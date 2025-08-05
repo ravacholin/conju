@@ -1,0 +1,38 @@
+[
+  {"level":"A1","mood":"indicative","tense":"pres","target":"produce"},
+  {"level":"A1","mood":"imperative","tense":"impAff","target":"produce"},
+  {"level":"A1","mood":"nonfinite","tense":"inf","target":"produce"},
+
+  {"level":"A2","mood":"indicative","tense":"pretPerf","target":"produce"},
+  {"level":"A2","mood":"indicative","tense":"pretIndef","target":"produce"},
+  {"level":"A2","mood":"indicative","tense":"impf","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"A2","mood":"indicative","tense":"irAInf","target":"produce"},
+  {"level":"A2","mood":"indicative","tense":"presFuturate","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"inf","target":"produce"},
+
+  {"level":"B1","mood":"indicative","tense":"plusc","target":"produce"},
+  {"level":"B1","mood":"indicative","tense":"fut","target":"produce"},
+  {"level":"B1","mood":"conditional","tense":"cond","target":"produce"},
+  {"level":"B1","mood":"subjunctive","tense":"subjPres","target":"produce"},
+  {"level":"B1","mood":"subjunctive","tense":"subjImpf","target":"recognize"},
+  {"level":"B1","mood":"imperative","tense":"impNeg","target":"produce"},
+  {"level":"B1","mood":"subjunctive","tense":"subjFut","target":"recognize"},
+  {"level":"B1","mood":"nonfinite","tense":"infPerf","target":"produce"},
+
+  {"level":"B2","mood":"subjunctive","tense":"subjImpf","target":"produce"},
+  {"level":"B2","mood":"subjunctive","tense":"subjPerf","target":"produce"},
+  {"level":"B2","mood":"subjunctive","tense":"subjPlusc","target":"produce"},
+  {"level":"B2","mood":"indicative","tense":"futPerf","target":"produce"},
+  {"level":"B2","mood":"conditional","tense":"condPerf","target":"produce"},
+  {"level":"B2","mood":"subjunctive","tense":"subjFut","target":"produce"},
+
+  {"level":"C1","mood":"indicative","tense":"pres","target":"produce"},
+  {"level":"C1","mood":"indicative","tense":"pretIndef","target":"produce"},
+  {"level":"C1","mood":"indicative","tense":"plusc","target":"produce"},
+  {"level":"C1","mood":"subjunctive","tense":"subjPlusc","target":"produce"},
+
+  {"level":"C2","mood":"subjunctive","tense":"subjFut","target":"produce"},
+  {"level":"C2","mood":"conditional","tense":"condPerf","target":"produce"}
+] 

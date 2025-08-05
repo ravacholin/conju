@@ -1,0 +1,19 @@
+{
+  "id":"venir",
+  "lemma":"venir",
+  "paradigms":[{
+    "regionTags":["rioplatense","la_general","peninsular"],
+    "forms":[
+      {"mood":"indicative","tense":"pres","person":"2s_tu","value":"vienes","accepts":{"vos":"venís"},"rules":["STEM_E_IE"]},
+      {"mood":"indicative","tense":"pres","person":"2s_vos","value":"venís","accepts":{"tu":"vienes"},"rules":["VOSEO_PRESENT_STRESS"]},
+      {"mood":"imperative","tense":"impAff","person":"2s_tu","value":"ven"},
+      {"mood":"imperative","tense":"impAff","person":"2s_vos","value":"vení","accepts":{"tu":"ven"},"rules":["VOSEO_IMP_AFF"]},
+      {"mood":"imperative","tense":"impNeg","person":"2s_tu","value":"no vengas"},
+      {"mood":"imperative","tense":"impNeg","person":"2s_vos","value":"no vengas","rules":["VOSEO_NEG_RIOMATCH"]},
+      {"mood":"subjunctive","tense":"subjPres","person":"2s_tu","value":"vengas"},
+      {"mood":"subjunctive","tense":"subjPres","person":"2s_vos","value":"vengas"},
+      {"mood":"indicative","tense":"fut","person":"2s_tu","value":"vendrás","rules":["FUT_ROOT_VENDR"]},
+      {"mood":"conditional","tense":"cond","person":"2s_tu","value":"vendrías","rules":["FUT_ROOT_VENDR"]}
+    ]
+  }]
+} 

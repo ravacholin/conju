@@ -1,0 +1,16 @@
+{
+  "id":"hablar",
+  "lemma":"hablar",
+  "paradigms":[{
+    "regionTags":["rioplatense","la_general","peninsular"],
+    "forms":[
+      {"mood":"indicative","tense":"pres","person":"1s","value":"hablo"},
+      {"mood":"indicative","tense":"pres","person":"2s_tu","value":"hablas","accepts":{"vos":"hablás"}},
+      {"mood":"indicative","tense":"pres","person":"2s_vos","value":"hablás","accepts":{"tu":"hablas"}},
+      {"mood":"imperative","tense":"impAff","person":"2s_tu","value":"habla"},
+      {"mood":"imperative","tense":"impAff","person":"2s_vos","value":"hablá"},
+      {"mood":"imperative","tense":"impNeg","person":"2s_tu","value":"no hables"},
+      {"mood":"imperative","tense":"impNeg","person":"2s_vos","value":"no hables"}
+    ]
+  }]
+} 
