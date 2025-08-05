@@ -10,7 +10,40 @@ export const RULE = {
   FUT_ROOT_VENDR: 'FUT_ROOT_VENDR'
 }
 
-// Basic canonicalization
+// Enhanced input normalization with warnings
+export function normalizeInput(input) {
+  const original = input
+  let normalized = input
+  
+  // Trim whitespace
+  normalized = normalized.trim()
+  
+  // Convert to lowercase
+  normalized = normalized.toLowerCase()
+  
+  // Remove extra spaces
+  normalized = normalized.replace(/\s+/g, ' ')
+  
+  // Generate warnings for corrections
+  const warnings = []
+  
+  if (original !== normalized) {
+    if (original.trim() !== input.trim()) {
+      warnings.push('Se eliminaron espacios extra')
+    }
+    if (original.toLowerCase() !== input.toLowerCase()) {
+      warnings.push('Se convirtió a minúsculas')
+    }
+  }
+  
+  return {
+    normalized,
+    warnings,
+    wasCorrected: warnings.length > 0
+  }
+}
+
+// Basic canonicalization for comparison (removes accents)
 export function normalize(s){
   return s
     .toLowerCase()

@@ -2,19 +2,24 @@ import { useState, useEffect } from 'react'
 import { useSettings } from './state/settings.js'
 import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
-import { getTensesForMood, getTenseLabel } from './lib/verbLabels.js'
+import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
+import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 import './App.css'
 
 function App() {
+  console.log('Curriculum gates imported:', gates)
+  console.log('Total gates:', gates.length)
+  console.log('Sample gates:', gates.slice(0, 5))
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})
   const [showSettings, setShowSettings] = useState(false)
-  const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode
+  const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
   const settings = useSettings()
 
   const generateNextItem = () => {
+    console.log('generateNextItem called')
     // Get all forms from all verbs
     const allForms = []
     verbs.forEach(verb => {
@@ -40,21 +45,24 @@ function App() {
         mood: nextForm.mood,
         tense: nextForm.tense,
         person: nextForm.person,
-        form: { ...nextForm } // Create new form object
+        form: { ...nextForm }, // Create new form object
+        settings: { ...settings } // Include settings for grading
       }
+      console.log('Setting new currentItem:', newItem)
       setCurrentItem(newItem)
     }
   }
 
   // Initialize first item when settings are ready
   useEffect(() => {
-    if (currentMode === 'drill' && settings.region) {
-      // Always generate a new item when entering drill mode or when practice settings change
+    if (currentMode === 'drill' && settings.region && !currentItem) {
+      // Only generate a new item when entering drill mode or when practice settings change AND there's no current item
       generateNextItem()
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense])
 
   const handleDrillResult = (result) => {
+    console.log('handleDrillResult called with:', result)
     // Update history
     const key = `${currentItem.mood}:${currentItem.tense}:${currentItem.person}:${currentItem.form.value}`
     setHistory(prev => ({
@@ -65,7 +73,12 @@ function App() {
       }
     }))
 
-    // Generate next item immediately (user controls timing with "Continue" button)
+    // Don't generate next item automatically - let the user control timing
+    // The Drill component will handle the "Continue" button to generate next item
+  }
+
+  const handleContinue = () => {
+    // Generate next item when user clicks "Continue"
     generateNextItem()
   }
 
@@ -117,66 +130,112 @@ function App() {
 
   const selectLevel = (level) => {
     settings.set({ level })
-    setOnboardingStep(3) // Move to practice mode selection
+    setOnboardingStep(4) // Go to practice mode selection
   }
 
   const selectPracticeMode = (mode) => {
+    settings.set({ practiceMode: mode })
     if (mode === 'mixed') {
-      settings.set({ 
-        practiceMode: 'mixed',
-        specificMood: null,
-        specificTense: null
-      })
-      startPractice()
+      setOnboardingStep(5) // Go to verb type selection for mixed practice
     } else {
-      settings.set({ practiceMode: 'specific' })
-      setOnboardingStep(4) // Move to mood selection
+      setOnboardingStep(5) // Go to mood selection for specific practice
     }
   }
 
   const selectMood = (mood) => {
+    console.log('selectMood called with:', mood)
+    console.log('Current settings:', settings)
     settings.set({ specificMood: mood })
-    setOnboardingStep(5) // Move to tense selection
+    console.log('After setting specificMood:', settings)
+    
+    if (settings.level) {
+      setOnboardingStep(6) // Go to tense selection for level-specific practice
+    } else {
+      setOnboardingStep(5) // Go to tense selection for general practice
+    }
   }
 
   const selectTense = (tense) => {
     settings.set({ specificTense: tense })
+    if (settings.level) {
+      setOnboardingStep(7) // Go to verb type selection for level-specific practice
+    } else {
+      setOnboardingStep(6) // Go to verb type selection for general practice
+    }
+  }
+
+  const selectVerbType = (verbType) => {
+    settings.set({ verbType })
     startPractice()
+  }
+
+  // Function to go back in the onboarding flow
+  const goBack = () => {
+    if (onboardingStep > 1) {
+      setOnboardingStep(onboardingStep - 1)
+    }
+  }
+
+  // Function to get available moods for a specific level
+  const getAvailableMoodsForLevel = (level) => {
+    console.log('getAvailableMoodsForLevel called with level:', level)
+    const levelGates = gates.filter(g => g.level === level)
+    console.log('Level gates found:', levelGates)
+    const moods = [...new Set(levelGates.map(g => g.mood))]
+    console.log('Available moods for level', level, ':', moods)
+    return moods
+  }
+
+  // Function to get available tenses for a specific level and mood
+  const getAvailableTensesForLevelAndMood = (level, mood) => {
+    const levelGates = gates.filter(g => g.level === level && g.mood === mood)
+    const tenses = levelGates.map(g => g.tense)
+    return tenses
+  }
+
+  // Function to get mood description
+  const getMoodDescription = (mood) => {
+    const descriptions = {
+      'indicative': 'Hechos y realidades',
+      'subjunctive': 'Dudas, deseos, emociones',
+      'imperative': 'Órdenes y mandatos',
+      'conditional': 'Situaciones hipotéticas'
+    }
+    return descriptions[mood] || ''
   }
 
   if (currentMode === 'onboarding') {
     return (
-      <div className="app">
+      <div className="App">
         <div className="onboarding">
-          <div className="onboarding-content">
-            <h1>Entrenador de Conjugación Española</h1>
+          <h1>Entrenador de Conjugación Española</h1>
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <div className="step-indicator">Paso 1 de 3</div>
+                <div className="step-indicator">Paso 1 de 6</div>
                 <h2>Selecciona tu variedad de español:</h2>
                 
-                <div className="dialect-options">
-                  <div className="dialect-card" onClick={() => selectDialect('rioplatense')}>
+                <div className="options-grid">
+                  <div className="option-card" onClick={() => selectDialect('rioplatense')}>
                     <h3>Español Rioplatense</h3>
                     <p>Argentina, Uruguay</p>
                     <p className="example">vos tenés, vos hablás</p>
                   </div>
                   
-                  <div className="dialect-card" onClick={() => selectDialect('la_general')}>
+                  <div className="option-card" onClick={() => selectDialect('la_general')}>
                     <h3>Latino Americano General</h3>
                     <p>La mayoría de América Latina</p>
                     <p className="example">tú tienes, tú hablas</p>
                   </div>
                   
-                  <div className="dialect-card" onClick={() => selectDialect('peninsular')}>
+                  <div className="option-card" onClick={() => selectDialect('peninsular')}>
                     <h3>Español Peninsular</h3>
                     <p>España</p>
                     <p className="example">tú tienes, vosotros tenéis</p>
                   </div>
                   
-                  <div className="dialect-card" onClick={() => selectDialect('both')}>
+                  <div className="option-card" onClick={() => selectDialect('both')}>
                     <h3>Ambas Formas</h3>
                     <p>Acepta tú y vos</p>
                     <p className="example">tú tienes / vos tenés</p>
@@ -185,144 +244,352 @@ function App() {
               </>
             )}
 
-            {/* Step 2: Level Selection */}
+            {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
-                <div className="step-indicator">Paso 2 de 3</div>
+                <div className="step-indicator">Paso 2 de 6</div>
+                <h2>¿Qué quieres practicar?</h2>
+                <p>Elige tu nivel MCER o trabaja formas específicas:</p>
+                
+                <div className="options-grid">
+                  <div className="option-card" onClick={() => setOnboardingStep(3)}>
+                    <h3>📚 Por Nivel MCER</h3>
+                    <p>Practica según tu nivel de español</p>
+                    <p className="example">A1, A2, B1, B2, C1, C2</p>
+                  </div>
+                  
+                  <div className="option-card" onClick={() => {
+                    settings.set({ practiceMode: 'specific', level: 'C2' })
+                    setOnboardingStep(4)
+                  }}>
+                    <h3>🎯 Formas Específicas</h3>
+                    <p>Elige un tiempo o modo específico</p>
+                    <p className="example">Presente, subjuntivo, imperativo, etc.</p>
+                  </div>
+                </div>
+                
+                <button onClick={goBack} className="back-btn">
+                  ← Volver atrás
+                </button>
+              </>
+            )}
+
+            {/* Step 3: Level Selection */}
+            {onboardingStep === 3 && (
+              <>
+                <div className="step-indicator">Paso 3 de 6</div>
                 <h2>¿Cuál es tu nivel de español?</h2>
                 <p>Selecciona tu nivel según el Marco Común Europeo de Referencia (MCER):</p>
                 
-                <div className="level-options">
-                  <div className="level-card" onClick={() => selectLevel('A1')}>
+                <div className="options-grid">
+                  <div className="option-card" onClick={() => selectLevel('A1')}>
                     <h3>A1 - Principiante</h3>
                     <p>Recién empiezas con el español</p>
+                    <p className="example">Indicativo: Presente</p>
                   </div>
                   
-                  <div className="level-card" onClick={() => selectLevel('A2')}>
+                  <div className="option-card" onClick={() => selectLevel('A2')}>
                     <h3>A2 - Elemental</h3>
                     <p>Conoces lo básico</p>
+                    <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
                   </div>
                   
-                  <div className="level-card" onClick={() => selectLevel('B1')}>
+                  <div className="option-card" onClick={() => selectLevel('B1')}>
                     <h3>B1 - Intermedio</h3>
                     <p>Puedes comunicarte en situaciones familiares</p>
+                    <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
                   </div>
                   
-                  <div className="level-card" onClick={() => selectLevel('B2')}>
+                  <div className="option-card" onClick={() => selectLevel('B2')}>
                     <h3>B2 - Intermedio Alto</h3>
                     <p>Te comunicas con fluidez</p>
+                    <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
                   </div>
                   
-                  <div className="level-card" onClick={() => selectLevel('C1')}>
+                  <div className="option-card" onClick={() => selectLevel('C1')}>
                     <h3>C1 - Avanzado</h3>
                     <p>Usas el español con eficacia</p>
+                    <p className="example">Todas las formas (solo irregulares en básicos)</p>
                   </div>
                   
-                  <div className="level-card" onClick={() => selectLevel('C2')}>
+                  <div className="option-card" onClick={() => selectLevel('C2')}>
                     <h3>C2 - Superior</h3>
                     <p>Dominio casi nativo</p>
+                    <p className="example">Todas las formas verbales</p>
                   </div>
                 </div>
-              </>
-            )}
-
-            {/* Step 3: Practice Mode Selection */}
-            {onboardingStep === 3 && (
-              <>
-                <div className="step-indicator">Paso 3 de 3</div>
-                <h2>¿Cómo quieres practicar?</h2>
                 
-                <div className="practice-mode-options">
-                  <div className="mode-card" onClick={() => selectPracticeMode('mixed')}>
-                    <h3>🎲 Práctica Mixta</h3>
-                    <p>Mezcla de todos los tiempos y modos</p>
-                    <p className="example">Variedad completa para práctica general</p>
-                  </div>
-                  
-                  <div className="mode-card" onClick={() => selectPracticeMode('specific')}>
-                    <h3>🎯 Práctica Específica</h3>
-                    <p>Enfócate en un tiempo/modo específico</p>
-                    <p className="example">Ideal para dominar formas particulares</p>
-                  </div>
-                </div>
+                <button onClick={goBack} className="back-btn">
+                  ← Volver atrás
+                </button>
               </>
             )}
 
-            {/* Step 4: Mood Selection (only for specific practice) */}
+            {/* Step 4: Practice Mode Selection (after level selection) or Mood Selection (from main menu) */}
             {onboardingStep === 4 && (
               <>
-                <div className="step-indicator">Configuración Específica</div>
-                <h2>Selecciona el modo verbal:</h2>
-                
-                <div className="mood-options">
-                  <div className="selection-card" onClick={() => selectMood('indicative')}>
-                    <h3>Indicativo</h3>
-                    <p>Hechos y realidades</p>
-                  </div>
-                  
-                  <div className="selection-card" onClick={() => selectMood('subjunctive')}>
-                    <h3>Subjuntivo</h3>
-                    <p>Dudas, deseos, emociones</p>
-                  </div>
-                  
-                  <div className="selection-card" onClick={() => selectMood('imperative')}>
-                    <h3>Imperativo</h3>
-                    <p>Órdenes y mandatos</p>
-                  </div>
-                  
-                  <div className="selection-card" onClick={() => selectMood('conditional')}>
-                    <h3>Condicional</h3>
-                    <p>Situaciones hipotéticas</p>
-                  </div>
-                  
-                  <div className="selection-card" onClick={() => selectMood('nonfinite')}>
-                    <h3>No finito</h3>
-                    <p>Infinitivo, gerundio, participio</p>
-                  </div>
-                </div>
+                <div className="step-indicator">Paso 4 de 6</div>
+                {settings.level ? (
+                  // Coming from level selection - show practice mode
+                  <>
+                    <h2>¿Cómo quieres practicar?</h2>
+                    <p>Elige el tipo de práctica para tu nivel {settings.level}:</p>
+                    
+                    <div className="options-grid">
+                      <div className="option-card" onClick={() => selectPracticeMode('mixed')}>
+                        <h3>🎲 Práctica Mixta</h3>
+                        <p>Mezcla de todos los tiempos y modos de tu nivel</p>
+                        <p className="example">Variedad completa para práctica general</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectPracticeMode('specific')}>
+                        <h3>🎯 Formas Específicas</h3>
+                        <p>Enfócate en un tiempo/modo específico de tu nivel</p>
+                        <p className="example">Ideal para dominar formas particulares</p>
+                      </div>
+                    </div>
+                    
+                    <button onClick={goBack} className="back-btn">
+                      ← Volver atrás
+                    </button>
+                  </>
+                ) : settings.practiceMode === 'specific' ? (
+                  // Coming from main menu - show mood selection
+                  <>
+                    <h2>Selecciona el modo verbal:</h2>
+                    
+                    <div className="options-grid">
+                      <div className="option-card" onClick={() => selectMood('indicative')}>
+                        <h3>Indicativo</h3>
+                        <p>Hechos y realidades</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectMood('subjunctive')}>
+                        <h3>Subjuntivo</h3>
+                        <p>Dudas, deseos, emociones</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectMood('imperative')}>
+                        <h3>Imperativo</h3>
+                        <p>Órdenes y mandatos</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectMood('conditional')}>
+                        <h3>Condicional</h3>
+                        <p>Situaciones hipotéticas</p>
+                      </div>
+                    </div>
+                    
+                    <button onClick={goBack} className="back-btn">
+                      ← Volver atrás
+                    </button>
+                  </>
+                ) : null}
               </>
             )}
 
-            {/* Step 5: Tense Selection (only for specific practice) */}
+            {/* Step 5: Practice Mode Selection or Mood/Tense Selection */}
             {onboardingStep === 5 && (
               <>
-                <div className="step-indicator">Configuración Específica</div>
-                <h2>Selecciona el tiempo verbal:</h2>
-                
-                <div className="tense-options">
-                  {getTensesForMood(settings.specificMood).map(tense => (
-                    <div key={tense} className="selection-card" onClick={() => selectTense(tense)}>
-                      <h3>{getTenseLabel(tense)}</h3>
+                <div className="step-indicator">Paso 5 de 6</div>
+                {(() => {
+                  console.log('Step 5 - Current settings:', {
+                    level: settings.level,
+                    practiceMode: settings.practiceMode,
+                    specificMood: settings.specificMood
+                  })
+                  
+                  if (settings.level && settings.practiceMode === 'mixed') {
+                    // Mixed practice from level - go directly to verb type selection
+                    return (
+                      <>
+                        <h2>Selecciona el tipo de verbos:</h2>
+                        <p>Práctica mixta para nivel {settings.level}:</p>
+                        
+                        <div className="options-grid">
+                          <div className="option-card" onClick={() => selectVerbType('all')}>
+                            <h3>📚 Todos los Verbos</h3>
+                            <p>Regulares e irregulares</p>
+                            <p className="example">Práctica completa</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectVerbType('regular')}>
+                            <h3>📖 Verbos Regulares</h3>
+                            <p>Solo verbos que siguen las reglas</p>
+                            <p className="example">hablar, comer, vivir</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectVerbType('irregular')}>
+                            <h3>🎯 Verbos Irregulares</h3>
+                            <p>Solo verbos con cambios especiales</p>
+                            <p className="example">ser, estar, tener, ir</p>
+                          </div>
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
+                  } else if (settings.level && settings.practiceMode === 'specific') {
+                    // Specific practice from level - show filtered moods
+                    console.log('=== STEP 5 DEBUG ===')
+                    console.log('Settings:', { level: settings.level, practiceMode: settings.practiceMode })
+                    const availableMoods = getAvailableMoodsForLevel(settings.level)
+                    console.log('Available moods for level', settings.level, ':', availableMoods)
+                    return (
+                      <>
+                        <h2>Selecciona el modo verbal:</h2>
+                        <p>Modos disponibles para nivel {settings.level}:</p>
+                        
+                        <div className="options-grid">
+                          {availableMoods.map(mood => (
+                            <div key={mood} className="option-card" onClick={() => selectMood(mood)}>
+                              <h3>{getMoodLabel(mood)}</h3>
+                              <p>{getMoodDescription(mood)}</p>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
+                  } else if (!settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
+                    // Coming from main menu - show tense selection
+                    console.log('Showing tense selection for mood:', settings.specificMood)
+                    return (
+                      <>
+                        <h2>Selecciona el tiempo verbal:</h2>
+                        
+                        <div className="options-grid">
+                          {getTensesForMood(settings.specificMood).map(tense => (
+                            <div key={tense} className="option-card" onClick={() => selectTense(tense)}>
+                              <h3>{getTenseLabel(tense)}</h3>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
+                  } else {
+                    console.log('No condition matched in step 5')
+                    return null
+                  }
+                })()}
+              </>
+            )}
+
+            {/* Step 6: Tense Selection (for specific practice from level) or Verb Type Selection */}
+            {onboardingStep === 6 && (
+              <>
+                <div className="step-indicator">Paso 6 de 6</div>
+                {settings.level ? (
+                  // Coming from level selection - show filtered tenses
+                  <>
+                    <h2>Selecciona el tiempo verbal:</h2>
+                    <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} en nivel {settings.level}:</p>
+                    
+                    <div className="options-grid">
+                      {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
+                        <div key={tense} className="option-card" onClick={() => selectTense(tense)}>
+                          <h3>{getTenseLabel(tense)}</h3>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                    
+                    <button onClick={goBack} className="back-btn">
+                      ← Volver atrás
+                    </button>
+                  </>
+                ) : settings.practiceMode === 'specific' ? (
+                  // Coming from main menu - show verb type selection
+                  <>
+                    <h2>Selecciona el tipo de verbos:</h2>
+                    
+                    <div className="options-grid">
+                      <div className="option-card" onClick={() => selectVerbType('all')}>
+                        <h3>📚 Todos los Verbos</h3>
+                        <p>Regulares e irregulares</p>
+                        <p className="example">Práctica completa</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectVerbType('regular')}>
+                        <h3>📖 Verbos Regulares</h3>
+                        <p>Solo verbos que siguen las reglas</p>
+                        <p className="example">hablar, comer, vivir</p>
+                      </div>
+                      
+                      <div className="option-card" onClick={() => selectVerbType('irregular')}>
+                        <h3>🎯 Verbos Irregulares</h3>
+                        <p>Solo verbos con cambios especiales</p>
+                        <p className="example">ser, estar, tener, ir</p>
+                      </div>
+                    </div>
+                    
+                    <button onClick={goBack} className="back-btn">
+                      ← Volver atrás
+                    </button>
+                  </>
+                ) : null}
+              </>
+            )}
+
+            {/* Step 7: Verb Type Selection (for specific practice from level) */}
+            {onboardingStep === 7 && settings.level && (
+              <>
+                <div className="step-indicator">Paso 7 de 7</div>
+                <h2>Selecciona el tipo de verbos:</h2>
+                
+                <div className="options-grid">
+                  <div className="option-card" onClick={() => selectVerbType('all')}>
+                    <h3>📚 Todos los Verbos</h3>
+                    <p>Regulares e irregulares</p>
+                    <p className="example">Práctica completa</p>
+                  </div>
+                  
+                  <div className="option-card" onClick={() => selectVerbType('regular')}>
+                    <h3>📖 Verbos Regulares</h3>
+                    <p>Solo verbos que siguen las reglas</p>
+                    <p className="example">hablar, comer, vivir</p>
+                  </div>
+                  
+                  <div className="option-card" onClick={() => selectVerbType('irregular')}>
+                    <h3>🎯 Verbos Irregulares</h3>
+                    <p>Solo verbos con cambios especiales</p>
+                    <p className="example">ser, estar, tener, ir</p>
+                  </div>
                 </div>
               </>
             )}
           </div>
         </div>
-      </div>
     )
   }
 
   if (currentMode === 'drill') {
     return (
-      <div className="app">
-        <header className="app-header">
-          <h1>Conjugación Española</h1>
-          <div className="header-controls">
-            <button 
-              className="settings-toggle"
-              onClick={() => setShowSettings(!showSettings)}
-            >
-              ⚙️ Configuración
-            </button>
-          </div>
+      <div className="App">
+        <header className="header">
+          <div></div>
+          <button 
+            onClick={() => {
+              setCurrentMode('onboarding')
+              setOnboardingStep(1)
+            }}
+            className="back-to-menu-btn"
+          >
+            🏠 Volver al menú
+          </button>
         </header>
 
         {showSettings && (
           <div className="settings-panel">
-            <div className="settings-content">
-              <h3>Configuración</h3>
+            <h3>Configuración</h3>
               <div className="setting-group">
                 <label>Variedad de español:</label>
                 <select 
@@ -359,7 +626,7 @@ function App() {
               </div>
               
               <div className="setting-group">
-                <label>Modo de práctica:</label>
+                <label title="Elige si quieres practicar con todos los tiempos o enfocarte en uno específico">Modo de práctica:</label>
                 <select 
                   value={settings.practiceMode}
                   onChange={(e) => {
@@ -377,6 +644,64 @@ function App() {
                   <option value="mixed">Práctica mixta (todos los tiempos)</option>
                   <option value="specific">Práctica específica</option>
                 </select>
+              </div>
+
+              <div className="setting-group">
+                <label title="Elige si quieres practicar con ambos pronombres (tú y vos) o solo uno">Práctica de pronombres:</label>
+                <select 
+                  value={settings.practicePronoun}
+                  onChange={(e) => {
+                    settings.set({ practicePronoun: e.target.value })
+                    generateNextItem()
+                  }}
+                  className="setting-select"
+                >
+                  <option value="both">Ambos (tú y vos)</option>
+                  <option value="tu_only">Solo tú</option>
+                  <option value="vos_only">Solo vos</option>
+                </select>
+              </div>
+
+              <div className="setting-group">
+                <label title="Elige el tipo de verbos a practicar">Tipo de verbos:</label>
+                <select 
+                  value={settings.verbType}
+                  onChange={(e) => {
+                    settings.set({ verbType: e.target.value })
+                    generateNextItem()
+                  }}
+                  className="setting-select"
+                >
+                  <option value="all">Todos (regulares e irregulares)</option>
+                  <option value="regular">Solo regulares</option>
+                  <option value="irregular">Solo irregulares</option>
+                </select>
+              </div>
+
+              <div className="setting-group">
+                <label title="Muestra el pronombre para facilitar el aprendizaje temprano">Mostrar pronombres:</label>
+                <div className="radio-group">
+                  <label>
+                    <input 
+                      type="radio" 
+                      name="showPronouns" 
+                      value="true"
+                      checked={settings.showPronouns === true}
+                      onChange={() => settings.set({ showPronouns: true })}
+                    />
+                    Sí (para principiantes)
+                  </label>
+                  <label>
+                    <input 
+                      type="radio" 
+                      name="showPronouns" 
+                      value="false"
+                      checked={settings.showPronouns === false}
+                      onChange={() => settings.set({ showPronouns: false })}
+                    />
+                    No (solo la forma verbal)
+                  </label>
+                </div>
               </div>
 
               {settings.practiceMode === 'specific' && (
@@ -439,21 +764,20 @@ function App() {
               )}
               
               <button 
-                className="close-settings"
+                className="btn btn-secondary"
                 onClick={() => setShowSettings(false)}
               >
                 Cerrar
               </button>
             </div>
-          </div>
         )}
 
-        <main className="app-main">
+        <main className="main-content">
           {currentItem ? (
             <Drill 
-              item={currentItem}
+              currentItem={currentItem}
               onResult={handleDrillResult}
-              settings={settings}
+              onContinue={handleContinue}
             />
           ) : (
             <div className="loading">Cargando próxima conjugación...</div>
@@ -465,7 +789,7 @@ function App() {
 
   // Fallback - should not reach here
   return (
-    <div className="app">
+    <div className="App">
       <div className="loading">Cargando aplicación...</div>
     </div>
   )

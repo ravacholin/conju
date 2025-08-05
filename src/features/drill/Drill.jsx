@@ -1,130 +1,156 @@
 import { useState, useEffect } from 'react'
 import { grade } from '../../lib/grader.js'
-import { getMoodLabel, getTenseLabel, getPersonLabel } from '../../lib/verbLabels.js'
 
-export default function Drill({item, onResult, settings}){
-  const [value, setValue] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export default function Drill({ 
+  currentItem, 
+  onResult, 
+  onContinue
+}) {
+  const [input, setInput] = useState('')
   const [result, setResult] = useState(null)
-  const [showResult, setShowResult] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Reset input when currentItem changes, but keep result until user continues
   useEffect(() => {
-    setValue('')
-    setIsSubmitting(false)
-    setResult(null)
-    setShowResult(false)
-  }, [item])
+    setInput('')
+    // Don't reset result here - let user control when to move to next item
+  }, [currentItem])
 
-  const handleSubmit = () => {
-    if (!value.trim() || isSubmitting) return
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (result && e.key === 'Enter') {
+        handleContinue()
+      }
+    }
+
+    if (result) {
+      document.addEventListener('keydown', handleKeyPress)
+      return () => document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [result])
+
+  const handleSubmit = async () => {
+    console.log('handleSubmit called with input:', input)
+    if (!input.trim() || isSubmitting) return
+
     setIsSubmitting(true)
     
-    // Grade the response
-    const gradeResult = grade(value, item.form, settings)
-    setResult(gradeResult)
-    setShowResult(true)
-    setIsSubmitting(false)
-  }
-
-  const handleContinue = () => {
-    // Pass result to parent and prepare for next question
-    onResult(result)
-    setShowResult(false)
-    setResult(null)
-    setValue('')
-  }
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      if (showResult) {
-        handleContinue()
-      } else if (!isSubmitting) {
-        handleSubmit()
-      }
+    try {
+      const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
+      console.log('Grade result:', gradeResult)
+      setResult(gradeResult)
+      onResult(gradeResult)
+    } catch (error) {
+      console.error('Error grading conjugation:', error)
+      setResult({ correct: false, message: 'Error al evaluar la conjugación' })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  return (
-    <div className="drill-interface">
-      <div className="prompt">
-        <div className="prompt-header">
-          <span className="prompt-label">Conjuga</span>
-          <span className="prompt-verb">{item.lemma}</span>
-        </div>
-        <div className="prompt-details">
-          <span className="prompt-mood">{getMoodLabel(item.mood)}</span>
-          <span className="prompt-separator">•</span>
-          <span className="prompt-tense">{getTenseLabel(item.tense)}</span>
-          <span className="prompt-separator">•</span>
-          <span className="prompt-person">{getPersonLabel(item.person)}</span>
-        </div>
-      </div>
-      
-      {!showResult ? (
-        <>
-          <div className="input-section">
-            <input 
-              value={value} 
-              onChange={e => setValue(e.target.value)} 
-              onKeyPress={handleKeyPress}
-              placeholder="Escribe tu respuesta..."
-              autoFocus
-              disabled={isSubmitting}
-              className="conjugation-input"
-            />
-            <button 
-              onClick={handleSubmit}
-              disabled={!value.trim() || isSubmitting}
-              className="submit-btn"
-            >
-              {isSubmitting ? 'Verificando...' : 'Verificar Respuesta'}
-            </button>
-          </div>
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !result) {
+      handleSubmit()
+    }
+  }
 
-          <div className="hint-section">
-            <p className="hint-text">
-              💡 Consejo: Puedes presionar Enter para enviar tu respuesta
-            </p>
-          </div>
-        </>
-      ) : (
-        <div className="result-section">
-          <div className={`result-feedback ${result.correct ? 'correct' : 'incorrect'}`}>
-            {result.correct ? (
-              <>
-                <div className="result-icon">✅</div>
-                <div className="result-message">¡Correcto!</div>
-                <div className="result-answer">Tu respuesta: <strong>{value}</strong></div>
-              </>
-            ) : (
-              <>
-                <div className="result-icon">❌</div>
-                <div className="result-message">Incorrecto</div>
-                <div className="result-answer">Tu respuesta: <strong>{value}</strong></div>
-                <div className="result-targets">
-                  Respuestas correctas: <strong>{result.targets.join(', ')}</strong>
-                </div>
-                {result.note && (
-                  <div className="result-note">{result.note}</div>
-                )}
-              </>
-            )}
-          </div>
-          
+  const handleContinue = () => {
+    setResult(null) // Reset result when user continues
+    onContinue()
+  }
+
+  if (!currentItem) {
+    return (
+      <div className="loading">
+        <p>Cargando próxima conjugación...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="drill-container">
+      {/* Verb lemma */}
+      <div className="verb-lemma">
+        {currentItem.lemma}
+      </div>
+
+      {/* Conjugation context */}
+      <div className="conjugation-context">
+        {currentItem.mood === 'imperative' && currentItem.tense === 'impAff' && 'Imperativo Afirmativo'}
+        {currentItem.mood === 'imperative' && currentItem.tense === 'impNeg' && 'Imperativo Negativo'}
+        {currentItem.mood === 'indicative' && currentItem.tense === 'pres' && 'Presente (Indicativo)'}
+        {currentItem.mood === 'indicative' && currentItem.tense === 'pret' && 'Pretérito (Indicativo)'}
+        {currentItem.mood === 'indicative' && currentItem.tense === 'impf' && 'Imperfecto (Indicativo)'}
+        {currentItem.mood === 'indicative' && currentItem.tense === 'fut' && 'Futuro (Indicativo)'}
+        {currentItem.mood === 'subjunctive' && currentItem.tense === 'subjPres' && 'Presente (Subjuntivo)'}
+        {currentItem.mood === 'subjunctive' && currentItem.tense === 'subjImpf' && 'Imperfecto (Subjuntivo)'}
+        {currentItem.mood === 'conditional' && currentItem.tense === 'cond' && 'Condicional'}
+      </div>
+
+      {/* Person/pronoun display */}
+      <div className="person-display">
+        {currentItem.person === '1s' && 'Yo'}
+        {currentItem.person === '2s_tu' && 'Tú'}
+        {currentItem.person === '2s_vos' && 'Vos'}
+        {currentItem.person === '3s' && 'Él/Ella/Usted'}
+        {currentItem.person === '1p' && 'Nosotros'}
+        {currentItem.person === '2p_vosotros' && 'Vosotros'}
+        {currentItem.person === '3p' && 'Ellos/Ustedes'}
+      </div>
+
+      {/* Input form */}
+      <div className="input-container">
+        <input
+          type="text"
+          className="conjugation-input"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Escribe la conjugación..."
+          disabled={result !== null}
+          autoFocus
+        />
+      </div>
+
+      {/* Action buttons */}
+      <div className="action-buttons">
+        {!result ? (
           <button 
-            onClick={handleContinue}
-            onKeyPress={handleKeyPress}
-            className="continue-btn"
-            autoFocus
+            className="btn" 
+            onClick={handleSubmit}
+            disabled={isSubmitting || !input.trim()}
           >
+            {isSubmitting ? 'Verificando...' : 'Verificar'}
+          </button>
+        ) : (
+          <button className="btn" onClick={handleContinue}>
             Continuar
           </button>
-          
-          <div className="hint-section">
-            <p className="hint-text">
-              💡 Presiona Enter para continuar
+        )}
+      </div>
+
+      {/* Result feedback */}
+      {result && (
+        <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
+          <p>
+            {result.correct ? '¡Correcto!' : 'Incorrecto'}
+          </p>
+          {result.correct && result.note && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
+              {result.note}
             </p>
-          </div>
+          )}
+          {!result.correct && result.targets && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
+              Respuesta correcta: <strong>{result.targets.join(' / ')}</strong>
+            </p>
+          )}
+          {!result.correct && result.note && (
+            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
+              {result.note}
+            </p>
+          )}
         </div>
       )}
     </div>
