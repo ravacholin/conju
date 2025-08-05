@@ -138,7 +138,8 @@ function App() {
     if (mode === 'mixed') {
       setOnboardingStep(5) // Go to verb type selection for mixed practice
     } else {
-      setOnboardingStep(5) // Go to mood selection for specific practice
+      // For specific practice, go directly to practice with current settings
+      startPractice()
     }
   }
 
@@ -259,8 +260,10 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => {
-                    settings.set({ practiceMode: 'specific', level: 'C2' })
-                    setOnboardingStep(4)
+                    console.log('Formas Específicas clicked - setting practiceMode to specific')
+                    settings.set({ practiceMode: 'specific' })
+                    console.log('Settings after setting practiceMode:', settings)
+                    setOnboardingStep(5)
                   }}>
                     <h3>🎯 Formas Específicas</h3>
                     <p>Elige un tiempo o modo específico</p>
@@ -329,62 +332,78 @@ function App() {
             {onboardingStep === 4 && (
               <>
                 <div className="step-indicator">Paso 4 de 6</div>
-                {settings.level ? (
-                  // Coming from level selection - show practice mode
-                  <>
-                    <h2>¿Cómo quieres practicar?</h2>
-                    <p>Elige el tipo de práctica para tu nivel {settings.level}:</p>
-                    
-                    <div className="options-grid">
-                      <div className="option-card" onClick={() => selectPracticeMode('mixed')}>
-                        <h3>🎲 Práctica Mixta</h3>
-                        <p>Mezcla de todos los tiempos y modos de tu nivel</p>
-                        <p className="example">Variedad completa para práctica general</p>
-                      </div>
-                      
-                      <div className="option-card" onClick={() => selectPracticeMode('specific')}>
+                {(() => {
+                  console.log('Step 4 - Current settings:', {
+                    level: settings.level,
+                    practiceMode: settings.practiceMode
+                  })
+                  
+                  if (settings.level) {
+                    // Coming from level selection - show practice mode
+                    return (
+                      <>
+                        <h2>¿Cómo quieres practicar?</h2>
+                        <p>Elige el tipo de práctica para tu nivel {settings.level}:</p>
+                        
+                        <div className="options-grid">
+                          <div className="option-card" onClick={() => selectPracticeMode('mixed')}>
+                            <h3>🎲 Práctica Mixta</h3>
+                            <p>Mezcla de todos los tiempos y modos de tu nivel</p>
+                            <p className="example">Variedad completa para práctica general</p>
+                          </div>
+                          
+                                                <div className="option-card" onClick={() => {
+                        settings.set({ practiceMode: 'specific' })
+                        setOnboardingStep(5)
+                      }}>
                         <h3>🎯 Formas Específicas</h3>
                         <p>Enfócate en un tiempo/modo específico de tu nivel</p>
                         <p className="example">Ideal para dominar formas particulares</p>
                       </div>
-                    </div>
-                    
-                    <button onClick={goBack} className="back-btn">
-                      ← Volver atrás
-                    </button>
-                  </>
-                ) : settings.practiceMode === 'specific' ? (
-                  // Coming from main menu - show mood selection
-                  <>
-                    <h2>Selecciona el modo verbal:</h2>
-                    
-                    <div className="options-grid">
-                      <div className="option-card" onClick={() => selectMood('indicative')}>
-                        <h3>Indicativo</h3>
-                        <p>Hechos y realidades</p>
-                      </div>
-                      
-                      <div className="option-card" onClick={() => selectMood('subjunctive')}>
-                        <h3>Subjuntivo</h3>
-                        <p>Dudas, deseos, emociones</p>
-                      </div>
-                      
-                      <div className="option-card" onClick={() => selectMood('imperative')}>
-                        <h3>Imperativo</h3>
-                        <p>Órdenes y mandatos</p>
-                      </div>
-                      
-                      <div className="option-card" onClick={() => selectMood('conditional')}>
-                        <h3>Condicional</h3>
-                        <p>Situaciones hipotéticas</p>
-                      </div>
-                    </div>
-                    
-                    <button onClick={goBack} className="back-btn">
-                      ← Volver atrás
-                    </button>
-                  </>
-                ) : null}
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
+                  } else if (settings.practiceMode === 'specific') {
+                    // Coming from main menu - show mood selection
+                    return (
+                      <>
+                        <h2>Selecciona el modo verbal:</h2>
+                        
+                        <div className="options-grid">
+                          <div className="option-card" onClick={() => selectMood('indicative')}>
+                            <h3>Indicativo</h3>
+                            <p>Hechos y realidades</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('subjunctive')}>
+                            <h3>Subjuntivo</h3>
+                            <p>Dudas, deseos, emociones</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('imperative')}>
+                            <h3>Imperativo</h3>
+                            <p>Órdenes y mandatos</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('conditional')}>
+                            <h3>Condicional</h3>
+                            <p>Situaciones hipotéticas</p>
+                          </div>
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
+                  } else {
+                    return null
+                  }
+                })()}
               </>
             )}
 
@@ -440,7 +459,11 @@ function App() {
                     return (
                       <>
                         <h2>Selecciona el modo verbal:</h2>
-                        <p>Modos disponibles para nivel {settings.level}:</p>
+                        {settings.level === 'C2' ? (
+                          <p>Modos disponibles (nivel C2 incluye todas las formas):</p>
+                        ) : (
+                          <p>Modos disponibles para nivel {settings.level}:</p>
+                        )}
                         
                         <div className="options-grid">
                           {availableMoods.map(mood => (
@@ -476,6 +499,40 @@ function App() {
                         </button>
                       </>
                     )
+                  } else if (!settings.level && settings.practiceMode === 'specific') {
+                    // Coming from forms specific without level - show mood selection
+                    console.log('Showing mood selection for forms specific without level')
+                    return (
+                      <>
+                        <h2>Selecciona el modo verbal:</h2>
+                        
+                        <div className="options-grid">
+                          <div className="option-card" onClick={() => selectMood('indicative')}>
+                            <h3>Indicativo</h3>
+                            <p>Hechos y realidades</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('subjunctive')}>
+                            <h3>Subjuntivo</h3>
+                            <p>Dudas, deseos, emociones</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('imperative')}>
+                            <h3>Imperativo</h3>
+                            <p>Órdenes y mandatos</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('conditional')}>
+                            <h3>Condicional</h3>
+                            <p>Situaciones hipotéticas</p>
+                          </div>
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          ← Volver atrás
+                        </button>
+                      </>
+                    )
                   } else {
                     console.log('No condition matched in step 5')
                     return null
@@ -492,7 +549,11 @@ function App() {
                   // Coming from level selection - show filtered tenses
                   <>
                     <h2>Selecciona el tiempo verbal:</h2>
-                    <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} en nivel {settings.level}:</p>
+                    {settings.level === 'C2' ? (
+                      <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} (nivel C2 incluye todas las formas):</p>
+                    ) : (
+                      <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} en nivel {settings.level}:</p>
+                    )}
                     
                     <div className="options-grid">
                       {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
