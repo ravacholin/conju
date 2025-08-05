@@ -10,35 +10,19 @@ export default function Drill({
   const [result, setResult] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Reset input when currentItem changes, but keep result until user continues
+  // Reset input when currentItem changes
   useEffect(() => {
     setInput('')
-    // Don't reset result here - let user control when to move to next item
-  }, [currentItem])
-
-  // Handle keyboard events
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (result && e.key === 'Enter') {
-        handleContinue()
-      }
-    }
-
-    if (result) {
-      document.addEventListener('keydown', handleKeyPress)
-      return () => document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [result])
+    // IMPORTANTE: NO resetear el resultado aquí
+  }, [currentItem?.id])
 
   const handleSubmit = async () => {
-    console.log('handleSubmit called with input:', input)
     if (!input.trim() || isSubmitting) return
 
     setIsSubmitting(true)
     
     try {
       const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
-      console.log('Grade result:', gradeResult)
       setResult(gradeResult)
       onResult(gradeResult)
     } catch (error) {
@@ -49,14 +33,27 @@ export default function Drill({
     }
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !result) {
-      handleSubmit()
+  // Handle keyboard events for non-input elements
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Only handle Enter if not in an input field
+      if (e.key === 'Enter' && e.target.tagName !== 'INPUT') {
+        e.preventDefault()
+        if (!result) {
+          handleSubmit()
+        } else {
+          handleContinue()
+        }
+      }
     }
-  }
+
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [result])
 
   const handleContinue = () => {
-    setResult(null) // Reset result when user continues
+    setResult(null)
+    setInput('')
     onContinue()
   }
 
@@ -68,6 +65,62 @@ export default function Drill({
     )
   }
 
+  // SIMPLE AND ROBUST CONTEXT LOGIC
+  const getContextText = () => {
+    const mood = currentItem.mood || 'indicative'
+    const tense = currentItem.tense || 'pres'
+    
+    const moodMap = {
+      'indicative': 'Indicativo',
+      'subjunctive': 'Subjuntivo', 
+      'imperative': 'Imperativo',
+      'conditional': 'Condicional',
+      'nonfinite': 'No Finito'
+    }
+    
+    const tenseMap = {
+      'pres': 'Presente',
+      'pretIndef': 'Pretérito Indefinido',
+      'impf': 'Imperfecto',
+      'fut': 'Futuro',
+      'pretPerf': 'Pretérito Perfecto',
+      'plusc': 'Pluscuamperfecto',
+      'futPerf': 'Futuro Perfecto',
+      'irAInf': 'Ir a + Infinitivo',
+      'presFuturate': 'Presente Futurativo',
+      'impAff': 'Afirmativo',
+      'impNeg': 'Negativo',
+      'subjPres': 'Presente',
+      'subjImpf': 'Imperfecto',
+      'subjFut': 'Futuro',
+      'subjPerf': 'Pretérito Perfecto',
+      'subjPlusc': 'Pluscuamperfecto',
+      'cond': 'Condicional',
+      'condPerf': 'Condicional Perfecto',
+      'inf': 'Infinitivo',
+      'part': 'Participio',
+      'ger': 'Gerundio'
+    }
+    
+    const moodText = moodMap[mood] || 'Indicativo'
+    const tenseText = tenseMap[tense] || 'Presente'
+    
+    return `${moodText} - ${tenseText}`
+  }
+
+  const getPersonText = () => {
+    const personMap = {
+      '1s': 'Yo',
+      '2s_tu': 'Tú',
+      '2s_vos': 'Vos',
+      '3s': 'Él/Ella/Usted',
+      '1p': 'Nosotros',
+      '2p_vosotros': 'Vosotros',
+      '3p': 'Ellos/Ustedes'
+    }
+    return personMap[currentItem.person] || 'Yo'
+  }
+
   return (
     <div className="drill-container">
       {/* Verb lemma */}
@@ -75,28 +128,14 @@ export default function Drill({
         {currentItem.lemma}
       </div>
 
-      {/* Conjugation context */}
+      {/* Conjugation context - ALWAYS SHOW */}
       <div className="conjugation-context">
-        {currentItem.mood === 'imperative' && currentItem.tense === 'impAff' && 'Imperativo Afirmativo'}
-        {currentItem.mood === 'imperative' && currentItem.tense === 'impNeg' && 'Imperativo Negativo'}
-        {currentItem.mood === 'indicative' && currentItem.tense === 'pres' && 'Presente (Indicativo)'}
-        {currentItem.mood === 'indicative' && currentItem.tense === 'pret' && 'Pretérito (Indicativo)'}
-        {currentItem.mood === 'indicative' && currentItem.tense === 'impf' && 'Imperfecto (Indicativo)'}
-        {currentItem.mood === 'indicative' && currentItem.tense === 'fut' && 'Futuro (Indicativo)'}
-        {currentItem.mood === 'subjunctive' && currentItem.tense === 'subjPres' && 'Presente (Subjuntivo)'}
-        {currentItem.mood === 'subjunctive' && currentItem.tense === 'subjImpf' && 'Imperfecto (Subjuntivo)'}
-        {currentItem.mood === 'conditional' && currentItem.tense === 'cond' && 'Condicional'}
+        {getContextText()}
       </div>
 
       {/* Person/pronoun display */}
       <div className="person-display">
-        {currentItem.person === '1s' && 'Yo'}
-        {currentItem.person === '2s_tu' && 'Tú'}
-        {currentItem.person === '2s_vos' && 'Vos'}
-        {currentItem.person === '3s' && 'Él/Ella/Usted'}
-        {currentItem.person === '1p' && 'Nosotros'}
-        {currentItem.person === '2p_vosotros' && 'Vosotros'}
-        {currentItem.person === '3p' && 'Ellos/Ustedes'}
+        {getPersonText()}
       </div>
 
       {/* Input form */}
@@ -106,7 +145,16 @@ export default function Drill({
           className="conjugation-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              if (!result) {
+                handleSubmit()
+              } else {
+                handleContinue()
+              }
+            }
+          }}
           placeholder="Escribe la conjugación..."
           disabled={result !== null}
           autoFocus
@@ -130,8 +178,8 @@ export default function Drill({
         )}
       </div>
 
-      {/* Result feedback */}
-      {result && (
+      {/* Result feedback - ALWAYS SHOW WHEN RESULT EXISTS */}
+      {result ? (
         <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
           <p>
             {result.correct ? '¡Correcto!' : 'Incorrecto'}
@@ -152,7 +200,7 @@ export default function Drill({
             </p>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   )
 } 

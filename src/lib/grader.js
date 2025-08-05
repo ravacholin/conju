@@ -40,24 +40,33 @@ export function grade(input, expected, settings){
 function generateFeedback(input, correctAnswers, settings, expected) {
   // Check for accent issues by comparing forms without accents
   const inputWithoutAccents = input.normalize('NFD').replace(/\p{Diacritic}+/gu, '')
-  const hasAccentIssue = correctAnswers.some(ans => {
+  const accentIssues = correctAnswers.filter(ans => {
     const ansWithoutAccents = ans.normalize('NFD').replace(/\p{Diacritic}+/gu, '')
     return ansWithoutAccents === inputWithoutAccents && ans !== input
   })
   
-  if (hasAccentIssue) {
-    return 'Te faltó la tilde. Revisa los acentos.'
+  if (accentIssues.length > 0) {
+    return `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${accentIssues[0]}"`
   }
   
   // Check for pronoun-specific issues
   if (settings.region === 'rioplatense' && settings.useVoseo) {
     // Check if user wrote tú form instead of vos form
-    const tuForms = ['escribes', 'comes', 'vives', 'vales', 'hablas']
-    const vosForms = ['escribis', 'comes', 'vivis', 'vales', 'hablas']
+    const tuVosPairs = {
+      'escribes': 'escribís',
+      'comes': 'comés', 
+      'vives': 'vivís',
+      'vales': 'valés',
+      'hablas': 'hablás',
+      'necesitas': 'necesitás',
+      'ayudas': 'ayudás',
+      'buscas': 'buscás',
+      'compras': 'comprás',
+      'llegas': 'llegás'
+    }
     
-    const tuIndex = tuForms.indexOf(input)
-    if (tuIndex !== -1) {
-      return `En español rioplatense se usa "vos". La forma correcta es "${vosForms[tuIndex]}"`
+    if (tuVosPairs[input]) {
+      return `⚠️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`
     }
   }
   
@@ -72,12 +81,17 @@ function generateFeedback(input, correctAnswers, settings, expected) {
     'comis': 'comés', 
     'vivis': 'vivís',
     'valis': 'valés',
-    'hablis': 'hablás'
+    'hablis': 'hablás',
+    'necesitis': 'necesitás',
+    'ayudis': 'ayudás',
+    'buscis': 'buscás',
+    'compris': 'comprás',
+    'llegis': 'llegás'
   }
   
   if (commonMistakes[input]) {
-    return `Te faltó la tilde. La forma correcta es "${commonMistakes[input]}"`
+    return `⚠️ ERROR DE TILDE: Te faltó la tilde. La forma correcta es "${commonMistakes[input]}"`
   }
   
-  return 'Forma incorrecta. Revisa la conjugación.'
+  return '❌ Forma incorrecta. Revisa la conjugación y los acentos.'
 } 

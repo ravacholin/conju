@@ -19,7 +19,6 @@ function App() {
   const settings = useSettings()
 
   const generateNextItem = () => {
-    console.log('generateNextItem called')
     // Get all forms from all verbs
     const allForms = []
     verbs.forEach(verb => {
@@ -37,7 +36,7 @@ function App() {
     
     const nextForm = chooseNext({ forms: allForms, history })
     
-    if (nextForm) {
+    if (nextForm && nextForm.mood && nextForm.tense) {
       // Force a new object to ensure React detects the change
       const newItem = {
         id: Date.now(), // Unique identifier to force re-render
@@ -48,8 +47,12 @@ function App() {
         form: { ...nextForm }, // Create new form object
         settings: { ...settings } // Include settings for grading
       }
-      console.log('Setting new currentItem:', newItem)
       setCurrentItem(newItem)
+    } else {
+      // If no valid form found, try again after a short delay
+      setTimeout(() => {
+        generateNextItem()
+      }, 100)
     }
   }
 
@@ -62,7 +65,6 @@ function App() {
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense])
 
   const handleDrillResult = (result) => {
-    console.log('handleDrillResult called with:', result)
     // Update history
     const key = `${currentItem.mood}:${currentItem.tense}:${currentItem.person}:${currentItem.form.value}`
     setHistory(prev => ({
@@ -72,9 +74,7 @@ function App() {
         correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0)
       }
     }))
-
-    // Don't generate next item automatically - let the user control timing
-    // The Drill component will handle the "Continue" button to generate next item
+    // NO generar siguiente item automáticamente
   }
 
   const handleContinue = () => {
