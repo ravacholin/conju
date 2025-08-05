@@ -1,0 +1,11 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular minimalista -->
+  <circle cx="16" cy="16" r="15" fill="#8A2BE2" stroke="#6A1B9A" stroke-width="1"/>
+  
+  <!-- Letra "C" estilizada -->
+  <path d="M12 8C10.8954 8 10 8.89543 10 10V22C10 23.1046 10.8954 24 12 24H20C21.1046 24 22 23.1046 22 22V10C22 8.89543 21.1046 8 20 8H12ZM12 10H20V22H12V10Z" fill="white"/>
+  <path d="M14 12C13.4477 12 13 12.4477 13 13V19C13 19.5523 13.4477 20 14 20H18C18.5523 20 19 19.5523 19 19V13C19 12.4477 18.5523 12 18 12H14Z" fill="#8A2BE2"/>
+  
+  <!-- Punto decorativo -->
+  <circle cx="16" cy="16" r="2" fill="white"/>
+</svg> 

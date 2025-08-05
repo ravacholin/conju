@@ -208,7 +208,7 @@ function App() {
     return (
       <div className="App">
         <div className="onboarding">
-          <h1>Entrenador de Conjugación Española</h1>
+          <h1>Conjugador para practicar español</h1>
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
