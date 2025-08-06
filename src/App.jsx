@@ -174,7 +174,8 @@ function App() {
           useVoseo: true,
           useVosotros: true,
           strict: false,
-          region: 'la_general'
+          region: 'la_general',
+          practicePronoun: 'all' // Agregar soporte para todas las formas
         })
         break
     }
@@ -298,12 +299,11 @@ function App() {
     return (
       <div className="App">
         <div className="onboarding">
-          <h1>Conjugador para practicar español</h1>
+                      <h1>VerbOS</h1>
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <div className="step-indicator">Paso 1 de 6</div>
                 <h2>Selecciona tu variedad de español:</h2>
                 
                 <div className="options-grid">
@@ -314,7 +314,7 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('la_general')}>
-                    <h3>Latino Americano General</h3>
+                    <h3>Latinoamericano General</h3>
                     <p>La mayoría de América Latina</p>
                     <p className="example">tú tienes, tú hablas</p>
                   </div>
@@ -326,18 +326,21 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('both')}>
-                    <h3>Ambas Formas</h3>
-                    <p>Acepta tú y vos</p>
-                    <p className="example">tú tienes / vos tenés</p>
+                    <h3>Todas las Formas</h3>
+                    <p>Tú, vos, vosotros y todas las variantes</p>
+                    <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
                   </div>
                 </div>
+                
+                <button onClick={goBack} className="back-btn">
+                  ← Volver atrás
+                </button>
               </>
             )}
 
             {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
-                <div className="step-indicator">Paso 2 de 6</div>
                 <h2>¿Qué quieres practicar?</h2>
                 <p>Elige tu nivel MCER o trabaja formas específicas:</p>
                 
@@ -369,7 +372,6 @@ function App() {
             {/* Step 3: Level Selection */}
             {onboardingStep === 3 && (
               <>
-                <div className="step-indicator">Paso 3 de 6</div>
                 <h2>¿Cuál es tu nivel de español?</h2>
                 <p>Selecciona tu nivel según el Marco Común Europeo de Referencia (MCER):</p>
                 
@@ -420,7 +422,6 @@ function App() {
             {/* Step 4: Practice Mode Selection (after level selection) or Mood Selection (from main menu) */}
             {onboardingStep === 4 && (
               <>
-                <div className="step-indicator">Paso 4 de 6</div>
                 {(() => {
                   console.log('Step 4 - Current settings:', {
                     level: settings.level,
@@ -467,7 +468,6 @@ function App() {
             {/* Step 5: Practice Mode Selection or Mood/Tense Selection */}
             {onboardingStep === 5 && (
               <>
-                <div className="step-indicator">Paso 5 de 6</div>
                 {(() => {
                   console.log('Step 5 - Current settings:', {
                     level: settings.level,
@@ -606,7 +606,6 @@ function App() {
             {/* Step 6: Tense Selection (for specific practice from level) or Verb Type Selection */}
             {onboardingStep === 6 && (
               <>
-                <div className="step-indicator">Paso 6 de 6</div>
                 {(() => {
                   if (settings.level) {
                     // Coming from level selection - show filtered tenses
@@ -642,7 +641,6 @@ function App() {
             {/* Step 7: Verb Type Selection (for specific practice from level) */}
             {onboardingStep === 7 && settings.level && (
               <>
-                <div className="step-indicator">Paso 7 de 7</div>
                 <h2>Selecciona el tipo de verbos:</h2>
                 
                 <div className="options-grid">
@@ -664,6 +662,10 @@ function App() {
                     <p className="example">ser, estar, tener, ir</p>
                   </div>
                 </div>
+                
+                <button onClick={goBack} className="back-btn">
+                  ← Volver atrás
+                </button>
               </>
             )}
           </div>
@@ -712,9 +714,9 @@ function App() {
                   className="setting-select"
                 >
                   <option value="rioplatense">Español Rioplatense</option>
-                  <option value="la_general">Latino Americano General</option>
+                  <option value="la_general">Latinoamericano General</option>
                   <option value="peninsular">Español Peninsular</option>
-                  <option value="both">Ambas Formas</option>
+                  <option value="both">Todas las Formas</option>
                 </select>
               </div>
               

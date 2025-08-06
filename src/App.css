@@ -102,14 +102,7 @@ body {
   line-height: 1.7;
 }
 
-.step-indicator {
-  font-size: 0.9rem;
-  color: #888888;
-  margin-bottom: 2rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
+
 
 .options-grid {
   display: grid;
