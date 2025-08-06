@@ -27,7 +27,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
   background: rgba(0, 0, 0, 0.95);
   border-bottom: 1px solid #333333;
   backdrop-filter: blur(20px);
@@ -63,9 +63,9 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 2rem 1.5rem;
+  padding: 0.5rem 1.5rem;
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
@@ -158,7 +158,7 @@ body {
   background: #111111;
   border: 1px solid #333333;
   border-radius: 16px;
-  padding: 3rem 2rem;
+  padding: 2rem 1.5rem;
   max-width: 600px;
   width: 100%;
   text-align: center;
@@ -167,38 +167,38 @@ body {
 }
 
 .verb-lemma {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 300;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #ffffff;
   letter-spacing: -0.02em;
 }
 
 .conjugation-context {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #888888;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .person-display {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #cccccc;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   font-weight: 500;
 }
 
 .input-container {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .conjugation-input {
   width: 100%;
   max-width: 400px;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   border: 1px solid #333333;
   border-radius: 8px;
   background: #1a1a1a;
@@ -226,16 +226,16 @@ body {
 }
 
 .action-buttons {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .btn {
   background: #ffffff;
   color: #000000;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;

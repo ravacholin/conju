@@ -28,12 +28,16 @@ export function grade(input, expected, settings){
     feedback = generateFeedback(normalizedInputCanon, normalizedCandidates, settings, expected)
   }
   
+  // Check if this is an accent error
+  const isAccentError = feedback && feedback.includes('ERROR DE TILDE')
+  
   return {
     correct,
     accepted: correct ? input : null,
     targets: [...candidates],
     note: feedback,
-    warnings: wasCorrected ? warnings : null
+    warnings: wasCorrected ? warnings : null,
+    isAccentError
   }
 }
 

@@ -24,6 +24,18 @@ export default function Drill({
     }
   }, [currentItem?.id, result])
 
+  // Auto-advance on accent errors
+  useEffect(() => {
+    if (result && result.isAccentError) {
+      // Auto-advance to next verb after 2 seconds for accent errors
+      const timer = setTimeout(() => {
+        handleContinue()
+      }, 2000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [result])
+
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return
 
@@ -207,7 +219,7 @@ export default function Drill({
           </button>
         ) : (
           <button className="btn" onClick={handleContinue}>
-            Continuar
+            {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
           </button>
         )}
       </div>
@@ -216,7 +228,7 @@ export default function Drill({
       {result ? (
         <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
           <p>
-            {result.correct ? '¡Correcto!' : 'Incorrecto'}
+            {result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}
           </p>
           {result.correct && result.note && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>

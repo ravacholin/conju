@@ -115,15 +115,17 @@ function App() {
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense])
 
   const handleDrillResult = (result) => {
-    // Update history
-    const key = `${currentItem.mood}:${currentItem.tense}:${currentItem.person}:${currentItem.form.value}`
-    setHistory(prev => ({
-      ...prev,
-      [key]: {
-        seen: (prev[key]?.seen || 0) + 1,
-        correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0)
-      }
-    }))
+    // Only update history if it's not an accent error
+    if (!result.isAccentError) {
+      const key = `${currentItem.mood}:${currentItem.tense}:${currentItem.person}:${currentItem.form.value}`
+      setHistory(prev => ({
+        ...prev,
+        [key]: {
+          seen: (prev[key]?.seen || 0) + 1,
+          correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0)
+        }
+      }))
+    }
     // NO generar siguiente item automáticamente
   }
 
