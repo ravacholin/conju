@@ -9,7 +9,8 @@ const levelVerbRestrictions = {
   'B1': { regular: true, irregular: true },
   'B2': { regular: true, irregular: true },
   'C1': { regular: false, irregular: true }, // Only irregular verbs for C1
-  'C2': { regular: true, irregular: true }
+  'C2': { regular: true, irregular: true },
+  'ALL': { regular: true, irregular: true } // Allow all verb types for ALL level
 }
 
 function isVerbTypeAllowedForLevel(verbType, level) {
@@ -32,6 +33,15 @@ export function chooseNext({forms, history}){
   console.log('🔍 PRACTICE MODE:', practiceMode)
   console.log('🔍 SPECIFIC MOOD/TENSE:', { specificMood, specificTense })
   
+  // Debug: Show sample forms
+  console.log('🔍 Sample forms:', forms.slice(0, 5).map(f => `${f.lemma} ${f.mood} ${f.tense} ${f.person}`))
+  
+  // Debug: Count nonfinite forms
+  const nonfiniteForms = forms.filter(f => f.mood === 'nonfinite')
+  console.log('🔍 Nonfinite forms count:', nonfiniteForms.length)
+  console.log('🔍 Gerundios count:', nonfiniteForms.filter(f => f.tense === 'ger').length)
+  console.log('🔍 Participios count:', nonfiniteForms.filter(f => f.tense === 'part').length)
+  
   let eligible = forms.filter(f=>{
     console.log(`\n--- Checking form: ${f.lemma} ${f.mood} ${f.tense} ${f.person} ---`)
     
@@ -45,8 +55,11 @@ export function chooseNext({forms, history}){
     
     // Person filtering (dialect) - exclude forms not used in the selected dialect
     console.log(`🔍 DIALECT FILTERING: ${f.person} - useVoseo=${useVoseo}, useTuteo=${useTuteo}, useVosotros=${useVosotros}`)
-    // For specific practice, show ALL persons but respect dialect rules
-    if (practiceMode === 'specific' && specificMood && specificTense) {
+    
+    // For nonfinite forms (gerundios, participios), skip person filtering - they're invariable
+    if (f.mood === 'nonfinite') {
+      console.log(`✅ Form ${f.lemma} ${f.person} included - nonfinite forms are invariable`)
+    } else if (practiceMode === 'specific' && specificMood && specificTense) {
       // For specific practice, show ALL persons but respect dialect
       if (useVoseo && !useTuteo) {
         // Rioplatense: show ALL persons but replace tú with vos, exclude vosotros
@@ -131,22 +144,27 @@ export function chooseNext({forms, history}){
     }
     console.log(`🔍 Verb type check: ${f.lemma} is ${verb.type}, verbType setting: ${verbType}`)
     
-    // Check MCER level restrictions first
-    if (!isVerbTypeAllowedForLevel(verb.type, level)) {
-      console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
-      return false
-    }
-    
-    // Then check user's verb type preference
-    if (verbType === 'regular') {
-      if (verb.type !== 'regular') {
-        console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
+    // For nonfinite forms, be more permissive with verb type filtering
+    if (f.mood === 'nonfinite') {
+      console.log(`✅ Form ${f.lemma} ${f.type} included - nonfinite forms are more permissive`)
+    } else {
+      // Check MCER level restrictions first
+      if (!isVerbTypeAllowedForLevel(verb.type, level)) {
+        console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
         return false
       }
-    } else if (verbType === 'irregular') {
-      if (verb.type !== 'irregular') {
-        console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
-        return false
+      
+      // Then check user's verb type preference
+      if (verbType === 'regular') {
+        if (verb.type !== 'regular') {
+          console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
+          return false
+        }
+      } else if (verbType === 'irregular') {
+        if (verb.type !== 'irregular') {
+          console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
+          return false
+        }
       }
     }
     // If verbType is 'all', we only check MCER restrictions (already done above)

@@ -10,6 +10,10 @@ import { testNonfiniteVerbs } from './lib/testNonfinite.js'
 import { comprehensiveVerbTest, testSpecificCategories } from './lib/comprehensiveTest.js'
 import { cleanDuplicateVerbs, addMissingForms, validateVerbStructure } from './lib/cleanDuplicateVerbs.js'
 import { generateImprovementReport } from './lib/bugFixes.js'
+import { testNonfiniteSelection } from './lib/testNonfiniteSelection.js'
+import { debugGerundioIssue } from './lib/debugGerundioIssue.js'
+import { fixGerundioIssue } from './lib/fixGerundioIssue.js'
+import { testGerundioDirect } from './lib/testGerundioDirect.js'
 import './App.css'
 
 function App() {
@@ -34,6 +38,18 @@ function App() {
     
     // Generate improvement report
     generateImprovementReport()
+    
+    // Test nonfinite selection specifically
+    testNonfiniteSelection()
+    
+    // Debug gerundio issue specifically
+    debugGerundioIssue()
+    
+    // Fix gerundio issue
+    fixGerundioIssue()
+    
+    // Test gerundio directly
+    testGerundioDirect()
     
     console.log('=== DIAGNOSTICS COMPLETE ===')
   }, [])
@@ -256,7 +272,8 @@ function App() {
       'indicative': 'Hechos y realidades',
       'subjunctive': 'Dudas, deseos, emociones',
       'imperative': 'Órdenes y mandatos',
-      'conditional': 'Situaciones hipotéticas'
+      'conditional': 'Situaciones hipotéticas',
+      'nonfinite': 'Participios y gerundios'
     }
     return descriptions[mood] || ''
   }
@@ -317,7 +334,7 @@ function App() {
                   
                   <div className="option-card" onClick={() => {
                     console.log('Formas Específicas clicked - setting practiceMode to specific')
-                    settings.set({ practiceMode: 'specific', level: 'ALL' })
+                    settings.set({ practiceMode: 'specific', level: 'C2' })
                     console.log('Settings after setting practiceMode:', settings)
                     setOnboardingStep(5)
                   }}>
@@ -549,6 +566,11 @@ function App() {
                           <div className="option-card" onClick={() => selectMood('conditional')}>
                             <h3>Condicional</h3>
                             <p>Situaciones hipotéticas</p>
+                          </div>
+                          
+                          <div className="option-card" onClick={() => selectMood('nonfinite')}>
+                            <h3>Formas no conjugadas</h3>
+                            <p>Participios y gerundios</p>
                           </div>
                         </div>
                         
