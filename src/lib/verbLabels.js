@@ -5,7 +5,7 @@ export const MOOD_LABELS = {
   'subjunctive': 'Subjuntivo',
   'imperative': 'Imperativo',
   'conditional': 'Condicional',
-  'nonfinite': 'No finito'
+  'nonfinite': 'Formas no conjugadas'
 }
 
 export const TENSE_LABELS = {
@@ -17,8 +17,7 @@ export const TENSE_LABELS = {
   'plusc': 'Pluscuamperfecto',
   'fut': 'Futuro',
   'futPerf': 'Futuro perfecto',
-  'irAInf': 'Ir a + infinitivo',
-  'presFuturate': 'Presente futurate',
+
   
   // Subjuntivo
   'subjPres': 'Presente',
@@ -34,9 +33,7 @@ export const TENSE_LABELS = {
   'cond': 'Condicional',
   'condPerf': 'Condicional perfecto',
   
-  // No finito
-  'inf': 'Infinitivo',
-  'infPerf': 'Infinitivo perfecto',
+  // Formas no conjugadas
   'ger': 'Gerundio',
   'part': 'Participio'
 }
@@ -55,7 +52,7 @@ export const PERSON_LABELS = {
 export const MOOD_TENSES = {
   'indicative': [
     'pres', 'pretPerf', 'pretIndef', 'impf', 'plusc', 
-    'fut', 'futPerf', 'irAInf', 'presFuturate'
+    'fut', 'futPerf'
   ],
   'subjunctive': [
     'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'
@@ -67,7 +64,7 @@ export const MOOD_TENSES = {
     'cond', 'condPerf'
   ],
   'nonfinite': [
-    'inf', 'infPerf', 'ger', 'part'
+    'ger', 'part'
   ]
 }
 

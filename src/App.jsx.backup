@@ -183,12 +183,6 @@ function App() {
   // Function to get available moods for a specific level
   const getAvailableMoodsForLevel = (level) => {
     console.log('getAvailableMoodsForLevel called with level:', level)
-    
-    // Special case for ALL level - show all moods
-    if (level === 'ALL') {
-      return ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
-    }
-    
     const levelGates = gates.filter(g => g.level === level)
     console.log('Level gates found:', levelGates)
     const moods = [...new Set(levelGates.map(g => g.mood))]
@@ -198,18 +192,6 @@ function App() {
 
   // Function to get available tenses for a specific level and mood
   const getAvailableTensesForLevelAndMood = (level, mood) => {
-    // Special case for ALL level - show all tenses for the mood
-    if (level === 'ALL') {
-      const allTenses = {
-        'indicative': ['pres', 'pretPerf', 'pretIndef', 'impf', 'plusc', 'fut', 'futPerf'],
-        'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
-        'imperative': ['impAff', 'impNeg'],
-        'conditional': ['cond', 'condPerf'],
-        'nonfinite': ['ger', 'part']
-      }
-      return allTenses[mood] || ['pres']
-    }
-    
     const levelGates = gates.filter(g => g.level === level && g.mood === mood)
     const tenses = levelGates.map(g => g.tense)
     return tenses
@@ -282,7 +264,11 @@ function App() {
                   
                   <div className="option-card" onClick={() => {
                     console.log('Formas Específicas clicked - setting practiceMode to specific')
-                    settings.set({ practiceMode: 'specific', level: 'ALL' })
+                    settings.set({ practiceMode: 'specific' })
+                    // If no level is set, use C2 to show all forms
+                    if (!settings.level) {
+                      settings.set({ level: 'C2' })
+                    }
                     console.log('Settings after setting practiceMode:', settings)
                     setOnboardingStep(5)
                   }}>
@@ -448,8 +434,8 @@ function App() {
                     return (
                       <>
                         <h2>Selecciona el modo verbal:</h2>
-                        {settings.level === 'C2' || settings.level === 'ALL' ? (
-                          <p>Modos disponibles (todas las formas):</p>
+                        {settings.level === 'C2' ? (
+                          <p>Modos disponibles (nivel C2 incluye todas las formas):</p>
                         ) : (
                           <p>Modos disponibles para nivel {settings.level}:</p>
                         )}
@@ -540,8 +526,8 @@ function App() {
                     return (
                       <>
                         <h2>Selecciona el tiempo verbal:</h2>
-                        {settings.level === 'C2' || settings.level === 'ALL' ? (
-                          <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} (todas las formas):</p>
+                        {settings.level === 'C2' ? (
+                          <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} (nivel C2 incluye todas las formas):</p>
                         ) : (
                           <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} en nivel {settings.level}:</p>
                         )}
