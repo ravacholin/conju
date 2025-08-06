@@ -301,7 +301,9 @@ function App() {
     return (
       <div className="App">
         <div className="onboarding">
-                      <h1>VerbOS</h1>
+                      <div className="app-logo">
+                        <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+                      </div>
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
