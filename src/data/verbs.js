@@ -1,4 +1,6 @@
 // Comprehensive Spanish verb database
+import { additionalVerbs } from './additionalVerbs.js'
+
 export const verbs = [
   // REGULAR VERBS
   {
@@ -2798,5 +2800,8 @@ export const verbs = [
         { mood: 'nonfinite', tense: 'ger', person: 'inv', value: 'trayendo' }
       ]
     }]
-  }
+  },
+  
+  // Additional verbs to ensure we have enough nonfinite forms
+  ...additionalVerbs
 ] 

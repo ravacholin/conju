@@ -6,12 +6,19 @@ import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 import { useResponsive } from './lib/mobileDetection.js'
+import { testNonfiniteVerbs } from './lib/testNonfinite.js'
 import './App.css'
 
 function App() {
   console.log('Curriculum gates imported:', gates)
   console.log('Total gates:', gates.length)
   console.log('Sample gates:', gates.slice(0, 5))
+  
+  // Test nonfinite verbs on app load
+  useEffect(() => {
+    testNonfiniteVerbs()
+  }, [])
+  
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})

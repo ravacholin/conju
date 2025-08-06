@@ -66,5 +66,18 @@
   {"level":"C2","mood":"imperative","tense":"impAff","target":"produce"},
   {"level":"C2","mood":"imperative","tense":"impNeg","target":"produce"},
   {"level":"C2","mood":"conditional","tense":"cond","target":"produce"},
-  {"level":"C2","mood":"conditional","tense":"condPerf","target":"produce"}
+  {"level":"C2","mood":"conditional","tense":"condPerf","target":"produce"},
+  
+  {"level":"A1","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"A1","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"B1","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"B1","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"B2","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"B2","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"C1","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"C1","mood":"nonfinite","tense":"ger","target":"produce"},
+  {"level":"C2","mood":"nonfinite","tense":"part","target":"produce"},
+  {"level":"C2","mood":"nonfinite","tense":"ger","target":"produce"}
 ] 
