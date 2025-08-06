@@ -134,6 +134,9 @@ function App() {
   }
 
   const startPractice = () => {
+    // Clear history when starting new practice
+    setHistory({})
+    setCurrentItem(null)
     setCurrentMode('drill')
   }
 
@@ -203,6 +206,10 @@ function App() {
     settings.set({ specificMood: mood })
     console.log('After setting specificMood:', settings)
     
+    // Clear history when changing mood
+    setHistory({})
+    setCurrentItem(null)
+    
     if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
     } else {
@@ -212,6 +219,11 @@ function App() {
 
   const selectTense = (tense) => {
     settings.set({ specificTense: tense })
+    
+    // Clear history when changing tense
+    setHistory({})
+    setCurrentItem(null)
+    
     if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
     } else {
@@ -221,6 +233,11 @@ function App() {
 
   const selectVerbType = (verbType) => {
     settings.set({ verbType })
+    
+    // Clear history when changing verb type
+    setHistory({})
+    setCurrentItem(null)
+    
     startPractice()
   }
 
@@ -664,6 +681,9 @@ function App() {
             onClick={() => {
               setCurrentMode('onboarding')
               setOnboardingStep(1)
+              // Clear history when going back to menu
+              setHistory({})
+              setCurrentItem(null)
             }}
             className="back-to-menu-btn"
           >
@@ -683,7 +703,13 @@ function App() {
                     !settings.strict && settings.useTuteo && settings.useVoseo ? 'both' :
                     'la_general'
                   }
-                  onChange={(e) => selectDialect(e.target.value)}
+                  onChange={(e) => {
+                    selectDialect(e.target.value)
+                    // Clear history when changing dialect
+                    setHistory({})
+                    setCurrentItem(null)
+                    generateNextItem()
+                  }}
                   className="setting-select"
                 >
                   <option value="rioplatense">Español Rioplatense</option>
@@ -697,7 +723,13 @@ function App() {
                 <label>Nivel MCER:</label>
                 <select 
                   value={settings.level}
-                  onChange={(e) => settings.set({ level: e.target.value })}
+                  onChange={(e) => {
+                    settings.set({ level: e.target.value })
+                    // Clear history when changing level
+                    setHistory({})
+                    setCurrentItem(null)
+                    generateNextItem()
+                  }}
                   className="setting-select"
                 >
                   <option value="A1">A1 - Principiante</option>
@@ -719,6 +751,9 @@ function App() {
                       specificMood: null,
                       specificTense: null
                     })
+                    // Clear history when changing practice mode
+                    setHistory({})
+                    setCurrentItem(null)
                     if (e.target.value === 'mixed') {
                       generateNextItem()
                     }
@@ -736,6 +771,9 @@ function App() {
                   value={settings.practicePronoun}
                   onChange={(e) => {
                     settings.set({ practicePronoun: e.target.value })
+                    // Clear history when changing pronoun practice
+                    setHistory({})
+                    setCurrentItem(null)
                     generateNextItem()
                   }}
                   className="setting-select"
@@ -752,6 +790,9 @@ function App() {
                   value={settings.verbType}
                   onChange={(e) => {
                     settings.set({ verbType: e.target.value })
+                    // Clear history when changing verb type
+                    setHistory({})
+                    setCurrentItem(null)
                     generateNextItem()
                   }}
                   className="setting-select"

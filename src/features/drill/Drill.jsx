@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { grade } from '../../lib/grader.js'
 import { useResponsive } from '../../lib/mobileDetection.js'
 
@@ -11,12 +11,18 @@ export default function Drill({
   const [result, setResult] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { isMobile } = useResponsive()
+  const inputRef = useRef(null)
 
   // Reset input when currentItem changes
   useEffect(() => {
     setInput('')
     // IMPORTANTE: NO resetear el resultado aquí
-  }, [currentItem?.id])
+    
+    // Focus the input when a new item is loaded
+    if (inputRef.current && !result) {
+      inputRef.current.focus()
+    }
+  }, [currentItem?.id, result])
 
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return
@@ -57,6 +63,13 @@ export default function Drill({
     setResult(null)
     setInput('')
     onContinue()
+    
+    // Focus the input after a short delay to ensure the new item is loaded
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
+    }, 100)
   }
 
   if (!currentItem) {
@@ -161,6 +174,7 @@ export default function Drill({
       {/* Input form */}
       <div className="input-container">
         <input
+          ref={inputRef}
           type="text"
           className="conjugation-input"
           value={input}
