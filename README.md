@@ -10,6 +10,7 @@ A browser-based Spanish verb conjugation trainer aligned to MCER levels, with di
 - **Spaced Repetition**: SM-2 algorithm for optimal learning
 - **PWA Support**: Works offline, installable on mobile devices
 - **Modern UI**: Clean, responsive design with beautiful gradients
+- **Mobile Optimized**: Compact interface designed for mobile devices with reduced spacing
 
 ## Tech Stack
 
@@ -54,6 +55,16 @@ npm run build
 2. **Drill Mode**: Practice conjugations with smart feedback
 3. **Tables Mode**: View complete conjugation tables filtered by dialect
 4. **Progress Tracking**: Your learning progress is automatically saved
+
+## Mobile Responsiveness
+
+The app automatically detects mobile devices and provides a compact interface optimized for smaller screens:
+
+- **Reduced Spacing**: Tighter margins and padding for mobile layouts
+- **Touch-Friendly**: Minimum 44px touch targets for buttons
+- **Compact Layout**: All elements fit on screen without scrolling
+- **Responsive Typography**: Smaller font sizes on mobile devices
+- **Flexible Grid**: Single-column layout on mobile for better readability
 
 ## Dialect Tracks
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { grade } from '../../lib/grader.js'
+import { useResponsive } from '../../lib/mobileDetection.js'
 
 export default function Drill({ 
   currentItem, 
@@ -9,6 +10,7 @@ export default function Drill({
   const [input, setInput] = useState('')
   const [result, setResult] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { isMobile } = useResponsive()
 
   // Reset input when currentItem changes
   useEffect(() => {
@@ -122,7 +124,7 @@ export default function Drill({
   }
 
   return (
-    <div className="drill-container">
+    <div className={`drill-container ${isMobile ? 'mobile-layout' : ''}`}>
       {/* Verb lemma */}
       <div className="verb-lemma">
         {currentItem.lemma}
