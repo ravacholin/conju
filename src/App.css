@@ -69,6 +69,7 @@ body {
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 /* Onboarding styles */
@@ -112,9 +113,10 @@ body {
 
 .options-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  width: 100%;
 }
 
 .option-card {
@@ -168,6 +170,7 @@ body {
   width: 100%;
   text-align: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
 }
 
 .verb-lemma {
@@ -209,6 +212,7 @@ body {
   color: #ffffff;
   text-align: center;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .conjugation-input:focus {
@@ -399,260 +403,7 @@ body {
   border-color: #555555;
 }
 
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-    justify-content: flex-start;
-    padding-top: 2rem;
-  }
 
-  .header {
-    padding: 1rem;
-  }
-
-  .back-to-menu-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-
-  .onboarding h1 {
-    font-size: 2.5rem;
-  }
-
-  .onboarding h2 {
-    font-size: 1.8rem;
-  }
-
-  .onboarding p {
-    font-size: 1rem;
-  }
-
-  .step-indicator {
-    font-size: 0.8rem;
-  }
-
-  .verb-lemma {
-    font-size: 2rem;
-  }
-
-  .conjugation-context {
-    font-size: 1rem;
-  }
-
-  .person-display {
-    font-size: 1.1rem;
-  }
-
-  .options-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .option-card {
-    padding: 1.5rem;
-  }
-
-  .option-card h3 {
-    font-size: 1.2rem;
-  }
-
-  .option-card p {
-    font-size: 0.9rem;
-  }
-
-  .option-card .example {
-    font-size: 0.8rem;
-  }
-
-  .input-container {
-    margin-bottom: 1.5rem;
-  }
-
-  .conjugation-input {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-  }
-
-  .action-buttons {
-    margin-bottom: 1.5rem;
-  }
-
-  .btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
-
-  .drill-container {
-    padding: 2rem 1.5rem;
-    margin: 1rem;
-  }
-
-  .result {
-    padding: 1rem;
-  }
-
-  .result p {
-    font-size: 0.9rem;
-  }
-
-  .settings-panel {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .settings-panel h3 {
-    font-size: 1.2rem;
-  }
-
-  .setting-group {
-    margin-bottom: 1rem;
-  }
-
-  .setting-group label {
-    font-size: 0.85rem;
-  }
-
-  .setting-select {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .radio-group {
-    gap: 0.5rem;
-  }
-
-  .radio-group label {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-  }
-
-  .back-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.85rem;
-  }
-
-  .App {
-    min-height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-  }
-
-  .mobile-layout .main-content {
-    padding: 0.5rem;
-    padding-top: 1rem;
-    justify-content: flex-start;
-    overflow-y: auto;
-    max-height: calc(100vh - 80px);
-  }
-
-  .mobile-layout .drill-container {
-    padding: 1.5rem 1rem;
-    margin: 0.5rem;
-    border-radius: 12px;
-  }
-
-  .mobile-layout .verb-lemma {
-    font-size: 1.8rem;
-  }
-
-  .mobile-layout .conjugation-context {
-    font-size: 0.9rem;
-  }
-
-  .mobile-layout .person-display {
-    font-size: 1rem;
-  }
-
-  .mobile-layout .input-container {
-    margin-bottom: 1rem;
-  }
-
-  .mobile-layout .action-buttons {
-    margin-bottom: 1rem;
-  }
-
-  .mobile-layout .result {
-    padding: 0.75rem;
-    margin-top: 0.5rem;
-  }
-
-  .drill-container {
-    position: relative;
-    z-index: 1;
-  }
-
-  .mobile-layout {
-    overflow: hidden;
-  }
-
-  .mobile-layout .onboarding {
-    padding: 0 0.5rem;
-  }
-
-  .mobile-layout .drill-container {
-    margin: 0.5rem;
-  }
-
-  .mobile-layout .btn,
-  .mobile-layout .back-to-menu-btn {
-    min-width: auto;
-    width: auto;
-  }
-
-  .mobile-layout .main-content {
-    padding: 0.5rem;
-    padding-top: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    .main-content {
-      padding: 0.5rem;
-    }
-
-    .onboarding h1 {
-      font-size: 2rem;
-    }
-
-    .onboarding h2 {
-      font-size: 1.5rem;
-    }
-
-    .verb-lemma {
-      font-size: 1.6rem;
-    }
-
-    .conjugation-context {
-      font-size: 0.85rem;
-    }
-
-    .person-display {
-      font-size: 0.9rem;
-    }
-
-    .option-card {
-      padding: 1rem;
-    }
-
-    .drill-container {
-      padding: 1.5rem 1rem;
-    }
-
-    .conjugation-input {
-      padding: 0.6rem 0.8rem;
-      font-size: 0.9rem;
-    }
-
-    .btn {
-      padding: 0.6rem 1.2rem;
-      font-size: 0.85rem;
-    }
-
-    .result {
-      padding: 0.75rem;
-    }
-  }
-}
 
 .loading {
   display: flex;

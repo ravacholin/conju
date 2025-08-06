@@ -5,7 +5,7 @@ import { chooseNext } from './lib/generator.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
-import { useResponsive } from './lib/mobileDetection.js'
+
 import { testNonfiniteVerbs } from './lib/testNonfinite.js'
 import { comprehensiveVerbTest, testSpecificCategories } from './lib/comprehensiveTest.js'
 import { cleanDuplicateVerbs, addMissingForms, validateVerbStructure } from './lib/cleanDuplicateVerbs.js'
@@ -60,7 +60,6 @@ function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
   const settings = useSettings()
-  const { isMobile } = useResponsive()
 
   const generateNextItem = () => {
     // Get all forms from all verbs
@@ -298,7 +297,7 @@ function App() {
   if (currentMode === 'onboarding') {
     return (
       <div className="App">
-        <div className={`onboarding ${isMobile ? 'mobile-layout' : ''}`}>
+        <div className="onboarding">
           <h1>Conjugador para practicar español</h1>
             
             {/* Step 1: Dialect Selection */}
@@ -897,7 +896,7 @@ function App() {
             </div>
         )}
 
-        <main className={`main-content ${isMobile ? 'mobile-layout' : ''}`}>
+        <main className="main-content">
           {currentItem ? (
             <Drill 
               currentItem={currentItem}
