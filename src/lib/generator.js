@@ -164,6 +164,12 @@ export function chooseNext({forms, history}){
       }
     }
     
+    // Filter out infinitivos from practice (they're not conjugated forms)
+    if(f.mood === 'nonfinite' && (f.tense === 'inf' || f.tense === 'infPerf')) {
+      console.log(`❌ Form ${f.lemma} ${f.tense} filtered out - infinitivos are not for practice`)
+      return false
+    }
+    
     console.log(`✅ Form ${f.lemma} ${f.mood} ${f.tense} ${f.person} PASSED all filters`)
     return true
   })

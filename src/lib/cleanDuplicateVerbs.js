@@ -1,0 +1,160 @@
+import { verbs } from '../data/verbs.js'
+
+// Function to clean duplicate verbs
+export function cleanDuplicateVerbs() {
+  const uniqueVerbs = []
+  const seenLemmas = new Set()
+  const duplicates = []
+  
+  verbs.forEach(verb => {
+    if (!seenLemmas.has(verb.lemma)) {
+      seenLemmas.add(verb.lemma)
+      uniqueVerbs.push(verb)
+    } else {
+      duplicates.push(verb.lemma)
+    }
+  })
+  
+  console.log(`Original verbs: ${verbs.length}`)
+  console.log(`Unique verbs: ${uniqueVerbs.length}`)
+  console.log(`Duplicates removed: ${duplicates.length}`)
+  console.log(`Duplicate lemmas: ${[...new Set(duplicates)].join(', ')}`)
+  
+  return uniqueVerbs
+}
+
+// Function to add missing forms to verbs
+export function addMissingForms() {
+  const updatedVerbs = []
+  
+  verbs.forEach(verb => {
+    const updatedVerb = { ...verb }
+    let hasChanges = false
+    
+    // Check for missing nonfinite forms
+    const hasParticiple = verb.paradigms.some(paradigm => 
+      paradigm.forms.some(form => form.mood === 'nonfinite' && form.tense === 'part')
+    )
+    
+    const hasGerund = verb.paradigms.some(paradigm => 
+      paradigm.forms.some(form => form.mood === 'nonfinite' && form.tense === 'ger')
+    )
+    
+    if (!hasParticiple || !hasGerund) {
+      updatedVerb.paradigms = updatedVerb.paradigms.map(paradigm => {
+        const updatedParadigm = { ...paradigm }
+        
+        if (!hasParticiple) {
+          // Generate participle based on verb ending
+          let participle = ''
+          if (verb.lemma.endsWith('ar')) {
+            participle = verb.lemma.replace('ar', 'ado')
+          } else if (verb.lemma.endsWith('er')) {
+            participle = verb.lemma.replace('er', 'ido')
+          } else if (verb.lemma.endsWith('ir')) {
+            participle = verb.lemma.replace('ir', 'ido')
+          }
+          
+          if (participle) {
+            updatedParadigm.forms.push({
+              mood: 'nonfinite',
+              tense: 'part',
+              person: 'inv',
+              value: participle
+            })
+            hasChanges = true
+          }
+        }
+        
+        if (!hasGerund) {
+          // Generate gerund based on verb ending
+          let gerund = ''
+          if (verb.lemma.endsWith('ar')) {
+            gerund = verb.lemma.replace('ar', 'ando')
+          } else if (verb.lemma.endsWith('er')) {
+            gerund = verb.lemma.replace('er', 'iendo')
+          } else if (verb.lemma.endsWith('ir')) {
+            gerund = verb.lemma.replace('ir', 'iendo')
+          }
+          
+          if (gerund) {
+            updatedParadigm.forms.push({
+              mood: 'nonfinite',
+              tense: 'ger',
+              person: 'inv',
+              value: gerund
+            })
+            hasChanges = true
+          }
+        }
+        
+        return updatedParadigm
+      })
+    }
+    
+    updatedVerbs.push(updatedVerb)
+  })
+  
+  return updatedVerbs
+}
+
+// Function to validate verb data structure
+export function validateVerbStructure() {
+  const issues = []
+  
+  verbs.forEach((verb, index) => {
+    // Check for required fields
+    if (!verb.lemma) {
+      issues.push({ type: 'missing_lemma', index, verb })
+    }
+    
+    if (!verb.type) {
+      issues.push({ type: 'missing_type', index, verb })
+    }
+    
+    if (!verb.paradigms || verb.paradigms.length === 0) {
+      issues.push({ type: 'missing_paradigms', index, verb })
+    }
+    
+    // Check each paradigm
+    verb.paradigms?.forEach((paradigm, pIndex) => {
+      if (!paradigm.regionTags || paradigm.regionTags.length === 0) {
+        issues.push({ type: 'missing_region_tags', index, pIndex, verb })
+      }
+      
+      if (!paradigm.forms || paradigm.forms.length === 0) {
+        issues.push({ type: 'missing_forms', index, pIndex, verb })
+      }
+      
+      // Check each form
+      paradigm.forms?.forEach((form, fIndex) => {
+        if (!form.mood) {
+          issues.push({ type: 'missing_mood', index, pIndex, fIndex, verb })
+        }
+        
+        if (!form.tense) {
+          issues.push({ type: 'missing_tense', index, pIndex, fIndex, verb })
+        }
+        
+        if (!form.person) {
+          issues.push({ type: 'missing_person', index, pIndex, fIndex, verb })
+        }
+        
+        if (!form.value) {
+          issues.push({ type: 'missing_value', index, pIndex, fIndex, verb })
+        }
+      })
+    })
+  })
+  
+  if (issues.length === 0) {
+    console.log('✅ All verbs have valid structure')
+  } else {
+    console.log(`❌ Found ${issues.length} structural issues:`)
+    issues.forEach(issue => {
+      console.log(`  - ${issue.type}: ${issue.verb?.lemma || 'unknown'}`)
+    })
+  }
+  
+  return issues
+} 

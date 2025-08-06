@@ -66,6 +66,24 @@ export default function Drill({
       </div>
     )
   }
+  
+  // Handle error state
+  if (currentItem.error) {
+    return (
+      <div className="drill-container">
+        <div className="error-message">
+          <h3>⚠️ Error</h3>
+          <p>{currentItem.message}</p>
+          <button 
+            className="btn" 
+            onClick={() => window.location.reload()}
+          >
+            Recargar aplicación
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // SIMPLE AND ROBUST CONTEXT LOGIC
   const getContextText = () => {

@@ -7,6 +7,9 @@ import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 import { useResponsive } from './lib/mobileDetection.js'
 import { testNonfiniteVerbs } from './lib/testNonfinite.js'
+import { comprehensiveVerbTest, testSpecificCategories } from './lib/comprehensiveTest.js'
+import { cleanDuplicateVerbs, addMissingForms, validateVerbStructure } from './lib/cleanDuplicateVerbs.js'
+import { generateImprovementReport } from './lib/bugFixes.js'
 import './App.css'
 
 function App() {
@@ -14,9 +17,25 @@ function App() {
   console.log('Total gates:', gates.length)
   console.log('Sample gates:', gates.slice(0, 5))
   
-  // Test nonfinite verbs on app load
+  // Test verb availability on app load
   useEffect(() => {
+    console.log('=== RUNNING COMPREHENSIVE APP DIAGNOSTICS ===')
+    
+    // Validate verb structure
+    validateVerbStructure()
+    
+    // Test verb availability
     testNonfiniteVerbs()
+    comprehensiveVerbTest()
+    testSpecificCategories()
+    
+    // Check for duplicates
+    cleanDuplicateVerbs()
+    
+    // Generate improvement report
+    generateImprovementReport()
+    
+    console.log('=== DIAGNOSTICS COMPLETE ===')
   }, [])
   
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
@@ -43,6 +62,7 @@ function App() {
       })
     })
     
+    console.log(`Generating next item with ${allForms.length} total forms`)
     const nextForm = chooseNext({ forms: allForms, history })
     
     if (nextForm && nextForm.mood && nextForm.tense) {
@@ -58,10 +78,16 @@ function App() {
       }
       setCurrentItem(newItem)
     } else {
-      // If no valid form found, try again after a short delay
-      setTimeout(() => {
-        generateNextItem()
-      }, 100)
+      console.error('❌ No valid form found! This might indicate a bug in the generator or insufficient verbs.')
+      console.error('Current settings:', settings)
+      console.error('Available forms count:', allForms.length)
+      
+      // Show a user-friendly error instead of infinite retry
+      setCurrentItem({
+        id: Date.now(),
+        error: true,
+        message: 'No hay suficientes verbos disponibles para esta combinación. Por favor, intenta con diferentes configuraciones.'
+      })
     }
   }
 
