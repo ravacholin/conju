@@ -11829,7 +11829,7 @@ export const verbs = [
   {
     "id": "traer",
     "lemma": "traer",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -11923,7 +11923,7 @@ export const verbs = [
   {
     "id": "caer",
     "lemma": "caer",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -12574,7 +12574,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -14426,7 +14426,7 @@ export const verbs = [
   {
     "id": "oir",
     "lemma": "oir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -15752,7 +15752,7 @@ export const verbs = [
   {
     "id": "caer",
     "lemma": "caer",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16152,7 +16152,7 @@ export const verbs = [
   {
     "id": "traer",
     "lemma": "traer",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16804,7 +16804,7 @@ export const verbs = [
   {
     "id": "abrir",
     "lemma": "abrir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -16832,7 +16832,7 @@ export const verbs = [
   {
     "id": "cubrir",
     "lemma": "cubrir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -16860,7 +16860,7 @@ export const verbs = [
   {
     "id": "descubrir",
     "lemma": "descubrir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -16888,7 +16888,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -23204,7 +23204,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
