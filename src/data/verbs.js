@@ -12574,7 +12574,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16804,7 +16804,7 @@ export const verbs = [
   {
     "id": "abrir",
     "lemma": "abrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16832,7 +16832,7 @@ export const verbs = [
   {
     "id": "cubrir",
     "lemma": "cubrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16860,7 +16860,7 @@ export const verbs = [
   {
     "id": "descubrir",
     "lemma": "descubrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16888,7 +16888,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -23204,7 +23204,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
