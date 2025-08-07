@@ -170,9 +170,9 @@ export default function Drill({
 
   return (
     <div className="drill-container">
-      {/* Verb lemma */}
-      <div className="verb-lemma">
-        {currentItem.lemma}
+      {/* Person/pronoun display */}
+      <div className="person-display">
+        {getPersonText()}
       </div>
 
       {/* Conjugation context - ALWAYS SHOW */}
@@ -180,9 +180,9 @@ export default function Drill({
         {getContextText()}
       </div>
 
-      {/* Person/pronoun display */}
-      <div className="person-display">
-        {getPersonText()}
+      {/* Verb lemma */}
+      <div className="verb-lemma">
+        {currentItem.lemma}
       </div>
 
       {/* Input form */}

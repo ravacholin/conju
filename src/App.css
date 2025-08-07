@@ -204,7 +204,7 @@ body {
 .verb-lemma {
   font-size: 2rem;
   font-weight: 300;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   color: #ffffff;
   letter-spacing: -0.02em;
 }
@@ -212,7 +212,7 @@ body {
 .conjugation-context {
   font-size: 1rem;
   color: #888888;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -221,7 +221,7 @@ body {
 .person-display {
   font-size: 1.2rem;
   color: #cccccc;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
   font-weight: 500;
 }
 
