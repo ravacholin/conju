@@ -170,10 +170,12 @@ export default function Drill({
 
   return (
     <div className="drill-container">
-      {/* Person/pronoun display */}
-      <div className="person-display">
-        {getPersonText()}
-      </div>
+      {/* Person/pronoun display - hide for nonfinite forms */}
+      {currentItem.mood !== 'nonfinite' && (
+        <div className="person-display">
+          {getPersonText()}
+        </div>
+      )}
 
       {/* Conjugation context - ALWAYS SHOW */}
       <div className="conjugation-context">

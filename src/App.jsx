@@ -351,7 +351,7 @@ function App() {
   if (currentMode === 'onboarding') {
     return (
       <div className="App">
-        <div className="onboarding">
+          <div className="onboarding">
                       <div className="app-logo">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
                       </div>
