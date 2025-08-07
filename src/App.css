@@ -154,6 +154,11 @@ body {
   font-weight: 500;
   margin-bottom: 0.75rem;
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  padding-left: -1.25rem;
 }
 
 .option-card p {
@@ -168,6 +173,8 @@ body {
   color: #888888;
   font-style: italic;
 }
+
+
 
 /* Drill container */
 .drill-container {
@@ -403,13 +410,51 @@ body {
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 1rem;
+  margin: 1rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .back-btn:hover {
   background: #111111;
   color: #ffffff;
   border-color: #555555;
+}
+
+.back-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.menu-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.play-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.option-card h3 .option-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.start-specific-practice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 

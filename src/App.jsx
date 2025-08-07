@@ -308,7 +308,7 @@ function App() {
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <h2>Selecciona tu variedad de español:</h2>
+                <h2>Seleccioná tu variedad de español:</h2>
                 
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
@@ -335,23 +335,19 @@ function App() {
                     <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
                   </div>
                 </div>
-                
-                <button onClick={goBack} className="back-btn">
-                  ← Volver atrás
-                </button>
               </>
             )}
 
             {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
-                <h2>¿Qué quieres practicar?</h2>
-                <p>Elige tu nivel MCER o trabaja formas específicas:</p>
+                <h2>¿Qué querés practicar?</h2>
+                <p>Elegí tu nivel o trabajá formas específicas:</p>
                 
                 <div className="options-grid">
                   <div className="option-card" onClick={() => setOnboardingStep(3)}>
-                    <h3>📚 Por Nivel MCER</h3>
-                    <p>Practica según tu nivel de español</p>
+                    <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
+                    <p>Practicá según tu nivel de español</p>
                     <p className="example">A1, A2, B1, B2, C1, C2</p>
                   </div>
                   
@@ -361,14 +357,14 @@ function App() {
                     console.log('Settings after setting practiceMode:', settings)
                     setOnboardingStep(5)
                   }}>
-                    <h3>🎯 Formas Específicas</h3>
-                    <p>Elige un tiempo o modo específico</p>
+                    <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
+                    <p>Elegí un tiempo o modo específico</p>
                     <p className="example">Presente, subjuntivo, imperativo, etc.</p>
                   </div>
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
-                  ← Volver atrás
+                  <img src="/back.png" alt="Volver" className="back-icon" />
                 </button>
               </>
             )}
@@ -377,36 +373,36 @@ function App() {
             {onboardingStep === 3 && (
               <>
                 <h2>¿Cuál es tu nivel de español?</h2>
-                <p>Selecciona tu nivel según el Marco Común Europeo de Referencia (MCER):</p>
+                <p>Seleccioná tu nivel según el Marco Común Europeo de Referencia (MCER):</p>
                 
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectLevel('A1')}>
                     <h3>A1 - Principiante</h3>
-                    <p>Recién empiezas con el español</p>
+                    <p>Recién empezás con el español</p>
                     <p className="example">Indicativo: Presente</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('A2')}>
                     <h3>A2 - Elemental</h3>
-                    <p>Conoces lo básico</p>
+                    <p>Conocés lo básico</p>
                     <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('B1')}>
                     <h3>B1 - Intermedio</h3>
-                    <p>Puedes comunicarte en situaciones familiares</p>
+                    <p>Podés comunicarte en situaciones familiares</p>
                     <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('B2')}>
                     <h3>B2 - Intermedio Alto</h3>
-                    <p>Te comunicas con fluidez</p>
+                    <p>Te comunicás con fluidez</p>
                     <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('C1')}>
                     <h3>C1 - Avanzado</h3>
-                    <p>Usas el español con eficacia</p>
+                    <p>Usás el español con eficacia</p>
                     <p className="example">Todas las formas (solo irregulares en básicos)</p>
                   </div>
                   
@@ -418,7 +414,7 @@ function App() {
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
-                  ← Volver atrás
+                  <img src="/back.png" alt="Volver" className="back-icon" />
                 </button>
               </>
             )}
@@ -436,13 +432,13 @@ function App() {
                     // Coming from level selection - show practice mode
                     return (
                       <>
-                        <h2>¿Cómo quieres practicar?</h2>
-                        <p>Elige el tipo de práctica para tu nivel {settings.level}:</p>
+                        <h2>¿Cómo querés practicar?</h2>
+                        <p>Elegí el tipo de práctica para tu nivel {settings.level}:</p>
                         
                         <div className="options-grid">
                           <div className="option-card" onClick={() => selectPracticeMode('mixed')}>
-                            <h3>🎲 Práctica Mixta</h3>
-                            <p>Mezcla de todos los tiempos y modos de tu nivel</p>
+                            <h3><img src="/dice.png" alt="Dado" className="option-icon" /> Práctica Mixta</h3>
+                            <p>Mezclá todos los tiempos y modos de tu nivel</p>
                             <p className="example">Variedad completa para práctica general</p>
                           </div>
                           
@@ -451,14 +447,14 @@ function App() {
                         // Don't change level if it's already set from previous selection
                         setOnboardingStep(5)
                       }}>
-                        <h3>🎯 Formas Específicas</h3>
-                        <p>Enfócate en un tiempo/modo específico de tu nivel</p>
+                        <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Formas Específicas</h3>
+                        <p>Enfocate en un tiempo/modo específico de tu nivel</p>
                         <p className="example">Ideal para dominar formas particulares</p>
                       </div>
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -483,31 +479,31 @@ function App() {
                     // Mixed practice from level - go directly to verb type selection
                     return (
                       <>
-                        <h2>Selecciona el tipo de verbos:</h2>
+                        <h2>Seleccioná el tipo de verbos:</h2>
                         <p>Práctica mixta para nivel {settings.level}:</p>
                         
                         <div className="options-grid">
                           <div className="option-card" onClick={() => selectVerbType('all')}>
-                            <h3>📚 Todos los Verbos</h3>
+                            <h3><img src="/books.png" alt="Libros" className="option-icon" /> Todos los Verbos</h3>
                             <p>Regulares e irregulares</p>
                             <p className="example">Práctica completa</p>
                           </div>
                           
                           <div className="option-card" onClick={() => selectVerbType('regular')}>
-                            <h3>📖 Verbos Regulares</h3>
+                            <h3><img src="/openbook.png" alt="Libro Abierto" className="option-icon" /> Verbos Regulares</h3>
                             <p>Solo verbos que siguen las reglas</p>
                             <p className="example">hablar, comer, vivir</p>
                           </div>
                           
                           <div className="option-card" onClick={() => selectVerbType('irregular')}>
-                            <h3>🎯 Verbos Irregulares</h3>
+                            <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Verbos Irregulares</h3>
                             <p>Solo verbos con cambios especiales</p>
                             <p className="example">ser, estar, tener, ir</p>
                           </div>
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -519,7 +515,7 @@ function App() {
                     console.log('Available moods for level', settings.level, ':', availableMoods)
                     return (
                       <>
-                        <h2>Selecciona el modo verbal:</h2>
+                        <h2>Seleccioná el modo verbal:</h2>
                         {settings.level === 'C2' || settings.level === 'ALL' ? (
                           <p>Modos disponibles (todas las formas):</p>
                         ) : (
@@ -536,7 +532,7 @@ function App() {
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -545,7 +541,7 @@ function App() {
                     console.log('Showing tense selection for mood:', settings.specificMood)
                     return (
                       <>
-                        <h2>Selecciona el tiempo verbal:</h2>
+                        <h2>Seleccioná el tiempo verbal:</h2>
                         
                         <div className="options-grid">
                           {getTensesForMood(settings.specificMood).map(tense => (
@@ -556,7 +552,7 @@ function App() {
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -565,7 +561,7 @@ function App() {
                     console.log('Showing mood selection for forms specific without level')
                     return (
                       <>
-                        <h2>Selecciona el modo verbal:</h2>
+                        <h2>Seleccioná el modo verbal:</h2>
                         
                         <div className="options-grid">
                           <div className="option-card" onClick={() => selectMood('indicative')}>
@@ -595,7 +591,7 @@ function App() {
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -615,7 +611,7 @@ function App() {
                     // Coming from level selection - show filtered tenses
                     return (
                       <>
-                        <h2>Selecciona el tiempo verbal:</h2>
+                        <h2>Seleccioná el tiempo verbal:</h2>
                         {settings.level === 'C2' || settings.level === 'ALL' ? (
                           <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} (todas las formas):</p>
                         ) : (
@@ -631,7 +627,7 @@ function App() {
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
-                          ← Volver atrás
+                          <img src="/back.png" alt="Volver" className="back-icon" />
                         </button>
                       </>
                     )
@@ -645,30 +641,30 @@ function App() {
             {/* Step 7: Verb Type Selection (for specific practice from level) */}
             {onboardingStep === 7 && settings.level && (
               <>
-                <h2>Selecciona el tipo de verbos:</h2>
+                <h2>Seleccioná el tipo de verbos:</h2>
                 
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectVerbType('all')}>
-                    <h3>📚 Todos los Verbos</h3>
+                    <h3><img src="/books.png" alt="Libros" className="option-icon" /> Todos los Verbos</h3>
                     <p>Regulares e irregulares</p>
                     <p className="example">Práctica completa</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectVerbType('regular')}>
-                    <h3>📖 Verbos Regulares</h3>
+                    <h3><img src="/openbook.png" alt="Libro Abierto" className="option-icon" /> Verbos Regulares</h3>
                     <p>Solo verbos que siguen las reglas</p>
                     <p className="example">hablar, comer, vivir</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectVerbType('irregular')}>
-                    <h3>🎯 Verbos Irregulares</h3>
+                    <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Verbos Irregulares</h3>
                     <p>Solo verbos con cambios especiales</p>
                     <p className="example">ser, estar, tener, ir</p>
                   </div>
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
-                  ← Volver atrás
+                  <img src="/back.png" alt="Volver" className="back-icon" />
                 </button>
               </>
             )}
@@ -692,7 +688,7 @@ function App() {
             }}
             className="back-to-menu-btn"
           >
-            🏠 Volver al menú
+            <img src="/home.png" alt="Menú" className="menu-icon" />
           </button>
         </header>
 
@@ -848,7 +844,7 @@ function App() {
                       }}
                       className="setting-select"
                     >
-                      <option value="">Seleccionar modo...</option>
+                      <option value="">Seleccioná modo...</option>
                       <option value="indicative">Indicativo</option>
                       <option value="subjunctive">Subjuntivo</option>
                       <option value="imperative">Imperativo</option>
@@ -867,7 +863,7 @@ function App() {
                         }}
                         className="setting-select"
                       >
-                        <option value="">Seleccionar tiempo...</option>
+                        <option value="">Seleccioná tiempo...</option>
                         {getTensesForMood(settings.specificMood).map(tense => (
                           <option key={tense} value={tense}>
                             {getTenseLabel(tense)}
@@ -886,7 +882,7 @@ function App() {
                           setShowSettings(false)
                         }}
                       >
-                        🎯 Comenzar Práctica Específica
+                        <img src="/diana.png" alt="Diana" className="option-icon" /> Comenzar Práctica Específica
                       </button>
                     </div>
                   )}
