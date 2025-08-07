@@ -176,9 +176,25 @@ export function chooseNext({forms, history}){
         console.log(`❌ Form ${f.lemma} ${f.mood} filtered out by specific mood ${specificMood}`)
         return false
       }
-      if(specificTense && f.tense !== specificTense) {
-        console.log(`❌ Form ${f.lemma} ${f.tense} filtered out by specific tense ${specificTense}`)
-        return false
+      
+      // Handle mixed options for imperative and nonfinite
+      if(specificTense) {
+        if(specificTense === 'impMixed') {
+          // For mixed imperative, include both affirmative and negative
+          if(f.mood !== 'imperative' || (f.tense !== 'impAff' && f.tense !== 'impNeg')) {
+            console.log(`❌ Form ${f.lemma} ${f.tense} filtered out - not imperative affirmative or negative`)
+            return false
+          }
+        } else if(specificTense === 'nonfiniteMixed') {
+          // For mixed nonfinite, include both gerund and participle
+          if(f.mood !== 'nonfinite' || (f.tense !== 'ger' && f.tense !== 'part')) {
+            console.log(`❌ Form ${f.lemma} ${f.tense} filtered out - not nonfinite gerund or participle`)
+            return false
+          }
+        } else if(f.tense !== specificTense) {
+          console.log(`❌ Form ${f.lemma} ${f.tense} filtered out by specific tense ${specificTense}`)
+          return false
+        }
       }
     }
     

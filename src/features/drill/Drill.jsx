@@ -135,6 +135,7 @@ export default function Drill({
       'presFuturate': 'Presente Futurativo',
       'impAff': 'Afirmativo',
       'impNeg': 'Negativo',
+      'impMixed': 'Todas',
       'subjPres': 'Presente',
       'subjImpf': 'Imperfecto',
       'subjFut': 'Futuro',
@@ -144,7 +145,8 @@ export default function Drill({
       'condPerf': 'Condicional Perfecto',
       'inf': 'Infinitivo',
       'part': 'Participio',
-      'ger': 'Gerundio'
+      'ger': 'Gerundio',
+      'nonfiniteMixed': 'Participios y Gerundios'
     }
     
     const moodText = moodMap[mood] || 'Indicativo'

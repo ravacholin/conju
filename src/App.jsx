@@ -372,43 +372,40 @@ function App() {
             {/* Step 3: Level Selection */}
             {onboardingStep === 3 && (
               <>
-                <h2>¿Cuál es tu nivel de español?</h2>
-                <p>Seleccioná tu nivel según el Marco Común Europeo de Referencia (MCER):</p>
-                
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectLevel('A1')}>
                     <h3>A1 - Principiante</h3>
-                    <p>Recién empezás con el español</p>
+                    <p>Te presentás, describís personas y rutinas, pedís y das datos básicos.</p>
                     <p className="example">Indicativo: Presente</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('A2')}>
                     <h3>A2 - Elemental</h3>
-                    <p>Conocés lo básico</p>
+                    <p>Contás experiencias y planes, seguís instrucciones y resolvés gestiones simples.</p>
                     <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('B1')}>
                     <h3>B1 - Intermedio</h3>
-                    <p>Podés comunicarte en situaciones familiares</p>
+                    <p>Narrás con orden, comparás pasados, explicás causas y fundamentás opiniones.</p>
                     <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('B2')}>
-                    <h3>B2 - Intermedio Alto</h3>
-                    <p>Te comunicás con fluidez</p>
+                    <h3>B2 - Intermedio alto</h3>
+                    <p>Argumentás con matices, manejás hipótesis y concesiones, pedís y das aclaraciones complejas.</p>
                     <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('C1')}>
                     <h3>C1 - Avanzado</h3>
-                    <p>Usás el español con eficacia</p>
+                    <p>Producís discursos precisos y cohesionados, adaptás registro y reformulás con naturalidad.</p>
                     <p className="example">Todas las formas (solo irregulares en básicos)</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('C2')}>
                     <h3>C2 - Superior</h3>
-                    <p>Dominio casi nativo</p>
+                    <p>Usás recursos idiomáticos y tonos variados con dominio casi nativo.</p>
                     <p className="example">Todas las formas verbales</p>
                   </div>
                 </div>

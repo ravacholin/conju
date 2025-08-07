@@ -28,6 +28,7 @@ export const TENSE_LABELS = {
   // Imperativo
   'impAff': 'Afirmativo',
   'impNeg': 'Negativo',
+  'impMixed': 'Todas',
   
   // Condicional
   'cond': 'Condicional',
@@ -35,7 +36,8 @@ export const TENSE_LABELS = {
   
   // Formas no conjugadas
   'ger': 'Gerundio',
-  'part': 'Participio'
+  'part': 'Participio',
+  'nonfiniteMixed': 'Participios y Gerundios'
 }
 
 export const PERSON_LABELS = {
@@ -58,13 +60,13 @@ export const MOOD_TENSES = {
     'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'
   ],
   'imperative': [
-    'impAff', 'impNeg'
+    'impAff', 'impNeg', 'impMixed'
   ],
   'conditional': [
     'cond', 'condPerf'
   ],
   'nonfinite': [
-    'ger', 'part'
+    'ger', 'part', 'nonfiniteMixed'
   ]
 }
 
