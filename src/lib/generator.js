@@ -161,6 +161,14 @@ export function chooseNext({forms, history}){
         console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
         return false
       }
+      
+      // For irregular verb type, only show irregular forms
+      // Check if this specific form is irregular
+      const isRegularForm = isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+      if (isRegularForm) {
+        console.log(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - regular form in irregular verb`)
+        return false
+      }
     }
     // If verbType is 'all', we only check MCER restrictions (already done above)
     
@@ -434,6 +442,290 @@ function isIrregularVerb(lemma) {
 }
 
 // Function to check if a nonfinite form is regular
+function isRegularFormForMood(lemma, mood, tense, person, value) {
+  // Remove accents for comparison
+  const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  
+  const normalizedLemma = normalize(lemma)
+  const normalizedValue = normalize(value)
+  
+  // Regular patterns for different verb endings
+  if (lemma.endsWith('ar')) {
+    if (mood === 'indicative') {
+      if (tense === 'pres') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'o'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'as'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'ás'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'a'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'áis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'an'))) return true
+      }
+      if (tense === 'pretIndef') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'é'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'aste'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'aste'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'ó'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'asteis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'aron'))) return true
+      }
+      if (tense === 'impf') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'aba'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'abas'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'abas'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'aba'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'ábamos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'abais'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'aban'))) return true
+      }
+      if (tense === 'fut') {
+        if (person === '1s' && normalizedValue === normalize(lemma + 'é')) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '3s' && normalizedValue === normalize(lemma + 'á')) return true
+        if (person === '1p' && normalizedValue === normalize(lemma + 'emos')) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
+        if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
+      }
+      if (tense === 'pretPerf') {
+        // Pretérito perfecto is always regular for -ar verbs
+        return true
+      }
+    }
+    if (mood === 'imperative') {
+      if (tense === 'impAff') {
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'a'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'á'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'e'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'emos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'ad'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'en'))) return true
+      }
+      if (tense === 'impNeg') {
+        if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace('ar', 'es'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace('ar', 'és'))) return true
+        if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace('ar', 'e'))) return true
+        if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace('ar', 'emos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace('ar', 'éis'))) return true
+        if (person === '3p' && normalizedValue === normalize('no ' + lemma.replace('ar', 'en'))) return true
+      }
+    }
+    if (mood === 'nonfinite') {
+      if (tense === 'ger' && normalizedValue === normalize(lemma.replace('ar', 'ando'))) return true
+      if (tense === 'part' && normalizedValue === normalize(lemma.replace('ar', 'ado'))) return true
+    }
+  } else if (lemma.endsWith('er')) {
+    if (mood === 'indicative') {
+      if (tense === 'pres') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'o'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'es'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'és'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'e'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'emos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'éis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'en'))) return true
+      }
+      if (tense === 'pretIndef') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'í'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'iste'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'iste'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'ió'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'imos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'isteis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'ieron'))) return true
+      }
+      if (tense === 'impf') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'ía'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'ías'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'ías'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'ía'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'íamos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'íais'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'ían'))) return true
+      }
+      if (tense === 'fut') {
+        if (person === '1s' && normalizedValue === normalize(lemma + 'é')) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '3s' && normalizedValue === normalize(lemma + 'á')) return true
+        if (person === '1p' && normalizedValue === normalize(lemma + 'emos')) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
+        if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
+      }
+      if (tense === 'pretPerf') {
+        // Pretérito perfecto is always regular for -er verbs
+        return true
+      }
+    }
+    if (mood === 'imperative') {
+      if (tense === 'impAff') {
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'e'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'é'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'a'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'ed'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'an'))) return true
+      }
+      if (tense === 'impNeg') {
+        if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace('er', 'as'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace('er', 'ás'))) return true
+        if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace('er', 'a'))) return true
+        if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace('er', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace('er', 'áis'))) return true
+        if (person === '3p' && normalizedValue === normalize('no ' + lemma.replace('er', 'an'))) return true
+      }
+    }
+    if (mood === 'nonfinite') {
+      if (tense === 'ger' && normalizedValue === normalize(lemma.replace('er', 'iendo'))) return true
+      if (tense === 'part' && normalizedValue === normalize(lemma.replace('er', 'ido'))) return true
+    }
+  } else if (lemma.endsWith('ir')) {
+    if (mood === 'indicative') {
+      if (tense === 'pres') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ir', 'o'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'es'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'és'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'e'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'imos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'ís'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'en'))) return true
+      }
+      if (tense === 'pretIndef') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ir', 'í'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'iste'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'iste'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'ió'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'imos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'isteis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'ieron'))) return true
+      }
+      if (tense === 'impf') {
+        if (person === '1s' && normalizedValue === normalize(lemma.replace('ir', 'ía'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'ías'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'ías'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'ía'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'íamos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'íais'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'ían'))) return true
+      }
+      if (tense === 'fut') {
+        if (person === '1s' && normalizedValue === normalize(lemma + 'é')) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma + 'ás')) return true
+        if (person === '3s' && normalizedValue === normalize(lemma + 'á')) return true
+        if (person === '1p' && normalizedValue === normalize(lemma + 'emos')) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
+        if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
+      }
+      if (tense === 'pretPerf') {
+        // Pretérito perfecto is always regular for -ir verbs
+        return true
+      }
+    }
+    if (mood === 'imperative') {
+      if (tense === 'impAff') {
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'e'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'é'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'a'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'id'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'an'))) return true
+      }
+      if (tense === 'impNeg') {
+        if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace('ir', 'as'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace('ir', 'ás'))) return true
+        if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace('ir', 'a'))) return true
+        if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace('ir', 'amos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace('ir', 'áis'))) return true
+        if (person === '3p' && normalizedValue === normalize('no ' + lemma.replace('ir', 'an'))) return true
+      }
+    }
+         if (mood === 'nonfinite') {
+       if (tense === 'ger' && normalizedValue === normalize(lemma.replace('ir', 'iendo'))) return true
+       if (tense === 'part' && normalizedValue === normalize(lemma.replace('ir', 'ido'))) return true
+     }
+   }
+   
+   // Add subjunctive and conditional patterns
+   if (mood === 'subjunctive') {
+     // Subjunctive patterns are similar to indicative but with different endings
+     if (lemma.endsWith('ar')) {
+       if (tense === 'subjPres') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'e'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'es'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'és'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'e'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'emos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'éis'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'en'))) return true
+       }
+       if (tense === 'subjImpf') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'ara'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'aras'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ar', 'aras'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('ar', 'ara'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'áramos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'arais'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'aran'))) return true
+       }
+     } else if (lemma.endsWith('er')) {
+       if (tense === 'subjPres') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'a'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'as'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'ás'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'a'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'amos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'áis'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'an'))) return true
+       }
+       if (tense === 'subjImpf') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'iera'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('er', 'ieras'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('er', 'ieras'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('er', 'iera'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('er', 'iéramos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('er', 'ierais'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('er', 'ieran'))) return true
+       }
+     } else if (lemma.endsWith('ir')) {
+       if (tense === 'subjPres') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('ir', 'a'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'as'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'ás'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'a'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'amos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'áis'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'an'))) return true
+       }
+       if (tense === 'subjImpf') {
+         if (person === '1s' && normalizedValue === normalize(lemma.replace('ir', 'iera'))) return true
+         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'ieras'))) return true
+         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'ieras'))) return true
+         if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'iera'))) return true
+         if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'iéramos'))) return true
+         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'ierais'))) return true
+         if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'ieran'))) return true
+       }
+     }
+   }
+   
+   if (mood === 'conditional') {
+     // Conditional is always regular (formed with infinitive + endings)
+     if (tense === 'cond') {
+       if (person === '1s' && normalizedValue === normalize(lemma + 'ía')) return true
+       if (person === '2s_tu' && normalizedValue === normalize(lemma + 'ías')) return true
+       if (person === '2s_vos' && normalizedValue === normalize(lemma + 'ías')) return true
+       if (person === '3s' && normalizedValue === normalize(lemma + 'ía')) return true
+       if (person === '1p' && normalizedValue === normalize(lemma + 'íamos')) return true
+       if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'íais')) return true
+       if (person === '3p' && normalizedValue === normalize(lemma + 'ían')) return true
+     }
+   }
+   
+   return false
+}
+
 function isRegularNonfiniteForm(lemma, tense, value) {
   // Remove accents for comparison
   const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
