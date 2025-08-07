@@ -79,5 +79,18 @@
   {"level":"C1","mood":"nonfinite","tense":"part","target":"produce"},
   {"level":"C1","mood":"nonfinite","tense":"ger","target":"produce"},
   {"level":"C2","mood":"nonfinite","tense":"part","target":"produce"},
-  {"level":"C2","mood":"nonfinite","tense":"ger","target":"produce"}
+  {"level":"C2","mood":"nonfinite","tense":"ger","target":"produce"},
+  
+  {"level":"A2","mood":"imperative","tense":"impMixed","target":"produce"},
+  {"level":"B1","mood":"imperative","tense":"impMixed","target":"produce"},
+  {"level":"B2","mood":"imperative","tense":"impMixed","target":"produce"},
+  {"level":"C1","mood":"imperative","tense":"impMixed","target":"produce"},
+  {"level":"C2","mood":"imperative","tense":"impMixed","target":"produce"},
+  
+  {"level":"A1","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"},
+  {"level":"A2","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"},
+  {"level":"B1","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"},
+  {"level":"B2","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"},
+  {"level":"C1","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"},
+  {"level":"C2","mood":"nonfinite","tense":"nonfiniteMixed","target":"produce"}
 ] 

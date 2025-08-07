@@ -3810,7 +3810,7 @@ export const verbs = [
   {
     "id": "volver",
     "lemma": "volver",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -3895,7 +3895,7 @@ export const verbs = [
   {
     "id": "dormir",
     "lemma": "dormir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -4341,7 +4341,7 @@ export const verbs = [
   {
     "id": "pedir",
     "lemma": "pedir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -4702,7 +4702,7 @@ export const verbs = [
   {
     "id": "seguir",
     "lemma": "seguir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -11829,7 +11829,7 @@ export const verbs = [
   {
     "id": "traer",
     "lemma": "traer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -11923,7 +11923,7 @@ export const verbs = [
   {
     "id": "caer",
     "lemma": "caer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -12574,7 +12574,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -14426,7 +14426,7 @@ export const verbs = [
   {
     "id": "oir",
     "lemma": "oir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -15752,7 +15752,7 @@ export const verbs = [
   {
     "id": "caer",
     "lemma": "caer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -16152,7 +16152,7 @@ export const verbs = [
   {
     "id": "traer",
     "lemma": "traer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -16804,7 +16804,7 @@ export const verbs = [
   {
     "id": "abrir",
     "lemma": "abrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16832,7 +16832,7 @@ export const verbs = [
   {
     "id": "cubrir",
     "lemma": "cubrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16860,7 +16860,7 @@ export const verbs = [
   {
     "id": "descubrir",
     "lemma": "descubrir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16888,7 +16888,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -17140,7 +17140,7 @@ export const verbs = [
   {
     "id": "conocer",
     "lemma": "conocer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17168,7 +17168,7 @@ export const verbs = [
   {
     "id": "nacer",
     "lemma": "nacer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17196,7 +17196,7 @@ export const verbs = [
   {
     "id": "crecer",
     "lemma": "crecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17224,7 +17224,7 @@ export const verbs = [
   {
     "id": "parecer",
     "lemma": "parecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17252,7 +17252,7 @@ export const verbs = [
   {
     "id": "obedecer",
     "lemma": "obedecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17280,7 +17280,7 @@ export const verbs = [
   {
     "id": "merecer",
     "lemma": "merecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17308,7 +17308,7 @@ export const verbs = [
   {
     "id": "agradecer",
     "lemma": "agradecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17336,7 +17336,7 @@ export const verbs = [
   {
     "id": "establecer",
     "lemma": "establecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17364,7 +17364,7 @@ export const verbs = [
   {
     "id": "ofrecer",
     "lemma": "ofrecer",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17392,7 +17392,7 @@ export const verbs = [
   {
     "id": "producir",
     "lemma": "producir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17420,7 +17420,7 @@ export const verbs = [
   {
     "id": "conducir",
     "lemma": "conducir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17448,7 +17448,7 @@ export const verbs = [
   {
     "id": "traducir",
     "lemma": "traducir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17476,7 +17476,7 @@ export const verbs = [
   {
     "id": "introducir",
     "lemma": "introducir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17504,7 +17504,7 @@ export const verbs = [
   {
     "id": "reducir",
     "lemma": "reducir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17532,7 +17532,7 @@ export const verbs = [
   {
     "id": "construir",
     "lemma": "construir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17560,7 +17560,7 @@ export const verbs = [
   {
     "id": "destruir",
     "lemma": "destruir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17588,7 +17588,7 @@ export const verbs = [
   {
     "id": "incluir",
     "lemma": "incluir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17616,7 +17616,7 @@ export const verbs = [
   {
     "id": "concluir",
     "lemma": "concluir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17644,7 +17644,7 @@ export const verbs = [
   {
     "id": "excluir",
     "lemma": "excluir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17672,7 +17672,7 @@ export const verbs = [
   {
     "id": "huir",
     "lemma": "huir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17700,7 +17700,7 @@ export const verbs = [
   {
     "id": "contribuir",
     "lemma": "contribuir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17728,7 +17728,7 @@ export const verbs = [
   {
     "id": "distribuir",
     "lemma": "distribuir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -17756,7 +17756,7 @@ export const verbs = [
   {
     "id": "atribuir",
     "lemma": "atribuir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -23204,7 +23204,7 @@ export const verbs = [
   {
     "id": "escribir",
     "lemma": "escribir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -25364,6 +25364,82 @@ export const verbs = [
             "tense": "ger",
             "person": "ger",
             "value": "recibiendo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "andar",
+    "lemma": "andar",
+    "type": "regular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "ando"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "andas",
+            "accepts": {
+              "vos": "andás"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "andás",
+            "accepts": {
+              "tu": "andas"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "anda"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "andamos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "andáis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "andan"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "inv",
+            "value": "andado"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "inv",
+            "value": "andando"
           }
         ]
       }

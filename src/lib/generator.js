@@ -144,27 +144,22 @@ export function chooseNext({forms, history}){
     }
     console.log(`🔍 Verb type check: ${f.lemma} is ${verb.type}, verbType setting: ${verbType}`)
     
-    // For nonfinite forms, be more permissive with verb type filtering
-    if (f.mood === 'nonfinite') {
-      console.log(`✅ Form ${f.lemma} ${f.type} included - nonfinite forms are more permissive`)
-    } else {
-      // Check MCER level restrictions first
-      if (!isVerbTypeAllowedForLevel(verb.type, level)) {
-        console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
+    // Check MCER level restrictions first
+    if (!isVerbTypeAllowedForLevel(verb.type, level)) {
+      console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
+      return false
+    }
+    
+    // Then check user's verb type preference
+    if (verbType === 'regular') {
+      if (verb.type !== 'regular') {
+        console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
         return false
       }
-      
-      // Then check user's verb type preference
-      if (verbType === 'regular') {
-        if (verb.type !== 'regular') {
-          console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
-          return false
-        }
-      } else if (verbType === 'irregular') {
-        if (verb.type !== 'irregular') {
-          console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
-          return false
-        }
+    } else if (verbType === 'irregular') {
+      if (verb.type !== 'irregular') {
+        console.log(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
+        return false
       }
     }
     // If verbType is 'all', we only check MCER restrictions (already done above)
@@ -190,6 +185,19 @@ export function chooseNext({forms, history}){
           if(f.mood !== 'nonfinite' || (f.tense !== 'ger' && f.tense !== 'part')) {
             console.log(`❌ Form ${f.lemma} ${f.tense} filtered out - not nonfinite gerund or participle`)
             return false
+          }
+          
+          // For irregular verb type, only show irregular forms
+          if(verbType === 'irregular') {
+            const verb = findVerbByLemma(f.lemma)
+            if(verb && verb.type === 'irregular') {
+              // Check if this specific form is irregular
+              const isRegularForm = isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+              if(isRegularForm) {
+                console.log(`❌ Form ${f.lemma} ${f.tense} filtered out - regular form in irregular verb`)
+                return false
+              }
+            }
           }
         } else if(f.tense !== specificTense) {
           console.log(`❌ Form ${f.lemma} ${f.tense} filtered out by specific tense ${specificTense}`)
@@ -423,6 +431,27 @@ function isIrregularVerb(lemma) {
     'haber', 'satisfacer', 'hacer', 'deshacer', 'rehacer', 'contrahacer'
   ]
   return irregularVerbs.includes(lemma)
+}
+
+// Function to check if a nonfinite form is regular
+function isRegularNonfiniteForm(lemma, tense, value) {
+  // Remove accents for comparison
+  const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  
+  const normalizedLemma = normalize(lemma)
+  const normalizedValue = normalize(value)
+  
+  if (lemma.endsWith('ar')) {
+    if (tense === 'ger' && normalizedValue === normalize(lemma.replace('ar', 'ando'))) return true
+    if (tense === 'part' && normalizedValue === normalize(lemma.replace('ar', 'ado'))) return true
+  } else if (lemma.endsWith('er')) {
+    if (tense === 'ger' && normalizedValue === normalize(lemma.replace('er', 'iendo'))) return true
+    if (tense === 'part' && normalizedValue === normalize(lemma.replace('er', 'ido'))) return true
+  } else if (lemma.endsWith('ir')) {
+    if (tense === 'ger' && normalizedValue === normalize(lemma.replace('ir', 'iendo'))) return true
+    if (tense === 'part' && normalizedValue === normalize(lemma.replace('ir', 'ido'))) return true
+  }
+  return false
 }
 
 function acc(f, history){

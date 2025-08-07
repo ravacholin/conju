@@ -250,6 +250,20 @@ function App() {
     }
   }
 
+  const handleBack = () => {
+    // Go back to settings
+    setShowSettings(true)
+  }
+
+  const handleHome = () => {
+    // Reset to onboarding
+    setCurrentMode('onboarding')
+    setOnboardingStep(1)
+    setCurrentItem(null)
+    setHistory({})
+    setShowSettings(false)
+  }
+
   // Function to get available moods for a specific level
   const getAvailableMoodsForLevel = (level) => {
     console.log('getAvailableMoodsForLevel called with level:', level)
@@ -273,9 +287,9 @@ function App() {
       const allTenses = {
         'indicative': ['pres', 'pretPerf', 'pretIndef', 'impf', 'plusc', 'fut', 'futPerf'],
         'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
-        'imperative': ['impAff', 'impNeg'],
+        'imperative': ['impAff', 'impNeg', 'impMixed'],
         'conditional': ['cond', 'condPerf'],
-        'nonfinite': ['ger', 'part']
+        'nonfinite': ['ger', 'part', 'nonfiniteMixed']
       }
       return allTenses[mood] || ['pres']
     }
@@ -295,6 +309,43 @@ function App() {
       'nonfinite': 'Participios y gerundios'
     }
     return descriptions[mood] || ''
+  }
+
+  // Function to get conjugation examples
+  const getConjugationExample = (mood, tense) => {
+    const examples = {
+      // Indicativo
+      'indicative_pres': 'hablo, hablas, habla',
+      'indicative_pretIndef': 'hablé, hablaste, habló',
+      'indicative_impf': 'hablaba, hablabas, hablaba',
+      'indicative_fut': 'hablaré, hablarás, hablará',
+      'indicative_pretPerf': 'he hablado, has hablado, ha hablado',
+      'indicative_plusc': 'había hablado, habías hablado, había hablado',
+      'indicative_futPerf': 'habré hablado, habrás hablado, habrá hablado',
+      
+      // Subjuntivo
+      'subjunctive_subjPres': 'hable, hables, hable',
+      'subjunctive_subjImpf': 'hablara, hablaras, hablara',
+      'subjunctive_subjPerf': 'haya hablado, hayas hablado, haya hablado',
+      'subjunctive_subjPlusc': 'hubiera hablado, hubieras hablado, hubiera hablado',
+      
+      // Imperativo
+      'imperative_impAff': 'habla, hable, hablen',
+      'imperative_impNeg': 'no hables, no hable, no hablen',
+      'imperative_impMixed': 'habla / no hables, hable / no hable',
+      
+      // Condicional
+      'conditional_cond': 'hablaría, hablarías, hablaría',
+      'conditional_condPerf': 'habría hablado, habrías hablado, habría hablado',
+      
+      // Formas no conjugadas
+      'nonfinite_ger': 'hablando',
+      'nonfinite_part': 'hablado',
+      'nonfinite_nonfiniteMixed': 'hablando / hablado'
+    }
+    
+    const key = `${mood}_${tense}`
+    return examples[key] || ''
   }
 
   if (currentMode === 'onboarding') {
@@ -619,6 +670,7 @@ function App() {
                           {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
                             <div key={tense} className="option-card" onClick={() => selectTense(tense)}>
                               <h3>{getTenseLabel(tense)}</h3>
+                              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
                             </div>
                           ))}
                         </div>
@@ -676,13 +728,7 @@ function App() {
         <header className="header">
           <div></div>
           <button 
-            onClick={() => {
-              setCurrentMode('onboarding')
-              setOnboardingStep(1)
-              // Clear history when going back to menu
-              setHistory({})
-              setCurrentItem(null)
-            }}
+            onClick={handleHome}
             className="back-to-menu-btn"
           >
             <img src="/home.png" alt="Menú" className="menu-icon" />
