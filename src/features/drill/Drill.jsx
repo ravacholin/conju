@@ -275,27 +275,6 @@ export default function Drill({
     return `${moodText} - ${tenseText}`
   }
 
-  // Tiny pattern/explanation chip (non-invasive)
-  const getExplanation = () => {
-    const { lemma } = currentItem
-    const { mood, tense, value } = currentItem.form || {}
-    if (!lemma || !mood || !tense || !value) return ''
-    // Basic lightweight rules; extendable
-    if (mood === 'nonfinite') {
-      if (tense === 'ger') return 'Gerundio regular si coincide con -ando/-iendo'
-      if (tense === 'part') return 'Participio regular si coincide con -ado/-ido'
-    }
-    if (mood === 'indicative' && tense === 'pres') {
-      if (/cer$|cir$/.test(lemma)) return 'Patrón: c→zc (1ª singular)'
-      if (/ger$|gir$/.test(lemma)) return 'Patrón: g→j (1ª singular)'
-      if (/go$/.test(value)) return 'Patrón: verbo en -go (1ª singular)'
-      if (/[ie]o$|ue/.test(value)) return 'Posible cambio vocálico'
-    }
-    if (mood === 'imperative') {
-      return 'Negativo ≈ subjuntivo presente'
-    }
-    return ''
-  }
 
   const getPersonText = () => {
     // Para formas no finitas, siempre mostrar "No conjugado"
@@ -430,9 +409,6 @@ export default function Drill({
           <p>
             {result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}
           </p>
-          {getExplanation() && (
-            <span className="explanation-chip">{getExplanation()}</span>
-          )}
           {result.correct && result.note && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
               {result.note}
