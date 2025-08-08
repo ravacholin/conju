@@ -29,6 +29,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
   const settings = useSettings()
+  const [showQuickSwitch, setShowQuickSwitch] = useState(false)
 
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
@@ -695,7 +696,13 @@ function App() {
     return (
       <div className="App">
         <header className="header">
-          <div></div>
+          <button
+            onClick={() => setShowQuickSwitch(prev => !prev)}
+            className="quick-switch-btn"
+            title="Cambiar rápido"
+          >
+            <img src="/diana.png" alt="Cambiar" className="menu-icon" />
+          </button>
           <button 
             onClick={handleHome}
             className="back-to-menu-btn"
@@ -908,6 +915,75 @@ function App() {
                 Cerrar
               </button>
             </div>
+        )}
+
+        {showQuickSwitch && (
+          <div className="quick-switch-panel">
+            <h3>Cambiar rápido</h3>
+            <div className="setting-group">
+              <label>Modo verbal:</label>
+              <select
+                className="setting-select"
+                value={settings.specificMood || ''}
+                onChange={(e) => {
+                  const mood = e.target.value || null
+                  settings.set({ specificMood: mood, specificTense: null })
+                }}
+              >
+                <option value="">Seleccioná modo...</option>
+                {(settings.level ? getAvailableMoodsForLevel(settings.level) : ['indicative','subjunctive','imperative','conditional','nonfinite']).map(m => (
+                  <option key={m} value={m}>{getMoodLabel(m)}</option>
+                ))}
+              </select>
+            </div>
+
+            {settings.specificMood && (
+              <div className="setting-group">
+                <label>Tiempo verbal:</label>
+                <select
+                  className="setting-select"
+                  value={settings.specificTense || ''}
+                  onChange={(e) => settings.set({ specificTense: e.target.value || null })}
+                >
+                  <option value="">Seleccioná tiempo...</option>
+                  {(settings.level
+                    ? getAvailableTensesForLevelAndMood(settings.level, settings.specificMood)
+                    : getTensesForMood(settings.specificMood)
+                  ).map(t => (
+                    <option key={t} value={t}>{getTenseLabel(t)}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className="setting-group">
+              <label>Tipo de verbos:</label>
+              <select
+                className="setting-select"
+                value={settings.verbType}
+                onChange={(e) => settings.set({ verbType: e.target.value })}
+              >
+                <option value="all">Todos</option>
+                <option value="regular">Regulares</option>
+                <option value="irregular">Irregulares</option>
+              </select>
+            </div>
+
+            <div className="setting-group">
+              <button
+                className="btn"
+                onClick={() => {
+                  // regenerate with new filters
+                  setCurrentItem(null)
+                  generateNextItem()
+                  setShowQuickSwitch(false)
+                }}
+              >
+                Aplicar
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowQuickSwitch(false)}>Cerrar</button>
+            </div>
+          </div>
         )}
 
         <main className="main-content">
