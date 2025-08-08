@@ -7,6 +7,8 @@ import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
 import './App.css'
+import configIcon from '../config.png'
+import enieIcon from '../enie.png'
 // Debug logging flag for this component
 const APP_DEBUG = false
 const dlog = (...args) => { if (APP_DEBUG) console.log(...args) }
@@ -423,7 +425,7 @@ function App() {
                   <div className="option-card" onClick={() => selectLevel('C1')}>
                     <h3>C1 - Avanzado</h3>
                     <p>Producís discursos precisos y cohesionados, adaptás registro y reformulás con naturalidad.</p>
-                    <p className="example">Todas las formas (solo irregulares en básicos)</p>
+                    <p className="example">Todas las formas verbales</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectLevel('C2')}>
@@ -704,7 +706,7 @@ function App() {
               className="icon-btn"
               title="Cambiar rápido"
             >
-              <img src="/config.png" alt="Config" className="menu-icon" />
+              <img src={configIcon} alt="Config" className="menu-icon" />
             </button>
             <button
               onClick={() => setShowChallenges(prev => !prev)}
@@ -718,7 +720,7 @@ function App() {
               className="icon-btn"
               title="Tildes"
             >
-              <img src="/enie.png" alt="Tildes" className="menu-icon" />
+              <img src={enieIcon} alt="Tildes" className="menu-icon" />
             </button>
             <button 
               onClick={handleHome}
