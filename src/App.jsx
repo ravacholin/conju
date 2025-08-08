@@ -30,6 +30,8 @@ function App() {
   const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
   const settings = useSettings()
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
+  const [showChallenges, setShowChallenges] = useState(false)
+  const [showAccentKeys, setShowAccentKeys] = useState(false)
 
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
@@ -696,19 +698,36 @@ function App() {
     return (
       <div className="App">
         <header className="header">
-          <button
-            onClick={() => setShowQuickSwitch(prev => !prev)}
-            className="quick-switch-btn"
-            title="Cambiar rápido"
-          >
-            <img src="/diana.png" alt="Cambiar" className="menu-icon" />
-          </button>
-          <button 
-            onClick={handleHome}
-            className="back-to-menu-btn"
-          >
-            <img src="/home.png" alt="Menú" className="menu-icon" />
-          </button>
+          <div className="icon-row">
+            <button
+              onClick={() => setShowQuickSwitch(prev => !prev)}
+              className="icon-btn"
+              title="Cambiar rápido"
+            >
+              <img src="/config.png" alt="Config" className="menu-icon" />
+            </button>
+            <button
+              onClick={() => setShowChallenges(prev => !prev)}
+              className="icon-btn"
+              title="Desafíos"
+            >
+              <img src="/diana.png" alt="Desafíos" className="menu-icon" />
+            </button>
+            <button
+              onClick={() => setShowAccentKeys(prev => !prev)}
+              className="icon-btn"
+              title="Tildes"
+            >
+              <img src="/enie.png" alt="Tildes" className="menu-icon" />
+            </button>
+            <button 
+              onClick={handleHome}
+              className="icon-btn"
+              title="Menú"
+            >
+              <img src="/home.png" alt="Menú" className="menu-icon" />
+            </button>
+          </div>
         </header>
 
         {showSettings && (
@@ -919,7 +938,6 @@ function App() {
 
         {showQuickSwitch && (
           <div className="quick-switch-panel">
-            <h3>Cambiar rápido</h3>
             <div className="setting-group">
               <label>Modo verbal:</label>
               <select
@@ -992,6 +1010,8 @@ function App() {
               currentItem={currentItem}
               onResult={handleDrillResult}
               onContinue={handleContinue}
+              showChallenges={showChallenges}
+              showAccentKeys={showAccentKeys}
             />
           ) : (
             <div className="loading">Cargando próxima conjugación...</div>

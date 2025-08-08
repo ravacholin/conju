@@ -6,7 +6,9 @@ import { useSettings } from '../../state/settings.js'
 export default function Drill({ 
   currentItem, 
   onResult, 
-  onContinue
+  onContinue,
+  showChallenges = false,
+  showAccentKeys = true
 }) {
   const [input, setInput] = useState('')
   const [result, setResult] = useState(null)
@@ -358,6 +360,7 @@ export default function Drill({
           autoFocus
         />
         {/* Accent keypad */}
+        {showAccentKeys && (
         <div className="accent-keypad" aria-hidden={result !== null}>
           {specialChars.map(ch => (
             <button
@@ -377,12 +380,14 @@ export default function Drill({
           >?
           </button>
         </div>
+        )}
         {hint && !result && (
           <div className="hint-text">{hint}</div>
         )}
       </div>
 
       {/* Micro-drills controls & progress */}
+      {showChallenges && (
       <div className="micro-controls">
         {microMode ? (
           <>
@@ -400,6 +405,7 @@ export default function Drill({
           </>
         )}
       </div>
+      )}
 
       {/* Action buttons */}
       <div className="action-buttons">
