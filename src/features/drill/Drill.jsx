@@ -156,6 +156,14 @@ export default function Drill({
   }
 
   const getPersonText = () => {
+    // Para formas no finitas, siempre mostrar "No conjugado"
+    if (currentItem.mood === 'nonfinite' || 
+        currentItem.tense === 'ger' || 
+        currentItem.tense === 'part' || 
+        currentItem.tense === 'nonfiniteMixed') {
+      return 'No conjugado'
+    }
+
     const personMap = {
       '1s': 'Yo',
       '2s_tu': 'Tú',

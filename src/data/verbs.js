@@ -9098,6 +9098,48 @@ export const verbs = [
           },
           {
             "mood": "indicative",
+            "tense": "impf",
+            "person": "1s",
+            "value": "iba"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "2s_tu",
+            "value": "ibas"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "2s_vos",
+            "value": "ibas"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "3s",
+            "value": "iba"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "1p",
+            "value": "íbamos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "2p_vosotros",
+            "value": "ibais"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "3p",
+            "value": "iban"
+          },
+          {
+            "mood": "indicative",
             "tense": "irAInf",
             "person": "1s",
             "value": "voy a ir"

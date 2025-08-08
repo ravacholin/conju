@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSettings } from './state/settings.js'
 import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
@@ -6,52 +6,21 @@ import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
-import { testNonfiniteVerbs } from './lib/testNonfinite.js'
-import { comprehensiveVerbTest, testSpecificCategories } from './lib/comprehensiveTest.js'
-import { cleanDuplicateVerbs, addMissingForms, validateVerbStructure } from './lib/cleanDuplicateVerbs.js'
-import { generateImprovementReport } from './lib/bugFixes.js'
-import { testNonfiniteSelection } from './lib/testNonfiniteSelection.js'
-import { debugGerundioIssue } from './lib/debugGerundioIssue.js'
-import { fixGerundioIssue } from './lib/fixGerundioIssue.js'
-import { testGerundioDirect } from './lib/testGerundioDirect.js'
 import './App.css'
+// Debug logging flag for this component
+const APP_DEBUG = false
+const dlog = (...args) => { if (APP_DEBUG) console.log(...args) }
 
 function App() {
-  console.log('Curriculum gates imported:', gates)
-  console.log('Total gates:', gates.length)
-  console.log('Sample gates:', gates.slice(0, 5))
+  dlog('Curriculum gates imported:', gates)
+  dlog('Total gates:', gates.length)
+  dlog('Sample gates:', gates.slice(0, 5))
   
   // Test verb availability on app load
   useEffect(() => {
-    console.log('=== RUNNING COMPREHENSIVE APP DIAGNOSTICS ===')
-    
-    // Validate verb structure
-    validateVerbStructure()
-    
-    // Test verb availability
-    testNonfiniteVerbs()
-    comprehensiveVerbTest()
-    testSpecificCategories()
-    
-    // Check for duplicates
-    cleanDuplicateVerbs()
-    
-    // Generate improvement report
-    generateImprovementReport()
-    
-    // Test nonfinite selection specifically
-    testNonfiniteSelection()
-    
-    // Debug gerundio issue specifically
-    debugGerundioIssue()
-    
-    // Fix gerundio issue
-    fixGerundioIssue()
-    
-    // Test gerundio directly
-    testGerundioDirect()
-    
-    console.log('=== DIAGNOSTICS COMPLETE ===')
+    if (import.meta.env.DEV) {
+      import('./lib/devDiagnostics.js').then(m => m.runDevDiagnostics()).catch(()=>{})
+    }
   }, [])
   
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
@@ -61,24 +30,24 @@ function App() {
   const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
   const settings = useSettings()
 
-  const generateNextItem = () => {
-    // Get all forms from all verbs
-    const allForms = []
-    verbs.forEach(verb => {
-      verb.paradigms.forEach(paradigm => {
+  const allFormsForRegion = useMemo(() => {
+    if (!settings.region) return []
+    const acc = []
+    for (const verb of verbs) {
+      for (const paradigm of verb.paradigms) {
         if (paradigm.regionTags.includes(settings.region)) {
-          paradigm.forms.forEach(form => {
-            allForms.push({
-              lemma: verb.lemma,
-              ...form
-            })
-          })
+          for (const form of paradigm.forms) {
+            acc.push({ lemma: verb.lemma, ...form })
+          }
         }
-      })
-    })
-    
-    console.log(`Generating next item with ${allForms.length} total forms`)
-    const nextForm = chooseNext({ forms: allForms, history })
+      }
+    }
+    dlog(`Cached ${acc.length} forms for region ${settings.region}`)
+    return acc
+  }, [settings.region])
+
+  const generateNextItem = () => {
+    const nextForm = chooseNext({ forms: allFormsForRegion, history })
     
     if (nextForm && nextForm.mood && nextForm.tense) {
       // Force a new object to ensure React detects the change
@@ -94,8 +63,8 @@ function App() {
       setCurrentItem(newItem)
     } else {
       console.error('❌ No valid form found! This might indicate a bug in the generator or insufficient verbs.')
-      console.error('Current settings:', settings)
-      console.error('Available forms count:', allForms.length)
+      dlog('Current settings:', settings)
+      dlog('Available forms count:', allFormsForRegion.length)
       
       // Show a user-friendly error instead of infinite retry
       setCurrentItem({
