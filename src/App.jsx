@@ -226,9 +226,9 @@ function App() {
   }
 
   const handleHome = () => {
-    // Reset to onboarding
+    // Go to main menu: "¿Qué querés practicar?" (step 2)
     setCurrentMode('onboarding')
-    setOnboardingStep(1)
+    setOnboardingStep(2)
     setCurrentItem(null)
     setHistory({})
     setShowSettings(false)
@@ -329,7 +329,7 @@ function App() {
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <h2>Seleccioná tu variedad de español:</h2>
+                <h2>Seleccioná tu variedad:</h2>
                 
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
