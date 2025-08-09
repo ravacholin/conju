@@ -29,6 +29,7 @@ export default function Drill({
   const inputRef = useRef(null)
   const touchStart = useRef({ x: 0, y: 0 })
   const settings = useSettings()
+  const [resistTick, setResistTick] = useState(0)
 
   // Reset input when currentItem changes
   useEffect(() => {
@@ -42,6 +43,29 @@ export default function Drill({
       inputRef.current.focus()
     }
   }, [currentItem?.id, result])
+
+  // Resistance countdown
+  useEffect(() => {
+    if (!settings.resistanceActive) return
+    if (settings.resistanceMsLeft <= 0) return
+    const id = setInterval(() => {
+      const left = Math.max(0, useSettings.getState().resistanceMsLeft - 100)
+      settings.set({ resistanceMsLeft: left })
+      setResistTick(t=>t+1)
+      if (left === 0) {
+        // update best by level
+        const lvl = settings.level || 'A1'
+        const best = useSettings.getState().resistanceBestMsByLevel || {}
+        const survived = (Date.now() - (useSettings.getState().resistanceStartTs||Date.now()))
+        if (!best[lvl] || survived > best[lvl]) {
+          best[lvl] = survived
+          settings.set({ resistanceBestMsByLevel: { ...best } })
+        }
+        settings.set({ resistanceActive: false })
+      }
+    }, 100)
+    return () => clearInterval(id)
+  }, [settings.resistanceActive, settings.resistanceMsLeft])
 
   // Auto-advance on accent errors
   useEffect(() => {
@@ -80,6 +104,11 @@ export default function Drill({
             }
             return ns
           })
+          // Resistance: add time on correct
+          if (settings.resistanceActive) {
+            const bonus = 5000 // ms per correct
+            settings.set({ resistanceMsLeft: Math.min(useSettings.getState().resistanceMsLeft + bonus, 120000) })
+          }
         } else {
           setCurrentStreak(0)
           setErrorsCount(e => e + 1)
@@ -495,6 +524,24 @@ export default function Drill({
           )}
         </div>
       ) : null}
+
+      {/* Resistance HUD */}
+      {settings.resistanceActive && (
+        <div className="resistance-hud">
+          <div className="digit-clock">
+            {(() => {
+              const ms = Math.max(0, settings.resistanceMsLeft)
+              const s = Math.floor(ms/1000)
+              const d2 = (n) => String(n).padStart(2,'0')
+              const str = `${d2(Math.floor(s/60))}:${d2(s%60)}`
+              return str.split('').map((ch, i) => (
+                <span key={i} className={`digit ${ch === ':' ? 'colon' : ''}`}>{ch}</span>
+              ))
+            })()}
+          </div>
+          <div className="resistance-caption">Modo Resistencia</div>
+        </div>
+      )}
     </div>
   )
 } 

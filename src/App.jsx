@@ -1341,10 +1341,17 @@ function App() {
         )}
 
         {showGames && (
-          <div className="games-panel quick-switch-panel">
-            <h3>Juegos</h3>
+          <div className="games-panel quick-switch-panel" aria-label="Juegos">
             <div className="options-grid">
-              <div className="option-card compact" onClick={() => { /* TODO: Survivor */ }} aria-label="Survivor">
+              <div className="option-card compact" onClick={() => {
+                // Toggle Resistance mode
+                const s = useSettings.getState()
+                const level = s.level || 'A1'
+                // A1: 60s, A2: 50s, B1: 40s, B2: 30s, C1: 25s, C2: 20s
+                const baseMs = level==='C2'?20000: level==='C1'?25000: level==='B2'?30000: level==='B1'?40000: level==='A2'?50000:60000
+                settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
+                setShowGames(false)
+              }} aria-label="Survivor">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <img src="/zombie.png" alt="Survivor" className="game-icon" />
                   <p className="conjugation-example" style={{ margin: 0 }}>Modo resistencia</p>
@@ -1356,12 +1363,14 @@ function App() {
                   <p className="conjugation-example" style={{ margin: 0 }}>Invertí la consigna</p>
                 </div>
               </div>
-              <div className="option-card compact" onClick={() => { /* TODO: Doble */ }}>
-                <h3>Doble</h3>
-                <p className="conjugation-example">Dos respuestas seguidas</p>
+              <div className="option-card compact" onClick={() => { /* TODO: Doble */ }} aria-label="Conjugá dos juntos">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
+                  <p className="conjugation-example" style={{ margin: 0 }}>Conjugá dos juntos</p>
+                </div>
               </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div style={{ textAlign: 'center' }}>
               <button className="btn btn-secondary" onClick={() => setShowGames(false)}>Cerrar</button>
             </div>
             </div>

@@ -26,6 +26,11 @@ export const useSettings = create((set) => ({
   conmutacionSeq: ['2s_vos','3p','3s'],
   conmutacionIdx: 0,
   c2RareBoostLemmas: [],
+  // Resistance mode (Survivor)
+  resistanceActive: false,
+  resistanceMsLeft: 0,
+  resistanceStartTs: null,
+  resistanceBestMsByLevel: {},
   region: 'la_general',  // 'rioplatense' | 'peninsular' | 'la_general'
   practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only'
   showPronouns: false,   // Show pronouns for early learning
