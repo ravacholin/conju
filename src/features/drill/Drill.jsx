@@ -26,8 +26,11 @@ export default function Drill({
   const [latencies, setLatencies] = useState([])
   const [itemStart, setItemStart] = useState(Date.now())
   const [shakeStreak, setShakeStreak] = useState(false)
+  const [secondInput, setSecondInput] = useState('')
 
   const inputRef = useRef(null)
+  const firstRef = useRef(null)
+  const secondRef = useRef(null)
   const touchStart = useRef({ x: 0, y: 0 })
   const settings = useSettings()
   const [resistTick, setResistTick] = useState(0)
@@ -35,13 +38,15 @@ export default function Drill({
   // Reset input when currentItem changes
   useEffect(() => {
     setInput('')
+    setSecondInput('')
     // IMPORTANTE: NO resetear el resultado aquí
     setHint('')
     setItemStart(Date.now())
     
     // Focus the input when a new item is loaded
-    if (inputRef.current && !result) {
-      inputRef.current.focus()
+    if (!result) {
+      if (settings.doubleActive && firstRef.current) firstRef.current.focus()
+      else if (inputRef.current) inputRef.current.focus()
     }
   }, [currentItem?.id, result])
 
@@ -124,14 +129,65 @@ export default function Drill({
     }
   }
 
+  const doubleSubmit = () => {
+    if (!input.trim() || !secondInput.trim() || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      const firstRes = grade(input.trim(), currentItem.form, currentItem.settings || {})
+      // Use explicit second target from secondForm if present, otherwise fall back to same as first
+      const secondTarget = currentItem.secondForm ? { ...currentItem.secondForm } : { ...currentItem.form }
+      const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { correct: false }
+      const correct = firstRes.correct && secondRes.correct
+      const resultObj = {
+        correct,
+        isAccentError: firstRes.isAccentError || secondRes.isAccentError,
+        targets: [currentItem.form.value, secondTarget.value]
+      }
+      setResult(resultObj)
+      onResult(resultObj)
+      const elapsed = Date.now() - itemStart
+      setLatencies(v => [...v, elapsed])
+      if (correct) {
+        setLocalCorrect(c => c + 1)
+        setCurrentStreak(s => {
+          const ns = s + 1
+          setBestStreak(b => Math.max(b, ns))
+          if (ns > 0 && ns % 5 === 0) {
+            setShakeStreak(true)
+            setTimeout(() => setShakeStreak(false), 500)
+          }
+          return ns
+        })
+      } else {
+        setCurrentStreak(0)
+        setErrorsCount(e => e + 1)
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   // Handle keyboard events for non-input elements
   useEffect(() => {
     const handleKeyPress = (e) => {
       // Only handle Enter if not in an input field
       if (e.key === 'Enter' && e.target.tagName !== 'INPUT') {
         e.preventDefault()
-        if (!result) {
-          handleSubmit()
+          if (!result) {
+          if (isDouble) {
+            // If double mode, guide focus then submit
+            if (document.activeElement !== firstRef.current && document.activeElement !== secondRef.current) {
+              if (firstRef.current) firstRef.current.focus()
+            } else if (document.activeElement === firstRef.current) {
+              if (secondRef.current) secondRef.current.focus()
+            } else if (document.activeElement === secondRef.current) {
+              doubleSubmit()
+            }
+          } else if (isReverse) {
+            reverseSubmit()
+          } else {
+            handleSubmit()
+          }
         } else {
           handleContinue()
         }
@@ -161,22 +217,24 @@ export default function Drill({
     }
   }
 
-  // Accent keypad logic
+  // Accent keypad logic (works in single and double)
   const specialChars = ['á','é','í','ó','ú','ü','ñ']
   const insertChar = (ch) => {
-    if (!inputRef.current) return
-    const el = inputRef.current
-    const start = el.selectionStart ?? input.length
-    const end = el.selectionEnd ?? input.length
-    const next = input.slice(0, start) + ch + input.slice(end)
-    setInput(next)
-    // restore caret after state applies
+    const active = document.activeElement
+    let el = null
+    if (active === secondRef.current) el = secondRef.current
+    else if (active === firstRef.current) el = firstRef.current
+    else el = inputRef.current
+    if (!el) return
+    const value = el.value ?? ''
+    const start = el.selectionStart ?? value.length
+    const end = el.selectionEnd ?? value.length
+    const next = value.slice(0, start) + ch + value.slice(end)
+    if (el === secondRef.current) setSecondInput(next)
+    else setInput(next)
     requestAnimationFrame(() => {
-      if (inputRef.current) {
-        const pos = start + ch.length
-        inputRef.current.setSelectionRange(pos, pos)
-        inputRef.current.focus()
-      }
+      try { el.setSelectionRange(start + ch.length, start + ch.length) } catch {}
+      el.focus()
     })
   }
 
@@ -375,6 +433,7 @@ export default function Drill({
   }
 
   const isReverse = !!settings.reverseActive
+  const isDouble = !!settings.doubleActive
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
 
   // Campos visibles según modo
@@ -455,14 +514,14 @@ export default function Drill({
       </div>
 
       {/* Conjugation context - MIDDLE */}
-      {!isReverse && (
+      {!isReverse && !isDouble && (
         <div className="conjugation-context">
           {getContextText()}
         </div>
       )}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}
-      {!isReverse && currentItem.mood !== 'nonfinite' && (
+      {!isReverse && !isDouble && currentItem.mood !== 'nonfinite' && (
         <div className="person-display">
           {getPersonText()}
           {(() => {
@@ -479,7 +538,7 @@ export default function Drill({
       {false && <div />}
 
       {/* Input form */}
-      {!isReverse && (
+      {!isReverse && !isDouble && (
       <div className="input-container">
         <input
           ref={inputRef}
@@ -574,6 +633,69 @@ export default function Drill({
         </div>
       )}
 
+      {isDouble && (
+        <div className="double-container">
+          <div className="conjugation-context" style={{marginBottom: '10px'}}>Conjugá dos juntos</div>
+          <div className="double-grid">
+            <div className="double-field">
+              <div className="person-display" style={{marginBottom: '6px'}}>{getMoodLabel(currentItem.mood)} · {getTenseLabel(currentItem.tense)} · {getPersonText()}</div>
+              <input
+                ref={firstRef}
+                className="conjugation-input"
+                value={input}
+                onChange={(e)=>setInput(e.target.value)}
+                placeholder="Escribí la primera forma..."
+                onKeyDown={(e)=>{
+                  if(e.key==='Enter'){
+                    e.preventDefault()
+                    if (result) { handleContinue(); return }
+                    if(secondRef.current){ secondRef.current.focus() }
+                  }
+                }}
+              />
+            </div>
+            <div className="double-field">
+              <div className="person-display" style={{marginBottom: '6px'}}>{getMoodLabel((currentItem.secondForm||currentItem.form).mood)} · {getTenseLabel((currentItem.secondForm||currentItem.form).tense)} · {getPersonText()}</div>
+              <input
+                ref={secondRef}
+                className="conjugation-input"
+                value={secondInput}
+                onChange={(e)=>setSecondInput(e.target.value)}
+                placeholder="Escribí la segunda forma..."
+                onKeyDown={(e)=>{
+                  if(e.key==='Enter'){
+                    e.preventDefault()
+                    if (result) { handleContinue(); return }
+                    doubleSubmit()
+                  }
+                }}
+              />
+            </div>
+          </div>
+          {showAccentKeys && (
+            <div className="accent-keypad" aria-hidden={result !== null}>
+              {specialChars.map(ch => (
+                <button
+                  key={ch}
+                  type="button"
+                  className="accent-key"
+                  onClick={() => insertChar(ch)}
+                  tabIndex={-1}
+                >{ch}</button>
+              ))}
+              <button
+                type="button"
+                className="accent-key hint-key"
+                onClick={revealHint}
+                title="Pista"
+                tabIndex={-1}
+              >?
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Micro-drills controls & progress */}
       {showChallenges && (
         <div className="chrono-panel">
@@ -609,7 +731,7 @@ export default function Drill({
 
       {/* Action buttons */}
       <div className="action-buttons">
-        {!isReverse ? (
+        {!isReverse && !isDouble ? (
           !result ? (
             <button 
               className="btn" 
@@ -623,12 +745,26 @@ export default function Drill({
               {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
             </button>
           )
-        ) : (
+        ) : isReverse ? (
           !result ? (
             <button 
               className="btn" 
               onClick={reverseSubmit}
               disabled={!(infinitiveGuess.trim() && personGuess && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
+            >
+              Verificar
+            </button>
+          ) : (
+            <button className="btn" onClick={handleContinue}>
+              Continuar
+            </button>
+          )
+        ) : (
+          !result ? (
+            <button 
+              className="btn" 
+              onClick={doubleSubmit}
+              disabled={!(input.trim() && secondInput.trim())}
             >
               Verificar
             </button>

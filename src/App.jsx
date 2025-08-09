@@ -45,7 +45,7 @@ function App() {
     setShowAccentKeys(false)
     setShowGames(false)
     settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
-    settings.set({ reverseActive: false })
+    settings.set({ reverseActive: false, doubleActive: false })
   }
 
   const allFormsForRegion = useMemo(() => {
@@ -229,6 +229,73 @@ function App() {
         person: nextForm.person,
         form: { ...nextForm }, // Create new form object
         settings: { ...settings } // Include settings for grading
+      }
+      // Modo doble: asegurar SIEMPRE una segunda forma distinta (mood/tense y valor) del mismo verbo y persona dentro del inventario del nivel
+      if (useSettings.getState().doubleActive) {
+        try {
+          const lvl = useSettings.getState().level || 'B1'
+          const normalize = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+          const allowedCombos = new Set()
+          getAvailableMoodsForLevel(lvl).forEach(m => {
+            getAvailableTensesForLevelAndMood(lvl, m).forEach(t => allowedCombos.add(`${m}|${t}`))
+          })
+          // Pool de todas las formas válidas para el mismo lema/persona
+          const pool = allFormsForRegion.filter(f =>
+            f.lemma === nextForm.lemma &&
+            f.person === nextForm.person &&
+            allowedCombos.has(`${f.mood}|${f.tense}`)
+          )
+          // Filtrar duplicados exactos por mood/tense y por valor
+          const unique = []
+          const seenCombos = new Set()
+          const seenVals = new Set()
+          for (const f of pool) {
+            const combo = `${f.mood}|${f.tense}`
+            const val = normalize(f.value)
+            if (seenCombos.has(combo)) continue
+            if (seenVals.has(val)) continue
+            seenCombos.add(combo)
+            seenVals.add(val)
+            unique.push(f)
+          }
+          // Elegir dos distintas. Si el nextForm no está en unique (por normalización), inclúyelo como primera
+          const baseIdx = unique.findIndex(u => u.mood===nextForm.mood && u.tense===nextForm.tense && normalize(u.value)===normalize(nextForm.value))
+          let first = baseIdx>=0 ? unique[baseIdx] : nextForm
+          // Armar candidatos para segunda que difieran por combo y valor
+          const secondCandidates = unique.filter(u => !(u.mood===first.mood && u.tense===first.tense) && normalize(u.value)!==normalize(first.value))
+          if (secondCandidates.length >= 1) {
+            // Preferir distinto mood si hay
+            const diffMood = secondCandidates.filter(u => u.mood !== first.mood)
+            const pool2 = diffMood.length ? diffMood : secondCandidates
+            const second = pool2[Math.floor(Math.random() * pool2.length)]
+            // Ajustar el item base para que coincida exactamente con 'first'
+            newItem.mood = first.mood
+            newItem.tense = first.tense
+            newItem.person = first.person
+            newItem.form = { ...first }
+            newItem.secondForm = { ...second }
+          } else {
+            // Si no hay par válido, intentar buscar otro par en todo el pool con al menos dos entradas
+            if (unique.length >= 2) {
+              // Elegir dos distintas al azar
+              const i = Math.floor(Math.random()*unique.length)
+              let j = Math.floor(Math.random()*unique.length)
+              if (j===i) j = (j+1)%unique.length
+              const a = unique[i]
+              const b = unique[j]
+              newItem.mood = a.mood
+              newItem.tense = a.tense
+              newItem.person = a.person
+              newItem.form = { ...a }
+              newItem.secondForm = { ...b }
+            } else {
+              // No hay forma de componer el doble de manera válida → no setear secondForm (el UI caerá a single)
+              newItem.secondForm = undefined
+            }
+          }
+        } catch (e) {
+          console.warn('Double mode pairing error:', e)
+        }
       }
       setCurrentItem(newItem)
     } else {
@@ -1431,13 +1498,13 @@ function App() {
               }} aria-label="Survivor">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <img src="/zombie.png" alt="Survivor" className="game-icon" />
-                  <p className="conjugation-example" style={{ margin: 0 }}>Modo resistencia</p>
+                  <p className="conjugation-example" style={{ margin: 0 }}>Modo supervivencia</p>
                 </div>
               </div>
               <div className="option-card compact" onClick={() => {
                 // Toggle reverse mode
                 const active = !!useSettings.getState().reverseActive
-                settings.set({ reverseActive: !active })
+                settings.set({ reverseActive: !active, doubleActive: false })
                 setShowGames(false)
               }} aria-label="Reverso">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -1445,7 +1512,12 @@ function App() {
                   <p className="conjugation-example" style={{ margin: 0 }}>Invertí la consigna</p>
                 </div>
               </div>
-              <div className="option-card compact" onClick={() => { /* TODO: Doble */ }} aria-label="Conjugá dos juntos">
+              <div className="option-card compact" onClick={() => {
+                // Toggle double mode
+                const active = !!useSettings.getState().doubleActive
+                settings.set({ doubleActive: !active, reverseActive: false })
+                setShowGames(false)
+              }} aria-label="Conjugá dos juntos">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
                   <p className="conjugation-example" style={{ margin: 0 }}>Conjugá dos juntos</p>
