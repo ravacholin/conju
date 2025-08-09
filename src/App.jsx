@@ -1344,9 +1344,11 @@ function App() {
           <div className="games-panel quick-switch-panel">
             <h3>Juegos</h3>
             <div className="options-grid">
-              <div className="option-card compact" onClick={() => { /* TODO: Survivor */ }}>
-                <h3>Survivor</h3>
-                <p className="conjugation-example">Modo resistencia</p>
+              <div className="option-card compact" onClick={() => { /* TODO: Survivor */ }} aria-label="Survivor">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <img src="/zombie.png" alt="Survivor" className="game-icon" />
+                  <p className="conjugation-example" style={{ margin: 0 }}>Modo resistencia</p>
+                </div>
               </div>
               <div className="option-card compact" onClick={() => { /* TODO: Reverso */ }}>
                 <h3>Reverso</h3>
@@ -1360,7 +1362,7 @@ function App() {
             <div style={{ textAlign: 'right' }}>
               <button className="btn btn-secondary" onClick={() => setShowGames(false)}>Cerrar</button>
             </div>
-          </div>
+            </div>
         )}
 
         <main className="main-content">

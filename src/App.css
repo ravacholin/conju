@@ -238,6 +238,7 @@ body {
 }
 .option-card.compact h3 { margin: 0; font-size: 1.2rem; }
 .option-card.compact .conjugation-example { margin: 0; font-size: 0.95rem; opacity: 0.85; }
+.game-icon{ width: 32px; height: 32px; object-fit: contain; }
 
 @media (max-width: 560px) {
   .option-card.compact { flex-direction: column; align-items: flex-start; }
