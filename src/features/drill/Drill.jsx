@@ -112,8 +112,10 @@ export default function Drill({
           })
           // Resistance: add time on correct
           if (settings.resistanceActive) {
-            const bonus = 5000 // ms per correct
-            settings.set({ resistanceMsLeft: Math.min(useSettings.getState().resistanceMsLeft + bonus, 120000) })
+            const lvl = useSettings.getState().level || 'A1'
+            // Incrementos por nivel: A1 +6s, A2 +5s, B1 +4s, B2 +3s, C1 +2.5s, C2 +2s
+            const inc = lvl==='C2'?2000: lvl==='C1'?2500: lvl==='B2'?3000: lvl==='B1'?4000: lvl==='A2'?5000:6000
+            settings.set({ resistanceMsLeft: Math.min(useSettings.getState().resistanceMsLeft + inc, 120000) })
           }
         } else {
           setCurrentStreak(0)
@@ -828,7 +830,7 @@ export default function Drill({
               ))
             })()}
           </div>
-          <div className="resistance-caption">Modo Resistencia</div>
+          <div className="resistance-caption">Modo Supervivencia</div>
         </div>
       )}
     </div>

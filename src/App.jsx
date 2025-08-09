@@ -272,73 +272,95 @@ function App() {
         form: { ...nextForm }, // Create new form object
         settings: { ...settings } // Include settings for grading
       }
-      // Modo doble: asegurar SIEMPRE una segunda forma distinta (mood/tense y valor) del mismo verbo y persona dentro del inventario del nivel
-      if (useSettings.getState().doubleActive) {
-        try {
-          const lvl = useSettings.getState().level || 'B1'
-          const normalize = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-          const allowedCombos = new Set()
-          getAvailableMoodsForLevel(lvl).forEach(m => {
-            getAvailableTensesForLevelAndMood(lvl, m).forEach(t => allowedCombos.add(`${m}|${t}`))
-          })
-          // Pool de todas las formas válidas para el mismo lema/persona
-          const pool = allFormsForRegion.filter(f =>
-            f.lemma === nextForm.lemma &&
-            f.person === nextForm.person &&
-            allowedCombos.has(`${f.mood}|${f.tense}`)
-          )
-          // Filtrar duplicados exactos por mood/tense y por valor
-          const unique = []
-          const seenCombos = new Set()
-          const seenVals = new Set()
-          for (const f of pool) {
-            const combo = `${f.mood}|${f.tense}`
-            const val = normalize(f.value)
-            if (seenCombos.has(combo)) continue
-            if (seenVals.has(val)) continue
-            seenCombos.add(combo)
-            seenVals.add(val)
-            unique.push(f)
-          }
-          // Elegir dos distintas. Si el nextForm no está en unique (por normalización), inclúyelo como primera
-          const baseIdx = unique.findIndex(u => u.mood===nextForm.mood && u.tense===nextForm.tense && normalize(u.value)===normalize(nextForm.value))
-          let first = baseIdx>=0 ? unique[baseIdx] : nextForm
-          // Armar candidatos para segunda que difieran por combo y valor
-          const secondCandidates = unique.filter(u => !(u.mood===first.mood && u.tense===first.tense) && normalize(u.value)!==normalize(first.value))
-          if (secondCandidates.length >= 1) {
-            // Preferir distinto mood si hay
-            const diffMood = secondCandidates.filter(u => u.mood !== first.mood)
-            const pool2 = diffMood.length ? diffMood : secondCandidates
-            const second = pool2[Math.floor(Math.random() * pool2.length)]
-            // Ajustar el item base para que coincida exactamente con 'first'
-            newItem.mood = first.mood
-            newItem.tense = first.tense
-            newItem.person = first.person
-            newItem.form = { ...first }
-            newItem.secondForm = { ...second }
-          } else {
-            // Si no hay par válido, intentar buscar otro par en todo el pool con al menos dos entradas
-            if (unique.length >= 2) {
-              // Elegir dos distintas al azar
-              const i = Math.floor(Math.random()*unique.length)
-              let j = Math.floor(Math.random()*unique.length)
-              if (j===i) j = (j+1)%unique.length
-              const a = unique[i]
-              const b = unique[j]
-              newItem.mood = a.mood
-              newItem.tense = a.tense
-              newItem.person = a.person
-              newItem.form = { ...a }
-              newItem.secondForm = { ...b }
-            } else {
-              // No hay forma de componer el doble de manera válida → no setear secondForm (el UI caerá a single)
-              newItem.secondForm = undefined
+                          // SOLUCIÓN BULLETPROOF: Modo doble con verificación FINAL
+          if (useSettings.getState().doubleActive) {
+            try {
+              const lvl = useSettings.getState().level || 'B1'
+              
+              // 1. Obtener todas las formas disponibles para el nivel
+              const levelForms = allFormsForRegion.filter(f => {
+                const allowedMoods = getAvailableMoodsForLevel(lvl)
+                const allowedTenses = getAvailableTensesForLevelAndMood(lvl, f.mood)
+                return allowedMoods.includes(f.mood) && allowedTenses.includes(f.tense)
+              })
+              
+              // 2. Crear un mapa de combinaciones únicas mood+tense
+              const uniqueCombos = new Map()
+              for (const f of levelForms) {
+                const key = `${f.mood}|${f.tense}`
+                if (!uniqueCombos.has(key)) {
+                  uniqueCombos.set(key, [])
+                }
+                uniqueCombos.get(key).push(f)
+              }
+              
+              // 3. Convertir a array y mezclar para aleatoriedad
+              const comboKeys = Array.from(uniqueCombos.keys())
+              if (comboKeys.length >= 2) {
+                // Mezclar las combinaciones
+                for (let i = comboKeys.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1))
+                  ;[comboKeys[i], comboKeys[j]] = [comboKeys[j], comboKeys[i]]
+                }
+                
+                // Tomar las primeras dos combinaciones distintas
+                const firstCombo = comboKeys[0]
+                const secondCombo = comboKeys[1]
+                
+                // Obtener formas de cada combinación
+                const firstForms = uniqueCombos.get(firstCombo)
+                const secondForms = uniqueCombos.get(secondCombo)
+                
+                if (firstForms && secondForms) {
+                  // Seleccionar formas aleatorias de cada combinación
+                  const firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
+                  const secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                  
+                  // VERIFICACIÓN FINAL: asegurar que sean DIFERENTES
+                  if (firstForm.mood !== secondForm.mood || firstForm.tense !== secondForm.tense) {
+                    console.log('✅ Double mode - VERIFIED distinct pair:')
+                    console.log('  First:', firstForm.mood, firstForm.tense)
+                    console.log('  Second:', secondForm.mood, secondForm.tense)
+                    
+                    // Actualizar el item principal
+                    newItem.lemma = firstForm.lemma
+                    newItem.mood = firstForm.mood
+                    newItem.tense = firstForm.tense
+                    newItem.person = firstForm.person
+                    newItem.form = { ...firstForm }
+                    
+                    // Agregar la segunda forma
+                    newItem.secondForm = { ...secondForm }
+                  } else {
+                    console.log('❌ CRITICAL ERROR: Forms are the same despite different combos!')
+                    console.log('First combo:', firstCombo)
+                    console.log('Second combo:', secondCombo)
+                    console.log('First form:', firstForm)
+                    console.log('Second form:', secondForm)
+                    
+                    // FALLBACK DE EMERGENCIA: crear dos formas manualmente distintas
+                    const emergencyForms = levelForms.filter(f => 
+                      f.mood !== firstForm.mood || f.tense !== firstForm.tense
+                    )
+                    
+                    if (emergencyForms.length > 0) {
+                      const emergencyForm = emergencyForms[0]
+                      console.log('🚨 Using emergency fallback:', emergencyForm.mood, emergencyForm.tense)
+                      
+                      newItem.lemma = firstForm.lemma
+                      newItem.mood = firstForm.mood
+                      newItem.tense = firstForm.tense
+                      newItem.person = firstForm.person
+                      newItem.form = { ...firstForm }
+                      newItem.secondForm = { ...emergencyForm }
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              console.warn('Double mode pairing error:', e)
             }
           }
-        } catch (e) {
-          console.warn('Double mode pairing error:', e)
-        }
-      }
       setCurrentItem(newItem)
     } else {
       console.error('❌ No valid form found! This might indicate a bug in the generator or insufficient verbs.')
@@ -1553,8 +1575,8 @@ function App() {
                   settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
                 } else {
                   const level = s.level || 'A1'
-                  // A1: 60s, A2: 50s, B1: 40s, B2: 30s, C1: 25s, C2: 20s
-                  const baseMs = level==='C2'?20000: level==='C1'?25000: level==='B2'?30000: level==='B1'?40000: level==='A2'?50000:60000
+                  // Supervivencia: A1 35s, A2 30s, B1 25s, B2 20s, C1 18s, C2 16s
+                  const baseMs = level==='C2'?16000: level==='C1'?18000: level==='B2'?20000: level==='B1'?25000: level==='A2'?30000:35000
                   settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
                 }
                 setShowGames(false)
