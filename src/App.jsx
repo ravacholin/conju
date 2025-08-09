@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSettings } from './state/settings.js'
 import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
@@ -37,6 +37,8 @@ function App() {
   const [showChallenges, setShowChallenges] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
+  const handlingPopRef = useRef(false)
+  const lastPushedRef = useRef({ mode: null, step: null })
   
   // Cierra todos los paneles superiores y desactiva funciones auxiliares
   const closeTopPanelsAndFeatures = () => {
@@ -190,6 +192,46 @@ function App() {
     dlog(`Cached ${acc.length} forms for region ${settings.region}`)
     return acc
   }, [settings.region])
+
+  // History integration: make mobile back gesture act like in-app back
+  useEffect(() => {
+    // Seed initial state
+    try {
+      window.history.replaceState({ app: true, mode: currentMode, step: onboardingStep }, '')
+    } catch {}
+    const onPop = (e) => {
+      const st = e.state
+      if (st && st.app) {
+        handlingPopRef.current = true
+        // Apply app state from history snapshot
+        setShowSettings(false)
+        setCurrentItem(null)
+        closeTopPanelsAndFeatures()
+        setCurrentMode(st.mode || 'onboarding')
+        setOnboardingStep(st.step || 2)
+        // Small delay to re-enable pushing
+        setTimeout(() => { handlingPopRef.current = false }, 0)
+      } else {
+        // Prevent exiting the app: re-push current state
+        try { window.history.pushState({ app: true, mode: currentMode, step: onboardingStep }, '') } catch {}
+      }
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  // Push state on app navigation changes
+  useEffect(() => {
+    if (handlingPopRef.current) return
+    const cur = { mode: currentMode, step: onboardingStep }
+    const last = lastPushedRef.current
+    if (last.mode === cur.mode && last.step === cur.step) return
+    try {
+      window.history.pushState({ app: true, mode: cur.mode, step: cur.step }, '')
+      lastPushedRef.current = cur
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMode, onboardingStep])
 
   // Helpers to build blocks for mixed practice per level
   const pickRandom = (arr, n) => {
