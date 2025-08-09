@@ -1350,9 +1350,11 @@ function App() {
                   <p className="conjugation-example" style={{ margin: 0 }}>Modo resistencia</p>
                 </div>
               </div>
-              <div className="option-card compact" onClick={() => { /* TODO: Reverso */ }}>
-                <h3>Reverso</h3>
-                <p className="conjugation-example">Invertí la consigna</p>
+              <div className="option-card compact" onClick={() => { /* TODO: Reverso */ }} aria-label="Reverso">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <img src="/sobrev.png" alt="Reverso" className="game-icon" />
+                  <p className="conjugation-example" style={{ margin: 0 }}>Invertí la consigna</p>
+                </div>
               </div>
               <div className="option-card compact" onClick={() => { /* TODO: Doble */ }}>
                 <h3>Doble</h3>
