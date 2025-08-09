@@ -24,6 +24,7 @@ export default function Drill({
   const [errorsCount, setErrorsCount] = useState(0)
   const [latencies, setLatencies] = useState([])
   const [itemStart, setItemStart] = useState(Date.now())
+  const [shakeStreak, setShakeStreak] = useState(false)
 
   const inputRef = useRef(null)
   const touchStart = useRef({ x: 0, y: 0 })
@@ -73,6 +74,10 @@ export default function Drill({
           setCurrentStreak(s => {
             const ns = s + 1
             setBestStreak(b => Math.max(b, ns))
+            if (ns > 0 && ns % 5 === 0) {
+              setShakeStreak(true)
+              setTimeout(() => setShakeStreak(false), 500)
+            }
             return ns
           })
         } else {
@@ -425,7 +430,10 @@ export default function Drill({
             <div className="chrono-label">Aciertos</div>
           </div>
           <div className="chrono-item">
-            <div className="chrono-value">{currentStreak}<span className="chrono-sub"> (mejor {bestStreak})</span></div>
+            <div className="chrono-value">
+              <span className={`streak-value streak-tier-${Math.min(6, Math.floor(currentStreak/5))} ${shakeStreak ? 'streak-shake' : ''}`}>{currentStreak}</span>
+              <span className="chrono-sub"> (mejor {bestStreak})</span>
+            </div>
             <div className="chrono-label">Racha</div>
           </div>
           <div className="chrono-item">
@@ -438,7 +446,7 @@ export default function Drill({
               <div className="chrono-label">Mediana</div>
               <div className="chrono-value">
                 {Math.round(([...latencies].sort((a,b)=>a-b)[Math.floor(latencies.length/2)])/10)/100}s
-                {settings.medianTargetMs && (
+                {(settings.level && settings.medianTargetMs) && (
                   <span className="chrono-sub"> / obj {Math.round(settings.medianTargetMs/10)/100}s</span>
                 )}
               </div>

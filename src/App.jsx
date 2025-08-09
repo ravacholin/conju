@@ -34,6 +34,7 @@ function App() {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showChallenges, setShowChallenges] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
+  const [showGames, setShowGames] = useState(false)
 
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
@@ -993,6 +994,13 @@ function App() {
             >
               <img src={enieIcon} alt="Tildes" className="menu-icon" />
             </button>
+            <button
+              onClick={() => setShowGames(prev => !prev)}
+              className="icon-btn"
+              title="Juegos"
+            >
+              <img src="/dice.png" alt="Juegos" className="menu-icon" />
+            </button>
             <button 
               onClick={handleHome}
               className="icon-btn"
@@ -1036,8 +1044,9 @@ function App() {
                 <select 
                   value={settings.level}
                   onChange={(e) => {
-                    settings.set({ level: e.target.value })
-                    // Clear history when changing level
+                    // Apply full level policy (median target, timing, orth, etc.)
+                    selectLevel(e.target.value)
+                    // Clear history when changing level (handled in selectLevel flow)
                     setHistory({})
                     setCurrentItem(null)
                     generateNextItem()
@@ -1329,6 +1338,29 @@ function App() {
               <button className="btn btn-secondary" onClick={() => setShowQuickSwitch(false)}>Cerrar</button>
             </div>
             </div>
+        )}
+
+        {showGames && (
+          <div className="games-panel quick-switch-panel">
+            <h3>Juegos</h3>
+            <div className="options-grid">
+              <div className="option-card compact" onClick={() => { /* TODO: Survivor */ }}>
+                <h3>Survivor</h3>
+                <p className="conjugation-example">Modo resistencia</p>
+              </div>
+              <div className="option-card compact" onClick={() => { /* TODO: Reverso */ }}>
+                <h3>Reverso</h3>
+                <p className="conjugation-example">Invertí la consigna</p>
+              </div>
+              <div className="option-card compact" onClick={() => { /* TODO: Doble */ }}>
+                <h3>Doble</h3>
+                <p className="conjugation-example">Dos respuestas seguidas</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <button className="btn btn-secondary" onClick={() => setShowGames(false)}>Cerrar</button>
+            </div>
+          </div>
         )}
 
         <main className="main-content">

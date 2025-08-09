@@ -133,15 +133,27 @@ export function grade(input, expected, settings){
         isAccentError: false
       }
     }
-    // Heurística de tilde obligatoria con enclíticos en C2: si hay enclítico y longitud>3, exigir vocal tildada
-    if (isImpAff && enclitic && settings.level === 'C2') {
+    // Heurística voseo 2s: 1 clítico → sin tilde; 2 clíticos → con tilde; C2 exigir regla
+    if (isImpAff && expected.person === '2s_vos' && settings.level === 'C2') {
+      const cl = (input.replace(/\s+/g,'').match(/(me|te|se|lo|la|le|nos|los|las|les)+$/i)||[''])[0]
+      const clCount = (cl.match(/(me|te|se|lo|la|le|nos|los|las|les)/gi)||[]).length
       const hasTilde = /[áéíóúÁÉÍÓÚ]/.test(input)
-      if (!hasTilde) {
+      if (clCount === 1 && hasTilde) {
         return {
           correct: false,
           accepted: null,
           targets: [...candidates],
-          note: 'C2: falta tilde en imperativo con enclíticos (p. ej., dámelo, oigámoselo).',
+          note: 'C2: con un clítico en voseo 2ª sg. no lleva tilde (hablame, comeme, vivime).',
+          warnings: wasCorrected ? warnings : null,
+          isAccentError: true
+        }
+      }
+      if (clCount >= 2 && !hasTilde) {
+        return {
+          correct: false,
+          accepted: null,
+          targets: [...candidates],
+          note: 'C2: con dos clíticos en voseo 2ª sg. debe llevar tilde (hablámelo, comémelo, vivímelo).',
           warnings: wasCorrected ? warnings : null,
           isAccentError: true
         }
