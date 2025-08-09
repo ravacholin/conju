@@ -192,9 +192,15 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
+  column-gap: 0.75rem;
 }
 .option-card.compact h3 { margin: 0; font-size: 1.2rem; }
-.option-card.compact .conjugation-example { margin: 0; font-size: 0.85rem; opacity: 0.8; }
+.option-card.compact .conjugation-example { margin: 0; font-size: 0.95rem; opacity: 0.85; }
+
+@media (max-width: 560px) {
+  .option-card.compact { flex-direction: column; align-items: flex-start; }
+  .option-card.compact .conjugation-example { margin-top: 0.3rem; }
+}
 
 .option-card:hover {
   background: var(--hover);
