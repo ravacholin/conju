@@ -979,15 +979,31 @@ function App() {
       <div className="App">
         <header className="header">
           <div className="icon-row">
-          <button 
-              onClick={() => setShowQuickSwitch(prev => !prev)}
+            <button
+              onClick={() => {
+                if (showQuickSwitch) {
+                  setShowQuickSwitch(false)
+                } else {
+                  setShowQuickSwitch(true)
+                  setShowChallenges(false)
+                  setShowGames(false)
+                }
+              }}
               className="icon-btn"
               title="Cambiar rápido"
             >
               <img src={configIcon} alt="Config" className="menu-icon" />
             </button>
             <button
-              onClick={() => setShowChallenges(prev => !prev)}
+              onClick={() => {
+                if (showChallenges) {
+                  setShowChallenges(false)
+                } else {
+                  setShowChallenges(true)
+                  setShowQuickSwitch(false)
+                  setShowGames(false)
+                }
+              }}
               className="icon-btn"
               title="Cronometría"
             >
@@ -1001,7 +1017,15 @@ function App() {
               <img src={enieIcon} alt="Tildes" className="menu-icon" />
             </button>
             <button
-              onClick={() => setShowGames(prev => !prev)}
+              onClick={() => {
+                if (showGames) {
+                  setShowGames(false)
+                } else {
+                  setShowGames(true)
+                  setShowQuickSwitch(false)
+                  setShowChallenges(false)
+                }
+              }}
               className="icon-btn"
               title="Juegos"
             >
@@ -1352,10 +1376,15 @@ function App() {
               <div className="option-card compact" onClick={() => {
                 // Toggle Resistance mode
                 const s = useSettings.getState()
-                const level = s.level || 'A1'
-                // A1: 60s, A2: 50s, B1: 40s, B2: 30s, C1: 25s, C2: 20s
-                const baseMs = level==='C2'?20000: level==='C1'?25000: level==='B2'?30000: level==='B1'?40000: level==='A2'?50000:60000
-                settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
+                if (s.resistanceActive) {
+                  // Deactivate
+                  settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+                } else {
+                  const level = s.level || 'A1'
+                  // A1: 60s, A2: 50s, B1: 40s, B2: 30s, C1: 25s, C2: 20s
+                  const baseMs = level==='C2'?20000: level==='C1'?25000: level==='B2'?30000: level==='B1'?40000: level==='A2'?50000:60000
+                  settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
+                }
                 setShowGames(false)
               }} aria-label="Survivor">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
