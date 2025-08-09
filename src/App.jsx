@@ -40,6 +40,8 @@ function App() {
     const acc = []
     const existingKey = new Set()
     const lemmaToParticiple = new Map()
+    const subjPresByLemma = new Map() // lemma -> Map(person -> value)
+    const lemmaEnding = new Map() // lemma -> ending ('ar'|'er'|'ir')
     for (const verb of verbs) {
       for (const paradigm of verb.paradigms) {
         if (!paradigm.regionTags.includes(settings.region)) continue
@@ -49,6 +51,16 @@ function App() {
           if (form.mood === 'nonfinite' && form.tense === 'part') {
             lemmaToParticiple.set(verb.lemma, form.value)
           }
+          if (form.mood === 'subjunctive' && form.tense === 'subjPres') {
+            if (!subjPresByLemma.has(verb.lemma)) subjPresByLemma.set(verb.lemma, new Map())
+            subjPresByLemma.get(verb.lemma).set(form.person, form.value)
+          }
+        }
+        // cache lemma ending once
+        if (!lemmaEnding.has(verb.lemma)) {
+          if (verb.lemma.endsWith('ar')) lemmaEnding.set(verb.lemma, 'ar')
+          else if (verb.lemma.endsWith('er')) lemmaEnding.set(verb.lemma, 'er')
+          else if (verb.lemma.endsWith('ir')) lemmaEnding.set(verb.lemma, 'ir')
         }
       }
     }
@@ -96,6 +108,52 @@ function App() {
             existingKey.add(key)
           }
         })
+      })
+    })
+
+    // Generate imperative forms from subjunctive present when missing
+    const subjPersons = ['2s_tu','2s_vos','3s','1p','2p_vosotros','3p']
+    verbs.forEach(verb => {
+      const lemma = verb.lemma
+      const subj = subjPresByLemma.get(lemma)
+      if (!subj) return
+      // Affirmative from subjunctive (except special 2s forms)
+      // 3s, 1p, 3p use subjunctive directly
+      ;(['3s','1p','3p']).forEach(p => {
+        const key = `${lemma}|imperative|impAff|${p}`
+        if (!existingKey.has(key)) {
+          const v = subj.get(p)
+          if (v) {
+            acc.push({ lemma, mood: 'imperative', tense: 'impAff', person: p, value: v })
+            existingKey.add(key)
+          }
+        }
+      })
+      // 2p_vosotros affirmative from infinitive: -ar→ad, -er→ed, -ir→id
+      const ending = lemmaEnding.get(lemma)
+      if (ending) {
+        const vosotrosKey = `${lemma}|imperative|impAff|2p_vosotros`
+        if (!existingKey.has(vosotrosKey)) {
+          let v = ''
+          if (ending === 'ar') v = lemma.replace(/ar$/, 'ad')
+          else if (ending === 'er') v = lemma.replace(/er$/, 'ed')
+          else if (ending === 'ir') v = lemma.replace(/ir$/, 'id')
+          if (v) {
+            acc.push({ lemma, mood: 'imperative', tense: 'impAff', person: '2p_vosotros', value: v })
+            existingKey.add(vosotrosKey)
+          }
+        }
+      }
+      // Negative imperative for all persons = 'no ' + subjunctive present
+      subjPersons.forEach(p => {
+        const key = `${lemma}|imperative|impNeg|${p}`
+        if (!existingKey.has(key)) {
+          const v = subj.get(p)
+          if (v) {
+            acc.push({ lemma, mood: 'imperative', tense: 'impNeg', person: p, value: `no ${v}` })
+            existingKey.add(key)
+          }
+        }
       })
     })
     dlog(`Cached ${acc.length} forms for region ${settings.region}`)
