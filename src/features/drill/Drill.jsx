@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { grade } from '../../lib/grader.js'
+import { getTenseLabel, getMoodLabel } from '../../lib/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
 
 
@@ -529,36 +530,47 @@ export default function Drill({
       )}
 
       {isReverse && (
-        <div className="input-container">
-          <div className="setting-group">
-            <label>Infinitivo</label>
-            <input className="conjugation-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} placeholder="escribir, tener..." />
+        <div className="reverse-container">
+          <div className="reverse-badge">Invertí la consigna</div>
+          <div className="reverse-subtle">
+            {inSpecific ? 'Decí el infinitivo y la persona' : 'Decí el infinitivo, la persona, el modo y el tiempo'}
           </div>
-          <div className="setting-group">
-            <label>Persona</label>
-            <select className="setting-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
-              <option value="">Seleccioná persona...</option>
-              {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
-            </select>
-          </div>
-          {showMoodField && (
-            <div className="setting-group">
-              <label>Modo</label>
-              <select className="setting-select" value={moodGuess} onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess('') }}>
-                <option value="">Seleccioná modo...</option>
-                {moodOptions.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
+          <div className="reverse-divider" />
+
+          <div className="reverse-grid">
+            <div className="reverse-field">
+              <label className="reverse-label">Infinitivo</label>
+              <input className="reverse-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} placeholder="escribir, tener..." />
+            </div>
+
+            <div className="reverse-field">
+              <label className="reverse-label">Persona</label>
+              <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
+                <option value="">Seleccioná persona...</option>
+                {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
               </select>
             </div>
-          )}
-          {showTenseField && (
-            <div className="setting-group">
-              <label>Tiempo</label>
-              <select className="setting-select" value={tenseGuess} onChange={(e)=>setTenseGuess(e.target.value)} disabled={!moodGuess}>
-                <option value="">Seleccioná tiempo...</option>
-                {(tenseOptionsByMood[moodGuess]||[]).map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-          )}
+
+            {showMoodField && (
+              <div className="reverse-field">
+                <label className="reverse-label">Modo</label>
+                <select className="reverse-select" value={moodGuess} onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess('') }}>
+                  <option value="">Seleccioná modo...</option>
+                  {moodOptions.map(m => <option key={m.v} value={m.v}>{getMoodLabel(m.v)}</option>)}
+                </select>
+              </div>
+            )}
+
+            {showTenseField && (
+              <div className="reverse-field">
+                <label className="reverse-label">Tiempo</label>
+                <select className="reverse-select" value={tenseGuess} onChange={(e)=>setTenseGuess(e.target.value)} disabled={!moodGuess}>
+                  <option value="">Seleccioná tiempo...</option>
+                  {(tenseOptionsByMood[moodGuess]||[]).map(t => <option key={t} value={t}>{getTenseLabel(t)}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
