@@ -343,8 +343,8 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('la_general')}>
-                    <h3>Latinoamericano General</h3>
-                    <p>La mayoría de América Latina</p>
+                    <h3>Latinoamérica</h3>
+                    <p>México, Perú, Cuba, etc.</p>
                     <p className="example">tú tienes, tú hablas</p>
                   </div>
                   
@@ -356,7 +356,7 @@ function App() {
                   
                   <div className="option-card" onClick={() => selectDialect('both')}>
                     <h3>Todas las Formas</h3>
-                    <p>Tú, vos, vosotros y todas las variantes</p>
+                    <p>Tú, vos, y vosotros</p>
                     <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
                   </div>
                 </div>
@@ -366,11 +366,6 @@ function App() {
             {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
-                <div className="breadcrumb">
-                  <span className="crumb">Inicio</span>
-                  <span className="sep">/</span>
-                  <span className="current">¿Qué querés practicar?</span>
-                </div>
                 <h2>¿Qué querés practicar?</h2>
                 <p>Elegí tu nivel o trabajá formas específicas:</p>
                 
@@ -760,7 +755,7 @@ function App() {
                   className="setting-select"
                 >
                   <option value="rioplatense">Español Rioplatense</option>
-                  <option value="la_general">Latinoamericano General</option>
+                  <option value="la_general">Latinoamérica</option>
                   <option value="peninsular">Español Peninsular</option>
                   <option value="both">Todas las Formas</option>
                 </select>
