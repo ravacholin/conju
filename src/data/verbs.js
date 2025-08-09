@@ -9070,7 +9070,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
-            "value": "ve"
+            "value": "andá"
           },
           {
             "mood": "imperative",

@@ -98,7 +98,7 @@ export function chooseNext({forms, history}){
           clog(`❌ Form ${f.lemma} ${f.person} filtered out - rioplatense doesn't use vosotros`)
           return false
         }
-        // Show ALL other persons: 1s, 2s_vos, 3s, 1p, 3p
+        // Show ALL other persons (imperative also includes 1p and 3p, exclude 2p_vosotros)
         clog(`✅ Form ${f.lemma} ${f.person} included for rioplatense specific practice`)
       } else if (useTuteo && !useVoseo) {
         // General Latin American: show ALL persons but replace vos with tú, exclude vosotros
@@ -110,7 +110,7 @@ export function chooseNext({forms, history}){
           clog(`❌ Form ${f.lemma} ${f.person} filtered out - general LA doesn't use vosotros`)
           return false
         }
-        // Show ALL other persons: 1s, 2s_tu, 3s, 1p, 3p
+        // Show ALL other persons (imperative also includes 1p and 3p)
         clog(`✅ Form ${f.lemma} ${f.person} included for general LA specific practice`)
       } else if (useVosotros) {
         // Peninsular: show ALL persons but replace vos with tú
@@ -118,7 +118,7 @@ export function chooseNext({forms, history}){
           clog(`❌ Form ${f.lemma} ${f.person} filtered out - peninsular uses tú instead of vos`)
           return false
         }
-        // Show ALL other persons: 1s, 2s_tu, 3s, 1p, 2p_vosotros, 3p
+        // Show ALL other persons
         clog(`✅ Form ${f.lemma} ${f.person} included for peninsular specific practice`)
       } else {
         // Both forms: show ALL persons
@@ -688,7 +688,8 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
     if (mood === 'imperative') {
       if (tense === 'impAff') {
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ir', 'e'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'é'))) return true
+        // Voseo afirmativo regular en verbos -ir termina en -í (viví), no -é
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace('ir', 'í'))) return true
         if (person === '3s' && normalizedValue === normalize(lemma.replace('ir', 'a'))) return true
         if (person === '1p' && normalizedValue === normalize(lemma.replace('ir', 'amos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'id'))) return true
