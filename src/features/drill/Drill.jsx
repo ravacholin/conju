@@ -373,20 +373,95 @@ export default function Drill({
     return tokens.join(' ')
   }
 
+  const isReverse = !!settings.reverseActive
+  const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
+
+  // Campos visibles según modo
+  const showInfinitiveField = isReverse
+  const showPersonField = isReverse
+  const showMoodField = isReverse && !inSpecific
+  const showTenseField = isReverse && !inSpecific
+
+  const [infinitiveGuess, setInfinitiveGuess] = useState('')
+  const [personGuess, setPersonGuess] = useState('')
+  const [moodGuess, setMoodGuess] = useState('')
+  const [tenseGuess, setTenseGuess] = useState('')
+
+  const resetReverseInputs = () => {
+    setInfinitiveGuess('')
+    setPersonGuess('')
+    setMoodGuess('')
+    setTenseGuess('')
+  }
+
+  useEffect(() => { if (isReverse) resetReverseInputs() }, [currentItem?.id, isReverse])
+
+  const personOptions = [
+    { v:'1s', l:'yo' },
+    { v:'2s_tu', l:'tú' },
+    { v:'2s_vos', l:'vos' },
+    { v:'3s', l:'él/ella/usted' },
+    { v:'1p', l:'nosotros' },
+    { v:'2p_vosotros', l:'vosotros' },
+    { v:'3p', l:'ellos/ustedes' }
+  ]
+
+  const moodOptions = [
+    { v:'indicative', l:'Indicativo' },
+    { v:'subjunctive', l:'Subjuntivo' },
+    { v:'imperative', l:'Imperativo' },
+    { v:'conditional', l:'Condicional' },
+    { v:'nonfinite', l:'No Finito' }
+  ]
+
+  const tenseOptionsByMood = {
+    indicative: ['pres','pretPerf','pretIndef','impf','plusc','fut','futPerf'],
+    subjunctive: ['subjPres','subjImpf','subjPerf','subjPlusc'],
+    imperative: ['impAff','impNeg','impMixed'],
+    conditional: ['cond','condPerf'],
+    nonfinite: ['ger','part','nonfiniteMixed']
+  }
+
+  const reverseSubmit = () => {
+    // Validar
+    if (!infinitiveGuess.trim()) return
+    if (!personGuess) return
+    if (showMoodField && !moodGuess) return
+    if (showTenseField && !tenseGuess) return
+
+    // Comprobar contra currentItem.form
+    const expected = currentItem.form
+    const okInf = expected.lemma ? expected.lemma.toLowerCase() === infinitiveGuess.trim().toLowerCase() : false
+    const okPerson = expected.person ? expected.person === personGuess : false
+    const okMood = showMoodField ? expected.mood === moodGuess : true
+    const okTense = showTenseField ? expected.tense === tenseGuess : true
+    const correct = okInf && okPerson && okMood && okTense
+
+    const resultObj = {
+      correct,
+      isAccentError: false,
+      targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`]
+    }
+    setResult(resultObj)
+    onResult(resultObj)
+  }
+
   return (
     <div className="drill-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {/* Verb lemma (infinitive) - TOP */}
       <div className="verb-lemma">
-        {currentItem.lemma}
+        {isReverse ? currentItem.form?.value : currentItem.lemma}
       </div>
 
       {/* Conjugation context - MIDDLE */}
-      <div className="conjugation-context">
-        {getContextText()}
-      </div>
+      {!isReverse && (
+        <div className="conjugation-context">
+          {getContextText()}
+        </div>
+      )}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}
-      {currentItem.mood !== 'nonfinite' && (
+      {!isReverse && currentItem.mood !== 'nonfinite' && (
         <div className="person-display">
           {getPersonText()}
           {(() => {
@@ -403,6 +478,7 @@ export default function Drill({
       {false && <div />}
 
       {/* Input form */}
+      {!isReverse && (
       <div className="input-container">
         <input
           ref={inputRef}
@@ -450,6 +526,41 @@ export default function Drill({
           <div className="hint-text">{hint}</div>
         )}
       </div>
+      )}
+
+      {isReverse && (
+        <div className="input-container">
+          <div className="setting-group">
+            <label>Infinitivo</label>
+            <input className="conjugation-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} placeholder="escribir, tener..." />
+          </div>
+          <div className="setting-group">
+            <label>Persona</label>
+            <select className="setting-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
+              <option value="">Seleccioná persona...</option>
+              {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
+            </select>
+          </div>
+          {showMoodField && (
+            <div className="setting-group">
+              <label>Modo</label>
+              <select className="setting-select" value={moodGuess} onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess('') }}>
+                <option value="">Seleccioná modo...</option>
+                {moodOptions.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
+              </select>
+            </div>
+          )}
+          {showTenseField && (
+            <div className="setting-group">
+              <label>Tiempo</label>
+              <select className="setting-select" value={tenseGuess} onChange={(e)=>setTenseGuess(e.target.value)} disabled={!moodGuess}>
+                <option value="">Seleccioná tiempo...</option>
+                {(tenseOptionsByMood[moodGuess]||[]).map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Micro-drills controls & progress */}
       {showChallenges && (
@@ -486,18 +597,34 @@ export default function Drill({
 
       {/* Action buttons */}
       <div className="action-buttons">
-        {!result ? (
-          <button 
-            className="btn" 
-            onClick={handleSubmit}
-            disabled={isSubmitting || !input.trim()}
-          >
-            {isSubmitting ? 'Verificando...' : 'Verificar'}
-          </button>
+        {!isReverse ? (
+          !result ? (
+            <button 
+              className="btn" 
+              onClick={handleSubmit}
+              disabled={isSubmitting || !input.trim()}
+            >
+              {isSubmitting ? 'Verificando...' : 'Verificar'}
+            </button>
+          ) : (
+            <button className="btn" onClick={handleContinue}>
+              {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
+            </button>
+          )
         ) : (
-          <button className="btn" onClick={handleContinue}>
-            {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
-          </button>
+          !result ? (
+            <button 
+              className="btn" 
+              onClick={reverseSubmit}
+              disabled={!(infinitiveGuess.trim() && personGuess && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
+            >
+              Verificar
+            </button>
+          ) : (
+            <button className="btn" onClick={handleContinue}>
+              Continuar
+            </button>
+          )
         )}
       </div>
 

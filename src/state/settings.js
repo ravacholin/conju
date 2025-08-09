@@ -31,6 +31,8 @@ export const useSettings = create((set) => ({
   resistanceMsLeft: 0,
   resistanceStartTs: null,
   resistanceBestMsByLevel: {},
+  // Reverse mode (Reverso)
+  reverseActive: false,
   region: 'la_general',  // 'rioplatense' | 'peninsular' | 'la_general'
   practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only'
   showPronouns: false,   // Show pronouns for early learning
