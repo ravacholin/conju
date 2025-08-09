@@ -37,6 +37,15 @@ function App() {
   const [showChallenges, setShowChallenges] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
+  
+  // Cierra todos los paneles superiores y desactiva funciones auxiliares
+  const closeTopPanelsAndFeatures = () => {
+    setShowQuickSwitch(false)
+    setShowChallenges(false)
+    setShowAccentKeys(false)
+    setShowGames(false)
+    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+  }
 
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
@@ -278,12 +287,14 @@ function App() {
     // Clear history when starting new practice
     setHistory({})
     setCurrentItem(null)
-    // Turn off Resistance by default
-    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+    // Cerrar paneles y desactivar funciones auxiliares
+    closeTopPanelsAndFeatures()
     setCurrentMode('drill')
   }
 
   const selectDialect = (dialect) => {
+    // Al elegir variedad, aseguramos que todos los paneles superiores estén cerrados
+    closeTopPanelsAndFeatures()
     switch (dialect) {
       case 'rioplatense':
         settings.set({
@@ -327,6 +338,8 @@ function App() {
   }
 
   const selectLevel = (level) => {
+    // Al elegir nivel, cerramos paneles y funciones auxiliares
+    closeTopPanelsAndFeatures()
     // Apply level-specific policies
     const updates = { level }
     if (level === 'A1') {
@@ -430,6 +443,8 @@ function App() {
   }
 
   const selectPracticeMode = (mode) => {
+    // Al elegir modo de práctica desde onboarding, cerramos paneles
+    closeTopPanelsAndFeatures()
     settings.set({ practiceMode: mode })
     if (mode === 'mixed') {
       setOnboardingStep(5) // Go to verb type selection for mixed practice
@@ -443,6 +458,8 @@ function App() {
   }
 
   const selectMood = (mood) => {
+    // Cerrar paneles al fijar modo
+    closeTopPanelsAndFeatures()
     console.log('selectMood called with:', mood)
     console.log('Current settings:', settings)
     settings.set({ specificMood: mood })
@@ -460,6 +477,8 @@ function App() {
   }
 
   const selectTense = (tense) => {
+    // Cerrar paneles al fijar tiempo
+    closeTopPanelsAndFeatures()
     settings.set({ specificTense: tense })
     
     // Clear history when changing tense
@@ -474,6 +493,8 @@ function App() {
   }
 
   const selectVerbType = (verbType) => {
+    // Cerrar paneles al fijar tipo de verbo
+    closeTopPanelsAndFeatures()
     const updates = { verbType }
     // Initialize mixed-practice blocks per level
     const lvl = settings.level
@@ -511,8 +532,8 @@ function App() {
     setCurrentItem(null)
     setHistory({})
     setShowSettings(false)
-    // Turn off Resistance on leaving drill
-    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+    // Cerrar paneles y desactivar funciones auxiliares
+    closeTopPanelsAndFeatures()
   }
 
   // Function to get available moods for a specific level
@@ -606,6 +627,8 @@ function App() {
                       <div className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
                       </div>
+                      { /* Garantizar que al entrar al menú todo esté cerrado */ }
+                      { showQuickSwitch || showChallenges || showAccentKeys || showGames ? closeTopPanelsAndFeatures() : null }
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
@@ -654,9 +677,22 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => {
-                    console.log('Formas Específicas clicked - setting practiceMode to specific')
-                    settings.set({ practiceMode: 'specific', level: 'C2' })
-                    console.log('Settings after setting practiceMode:', settings)
+                    // Formas específicas con inventario completo pero dificultad media
+                    settings.set({ practiceMode: 'specific', level: 'ALL' })
+                    settings.set({
+                      strict: true,
+                      accentTolerance: 'warn',
+                      requireDieresis: false,
+                      blockNonNormativeSpelling: false,
+                      cliticStrictness: 'low',
+                      cliticsPercent: 0,
+                      neutralizePronoun: false,
+                      rotateSecondPerson: false,
+                      timeMode: 'soft',
+                      perItemMs: 6000,
+                      medianTargetMs: 3000,
+                      allowedLemmas: null
+                    })
                     setOnboardingStep(5)
                   }}>
                     <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
@@ -709,6 +745,11 @@ function App() {
                     <h3>C2 - Superior</h3>
                     <p>Usás recursos idiomáticos y tonos variados con dominio casi nativo.</p>
                     <p className="example">Todas las formas verbales</p>
+                  </div>
+                    <div className="option-card" onClick={() => selectLevel('ALL')}>
+                      <h3>Libre</h3>
+                      <p>Elegí cualquier forma sin aumentar la dificultad</p>
+                      <p className="example">Inventario completo, dificultad media</p>
                   </div>
                 </div>
                 
@@ -979,8 +1020,8 @@ function App() {
       <div className="App">
         <header className="header">
           <div className="icon-row">
-            <button
-              onClick={() => {
+          <button 
+            onClick={() => {
                 if (showQuickSwitch) {
                   setShowQuickSwitch(false)
                 } else {
