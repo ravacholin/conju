@@ -49,7 +49,8 @@ function isVerbTypeAllowedForLevel(verbType, level) {
 export function chooseNext({forms, history}){
   const { 
     level, useVoseo, useTuteo, useVosotros,
-    practiceMode, specificMood, specificTense, practicePronoun, verbType
+    practiceMode, specificMood, specificTense, practicePronoun, verbType,
+    currentBlock
   } = useSettings.getState()
   
   clog('=== GENERATOR DEBUG ===')
@@ -73,13 +74,25 @@ export function chooseNext({forms, history}){
     clog(`\n--- Checking form: ${f.lemma} ${f.mood} ${f.tense} ${f.person} ---`)
     
     // Level filtering (O(1) with precomputed set)
-    const allowed = getAllowedCombosForLevel(level)
+    // Determine allowed combos: from current block if set, else level
+    const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
+      ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
+      : getAllowedCombosForLevel(level)
     if(!allowed.has(`${f.mood}|${f.tense}`)) {
       clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out by level gate`)
       return false
     }
     clog(`✅ Level gate passed`)
     
+    // Gate futuro de subjuntivo por toggle de producción
+    const sAll = useSettings.getState()
+    if (f.mood === 'subjunctive' && (f.tense === 'subjFut' || f.tense === 'subjFutPerf')) {
+      if (!sAll.enableFuturoSubjProd) {
+        clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - subjFut production disabled`)
+        return false
+      }
+    }
+
     // Person filtering (dialect) - exclude forms not used in the selected dialect
     clog(`🔍 DIALECT FILTERING: ${f.person} - useVoseo=${useVoseo}, useTuteo=${useTuteo}, useVosotros=${useVosotros}`)
     
@@ -177,7 +190,38 @@ export function chooseNext({forms, history}){
       console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
       return false
     }
+
+    // Additional per-level constraints
+    // C1: en presente e indefinido, solo irregulares
+    if (level === 'C1') {
+      if (f.mood === 'indicative' && (f.tense === 'pres' || f.tense === 'pretIndef')) {
+        if (verb.type !== 'irregular') {
+          clog(`❌ Form ${f.lemma} filtered out - C1 present/indef only irregulars`)
+          return false
+        }
+      }
+    }
+
+    // B2+: bloquear personas imposibles para defectivos/unipersonales
+    if (level === 'B2' || level === 'C1' || level === 'C2') {
+      const UNIPERSONALES = new Set(['llover','nevar','granizar','amanecer'])
+      if (UNIPERSONALES.has(f.lemma)) {
+        if (!(f.person === '3s' || f.person === '3p')) {
+          clog(`❌ Form ${f.lemma} filtered out - unipersonal person blocked at ${level}`)
+          return false
+        }
+      }
+    }
     
+    // Restrict lemmas if configured by level/packs
+    if (useSettings.getState().allowedLemmas) {
+      const set = useSettings.getState().allowedLemmas
+      if (!set.has(f.lemma)) {
+        clog(`❌ Form ${f.lemma} filtered out - lemma not allowed by level pack`)
+        return false
+      }
+    }
+
     // Then check user's verb type preference
     // isCompoundTense defined above
     if (verbType === 'regular') {
@@ -298,9 +342,30 @@ export function chooseNext({forms, history}){
     return fallback[0] || null
   }
   
-  // Apply weighted selection for "all" verb types to balance regular vs irregular
+  // Apply weighted selection for "all" verb types to balance regular vs irregular per level
   if (verbType === 'all') {
     eligible = applyWeightedSelection(eligible)
+  }
+
+  // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
+  eligible = applyLevelFormWeighting(eligible, useSettings.getState())
+
+  // C2 conmutación: asegurar variedad pero sin ocultar otras personas
+  // Suavizamos: priorizamos la persona objetivo si existe, pero mantenemos el resto disponible
+  const st = useSettings.getState()
+  if (st.enableC2Conmutacion && level === 'C2' && eligible.length > 0) {
+    const base = eligible[Math.floor(Math.random() * eligible.length)]
+    const seq = st.conmutacionSeq || ['2s_vos','3p','3s']
+    const idx = st.conmutacionIdx || 0
+    const targetPerson = seq[idx % seq.length]
+    const boosted = []
+    eligible.forEach(f => {
+      let w = 1
+      if (f.lemma === base.lemma && f.person === targetPerson) w = 3
+      for (let i=0;i<w;i++) boosted.push(f)
+    })
+    eligible = boosted
+    useSettings.getState().set({ conmutacionIdx: (idx + 1) % seq.length })
   }
   
   // Compute lowest accuracy and candidates in O(n)
@@ -336,10 +401,44 @@ export function chooseNext({forms, history}){
     Object.entries(candidatesByPerson).map(([person, forms]) => [person, forms.length])
   ))
   
-  // Select a random person first, then a random form from that person
-  const randomPerson = personsInCandidates[Math.floor(Math.random() * personsInCandidates.length)]
+  // Select a person using level-based weights, then a random form from that person
+  const personWeights = getPersonWeightsForLevel(useSettings.getState())
+  const availablePersons = personsInCandidates
+  // Optional rotation of second person at high levels
+  const rot = useSettings.getState().rotateSecondPerson
+  const next2 = useSettings.getState().nextSecondPerson
+  const weights = availablePersons.map(p => {
+    let w = personWeights[p] || 1
+    if (rot && (p === '2s_tu' || p === '2s_vos')) {
+      if (p === next2) w *= 1.5
+      else w *= 0.75
+    }
+    return w
+  })
+  const totalW = weights.reduce((a,b)=>a+b,0) || 1
+  let r = Math.random() * totalW
+  let randomPerson = availablePersons[0]
+  for (let i=0;i<availablePersons.length;i++){
+    r -= weights[i]
+    if (r <= 0) { randomPerson = availablePersons[i]; break }
+  }
   const formsForPerson = candidatesByPerson[randomPerson]
-  const selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
+  let selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
+  // Enforce clitics percentage in imperativo afirmativo at high levels
+  const s = useSettings.getState()
+  if (selectedForm.mood === 'imperative' && selectedForm.tense === 'impAff' && s.cliticsPercent > 0) {
+    const needClitic = Math.random()*100 < s.cliticsPercent
+    if (needClitic) {
+      // Simple heuristic: attach 'me' to 1s/2s targets, else 'se lo'
+      const part = selectedForm.value
+      const attach = (selectedForm.person === '1s' || selectedForm.person === '2s_tu' || selectedForm.person === '2s_vos') ? 'me' : 'se lo'
+      selectedForm = { ...selectedForm, value: `${part}${attach}`.replace(/\s+/g,'') }
+    }
+  }
+  // Update rotation pointer
+  if (rot && (randomPerson === '2s_tu' || randomPerson === '2s_vos')) {
+    useSettings.getState().set({ nextSecondPerson: randomPerson === '2s_tu' ? '2s_vos' : '2s_tu' })
+  }
   
   clog('🎯 Selected person:', randomPerson)
   clog('🎯 Forms available for selected person:', formsForPerson.length)
@@ -416,6 +515,94 @@ function applyWeightedSelection(forms) {
   })
   
   return selectedForms
+}
+
+// Level-based person distribution
+function getPersonWeightsForLevel(settings) {
+  const level = settings.level || 'B1'
+  // Default equal weights
+  const base = { '1s':1,'2s_tu':1,'2s_vos':1,'3s':1,'1p':1,'2p_vosotros':0.5,'3p':0.5 }
+  if (level === 'A1') {
+    return { ...base, '1s':3, '2s_tu':3, '2s_vos':3, '3s':3, '1p':1, '2p_vosotros':0.2, '3p':0.2 }
+  }
+  if (level === 'A2') {
+    return { ...base, '1s':2, '2s_tu':2, '2s_vos':2, '3s':2, '1p':1, '3p':1 }
+  }
+  if (level === 'B1') {
+    return { ...base, '1s':1.5, '2s_tu':1.5, '2s_vos':1.5, '3s':1.2, '1p':1, '3p':1 }
+  }
+  if (level === 'B2') {
+    return { ...base, '1s':1.2, '2s_tu':1.2, '2s_vos':1.2, '3s':1.2, '1p':1, '3p':1, '2p_vosotros': settings.useVosotros ? 1 : 0.2 }
+  }
+  if (level === 'C1' || level === 'C2') {
+    return { ...base, '1s':1, '2s_tu':1, '2s_vos':1, '3s':1, '1p':1, '3p':1, '2p_vosotros': settings.useVosotros ? 1 : 0.2 }
+  }
+  return base
+}
+
+// Increase probability of targeted irregular families per level by duplicating those forms
+function applyLevelFormWeighting(forms, settings) {
+  const level = settings.level || 'B1'
+  const boosted = []
+  const pushN = (f, n) => { for (let i=0;i<n;i++) boosted.push(f) }
+
+  for (const f of forms) {
+    let weight = 1
+    const lemma = f.lemma
+    const val = (f.value || '').toLowerCase()
+    if (level === 'A2') {
+      // -car/-gar/-zar pretérito 1s: busqué, llegué, almorcé
+      if (f.mood === 'indicative' && f.tense === 'pretIndef' && f.person === '1s') {
+        if (/(qué|gué|cé)$/.test(val)) weight = 2
+      }
+      // cambios radicales en pretérito (pude, vino, dijo)
+      if (f.mood === 'indicative' && f.tense === 'pretIndef' && ['poder','venir','decir','hacer','poner','traer','estar','tener','andar','querer'].includes(lemma)) {
+        weight = Math.max(weight, 2)
+      }
+      // -ir 3s cambio (pidió, durmió)
+      if (f.mood === 'indicative' && f.tense === 'pretIndef' && (f.person === '3s' || f.person === '3p') && ['dormir','pedir','seguir','servir','preferir'].includes(lemma)) {
+        weight = Math.max(weight, 2)
+      }
+      // Imperativo afirmativo 2s según dialecto
+      if (f.mood === 'imperative' && f.tense === 'impAff' && (f.person === '2s_tu' || f.person === '2s_vos')) {
+        weight = Math.max(weight, 2)
+      }
+    } else if (level === 'B1') {
+      // Perfectos (PPC, pluscuamperfecto, futuro compuesto)
+      if (f.mood === 'indicative' && (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf')) {
+        weight = 2
+      }
+      // Subjuntivo presente
+      if (f.mood === 'subjunctive' && f.tense === 'subjPres') {
+        weight = Math.max(weight, 2)
+      }
+      // Imperativo negativo (formas base)
+      if (f.mood === 'imperative' && f.tense === 'impNeg') {
+        weight = Math.max(weight, 2)
+      }
+    } else if (level === 'B2') {
+      // Subjuntivo imperfecto y pluscuamperfecto
+      if (f.mood === 'subjunctive' && (f.tense === 'subjImpf' || f.tense === 'subjPlusc')) {
+        weight = 2
+      }
+      // Condicional compuesto
+      if (f.mood === 'conditional' && f.tense === 'condPerf') {
+        weight = Math.max(weight, 2)
+      }
+    } else if (level === 'C1' || level === 'C2') {
+      // Clíticos en imperativo afirmativo
+      if (f.mood === 'imperative' && f.tense === 'impAff' && /(me|te|se|lo|la|le|nos|los|las|les)$/.test(val.replace(/\s+/g,''))) {
+        weight = 2
+      }
+      if (level === 'C2') {
+        // Boost rare-but-alive lemmas
+        const rare = settings.c2RareBoostLemmas || []
+        if (rare.includes(lemma)) weight = Math.max(weight, 3)
+      }
+    }
+    pushN(f, weight)
+  }
+  return boosted
 }
 
 // Helper function to randomly sample from an array

@@ -155,10 +155,53 @@ function App() {
           }
         }
       })
+
+      // Ensure 2s_vos affirmative exists (voseo regular), with special case for 'ir' → 'andá'
+      const keyVos = `${lemma}|imperative|impAff|2s_vos`
+      if (!existingKey.has(keyVos)) {
+        let vvos = ''
+        if (lemma === 'ir') {
+          vvos = 'andá'
+        } else {
+          const end = lemmaEnding.get(lemma)
+          if (end === 'ar') vvos = lemma.replace(/ar$/, 'á')
+          else if (end === 'er') vvos = lemma.replace(/er$/, 'é')
+          else if (end === 'ir') vvos = lemma.replace(/ir$/, 'í')
+        }
+        if (vvos) {
+          acc.push({ lemma, mood: 'imperative', tense: 'impAff', person: '2s_vos', value: vvos })
+          existingKey.add(keyVos)
+        }
+      }
     })
     dlog(`Cached ${acc.length} forms for region ${settings.region}`)
     return acc
   }, [settings.region])
+
+  // Helpers to build blocks for mixed practice per level
+  const pickRandom = (arr, n) => {
+    const a = [...arr]
+    const out = []
+    while (a.length && out.length < n) {
+      const i = Math.floor(Math.random() * a.length)
+      out.push(a.splice(i,1)[0])
+    }
+    return out
+  }
+  const combosForLevelMixed = (level) => {
+    // Simplificado: no forzar tiempos por nivel; usar todos los de curriculum
+    const allowed = gates.filter(g => g.level === level).map(g => ({ mood: g.mood, tense: g.tense }))
+    return allowed.length ? pickRandom(allowed, Math.min(4, allowed.length)) : []
+  }
+  const blockSizeForLevel = (level) => {
+    if (level === 'A1') return 8
+    if (level === 'A2') return 8
+    if (level === 'B1') return 12
+    if (level === 'B2') return 12
+    if (level === 'C1') return 16
+    if (level === 'C2') return 20
+    return 10
+  }
 
   const generateNextItem = () => {
     const nextForm = chooseNext({ forms: allFormsForRegion, history })
@@ -214,6 +257,17 @@ function App() {
 
   const handleContinue = () => {
     // Generate next item when user clicks "Continue"
+    // Decrement block counter if active
+    const s = useSettings.getState()
+    if (s.currentBlock && typeof s.currentBlock.itemsRemaining === 'number') {
+      const n = s.currentBlock.itemsRemaining - 1
+      if (n <= 0) {
+        // End block
+        settings.set({ currentBlock: null })
+      } else {
+        settings.set({ currentBlock: { ...s.currentBlock, itemsRemaining: n } })
+      }
+    }
     generateNextItem()
   }
 
@@ -268,7 +322,105 @@ function App() {
   }
 
   const selectLevel = (level) => {
-    settings.set({ level })
+    // Apply level-specific policies
+    const updates = { level }
+    if (level === 'A1') {
+      updates.strict = false
+      updates.accentTolerance = 'accept'
+      updates.requireDieresis = false
+      updates.blockNonNormativeSpelling = false
+      updates.cliticStrictness = 'off'
+      updates.impSubjVariantMode = 'accept_both'
+      updates.cliticsPercent = 0
+      updates.neutralizePronoun = false
+      updates.rotateSecondPerson = false
+      updates.timeMode = 'none'
+      updates.perItemMs = null
+      updates.medianTargetMs = null
+      updates.showPronouns = true
+      updates.practicePronoun = 'both'
+      // Core frequent lemmas for A1
+      updates.allowedLemmas = new Set(['ser','estar','tener','haber','ir','venir','poder','querer','hacer','decir','poner','dar','vivir','comer','hablar'])
+    } else if (level === 'A2') {
+      updates.strict = false
+      updates.accentTolerance = 'warn'
+      updates.requireDieresis = false
+      updates.blockNonNormativeSpelling = false
+      updates.cliticStrictness = 'off'
+      updates.impSubjVariantMode = 'accept_both'
+      updates.cliticsPercent = 0
+      updates.neutralizePronoun = false
+      updates.rotateSecondPerson = false
+      updates.timeMode = 'soft'
+      updates.perItemMs = 8000
+      updates.medianTargetMs = null
+      updates.showPronouns = true
+      updates.allowedLemmas = null // allow broader set
+    } else if (level === 'B1') {
+      updates.strict = true
+      updates.accentTolerance = 'warn'
+      updates.requireDieresis = false
+      updates.blockNonNormativeSpelling = false
+      updates.cliticStrictness = 'low'
+      updates.impSubjVariantMode = 'accept_both'
+      updates.cliticsPercent = 0
+      updates.neutralizePronoun = false
+      updates.rotateSecondPerson = false
+      updates.timeMode = 'soft'
+      updates.perItemMs = 6000
+      updates.medianTargetMs = 3000
+      updates.allowedLemmas = null
+    } else if (level === 'B2') {
+      updates.strict = true
+      updates.accentTolerance = 'strict'
+      updates.requireDieresis = true
+      updates.blockNonNormativeSpelling = false
+      updates.cliticStrictness = 'low'
+      updates.impSubjVariantMode = 'accept_both'
+      updates.cliticsPercent = 10
+      updates.neutralizePronoun = false
+      updates.rotateSecondPerson = true
+      updates.timeMode = 'strict'
+      updates.perItemMs = 5000
+      updates.medianTargetMs = 2500
+      updates.allowedLemmas = null
+    } else if (level === 'C1') {
+      updates.strict = true
+      updates.accentTolerance = 'warn'
+      updates.requireDieresis = true
+      updates.blockNonNormativeSpelling = true
+      updates.cliticStrictness = 'high'
+      updates.cliticsPercent = 30
+      updates.neutralizePronoun = true
+      updates.rotateSecondPerson = false
+      updates.timeMode = 'strict'
+      updates.perItemMs = 3500
+      updates.medianTargetMs = 1800
+      updates.enableFuturoSubjRead = true
+      updates.enableFuturoSubjProd = false
+      updates.enableC2Conmutacion = false
+      updates.allowedLemmas = null
+    } else if (level === 'C2') {
+      updates.strict = true
+      updates.accentTolerance = 'strict'
+      updates.requireDieresis = true
+      updates.blockNonNormativeSpelling = true
+      updates.cliticStrictness = 'high'
+      updates.cliticsPercent = 60
+      updates.neutralizePronoun = true
+      updates.rotateSecondPerson = true
+      updates.timeMode = 'strict'
+      updates.perItemMs = 2500
+      updates.medianTargetMs = 1200
+      updates.enableFuturoSubjRead = true
+      updates.enableFuturoSubjProd = true
+      updates.enableC2Conmutacion = true
+      updates.burstSize = 16
+      // Rare but alive families to boost in C2 (can be edited in settings UI later)
+      updates.c2RareBoostLemmas = ['argüir','delinquir','henchir','agorar','cocer','esparcir','distinguir','tañer']
+      updates.allowedLemmas = null
+    }
+    settings.set(updates)
     setOnboardingStep(4) // Go to practice mode selection
   }
 
@@ -317,7 +469,16 @@ function App() {
   }
 
   const selectVerbType = (verbType) => {
-    settings.set({ verbType })
+    const updates = { verbType }
+    // Initialize mixed-practice blocks per level
+    const lvl = settings.level
+    if (settings.practiceMode === 'mixed' && lvl) {
+      const combos = combosForLevelMixed(lvl)
+      updates.currentBlock = { combos, itemsRemaining: blockSizeForLevel(lvl) }
+    } else {
+      updates.currentBlock = null
+    }
+    settings.set(updates)
     
     // Clear history when changing verb type
     setHistory({})
@@ -434,7 +595,7 @@ function App() {
   if (currentMode === 'onboarding') {
     return (
       <div className="App">
-          <div className="onboarding">
+        <div className="onboarding">
                       <div className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
                       </div>
@@ -811,7 +972,7 @@ function App() {
       <div className="App">
         <header className="header">
           <div className="icon-row">
-            <button
+          <button 
               onClick={() => setShowQuickSwitch(prev => !prev)}
               className="icon-btn"
               title="Cambiar rápido"
@@ -821,9 +982,9 @@ function App() {
             <button
               onClick={() => setShowChallenges(prev => !prev)}
               className="icon-btn"
-              title="Desafíos"
+              title="Cronometría"
             >
-              <img src="/diana.png" alt="Desafíos" className="menu-icon" />
+              <img src="/crono.png" alt="Cronometría" className="menu-icon" />
             </button>
             <button
               onClick={() => setShowAccentKeys(prev => !prev)}
@@ -836,9 +997,9 @@ function App() {
               onClick={handleHome}
               className="icon-btn"
               title="Menú"
-            >
-              <img src="/home.png" alt="Menú" className="menu-icon" />
-            </button>
+          >
+            <img src="/home.png" alt="Menú" className="menu-icon" />
+          </button>
           </div>
         </header>
 
@@ -935,6 +1096,32 @@ function App() {
                 </select>
               </div>
 
+              {(settings.level === 'C1' || settings.level === 'C2') && (
+                <>
+                  <div className="setting-group">
+                    <label>Registro jurídico (Futuro de Subjuntivo):</label>
+                    <div className="radio-group">
+                      <label>
+                        <input type="checkbox" checked={settings.enableFuturoSubjRead} onChange={(e)=>settings.set({ enableFuturoSubjRead: e.target.checked })} /> Lectura C1/C2
+                      </label>
+                      <label>
+                        <input type="checkbox" checked={settings.enableFuturoSubjProd} onChange={(e)=>settings.set({ enableFuturoSubjProd: e.target.checked })} /> Producción C2
+                      </label>
+                    </div>
+                  </div>
+                  {settings.level === 'C2' && (
+                    <div className="setting-group">
+                      <label>Conmutación (C2):</label>
+                      <div className="radio-group">
+                        <label>
+                          <input type="checkbox" checked={settings.enableC2Conmutacion} onChange={(e)=>settings.set({ enableC2Conmutacion: e.target.checked })} /> Alternar tratamiento por ítem
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
               <div className="setting-group">
                 <label title="Elige el tipo de verbos a practicar">Tipo de verbos:</label>
                 <select 
@@ -953,6 +1140,22 @@ function App() {
                   <option value="irregular">Solo irregulares</option>
                 </select>
               </div>
+
+              {settings.level === 'C2' && (
+                <div className="setting-group">
+                  <label>Rarezas C2 (lista separada por comas):</label>
+                  <input
+                    type="text"
+                    className="setting-input"
+                    defaultValue={(settings.c2RareBoostLemmas||[]).join(',')}
+                    onBlur={(e)=>{
+                      const list = e.target.value.split(',').map(s=>s.trim()).filter(Boolean)
+                      settings.set({ c2RareBoostLemmas: list })
+                    }}
+                    placeholder="argüir, delinquir, henchir, ..."
+                  />
+                </div>
+              )}
 
               <div className="setting-group">
                 <label title="Muestra el pronombre para facilitar el aprendizaje temprano">Mostrar pronombres:</label>
@@ -1028,6 +1231,18 @@ function App() {
                       <button 
                         className="start-specific-practice"
                         onClick={() => {
+                          // Initialize block for A1/A2: one tense per tanda
+                          const lvl = settings.level
+                          if (lvl === 'A1' || lvl === 'A2') {
+                            settings.set({
+                              currentBlock: {
+                                combos: [{ mood: settings.specificMood, tense: settings.specificTense }],
+                                itemsRemaining: 8
+                              }
+                            })
+                          } else {
+                            settings.set({ currentBlock: null })
+                          }
                           generateNextItem()
                           setShowSettings(false)
                         }}
@@ -1113,7 +1328,7 @@ function App() {
               </button>
               <button className="btn btn-secondary" onClick={() => setShowQuickSwitch(false)}>Cerrar</button>
             </div>
-          </div>
+            </div>
         )}
 
         <main className="main-content">

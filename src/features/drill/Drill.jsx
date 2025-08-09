@@ -19,6 +19,11 @@ export default function Drill({
   const [cardsTarget, setCardsTarget] = useState(10)
   const [cardsDone, setCardsDone] = useState(0)
   const [localCorrect, setLocalCorrect] = useState(0)
+  const [bestStreak, setBestStreak] = useState(0)
+  const [currentStreak, setCurrentStreak] = useState(0)
+  const [errorsCount, setErrorsCount] = useState(0)
+  const [latencies, setLatencies] = useState([])
+  const [itemStart, setItemStart] = useState(Date.now())
 
   const inputRef = useRef(null)
   const touchStart = useRef({ x: 0, y: 0 })
@@ -29,6 +34,7 @@ export default function Drill({
     setInput('')
     // IMPORTANTE: NO resetear el resultado aquí
     setHint('')
+    setItemStart(Date.now())
     
     // Focus the input when a new item is loaded
     if (inputRef.current && !result) {
@@ -57,9 +63,22 @@ export default function Drill({
       const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
       setResult(gradeResult)
       onResult(gradeResult)
+      // latency
+      const elapsed = Date.now() - itemStart
+      setLatencies(v => [...v, elapsed])
       // local counters
       if (!gradeResult.isAccentError) {
-        if (gradeResult.correct) setLocalCorrect(c => c + 1)
+        if (gradeResult.correct) {
+          setLocalCorrect(c => c + 1)
+          setCurrentStreak(s => {
+            const ns = s + 1
+            setBestStreak(b => Math.max(b, ns))
+            return ns
+          })
+        } else {
+          setCurrentStreak(0)
+          setErrorsCount(e => e + 1)
+        }
         if (microMode === 'cards') setCardsDone(n => n + 1)
       }
     } catch (error) {
@@ -234,6 +253,7 @@ export default function Drill({
   const getContextText = () => {
     const mood = currentItem.mood || 'indicative'
     const tense = currentItem.tense || 'pres'
+    const lvl = settings.level
     
     const moodMap = {
       'indicative': 'Indicativo',
@@ -272,7 +292,9 @@ export default function Drill({
     const moodText = moodMap[mood] || 'Indicativo'
     const tenseText = tenseMap[tense] || 'Presente'
     
-    return `${moodText} - ${tenseText}`
+    // Etiqueta de registro jurídico si es futuro de subjuntivo y lectura/producción está activada
+    const isJur = (tense === 'subjFut' || tense === 'subjFutPerf') && (settings.enableFuturoSubjRead || settings.enableFuturoSubjProd)
+    return `${moodText} - ${tenseText}${isJur ? ' · Registro jurídico' : ''}`
   }
 
 
@@ -297,6 +319,26 @@ export default function Drill({
     return personMap[currentItem.person] || 'Yo'
   }
 
+  // Show required enclitics for imperativo afirmativo when present in target
+  const getCliticHint = () => {
+    if (!currentItem?.form?.value) return null
+    if (currentItem.mood !== 'imperative' || currentItem.tense !== 'impAff') return null
+    const val = String(currentItem.form.value).replace(/\s+/g, '').toLowerCase()
+    const m = val.match(/(me|te|se|lo|la|le|nos|los|las|les)+$/)
+    if (!m) return null
+    let s = m[0]
+    const order = ['nos','les','las','los','le','la','lo','se','me','te']
+    const tokens = []
+    while (s.length > 0) {
+      const t = order.find(tok => s.startsWith(tok))
+      if (!t) break
+      tokens.push(t)
+      s = s.slice(t.length)
+    }
+    if (tokens.length === 0) return null
+    return tokens.join(' ')
+  }
+
   return (
     <div className="drill-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {/* Verb lemma (infinitive) - TOP */}
@@ -313,8 +355,18 @@ export default function Drill({
       {currentItem.mood !== 'nonfinite' && (
         <div className="person-display">
           {getPersonText()}
+          {(() => {
+            const hint = getCliticHint()
+            if (hint && currentItem.mood === 'imperative' && currentItem.tense === 'impAff') {
+              return <span style={{ marginLeft: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>(Clíticos: {hint})</span>
+            }
+            return null
+          })()}
         </div>
       )}
+
+      {/* Variant selector for -ra/-se when enforced (C1/C2) */}
+      {false && <div />}
 
       {/* Input form */}
       <div className="input-container">
@@ -368,20 +420,11 @@ export default function Drill({
       {/* Micro-drills controls & progress */}
       {showChallenges && (
       <div className="micro-controls">
-        {microMode ? (
-          <>
-            {microMode === 'time' ? (
-              <div className="micro-chip">Tiempo: {timeLeft}s</div>
-            ) : (
-              <div className="micro-chip">Tarjetas: {cardsDone}/{cardsTarget}</div>
-            )}
-            <div className="micro-chip">Aciertos: {localCorrect}</div>
-          </>
-        ) : (
-          <>
-            <button className="btn btn-secondary" onClick={startTimeDrill}>1 min</button>
-            <button className="btn btn-secondary" onClick={startCardsDrill}>10 tarjetas</button>
-          </>
+        <div className="micro-chip">Aciertos: {localCorrect}</div>
+        <div className="micro-chip">Racha: {currentStreak} (mejor {bestStreak})</div>
+        <div className="micro-chip">Errores/100: {Math.round((errorsCount / Math.max(1, localCorrect + errorsCount)) * 100)}</div>
+        {settings.medianTargetMs && latencies.length>0 && (
+          <div className="micro-chip">Mediana: {Math.round([...latencies].sort((a,b)=>a-b)[Math.floor(latencies.length/2)]/10)/100}s / Obj {Math.round(settings.medianTargetMs/10)/100}s</div>
         )}
       </div>
       )}

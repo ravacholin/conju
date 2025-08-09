@@ -1,6 +1,7 @@
 import { normalize, normalizeInput } from './rules.js'
 
 export function grade(input, expected, settings){
+  const startTs = Date.now()
   // Normalize input with warnings (but keep accents)
   const { normalized: normalizedInput, warnings, wasCorrected } = normalizeInput(input)
   
@@ -15,9 +16,12 @@ export function grade(input, expected, settings){
     if(settings.useVosotros && a.vosotros) candidates.add(a.vosotros)
   }
   
-  // For accent-sensitive comparison, normalize for case and whitespace only
-  const normalizedCandidates = [...candidates].map(c => c.toLowerCase().trim())
-  const normalizedInputCanon = normalizedInput.toLowerCase().trim()
+  // Accent policy by level
+  const accentPolicy = settings.accentTolerance || 'warn' // 'accept' (A1), 'warn' (A2/B1), 'strict' (B2+)
+  const stripAccents = (s)=> s.normalize('NFD').replace(/\p{Diacritic}+/gu, '')
+  const norm = (s)=> s.toLowerCase().trim()
+  const normalizedCandidates = [...candidates].map(c => norm(accentPolicy==='accept' ? stripAccents(c) : c))
+  const normalizedInputCanon = norm(accentPolicy==='accept' ? stripAccents(normalizedInput) : normalizedInput)
   
   // Check for exact match (case-insensitive, whitespace-insensitive, but accent-sensitive)
   const correct = normalizedCandidates.includes(normalizedInputCanon)
@@ -31,13 +35,128 @@ export function grade(input, expected, settings){
   // Check if this is an accent error
   const isAccentError = feedback && feedback.includes('ERROR DE TILDE')
   
+  // If accents accepted (A1), downgrade accent-only mismatches to correct with note
+  if (!correct && accentPolicy==='accept') {
+    const inputNo = norm(stripAccents(normalizedInput))
+    const anyMatchNoAcc = [...candidates].some(c => norm(stripAccents(c))===inputNo)
+    if (anyMatchNoAcc) {
+      return {
+        correct: true,
+        accepted: input,
+        targets: [...candidates],
+        note: 'A1: acento no estricto (aceptado) — revisá la tilde',
+        warnings: wasCorrected ? warnings : null,
+        isAccentError: false
+      }
+    }
+  }
+
+  // Dieresis enforcement (B2+)
+  if (!correct && settings.requireDieresis) {
+    const expectHasU = /g[uü](e|i)/i.test(expected.value)
+    const expectNeedsDia = /g[u]e|g[u]i/i.test(expected.value) && /g[u]e|g[u]i/i.test(input) && !/gü(e|i)/i.test(input)
+    if (expectHasU && expectNeedsDia) {
+      return {
+        correct: false,
+        accepted: null,
+        targets: [...candidates],
+        note: 'Falta diéresis (ü) en güe/güi: revisá la ortografía',
+        warnings: wasCorrected ? warnings : null,
+        isAccentError: false
+      }
+    }
+  }
+
+  // Non-normative spellings (C1+): block "fué" etc.
+  if (!correct && settings.blockNonNormativeSpelling) {
+    // Penaliza "fué" y norma de "guion" en C2
+    if (/fué/i.test(input)) {
+      return {
+        correct: false,
+        accepted: null,
+        targets: [...candidates],
+        note: 'Grafía no normativa ("fué"). Debe ser "fue".',
+        warnings: wasCorrected ? warnings : null,
+        isAccentError: false
+      }
+    }
+    if (settings.level === 'C2') {
+      // Adoptamos "guion" como norma (sin tilde)
+      if (/guión/i.test(input)) {
+        return {
+          correct: false,
+          accepted: null,
+          targets: [...candidates],
+          note: 'Norma C2: usar "guion" (sin tilde).',
+          warnings: wasCorrected ? warnings : null,
+          isAccentError: false
+        }
+      }
+    }
+  }
+
+  // Defectivos explícitos: "soler" no tiene imperativo (C1/C2 marcan, C2 duro)
+  if (expected.lemma === 'soler' && expected.mood === 'imperative') {
+    return {
+      correct: false,
+      accepted: null,
+      targets: [...candidates],
+      note: '“soler” no admite imperativo en español estándar',
+      warnings: wasCorrected ? warnings : null,
+      isAccentError: false
+    }
+  }
+
+  // Clitic strictness (position and accent) basic checks when enabled
+  if (!correct && settings.cliticStrictness !== 'off') {
+    const val = normalizedInput
+    const enclitic = /(me|te|se|lo|la|le|nos|los|las|les)+$/i.test(val.replace(/\s+/g,''))
+    const isImpAff = expected.mood === 'imperative' && expected.tense === 'impAff'
+    const isImpNeg = expected.mood === 'imperative' && expected.tense === 'impNeg'
+    if (isImpAff && !enclitic && settings.cliticStrictness === 'high') {
+      return {
+        correct: false,
+        accepted: null,
+        targets: [...candidates],
+        note: 'Imperativo afirmativo: clíticos enclíticos requeridos',
+        warnings: wasCorrected ? warnings : null,
+        isAccentError: false
+      }
+    }
+    if (isImpNeg && enclitic && settings.cliticStrictness !== 'off') {
+      return {
+        correct: false,
+        accepted: null,
+        targets: [...candidates],
+        note: 'Imperativo negativo: clíticos proclíticos (antes del verbo) requeridos',
+        warnings: wasCorrected ? warnings : null,
+        isAccentError: false
+      }
+    }
+    // Heurística de tilde obligatoria con enclíticos en C2: si hay enclítico y longitud>3, exigir vocal tildada
+    if (isImpAff && enclitic && settings.level === 'C2') {
+      const hasTilde = /[áéíóúÁÉÍÓÚ]/.test(input)
+      if (!hasTilde) {
+        return {
+          correct: false,
+          accepted: null,
+          targets: [...candidates],
+          note: 'C2: falta tilde en imperativo con enclíticos (p. ej., dámelo, oigámoselo).',
+          warnings: wasCorrected ? warnings : null,
+          isAccentError: true
+        }
+      }
+    }
+  }
+  
   return {
     correct,
     accepted: correct ? input : null,
     targets: [...candidates],
     note: feedback,
     warnings: wasCorrected ? warnings : null,
-    isAccentError
+    isAccentError,
+    ts: startTs
   }
 }
 
@@ -52,9 +171,11 @@ function generateFeedback(input, correctAnswers, settings, expected) {
   if (accentIssues.length > 0) {
     return `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${accentIssues[0]}"`
   }
+
+  // Removed enforcement of -ra/-se variant per request
   
   // Check for pronoun-specific issues
-  if (settings.region === 'rioplatense' && settings.useVoseo) {
+  if (settings.region === 'rioplatense' && settings.useVoseo && !settings.neutralizePronoun) {
     // Check if user wrote tú form instead of vos form
     const tuVosPairs = {
       'escribes': 'escribís',
