@@ -492,7 +492,21 @@ export default function Drill({
     // Comprobar contra currentItem.form
     const expected = currentItem.form
     const okInf = expected.lemma ? expected.lemma.toLowerCase() === infinitiveGuess.trim().toLowerCase() : false
-    const okPerson = expected.person ? expected.person === personGuess : false
+    // Aceptar sincretismos de persona cuando la forma es idéntica (p. ej., 1s/3s)
+    const key = `${expected.mood}|${expected.tense}`
+    const EQUIV = {
+      'subjunctive|subjImpf': [['1s','3s']],
+      'subjunctive|subjPres': [['1s','3s']],
+      'subjunctive|subjPerf': [['1s','3s']],
+      'subjunctive|subjPlusc': [['1s','3s']],
+      'indicative|impf': [['1s','3s']],
+      'indicative|plusc': [['1s','3s']],
+      'conditional|cond': [['1s','3s']],
+      'conditional|condPerf': [['1s','3s']]
+    }
+    const groups = EQUIV[key] || []
+    const sameGroup = groups.some(g => g.includes(expected.person) && g.includes(personGuess))
+    const okPerson = expected.person ? (expected.person === personGuess || sameGroup) : false
     const okMood = showMoodField ? expected.mood === moodGuess : true
     const okTense = showTenseField ? expected.tense === tenseGuess : true
     const correct = okInf && okPerson && okMood && okTense
