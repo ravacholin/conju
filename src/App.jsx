@@ -38,15 +38,66 @@ function App() {
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
     const acc = []
+    const existingKey = new Set()
+    const lemmaToParticiple = new Map()
     for (const verb of verbs) {
       for (const paradigm of verb.paradigms) {
-        if (paradigm.regionTags.includes(settings.region)) {
-          for (const form of paradigm.forms) {
-            acc.push({ lemma: verb.lemma, ...form })
+        if (!paradigm.regionTags.includes(settings.region)) continue
+        for (const form of paradigm.forms) {
+          acc.push({ lemma: verb.lemma, ...form })
+          existingKey.add(`${verb.lemma}|${form.mood}|${form.tense}|${form.person}`)
+          if (form.mood === 'nonfinite' && form.tense === 'part') {
+            lemmaToParticiple.set(verb.lemma, form.value)
           }
         }
       }
     }
+    // Generate compound forms for all verbs that have a participle (ensures full availability across perfect tenses)
+    const persons = ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p']
+    const aux = {
+      indicative: {
+        pretPerf: { '1s':'he','2s_tu':'has','2s_vos':'has','3s':'ha','1p':'hemos','2p_vosotros':'habéis','3p':'han' },
+        plusc:    { '1s':'había','2s_tu':'habías','2s_vos':'habías','3s':'había','1p':'habíamos','2p_vosotros':'habíais','3p':'habían' },
+        futPerf:  { '1s':'habré','2s_tu':'habrás','2s_vos':'habrás','3s':'habrá','1p':'habremos','2p_vosotros':'habréis','3p':'habrán' }
+      },
+      conditional: {
+        condPerf: { '1s':'habría','2s_tu':'habrías','2s_vos':'habrías','3s':'habría','1p':'habríamos','2p_vosotros':'habríais','3p':'habrían' }
+      },
+      subjunctive: {
+        subjPerf:  { '1s':'haya','2s_tu':'hayas','2s_vos':'hayas','3s':'haya','1p':'hayamos','2p_vosotros':'hayáis','3p':'hayan' },
+        subjPlusc:{ '1s':'hubiera','2s_tu':'hubieras','2s_vos':'hubieras','3s':'hubiera','1p':'hubiéramos','2p_vosotros':'hubierais','3p':'hubieran' }
+      }
+    }
+    lemmaToParticiple.forEach((part, lemma) => {
+      // Indicative perfects
+      ;(['pretPerf','plusc','futPerf']).forEach(tense => {
+        persons.forEach(p => {
+          const key = `${lemma}|indicative|${tense}|${p}`
+          if (!existingKey.has(key)) {
+            acc.push({ lemma, mood:'indicative', tense, person: p, value: `${aux.indicative[tense][p]} ${part}` })
+            existingKey.add(key)
+          }
+        })
+      })
+      // Conditional perfect
+      persons.forEach(p => {
+        const key = `${lemma}|conditional|condPerf|${p}`
+        if (!existingKey.has(key)) {
+          acc.push({ lemma, mood:'conditional', tense:'condPerf', person: p, value: `${aux.conditional.condPerf[p]} ${part}` })
+          existingKey.add(key)
+        }
+      })
+      // Subjunctive perfects
+      ;(['subjPerf','subjPlusc']).forEach(tense => {
+        persons.forEach(p => {
+          const key = `${lemma}|subjunctive|${tense}|${p}`
+          if (!existingKey.has(key)) {
+            acc.push({ lemma, mood:'subjunctive', tense, person: p, value: `${aux.subjunctive[tense][p]} ${part}` })
+            existingKey.add(key)
+          }
+        })
+      })
+    })
     dlog(`Cached ${acc.length} forms for region ${settings.region}`)
     return acc
   }, [settings.region])

@@ -172,28 +172,31 @@ export function chooseNext({forms, history}){
     clog(`🔍 Verb type check: ${f.lemma} is ${verb.type}, verbType setting: ${verbType}`)
     
     // Check MCER level restrictions first
-    if (!isVerbTypeAllowedForLevel(verb.type, level)) {
+    const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
+    if (!isCompoundTense && f.mood !== 'nonfinite' && !isVerbTypeAllowedForLevel(verb.type, level)) {
       console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
       return false
     }
     
     // Then check user's verb type preference
+    // isCompoundTense defined above
     if (verbType === 'regular') {
       if (verb.type !== 'regular') {
         clog(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
         return false
       }
     } else if (verbType === 'irregular') {
-      if (verb.type !== 'irregular') {
-        clog(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular`)
+      // For compound tenses and nonfinite, irregularity is defined by the participle form itself
+      if (!isCompoundTense && f.mood !== 'nonfinite' && verb.type !== 'irregular') {
+        clog(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular (non-compound)`)
         return false
       }
-      
-      // For irregular verb type, only show irregular forms
-      // Check if this specific form is irregular
-      const isRegularForm = isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+      // Only include truly irregular forms for the specific category
+      const isRegularForm = f.mood === 'nonfinite'
+        ? isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+        : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
       if (isRegularForm) {
-        clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - regular form in irregular verb`)
+        clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - regular form for irregular practice`)
         return false
       }
     }
