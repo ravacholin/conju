@@ -366,11 +366,16 @@ function App() {
             {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
+                <div className="breadcrumb">
+                  <span className="crumb">Inicio</span>
+                  <span className="sep">/</span>
+                  <span className="current">¿Qué querés practicar?</span>
+                </div>
                 <h2>¿Qué querés practicar?</h2>
                 <p>Elegí tu nivel o trabajá formas específicas:</p>
                 
-                <div className="options-grid">
-                  <div className="option-card" onClick={() => setOnboardingStep(3)}>
+                <div className="options-grid menu-section">
+                  <div className="option-card featured" onClick={() => setOnboardingStep(3)}>
                     <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
                     <p>Practicá según tu nivel de español</p>
                     <p className="example">A1, A2, B1, B2, C1, C2</p>
@@ -546,9 +551,9 @@ function App() {
                         
                         <div className="options-grid">
                           {availableMoods.map(mood => (
-                            <div key={mood} className="option-card" onClick={() => selectMood(mood)}>
+                            <div key={mood} className="option-card compact" onClick={() => selectMood(mood)}>
                               <h3>{getMoodLabel(mood)}</h3>
-                              <p>{getMoodDescription(mood)}</p>
+                              <p className="conjugation-example">{getMoodDescription(mood)}</p>
                             </div>
                           ))}
                         </div>
@@ -567,8 +572,9 @@ function App() {
                         
                         <div className="options-grid">
                           {getTensesForMood(settings.specificMood).map(tense => (
-                            <div key={tense} className="option-card" onClick={() => selectTense(tense)}>
+                            <div key={tense} className="option-card compact" onClick={() => selectTense(tense)}>
                               <h3>{getTenseLabel(tense)}</h3>
+                              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
                             </div>
                           ))}
                         </div>
@@ -586,29 +592,29 @@ function App() {
                         <h2>Seleccioná el modo verbal:</h2>
                         
                         <div className="options-grid">
-                          <div className="option-card" onClick={() => selectMood('indicative')}>
+                          <div className="option-card compact" onClick={() => selectMood('indicative')}>
                             <h3>Indicativo</h3>
-                            <p>Hechos y realidades</p>
+                            <p className="conjugation-example">Hechos y realidades</p>
                           </div>
                           
-                          <div className="option-card" onClick={() => selectMood('subjunctive')}>
+                          <div className="option-card compact" onClick={() => selectMood('subjunctive')}>
                             <h3>Subjuntivo</h3>
-                            <p>Dudas, deseos, emociones</p>
+                            <p className="conjugation-example">Dudas, deseos, emociones</p>
                           </div>
                           
-                          <div className="option-card" onClick={() => selectMood('imperative')}>
+                          <div className="option-card compact" onClick={() => selectMood('imperative')}>
                             <h3>Imperativo</h3>
-                            <p>Órdenes y mandatos</p>
+                            <p className="conjugation-example">Órdenes y mandatos</p>
                           </div>
                           
-                          <div className="option-card" onClick={() => selectMood('conditional')}>
+                          <div className="option-card compact" onClick={() => selectMood('conditional')}>
                             <h3>Condicional</h3>
-                            <p>Situaciones hipotéticas</p>
+                            <p className="conjugation-example">Situaciones hipotéticas</p>
                           </div>
                           
-                          <div className="option-card" onClick={() => selectMood('nonfinite')}>
+                          <div className="option-card compact" onClick={() => selectMood('nonfinite')}>
                             <h3>Formas no conjugadas</h3>
-                            <p>Participios y gerundios</p>
+                            <p className="conjugation-example">Participios y gerundios</p>
                           </div>
                         </div>
                         
@@ -642,7 +648,7 @@ function App() {
                         
                         <div className="options-grid">
                           {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
-                            <div key={tense} className="option-card" onClick={() => selectTense(tense)}>
+                            <div key={tense} className="option-card compact" onClick={() => selectTense(tense)}>
                               <h3>{getTenseLabel(tense)}</h3>
                               <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
                             </div>

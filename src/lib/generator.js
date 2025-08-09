@@ -277,13 +277,22 @@ export function chooseNext({forms, history}){
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
-    clog('❌ No eligible forms found with current filters')
-    clog('Available forms sample:', forms.slice(0, 5).map(f => `${f.lemma} ${f.mood} ${f.tense} ${f.person}`))
-    
-    // Call debug function to show what's available
-    debugVerbAvailability()
-    
-    return null
+    // Failsafe: relax filters progressively to always return something
+    let fallback = forms.filter(f => getAllowedCombosForLevel(level).has(`${f.mood}|${f.tense}`))
+    if (specificMood) fallback = fallback.filter(f => f.mood === specificMood)
+    if (specificTense) fallback = fallback.filter(f => f.tense === specificTense)
+    // Respect dialect minimally for conjugated forms
+    fallback = fallback.filter(f => f.mood === 'nonfinite' || ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person))
+    // If still empty, drop tense constraint
+    if (fallback.length === 0 && specificTense) {
+      fallback = forms.filter(f => f.mood === specificMood)
+    }
+    // If still empty, drop mood constraint
+    if (fallback.length === 0 && specificMood) {
+      fallback = forms
+    }
+    // As last resort, return any form
+    return fallback[0] || null
   }
   
   // Apply weighted selection for "all" verb types to balance regular vs irregular
@@ -484,6 +493,23 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
   
   const normalizedLemma = normalize(lemma)
   const normalizedValue = normalize(value)
+
+  // Helper: detect regular participle inside periphrastic perfect forms
+  const isRegularPerfectWithParticiple = () => {
+    // Assume last token is the participle
+    const tokens = normalizedValue.trim().split(/\s+/)
+    const part = tokens[tokens.length - 1] || ''
+    if (normalizedLemma.endsWith('ar')) {
+      return part === normalizedLemma.replace(/ar$/, 'ado')
+    }
+    if (normalizedLemma.endsWith('er')) {
+      return part === normalizedLemma.replace(/er$/, 'ido')
+    }
+    if (normalizedLemma.endsWith('ir')) {
+      return part === normalizedLemma.replace(/ir$/, 'ido')
+    }
+    return false
+  }
   
   // Regular patterns for different verb endings
   if (lemma.endsWith('ar')) {
@@ -524,9 +550,8 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
         if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
       }
-      if (tense === 'pretPerf') {
-        // Pretérito perfecto is always regular for -ar verbs
-        return true
+      if (tense === 'pretPerf' || tense === 'plusc' || tense === 'futPerf') {
+        return isRegularPerfectWithParticiple()
       }
     }
     if (mood === 'imperative') {
@@ -589,9 +614,8 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
         if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
       }
-      if (tense === 'pretPerf') {
-        // Pretérito perfecto is always regular for -er verbs
-        return true
+      if (tense === 'pretPerf' || tense === 'plusc' || tense === 'futPerf') {
+        return isRegularPerfectWithParticiple()
       }
     }
     if (mood === 'imperative') {
@@ -654,9 +678,8 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'éis')) return true
         if (person === '3p' && normalizedValue === normalize(lemma + 'án')) return true
       }
-      if (tense === 'pretPerf') {
-        // Pretérito perfecto is always regular for -ir verbs
-        return true
+      if (tense === 'pretPerf' || tense === 'plusc' || tense === 'futPerf') {
+        return isRegularPerfectWithParticiple()
       }
     }
     if (mood === 'imperative') {
@@ -684,7 +707,7 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
    }
    
    // Add subjunctive and conditional patterns
-   if (mood === 'subjunctive') {
+    if (mood === 'subjunctive') {
      // Subjunctive patterns are similar to indicative but with different endings
      if (lemma.endsWith('ar')) {
        if (tense === 'subjPres') {
@@ -695,7 +718,10 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
          if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'emos'))) return true
          if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'éis'))) return true
          if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'en'))) return true
-       }
+        }
+        if (tense === 'subjPerf' || tense === 'subjPlusc') {
+          return isRegularPerfectWithParticiple()
+        }
        if (tense === 'subjImpf') {
          if (person === '1s' && normalizedValue === normalize(lemma.replace('ar', 'ara'))) return true
          if (person === '2s_tu' && normalizedValue === normalize(lemma.replace('ar', 'aras'))) return true
@@ -704,7 +730,10 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
          if (person === '1p' && normalizedValue === normalize(lemma.replace('ar', 'áramos'))) return true
          if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ar', 'arais'))) return true
          if (person === '3p' && normalizedValue === normalize(lemma.replace('ar', 'aran'))) return true
-       }
+        }
+        if (tense === 'subjPerf' || tense === 'subjPlusc') {
+          return isRegularPerfectWithParticiple()
+        }
      } else if (lemma.endsWith('er')) {
        if (tense === 'subjPres') {
          if (person === '1s' && normalizedValue === normalize(lemma.replace('er', 'a'))) return true
@@ -743,10 +772,13 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
          if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace('ir', 'ierais'))) return true
          if (person === '3p' && normalizedValue === normalize(lemma.replace('ir', 'ieran'))) return true
        }
-     }
+        }
+        if (tense === 'subjPerf' || tense === 'subjPlusc') {
+          return isRegularPerfectWithParticiple()
+        }
    }
    
-   if (mood === 'conditional') {
+    if (mood === 'conditional') {
      // Conditional is always regular (formed with infinitive + endings)
      if (tense === 'cond') {
        if (person === '1s' && normalizedValue === normalize(lemma + 'ía')) return true
@@ -757,6 +789,9 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
        if (person === '2p_vosotros' && normalizedValue === normalize(lemma + 'íais')) return true
        if (person === '3p' && normalizedValue === normalize(lemma + 'ían')) return true
      }
+      if (tense === 'condPerf') {
+        return isRegularPerfectWithParticiple()
+      }
    }
    
    return false
