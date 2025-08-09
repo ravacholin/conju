@@ -1,3 +1,28 @@
+.chrono-panel{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:8px;
+  padding:8px 10px;
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;
+  margin:8px 0 14px; /* espacio respecto al input y al botón */
+}
+.chrono-item{
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+  padding:6px 8px;
+  border-radius:8px;
+  background: rgba(255,255,255,0.02);
+}
+.chrono-item.wide{ grid-column: span 3; }
+.chrono-value{
+  font-size:18px; font-weight:600; letter-spacing:0.2px;
+}
+.chrono-sub{ font-size:11px; font-weight:400; opacity:0.7; margin-left:6px; }
+.chrono-label{
+  font-size:10px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; margin-top:4px;
+}
+.chrono-divider{ grid-column: span 3; height:1px; background:rgba(255,255,255,0.06); margin:2px 0; }
 :root {
   --bg: #0a0a0a;
   --panel: #0a0a0a;

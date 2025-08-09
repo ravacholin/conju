@@ -419,14 +419,32 @@ export default function Drill({
 
       {/* Micro-drills controls & progress */}
       {showChallenges && (
-      <div className="micro-controls">
-        <div className="micro-chip">Aciertos: {localCorrect}</div>
-        <div className="micro-chip">Racha: {currentStreak} (mejor {bestStreak})</div>
-        <div className="micro-chip">Errores/100: {Math.round((errorsCount / Math.max(1, localCorrect + errorsCount)) * 100)}</div>
-        {settings.medianTargetMs && latencies.length>0 && (
-          <div className="micro-chip">Mediana: {Math.round([...latencies].sort((a,b)=>a-b)[Math.floor(latencies.length/2)]/10)/100}s / Obj {Math.round(settings.medianTargetMs/10)/100}s</div>
-        )}
-      </div>
+        <div className="chrono-panel">
+          <div className="chrono-item">
+            <div className="chrono-value">{localCorrect}</div>
+            <div className="chrono-label">Aciertos</div>
+          </div>
+          <div className="chrono-item">
+            <div className="chrono-value">{currentStreak}<span className="chrono-sub"> (mejor {bestStreak})</span></div>
+            <div className="chrono-label">Racha</div>
+          </div>
+          <div className="chrono-item">
+            <div className="chrono-value">{Math.round((errorsCount / Math.max(1, localCorrect + errorsCount)) * 100)}</div>
+            <div className="chrono-label">Errores/100</div>
+          </div>
+          <div className="chrono-divider" />
+          {latencies.length>0 && (
+            <div className="chrono-item wide">
+              <div className="chrono-label">Mediana</div>
+              <div className="chrono-value">
+                {Math.round(([...latencies].sort((a,b)=>a-b)[Math.floor(latencies.length/2)])/10)/100}s
+                {settings.medianTargetMs && (
+                  <span className="chrono-sub"> / obj {Math.round(settings.medianTargetMs/10)/100}s</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Action buttons */}
