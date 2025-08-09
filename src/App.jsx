@@ -23,6 +23,8 @@ function App() {
     if (import.meta.env.DEV) {
       import('./lib/devDiagnostics.js').then(m => m.runDevDiagnostics()).catch(()=>{})
     }
+    // Ensure Resistance mode is off on app load
+    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
   }, [])
   
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
@@ -276,6 +278,8 @@ function App() {
     // Clear history when starting new practice
     setHistory({})
     setCurrentItem(null)
+    // Turn off Resistance by default
+    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
     setCurrentMode('drill')
   }
 
@@ -507,6 +511,8 @@ function App() {
     setCurrentItem(null)
     setHistory({})
     setShowSettings(false)
+    // Turn off Resistance on leaving drill
+    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
   }
 
   // Function to get available moods for a specific level
