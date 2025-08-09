@@ -730,6 +730,32 @@ function App() {
     return examples[key] || ''
   }
 
+  // Compact samples per mood using hablar
+  const getModeSamples = (mood) => {
+    const picks = {
+      indicative: ['pres','pretIndef','impf','fut'],
+      subjunctive: ['subjPres','subjImpf'],
+      imperative: ['impAff','impNeg'],
+      conditional: ['cond'],
+      nonfinite: ['ger','part']
+    }
+    const tenses = picks[mood] || []
+    const singleOf = (m, t) => {
+      const s = getConjugationExample(m, t)
+      if (!s) return ''
+      // tomar solo la primera forma de cada tiempo (antes de la primera coma o slash)
+      const parts = s.split(',').map(x=>x.trim())
+      let pick = parts[0] || ''
+      // Para imperativo queremos la forma de usted: segunda entrada (hable / no hable)
+      if (m === 'imperative') {
+        pick = (parts[1] || parts[0] || '').trim()
+      }
+      // si hubiera barras, tomar el primer segmento
+      return pick.split('/')[0].trim()
+    }
+    return tenses.map(t => singleOf(mood, t)).filter(Boolean).join(' · ')
+  }
+
   if (currentMode === 'onboarding') {
     return (
       <div className="App">
@@ -856,11 +882,6 @@ function App() {
                     <p>Usás recursos idiomáticos y tonos variados con dominio casi nativo.</p>
                     <p className="example">Todas las formas verbales</p>
                   </div>
-                    <div className="option-card" onClick={() => selectLevel('ALL')}>
-                      <h3>Libre</h3>
-                      <p>Elegí cualquier forma sin aumentar la dificultad</p>
-                      <p className="example">Inventario completo, dificultad media</p>
-                  </div>
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
@@ -976,7 +997,7 @@ function App() {
                           {availableMoods.map(mood => (
                             <div key={mood} className="option-card compact" onClick={() => selectMood(mood)}>
                               <h3>{getMoodLabel(mood)}</h3>
-                              <p className="conjugation-example">{getMoodDescription(mood)}</p>
+                              <p className="conjugation-example">{getModeSamples(mood)}</p>
                             </div>
                           ))}
                         </div>
@@ -1017,27 +1038,27 @@ function App() {
                         <div className="options-grid">
                           <div className="option-card compact" onClick={() => selectMood('indicative')}>
                             <h3>Indicativo</h3>
-                            <p className="conjugation-example">Hechos y realidades</p>
+                            <p className="conjugation-example">{getModeSamples('indicative')}</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectMood('subjunctive')}>
                             <h3>Subjuntivo</h3>
-                            <p className="conjugation-example">Dudas, deseos, emociones</p>
+                            <p className="conjugation-example">{getModeSamples('subjunctive')}</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectMood('imperative')}>
                             <h3>Imperativo</h3>
-                            <p className="conjugation-example">Órdenes y mandatos</p>
+                            <p className="conjugation-example">{getModeSamples('imperative')}</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectMood('conditional')}>
                             <h3>Condicional</h3>
-                            <p className="conjugation-example">Situaciones hipotéticas</p>
+                            <p className="conjugation-example">{getModeSamples('conditional')}</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectMood('nonfinite')}>
                             <h3>Formas no conjugadas</h3>
-                            <p className="conjugation-example">Participios y gerundios</p>
+                            <p className="conjugation-example">{getModeSamples('nonfinite')}</p>
                           </div>
                         </div>
                         
