@@ -326,7 +326,7 @@ function App() {
     return (
       <div className="App">
           <div className="onboarding">
-                      <div className="app-logo">
+                      <div className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
                       </div>
             
