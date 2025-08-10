@@ -857,13 +857,20 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('peninsular')}>
-                    <h3><img src="/tuvosotros.png" alt="Tú + Vosotros" className="option-icon" /></h3>
+                    <h3>
+                      <img src="/tu.png" alt="Tú" className="option-icon" />
+                      <img src="/vosotros.png" alt="Vosotros" className="option-icon" />
+                    </h3>
                     <p>España</p>
                     <p className="example">tú tienes, vosotros tenéis</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('both')}>
-                    <h3><img src="/tuvosvosotros.png" alt="Todas las formas" className="option-icon" /></h3>
+                    <h3>
+                      <img src="/tu.png" alt="Tú" className="option-icon" />
+                      <img src="/vos.png" alt="Vos" className="option-icon" />
+                      <img src="/vosotros.png" alt="Vosotros" className="option-icon" />
+                    </h3>
                     <p>Argentina, España, México, etc.</p>
                     <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
                   </div>
