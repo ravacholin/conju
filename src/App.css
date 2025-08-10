@@ -1021,43 +1021,10 @@ body {
   * { transition: none !important; animation: none !important; }
 }
 
-/* Menú de juegos - grid más compacto */
-.games-panel .options-grid {
-  grid-template-columns: 1fr;
-  max-width: 320px;
-  gap: 0.75rem;
-}
-
-.games-panel .option-card.compact {
-  min-height: 70px;
-  padding: 0.75rem 1rem;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: left;
-  flex-direction: row;
-  gap: 1rem;
-  width: fit-content;
-  margin: 0 auto;
-}
-
+/* Menú de juegos - mantener diseño original pero mejorar legibilidad */
 .games-panel .option-card.compact .conjugation-example {
-  font-size: 0.9rem;
-  margin: 0;
-  padding: 0;
-  border-left: none;
-  background: transparent;
-  border-radius: 0;
-  font-family: inherit;
-  color: var(--text);
-  opacity: 1;
-  text-align: left;
-  line-height: 1.3;
-  flex: 0 1 auto;
-  white-space: nowrap;
-}
-
-.games-panel .game-icon {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 }
