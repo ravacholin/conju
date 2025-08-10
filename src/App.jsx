@@ -671,6 +671,19 @@ function App() {
   // Function to go back in the onboarding flow
   const goBack = () => {
     if (onboardingStep > 1) {
+      // Special case: if we're in step 5 and came from "Por tema", go directly to main menu
+      if (onboardingStep === 5 && settings.cameFromTema) {
+        setOnboardingStep(2) // Go directly to main menu: "¿Qué querés practicar?"
+        return
+      }
+      
+      // Special case: if we're in step 6 and came from "Por tema", go back to step 5
+      if (onboardingStep === 6 && settings.cameFromTema) {
+        setOnboardingStep(5)
+        return
+      }
+      
+      // Default behavior: go back one step
       setOnboardingStep(onboardingStep - 1)
     }
   }
@@ -857,7 +870,7 @@ function App() {
                   
                   <div className="option-card" onClick={() => {
                     // Formas específicas con inventario completo pero dificultad media
-                    settings.set({ practiceMode: 'specific', level: 'ALL' })
+                    settings.set({ practiceMode: 'specific', level: null, cameFromTema: true })
                     settings.set({
                       strict: true,
                       accentTolerance: 'warn',
