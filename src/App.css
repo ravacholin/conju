@@ -827,8 +827,8 @@ body {
 
 /* Ícono de vosotros más grande */
 .option-card h3 .option-icon[src*="vosotros"] {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
 }
 
 .start-specific-practice {
