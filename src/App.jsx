@@ -813,6 +813,35 @@ function App() {
   
   // Helper function to get samples from a list of tenses
   const getSamplesFromTenses = (mood, tenses) => {
+    // Define the order of learning for each mood (simple tenses first, no compound tenses)
+    const learningOrder = {
+      'indicative': ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf'],
+      'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
+      'imperative': ['impAff', 'impNeg'], // Exclude impMixed to avoid repetition
+      'conditional': ['cond', 'condPerf'],
+      'nonfinite': ['ger', 'part'] // Exclude nonfiniteMixed to avoid repetition
+    }
+    
+    // Filter out compound tenses and mixed forms for subtitles
+    const simpleTenses = tenses.filter(t => {
+      // Exclude compound tenses (those with 'Perf' or 'Plusc')
+      if (t.includes('Perf') || t.includes('Plusc')) return false
+      // Exclude mixed forms for subtitles
+      if (t.includes('Mixed')) return false
+      return true
+    })
+    
+    // Sort tenses according to learning order
+    const sortedTenses = simpleTenses.sort((a, b) => {
+      const order = learningOrder[mood] || []
+      const aIndex = order.indexOf(a)
+      const bIndex = order.indexOf(b)
+      if (aIndex === -1 && bIndex === -1) return 0
+      if (aIndex === -1) return 1
+      if (bIndex === -1) return -1
+      return aIndex - bIndex
+    })
+    
     const singleOf = (m, t) => {
       const s = getConjugationExample(m, t)
       if (!s) return ''
@@ -827,7 +856,7 @@ function App() {
       // si hubiera barras, tomar el primer segmento
       return pick.split('/')[0].trim()
     }
-    return tenses.map(t => singleOf(mood, t)).filter(Boolean).join(' · ')
+    return sortedTenses.map(t => singleOf(mood, t)).filter(Boolean).join(' · ')
   }
 
   if (currentMode === 'onboarding') {
