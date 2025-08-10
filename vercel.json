@@ -19,7 +19,7 @@
       "dest": "/index.html"
     }
   ],
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "buildCommand": "./vercel-build.sh",
+  "installCommand": "echo 'Using custom build script'",
   "outputDirectory": "dist"
 }
