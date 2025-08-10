@@ -722,6 +722,8 @@ function App() {
 
   // Function to get available tenses for a specific level and mood
   const getAvailableTensesForLevelAndMood = (level, mood) => {
+    console.log(`🔍 getAvailableTensesForLevelAndMood(${level}, ${mood}) called`)
+    
     // Special case for ALL level - show all tenses for the mood
     if (level === 'ALL') {
       const allTenses = {
@@ -731,11 +733,14 @@ function App() {
         'conditional': ['cond', 'condPerf'],
         'nonfinite': ['ger', 'part', 'nonfiniteMixed']
       }
-      return allTenses[mood] || ['pres']
+      const result = allTenses[mood] || ['pres']
+      console.log(`📋 ALL level - returning all tenses for ${mood}:`, result)
+      return result
     }
     
     const levelGates = gates.filter(g => g.level === level && g.mood === mood)
     const tenses = levelGates.map(g => g.tense)
+    console.log(`📋 Level ${level} - found gates:`, levelGates, 'returning tenses:', tenses)
     return tenses
   }
 
@@ -793,6 +798,13 @@ function App() {
     // Get available tenses for the current level and mood
     const availableTenses = getAvailableTensesForLevelAndMood(settings.level, mood)
     
+    console.log(`🔍 getModeSamples(${mood}) called with:`, {
+      level: settings.level,
+      practiceMode: settings.practiceMode,
+      availableTenses,
+      mood
+    })
+    
     // If no specific level, show all tenses for the mood
     if (!settings.level) {
       const allTenses = {
@@ -803,7 +815,9 @@ function App() {
         'nonfinite': ['ger','part']
       }
       const tenses = allTenses[mood] || []
-      return getSamplesFromTenses(mood, tenses)
+      const result = getSamplesFromTenses(mood, tenses)
+      console.log(`📋 No level - showing all tenses for ${mood}:`, result)
+      return result
     }
     
     // If practiceMode is 'specific', show all tenses for the mood
@@ -816,11 +830,15 @@ function App() {
         'nonfinite': ['ger','part']
       }
       const tenses = allTenses[mood] || []
-      return getSamplesFromTenses(mood, tenses)
+      const result = getSamplesFromTenses(mood, tenses)
+      console.log(`📋 Specific mode - showing all tenses for ${mood}:`, result)
+      return result
     }
     
     // For level-based practice (mixed mode), only show tenses available at that level
-    return getSamplesFromTenses(mood, availableTenses)
+    const result = getSamplesFromTenses(mood, availableTenses)
+    console.log(`📋 Level-based (${settings.level}) - showing available tenses for ${mood}:`, result)
+    return result
   }
   
   // Helper function to get samples from a list of tenses
