@@ -769,10 +769,10 @@ function App() {
       'subjunctive_subjPerf': 'haya hablado, hayas hablado, haya hablado',
       'subjunctive_subjPlusc': 'hubiera hablado, hubieras hablado, hubiera hablado',
       
-      // Imperativo
-      'imperative_impAff': 'habla, hable, hablen',
-      'imperative_impNeg': 'no hables, no hable, no hablen',
-      'imperative_impMixed': 'habla / no hables, hable / no hable',
+      // Imperativo - ahora incluye variantes dialectales
+      'imperative_impAff': settings.useVoseo ? 'hablá, hable, hablen' : 'habla, hable, hablen',
+      'imperative_impNeg': settings.useVoseo ? 'no hables, no hable, no hablen' : 'no hables, no hable, no hablen',
+      'imperative_impMixed': settings.useVoseo ? 'hablá / no hables, hable / no hable' : 'habla / no hables, hable / no hable',
       
       // Condicional
       'conditional_cond': 'hablaría, hablarías, hablaría',
@@ -804,15 +804,10 @@ function App() {
       // tomar solo la primera forma de cada tiempo (antes de la primera coma o slash)
       const parts = s.split(',').map(x=>x.trim())
       let pick = parts[0] || ''
-      // Para imperativo queremos la forma según la variante dialectal
+      // Para imperativo ya tenemos la forma correcta según la variante en getConjugationExample
+      // Solo tomamos la primera forma (2s) para el ejemplo
       if (m === 'imperative') {
-        if (settings.useVoseo) {
-          // Para voseo: "hablá - no hables"
-          pick = (parts[0] || '').trim() // Primera entrada para afirmativo
-        } else {
-          // Para tuteo: "habla - no hables" 
-          pick = (parts[1] || parts[0] || '').trim() // Segunda entrada para afirmativo
-        }
+        pick = parts[0] || ''
       }
       // si hubiera barras, tomar el primer segmento
       return pick.split('/')[0].trim()
