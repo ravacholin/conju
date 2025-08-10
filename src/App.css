@@ -825,6 +825,12 @@ body {
   margin-right: 0;
 }
 
+/* Ícono de vosotros más grande */
+.option-card h3 .option-icon[src*="vosotros"] {
+  width: 48px;
+  height: 48px;
+}
+
 .start-specific-practice {
   display: flex;
   align-items: center;
