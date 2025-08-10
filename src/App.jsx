@@ -866,8 +866,8 @@ function App() {
     const samples = sortedTenses.map(t => singleOf(mood, t)).filter(Boolean)
     const result = samples.join(' · ')
     
-    // Add "+ etc." if there are compound tenses available
-    return hasCompoundTenses && result ? `${result} + etc.` : result
+    // Add " · etc." if there are compound tenses available
+    return hasCompoundTenses && result ? `${result} · etc.` : result
   }
 
   if (currentMode === 'onboarding') {
