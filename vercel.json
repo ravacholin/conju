@@ -1,5 +1,4 @@
 {
-  "name": "conju",
   "version": 2,
   "builds": [
     {
@@ -12,11 +11,7 @@
   ],
   "routes": [
     {
-      "src": "/public/(.*)",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*\\.(png|jpg|jpeg|gif|svg|ico|css|js|woff|woff2|ttf|eot))",
+      "src": "/(.*\\.(png|jpg|jpeg|gif|svg|ico|css|js|woff|woff2|ttf|eot|webmanifest))",
       "dest": "/$1"
     },
     {
@@ -24,20 +19,7 @@
       "dest": "/index.html"
     }
   ],
-  "outputDirectory": "dist",
-  "framework": "vite",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "functions": {},
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    }
-  ]
+  "outputDirectory": "dist"
 }
