@@ -822,13 +822,16 @@ function App() {
       'nonfinite': ['ger', 'part'] // Exclude nonfiniteMixed to avoid repetition
     }
     
+    // Define which tenses are compound (should not appear in subtitles)
+    const compoundTenses = ['pretPerf', 'plusc', 'futPerf', 'subjPerf', 'subjPlusc', 'condPerf']
+    
     // Check if there are compound tenses available
-    const hasCompoundTenses = tenses.some(t => t.includes('Perf') || t.includes('Plusc'))
+    const hasCompoundTenses = tenses.some(t => compoundTenses.includes(t))
     
     // Filter out compound tenses and mixed forms for subtitles
     const simpleTenses = tenses.filter(t => {
-      // Exclude compound tenses (those with 'Perf' or 'Plusc')
-      if (t.includes('Perf') || t.includes('Plusc')) return false
+      // Exclude compound tenses
+      if (compoundTenses.includes(t)) return false
       // Exclude mixed forms for subtitles
       if (t.includes('Mixed')) return false
       return true
