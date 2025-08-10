@@ -73,6 +73,15 @@ export default function Drill({
     return () => clearInterval(id)
   }, [settings.resistanceActive, settings.resistanceMsLeft])
 
+  // Add 5 seconds when countdown is activated
+  useEffect(() => {
+    if (settings.resistanceActive && settings.resistanceMsLeft > 0) {
+      // Add 5 seconds (5000ms) to the countdown
+      const currentMs = settings.resistanceMsLeft
+      settings.set({ resistanceMsLeft: currentMs + 5000 })
+    }
+  }, [settings.resistanceActive])
+
   // Auto-advance on accent errors
   useEffect(() => {
     if (result && result.isAccentError) {
@@ -825,7 +834,7 @@ export default function Drill({
       {/* Resistance HUD */}
       {settings.resistanceActive && (
         <div className="resistance-hud">
-          <div className="digit-clock">
+          <div className={`digit-clock ${settings.resistanceMsLeft <= 3000 ? 'urgent' : ''} ${settings.resistanceMsLeft === 0 ? 'shake' : ''}`}>
             {(() => {
               const ms = Math.max(0, settings.resistanceMsLeft)
               const s = Math.floor(ms/1000)

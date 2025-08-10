@@ -692,6 +692,33 @@ body {
 }
 .resistance-caption{ font-size: 0.9rem; color: #9aa5b1; text-transform: uppercase; letter-spacing: 0.08em; }
 
+/* Urgent mode - last 3 seconds (red color) */
+.digit-clock.urgent {
+  color: #ff6666 !important;
+  text-shadow: 0 0 4px rgba(255,102,102,0.35), 0 0 10px rgba(255,102,102,0.2) !important;
+  border-color: #2a1a1a !important;
+}
+
+.digit-clock.urgent .digit {
+  border-color: rgba(255,102,102,0.18) !important;
+  background: linear-gradient(to bottom, rgba(255,102,102,0.08), rgba(255,102,102,0.04)) !important;
+}
+
+.digit-clock.urgent .digit.colon {
+  text-shadow: 0 0 4px rgba(255,102,102,0.35) !important;
+}
+
+/* Shake animation when countdown reaches zero */
+.digit-clock.shake {
+  animation: countdown-shake 0.5s ease-in-out;
+}
+
+@keyframes countdown-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
 .settings-panel {
   background: #0a0a0a;
   border: 1px solid var(--border);
