@@ -845,26 +845,26 @@ function App() {
               <>
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
-                    <h3>Español Rioplatense</h3>
+                    <h3><img src="/vos.png" alt="Vos" className="option-icon" /></h3>
                     <p>Argentina, Uruguay</p>
                     <p className="example">vos tenés, vos hablás</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('la_general')}>
-                    <h3>Latinoamérica</h3>
+                    <h3><img src="/tu.png" alt="Tú" className="option-icon" /></h3>
                     <p>México, Perú, Cuba, etc.</p>
                     <p className="example">tú tienes, tú hablas</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('peninsular')}>
-                    <h3>Español Peninsular</h3>
+                    <h3><img src="/tuvosotros.png" alt="Tú + Vosotros" className="option-icon" /></h3>
                     <p>España</p>
                     <p className="example">tú tienes, vosotros tenéis</p>
                   </div>
                   
                   <div className="option-card" onClick={() => selectDialect('both')}>
-                    <h3>Todas las Formas</h3>
-                    <p>Tú, vos, y vosotros</p>
+                    <h3><img src="/tuvosvosotros.png" alt="Todas las formas" className="option-icon" /></h3>
+                    <p>Argentina, España, México, etc.</p>
                     <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
                   </div>
                 </div>
