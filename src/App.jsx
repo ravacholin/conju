@@ -870,7 +870,7 @@ function App() {
                   
                   <div className="option-card" onClick={() => {
                     // Formas específicas con inventario completo pero dificultad media
-                    settings.set({ practiceMode: 'specific', level: null, cameFromTema: true })
+                    settings.set({ practiceMode: 'specific', level: 'ALL', cameFromTema: true })
                     settings.set({
                       strict: true,
                       accentTolerance: 'warn',
