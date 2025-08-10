@@ -814,8 +814,6 @@ function App() {
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <h2>Seleccioná tu variedad:</h2>
-                
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
                     <h3>Español Rioplatense</h3>
