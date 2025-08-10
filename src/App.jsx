@@ -793,8 +793,8 @@ function App() {
     // Get available tenses for the current level and mood
     const availableTenses = getAvailableTensesForLevelAndMood(settings.level, mood)
     
-    // If no specific level or practice mode, show all tenses for the mood
-    if (!settings.level || settings.practiceMode === 'specific') {
+    // If no specific level, show all tenses for the mood
+    if (!settings.level) {
       const allTenses = {
         'indicative': ['pres','pretIndef','impf','fut'],
         'subjunctive': ['subjPres','subjImpf'],
@@ -806,7 +806,20 @@ function App() {
       return getSamplesFromTenses(mood, tenses)
     }
     
-    // For level-based practice, only show tenses available at that level
+    // If practiceMode is 'specific', show all tenses for the mood
+    if (settings.practiceMode === 'specific') {
+      const allTenses = {
+        'indicative': ['pres','pretIndef','impf','fut'],
+        'subjunctive': ['subjPres','subjImpf'],
+        'imperative': ['impAff','impNeg'],
+        'conditional': ['cond'],
+        'nonfinite': ['ger','part']
+      }
+      const tenses = allTenses[mood] || []
+      return getSamplesFromTenses(mood, tenses)
+    }
+    
+    // For level-based practice (mixed mode), only show tenses available at that level
     return getSamplesFromTenses(mood, availableTenses)
   }
   
