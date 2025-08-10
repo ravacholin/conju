@@ -272,7 +272,7 @@ function App() {
         form: { ...nextForm }, // Create new form object
         settings: { ...settings } // Include settings for grading
       }
-                          // SOLUCIÓN BULLETPROOF: Modo doble con verificación FINAL
+          // SOLUCIÓN BULLETPROOF: Modo doble con verificación FINAL
           if (useSettings.getState().doubleActive) {
             try {
               const lvl = useSettings.getState().level || 'B1'
@@ -284,75 +284,98 @@ function App() {
                 return allowedMoods.includes(f.mood) && allowedTenses.includes(f.tense)
               })
               
-              // 2. Crear un mapa de combinaciones únicas mood+tense
-              const uniqueCombos = new Map()
+              // 2. Agrupar formas por verbo (lemma)
+              const formsByVerb = new Map()
               for (const f of levelForms) {
-                const key = `${f.mood}|${f.tense}`
-                if (!uniqueCombos.has(key)) {
-                  uniqueCombos.set(key, [])
+                if (!formsByVerb.has(f.lemma)) {
+                  formsByVerb.set(f.lemma, [])
                 }
-                uniqueCombos.get(key).push(f)
+                formsByVerb.get(f.lemma).push(f)
               }
               
-              // 3. Convertir a array y mezclar para aleatoriedad
-              const comboKeys = Array.from(uniqueCombos.keys())
-              if (comboKeys.length >= 2) {
-                // Mezclar las combinaciones
-                for (let i = comboKeys.length - 1; i > 0; i--) {
-                  const j = Math.floor(Math.random() * (i + 1))
-                  ;[comboKeys[i], comboKeys[j]] = [comboKeys[j], comboKeys[i]]
+              // 3. Encontrar verbos que tengan al menos 2 formas con diferentes combinaciones mood+tense
+              const validVerbs = []
+              for (const [lemma, forms] of formsByVerb.entries()) {
+                const uniqueCombos = new Set()
+                for (const form of forms) {
+                  uniqueCombos.add(`${form.mood}|${form.tense}`)
+                }
+                if (uniqueCombos.size >= 2) {
+                  validVerbs.push({ lemma, forms, uniqueCombos: uniqueCombos.size })
+                }
+              }
+              
+              // 4. Seleccionar un verbo aleatorio de los válidos
+              if (validVerbs.length > 0) {
+                // Ordenar por cantidad de combinaciones únicas (preferir verbos con más variedad)
+                validVerbs.sort((a, b) => b.uniqueCombos - a.uniqueCombos)
+                
+                // Tomar uno de los primeros verbos (con más variedad)
+                const selectedVerb = validVerbs[Math.floor(Math.random() * Math.min(3, validVerbs.length))]
+                const verbForms = selectedVerb.forms
+                
+                // 5. Crear mapa de combinaciones únicas mood+tense para este verbo
+                const uniqueCombos = new Map()
+                for (const f of verbForms) {
+                  const key = `${f.mood}|${f.tense}`
+                  if (!uniqueCombos.has(key)) {
+                    uniqueCombos.set(key, [])
+                  }
+                  uniqueCombos.get(key).push(f)
                 }
                 
-                // Tomar las primeras dos combinaciones distintas
-                const firstCombo = comboKeys[0]
-                const secondCombo = comboKeys[1]
-                
-                // Obtener formas de cada combinación
-                const firstForms = uniqueCombos.get(firstCombo)
-                const secondForms = uniqueCombos.get(secondCombo)
-                
-                if (firstForms && secondForms) {
-                  // Seleccionar formas aleatorias de cada combinación
-                  const firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
-                  const secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                // 6. Seleccionar dos combinaciones diferentes
+                const comboKeys = Array.from(uniqueCombos.keys())
+                if (comboKeys.length >= 2) {
+                  // Mezclar las combinaciones
+                  for (let i = comboKeys.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1))
+                    ;[comboKeys[i], comboKeys[j]] = [comboKeys[j], comboKeys[i]]
+                  }
                   
-                  // VERIFICACIÓN FINAL: asegurar que sean DIFERENTES
-                  if (firstForm.mood !== secondForm.mood || firstForm.tense !== secondForm.tense) {
-                    console.log('✅ Double mode - VERIFIED distinct pair:')
-                    console.log('  First:', firstForm.mood, firstForm.tense)
-                    console.log('  Second:', secondForm.mood, secondForm.tense)
+                  // Tomar las primeras dos combinaciones distintas
+                  const firstCombo = comboKeys[0]
+                  const secondCombo = comboKeys[1]
+                  
+                  // 7. Obtener formas de cada combinación (del mismo verbo)
+                  const firstForms = uniqueCombos.get(firstCombo)
+                  const secondForms = uniqueCombos.get(secondCombo)
+                  
+                  if (firstForms && secondForms) {
+                    // Seleccionar formas aleatorias de cada combinación
+                    const firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
+                    const secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
                     
-                    // Actualizar el item principal
-                    newItem.lemma = firstForm.lemma
-                    newItem.mood = firstForm.mood
-                    newItem.tense = firstForm.tense
-                    newItem.person = firstForm.person
-                    newItem.form = { ...firstForm }
-                    
-                    // Agregar la segunda forma
-                    newItem.secondForm = { ...secondForm }
-                  } else {
-                    console.log('❌ CRITICAL ERROR: Forms are the same despite different combos!')
-                    console.log('First combo:', firstCombo)
-                    console.log('Second combo:', secondCombo)
-                    console.log('First form:', firstForm)
-                    console.log('Second form:', secondForm)
-                    
-                    // FALLBACK DE EMERGENCIA: crear dos formas manualmente distintas
-                    const emergencyForms = levelForms.filter(f => 
-                      f.mood !== firstForm.mood || f.tense !== firstForm.tense
-                    )
-                    
-                    if (emergencyForms.length > 0) {
-                      const emergencyForm = emergencyForms[0]
-                      console.log('🚨 Using emergency fallback:', emergencyForm.mood, emergencyForm.tense)
+                    // VERIFICACIÓN FINAL: asegurar que sean del MISMO VERBO y DIFERENTES combinaciones
+                    if (firstForm.lemma === secondForm.lemma && 
+                        (firstForm.mood !== secondForm.mood || firstForm.tense !== secondForm.tense)) {
+                      console.log('✅ Double mode - VERIFIED same verb with distinct combinations:')
+                      console.log('  Verb:', firstForm.lemma)
+                      console.log('  First:', firstForm.mood, firstForm.tense)
+                      console.log('  Second:', secondForm.mood, secondForm.tense)
                       
+                      // Actualizar el item principal
                       newItem.lemma = firstForm.lemma
                       newItem.mood = firstForm.mood
                       newItem.tense = firstForm.tense
                       newItem.person = firstForm.person
                       newItem.form = { ...firstForm }
-                      newItem.secondForm = { ...emergencyForm }
+                      
+                      // Agregar la segunda forma
+                      newItem.secondForm = { ...secondForm }
+                    } else {
+                      console.log('❌ CRITICAL ERROR: Forms are not from same verb or have same combo!')
+                      console.log('First form:', firstForm)
+                      console.log('Second form:', secondForm)
+                      
+                      // FALLBACK DE EMERGENCIA: buscar otro verbo válido
+                      const fallbackVerb = validVerbs.find(v => v.lemma !== selectedVerb.lemma)
+                      if (fallbackVerb) {
+                        console.log('🚨 Using fallback verb:', fallbackVerb.lemma)
+                        // Recursivamente intentar con otro verbo
+                        setTimeout(() => generateNextItem(), 100)
+                        return
+                      }
                     }
                   }
                 }

@@ -651,10 +651,14 @@ export default function Drill({
 
       {isDouble && (
         <div className="double-container">
-          <div className="conjugation-context" style={{marginBottom: '10px'}}>Conjugá dos juntos</div>
+          <div className="conjugation-context" style={{marginBottom: '10px'}}>
+            <strong>Conjugá dos juntos: {currentItem.lemma}</strong>
+          </div>
           <div className="double-grid">
             <div className="double-field">
-              <div className="person-display" style={{marginBottom: '6px'}}>{getMoodLabel(currentItem.mood)} · {getTenseLabel(currentItem.tense)} · {getPersonText()}</div>
+              <div className="person-display" style={{marginBottom: '6px'}}>
+                {getMoodLabel(currentItem.mood)} · {getTenseLabel(currentItem.tense)} · {getPersonText()}
+              </div>
               <input
                 ref={firstRef}
                 className="conjugation-input"
@@ -671,7 +675,9 @@ export default function Drill({
               />
             </div>
             <div className="double-field">
-              <div className="person-display" style={{marginBottom: '6px'}}>{getMoodLabel((currentItem.secondForm||currentItem.form).mood)} · {getTenseLabel((currentItem.secondForm||currentItem.form).tense)} · {getPersonText()}</div>
+              <div className="person-display" style={{marginBottom: '6px'}}>
+                {getMoodLabel((currentItem.secondForm||currentItem.form).mood)} · {getTenseLabel((currentItem.secondForm||currentItem.form).tense)} · {getPersonText()}
+              </div>
               <input
                 ref={secondRef}
                 className="conjugation-input"
