@@ -1678,10 +1678,8 @@ function App() {
                 }
                 setShowGames(false)
               }} aria-label="Survivor">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <img src="/zombie.png" alt="Survivor" className="game-icon" />
-                  <p className="conjugation-example" style={{ margin: 0 }}>Modo supervivencia</p>
-                </div>
+                <img src="/zombie.png" alt="Survivor" className="game-icon" />
+                <p className="conjugation-example">Modo supervivencia</p>
               </div>
               <div className="option-card compact" onClick={() => {
                 // Toggle reverse mode
@@ -1696,10 +1694,8 @@ function App() {
                   }, 100)
                 }
               }} aria-label="Reverso">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <img src="/sobrev.png" alt="Reverso" className="game-icon" />
-                  <p className="conjugation-example" style={{ margin: 0 }}>Invertí la consigna</p>
-                </div>
+                <img src="/sobrev.png" alt="Reverso" className="game-icon" />
+                <p className="conjugation-example">Invertí la consigna</p>
               </div>
               <div className="option-card compact" onClick={() => {
                 // Toggle double mode
@@ -1714,10 +1710,8 @@ function App() {
                   }, 100)
                 }
               }} aria-label="Conjugá dos juntos">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
-                  <p className="conjugation-example" style={{ margin: 0 }}>Conjugá dos juntos</p>
-                </div>
+                <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
+                <p className="conjugation-example">Conjugá dos juntos</p>
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>

@@ -279,6 +279,14 @@ body {
     font-size: 0.85rem;
     padding-left: 0.4rem;
   }
+  
+  /* Menú de juegos en mobile - solo mejorar legibilidad del texto */
+  .games-panel .option-card.compact .conjugation-example {
+    font-size: 1.1rem !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+  }
 }
 
 .option-card:hover {
@@ -692,31 +700,118 @@ body {
 }
 .resistance-caption{ font-size: 0.9rem; color: #9aa5b1; text-transform: uppercase; letter-spacing: 0.08em; }
 
-/* Urgent mode - last 3 seconds (red color) */
+/* Urgent mode - last 5 seconds (red color) */
 .digit-clock.urgent {
-  color: #ff6666 !important;
-  text-shadow: 0 0 4px rgba(255,102,102,0.35), 0 0 10px rgba(255,102,102,0.2) !important;
-  border-color: #2a1a1a !important;
+  color: #ff4444;
+  animation: urgent-pulse 1s ease-in-out infinite;
+}
+
+@keyframes urgent-pulse {
+  0% { 
+    color: #ff4444;
+    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  }
+  50% { 
+    color: #ff6666;
+    text-shadow: 0 0 12px rgba(255, 68, 68, 0.8);
+  }
+  100% { 
+    color: #ff4444;
+    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  }
 }
 
 .digit-clock.urgent .digit {
-  border-color: rgba(255,102,102,0.18) !important;
-  background: linear-gradient(to bottom, rgba(255,102,102,0.08), rgba(255,102,102,0.04)) !important;
+  color: #ff4444;
+  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
 }
 
 .digit-clock.urgent .digit.colon {
-  text-shadow: 0 0 4px rgba(255,102,102,0.35) !important;
+  color: #ff4444;
+  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+}
+
+/* Vibración ligera para modo urgente */
+.digit-clock.urgent-tick {
+  animation: urgent-tick 0.15s ease-out;
+}
+
+@keyframes urgent-tick {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  50% { transform: translateX(1px); }
+  75% { transform: translateX(-0.5px); }
+  100% { transform: translateX(0); }
 }
 
 /* Shake animation when countdown reaches zero */
 .digit-clock.shake {
-  animation: countdown-shake 0.5s ease-in-out;
+  animation: countdown-explosion 1.2s ease-in-out;
+  color: #ff0000 !important;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
 }
 
-@keyframes countdown-shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-  20%, 40%, 60%, 80% { transform: translateX(2px); }
+.digit-clock.shake .digit {
+  color: #ff0000 !important;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+}
+
+@keyframes countdown-explosion {
+  0% { 
+    transform: scale(1) rotate(0deg); 
+    filter: brightness(1);
+  }
+  10% { 
+    transform: scale(1.1) rotate(-2deg); 
+    filter: brightness(1.2);
+  }
+  20% { 
+    transform: scale(1.2) rotate(2deg); 
+    filter: brightness(1.4);
+  }
+  30% { 
+    transform: scale(1.3) rotate(-3deg); 
+    filter: brightness(1.6);
+  }
+  40% { 
+    transform: scale(1.4) rotate(3deg); 
+    filter: brightness(1.8);
+  }
+  50% { 
+    transform: scale(1.5) rotate(-4deg); 
+    filter: brightness(2);
+  }
+  60% { 
+    transform: scale(1.4) rotate(3deg); 
+    filter: brightness(1.8);
+  }
+  70% { 
+    transform: scale(1.3) rotate(-2deg); 
+    filter: brightness(1.6);
+  }
+  80% { 
+    transform: scale(1.2) rotate(1deg); 
+    filter: brightness(1.4);
+  }
+  90% { 
+    transform: scale(1.1) rotate(-0.5deg); 
+    filter: brightness(1.2);
+  }
+  100% { 
+    transform: scale(1) rotate(0deg); 
+    filter: brightness(1);
+  }
+}
+
+/* Click feedback animation when adding 5 seconds */
+.digit-clock.click-feedback {
+  animation: click-feedback 0.3s ease-out;
+}
+
+@keyframes click-feedback {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 .settings-panel {
@@ -854,8 +949,8 @@ body {
 
 /* Ícono de vosotros más grande */
 .option-card h3 .option-icon[src*="vosotros"] {
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
 }
 
 .start-specific-practice {
@@ -920,8 +1015,104 @@ body {
   .verb-lemma { font-size: 1.8rem; }
   .conjugation-input { max-width: 100%; font-size: 1.05rem; }
   .header { padding: 0.6rem 0.8rem; }
+  
+  /* Menú de juegos en mobile - elementos más grandes */
+  .games-panel .option-card.compact {
+    padding: 1.5rem 1.75rem;
+    min-height: 130px;
+  }
+  
+  .games-panel .option-card.compact .conjugation-example {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-top: 0.5rem;
+  }
+  
+  .games-panel .game-icon {
+    width: 56px;
+    height: 56px;
+  }
+  
+  /* Botón de cerrar en mobile */
+  .games-panel .btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    min-height: 48px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
+}
+
+/* Menú de juegos - grid más compacto */
+.games-panel .options-grid {
+  grid-template-columns: 1fr;
+  max-width: 320px;
+  gap: 0.75rem;
+}
+
+.games-panel .option-card.compact {
+  min-height: 70px;
+  padding: 0.75rem 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+  flex-direction: row;
+  gap: 1rem;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.games-panel .option-card.compact .conjugation-example {
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0;
+  border-left: none;
+  background: transparent;
+  border-radius: 0;
+  font-family: inherit;
+  color: var(--text);
+  opacity: 1;
+  text-align: left;
+  line-height: 1.3;
+  flex: 0 1 auto;
+  white-space: nowrap;
+}
+
+.games-panel .game-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 560px) {
+  .games-panel .options-grid {
+    max-width: 100%;
+    gap: 0.4rem;
+    padding: 0 0.5rem;
+  }
+  
+  .games-panel .option-card.compact {
+    min-height: 45px;
+    padding: 0.4rem 0.6rem;
+    gap: 0.5rem;
+    max-width: 220px;
+    margin: 0 auto;
+    width: fit-content;
+  }
+  
+  .games-panel .option-card.compact .conjugation-example {
+    font-size: 0.75rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .games-panel .game-icon {
+    width: 24px;
+    height: 24px;
+  }
 }

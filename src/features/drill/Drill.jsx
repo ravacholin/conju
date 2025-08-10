@@ -27,6 +27,9 @@ export default function Drill({
   const [itemStart, setItemStart] = useState(Date.now())
   const [shakeStreak, setShakeStreak] = useState(false)
   const [secondInput, setSecondInput] = useState('')
+  const [clockClickFeedback, setClockClickFeedback] = useState(false)
+  const [showExplosion, setShowExplosion] = useState(false)
+  const [urgentTick, setUrgentTick] = useState(false)
 
   const inputRef = useRef(null)
   const firstRef = useRef(null)
@@ -58,16 +61,30 @@ export default function Drill({
       const left = Math.max(0, useSettings.getState().resistanceMsLeft - 100)
       settings.set({ resistanceMsLeft: left })
       setResistTick(t=>t+1)
+      
+      // Vibración ligera en modo urgente (últimos 5 segundos)
+      if (left <= 5000 && left > 0) {
+        setUrgentTick(true)
+        setTimeout(() => setUrgentTick(false), 150)
+      }
+      
       if (left === 0) {
-        // update best by level
-        const lvl = settings.level || 'A1'
-        const best = useSettings.getState().resistanceBestMsByLevel || {}
-        const survived = (Date.now() - (useSettings.getState().resistanceStartTs||Date.now()))
-        if (!best[lvl] || survived > best[lvl]) {
-          best[lvl] = survived
-          settings.set({ resistanceBestMsByLevel: { ...best } })
-        }
-        settings.set({ resistanceActive: false })
+        // Activar animación de explosión
+        setShowExplosion(true)
+        
+        // Mantener la explosión visible por 2 segundos
+        setTimeout(() => {
+          setShowExplosion(false)
+          // update best by level
+          const lvl = settings.level || 'A1'
+          const best = useSettings.getState().resistanceBestMsByLevel || {}
+          const survived = (Date.now() - (useSettings.getState().resistanceStartTs||Date.now()))
+          if (!best[lvl] || survived > best[lvl]) {
+            best[lvl] = survived
+            settings.set({ resistanceBestMsByLevel: { ...best } })
+          }
+          settings.set({ resistanceActive: false })
+        }, 2000)
       }
     }, 100)
     return () => clearInterval(id)
@@ -832,9 +849,25 @@ export default function Drill({
       ) : null}
 
       {/* Resistance HUD */}
-      {settings.resistanceActive && (
+      {(settings.resistanceActive || showExplosion) && (
         <div className="resistance-hud">
-          <div className={`digit-clock ${settings.resistanceMsLeft <= 3000 ? 'urgent' : ''} ${settings.resistanceMsLeft === 0 ? 'shake' : ''}`}>
+          <div 
+            className={`digit-clock ${settings.resistanceMsLeft <= 5000 ? 'urgent' : ''} ${showExplosion ? 'shake' : ''} ${clockClickFeedback ? 'click-feedback' : ''} ${urgentTick ? 'urgent-tick' : ''}`}
+            onClick={() => {
+              // Solo permitir clicks si el modo está activo
+              if (settings.resistanceActive && settings.resistanceMsLeft > 0) {
+                // Add 5 seconds (5000ms) when clicking the clock
+                const currentMs = settings.resistanceMsLeft
+                settings.set({ resistanceMsLeft: currentMs + 5000 })
+                
+                // Show visual feedback
+                setClockClickFeedback(true)
+                setTimeout(() => setClockClickFeedback(false), 300)
+              }
+            }}
+            style={{ cursor: settings.resistanceActive && settings.resistanceMsLeft > 0 ? 'pointer' : 'default' }}
+            title={settings.resistanceActive && settings.resistanceMsLeft > 0 ? "Click para agregar 5 segundos" : "¡Tiempo agotado!"}
+          >
             {(() => {
               const ms = Math.max(0, settings.resistanceMsLeft)
               const s = Math.floor(ms/1000)
@@ -845,7 +878,9 @@ export default function Drill({
               ))
             })()}
           </div>
-          <div className="resistance-caption">Modo Supervivencia</div>
+          <div className="resistance-caption">
+            {showExplosion ? '¡Tiempo agotado!' : 'Modo Supervivencia'}
+          </div>
         </div>
       )}
     </div>
