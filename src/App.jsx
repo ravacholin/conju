@@ -788,16 +788,30 @@ function App() {
     return examples[key] || ''
   }
 
-  // Compact samples per mood using hablar
+  // Compact samples per mood using hablar - now dynamic based on level
   const getModeSamples = (mood) => {
-    const picks = {
-      indicative: ['pres','pretIndef','impf','fut'],
-      subjunctive: ['subjPres','subjImpf'],
-      imperative: ['impAff','impNeg'],
-      conditional: ['cond'],
-      nonfinite: ['ger','part']
+    // Get available tenses for the current level and mood
+    const availableTenses = getAvailableTensesForLevelAndMood(settings.level, mood)
+    
+    // If no specific level or practice mode, show all tenses for the mood
+    if (!settings.level || settings.practiceMode === 'specific') {
+      const allTenses = {
+        'indicative': ['pres','pretIndef','impf','fut'],
+        'subjunctive': ['subjPres','subjImpf'],
+        'imperative': ['impAff','impNeg'],
+        'conditional': ['cond'],
+        'nonfinite': ['ger','part']
+      }
+      const tenses = allTenses[mood] || []
+      return getSamplesFromTenses(mood, tenses)
     }
-    const tenses = picks[mood] || []
+    
+    // For level-based practice, only show tenses available at that level
+    return getSamplesFromTenses(mood, availableTenses)
+  }
+  
+  // Helper function to get samples from a list of tenses
+  const getSamplesFromTenses = (mood, tenses) => {
     const singleOf = (m, t) => {
       const s = getConjugationExample(m, t)
       if (!s) return ''
