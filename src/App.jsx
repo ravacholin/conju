@@ -822,6 +822,9 @@ function App() {
       'nonfinite': ['ger', 'part'] // Exclude nonfiniteMixed to avoid repetition
     }
     
+    // Check if there are compound tenses available
+    const hasCompoundTenses = tenses.some(t => t.includes('Perf') || t.includes('Plusc'))
+    
     // Filter out compound tenses and mixed forms for subtitles
     const simpleTenses = tenses.filter(t => {
       // Exclude compound tenses (those with 'Perf' or 'Plusc')
@@ -856,7 +859,12 @@ function App() {
       // si hubiera barras, tomar el primer segmento
       return pick.split('/')[0].trim()
     }
-    return sortedTenses.map(t => singleOf(mood, t)).filter(Boolean).join(' · ')
+    
+    const samples = sortedTenses.map(t => singleOf(mood, t)).filter(Boolean)
+    const result = samples.join(' · ')
+    
+    // Add "+ etc." if there are compound tenses available
+    return hasCompoundTenses && result ? `${result} + etc.` : result
   }
 
   if (currentMode === 'onboarding') {
