@@ -834,6 +834,7 @@ function App() {
                     <p className="example">A1, A2, B1, B2, C1, C2</p>
                   </div>
                   
+                  {/* Comentado temporalmente - nivel Libre
                   <div className="option-card" onClick={() => {
                     // Formas específicas con inventario completo pero dificultad media
                     settings.set({ practiceMode: 'specific', level: 'ALL' })
@@ -857,6 +858,7 @@ function App() {
                     <p>Elegí un tiempo o modo específico</p>
                     <p className="example">Presente, subjuntivo, imperativo, etc.</p>
                   </div>
+                  */}
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
@@ -1591,6 +1593,13 @@ function App() {
                 const active = !!useSettings.getState().reverseActive
                 settings.set({ reverseActive: !active, doubleActive: false })
                 setShowGames(false)
+                
+                // CRÍTICO: Si se activa el modo reverso, regenerar inmediatamente
+                if (!active) {
+                  setTimeout(() => {
+                    generateNextItem()
+                  }, 100)
+                }
               }} aria-label="Reverso">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <img src="/sobrev.png" alt="Reverso" className="game-icon" />
@@ -1602,6 +1611,13 @@ function App() {
                 const active = !!useSettings.getState().doubleActive
                 settings.set({ doubleActive: !active, reverseActive: false })
                 setShowGames(false)
+                
+                // CRÍTICO: Si se activa el modo doble, regenerar inmediatamente
+                if (!active) {
+                  setTimeout(() => {
+                    generateNextItem()
+                  }, 100)
+                }
               }} aria-label="Conjugá dos juntos">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
