@@ -804,9 +804,15 @@ function App() {
       // tomar solo la primera forma de cada tiempo (antes de la primera coma o slash)
       const parts = s.split(',').map(x=>x.trim())
       let pick = parts[0] || ''
-      // Para imperativo queremos la forma de usted: segunda entrada (hable / no hable)
+      // Para imperativo queremos la forma según la variante dialectal
       if (m === 'imperative') {
-        pick = (parts[1] || parts[0] || '').trim()
+        if (settings.useVoseo) {
+          // Para voseo: "hablá - no hables"
+          pick = (parts[0] || '').trim() // Primera entrada para afirmativo
+        } else {
+          // Para tuteo: "habla - no hables" 
+          pick = (parts[1] || parts[0] || '').trim() // Segunda entrada para afirmativo
+        }
       }
       // si hubiera barras, tomar el primer segmento
       return pick.split('/')[0].trim()
