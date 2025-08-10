@@ -855,7 +855,6 @@ function App() {
                     <p className="example">A1, A2, B1, B2, C1, C2</p>
                   </div>
                   
-                  {/* Comentado temporalmente - nivel Libre
                   <div className="option-card" onClick={() => {
                     // Formas específicas con inventario completo pero dificultad media
                     settings.set({ practiceMode: 'specific', level: 'ALL' })
@@ -879,7 +878,6 @@ function App() {
                     <p>Elegí un tiempo o modo específico</p>
                     <p className="example">Presente, subjuntivo, imperativo, etc.</p>
                   </div>
-                  */}
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
