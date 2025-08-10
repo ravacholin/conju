@@ -1015,30 +1015,6 @@ body {
   .verb-lemma { font-size: 1.8rem; }
   .conjugation-input { max-width: 100%; font-size: 1.05rem; }
   .header { padding: 0.6rem 0.8rem; }
-  
-  /* Menú de juegos en mobile - elementos más grandes */
-  .games-panel .option-card.compact {
-    padding: 1.5rem 1.75rem;
-    min-height: 130px;
-  }
-  
-  .games-panel .option-card.compact .conjugation-example {
-    font-size: 1.1rem;
-    line-height: 1.5;
-    margin-top: 0.5rem;
-  }
-  
-  .games-panel .game-icon {
-    width: 56px;
-    height: 56px;
-  }
-  
-  /* Botón de cerrar en mobile */
-  .games-panel .btn {
-    font-size: 1rem;
-    padding: 0.8rem 1.5rem;
-    min-height: 48px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1084,35 +1060,4 @@ body {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-}
-
-/* Mobile optimizations */
-@media (max-width: 560px) {
-  .games-panel .options-grid {
-    max-width: 100%;
-    gap: 0.4rem;
-    padding: 0 0.5rem;
-  }
-  
-  .games-panel .option-card.compact {
-    min-height: 45px;
-    padding: 0.4rem 0.6rem;
-    gap: 0.5rem;
-    max-width: 220px;
-    margin: 0 auto;
-    width: fit-content;
-  }
-  
-  .games-panel .option-card.compact .conjugation-example {
-    font-size: 0.75rem;
-    line-height: 1.1;
-    white-space: nowrap;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .games-panel .game-icon {
-    width: 24px;
-    height: 24px;
-  }
 }
