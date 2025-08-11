@@ -1121,50 +1121,20 @@ body {
     margin-bottom: 0.5rem !important;
   }
   
-  /* ===== SUBTÍTULOS EN BLANCO PARA MOBILE ===== */
-  /* Hacer que todos los subtítulos y textos descriptivos sean blancos en mobile */
+  /* ===== SOLO SUBTÍTULOS ESPECÍFICOS EN BLANCO PARA MOBILE ===== */
+  /* Solo los textos que mencionaste, sin tocar nada más */
   
-  /* Subtítulos del primer menú (dialectos) */
+  /* Subtítulos del primer menú (dialectos): "vos tenés, vos hablás" */
   .option-card .example {
     color: #ffffff !important;
-    opacity: 1 !important;
   }
   
-  /* Subtítulos del segundo menú (niveles) */
+  /* Subtítulos del segundo menú (niveles): "A1, A2, B1, B2, C1, C2" */
   .option-card p:not(.example) {
     color: #ffffff !important;
   }
   
-  /* Ejemplos de conjugación en todos los menús */
-  .conjugation-example {
-    color: #ffffff !important;
-    opacity: 1 !important;
-  }
-  
-  /* Textos descriptivos en cards */
-  .option-card p {
-    color: #ffffff !important;
-  }
-  
-  /* Textos en breadcrumb */
-  .breadcrumb {
-    color: #ffffff !important;
-  }
-  
-  .breadcrumb .crumb {
-    color: #ffffff !important;
-    opacity: 0.8 !important;
-  }
-  
-  .breadcrumb .sep {
-    color: #ffffff !important;
-    opacity: 0.6 !important;
-  }
-  
-  .breadcrumb .current {
-    color: #ffffff !important;
-    opacity: 1 !important;
-  }
+
   
   /* Reducir espaciado en settings panel */
   .settings-panel {
@@ -1396,4 +1366,6 @@ body {
   .error-message {
     padding: 1.25rem !important;
   }
+  
+
 }
