@@ -1105,11 +1105,6 @@ function App() {
                     return (
                       <>
                         <h2>Seleccioná el modo verbal:</h2>
-                        {settings.level === 'C2' || settings.level === 'ALL' ? (
-                          <p>Modos disponibles (todas las formas):</p>
-                        ) : (
-                          <p>Modos disponibles para nivel {settings.level}:</p>
-                        )}
                         
                         <div className="options-grid">
                           {availableMoods.map(mood => (
