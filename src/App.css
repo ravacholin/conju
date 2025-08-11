@@ -1043,7 +1043,7 @@ body {
 /* Solo ajusta espaciado y colores de texto específicos */
 /* NO modifica tamaños de imágenes ni estructura base */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* Reducir espaciado general en mobile */
   .option-card {
     padding: 1.5rem !important;
@@ -1121,29 +1121,53 @@ body {
     margin-bottom: 0.5rem !important;
   }
   
-  /* ===== SOLO SUBTÍTULOS ESPECÍFICOS EN BLANCO PARA MOBILE ===== */
-  /* Solo los textos que mencionaste, sin tocar nada más */
+  /* ===== SUBTÍTULOS EN BLANCO PARA MOBILE - CSS AGRESIVO ===== */
+  /* Forzar que los subtítulos sean blancos en mobile */
   
   /* Subtítulos del primer menú (dialectos): "vos tenés, vos hablás" */
   .option-card .example,
-  .option-card p.example {
+  .option-card p.example,
+  .onboarding .option-card .example,
+  .onboarding .option-card p.example {
     color: #ffffff !important;
     opacity: 1 !important;
+    font-weight: 500 !important;
   }
   
   /* Subtítulos del segundo menú (niveles): "A1, A2, B1, B2, C1, C2" */
-  .option-card p:not(.example) {
-    color: #ffffff !important;
-  }
-  
-  /* Forzar específicamente los textos que mencionaste */
-  .onboarding .option-card .example {
-    color: #ffffff !important;
-    opacity: 1 !important;
-  }
-  
+  .option-card p:not(.example),
   .onboarding .option-card p:not(.example) {
     color: #ffffff !important;
+    font-weight: 400 !important;
+  }
+  
+  /* Forzar TODOS los textos en cards a blanco en mobile */
+  .onboarding .option-card p,
+  .option-card p {
+    color: #ffffff !important;
+  }
+  
+  /* CSS específico para celulares - más agresivo */
+  @media (max-width: 768px) {
+    .option-card .example,
+    .option-card p.example,
+    .onboarding .option-card .example,
+    .onboarding .option-card p.example {
+      color: #ffffff !important;
+      opacity: 1 !important;
+      font-weight: 500 !important;
+    }
+    
+    .option-card p:not(.example),
+    .onboarding .option-card p:not(.example) {
+      color: #ffffff !important;
+      font-weight: 400 !important;
+    }
+    
+    .onboarding .option-card p,
+    .option-card p {
+      color: #ffffff !important;
+    }
   }
   
 
