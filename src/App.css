@@ -1125,24 +1125,12 @@ body {
   /* Solo los textos que mencionaste, sin tocar nada más */
   
   /* Subtítulos del primer menú (dialectos): "vos tenés, vos hablás" */
-  .option-card .example,
-  .option-card p.example {
+  .option-card .example {
     color: #ffffff !important;
-    opacity: 1 !important;
   }
   
   /* Subtítulos del segundo menú (niveles): "A1, A2, B1, B2, C1, C2" */
   .option-card p:not(.example) {
-    color: #ffffff !important;
-  }
-  
-  /* Forzar específicamente los textos que mencionaste */
-  .onboarding .option-card .example {
-    color: #ffffff !important;
-    opacity: 1 !important;
-  }
-  
-  .onboarding .option-card p:not(.example) {
     color: #ffffff !important;
   }
   
