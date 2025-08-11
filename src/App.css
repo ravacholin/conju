@@ -1021,10 +1021,31 @@ body {
   * { transition: none !important; animation: none !important; }
 }
 
-/* Menú de juegos - mantener diseño original pero mejorar legibilidad */
+/* Menú de juegos - layout horizontal y botones compactos */
+.games-panel .option-card.compact {
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.75rem !important;
+  min-height: 60px !important;
+  padding: 0.75rem 1rem !important;
+  width: fit-content !important;
+  margin: 0 auto !important;
+}
+
 .games-panel .option-card.compact .conjugation-example {
   font-size: 1rem;
   color: #ffffff;
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 1 auto !important;
+  white-space: nowrap !important;
+}
+
+.games-panel .game-icon {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0 !important;
 }
