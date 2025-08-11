@@ -922,7 +922,6 @@ function App() {
             {onboardingStep === 2 && (
               <>
                 <h2>¿Qué querés practicar?</h2>
-                <p>Elegí tu nivel o trabajá formas específicas:</p>
                 
                 <div className="options-grid menu-section">
                   <div className="option-card featured" onClick={() => setOnboardingStep(3)}>
