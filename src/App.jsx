@@ -402,6 +402,18 @@ function App() {
   // Initialize first item when settings are ready
   useEffect(() => {
     if (currentMode === 'drill' && settings.region && !currentItem) {
+      // Asegurar que la página esté en la parte superior cuando se entra al drill
+      // Esto previene el scroll automático en mobile
+      if (typeof window !== 'undefined') {
+        // Scroll inmediato a la parte superior
+        window.scrollTo(0, 0)
+        
+        // Scroll suave adicional para dispositivos que lo soporten
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }, 50)
+      }
+      
       // Only generate a new item when entering drill mode or when practice settings change AND there's no current item
       generateNextItem()
     }
@@ -444,6 +456,19 @@ function App() {
     setCurrentItem(null)
     // Cerrar paneles y desactivar funciones auxiliares
     closeTopPanelsAndFeatures()
+    
+    // Asegurar que la página esté en la parte superior cuando se abre el drill
+    // Esto es especialmente importante en mobile donde puede haber scroll automático
+    if (typeof window !== 'undefined') {
+      // Scroll suave a la parte superior
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      
+      // Fallback para dispositivos que no soportan smooth scroll
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+    }
+    
     setCurrentMode('drill')
   }
 
@@ -686,6 +711,18 @@ function App() {
       // Default behavior: go back one step
       setOnboardingStep(onboardingStep - 1)
     }
+    
+    // Asegurar que la página esté en la parte superior cuando se navega hacia atrás
+    // Esto es especialmente importante en mobile donde puede haber scroll automático
+    if (typeof window !== 'undefined') {
+      // Scroll suave a la parte superior
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      
+      // Fallback para dispositivos que no soportan smooth scroll
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+    }
   }
 
   const handleBack = () => {
@@ -694,13 +731,20 @@ function App() {
   }
 
   const handleHome = () => {
-    // Go to main menu: "¿Qué querés practicar?" (step 2)
+    // Asegurar que la página esté en la parte superior cuando se regresa al menú
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      
+      // Fallback para dispositivos que no soportan smooth scroll
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+    }
+    
     setCurrentMode('onboarding')
-    setOnboardingStep(2)
+    setOnboardingStep(1)
     setCurrentItem(null)
     setHistory({})
-    setShowSettings(false)
-    // Cerrar paneles y desactivar funciones auxiliares
     closeTopPanelsAndFeatures()
   }
 
@@ -883,7 +927,7 @@ function App() {
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
-                <div className="options-grid">
+                <div className="options-grid dialect-selection">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
                     <h3><img src="/vos.png" alt="Vos" className="option-icon" /></h3>
                     <p>Argentina, Uruguay</p>
@@ -921,12 +965,9 @@ function App() {
             {/* Step 2: Level Selection or Specific Forms */}
             {onboardingStep === 2 && (
               <>
-                <h2>¿Qué querés practicar?</h2>
-                
                 <div className="options-grid menu-section">
                   <div className="option-card featured" onClick={() => setOnboardingStep(3)}>
                     <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
-                    <p>Practicá según tu nivel de español</p>
                     <p className="example">A1, A2, B1, B2, C1, C2</p>
                   </div>
                   
@@ -950,7 +991,6 @@ function App() {
                     setOnboardingStep(5)
                   }}>
                     <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
-                    <p>Elegí un tiempo o modo específico</p>
                     <p className="example">Presente, subjuntivo, imperativo, etc.</p>
                   </div>
                 </div>
@@ -1021,9 +1061,6 @@ function App() {
                     // Coming from level selection - show practice mode
                     return (
                       <>
-                        <h2>¿Cómo querés practicar?</h2>
-                        <p>Elegí el tipo de práctica para tu nivel {settings.level}:</p>
-                        
                         <div className="options-grid">
                           <div className="option-card" onClick={() => selectPracticeMode('mixed')}>
                             <h3><img src="/dice.png" alt="Dado" className="option-icon" /> Práctica Mixta</h3>
@@ -1068,9 +1105,6 @@ function App() {
                     // Mixed practice from level - go directly to verb type selection
                     return (
                       <>
-                        <h2>Seleccioná el tipo de verbos:</h2>
-                        <p>Práctica mixta para nivel {settings.level}:</p>
-                        
                         <div className="options-grid">
                           <div className="option-card" onClick={() => selectVerbType('all')}>
                             <h3><img src="/books.png" alt="Libros" className="option-icon" /> Todos los Verbos</h3>
@@ -1104,8 +1138,6 @@ function App() {
                     console.log('Available moods for level', settings.level, ':', availableMoods)
                     return (
                       <>
-                        <h2>Seleccioná el modo verbal:</h2>
-                        
                         <div className="options-grid">
                           {availableMoods.map(mood => (
                             <div key={mood} className="option-card compact" onClick={() => selectMood(mood)}>
@@ -1125,8 +1157,6 @@ function App() {
                     console.log('Showing tense selection for mood:', settings.specificMood)
                     return (
                       <>
-                        <h2>Seleccioná el tiempo verbal:</h2>
-                        
                         <div className="options-grid">
                           {getTensesForMood(settings.specificMood).map(tense => (
                             <div key={tense} className="option-card compact" onClick={() => selectTense(tense)}>
@@ -1146,8 +1176,6 @@ function App() {
                     console.log('Showing mood selection for forms specific without level')
                     return (
                       <>
-                        <h2>Seleccioná el modo verbal:</h2>
-                        
                         <div className="options-grid">
                           <div className="option-card compact" onClick={() => selectMood('indicative')}>
                             <h3>Indicativo</h3>
@@ -1196,13 +1224,6 @@ function App() {
                     // Coming from level selection - show filtered tenses
                     return (
                       <>
-                        <h2>Seleccioná el tiempo verbal:</h2>
-                        {settings.level === 'C2' || settings.level === 'ALL' ? (
-                          <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} (todas las formas):</p>
-                        ) : (
-                          <p>Tiempos disponibles para {getMoodLabel(settings.specificMood)} en nivel {settings.level}:</p>
-                        )}
-                        
                         <div className="options-grid">
                           {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
                             <div key={tense} className="option-card compact" onClick={() => selectTense(tense)}>
@@ -1227,8 +1248,6 @@ function App() {
             {/* Step 7: Verb Type Selection (for specific practice from level) */}
             {onboardingStep === 7 && settings.level && (
               <>
-                <h2>Seleccioná el tipo de verbos:</h2>
-                
                 <div className="options-grid">
                   <div className="option-card" onClick={() => selectVerbType('all')}>
                     <h3><img src="/books.png" alt="Libros" className="option-icon" /> Todos los Verbos</h3>
@@ -1642,6 +1661,10 @@ function App() {
               <button
                 className="btn"
                 onClick={() => {
+                  // Set practice mode to specific when using quick switch
+                  if (settings.specificMood || settings.specificTense) {
+                    settings.set({ practiceMode: 'specific' })
+                  }
                   // regenerate with new filters
                   setCurrentItem(null)
                   generateNextItem()
@@ -1703,9 +1726,9 @@ function App() {
                     generateNextItem()
                   }, 100)
                 }
-              }} aria-label="Conjugá dos juntos">
+              }} aria-label="Dos juntos dos">
                 <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
-                <p className="conjugation-example">Conjugá dos juntos</p>
+                <p className="conjugation-example">Dos juntos dos</p>
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>

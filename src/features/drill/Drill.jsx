@@ -678,7 +678,7 @@ export default function Drill({
       {isDouble && (
         <div className="double-container">
           <div className="conjugation-context" style={{marginBottom: '10px'}}>
-            <strong>Conjugá dos juntos: {currentItem.lemma}</strong>
+                            <strong>Dos verbos dos: {currentItem.lemma}</strong>
           </div>
           <div className="double-grid">
             <div className="double-field">

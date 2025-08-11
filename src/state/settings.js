@@ -33,7 +33,7 @@ export const useSettings = create((set) => ({
   resistanceBestMsByLevel: {},
   // Reverse mode (Reverso)
   reverseActive: false,
-  // Double mode (Conjugá dos juntos)
+  // Double mode (Dos verbos dos)
   doubleActive: false,
   region: 'la_general',  // 'rioplatense' | 'peninsular' | 'la_general'
   practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only'

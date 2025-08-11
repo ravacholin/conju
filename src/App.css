@@ -48,7 +48,7 @@
   --muted-2: #888888;
   --border: #2a2a2a;
   --border-2: #333333;
-  --hover: #111111;
+  --hover: #0a0a0a;
   --accent: #ffffff;
 }
 
@@ -317,9 +317,9 @@ body {
   padding-left: 0;
 }
 
-/* Más espacio entre ícono y texto en los primeros dos boxes de dialectos */
-.option-card:first-child h3,
-.option-card:nth-child(2) h3 {
+/* Más espacio entre ícono y texto en los primeros dos boxes de dialectos - SOLO para el menú de dialectos */
+.dialect-selection .option-card:first-child h3,
+.dialect-selection .option-card:nth-child(2) h3 {
   margin-bottom: 2.25rem;
 }
 
@@ -927,9 +927,9 @@ body {
 }
 
 .back-btn:hover {
-  background: #111111;
-  color: #ffffff;
+  background: transparent;
   border-color: #555555;
+  transform: translateY(-1px);
 }
 
 .back-icon {
@@ -1033,6 +1033,19 @@ body {
   .verb-lemma { font-size: 1.8rem; }
   .conjugation-input { max-width: 100%; font-size: 1.05rem; }
   .header { padding: 0.6rem 0.8rem; }
+  
+  /* En mobile, hacer los íconos de Tú y Vos 1/3 más pequeños */
+  .option-card h3 .option-icon[src*="tu"],
+  .option-card h3 .option-icon[src*="vos"] {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* En mobile, hacer el ícono de Vosotros al doble de su tamaño */
+  .option-card h3 .option-icon[src*="vosotros"] {
+    width: 800px;
+    height: 800px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1068,385 +1081,77 @@ body {
   flex-shrink: 0 !important;
 }
 
-/* ===== MODO MOBILE OPTIMIZADO ===== */
+/* ===== MEJORAS ESPECÍFICAS PARA TÍTULOS Y SUBTÍTULOS DE MENÚS ===== */
 @media (max-width: 768px) {
-  /* Botones más pequeños y compactos en mobile */
-  .option-card {
-    padding: 1.5rem;
-    min-height: auto;
-  }
-  
-  .option-card.compact {
-    padding: 1rem 1.25rem;
-    min-height: 80px;
-    gap: 0.75rem;
-  }
-  
-  /* Títulos más compactos */
-  .option-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    gap: 0.5rem;
-  }
-  
-  .option-card.compact h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  /* Iconos más pequeños en mobile */
-  .option-card h3 .option-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .option-card h3 .option-icon[src*="vosotros"] {
-    width: 70px;
-    height: 70px;
-  }
-  
-  /* Grid más compacto */
-  .options-grid {
-    gap: 1rem;
-    max-width: 100%;
-  }
-  
-  /* Menú de juegos específicamente más compacto */
-  .games-panel .option-card.compact {
-    min-height: 70px;
-    padding: 0.75rem 1rem;
-    gap: 0.75rem;
-  }
-  
-  .games-panel .game-icon {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-@media (max-width: 560px) {
-  /* Mobile más agresivo */
-  .option-card {
-    padding: 1.25rem;
-  }
-  
-  .option-card.compact {
-    padding: 0.875rem 1rem;
-    min-height: 70px;
-  }
-  
-  .option-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
-  }
-  
-  .option-card.compact h3 {
-    font-size: 1rem;
-    margin-bottom: 0.4rem;
-  }
-  
-  /* Iconos aún más pequeños */
-  .option-card h3 .option-icon {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .option-card h3 .option-icon[src*="vosotros"] {
-    width: 60px;
-    height: 60px;
-  }
-  
-  /* Grid más compacto */
-  .options-grid {
-    gap: 0.75rem;
-  }
-  
-  /* Menú de juegos ultra compacto */
-  .games-panel .option-card.compact {
-    min-height: 60px;
-    padding: 0.625rem 0.875rem;
-    gap: 0.625rem;
-  }
-  
-  .games-panel .game-icon {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-/* ===== MEJORAS DE LEGIBILIDAD PARA TODOS LOS TEXTOS DE EJEMPLO ===== */
-@media (max-width: 768px) {
-  /* Todos los textos de ejemplo más legibles en mobile */
-  .option-card .example,
-  .option-card .conjugation-example,
-  .conjugation-example {
-    font-size: 1rem !important;
-    color: #ffffff !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.9) !important;
-    opacity: 1 !important;
-    line-height: 1.3 !important;
-    padding: 0.5rem 0.75rem !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-left: 3px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 0 8px 8px 0 !important;
-  }
-  
-  /* Subtítulos de dialectos más legibles */
-  .option-card p:not(.example) {
-    font-size: 1.1rem !important;
-    color: #ffffff !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
-    margin-bottom: 0.75rem !important;
-  }
-  
-  /* Títulos principales más legibles */
+  /* Títulos principales de menús más prominentes */
   .onboarding h1 {
     font-size: 2.2rem !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-  }
-  
-  .onboarding h2 {
-    font-size: 1.6rem !important;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
-  }
-  
-  /* Breadcrumb más legible */
-  .breadcrumb {
-    font-size: 1rem !important;
+    font-weight: 700 !important;
     color: #ffffff !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
-  }
-}
-
-@media (max-width: 560px) {
-  /* Mobile más agresivo para legibilidad */
-  .option-card .example,
-  .option-card .conjugation-example,
-  .conjugation-example {
-    font-size: 0.95rem !important;
-    padding: 0.4rem 0.625rem !important;
-    line-height: 1.25 !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9) !important;
+    margin-bottom: 1rem !important;
   }
   
-  .option-card p:not(.example) {
-    font-size: 1rem !important;
-    margin-bottom: 0.625rem !important;
-  }
-  
-  .onboarding h1 {
-    font-size: 2rem !important;
-  }
-  
+  /* Subtítulos de menús más legibles */
   .onboarding h2 {
     font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    color: #e0e0e0 !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
+    margin-bottom: 1.5rem !important;
   }
   
-  .breadcrumb {
-    font-size: 0.9rem !important;
-  }
-}
-
-/* ===== AJUSTES ESPECÍFICOS PARA EL MENÚ DE JUEGOS ===== */
-@media (max-width: 768px) {
-  .games-panel .options-grid {
-    grid-template-columns: 1fr !important;
-    max-width: 100% !important;
-    gap: 0.75rem !important;
-  }
-  
-  .games-panel .option-card.compact {
-    width: 100% !important;
-    margin: 0 !important;
-    justify-content: center !important;
-    text-align: center !important;
-  }
-  
-  .games-panel .option-card.compact .conjugation-example {
-    text-align: center !important;
-    justify-content: center !important;
+  /* Descripciones principales de menús */
+  .onboarding p {
+    font-size: 1.1rem !important;
+    color: #d0d0d0 !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1rem !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.7) !important;
   }
 }
 
 @media (max-width: 560px) {
-  .games-panel .options-grid {
-    gap: 0.625rem !important;
+  /* Títulos principales en mobile pequeño */
+  .onboarding h1 {
+    font-size: 1.9rem !important;
+    margin-bottom: 0.875rem !important;
   }
   
-  .games-panel .option-card.compact {
-    padding: 0.75rem 1rem !important;
-    min-height: 65px !important;
+  /* Subtítulos en mobile pequeño */
+  .onboarding h2 {
+    font-size: 1.3rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+  
+  /* Descripciones en mobile pequeño */
+  .onboarding p {
+    font-size: 1rem !important;
+    margin-bottom: 0.875rem !important;
   }
 }
 
-/* ===== AJUSTES PARA EL HEADER Y NAVEGACIÓN ===== */
-@media (max-width: 768px) {
-  .header {
-    padding: 0.5rem 0.75rem;
-  }
-  
-  .icon-btn {
-    padding: 0.4rem 0.7rem;
-    font-size: 0.9rem;
-  }
-  
-  .back-btn {
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-  }
-  
-  .back-icon {
-    width: 18px;
-    height: 18px;
-  }
-}
 
-@media (max-width: 560px) {
-  .header {
-    padding: 0.4rem 0.625rem;
-  }
-  
-  .icon-btn {
-    padding: 0.35rem 0.6rem;
-    font-size: 0.85rem;
-  }
-  
-  .back-btn {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.9rem;
-  }
-  
-  .back-icon {
-    width: 16px;
-    height: 16px;
-  }
-}
 
-/* ===== AJUSTES PARA EL DRILL EN MOBILE ===== */
-@media (max-width: 768px) {
-  .drill-container {
-    padding: 1rem;
-  }
-  
-  .verb-lemma {
-    font-size: 2rem;
-  }
-  
-  .conjugation-input {
-    font-size: 1.1rem;
-    padding: 0.875rem;
-  }
-  
-  .btn {
-    padding: 0.875rem 1.25rem;
-    font-size: 1rem;
-  }
-}
 
-@media (max-width: 560px) {
-  .drill-container {
-    padding: 0.875rem;
-  }
-  
-  .verb-lemma {
-    font-size: 1.8rem;
-  }
-  
-  .conjugation-input {
-    font-size: 1rem;
-    padding: 0.75rem;
-  }
-  
-  .btn {
-    padding: 0.75rem 1.125rem;
-    font-size: 0.95rem;
-  }
-}
 
-/* ===== AJUSTES PARA PANELES Y CONTROLES ===== */
-@media (max-width: 768px) {
-  .quick-switch-panel {
-    padding: 1rem;
-  }
-  
-  .settings-panel {
-    padding: 1rem;
-  }
-  
-  .setting-select {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.95rem;
-  }
-  
-  .radio-group label {
-    padding: 0.75rem;
-    font-size: 0.95rem;
-  }
-}
 
-@media (max-width: 560px) {
-  .quick-switch-panel {
-    padding: 0.875rem;
-  }
-  
-  .settings-panel {
-    padding: 0.875rem;
-  }
-  
-  .setting-select {
-    padding: 0.4rem 0.625rem;
-    font-size: 0.9rem;
-  }
-  
-  .radio-group label {
-    padding: 0.625rem;
-    font-size: 0.9rem;
-  }
-}
 
-/* ===== MANTENER LA ESTÉTICA MINIMALISTA ===== */
-@media (max-width: 768px) {
-  /* Mantener sombras y efectos sutiles */
-  .option-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  }
-  
-  /* Mantener transiciones suaves */
-  .option-card,
-  .btn,
-  .icon-btn {
-    transition: all 0.2s ease;
-  }
-  
-  /* Mantener bordes y colores consistentes */
-  .option-card {
-    border: 1px solid var(--border);
-    background: #0a0a0a;
-  }
-  
-  /* Mantener espaciado consistente */
-  .onboarding {
-    padding: 1.5rem 1rem;
-  }
-  
-  .main-content {
-    padding: 1rem;
-  }
-}
 
-@media (max-width: 560px) {
-  .option-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  }
-  
-  .onboarding {
-    padding: 1.25rem 0.875rem;
-  }
-  
-  .main-content {
-    padding: 0.875rem;
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
