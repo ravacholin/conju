@@ -317,6 +317,12 @@ body {
   padding-left: 0;
 }
 
+/* Más espacio entre ícono y texto en los primeros dos boxes de dialectos */
+.option-card:first-child h3,
+.option-card:nth-child(2) h3 {
+  margin-bottom: 1.5rem;
+}
+
 .option-card p {
   font-size: 1rem;
   color: var(--muted);
