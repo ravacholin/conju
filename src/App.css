@@ -266,28 +266,7 @@ body {
 }
 .game-icon{ width: 46px; height: 46px; object-fit: contain; }
 
-@media (max-width: 560px) {
-  .option-card.compact { 
-    min-height: 110px;
-    padding: 1rem 1.25rem;
-  }
-  .option-card.compact h3 { 
-    font-size: 1.2rem; 
-    margin-bottom: 0.6rem;
-  }
-  .option-card.compact .conjugation-example { 
-    font-size: 0.85rem;
-    padding-left: 0.4rem;
-  }
-  
-  /* Menú de juegos en mobile - solo mejorar legibilidad del texto */
-  .games-panel .option-card.compact .conjugation-example {
-    font-size: 1.1rem !important;
-    color: #ffffff !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
-  }
-}
+
 
 .option-card:hover {
   background: var(--hover);
@@ -491,9 +470,7 @@ body {
   color: var(--text);
 }
 
-@media (max-width: 560px){
-  .reverse-grid{ grid-template-columns: 1fr; }
-}
+
 
 /* Double mode styles */
 .double-container{ margin-bottom: 1.2rem; }
@@ -503,9 +480,7 @@ body {
 .double-field{ display:flex; flex-direction:column; gap:6px; text-align:left; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; }
 .double-context{ font-size: 0.9rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.05em; }
 
-@media (max-width: 560px){
-  .double-grid{ grid-template-columns: 1fr; }
-}
+
 
 .conjugation-input {
   width: 100%;
@@ -1028,25 +1003,7 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
-@media (max-width: 480px) {
-  .option-card { padding: 1.5rem; }
-  .verb-lemma { font-size: 1.8rem; }
-  .conjugation-input { max-width: 100%; font-size: 1.05rem; }
-  .header { padding: 0.6rem 0.8rem; }
-  
-  /* En mobile, hacer los íconos de Tú y Vos 1/3 más pequeños */
-  .option-card h3 .option-icon[src*="tu"],
-  .option-card h3 .option-icon[src*="vos"] {
-    width: 24px;
-    height: 24px;
-  }
-  
-  /* En mobile, hacer el ícono de Vosotros al doble de su tamaño */
-  .option-card h3 .option-icon[src*="vosotros"] {
-    width: 800px;
-    height: 800px;
-  }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
@@ -1081,56 +1038,7 @@ body {
   flex-shrink: 0 !important;
 }
 
-/* ===== MEJORAS ESPECÍFICAS PARA TÍTULOS Y SUBTÍTULOS DE MENÚS ===== */
-@media (max-width: 768px) {
-  /* Títulos principales de menús más prominentes */
-  .onboarding h1 {
-    font-size: 2.2rem !important;
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.9) !important;
-    margin-bottom: 1rem !important;
-  }
-  
-  /* Subtítulos de menús más legibles */
-  .onboarding h2 {
-    font-size: 1.4rem !important;
-    font-weight: 600 !important;
-    color: #e0e0e0 !important;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
-    margin-bottom: 1.5rem !important;
-  }
-  
-  /* Descripciones principales de menús */
-  .onboarding p {
-    font-size: 1.1rem !important;
-    color: #d0d0d0 !important;
-    font-weight: 500 !important;
-    line-height: 1.5 !important;
-    margin-bottom: 1rem !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.7) !important;
-  }
-}
 
-@media (max-width: 560px) {
-  /* Títulos principales en mobile pequeño */
-  .onboarding h1 {
-    font-size: 1.9rem !important;
-    margin-bottom: 0.875rem !important;
-  }
-  
-  /* Subtítulos en mobile pequeño */
-  .onboarding h2 {
-    font-size: 1.3rem !important;
-    margin-bottom: 1.25rem !important;
-  }
-  
-  /* Descripciones en mobile pequeño */
-  .onboarding p {
-    font-size: 1rem !important;
-    margin-bottom: 0.875rem !important;
-  }
-}
 
 
 
