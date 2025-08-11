@@ -325,9 +325,21 @@ body {
 }
 
 .option-card .example {
-  font-size: 0.9rem;
-  color: #888888;
-  font-style: italic;
+  margin: 0; 
+  font-size: 0.9rem; 
+  opacity: 0.8;
+  color: var(--muted-2);
+  font-family: 'Courier New', monospace;
+  line-height: 1.4;
+  padding-left: 0.75rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 6px 6px 0;
+  margin-top: 0.25rem;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
 }
 
 .conjugation-example {
