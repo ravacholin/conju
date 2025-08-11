@@ -2,9 +2,6 @@ import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { verbs } from '../data/verbs.js'
 
-// Debug logging flag for this module
-const GEN_DEBUG = false
-const clog = (...args) => { if (GEN_DEBUG) console.log(...args) }
 
 // Fast lookups and memo caches
 const LEMMA_TO_VERB = new Map(verbs.map(v => [v.lemma, v]))
@@ -53,25 +50,9 @@ export function chooseNext({forms, history}){
     currentBlock
   } = useSettings.getState()
   
-  clog('=== GENERATOR DEBUG ===')
-  clog('Settings:', { level, useVoseo, useTuteo, useVosotros, practiceMode, specificMood, specificTense, practicePronoun, verbType })
-  clog('Total forms available:', forms.length)
-  clog('🔍 PRACTICE PRONOUN SETTING:', practicePronoun)
-  clog('🔍 DIALECT SETTINGS:', { useVoseo, useTuteo, useVosotros })
-  clog('🔍 PRACTICE MODE:', practiceMode)
-  clog('🔍 SPECIFIC MOOD/TENSE:', { specificMood, specificTense })
   
-  // Debug: Show sample forms
-  clog('🔍 Sample forms:', forms.slice(0, 5).map(f => `${f.lemma} ${f.mood} ${f.tense} ${f.person}`))
-  
-  // Debug: Count nonfinite forms
-  const nonfiniteForms = forms.filter(f => f.mood === 'nonfinite')
-  clog('🔍 Nonfinite forms count:', nonfiniteForms.length)
-  clog('🔍 Gerundios count:', nonfiniteForms.filter(f => f.tense === 'ger').length)
-  clog('🔍 Participios count:', nonfiniteForms.filter(f => f.tense === 'part').length)
   
   let eligible = forms.filter(f=>{
-    clog(`\n--- Checking form: ${f.lemma} ${f.mood} ${f.tense} ${f.person} ---`)
     
     // Level filtering (O(1) with precomputed set)
     // Determine allowed combos: from current block if set, else level
@@ -79,115 +60,89 @@ export function chooseNext({forms, history}){
       ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
       : getAllowedCombosForLevel(level)
     if(!allowed.has(`${f.mood}|${f.tense}`)) {
-      clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out by level gate`)
       return false
     }
-    clog(`✅ Level gate passed`)
     
     // Gate futuro de subjuntivo por toggle de producción
     const sAll = useSettings.getState()
     if (f.mood === 'subjunctive' && (f.tense === 'subjFut' || f.tense === 'subjFutPerf')) {
       if (!sAll.enableFuturoSubjProd) {
-        clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - subjFut production disabled`)
         return false
       }
     }
 
     // Person filtering (dialect) - exclude forms not used in the selected dialect
-    clog(`🔍 DIALECT FILTERING: ${f.person} - useVoseo=${useVoseo}, useTuteo=${useTuteo}, useVosotros=${useVosotros}`)
     
     // For nonfinite forms (gerundios, participios), skip person filtering - they're invariable
     if (f.mood === 'nonfinite') {
-      clog(`✅ Form ${f.lemma} ${f.person} included - nonfinite forms are invariable`)
     } else if (practiceMode === 'specific' && specificMood && specificTense) {
       // For specific practice, show ALL persons but respect dialect
       if (useVoseo && !useTuteo) {
         // Rioplatense: show ALL persons but replace tú with vos, exclude vosotros
         if (f.person === '2s_tu') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out - rioplatense uses vos instead of tú`)
           return false
         }
         if (f.person === '2p_vosotros') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out - rioplatense doesn't use vosotros`)
           return false
         }
         // Show ALL other persons (imperative also includes 1p and 3p, exclude 2p_vosotros)
-        clog(`✅ Form ${f.lemma} ${f.person} included for rioplatense specific practice`)
       } else if (useTuteo && !useVoseo) {
         // General Latin American: show ALL persons but replace vos with tú, exclude vosotros
         if (f.person === '2s_vos') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out - general LA uses tú instead of vos`)
           return false
         }
         if (f.person === '2p_vosotros') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out - general LA doesn't use vosotros`)
           return false
         }
         // Show ALL other persons (imperative also includes 1p and 3p)
-        clog(`✅ Form ${f.lemma} ${f.person} included for general LA specific practice`)
       } else if (useVosotros) {
         // Peninsular: show ALL persons but replace vos with tú
         if (f.person === '2s_vos') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out - peninsular uses tú instead of vos`)
           return false
         }
         // Show ALL other persons
-        clog(`✅ Form ${f.lemma} ${f.person} included for peninsular specific practice`)
       } else {
         // Both forms: show ALL persons
-        clog(`✅ Form ${f.lemma} ${f.person} included for both forms specific practice`)
       }
     } else {
       // For mixed practice, apply normal dialect filtering
       if(f.person==='2s_vos' && !useVoseo) {
-        clog(`❌ Form ${f.lemma} ${f.person} filtered out by voseo setting`)
         return false
       }
       if(f.person==='2s_tu' && !useTuteo) {
-        clog(`❌ Form ${f.lemma} ${f.person} filtered out by tuteo setting`)
         return false
       }
       if(f.person==='2p_vosotros' && !useVosotros) {
-        clog(`❌ Form ${f.lemma} ${f.person} filtered out by vosotros setting`)
         return false
       }
-      clog(`✅ Dialect filtering passed`)
     }
     
     // Pronoun practice filtering - be less restrictive for specific practice
-    clog(`🔍 Checking pronoun filtering for ${f.person}, practicePronoun: ${practicePronoun}`)
     if (practiceMode === 'specific' && specificMood && specificTense) {
       // For specific practice, show ALL persons of the selected form
       // Don't filter by practicePronoun at all - show variety
-      clog(`✅ Form ${f.lemma} ${f.person} included for specific practice (pronoun filtering bypassed)`)
     } else {
       // For mixed practice, apply normal pronoun filtering
       if (practicePronoun === 'tu_only') {
         if (f.person !== '2s_tu') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out by tu_only setting`)
           return false
         }
       } else if (practicePronoun === 'vos_only') {
         if (f.person !== '2s_vos') {
-          clog(`❌ Form ${f.lemma} ${f.person} filtered out by vos_only setting`)
           return false
         }
       }
-      clog(`✅ Pronoun filtering passed`)
     }
     
     // Verb type filtering - check both user selection and MCER level restrictions
     const verb = LEMMA_TO_VERB.get(f.lemma)
     if (!verb) {
-      console.log(`❌ Form ${f.lemma} filtered out - verb not found in database`)
       return false
     }
-    clog(`🔍 Verb type check: ${f.lemma} is ${verb.type}, verbType setting: ${verbType}`)
     
     // Check MCER level restrictions first
     const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
     if (!isCompoundTense && f.mood !== 'nonfinite' && !isVerbTypeAllowedForLevel(verb.type, level)) {
-      console.log(`❌ Form ${f.lemma} filtered out - ${verb.type} verbs not allowed for level ${level}`)
       return false
     }
 
@@ -196,7 +151,6 @@ export function chooseNext({forms, history}){
     if (level === 'C1') {
       if (f.mood === 'indicative' && (f.tense === 'pres' || f.tense === 'pretIndef')) {
         if (verb.type !== 'irregular') {
-          clog(`❌ Form ${f.lemma} filtered out - C1 present/indef only irregulars`)
           return false
         }
       }
@@ -207,7 +161,6 @@ export function chooseNext({forms, history}){
       const UNIPERSONALES = new Set(['llover','nevar','granizar','amanecer'])
       if (UNIPERSONALES.has(f.lemma)) {
         if (!(f.person === '3s' || f.person === '3p')) {
-          clog(`❌ Form ${f.lemma} filtered out - unipersonal person blocked at ${level}`)
           return false
         }
       }
@@ -217,7 +170,6 @@ export function chooseNext({forms, history}){
     if (useSettings.getState().allowedLemmas) {
       const set = useSettings.getState().allowedLemmas
       if (!set.has(f.lemma)) {
-        clog(`❌ Form ${f.lemma} filtered out - lemma not allowed by level pack`)
         return false
       }
     }
@@ -226,13 +178,11 @@ export function chooseNext({forms, history}){
     // isCompoundTense defined above
     if (verbType === 'regular') {
       if (verb.type !== 'regular') {
-        clog(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not regular`)
         return false
       }
     } else if (verbType === 'irregular') {
       // For compound tenses and nonfinite, irregularity is defined by the participle form itself
       if (!isCompoundTense && f.mood !== 'nonfinite' && verb.type !== 'irregular') {
-        clog(`❌ Form ${f.lemma} filtered out - verb type is ${verb.type}, not irregular (non-compound)`)
         return false
       }
       // Only include truly irregular forms for the specific category
@@ -240,17 +190,14 @@ export function chooseNext({forms, history}){
         ? isRegularNonfiniteForm(f.lemma, f.tense, f.value)
         : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
       if (isRegularForm) {
-        clog(`❌ Form ${f.lemma} ${f.mood} ${f.tense} filtered out - regular form for irregular practice`)
         return false
       }
     }
     // If verbType is 'all', we only check MCER restrictions (already done above)
     
     // Specific practice filtering
-    console.log(`🔍 Specific practice check: mood=${f.mood} vs ${specificMood}, tense=${f.tense} vs ${specificTense}`)
     if(practiceMode === 'specific') {
       if(specificMood && f.mood !== specificMood) {
-      clog(`❌ Form ${f.lemma} ${f.mood} filtered out by specific mood ${specificMood}`)
         return false
       }
       
@@ -259,13 +206,11 @@ export function chooseNext({forms, history}){
         if(specificTense === 'impMixed') {
           // For mixed imperative, include both affirmative and negative
           if(f.mood !== 'imperative' || (f.tense !== 'impAff' && f.tense !== 'impNeg')) {
-            clog(`❌ Form ${f.lemma} ${f.tense} filtered out - not imperative affirmative or negative`)
             return false
           }
         } else if(specificTense === 'nonfiniteMixed') {
           // For mixed nonfinite, include both gerund and participle
           if(f.mood !== 'nonfinite' || (f.tense !== 'ger' && f.tense !== 'part')) {
-            clog(`❌ Form ${f.lemma} ${f.tense} filtered out - not nonfinite gerund or participle`)
             return false
           }
           
@@ -281,13 +226,11 @@ export function chooseNext({forms, history}){
                 regularNonfiniteMemo.set(k, isRegularForm)
               }
               if(isRegularForm) {
-                clog(`❌ Form ${f.lemma} ${f.tense} filtered out - regular form in irregular verb`)
                 return false
               }
             }
           }
         } else if(f.tense !== specificTense) {
-          clog(`❌ Form ${f.lemma} ${f.tense} filtered out by specific tense ${specificTense}`)
           return false
         }
       }
@@ -295,32 +238,14 @@ export function chooseNext({forms, history}){
     
     // Filter out infinitivos from practice (they're not conjugated forms)
     if(f.mood === 'nonfinite' && (f.tense === 'inf' || f.tense === 'infPerf')) {
-      clog(`❌ Form ${f.lemma} ${f.tense} filtered out - infinitivos are not for practice`)
       return false
     }
     
-    console.log(`✅ Form ${f.lemma} ${f.mood} ${f.tense} ${f.person} PASSED all filters`)
     return true
-  })
-  
-  // Debug logging
-  clog('Filtering results:', {
-    totalForms: forms.length,
-    eligibleForms: eligible.length,
-    verbType,
-    practiceMode,
-    specificMood,
-    specificTense,
-    practicePronoun,
-    levelRestrictions: levelVerbRestrictions[level]
   })
   
   // Show which persons were included
   const includedPersons = [...new Set(eligible.map(f => f.person))]
-  clog('🎯 INCLUDED PERSONS:', includedPersons)
-  clog('🎯 SAMPLE FORMS:', eligible.slice(0, 5).map(f => `${f.lemma} ${f.person}`))
-  clog('🎯 TOTAL ELIGIBLE FORMS:', eligible.length)
-  clog('🎯 ALL PERSONS IN ELIGIBLE:', eligible.map(f => f.person))
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
@@ -381,25 +306,14 @@ export function chooseNext({forms, history}){
     if (accCache.get(eligible[i]) === lowestAcc) candidates.push(eligible[i])
   }
   
-  clog('🎯 ACCURACY DEBUG:')
-  clog('🎯 Lowest accuracy:', lowestAcc)
-  clog('🎯 Candidates with lowest accuracy:', candidates.length)
-  clog('🎯 Sample candidates:', candidates.slice(0, 5).map(f => `${f.lemma} ${f.person} (acc: ${acc(f, history)})`))
-  clog('🎯 All candidates persons:', [...new Set(candidates.map(f => f.person))])
-  
   // Balance selection by person to ensure variety
   const personsInCandidates = [...new Set(candidates.map(f => f.person))]
-  clog('🎯 Persons in candidates:', personsInCandidates)
   
   // Group candidates by person
   const candidatesByPerson = {}
   personsInCandidates.forEach(person => {
     candidatesByPerson[person] = candidates.filter(f => f.person === person)
   })
-  
-  clog('🎯 Candidates by person:', Object.fromEntries(
-    Object.entries(candidatesByPerson).map(([person, forms]) => [person, forms.length])
-  ))
   
   // Select a person using level-based weights, then a random form from that person
   const personWeights = getPersonWeightsForLevel(useSettings.getState())
@@ -441,11 +355,6 @@ export function chooseNext({forms, history}){
     useSettings.getState().set({ nextSecondPerson: randomPerson === '2s_tu' ? '2s_vos' : '2s_tu' })
   }
   
-  clog('🎯 Selected person:', randomPerson)
-  clog('🎯 Forms available for selected person:', formsForPerson.length)
-  
-  clog('✅ Selected form:', selectedForm)
-  clog('=== END GENERATOR DEBUG ===')
   
   return selectedForm
 }

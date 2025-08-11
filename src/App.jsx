@@ -9,20 +9,11 @@ import Drill from './features/drill/Drill.jsx'
 import './App.css'
 import configIcon from '../config.png'
 import enieIcon from '../enie.png'
-// Debug logging flag for this component
-const APP_DEBUG = false
-const dlog = (...args) => { if (APP_DEBUG) console.log(...args) }
 
 function App() {
-  dlog('Curriculum gates imported:', gates)
-  dlog('Total gates:', gates.length)
-  dlog('Sample gates:', gates.slice(0, 5))
   
-  // Test verb availability on app load
+  // Initialize app state
   useEffect(() => {
-    if (import.meta.env.DEV) {
-      import('./lib/devDiagnostics.js').then(m => m.runDevDiagnostics()).catch(()=>{})
-    }
     // Ensure Resistance mode is off on app load
     settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
   }, [])
@@ -40,7 +31,7 @@ function App() {
   const handlingPopRef = useRef(false)
   const lastPushedRef = useRef({ mode: null, step: null })
   
-  // Cierra todos los paneles superiores y desactiva funciones auxiliares
+  // Close all top panels and deactivate auxiliary functions
   const closeTopPanelsAndFeatures = () => {
     setShowQuickSwitch(false)
     setShowChallenges(false)
@@ -189,7 +180,6 @@ function App() {
         }
       }
     })
-    dlog(`Cached ${acc.length} forms for region ${settings.region}`)
     return acc
   }, [settings.region])
 
@@ -349,10 +339,6 @@ function App() {
                     // VERIFICACIÓN FINAL: asegurar que sean del MISMO VERBO y DIFERENTES combinaciones
                     if (firstForm.lemma === secondForm.lemma && 
                         (firstForm.mood !== secondForm.mood || firstForm.tense !== secondForm.tense)) {
-                      console.log('✅ Double mode - VERIFIED same verb with distinct combinations:')
-                      console.log('  Verb:', firstForm.lemma)
-                      console.log('  First:', firstForm.mood, firstForm.tense)
-                      console.log('  Second:', secondForm.mood, secondForm.tense)
                       
                       // Actualizar el item principal
                       newItem.lemma = firstForm.lemma
@@ -364,14 +350,9 @@ function App() {
                       // Agregar la segunda forma
                       newItem.secondForm = { ...secondForm }
                     } else {
-                      console.log('❌ CRITICAL ERROR: Forms are not from same verb or have same combo!')
-                      console.log('First form:', firstForm)
-                      console.log('Second form:', secondForm)
-                      
                       // FALLBACK DE EMERGENCIA: buscar otro verbo válido
                       const fallbackVerb = validVerbs.find(v => v.lemma !== selectedVerb.lemma)
                       if (fallbackVerb) {
-                        console.log('🚨 Using fallback verb:', fallbackVerb.lemma)
                         // Recursivamente intentar con otro verbo
                         setTimeout(() => generateNextItem(), 100)
                         return
@@ -387,8 +368,6 @@ function App() {
       setCurrentItem(newItem)
     } else {
       console.error('❌ No valid form found! This might indicate a bug in the generator or insufficient verbs.')
-      dlog('Current settings:', settings)
-      dlog('Available forms count:', allFormsForRegion.length)
       
       // Show a user-friendly error instead of infinite retry
       setCurrentItem({
@@ -402,17 +381,8 @@ function App() {
   // Initialize first item when settings are ready
   useEffect(() => {
     if (currentMode === 'drill' && settings.region && !currentItem) {
-      // Asegurar que la página esté en la parte superior cuando se entra al drill
-      // Esto previene el scroll automático en mobile
-      if (typeof window !== 'undefined') {
-        // Scroll inmediato a la parte superior
-        window.scrollTo(0, 0)
-        
-        // Scroll suave adicional para dispositivos que lo soporten
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' })
-        }, 50)
-      }
+      // Scroll to top when entering drill mode
+      window.scrollTo(0, 0)
       
       // Only generate a new item when entering drill mode or when practice settings change AND there's no current item
       generateNextItem()
@@ -457,17 +427,8 @@ function App() {
     // Cerrar paneles y desactivar funciones auxiliares
     closeTopPanelsAndFeatures()
     
-    // Asegurar que la página esté en la parte superior cuando se abre el drill
-    // Esto es especialmente importante en mobile donde puede haber scroll automático
-    if (typeof window !== 'undefined') {
-      // Scroll suave a la parte superior
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      
-      // Fallback para dispositivos que no soportan smooth scroll
-      setTimeout(() => {
-        window.scrollTo(0, 0)
-      }, 100)
-    }
+    // Scroll to top when starting practice
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     
     setCurrentMode('drill')
   }
@@ -640,10 +601,7 @@ function App() {
   const selectMood = (mood) => {
     // Cerrar paneles al fijar modo
     closeTopPanelsAndFeatures()
-    console.log('selectMood called with:', mood)
-    console.log('Current settings:', settings)
     settings.set({ specificMood: mood })
-    console.log('After setting specificMood:', settings)
     
     // Clear history when changing mood
     setHistory({})
@@ -712,17 +670,8 @@ function App() {
       setOnboardingStep(onboardingStep - 1)
     }
     
-    // Asegurar que la página esté en la parte superior cuando se navega hacia atrás
-    // Esto es especialmente importante en mobile donde puede haber scroll automático
-    if (typeof window !== 'undefined') {
-      // Scroll suave a la parte superior
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      
-      // Fallback para dispositivos que no soportan smooth scroll
-      setTimeout(() => {
-        window.scrollTo(0, 0)
-      }, 100)
-    }
+    // Scroll to top when navigating back
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleBack = () => {
@@ -731,15 +680,8 @@ function App() {
   }
 
   const handleHome = () => {
-    // Asegurar que la página esté en la parte superior cuando se regresa al menú
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      
-      // Fallback para dispositivos que no soportan smooth scroll
-      setTimeout(() => {
-        window.scrollTo(0, 0)
-      }, 100)
-    }
+    // Scroll to top when returning to menu
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     
     setCurrentMode('onboarding')
     setOnboardingStep(1)
@@ -750,17 +692,13 @@ function App() {
 
   // Function to get available moods for a specific level
   const getAvailableMoodsForLevel = (level) => {
-    console.log('getAvailableMoodsForLevel called with level:', level)
-    
     // Special case for ALL level - show all moods
     if (level === 'ALL') {
       return ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
     }
     
     const levelGates = gates.filter(g => g.level === level)
-    console.log('Level gates found:', levelGates)
     const moods = [...new Set(levelGates.map(g => g.mood))]
-    console.log('Available moods for level', level, ':', moods)
     return moods
   }
 
@@ -921,7 +859,6 @@ function App() {
                       <div className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
                       </div>
-                      { /* Garantizar que al entrar al menú todo esté cerrado */ }
                       { showQuickSwitch || showChallenges || showAccentKeys || showGames ? closeTopPanelsAndFeatures() : null }
             
             {/* Step 1: Dialect Selection */}
@@ -1052,11 +989,6 @@ function App() {
             {onboardingStep === 4 && (
               <>
                 {(() => {
-                  console.log('Step 4 - Current settings:', {
-                    level: settings.level,
-                    practiceMode: settings.practiceMode
-                  })
-                  
                   if (settings.level) {
                     // Coming from level selection - show practice mode
                     return (
@@ -1095,12 +1027,6 @@ function App() {
             {onboardingStep === 5 && (
               <>
                 {(() => {
-                  console.log('Step 5 - Current settings:', {
-                    level: settings.level,
-                    practiceMode: settings.practiceMode,
-                    specificMood: settings.specificMood
-                  })
-                  
                   if (settings.level && settings.practiceMode === 'mixed') {
                     // Mixed practice from level - go directly to verb type selection
                     return (
@@ -1132,10 +1058,7 @@ function App() {
                     )
                   } else if (settings.level && settings.practiceMode === 'specific') {
                     // Specific practice from level - show filtered moods
-                    console.log('=== STEP 5 DEBUG ===')
-                    console.log('Settings:', { level: settings.level, practiceMode: settings.practiceMode })
                     const availableMoods = getAvailableMoodsForLevel(settings.level)
-                    console.log('Available moods for level', settings.level, ':', availableMoods)
                     return (
                       <>
                         <div className="options-grid">
@@ -1154,7 +1077,6 @@ function App() {
                     )
                   } else if (!settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
                     // Coming from main menu - show tense selection
-                    console.log('Showing tense selection for mood:', settings.specificMood)
                     return (
                       <>
                         <div className="options-grid">
@@ -1173,7 +1095,6 @@ function App() {
                     )
                   } else if (!settings.level && settings.practiceMode === 'specific') {
                     // Coming from forms specific without level - show mood selection
-                    console.log('Showing mood selection for forms specific without level')
                     return (
                       <>
                         <div className="options-grid">
@@ -1209,7 +1130,6 @@ function App() {
                       </>
                     )
                   } else {
-                    console.log('No condition matched in step 5')
                     return null
                   }
                 })()}
