@@ -1360,9 +1360,14 @@ body {
 }
 
 @media (max-width: 768px) {
+  /* Subtítulos de ejemplo en blanco para mobile */
+  .example, 
+  .conjugation-example,
+  .option-card .example,
+  .option-card .conjugation-example,
+  .option-card.compact .conjugation-example,
   .options-grid .option-card .example,
-  .options-grid .option-card .conjugation-example,
-  .option-card.compact .conjugation-example {
+  .options-grid .option-card .conjugation-example {
     color: #ffffff !important;
     opacity: 1 !important;
   }
