@@ -1358,3 +1358,12 @@ body {
     padding: 1.25rem !important;
   }
 }
+
+@media (max-width: 768px) {
+  .options-grid .option-card .example,
+  .options-grid .option-card .conjugation-example,
+  .option-card.compact .conjugation-example {
+    color: #ffffff !important;
+    opacity: 1 !important;
+  }
+}
