@@ -1045,7 +1045,7 @@ body {
 
 @media (max-width: 768px) {
   /* Unificar color de texto a blanco en mobile */
-  body, .onboarding p, .option-card p, .option-card .example, .conjugation-example, .breadcrumb, .reverse-subtle, .reverse-label, .double-context, .hint-text, .explanation-chip, .resistance-caption, .setting-group label, .back-btn {
+  body, .onboarding p, .option-card p, .option-card .example, .conjugation-example, .breadcrumb, .reverse-subtle, .reverse-label, .double-context, .hint-text, .explanation-chip, .resistance-caption, .setting-group label, .back-btn, .streak-tier-0, .chrono-sub, .chrono-label, .reverse-badge, .resistance-caption, .micro-chip, .person-display, .breadcrumb .crumb, .breadcrumb .sep {
     color: #ffffff !important;
     opacity: 1 !important;
   }
@@ -1240,7 +1240,7 @@ body {
   /* Reducir espaciado en chrono panel */
   .chrono-panel {
     gap: 0.5rem !important;
-    padding: 1rem !important;
+    padding: 1rem !importan;
   }
   
   .chrono-item {
