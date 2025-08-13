@@ -96,13 +96,34 @@ export function getSimplifiedGroupForVerb(verbFamilies, tense) {
     return null // Para otros tiempos, usar clasificación completa
   }
   
-  // Verificar en qué grupo simplificado encaja
-  for (const group of Object.values(SIMPLIFIED_GROUPS)) {
-    const hasMatchingFamily = verbFamilies.some(family => 
-      group.includedFamilies.includes(family)
+  // Para pretérito indefinido, priorizar irregulares fuertes sobre terceras personas
+  if (['pretIndef', 'subjImpf'].includes(tense)) {
+    // Primero verificar si es irregular fuerte (prioridad alta)
+    const strongStemGroup = SIMPLIFIED_GROUPS['PRETERITE_STRONG_STEM']
+    const hasStrongStemFamily = verbFamilies.some(family => 
+      strongStemGroup.includedFamilies.includes(family)
     )
-    if (hasMatchingFamily && group.relevantTenses.includes(tense)) {
-      return group.id
+    if (hasStrongStemFamily && strongStemGroup.relevantTenses.includes(tense)) {
+      return 'PRETERITE_STRONG_STEM'
+    }
+    
+    // Luego verificar si es irregular de 3ª persona
+    const thirdPersonGroup = SIMPLIFIED_GROUPS['PRETERITE_THIRD_PERSON']
+    const hasThirdPersonFamily = verbFamilies.some(family => 
+      thirdPersonGroup.includedFamilies.includes(family)
+    )
+    if (hasThirdPersonFamily && thirdPersonGroup.relevantTenses.includes(tense)) {
+      return 'PRETERITE_THIRD_PERSON'
+    }
+  } else {
+    // Para otros tiempos, usar orden original
+    for (const group of Object.values(SIMPLIFIED_GROUPS)) {
+      const hasMatchingFamily = verbFamilies.some(family => 
+        group.includedFamilies.includes(family)
+      )
+      if (hasMatchingFamily && group.relevantTenses.includes(tense)) {
+        return group.id
+      }
     }
   }
   

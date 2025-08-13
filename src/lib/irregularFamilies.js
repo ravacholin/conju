@@ -36,19 +36,19 @@ export const IRREGULAR_FAMILIES = {
   'E_I_IR': {
     id: 'E_I_IR',
     name: 'e→i (verbos -ir)',
-    description: 'pedir, servir, reír',
-    examples: ['pedir', 'servir', 'reír', 'repetir', 'seguir', 'elegir', 'medir'],
-    pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio',
+    description: 'pedir, servir, repetir, seguir, sentir, preferir',
+    examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir'],
+    pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
     affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg', 'ger', 'pretIndef'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']
   },
   
   'O_U_GER_IR': {
     id: 'O_U_GER_IR',
-    name: 'o→u en gerundio (-ir)',
+    name: 'o→u en gerundio y pretérito (-ir)',
     description: 'dormir, morir',
     examples: ['dormir', 'morir'],
-    pattern: 'o→u en gerundio de verbos -ir que diptongan',
+    pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
     affectedTenses: ['ger', 'pretIndef'],
     paradigmaticVerbs: ['dormir', 'morir']
   },
@@ -117,12 +117,12 @@ export const IRREGULAR_FAMILIES = {
   
   'HIATUS_Y': {
     id: 'HIATUS_Y',
-    name: 'Hiatos con -y-',
-    description: 'caer, leer, oír, traer, proveer',
-    examples: ['caer', 'leer', 'oír', 'traer', 'proveer', 'creer', 'poseer'],
-    pattern: 'vocal + er/ir: i→y en pretérito 3ª (cayó, leyó), gerundio con y',
+    name: 'Hiatos con -y- (3ª persona)',
+    description: 'leer, creer, construir, destruir, huir',
+    examples: ['leer', 'creer', 'construir', 'destruir', 'huir', 'incluir', 'concluir', 'contribuir', 'distribuir'],
+    pattern: 'verbos con raíz vocal: i→y solo en pretérito 3ª personas (leyó, leyeron)',
     affectedTenses: ['pretIndef', 'ger', 'part'],
-    paradigmaticVerbs: ['caer', 'leer', 'oír', 'traer']
+    paradigmaticVerbs: ['leer', 'creer', 'construir']
   },
   
   // 4) Cambios ortográficos para conservar sonido
@@ -330,9 +330,9 @@ export function categorizeVerb(lemma, verbData) {
     'hacer': ['G_VERBS', 'PRET_I'],
     'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I'],
     'decir': ['G_VERBS', 'E_I_IR', 'PRET_J'],
-    'oír': ['G_VERBS', 'HIATUS_Y'],
-    'traer': ['G_VERBS', 'HIATUS_Y', 'PRET_J'],
-    'caer': ['G_VERBS', 'HIATUS_Y'],
+    'oír': ['G_VERBS', 'PRET_J'],
+    'traer': ['G_VERBS', 'PRET_J'],
+    'caer': ['G_VERBS', 'PRET_J'],
     'valer': ['G_VERBS'],
     
     // Diptongación e→ie
@@ -363,6 +363,11 @@ export function categorizeVerb(lemma, verbData) {
     'elegir': ['E_I_IR', 'JO_VERBS'],
     'medir': ['E_I_IR'],
     'reír': ['E_I_IR'],
+    'sentir': ['DIPHT_E_IE', 'E_I_IR'],
+    'preferir': ['DIPHT_E_IE', 'E_I_IR'],
+    'mentir': ['DIPHT_E_IE', 'E_I_IR'],
+    'competir': ['E_I_IR'],
+    'vestir': ['E_I_IR'],
     
     // Pretéritos fuertes
     'andar': ['PRET_UV'],
@@ -381,11 +386,29 @@ export function categorizeVerb(lemma, verbData) {
     'ver': ['PRET_SUPPL'],
     'haber': ['PRET_SUPPL'],
     
-    // Hiatos
+    // Hiatos (solo irregulares en 3ª persona)
     'leer': ['HIATUS_Y'],
     'creer': ['HIATUS_Y'],
+    'construir': ['UIR_Y', 'HIATUS_Y'],
+    'destruir': ['UIR_Y', 'HIATUS_Y'],
+    'huir': ['UIR_Y', 'HIATUS_Y'],
+    'incluir': ['UIR_Y', 'HIATUS_Y'],
+    'concluir': ['UIR_Y', 'HIATUS_Y'],
+    'contribuir': ['UIR_Y', 'HIATUS_Y'],
+    'distribuir': ['UIR_Y', 'HIATUS_Y'],
+    // Verbos más avanzados (B2+)
     'poseer': ['HIATUS_Y'],
     'proveer': ['HIATUS_Y'],
+    'releer': ['HIATUS_Y'],
+    'instruir': ['UIR_Y', 'HIATUS_Y'],
+    'reconstruir': ['UIR_Y', 'HIATUS_Y'],
+    'sustituir': ['UIR_Y', 'HIATUS_Y'],
+    'atribuir': ['UIR_Y', 'HIATUS_Y'],
+    'excluir': ['UIR_Y', 'HIATUS_Y'],
+    
+    // Verbos menos comunes para B2+ (o→u en pretérito)
+    'podrir': ['DIPHT_O_UE', 'O_U_GER_IR'],
+    'gruñir': ['O_U_GER_IR'],
     
     // -zco verbos específicos
     'conocer': ['ZCO_VERBS'],
