@@ -2,7 +2,7 @@ import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { verbs } from '../data/verbs.js'
 import { categorizeVerb } from './irregularFamilies.js'
-import { expandSimplifiedGroup } from './simplifiedFamilyGroups.js'
+import { expandSimplifiedGroup, getSimplifiedGroupForVerb } from './simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 
 
@@ -203,11 +203,9 @@ export function chooseNext({forms, history}){
         // Check if it's a simplified group that needs expansion
         const expandedFamilies = expandSimplifiedGroup(selectedFamily)
         if (expandedFamilies.length > 0) {
-          // It's a simplified group - check if verb belongs to any of the expanded families
-          const hasMatchingFamily = expandedFamilies.some(familyId => 
-            verbFamilies.includes(familyId)
-          )
-          if (!hasMatchingFamily) {
+          // It's a simplified group - use priority-based classification
+          const verbGroup = getSimplifiedGroupForVerb(verbFamilies, f.tense)
+          if (verbGroup !== selectedFamily) {
             return false
           }
         } else {
