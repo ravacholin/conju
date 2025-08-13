@@ -3,6 +3,7 @@ import { useSettings } from '../state/settings.js'
 import { verbs } from '../data/verbs.js'
 import { categorizeVerb } from './irregularFamilies.js'
 import { expandSimplifiedGroup } from './simplifiedFamilyGroups.js'
+import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 
 
 // Fast lookups and memo caches
@@ -214,6 +215,17 @@ export function chooseNext({forms, history}){
           if (!verbFamilies.includes(selectedFamily)) {
             return false
           }
+        }
+        
+        // Level-based filtering for specific verb types
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+          return false
+        }
+      } else {
+        // Even without family selection, apply level-based filtering for irregulars
+        const verbFamilies = categorizeVerb(f.lemma, verb)
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+          return false
         }
       }
     }
