@@ -3,12 +3,13 @@ import { useSettings } from './state/settings.js'
 import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
+import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/irregularFamilies.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
 import './App.css'
-import configIcon from '../config.png'
-import enieIcon from '../enie.png'
+import configIcon from '/config.png'
+import enieIcon from '/enie.svg'
 
 function App() {
   
@@ -22,7 +23,7 @@ function App() {
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})
   const [showSettings, setShowSettings] = useState(false)
-  const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type
+  const [onboardingStep, setOnboardingStep] = useState(1) // 1: dialect, 2: level, 3: practice mode, 4: mood/tense, 5: verb type, 6: family selection
   const settings = useSettings()
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showChallenges, setShowChallenges] = useState(false)
@@ -633,7 +634,37 @@ function App() {
   const selectVerbType = (verbType) => {
     // Cerrar paneles al fijar tipo de verbo
     closeTopPanelsAndFeatures()
-    const updates = { verbType }
+    
+    if (verbType === 'irregular') {
+      // Para irregulares, ir a selección de familias
+      settings.set({ verbType })
+      setOnboardingStep(getNextStep() + 1) // Go to family selection
+    } else {
+      // Para regulares y todos, continuar como antes
+      const updates = { verbType, selectedFamily: null }
+      // Initialize mixed-practice blocks per level
+      const lvl = settings.level
+      if (settings.practiceMode === 'mixed' && lvl) {
+        const combos = combosForLevelMixed(lvl)
+        updates.currentBlock = { combos, itemsRemaining: blockSizeForLevel(lvl) }
+      } else {
+        updates.currentBlock = null
+      }
+      settings.set(updates)
+      
+      // Clear history when changing verb type
+      setHistory({})
+      setCurrentItem(null)
+      
+      startPractice()
+    }
+  }
+  
+  const selectFamily = (familyId) => {
+    // Cerrar paneles al fijar familia
+    closeTopPanelsAndFeatures()
+    const updates = { selectedFamily: familyId }
+    
     // Initialize mixed-practice blocks per level
     const lvl = settings.level
     if (settings.practiceMode === 'mixed' && lvl) {
@@ -644,11 +675,19 @@ function App() {
     }
     settings.set(updates)
     
-    // Clear history when changing verb type
+    // Clear history when changing family
     setHistory({})
     setCurrentItem(null)
     
     startPractice()
+  }
+  
+  // Helper function to get next step number
+  const getNextStep = () => {
+    if (settings.level && settings.practiceMode === 'mixed') return 5
+    if (settings.level && settings.practiceMode === 'specific') return 7
+    if (!settings.level && settings.practiceMode === 'specific') return 6
+    return 5
   }
 
   // Function to go back in the onboarding flow
@@ -1136,11 +1175,65 @@ function App() {
               </>
             )}
 
-            {/* Step 6: Tense Selection (for specific practice from level) or Verb Type Selection */}
+            {/* Step 6: Family Selection (when irregular verbs are chosen from mixed practice) OR Tense Selection */}
             {onboardingStep === 6 && (
               <>
                 {(() => {
-                  if (settings.level) {
+                  if (settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed') {
+                    // Show family selection for irregular verbs from mixed practice
+                    return (
+                      <>
+                        <div className="options-grid">
+                          {/* All irregulars option */}
+                          <div className="option-card featured" onClick={() => selectFamily(null)}>
+                            <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
+                            <p>Todas las familias juntas</p>
+                            <p className="example">Máxima variedad</p>
+                          </div>
+
+                          {/* Main irregular families */}
+                          <div className="option-card compact" onClick={() => selectFamily('G_VERBS')}>
+                            <h3>Verbos en -go</h3>
+                            <p className="conjugation-example">tener, poner, salir</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('DIPHT_E_IE')}>
+                            <h3>Diptongación e→ie</h3>
+                            <p className="conjugation-example">pensar, cerrar</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('DIPHT_O_UE')}>
+                            <h3>Diptongación o→ue</h3>
+                            <p className="conjugation-example">volver, poder</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('E_I_IR')}>
+                            <h3>e→i (verbos -ir)</h3>
+                            <p className="conjugation-example">pedir, servir</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('ZCO_VERBS')}>
+                            <h3>-cer/-cir → -zco</h3>
+                            <p className="conjugation-example">conocer, conducir</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('PRET_UV')}>
+                            <h3>Pretérito -uv-</h3>
+                            <p className="conjugation-example">andar, estar, tener</p>
+                          </div>
+                          
+                          <div className="option-card compact" onClick={() => selectFamily('PRET_J')}>
+                            <h3>Pretérito -j-</h3>
+                            <p className="conjugation-example">decir, traer</p>
+                          </div>
+                        </div>
+                        
+                        <button onClick={goBack} className="back-btn">
+                          <img src="/back.png" alt="Volver" className="back-icon" />
+                        </button>
+                      </>
+                    )
+                  } else if (settings.level) {
                     // Coming from level selection - show filtered tenses
                     return (
                       <>
@@ -1186,6 +1279,48 @@ function App() {
                     <p>Solo verbos con cambios especiales</p>
                     <p className="example">ser, estar, tener, ir</p>
                   </div>
+                </div>
+                
+                <button onClick={goBack} className="back-btn">
+                  <img src="/back.png" alt="Volver" className="back-icon" />
+                </button>
+              </>
+            )}
+
+            {/* Step 8: Family Selection (when irregular verbs are chosen) */}
+            {onboardingStep === 8 && settings.verbType === 'irregular' && (
+              <>
+                <div className="options-grid">
+                  {/* All irregulars option */}
+                  <div className="option-card featured" onClick={() => selectFamily(null)}>
+                    <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
+                    <p>Todas las familias juntas</p>
+                    <p className="example">Máxima variedad</p>
+                  </div>
+
+                  {/* Get available families for current mood/tense */}
+                  {(() => {
+                    const availableFamilies = settings.specificMood
+                      ? getFamiliesForMood(settings.specificMood)
+                      : Object.values({
+                          'G_VERBS': { id: 'G_VERBS', name: 'Verbos en -go', description: 'tener, poner, salir' },
+                          'DIPHT_E_IE': { id: 'DIPHT_E_IE', name: 'Diptongación e→ie', description: 'pensar, cerrar' },
+                          'DIPHT_O_UE': { id: 'DIPHT_O_UE', name: 'Diptongación o→ue', description: 'volver, poder' },
+                          'E_I_IR': { id: 'E_I_IR', name: 'e→i (verbos -ir)', description: 'pedir, servir' },
+                          'ZCO_VERBS': { id: 'ZCO_VERBS', name: '-cer/-cir → -zco', description: 'conocer, conducir' },
+                          'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
+                          'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
+                          'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
+                          'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
+                        })
+                    
+                    return availableFamilies.slice(0, 8).map(family => (
+                      <div key={family.id} className="option-card compact" onClick={() => selectFamily(family.id)}>
+                        <h3>{family.name}</h3>
+                        <p className="conjugation-example">{family.description}</p>
+                      </div>
+                    ))
+                  })()}
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
@@ -1390,7 +1525,10 @@ function App() {
                 <select 
                   value={settings.verbType}
                   onChange={(e) => {
-                    settings.set({ verbType: e.target.value })
+                    settings.set({ 
+                      verbType: e.target.value,
+                      selectedFamily: e.target.value !== 'irregular' ? null : settings.selectedFamily
+                    })
                     // Clear history when changing verb type
                     setHistory({})
                     setCurrentItem(null)
@@ -1403,6 +1541,42 @@ function App() {
                   <option value="irregular">Solo irregulares</option>
                 </select>
               </div>
+
+              {settings.verbType === 'irregular' && (
+                <div className="setting-group">
+                  <label title="Elige una familia específica de verbos irregulares">Familia de irregulares:</label>
+                  <select 
+                    value={settings.selectedFamily || ''}
+                    onChange={(e) => {
+                      settings.set({ selectedFamily: e.target.value || null })
+                      // Clear history when changing family
+                      setHistory({})
+                      setCurrentItem(null)
+                      generateNextItem()
+                    }}
+                    className="setting-select"
+                  >
+                    <option value="">Todas las familias</option>
+                    <option value="G_VERBS">Verbos en -go (tener, poner, salir)</option>
+                    <option value="DIPHT_E_IE">Diptongación e→ie (pensar, cerrar)</option>
+                    <option value="DIPHT_O_UE">Diptongación o→ue (volver, poder)</option>
+                    <option value="DIPHT_U_UE">Diptongación u→ue (jugar)</option>
+                    <option value="E_I_IR">e→i verbos -ir (pedir, servir)</option>
+                    <option value="ZCO_VERBS">-cer/-cir → -zco (conocer, conducir)</option>
+                    <option value="JO_VERBS">-ger/-gir → -jo (proteger, elegir)</option>
+                    <option value="UIR_Y">-uir inserción y (construir, huir)</option>
+                    <option value="HIATUS_Y">Hiatos con y (caer, leer, oír)</option>
+                    <option value="ORTH_CAR">-car → -qu (buscar, tocar)</option>
+                    <option value="ORTH_GAR">-gar → -gu (llegar, pagar)</option>
+                    <option value="ORTH_ZAR">-zar → -c (empezar, almorzar)</option>
+                    <option value="PRET_UV">Pretérito -uv- (andar, estar, tener)</option>
+                    <option value="PRET_U">Pretérito -u- (poder, poner, saber)</option>
+                    <option value="PRET_I">Pretérito -i- (querer, venir, hacer)</option>
+                    <option value="PRET_J">Pretérito -j- (decir, traer, conducir)</option>
+                    <option value="PRET_SUPPL">Pretéritos supletivos (ir/ser, dar, ver)</option>
+                  </select>
+                </div>
+              )}
 
               {settings.level === 'C2' && (
                 <div className="setting-group">

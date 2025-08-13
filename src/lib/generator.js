@@ -1,6 +1,7 @@
 import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { verbs } from '../data/verbs.js'
+import { categorizeVerb } from './irregularFamilies.js'
 
 
 // Fast lookups and memo caches
@@ -47,7 +48,7 @@ export function chooseNext({forms, history}){
   const { 
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
-    currentBlock
+    currentBlock, selectedFamily
   } = useSettings.getState()
   
   
@@ -191,6 +192,14 @@ export function chooseNext({forms, history}){
         : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
       if (isRegularForm) {
         return false
+      }
+      
+      // Family filtering for irregular verbs
+      if (selectedFamily) {
+        const verbFamilies = categorizeVerb(f.lemma, verb)
+        if (!verbFamilies.includes(selectedFamily)) {
+          return false
+        }
       }
     }
     // If verbType is 'all', we only check MCER restrictions (already done above)
