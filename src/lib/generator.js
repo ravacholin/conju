@@ -2,6 +2,7 @@ import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { verbs } from '../data/verbs.js'
 import { categorizeVerb } from './irregularFamilies.js'
+import { expandSimplifiedGroup } from './simplifiedFamilyGroups.js'
 
 
 // Fast lookups and memo caches
@@ -197,8 +198,22 @@ export function chooseNext({forms, history}){
       // Family filtering for irregular verbs
       if (selectedFamily) {
         const verbFamilies = categorizeVerb(f.lemma, verb)
-        if (!verbFamilies.includes(selectedFamily)) {
-          return false
+        
+        // Check if it's a simplified group that needs expansion
+        const expandedFamilies = expandSimplifiedGroup(selectedFamily)
+        if (expandedFamilies.length > 0) {
+          // It's a simplified group - check if verb belongs to any of the expanded families
+          const hasMatchingFamily = expandedFamilies.some(familyId => 
+            verbFamilies.includes(familyId)
+          )
+          if (!hasMatchingFamily) {
+            return false
+          }
+        } else {
+          // It's a regular family - check direct match
+          if (!verbFamilies.includes(selectedFamily)) {
+            return false
+          }
         }
       }
     }

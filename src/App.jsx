@@ -4,6 +4,7 @@ import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
 import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/irregularFamilies.js'
+import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, expandSimplifiedGroup } from './lib/simplifiedFamilyGroups.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
@@ -1191,30 +1192,17 @@ function App() {
                             <p className="example">Máxima variedad</p>
                           </div>
 
-                          {/* Main irregular families */}
-                          <div className="option-card compact" onClick={() => selectFamily('G_VERBS')}>
-                            <h3>Verbos en -go</h3>
-                            <p className="conjugation-example">tener, poner, salir</p>
+                          {/* Show simplified groups for mixed practice */}
+                          <div className="option-card compact" onClick={() => selectFamily('STEM_CHANGES')}>
+                            <h3>Verbos que Diptongan</h3>
+                            <p className="conjugation-example">pensar→pienso, volver→vuelvo, pedir→pido</p>
+                            <p className="hint">Cambios de raíz: e→ie, o→ue, e→i</p>
                           </div>
                           
-                          <div className="option-card compact" onClick={() => selectFamily('DIPHT_E_IE')}>
-                            <h3>Diptongación e→ie</h3>
-                            <p className="conjugation-example">pensar, cerrar</p>
-                          </div>
-                          
-                          <div className="option-card compact" onClick={() => selectFamily('DIPHT_O_UE')}>
-                            <h3>Diptongación o→ue</h3>
-                            <p className="conjugation-example">volver, poder</p>
-                          </div>
-                          
-                          <div className="option-card compact" onClick={() => selectFamily('E_I_IR')}>
-                            <h3>e→i (verbos -ir)</h3>
-                            <p className="conjugation-example">pedir, servir</p>
-                          </div>
-                          
-                          <div className="option-card compact" onClick={() => selectFamily('ZCO_VERBS')}>
-                            <h3>-cer/-cir → -zco</h3>
-                            <p className="conjugation-example">conocer, conducir</p>
+                          <div className="option-card compact" onClick={() => selectFamily('FIRST_PERSON_IRREGULAR')}>
+                            <h3>Irregulares en YO</h3>
+                            <p className="conjugation-example">tengo, conozco, salgo, protejo</p>
+                            <p className="hint">1ª persona irregular que afecta el subjuntivo</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectFamily('PRET_UV')}>
@@ -1298,28 +1286,42 @@ function App() {
                     <p className="example">Máxima variedad</p>
                   </div>
 
-                  {/* Get available families for current mood/tense */}
+                  {/* Show simplified groups for present tenses, full families for others */}
                   {(() => {
-                    const availableFamilies = settings.specificMood
-                      ? getFamiliesForMood(settings.specificMood)
-                      : Object.values({
-                          'G_VERBS': { id: 'G_VERBS', name: 'Verbos en -go', description: 'tener, poner, salir' },
-                          'DIPHT_E_IE': { id: 'DIPHT_E_IE', name: 'Diptongación e→ie', description: 'pensar, cerrar' },
-                          'DIPHT_O_UE': { id: 'DIPHT_O_UE', name: 'Diptongación o→ue', description: 'volver, poder' },
-                          'E_I_IR': { id: 'E_I_IR', name: 'e→i (verbos -ir)', description: 'pedir, servir' },
-                          'ZCO_VERBS': { id: 'ZCO_VERBS', name: '-cer/-cir → -zco', description: 'conocer, conducir' },
-                          'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
-                          'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
-                          'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
-                          'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
-                        })
+                    const mood = settings.specificMood
+                    const tense = settings.specificTense
                     
-                    return availableFamilies.slice(0, 8).map(family => (
-                      <div key={family.id} className="option-card compact" onClick={() => selectFamily(family.id)}>
-                        <h3>{family.name}</h3>
-                        <p className="conjugation-example">{family.description}</p>
-                      </div>
-                    ))
+                    // Use simplified grouping for present indicative and subjunctive
+                    if (mood && shouldUseSimplifiedGroupingForMood(mood) && 
+                        (tense === 'pres' || tense === 'subjPres' || !tense)) {
+                      const simplifiedGroups = getSimplifiedGroupsForMood(mood)
+                      return simplifiedGroups.map(group => (
+                        <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
+                          <h3>{group.name}</h3>
+                          <p className="conjugation-example">{group.description}</p>
+                          <p className="hint">{group.explanation}</p>
+                        </div>
+                      ))
+                    } else {
+                      // Use full families for other tenses
+                      const availableFamilies = mood
+                        ? getFamiliesForMood(mood)
+                        : Object.values({
+                            'G_VERBS': { id: 'G_VERBS', name: 'Verbos en -go', description: 'tener, poner, salir' },
+                            'ZCO_VERBS': { id: 'ZCO_VERBS', name: '-cer/-cir → -zco', description: 'conocer, conducir' },
+                            'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
+                            'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
+                            'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
+                            'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
+                          })
+                      
+                      return availableFamilies.slice(0, 8).map(family => (
+                        <div key={family.id} className="option-card compact" onClick={() => selectFamily(family.id)}>
+                          <h3>{family.name}</h3>
+                          <p className="conjugation-example">{family.description}</p>
+                        </div>
+                      ))
+                    }
                   })()}
                 </div>
                 
@@ -1557,23 +1559,21 @@ function App() {
                     className="setting-select"
                   >
                     <option value="">Todas las familias</option>
-                    <option value="G_VERBS">Verbos en -go (tener, poner, salir)</option>
-                    <option value="DIPHT_E_IE">Diptongación e→ie (pensar, cerrar)</option>
-                    <option value="DIPHT_O_UE">Diptongación o→ue (volver, poder)</option>
-                    <option value="DIPHT_U_UE">Diptongación u→ue (jugar)</option>
-                    <option value="E_I_IR">e→i verbos -ir (pedir, servir)</option>
-                    <option value="ZCO_VERBS">-cer/-cir → -zco (conocer, conducir)</option>
-                    <option value="JO_VERBS">-ger/-gir → -jo (proteger, elegir)</option>
-                    <option value="UIR_Y">-uir inserción y (construir, huir)</option>
-                    <option value="HIATUS_Y">Hiatos con y (caer, leer, oír)</option>
-                    <option value="ORTH_CAR">-car → -qu (buscar, tocar)</option>
-                    <option value="ORTH_GAR">-gar → -gu (llegar, pagar)</option>
-                    <option value="ORTH_ZAR">-zar → -c (empezar, almorzar)</option>
-                    <option value="PRET_UV">Pretérito -uv- (andar, estar, tener)</option>
-                    <option value="PRET_U">Pretérito -u- (poder, poner, saber)</option>
-                    <option value="PRET_I">Pretérito -i- (querer, venir, hacer)</option>
-                    <option value="PRET_J">Pretérito -j- (decir, traer, conducir)</option>
-                    <option value="PRET_SUPPL">Pretéritos supletivos (ir/ser, dar, ver)</option>
+                    <optgroup label="── Grupos Principales (Presente) ──">
+                      <option value="STEM_CHANGES">Verbos que Diptongan (pensar, volver, pedir)</option>
+                      <option value="FIRST_PERSON_IRREGULAR">Irregulares en YO (tengo, conozco, salgo)</option>
+                    </optgroup>
+                    <optgroup label="── Familias Específicas ──">
+                      <option value="G_VERBS">Verbos en -go (tener, poner, salir)</option>
+                      <option value="DIPHT_E_IE">Diptongación e→ie (pensar, cerrar)</option>
+                      <option value="DIPHT_O_UE">Diptongación o→ue (volver, poder)</option>
+                      <option value="E_I_IR">e→i verbos -ir (pedir, servir)</option>
+                      <option value="ZCO_VERBS">-cer/-cir → -zco (conocer, conducir)</option>
+                      <option value="UIR_Y">-uir inserción y (construir, huir)</option>
+                      <option value="PRET_UV">Pretérito -uv- (andar, estar, tener)</option>
+                      <option value="PRET_U">Pretérito -u- (poder, poner, saber)</option>
+                      <option value="PRET_J">Pretérito -j- (decir, traer, conducir)</option>
+                    </optgroup>
                   </select>
                 </div>
               )}
