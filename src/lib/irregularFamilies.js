@@ -9,7 +9,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'pensar, cerrar, empezar',
     examples: ['pensar', 'cerrar', 'empezar', 'comenzar', 'despertar', 'sentir'],
     pattern: 'e→ie en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['pensar', 'cerrar', 'empezar']
   },
   
@@ -19,7 +19,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'volver, poder, contar',
     examples: ['volver', 'poder', 'contar', 'mostrar', 'dormir', 'morir'],
     pattern: 'o→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['volver', 'poder', 'contar']
   },
   
@@ -29,7 +29,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'jugar',
     examples: ['jugar'],
     pattern: 'u→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['jugar']
   },
   
@@ -39,7 +39,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'pedir, servir, repetir, seguir, sentir, preferir',
     examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir'],
     pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg', 'ger', 'pretIndef'],
+    affectedTenses: ['pres', 'subjPres', 'ger', 'pretIndef'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']
   },
   
@@ -60,7 +60,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'tener, poner, salir, hacer, venir, decir, oír, traer',
     examples: ['tener', 'poner', 'salir', 'hacer', 'venir', 'decir', 'oír', 'traer', 'caer', 'valer'],
     pattern: '1ª persona presente en -go, propagación a todo el subjuntivo e imperativo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['tener', 'poner', 'salir', 'hacer', 'venir']
   },
   
@@ -70,7 +70,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'conocer, nacer, conducir, producir',
     examples: ['conocer', 'nacer', 'conducir', 'producir', 'traducir', 'reducir', 'parecer', 'crecer'],
     pattern: 'vocal + cer/cir → -zco en 1ª persona, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['conocer', 'conducir', 'producir']
   },
   
@@ -80,7 +80,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'vencer, ejercer',
     examples: ['vencer', 'ejercer', 'torcer', 'cocer'],
     pattern: 'consonante + cer → -zo en 1ª persona, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['vencer', 'ejercer']
   },
   
@@ -90,7 +90,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'proteger, elegir, coger',
     examples: ['proteger', 'elegir', 'coger', 'recoger', 'dirigir', 'corregir'],
     pattern: '-ger/-gir → -jo en 1ª persona, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['proteger', 'elegir', 'coger']
   },
   
@@ -100,7 +100,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'seguir, distinguir',
     examples: ['seguir', 'distinguir', 'extinguir', 'conseguir'],
     pattern: 'pérdida de "u" en 1ª persona: -guir → -go, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['seguir', 'distinguir']
   },
   
@@ -111,7 +111,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'construir, huir, destruir',
     examples: ['construir', 'huir', 'destruir', 'incluir', 'excluir', 'concluir', 'sustituir'],
     pattern: 'inserción de -y- en presente (todas menos nosotros/vosotros), subjuntivo',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['construir', 'huir', 'destruir']
   },
   
@@ -132,7 +132,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'buscar, sacar, tocar',
     examples: ['buscar', 'sacar', 'tocar', 'practicar', 'explicar', 'atacar'],
     pattern: '-car → -qu ante e (pretérito 1ª, subjuntivo, imperativo)',
-    affectedTenses: ['pretIndef', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pretIndef', 'subjPres'],
     paradigmaticVerbs: ['buscar', 'sacar', 'tocar']
   },
   
@@ -142,7 +142,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'llegar, pagar, jugar',
     examples: ['llegar', 'pagar', 'jugar', 'entregar', 'apagar', 'obligar'],
     pattern: '-gar → -gu ante e (pretérito 1ª, subjuntivo, imperativo)',
-    affectedTenses: ['pretIndef', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pretIndef', 'subjPres'],
     paradigmaticVerbs: ['llegar', 'pagar', 'obligar']
   },
   
@@ -152,7 +152,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'empezar, almorzar, organizar',
     examples: ['empezar', 'almorzar', 'organizar', 'comenzar', 'realizar', 'utilizar'],
     pattern: '-zar → -c ante e (pretérito 1ª, subjuntivo, imperativo)',
-    affectedTenses: ['pretIndef', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pretIndef', 'subjPres'],
     paradigmaticVerbs: ['empezar', 'almorzar', 'organizar']
   },
   
@@ -162,7 +162,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'averiguar, apaciguar',
     examples: ['averiguar', 'apaciguar', 'aguar'],
     pattern: '-guar con diéresis: averigüé, averigüe',
-    affectedTenses: ['pretIndef', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pretIndef', 'subjPres'],
     paradigmaticVerbs: ['averiguar', 'apaciguar']
   },
   
@@ -173,7 +173,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'andar, estar, tener',
     examples: ['andar', 'estar', 'tener'],
     pattern: 'raíz -uv- en pretérito: anduve, estuve, tuve. Propagación a subjuntivo imperfecto',
-    affectedTenses: ['pretIndef', 'subjImpf'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['andar', 'estar', 'tener']
   },
   
@@ -183,7 +183,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'poder, poner, saber, caber',
     examples: ['poder', 'poner', 'saber', 'caber'],
     pattern: 'raíz -u- en pretérito: pude, puse, supe, cupe. Propagación a subjuntivo imperfecto',
-    affectedTenses: ['pretIndef', 'subjImpf'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['poder', 'poner', 'saber', 'caber']
   },
   
@@ -193,7 +193,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'querer, venir, hacer',
     examples: ['querer', 'venir', 'hacer'],
     pattern: 'raíz -i- en pretérito: quise, vine, hice. Propagación a subjuntivo imperfecto',
-    affectedTenses: ['pretIndef', 'subjImpf'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['querer', 'venir', 'hacer']
   },
   
@@ -203,7 +203,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'decir, traer, conducir',
     examples: ['decir', 'traer', 'conducir', 'traducir', 'producir', 'reducir'],
     pattern: 'raíz -j- en pretérito: dije, traje, conduje. 3ª plural -eron (no -ieron)',
-    affectedTenses: ['pretIndef', 'subjImpf'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['decir', 'traer', 'conducir']
   },
   
@@ -213,7 +213,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'ir/ser, dar, ver, haber',
     examples: ['ir', 'ser', 'dar', 'ver', 'haber'],
     pattern: 'formas completamente irregulares: fui, di, vi, hubo',
-    affectedTenses: ['pretIndef', 'subjImpf'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
   },
   
@@ -224,7 +224,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'enviar, confiar, guiar',
     examples: ['enviar', 'confiar', 'guiar', 'fiar', 'criar', 'ampliar'],
     pattern: 'algunos -iar llevan tilde: envío, confío (no todos: cambiar→cambio)',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['enviar', 'confiar', 'guiar']
   },
   
@@ -234,7 +234,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'continuar, actuar, evaluar',
     examples: ['continuar', 'actuar', 'evaluar', 'graduar', 'situar'],
     pattern: 'algunos -uar llevan tilde: continúo, actúo (no todos: averiguar→averiguo)',
-    affectedTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['continuar', 'actuar', 'evaluar']
   }
 }

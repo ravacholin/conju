@@ -1312,8 +1312,10 @@ function App() {
                         </div>
                       ))
                     } else {
-                      // Use full families for other tenses
-                      const availableFamilies = mood
+                      // Use families for specific tense, or fallback to mood families
+                      const availableFamilies = tense
+                        ? getFamiliesForTense(tense)
+                        : mood
                         ? getFamiliesForMood(mood)
                         : Object.values({
                             'G_VERBS': { id: 'G_VERBS', name: 'Verbos en -go', description: 'tener, poner, salir' },

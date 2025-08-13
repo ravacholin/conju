@@ -18,7 +18,7 @@ export const SIMPLIFIED_GROUPS = {
       'E_I_IR'         // pedir, servir, repetir
     ],
     // Tiempos donde este grupo es relevante
-    relevantTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    relevantTenses: ['pres', 'subjPres'],
     // Verbos ejemplares para mostrar
     exampleVerbs: ['pensar', 'volver', 'jugar', 'pedir'],
     color: '#4CAF50' // Verde para cambios de raíz
@@ -39,7 +39,7 @@ export const SIMPLIFIED_GROUPS = {
       'GU_DROP'        // seguir→sigo, distinguir→distingo
     ],
     // Tiempos donde este grupo es relevante
-    relevantTenses: ['pres', 'subjPres', 'impAff', 'impNeg'],
+    relevantTenses: ['pres', 'subjPres'],
     // Verbos ejemplares para mostrar
     exampleVerbs: ['tener', 'conocer', 'proteger', 'seguir'],
     color: '#2196F3' // Azul para irregulares en yo
@@ -60,7 +60,7 @@ export const SIMPLIFIED_GROUPS = {
       'HIATUS_Y'       // leer→leyó, caer→cayó, oír→oyó
     ],
     // Tiempos donde este grupo es relevante
-    relevantTenses: ['pretIndef', 'subjImpf'],
+    relevantTenses: ['pretIndef'],
     // Verbos ejemplares para mostrar
     exampleVerbs: ['pedir', 'dormir', 'leer', 'caer', 'oír'],
     color: '#FF9800' // Naranja para terceras personas
@@ -81,7 +81,7 @@ export const SIMPLIFIED_GROUPS = {
       'PRET_SUPPL'     // ir/ser→fue, dar→dio, ver→vio
     ],
     // Tiempos donde este grupo es relevante
-    relevantTenses: ['pretIndef', 'subjImpf'],
+    relevantTenses: ['pretIndef'],
     // Verbos ejemplares para mostrar
     exampleVerbs: ['tener', 'decir', 'hacer', 'poner', 'venir', 'ir', 'ser'],
     color: '#E91E63' // Rosa para muy irregulares
