@@ -4,7 +4,7 @@ import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/generator.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
 import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/irregularFamilies.js'
-import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, expandSimplifiedGroup } from './lib/simplifiedFamilyGroups.js'
+import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, shouldUseSimplifiedGrouping, expandSimplifiedGroup } from './lib/simplifiedFamilyGroups.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
@@ -1291,9 +1291,18 @@ function App() {
                     const mood = settings.specificMood
                     const tense = settings.specificTense
                     
-                    // Use simplified grouping for present indicative and subjunctive
-                    if (mood && shouldUseSimplifiedGroupingForMood(mood) && 
-                        (tense === 'pres' || tense === 'subjPres' || !tense)) {
+                    // Use simplified grouping for supported tenses (present, preterite)
+                    if (tense && shouldUseSimplifiedGrouping(tense)) {
+                      const simplifiedGroups = getSimplifiedGroupsForTense(tense)
+                      return simplifiedGroups.map(group => (
+                        <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
+                          <h3>{group.name}</h3>
+                          <p className="conjugation-example">{group.description}</p>
+                          <p className="hint">{group.explanation}</p>
+                        </div>
+                      ))
+                    } else if (mood && shouldUseSimplifiedGroupingForMood(mood) && !tense) {
+                      // For mood selection without specific tense, show all relevant groups
                       const simplifiedGroups = getSimplifiedGroupsForMood(mood)
                       return simplifiedGroups.map(group => (
                         <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>

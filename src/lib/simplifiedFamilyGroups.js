@@ -2,6 +2,8 @@
 // Agrupa las familias técnicas en categorías más simples para el usuario
 
 export const SIMPLIFIED_GROUPS = {
+  // GRUPOS PARA PRESENTE INDICATIVO Y SUBJUNTIVO
+  
   // Grupo 1: Verbos que cambian la raíz (diptongación y e→i)
   'STEM_CHANGES': {
     id: 'STEM_CHANGES',
@@ -41,14 +43,56 @@ export const SIMPLIFIED_GROUPS = {
     // Verbos ejemplares para mostrar
     exampleVerbs: ['tener', 'conocer', 'proteger', 'seguir'],
     color: '#2196F3' // Azul para irregulares en yo
+  },
+
+  // GRUPOS ESPECÍFICOS PARA PRETÉRITO INDEFINIDO
+  
+  // Grupo 3: Irregulares en terceras personas (diptongación -ir + hiatos con y)
+  'PRETERITE_THIRD_PERSON': {
+    id: 'PRETERITE_THIRD_PERSON',
+    name: 'Irregulares en 3ª persona',
+    description: 'pidió/pidieron, leyó/leyeron, durmió/durmieron',
+    explanation: 'Verbos -ir que diptongan (e→i, o→u) y verbos con raíz vocal + y en 3ª',
+    // Familias técnicas que incluye
+    includedFamilies: [
+      'E_I_IR',        // pedir→pidió, servir→sirvió
+      'O_U_GER_IR',    // dormir→durmió, morir→murió  
+      'HIATUS_Y'       // leer→leyó, caer→cayó, oír→oyó
+    ],
+    // Tiempos donde este grupo es relevante
+    relevantTenses: ['pretIndef', 'subjImpf'],
+    // Verbos ejemplares para mostrar
+    exampleVerbs: ['pedir', 'dormir', 'leer', 'caer', 'oír'],
+    color: '#FF9800' // Naranja para terceras personas
+  },
+
+  // Grupo 4: Muy irregulares con raíces y terminaciones completamente irregulares
+  'PRETERITE_STRONG_STEM': {
+    id: 'PRETERITE_STRONG_STEM',
+    name: 'Muy Irregulares (raíz fuerte)',
+    description: 'tuve, dije, hice, puse, vine, fue',
+    explanation: 'Verbos con raíces completamente irregulares y terminaciones especiales',
+    // Familias técnicas que incluye
+    includedFamilies: [
+      'PRET_UV',       // andar→anduve, estar→estuve, tener→tuve
+      'PRET_U',        // poder→pude, poner→puse, saber→supe
+      'PRET_I',        // querer→quise, venir→vine, hacer→hice
+      'PRET_J',        // decir→dije, traer→traje, conducir→conduje
+      'PRET_SUPPL'     // ir/ser→fue, dar→dio, ver→vio
+    ],
+    // Tiempos donde este grupo es relevante
+    relevantTenses: ['pretIndef', 'subjImpf'],
+    // Verbos ejemplares para mostrar
+    exampleVerbs: ['tener', 'decir', 'hacer', 'poner', 'venir', 'ir', 'ser'],
+    color: '#E91E63' // Rosa para muy irregulares
   }
 }
 
 // Función para obtener el grupo simplificado de un verbo para tiempos específicos
 // Nota: Esta función requiere que se pase el resultado de categorizeVerb externamente
 export function getSimplifiedGroupForVerb(verbFamilies, tense) {
-  // Solo aplicar agrupación simplificada para presente indicativo y subjuntivo
-  if (!['pres', 'subjPres', 'impAff', 'impNeg'].includes(tense)) {
+  // Solo aplicar agrupación simplificada para tiempos soportados
+  if (!shouldUseSimplifiedGrouping(tense)) {
     return null // Para otros tiempos, usar clasificación completa
   }
   
@@ -67,8 +111,11 @@ export function getSimplifiedGroupForVerb(verbFamilies, tense) {
 
 // Función para obtener grupos disponibles para un tiempo específico
 export function getSimplifiedGroupsForTense(tense) {
-  if (!['pres', 'subjPres', 'impAff', 'impNeg'].includes(tense)) {
-    return [] // Solo para presente indicativo y subjuntivo
+  // Tiempos que usan agrupación simplificada
+  const supportedTenses = ['pres', 'subjPres', 'impAff', 'impNeg', 'pretIndef', 'subjImpf']
+  
+  if (!supportedTenses.includes(tense)) {
+    return [] // Solo para tiempos con agrupación simplificada
   }
   
   return Object.values(SIMPLIFIED_GROUPS).filter(group => 
@@ -79,8 +126,8 @@ export function getSimplifiedGroupsForTense(tense) {
 // Función para obtener grupos disponibles para un modo específico
 export function getSimplifiedGroupsForMood(mood) {
   const relevantTenses = {
-    'indicative': ['pres'],
-    'subjunctive': ['subjPres'], 
+    'indicative': ['pres', 'pretIndef'],
+    'subjunctive': ['subjPres', 'subjImpf'], 
     'imperative': ['impAff', 'impNeg']
   }
   
@@ -100,7 +147,7 @@ export function expandSimplifiedGroup(groupId) {
 
 // Función para determinar si un tiempo debe usar agrupación simplificada
 export function shouldUseSimplifiedGrouping(tense) {
-  return ['pres', 'subjPres', 'impAff', 'impNeg'].includes(tense)
+  return ['pres', 'subjPres', 'impAff', 'impNeg', 'pretIndef', 'subjImpf'].includes(tense)
 }
 
 // Función para determinar si un modo debe usar agrupación simplificada  
