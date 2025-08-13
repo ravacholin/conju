@@ -46,8 +46,8 @@ export const IRREGULAR_FAMILIES = {
   'O_U_GER_IR': {
     id: 'O_U_GER_IR',
     name: 'o→u en gerundio y pretérito (-ir)',
-    description: 'dormir, morir',
-    examples: ['dormir', 'morir'],
+    description: 'dormir, morir, adormecerse',
+    examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir'],
     pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
     affectedTenses: ['ger', 'pretIndef'],
     paradigmaticVerbs: ['dormir', 'morir']
@@ -152,7 +152,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'PRET_UV',
     name: 'Pretérito fuerte -uv-',
     description: 'andar, estar, tener',
-    examples: ['andar', 'estar', 'tener'],
+    examples: ['andar', 'estar', 'tener', 'mantener', 'obtener', 'contener', 'sostener'],
     pattern: 'raíz -uv- en pretérito: anduve, estuve, tuve. Propagación a subjuntivo imperfecto',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['andar', 'estar', 'tener']
@@ -172,7 +172,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'PRET_I',
     name: 'Pretérito fuerte -i-',
     description: 'querer, venir, hacer',
-    examples: ['querer', 'venir', 'hacer'],
+    examples: ['querer', 'venir', 'hacer', 'convenir', 'prevenir', 'rehacer', 'deshacer'],
     pattern: 'raíz -i- en pretérito: quise, vine, hice. Propagación a subjuntivo imperfecto',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['querer', 'venir', 'hacer']
