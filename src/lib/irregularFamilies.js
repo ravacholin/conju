@@ -56,33 +56,14 @@ export const IRREGULAR_FAMILIES = {
   // 2) Alternancias de consonante en 1.ª sing. (presente) + subjuntivo
   'G_VERBS': {
     id: 'G_VERBS',
-    name: 'Verbos en -go (1ª persona)',
-    description: 'tener, poner, salir, hacer, venir, decir, oír, traer',
-    examples: ['tener', 'poner', 'salir', 'hacer', 'venir', 'decir', 'oír', 'traer', 'caer', 'valer'],
-    pattern: '1ª persona presente en -go, propagación a todo el subjuntivo e imperativo',
+    name: 'Irregulares en YO',
+    description: 'tener, poner, salir, hacer, venir, decir, oír, traer, conocer, conducir, vencer',
+    examples: ['tener', 'poner', 'salir', 'hacer', 'venir', 'decir', 'oír', 'traer', 'caer', 'valer', 'conocer', 'nacer', 'conducir', 'producir', 'traducir', 'reducir', 'parecer', 'crecer', 'vencer', 'ejercer', 'torcer', 'cocer'],
+    pattern: '1ª persona presente irregular (tengo, conozco, venzo), propagación a todo el subjuntivo',
     affectedTenses: ['pres', 'subjPres'],
-    paradigmaticVerbs: ['tener', 'poner', 'salir', 'hacer', 'venir']
+    paradigmaticVerbs: ['tener', 'poner', 'salir', 'hacer', 'venir', 'conocer', 'conducir', 'vencer']
   },
   
-  'ZCO_VERBS': {
-    id: 'ZCO_VERBS',
-    name: 'Verbos -cer/-cir → -zco',
-    description: 'conocer, nacer, conducir, producir',
-    examples: ['conocer', 'nacer', 'conducir', 'producir', 'traducir', 'reducir', 'parecer', 'crecer'],
-    pattern: 'vocal + cer/cir → -zco en 1ª persona, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres'],
-    paradigmaticVerbs: ['conocer', 'conducir', 'producir']
-  },
-  
-  'ZO_VERBS': {
-    id: 'ZO_VERBS',
-    name: 'Consonante + -cer → -zo',
-    description: 'vencer, ejercer',
-    examples: ['vencer', 'ejercer', 'torcer', 'cocer'],
-    pattern: 'consonante + cer → -zo en 1ª persona, propagación a subjuntivo',
-    affectedTenses: ['pres', 'subjPres'],
-    paradigmaticVerbs: ['vencer', 'ejercer']
-  },
   
   'JO_VERBS': {
     id: 'JO_VERBS',

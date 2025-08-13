@@ -1318,8 +1318,7 @@ function App() {
                         : mood
                         ? getFamiliesForMood(mood)
                         : Object.values({
-                            'G_VERBS': { id: 'G_VERBS', name: 'Verbos en -go', description: 'tener, poner, salir' },
-                            'ZCO_VERBS': { id: 'ZCO_VERBS', name: '-cer/-cir → -zco', description: 'conocer, conducir' },
+                            'G_VERBS': { id: 'G_VERBS', name: 'Irregulares en YO', description: 'tener, poner, salir, conocer, vencer' },
                             'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
                             'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
                             'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
@@ -1575,11 +1574,10 @@ function App() {
                       <option value="FIRST_PERSON_IRREGULAR">Irregulares en YO (tengo, conozco, salgo)</option>
                     </optgroup>
                     <optgroup label="── Familias Específicas ──">
-                      <option value="G_VERBS">Verbos en -go (tener, poner, salir)</option>
+                      <option value="G_VERBS">Irregulares en YO (tener, conocer, vencer)</option>
                       <option value="DIPHT_E_IE">Diptongación e→ie (pensar, cerrar)</option>
                       <option value="DIPHT_O_UE">Diptongación o→ue (volver, poder)</option>
                       <option value="E_I_IR">e→i verbos -ir (pedir, servir)</option>
-                      <option value="ZCO_VERBS">-cer/-cir → -zco (conocer, conducir)</option>
                       <option value="UIR_Y">-uir inserción y (construir, huir)</option>
                       <option value="PRET_UV">Pretérito -uv- (andar, estar, tener)</option>
                       <option value="PRET_U">Pretérito -u- (poder, poner, saber)</option>

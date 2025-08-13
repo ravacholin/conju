@@ -44,10 +44,10 @@ export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense) {
   
   // Filtrado para presente indicativo y subjuntivo
   if (['pres', 'subjPres', 'impAff', 'impNeg'].includes(tense)) {
-    // Filtrar verbos ZO_VERBS para niveles básicos
-    if (isZOVerb(lemma) && verbFamilies.includes('ZO_VERBS')) {
-      return basicLevels.includes(userLevel)
-    }
+    // Filtrar verbos ZO_VERBS para niveles básicos (temporalmente comentado)
+    // if (isZOVerb(lemma) && verbFamilies.includes('ZO_VERBS')) {
+    //   return basicLevels.includes(userLevel)
+    // }
   }
   
   // Filtrado para pretérito indefinido (verbos de 3ª persona avanzados)
@@ -69,9 +69,9 @@ export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense) {
 // Función para obtener la razón del filtrado (para debugging)
 export function getFilterReason(lemma, verbFamilies, userLevel, tense) {
   if (shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense)) {
-    if (isZOVerb(lemma)) {
-      return `Verbo ZO_VERBS "${lemma}" filtrado para nivel ${userLevel} (solo B2+)`
-    }
+    // if (isZOVerb(lemma)) {
+    //   return `Verbo ZO_VERBS "${lemma}" filtrado para nivel ${userLevel} (solo B2+)`
+    // }
     if (isAdvancedThirdPersonVerb(lemma)) {
       return `Verbo de 3ª persona avanzado "${lemma}" filtrado para nivel ${userLevel} (solo B2+)`
     }

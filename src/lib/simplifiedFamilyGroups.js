@@ -32,9 +32,7 @@ export const SIMPLIFIED_GROUPS = {
     explanation: 'Verbos irregulares en 1ª persona que afectan todo el subjuntivo',
     // Familias técnicas que incluye
     includedFamilies: [
-      'G_VERBS',       // tener→tengo, poner→pongo, salir→salgo
-      'ZCO_VERBS',     // conocer→conozco, conducir→conduzco  
-      'ZO_VERBS',      // vencer→venzo, ejercer→ejerzo
+      'G_VERBS',       // tener→tengo, poner→pongo, salir→salgo, conocer→conozco, vencer→venzo
       'JO_VERBS',      // proteger→protejo, elegir→elijo
       'GU_DROP'        // seguir→sigo, distinguir→distingo
     ],
