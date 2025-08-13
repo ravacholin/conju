@@ -9,7 +9,7 @@ import Drill from './features/drill/Drill.jsx'
 
 import './App.css'
 import configIcon from '/config.png'
-import enieIcon from '/enie.svg'
+import enieIcon from '/enie.png'
 
 function App() {
   
