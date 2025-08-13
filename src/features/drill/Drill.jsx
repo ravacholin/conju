@@ -139,8 +139,8 @@ export default function Drill({
           // Resistance: add time on correct
           if (settings.resistanceActive) {
             const lvl = useSettings.getState().level || 'A1'
-            // Incrementos por nivel: A1 +6s, A2 +5s, B1 +4s, B2 +3s, C1 +2.5s, C2 +2s
-            const inc = lvl==='C2'?2000: lvl==='C1'?2500: lvl==='B2'?3000: lvl==='B1'?4000: lvl==='A2'?5000:6000
+            // Incrementos por nivel: A1 +5.0s, A2 +4.5s, B1 +4.0s, B2 +3.5s, C1 +3.0s, C2 +2.5s
+            const inc = lvl==='C2'?2500: lvl==='C1'?3000: lvl==='B2'?3500: lvl==='B1'?4000: lvl==='A2'?4500:5000
             settings.set({ resistanceMsLeft: Math.min(useSettings.getState().resistanceMsLeft + inc, 120000) })
           }
         } else {
@@ -878,9 +878,11 @@ export default function Drill({
               ))
             })()}
           </div>
-          <div className="resistance-caption">
-            {showExplosion ? '¡Tiempo agotado!' : 'Modo Supervivencia'}
-          </div>
+          {showExplosion && (
+            <div className="resistance-caption">
+              ¡Tiempo agotado!
+            </div>
+          )}
         </div>
       )}
     </div>

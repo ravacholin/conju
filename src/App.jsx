@@ -1783,8 +1783,8 @@ function App() {
                   settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
                 } else {
                   const level = s.level || 'A1'
-                  // Supervivencia: A1 35s, A2 30s, B1 25s, B2 20s, C1 18s, C2 16s
-                  const baseMs = level==='C2'?16000: level==='C1'?18000: level==='B2'?20000: level==='B1'?25000: level==='A2'?30000:35000
+                  // Supervivencia: A1 20s, A2 18s, B1 18s, B2 17s, C1 16s, C2 15s
+                  const baseMs = level==='C2'?15000: level==='C1'?16000: level==='B2'?17000: level==='B1'?18000: level==='A2'?18000:20000
                   settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
                 }
                 setShowGames(false)
