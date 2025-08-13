@@ -25486,5 +25486,264 @@ export const verbs = [
         ]
       }
     ]
+  },
+  {
+    "id": "servir",
+    "lemma": "servir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "sirvo",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "sirves",
+            "rules": ["STEM_E_I"],
+            "accepts": {
+              "vos": "servís"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "servís",
+            "rules": ["STEM_E_I"],
+            "accepts": {
+              "tu": "sirves"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "sirve",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "servimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "servís"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "sirven",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "serví"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "serviste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "serviste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "sirvió",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "servimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "servisteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "sirvieron",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "servir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "inv",
+            "value": "sirviendo",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "inv",
+            "value": "servido"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "leer",
+    "lemma": "leer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "leo"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "lees",
+            "accepts": {
+              "vos": "leés"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "leés",
+            "accepts": {
+              "tu": "lees"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "lee"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "leemos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "leéis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "leen"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "leí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "leíste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "leíste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "leyó",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "leímos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "leísteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "leyeron",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "leer"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "inv",
+            "value": "leyendo",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "inv",
+            "value": "leído"
+          }
+        ]
+      }
+    ]
   }
 ]
