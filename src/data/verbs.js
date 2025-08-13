@@ -16762,7 +16762,7 @@ export const verbs = [
   {
     "id": "creer",
     "lemma": "creer",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -16771,6 +16771,104 @@ export const verbs = [
           "peninsular"
         ],
         "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "creo"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "crees",
+            "accepts": {
+              "vos": "creés"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "creés",
+            "accepts": {
+              "tu": "crees"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "cree"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "creemos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "creéis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "creen"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "creí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "creíste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "creíste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "creyó",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "creímos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "creísteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "creyeron",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "creer"
+          },
           {
             "mood": "nonfinite",
             "tense": "part",
@@ -16781,7 +16879,8 @@ export const verbs = [
             "mood": "nonfinite",
             "tense": "ger",
             "person": "inv",
-            "value": "creyendo"
+            "value": "creyendo",
+            "rules": ["HIATUS_Y"]
           }
         ]
       }
@@ -17574,7 +17673,7 @@ export const verbs = [
   {
     "id": "construir",
     "lemma": "construir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -17583,6 +17682,108 @@ export const verbs = [
           "peninsular"
         ],
         "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "construyo",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "construyes",
+            "rules": ["UIR_Y"],
+            "accepts": {
+              "vos": "construís"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "construís",
+            "accepts": {
+              "tu": "construyes"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "construye",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "construimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "construís"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "construyen",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "construí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "construiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "construiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "construyó",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "construimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "construisteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "construyeron",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "construir"
+          },
           {
             "mood": "nonfinite",
             "tense": "part",
@@ -17593,7 +17794,8 @@ export const verbs = [
             "mood": "nonfinite",
             "tense": "ger",
             "person": "inv",
-            "value": "construyendo"
+            "value": "construyendo",
+            "rules": ["UIR_Y"]
           }
         ]
       }
@@ -17602,7 +17804,7 @@ export const verbs = [
   {
     "id": "destruir",
     "lemma": "destruir",
-    "type": "regular",
+    "type": "irregular",
     "paradigms": [
       {
         "regionTags": [
@@ -17611,6 +17813,108 @@ export const verbs = [
           "peninsular"
         ],
         "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "destruyo",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "destruyes",
+            "rules": ["UIR_Y"],
+            "accepts": {
+              "vos": "destruís"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "destruís",
+            "accepts": {
+              "tu": "destruyes"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "destruye",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "destruimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "destruís"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "destruyen",
+            "rules": ["UIR_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "destruí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "destruiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "destruiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "destruyó",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "destruimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "destruisteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "destruyeron",
+            "rules": ["HIATUS_Y"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "destruir"
+          },
           {
             "mood": "nonfinite",
             "tense": "part",
@@ -17621,7 +17925,8 @@ export const verbs = [
             "mood": "nonfinite",
             "tense": "ger",
             "person": "inv",
-            "value": "destruyendo"
+            "value": "destruyendo",
+            "rules": ["UIR_Y"]
           }
         ]
       }
@@ -25741,6 +26046,268 @@ export const verbs = [
             "tense": "part",
             "person": "inv",
             "value": "leído"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "repetir",
+    "lemma": "repetir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "repito",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "repites",
+            "rules": ["STEM_E_I"],
+            "accepts": {
+              "vos": "repetís"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "repetís",
+            "accepts": {
+              "tu": "repites"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "repite",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "repetimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "repetís"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "repiten",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "repetí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "repetiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "repetiste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "repitió",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "repetimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "repetisteis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "repitieron",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "repetir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "inv",
+            "value": "repitiendo",
+            "rules": ["STEM_E_I"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "inv",
+            "value": "repetido"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "morir",
+    "lemma": "morir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "muero",
+            "rules": ["DIPHT_O_UE"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "mueres",
+            "rules": ["DIPHT_O_UE"],
+            "accepts": {
+              "vos": "morís"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "morís",
+            "accepts": {
+              "tu": "mueres"
+            }
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "muere",
+            "rules": ["DIPHT_O_UE"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "morimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "morís"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "mueren",
+            "rules": ["DIPHT_O_UE"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "morí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "moriste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_vos",
+            "value": "moriste"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "murió",
+            "rules": ["STEM_O_U"]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "morimos"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "moristeis"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "murieron",
+            "rules": ["STEM_O_U"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "inv",
+            "value": "morir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "inv",
+            "value": "muriendo",
+            "rules": ["STEM_O_U"]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "inv",
+            "value": "muerto"
           }
         ]
       }
