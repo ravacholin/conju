@@ -28,18 +28,19 @@ export const SIMPLIFIED_GROUPS = {
   'FIRST_PERSON_IRREGULAR': {
     id: 'FIRST_PERSON_IRREGULAR', 
     name: 'Irregulares en YO',
-    description: 'tengo, conozco, salgo, protejo',
+    description: 'tengo, salgo, protejo, conozco',
     explanation: 'Verbos irregulares en 1ª persona que afectan todo el subjuntivo',
     // Familias técnicas que incluye
     includedFamilies: [
       'G_VERBS',       // tener→tengo, poner→pongo, salir→salgo, conocer→conozco, vencer→venzo
       'JO_VERBS',      // proteger→protejo, elegir→elijo
-      'GU_DROP'        // seguir→sigo, distinguir→distingo
+      'GU_DROP',       // seguir→sigo, distinguir→distingo
+      'ZCO_VERBS'      // conocer→conozco, parecer→parezco, conducir→conduzco
     ],
     // Tiempos donde este grupo es relevante
     relevantTenses: ['pres', 'subjPres'],
     // Verbos ejemplares para mostrar
-    exampleVerbs: ['tener', 'conocer', 'proteger', 'seguir'],
+    exampleVerbs: ['tener', 'salir', 'proteger', 'seguir', 'conocer', 'parecer'],
     color: '#2196F3' // Azul para irregulares en yo
   },
 
