@@ -933,7 +933,7 @@ function App() {
                       <img src="/tu.png" alt="Tú" className="option-icon" />
                       <img src="/vosotros.png" alt="Vosotros" className="option-icon" />
                     </h3>
-                    <p>España</p>
+                    <p>España, etc.</p>
                     <p className="example">tú tienes, vosotros tenéis</p>
                   </div>
                   
