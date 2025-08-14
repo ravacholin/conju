@@ -548,6 +548,19 @@ export default function Drill({
     onResult(resultObj)
   }
 
+  const handleReverseKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (!result) {
+        // Primer Enter: verificar respuesta
+        reverseSubmit()
+      } else {
+        // Segundo Enter: continuar al siguiente
+        handleContinue()
+      }
+    }
+  }
+
   return (
     <div className="drill-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {/* Verb lemma (infinitive) - TOP */}
@@ -641,13 +654,13 @@ export default function Drill({
           <div className="reverse-grid">
             <div className="reverse-field">
               <label className="reverse-label">Infinitivo</label>
-              <input className="reverse-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} placeholder="escribir, tener..." />
+              <input className="reverse-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} onKeyDown={handleReverseKeyDown} placeholder="escribir, tener..." />
             </div>
 
             {showPersonField && (
               <div className="reverse-field">
                 <label className="reverse-label">Persona</label>
-                <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
+                <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)} onKeyDown={handleReverseKeyDown}>
                   <option value="">Seleccioná persona...</option>
                   {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
                 </select>
@@ -657,7 +670,7 @@ export default function Drill({
             {showMoodField && (
               <div className="reverse-field">
                 <label className="reverse-label">Modo</label>
-                <select className="reverse-select" value={moodGuess} onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess('') }}>
+                <select className="reverse-select" value={moodGuess} onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess('') }} onKeyDown={handleReverseKeyDown}>
                   <option value="">Seleccioná modo...</option>
                   {moodOptions.map(m => <option key={m.v} value={m.v}>{getMoodLabel(m.v)}</option>)}
                 </select>
@@ -667,7 +680,7 @@ export default function Drill({
             {showTenseField && (
               <div className="reverse-field">
                 <label className="reverse-label">Tiempo</label>
-                <select className="reverse-select" value={tenseGuess} onChange={(e)=>setTenseGuess(e.target.value)} disabled={!moodGuess}>
+                <select className="reverse-select" value={tenseGuess} onChange={(e)=>setTenseGuess(e.target.value)} onKeyDown={handleReverseKeyDown} disabled={!moodGuess}>
                   <option value="">Seleccioná tiempo...</option>
                   {(tenseOptionsByMood[moodGuess]||[]).map(t => <option key={t} value={t}>{getTenseLabel(t)}</option>)}
                 </select>
