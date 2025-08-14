@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { grade } from '../../lib/grader.js'
-import { getTenseLabel, getMoodLabel } from '../../lib/verbLabels.js'
+import { grade } from '../../lib/core/grader.js'
+import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
 
 

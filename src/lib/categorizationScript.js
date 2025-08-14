@@ -1,6 +1,6 @@
 // Script para categorizar todos los verbos con familias de irregulares
 import { verbs } from '../data/verbs.js'
-import { categorizeVerb, getAllFamilies } from './irregularFamilies.js'
+import { categorizeVerb, getAllFamilies } from './data/irregularFamilies.js'
 
 // Función para analizar y categorizar todos los verbos
 export function categorizeAllVerbs() {

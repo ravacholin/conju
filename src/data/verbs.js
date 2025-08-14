@@ -1,7 +1,8 @@
 // Comprehensive Spanish verb database
 import { additionalVerbs } from './additionalVerbs.js'
+import { priorityVerbs } from './priorityVerbs.js'
 
-export const verbs = [
+const baseVerbs = [
   {
     "id": "hablar",
     "lemma": "hablar",
@@ -26314,3 +26315,14 @@ export const verbs = [
     ]
   }
 ]
+
+// Combinar todos los verbos eliminando duplicados
+const allVerbsWithDuplicates = [...baseVerbs, ...additionalVerbs, ...priorityVerbs]
+const verbMap = new Map()
+
+// Eliminar duplicados manteniendo el último encontrado
+allVerbsWithDuplicates.forEach(verb => {
+  verbMap.set(verb.lemma, verb)
+})
+
+export const verbs = Array.from(verbMap.values())

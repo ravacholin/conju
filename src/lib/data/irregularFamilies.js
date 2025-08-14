@@ -26,8 +26,8 @@ export const IRREGULAR_FAMILIES = {
   'DIPHT_U_UE': {
     id: 'DIPHT_U_UE',
     name: 'Diptongación u→ue',
-    description: 'jugar, amuar, desaguar',
-    examples: ['jugar', 'amuar', 'desaguar', 'menguar'],
+    description: 'jugar, amuar, desaguar, menguar, fraguar, atestiguar',
+    examples: ['jugar', 'amuar', 'desaguar', 'menguar', 'fraguar', 'atestiguar'],
     pattern: 'u→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['jugar']
@@ -46,8 +46,8 @@ export const IRREGULAR_FAMILIES = {
   'O_U_GER_IR': {
     id: 'O_U_GER_IR',
     name: 'o→u en gerundio y pretérito (-ir)',
-    description: 'dormir, morir, adormecerse',
-    examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir'],
+    description: 'dormir, morir, adormecerse, gruñir, podrir, promorir',
+    examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir', 'gruñir'],
     pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['dormir', 'morir']
@@ -78,8 +78,8 @@ export const IRREGULAR_FAMILIES = {
   'GU_DROP': {
     id: 'GU_DROP',
     name: 'Verbos -guir (pérdida de u)',
-    description: 'seguir, distinguir',
-    examples: ['seguir', 'distinguir', 'extinguir', 'conseguir'],
+    description: 'seguir, distinguir, extinguir, conseguir, perseguir, proseguir',
+    examples: ['seguir', 'distinguir', 'extinguir', 'conseguir', 'perseguir', 'proseguir'],
     pattern: 'pérdida de "u" en 1ª persona: -guir → -go, propagación a subjuntivo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['seguir', 'distinguir']
@@ -181,9 +181,9 @@ export const IRREGULAR_FAMILIES = {
   'PRET_U': {
     id: 'PRET_U',
     name: 'Pretérito fuerte -u-',
-    description: 'poder, poner, saber, caber',
-    examples: ['poder', 'poner', 'saber', 'caber'],
-    pattern: 'raíz -u- en pretérito: pude, puse, supe, cupe. Propagación a subjuntivo imperfecto',
+    description: 'poder, poner, saber, caber, haber, deber',
+    examples: ['poder', 'poner', 'saber', 'caber', 'haber', 'deber'],
+    pattern: 'raíz -u- en pretérito: pude, puse, supe, cupe, hube, debí (aunque deber es regular, sigue el patrón en algunos dialectos)',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['poder', 'poner', 'saber', 'caber']
   },
@@ -211,9 +211,9 @@ export const IRREGULAR_FAMILIES = {
   'PRET_SUPPL': {
     id: 'PRET_SUPPL',
     name: 'Pretéritos supletivos',
-    description: 'ir/ser, dar, ver, haber',
-    examples: ['ir', 'ser', 'dar', 'ver', 'haber'],
-    pattern: 'formas completamente irregulares: fui, di, vi, hubo',
+    description: 'ir/ser, dar, ver, haber, estar',
+    examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
+    pattern: 'formas completamente irregulares: fui, di, vi, hubo, estuve',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
   },
@@ -232,8 +232,8 @@ export const IRREGULAR_FAMILIES = {
   'UAR_VERBS': {
     id: 'UAR_VERBS',
     name: 'Verbos -uar (algunos con tilde)',
-    description: 'continuar, actuar, evaluar',
-    examples: ['continuar', 'actuar', 'evaluar', 'graduar', 'situar'],
+    description: 'continuar, actuar, evaluar, graduar, situar, fluctuar',
+    examples: ['continuar', 'actuar', 'evaluar', 'graduar', 'situar', 'fluctuar'],
     pattern: 'algunos -uar llevan tilde: continúo, actúo (no todos: averiguar→averiguo)',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['continuar', 'actuar', 'evaluar']
@@ -280,6 +280,47 @@ export const IRREGULAR_FAMILIES = {
     pattern: 'formas especiales de imperativo: ten, ven, pon, sal, haz, di, ve, sé',
     affectedTenses: ['impAff', 'impNeg'],
     paradigmaticVerbs: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir']
+  },
+
+  // 10) Categorías especializadas adicionales
+  'DEFECTIVE_VERBS': {
+    id: 'DEFECTIVE_VERBS',
+    name: 'Verbos defectivos',
+    description: 'soler, abolir, blandir, agredir, empedernir, desvaír',
+    examples: ['soler', 'abolir', 'blandir', 'agredir', 'empedernir', 'desvaír'],
+    pattern: 'verbos que carecen de algunas formas (solo 3ª persona, infinitivo, etc.)',
+    affectedTenses: ['pres', 'subjPres', 'impAff'],
+    paradigmaticVerbs: ['soler', 'abolir', 'blandir']
+  },
+
+  'DOUBLE_PARTICIPLES': {
+    id: 'DOUBLE_PARTICIPLES',
+    name: 'Doble participio',
+    description: 'freír, imprimir, proveer, elegir, prender, suspender',
+    examples: ['freír', 'imprimir', 'proveer', 'elegir', 'prender', 'suspender'],
+    pattern: 'verbos con doble participio: frito/freído, impreso/imprimido, electo/elegido',
+    affectedTenses: ['part'],
+    paradigmaticVerbs: ['freír', 'imprimir', 'proveer']
+  },
+
+  'ACCENT_CHANGES': {
+    id: 'ACCENT_CHANGES',
+    name: 'Cambios de acentuación',
+    description: 'prohibir, reunir, aislar, aullar, maullar, rehusar',
+    examples: ['prohibir', 'reunir', 'aislar', 'aullar', 'maullar', 'rehusar'],
+    pattern: 'verbos con cambios de acento prosódico: prohíbo, reúno, aíslo',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['prohibir', 'reunir', 'aislar']
+  },
+
+  'MONOSYLLABIC_IRREG': {
+    id: 'MONOSYLLABIC_IRREG',
+    name: 'Monosílabos irregulares',
+    description: 'ir, ser, dar, ver, haber, estar',
+    examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
+    pattern: 'verbos monosílabos altamente irregulares en múltiples tiempos',
+    affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff'],
+    paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
   }
 }
 

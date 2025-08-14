@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSettings } from './state/settings.js'
 import { verbs } from './data/verbs.js'
-import { chooseNext } from './lib/generator.js'
-import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/verbLabels.js'
-import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/irregularFamilies.js'
-import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, shouldUseSimplifiedGrouping, expandSimplifiedGroup } from './lib/simplifiedFamilyGroups.js'
+import { chooseNext } from './lib/core/generator.js'
+import { warmupCaches, getCacheStats } from './lib/core/optimizedCache.js'
+import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/utils/verbLabels.js'
+import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/data/irregularFamilies.js'
+import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, shouldUseSimplifiedGrouping, expandSimplifiedGroup } from './lib/data/simplifiedFamilyGroups.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
@@ -18,6 +19,16 @@ function App() {
   useEffect(() => {
     // Ensure Resistance mode is off on app load
     settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+    
+    // Warm up performance caches
+    warmupCaches()
+    
+    // Log cache stats in development
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(() => {
+        console.log('📊 Cache Stats:', getCacheStats())
+      }, 1000)
+    }
   }, [])
   
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'

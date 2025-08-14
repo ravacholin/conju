@@ -1,13 +1,23 @@
-import gates from '../data/curriculum.json'
-import { useSettings } from '../state/settings.js'
-import { verbs } from '../data/verbs.js'
-import { categorizeVerb } from './irregularFamilies.js'
-import { expandSimplifiedGroup, getSimplifiedGroupForVerb } from './simplifiedFamilyGroups.js'
+import gates from '../../data/curriculum.json'
+import { useSettings } from '../../state/settings.js'
+import { verbs } from '../../data/verbs.js'
+import { categorizeVerb } from '../data/irregularFamilies.js'
+import { expandSimplifiedGroup, getSimplifiedGroupForVerb } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 
 
-// Fast lookups and memo caches
-const LEMMA_TO_VERB = new Map(verbs.map(v => [v.lemma, v]))
+// Imports optimizados
+import { 
+  VERB_LOOKUP_MAP, 
+  FORM_LOOKUP_MAP,
+  verbCategorizationCache,
+  formFilterCache,
+  combinationCache,
+  warmupCaches 
+} from './optimizedCache.js'
+
+// Fast lookups (ahora usando cache optimizado)
+const LEMMA_TO_VERB = VERB_LOOKUP_MAP
 const allowedCombosCache = new Map() // level -> Set("mood|tense")
 function getAllowedCombosForLevel(level) {
   if (allowedCombosCache.has(level)) return allowedCombosCache.get(level)
@@ -55,16 +65,24 @@ export function chooseNext({forms, history}){
   
   
   
-  let eligible = forms.filter(f=>{
-    
-    // Level filtering (O(1) with precomputed set)
-    // Determine allowed combos: from current block if set, else level
-    const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
-      ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
-      : getAllowedCombosForLevel(level)
-    if(!allowed.has(`${f.mood}|${f.tense}`)) {
-      return false
-    }
+  // Crear cache key para este filtrado
+  const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
+  
+  // Intentar obtener del cache
+  let eligible = formFilterCache.get(filterKey)
+  
+  if (!eligible) {
+    // Si no está en cache, calcular
+    eligible = forms.filter(f=>{
+      
+      // Level filtering (O(1) with precomputed set)
+      // Determine allowed combos: from current block if set, else level
+      const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
+        ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
+        : getAllowedCombosForLevel(level)
+      if(!allowed.has(`${f.mood}|${f.tense}`)) {
+        return false
+      }
     
     // Gate futuro de subjuntivo por toggle de producción
     const sAll = useSettings.getState()
@@ -277,6 +295,10 @@ export function chooseNext({forms, history}){
     
     return true
   })
+  
+    // Guardar en cache para futuros usos
+    formFilterCache.set(filterKey, eligible)
+  }
   
   // Show which persons were included
   const includedPersons = [...new Set(eligible.map(f => f.person))]
