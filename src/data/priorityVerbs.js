@@ -283,6 +283,266 @@ export const priorityVerbs = [
         ]
       }
     ]
+  },
+
+  // Verbos de diptongación e→ie críticos faltantes
+  {
+    "id": "cerrar_priority",
+    "lemma": "cerrar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "cierro" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "cierras", "accepts": { "vos": "cerrás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "cierra" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "cerramos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "cerráis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "cierran" },
+
+          // Presente subjuntivo (e→ie) 
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "cierre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "cierres", "accepts": { "vos": "cierres" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "cierre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "cerremos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "cerréis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "cierren" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "cerrar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "cerrando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "cerrado" }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "comenzar_priority",
+    "lemma": "comenzar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "comienzo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "comienzas", "accepts": { "vos": "comenzás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "comienza" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "comenzamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "comenzáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "comienzan" },
+
+          // Presente subjuntivo (e→ie)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "comience" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "comiences", "accepts": { "vos": "comiences" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "comience" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "comencemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "comencéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "comiencen" },
+
+          // Pretérito indefinido (z→c)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "comencé" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "comenzaste", "accepts": { "vos": "comenzaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "comenzó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "comenzamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "comenzasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "comenzaron" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "comenzar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "comenzando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "comenzado" }
+        ]
+      }
+    ]
+  },
+
+  // Verbos de diptongación o→ue críticos faltantes
+  {
+    "id": "contar_priority",
+    "lemma": "contar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (o→ue)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "cuento" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "cuentas", "accepts": { "vos": "contás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "cuenta" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "contamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "contáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "cuentan" },
+
+          // Presente subjuntivo (o→ue)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "cuente" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "cuentes", "accepts": { "vos": "cuentes" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "cuente" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "contemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "contéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "cuenten" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "contar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "contando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "contado" }
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "mostrar_priority",
+    "lemma": "mostrar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (o→ue)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "muestro" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "muestras", "accepts": { "vos": "mostrás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "muestra" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "mostramos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "mostráis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "muestran" },
+
+          // Presente subjuntivo (o→ue)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "muestre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "muestres", "accepts": { "vos": "muestres" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "muestre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "mostremos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "mostréis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "muestren" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "mostrar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "mostrando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "mostrado" }
+        ]
+      }
+    ]
+  },
+
+  // Verbos -ger/-gir → -jo críticos faltantes (familia JO_VERBS con solo 2 verbos)
+  {
+    "id": "elegir_priority",
+    "lemma": "elegir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g→j + e→i)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "elijo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "eliges", "accepts": { "vos": "elegís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "elige" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "elegimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "elegís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "eligen" },
+
+          // Presente subjuntivo (g→j + e→i)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "elija" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "elijas", "accepts": { "vos": "elijas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "elija" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "elijamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "elijáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "elijan" },
+
+          // Pretérito indefinido (e→i en 3ª persona)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "elegí" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "elegiste", "accepts": { "vos": "elegiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "eligió" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "elegimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "elegisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "eligieron" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "elegir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "eligiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "elegido" }
+        ]
+      }
+    ]
+  },
+
+  // Verbos -guir críticos faltantes (familia GU_DROP con solo 1 verbo)
+  {
+    "id": "distinguir_priority",
+    "lemma": "distinguir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (gu→g)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "distingo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "distingues", "accepts": { "vos": "distinguís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "distingue" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "distinguimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "distinguís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "distinguen" },
+
+          // Presente subjuntivo (gu→g)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "distinga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "distingas", "accepts": { "vos": "distingas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "distinga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "distingamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "distingáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "distingan" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "distinguir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "distinguiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "distinguido" }
+        ]
+      }
+    ]
+  },
+
+  // Verbo e→i crítico faltante
+  {
+    "id": "sentir_priority",
+    "lemma": "sentir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "siento" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "sientes", "accepts": { "vos": "sentís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "siente" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "sentimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "sentís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "sienten" },
+
+          // Presente subjuntivo (e→ie)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "sienta" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "sientas", "accepts": { "vos": "sientas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "sienta" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "sintamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "sintáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "sientan" },
+
+          // Pretérito indefinido (e→i en 3ª persona)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "sentí" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "sentiste", "accepts": { "vos": "sentiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "sintió" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "sentimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "sentisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "sintieron" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "sentir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "sintiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "sentido" }
+        ]
+      }
+    ]
   }
   
   // Se pueden agregar más verbos aquí según necesidades
