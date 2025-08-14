@@ -466,7 +466,7 @@ export default function Drill({
 
   // Campos visibles según modo
   const showInfinitiveField = isReverse
-  const showPersonField = isReverse
+  const showPersonField = isReverse && currentItem?.mood !== 'nonfinite'
   const showMoodField = isReverse && !inSpecific
   const showTenseField = isReverse && !inSpecific
 
@@ -513,7 +513,7 @@ export default function Drill({
   const reverseSubmit = () => {
     // Validar
     if (!infinitiveGuess.trim()) return
-    if (!personGuess) return
+    if (showPersonField && !personGuess) return
     if (showMoodField && !moodGuess) return
     if (showTenseField && !tenseGuess) return
 
@@ -534,7 +534,7 @@ export default function Drill({
     }
     const groups = EQUIV[key] || []
     const sameGroup = groups.some(g => g.includes(expected.person) && g.includes(personGuess))
-    const okPerson = expected.person ? (expected.person === personGuess || sameGroup) : false
+    const okPerson = showPersonField ? (expected.person ? (expected.person === personGuess || sameGroup) : false) : true
     const okMood = showMoodField ? expected.mood === moodGuess : true
     const okTense = showTenseField ? expected.tense === tenseGuess : true
     const correct = okInf && okPerson && okMood && okTense
@@ -644,13 +644,15 @@ export default function Drill({
               <input className="reverse-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} placeholder="escribir, tener..." />
             </div>
 
-            <div className="reverse-field">
-              <label className="reverse-label">Persona</label>
-              <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
-                <option value="">Seleccioná persona...</option>
-                {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
-              </select>
-            </div>
+            {showPersonField && (
+              <div className="reverse-field">
+                <label className="reverse-label">Persona</label>
+                <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)}>
+                  <option value="">Seleccioná persona...</option>
+                  {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
+                </select>
+              </div>
+            )}
 
             {showMoodField && (
               <div className="reverse-field">
@@ -798,7 +800,7 @@ export default function Drill({
             <button 
               className="btn" 
               onClick={reverseSubmit}
-              disabled={!(infinitiveGuess.trim() && personGuess && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
+              disabled={!(infinitiveGuess.trim() && (!showPersonField || personGuess) && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
             >
               Verificar
             </button>
