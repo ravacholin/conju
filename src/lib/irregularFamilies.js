@@ -26,8 +26,8 @@ export const IRREGULAR_FAMILIES = {
   'DIPHT_U_UE': {
     id: 'DIPHT_U_UE',
     name: 'Diptongación u→ue',
-    description: 'jugar',
-    examples: ['jugar'],
+    description: 'jugar, amuar, desaguar',
+    examples: ['jugar', 'amuar', 'desaguar', 'menguar'],
     pattern: 'u→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['jugar']
@@ -83,6 +83,26 @@ export const IRREGULAR_FAMILIES = {
     pattern: 'pérdida de "u" en 1ª persona: -guir → -go, propagación a subjuntivo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['seguir', 'distinguir']
+  },
+
+  'ZCO_VERBS': {
+    id: 'ZCO_VERBS',
+    name: 'Verbos -cer/-cir → -zco',
+    description: 'conocer, nacer, parecer, conducir',
+    examples: ['conocer', 'nacer', 'parecer', 'crecer', 'conducir', 'traducir', 'producir', 'reducir'],
+    pattern: 'vocal + cer/cir → -zco en 1ª persona: conozco, nazco, parezco, conduzco',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['conocer', 'parecer', 'conducir']
+  },
+
+  'ZO_VERBS': {
+    id: 'ZO_VERBS',
+    name: 'Verbos -cer → -zo',
+    description: 'vencer, ejercer, torcer, cocer',
+    examples: ['vencer', 'ejercer', 'torcer', 'cocer', 'convencer', 'retorcer'],
+    pattern: 'consonante + cer → -zo en 1ª persona: venzo, ejerzo, tuerzo, cuezo',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['vencer', 'ejercer', 'torcer']
   },
   
   // 3) Inserción de -y- y fenómenos vocálicos con hiato
@@ -140,8 +160,8 @@ export const IRREGULAR_FAMILIES = {
   'ORTH_GUAR': {
     id: 'ORTH_GUAR',
     name: 'Verbos -guar (diéresis)',
-    description: 'averiguar, apaciguar',
-    examples: ['averiguar', 'apaciguar', 'aguar'],
+    description: 'averiguar, apaciguar, aguar, fraguar, menguar',
+    examples: ['averiguar', 'apaciguar', 'aguar', 'fraguar', 'menguar', 'santiguar'],
     pattern: '-guar con diéresis: averigüé, averigüe',
     affectedTenses: ['pretIndef', 'subjPres'],
     paradigmaticVerbs: ['averiguar', 'apaciguar']
@@ -217,6 +237,49 @@ export const IRREGULAR_FAMILIES = {
     pattern: 'algunos -uar llevan tilde: continúo, actúo (no todos: averiguar→averiguo)',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['continuar', 'actuar', 'evaluar']
+  },
+
+  // 7) Categorías específicas para formas no conjugadas
+  'IRREG_GERUNDS': {
+    id: 'IRREG_GERUNDS',
+    name: 'Gerundios irregulares',
+    description: 'ir, poder, venir, decir, traer',
+    examples: ['ir', 'poder', 'venir', 'decir', 'traer', 'caer', 'leer', 'creer', 'oír', 'huir'],
+    pattern: 'gerundios con formas especiales: yendo, pudiendo, viniendo, diciendo, trayendo',
+    affectedTenses: ['ger'],
+    paradigmaticVerbs: ['ir', 'poder', 'venir', 'decir']
+  },
+
+  'IRREG_PARTICIPLES': {
+    id: 'IRREG_PARTICIPLES',
+    name: 'Participios irregulares',
+    description: 'hacer, ver, escribir, poner, volver',
+    examples: ['hacer', 'ver', 'escribir', 'poner', 'volver', 'morir', 'abrir', 'cubrir', 'descubrir', 'romper'],
+    pattern: 'participios irregulares: hecho, visto, escrito, puesto, vuelto, muerto',
+    affectedTenses: ['part'],
+    paradigmaticVerbs: ['hacer', 'ver', 'escribir', 'poner', 'volver']
+  },
+
+  // 8) Categorías para condicional (irregulares de futuro)
+  'IRREG_CONDITIONAL': {
+    id: 'IRREG_CONDITIONAL',
+    name: 'Condicional irregular',
+    description: 'tener, venir, poner, salir, valer, poder, saber, haber, hacer, decir, querer, caber',
+    examples: ['tener', 'venir', 'poner', 'salir', 'valer', 'poder', 'saber', 'haber', 'hacer', 'decir', 'querer', 'caber'],
+    pattern: 'misma raíz irregular que el futuro: tendría, vendría, pondría, sabría',
+    affectedTenses: ['cond', 'fut'],
+    paradigmaticVerbs: ['tener', 'venir', 'poner', 'salir', 'poder', 'saber']
+  },
+
+  // 9) Categorías para imperativo
+  'IMPERATIVE_IRREG': {
+    id: 'IMPERATIVE_IRREG',
+    name: 'Imperativo irregular',
+    description: 'tener, venir, poner, salir, hacer, decir, ir, ser',
+    examples: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir', 'ir', 'ser', 'haber', 'saber'],
+    pattern: 'formas especiales de imperativo: ten, ven, pon, sal, haz, di, ve, sé',
+    affectedTenses: ['impAff', 'impNeg'],
+    paradigmaticVerbs: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir']
   }
 }
 
