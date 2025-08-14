@@ -774,8 +774,8 @@ export default function Drill({
             <div className="chrono-label">Racha</div>
           </div>
           <div className="chrono-item">
-            <div className="chrono-value">{Math.round((errorsCount / Math.max(1, localCorrect + errorsCount)) * 100)}</div>
-            <div className="chrono-label">Errores/100</div>
+            <div className="chrono-value">{Math.round((localCorrect / Math.max(1, localCorrect + errorsCount)) * 100)}</div>
+            <div className="chrono-label">Aciertos/100</div>
           </div>
           <div className="chrono-divider" />
           {latencies.length>0 && (
