@@ -39,7 +39,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'pedir, servir, repetir, seguir, sentir, preferir',
     examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir'],
     pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
-    affectedTenses: ['pres', 'subjPres', 'ger', 'pretIndef'],
+    affectedTenses: ['pres', 'subjPres', 'pretIndef'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']
   },
   
@@ -49,7 +49,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'dormir, morir, adormecerse',
     examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir'],
     pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
-    affectedTenses: ['ger', 'pretIndef'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['dormir', 'morir']
   },
   
@@ -102,7 +102,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'leer, creer, construir, destruir, huir',
     examples: ['leer', 'creer', 'construir', 'destruir', 'huir', 'incluir', 'concluir', 'contribuir', 'distribuir'],
     pattern: 'verbos con raíz vocal: i→y solo en pretérito 3ª personas (leyó, leyeron)',
-    affectedTenses: ['pretIndef', 'ger', 'part'],
+    affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['leer', 'creer', 'construir']
   },
   
