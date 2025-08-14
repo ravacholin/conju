@@ -907,7 +907,7 @@ function App() {
                 <div className="options-grid dialect-selection">
                   <div className="option-card" onClick={() => selectDialect('rioplatense')}>
                     <h3><img src="/vos.png" alt="Vos" className="option-icon" /></h3>
-                    <p>Argentina, Uruguay</p>
+                    <p>Argentina, Uruguay, etc.</p>
                     <p className="example">vos tenés, vos hablás</p>
                   </div>
                   
