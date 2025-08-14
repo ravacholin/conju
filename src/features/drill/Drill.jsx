@@ -651,7 +651,7 @@ export default function Drill({
           </div>
           <div className="reverse-divider" />
 
-          <div className="reverse-grid">
+          <div className={`reverse-grid ${!showPersonField && !showMoodField && !showTenseField ? 'reverse-grid-single' : ''}`}>
             <div className="reverse-field">
               <label className="reverse-label">Infinitivo</label>
               <input className="reverse-input" value={infinitiveGuess} onChange={(e)=>setInfinitiveGuess(e.target.value)} onKeyDown={handleReverseKeyDown} placeholder="escribir, tener..." />
