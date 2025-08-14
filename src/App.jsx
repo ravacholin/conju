@@ -1195,14 +1195,14 @@ function App() {
                           {/* Show simplified groups for mixed practice */}
                           <div className="option-card compact" onClick={() => selectFamily('STEM_CHANGES')}>
                             <h3>Verbos que Diptongan</h3>
-                            <p className="conjugation-example">pensar→pienso, volver→vuelvo, pedir→pido</p>
                             <p className="hint">Cambios de raíz: e→ie, o→ue, e→i</p>
+                            <p className="conjugation-example">pensar→pienso, volver→vuelvo, pedir→pido</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectFamily('FIRST_PERSON_IRREGULAR')}>
                             <h3>Irregulares en YO</h3>
-                            <p className="conjugation-example">tengo, conozco, salgo, protejo</p>
                             <p className="hint">1ª persona irregular que afecta el subjuntivo</p>
+                            <p className="conjugation-example">tengo, conozco, salgo, protejo</p>
                           </div>
                           
                           <div className="option-card compact" onClick={() => selectFamily('PRET_UV')}>
@@ -1297,8 +1297,8 @@ function App() {
                       return simplifiedGroups.map(group => (
                         <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
                           <h3>{group.name}</h3>
-                          <p className="conjugation-example">{group.description}</p>
                           <p className="hint">{group.explanation}</p>
+                          <p className="conjugation-example">{group.description}</p>
                         </div>
                       ))
                     } else if (mood && shouldUseSimplifiedGroupingForMood(mood) && !tense) {
@@ -1307,8 +1307,8 @@ function App() {
                       return simplifiedGroups.map(group => (
                         <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
                           <h3>{group.name}</h3>
-                          <p className="conjugation-example">{group.description}</p>
                           <p className="hint">{group.explanation}</p>
+                          <p className="conjugation-example">{group.description}</p>
                         </div>
                       ))
                     } else {
