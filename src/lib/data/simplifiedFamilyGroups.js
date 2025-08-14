@@ -33,11 +33,10 @@ export const SIMPLIFIED_GROUPS = {
     // Familias técnicas que incluye
     includedFamilies: [
       'G_VERBS',       // tener→tengo, poner→pongo, salir→salgo
-      'ZCO_VERBS',     // conocer→conozco, producir→produzco
+      'ZCO_VERBS',     // conocer→conozco, parecer→parezco, conducir→conduzco
       'ZO_VERBS',      // vencer→venzo, ejercer→ejerzo
       'JO_VERBS',      // proteger→protejo, elegir→elijo
-      'GU_DROP',       // seguir→sigo, distinguir→distingo
-      'ZCO_VERBS'      // conocer→conozco, parecer→parezco, conducir→conduzco
+      'GU_DROP'        // seguir→sigo, distinguir→distingo
     ],
     // Tiempos donde este grupo es relevante
     relevantTenses: ['pres', 'subjPres'],
