@@ -217,13 +217,13 @@ export function chooseNext({forms, history}){
       // Family filtering for irregular verbs
       if (selectedFamily) {
         const verbFamilies = categorizeVerb(f.lemma, verb)
-        
+
         // Check if it's a simplified group that needs expansion
         const expandedFamilies = expandSimplifiedGroup(selectedFamily)
         if (expandedFamilies.length > 0) {
-          // It's a simplified group - use priority-based classification
-          const verbGroup = getSimplifiedGroupForVerb(verbFamilies, f.tense)
-          if (verbGroup !== selectedFamily) {
+          // It's a simplified group. Check if the verb belongs to ANY of the included families.
+          const isMatch = verbFamilies.some(vf => expandedFamilies.includes(vf))
+          if (!isMatch) {
             return false
           }
         } else {
