@@ -6569,6 +6569,406 @@ export const priorityVerbs = [
         ]
       }
     ]
+  },
+
+  // ORTH_GAR: colgar (g→gu)
+  {
+    "id": "colgar_priority",
+    "lemma": "colgar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "cuelgo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "cuelgas", "accepts": { "vos": "colgás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "cuelga" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "colgamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "colgáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "cuelgan" },
+
+          // Pretérito indefinido (g→gu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "colgué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "colgaste", "accepts": { "vos": "colgaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "colgó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "colgamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "colgasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "colgaron" },
+
+          // Presente subjuntivo (g→gu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "cuelgue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "cuelgues", "accepts": { "vos": "cuelgues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "cuelgue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "colguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "colguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "cuelguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "colgar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "colgando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "colgado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_GAR: negar (g→gu)
+  {
+    "id": "negar_priority",
+    "lemma": "negar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→ie + regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "niego" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "niegas", "accepts": { "vos": "negás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "niega" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "negamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "negáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "niegan" },
+
+          // Pretérito indefinido (g→gu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "negué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "negaste", "accepts": { "vos": "negaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "negó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "negamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "negasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "negaron" },
+
+          // Presente subjuntivo (e→ie + g→gu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "niegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "niegues", "accepts": { "vos": "niegues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "niegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "neguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "neguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "nieguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "negar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "negando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "negado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_GAR: rogar (g→gu)
+  {
+    "id": "rogar_priority",
+    "lemma": "rogar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (o→ue)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "ruego" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "ruegas", "accepts": { "vos": "rogás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "ruega" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "rogamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "rogáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "ruegan" },
+
+          // Pretérito indefinido (g→gu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "rogué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "rogaste", "accepts": { "vos": "rogaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "rogó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "rogamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "rogasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "rogaron" },
+
+          // Presente subjuntivo (o→ue + g→gu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "ruegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "ruegues", "accepts": { "vos": "ruegues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "ruegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "roguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "roguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "rueguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "rogar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "rogando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "rogado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_GAR: castigar (g→gu)
+  {
+    "id": "castigar_priority",
+    "lemma": "castigar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "castigo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "castigas", "accepts": { "vos": "castigás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "castiga" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "castigamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "castigáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "castigan" },
+
+          // Pretérito indefinido (g→gu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "castigué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "castigaste", "accepts": { "vos": "castigaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "castigó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "castigamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "castigasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "castigaron" },
+
+          // Presente subjuntivo (g→gu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "castigue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "castigues", "accepts": { "vos": "castigues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "castigue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "castiguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "castiguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "castiguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "castigar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "castigando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "castigado" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: disponer (pretérito fuerte -u-)
+  {
+    "id": "disponer_priority",
+    "lemma": "disponer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "dispongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "dispones", "accepts": { "vos": "disponés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "dispone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "disponemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "disponéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "disponen" },
+
+          // Pretérito indefinido (fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "dispuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "dispusiste", "accepts": { "vos": "dispusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "dispuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "dispusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "dispusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "dispusieron" },
+
+          // Presente subjuntivo
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "disponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "dispongas", "accepts": { "vos": "dispongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "disponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "dispongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "dispongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "dispongan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "dispondré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "dispondrás", "accepts": { "vos": "dispondrás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "dispondrá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "dispondremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "dispondréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "dispondrán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "dispondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "dispondrías", "accepts": { "vos": "dispondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "dispondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "dispondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "dispondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "dispondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "disponer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "disponiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "dispuesto" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: exponer (pretérito fuerte -u-)
+  {
+    "id": "exponer_priority",
+    "lemma": "exponer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "expongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "expones", "accepts": { "vos": "exponés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "expone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "exponemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "exponéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "exponen" },
+
+          // Pretérito indefinido (fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "expuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "expusiste", "accepts": { "vos": "expusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "expuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "expusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "expusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "expusieron" },
+
+          // Presente subjuntivo
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "exponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "expongas", "accepts": { "vos": "expongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "exponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "expongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "expongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "expongan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "expondré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "expondrás", "accepts": { "vos": "expondrás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "expondrá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "expondremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "expondréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "expondrán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "expondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "expondrías", "accepts": { "vos": "expondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "expondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "expondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "expondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "expondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "exponer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "exponiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "expuesto" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: suponer (pretérito fuerte -u-)
+  {
+    "id": "suponer_priority",
+    "lemma": "suponer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "supongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "supones", "accepts": { "vos": "suponés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "supone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "suponemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "suponéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "suponen" },
+
+          // Pretérito indefinido (fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "supuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "supusiste", "accepts": { "vos": "supusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "supuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "supusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "supusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "supusieron" },
+
+          // Presente subjuntivo
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "suponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "supongas", "accepts": { "vos": "supongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "suponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "supongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "supongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "supongan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "supondré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "supondrás", "accepts": { "vos": "supondrás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "supondrá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "supondremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "supondréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "supondrán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "supondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "supondrías", "accepts": { "vos": "supondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "supondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "supondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "supondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "supondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "suponer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "suponiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "supuesto" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: imponer (pretérito fuerte -u-)
+  {
+    "id": "imponer_priority",
+    "lemma": "imponer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "impongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "impones", "accepts": { "vos": "imponés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "impone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "imponemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "imponéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "imponen" },
+
+          // Pretérito indefinido (fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "impuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "impusiste", "accepts": { "vos": "impusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "impuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "impusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "impusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "impusieron" },
+
+          // Presente subjuntivo
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "imponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "impongas", "accepts": { "vos": "impongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "imponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "impongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "impongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "impongan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "impondré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "impondrás", "accepts": { "vos": "impondrás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "impondrá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "impondremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "impondréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "impondrán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "impondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "impondrías", "accepts": { "vos": "impondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "impondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "impondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "impondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "impondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "imponer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "imponiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "impuesto" }
+        ]
+      }
+    ]
   }
 ]
 

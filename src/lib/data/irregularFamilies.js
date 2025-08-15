@@ -677,7 +677,19 @@ export function categorizeVerb(lemma, verbData) {
     'comunicar': ['ORTH_CAR'],
     'educar': ['ORTH_CAR'],
     'publicar': ['ORTH_CAR'],
-    'provocar': ['ORTH_CAR']
+    'provocar': ['ORTH_CAR'],
+    
+    // Expansión ORTH_GAR (FASE 9)
+    'colgar': ['DIPHT_O_UE', 'ORTH_GAR'],
+    'negar': ['DIPHT_E_IE', 'ORTH_GAR'],
+    'rogar': ['DIPHT_O_UE', 'ORTH_GAR'],
+    'castigar': ['ORTH_GAR'],
+    
+    // Expansión PRET_U (FASE 9)
+    'disponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'exponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'suponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'imponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES']
   }
   
   if (knownVerbs[lemma]) {
