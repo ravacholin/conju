@@ -99,17 +99,7 @@ export default function Drill({
     }
   }, [settings.resistanceActive])
 
-  // Auto-advance on accent errors
-  useEffect(() => {
-    if (result && result.isAccentError) {
-      // Auto-advance to next verb after 2 seconds for accent errors
-      const timer = setTimeout(() => {
-        handleContinue()
-      }, 2000)
-      
-      return () => clearTimeout(timer)
-    }
-  }, [result])
+  
 
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return

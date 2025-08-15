@@ -689,7 +689,19 @@ export function categorizeVerb(lemma, verbData) {
     'disponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'exponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'suponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
-    'imponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES']
+    'imponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+
+    // Expansión DIPHT_U_UE (FASE 10)
+    'adecuar': ['DIPHT_U_UE'],
+    'evacuar': ['DIPHT_U_UE'],
+    'graduar': ['DIPHT_U_UE'],
+    'situar': ['DIPHT_U_UE'],
+
+    // Expansión GU_DROP (FASE 10)
+    'distinguir': ['GU_DROP'],
+    'extinguir': ['GU_DROP'],
+    'conseguir': ['GU_DROP', 'E_I_IR'],
+    'perseguir': ['GU_DROP', 'E_I_IR']
   }
   
   if (knownVerbs[lemma]) {
