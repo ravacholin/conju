@@ -413,10 +413,10 @@ export function categorizeVerb(lemma, verbData) {
     'poner': ['G_VERBS', 'PRET_U'],
     'salir': ['G_VERBS'],
     'hacer': ['G_VERBS', 'PRET_I'],
-    'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I'],
-    'decir': ['G_VERBS', 'E_I_IR', 'PRET_J'],
+    'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
+    'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IRREG_GERUNDS', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
     'oír': ['G_VERBS', 'PRET_J'],
-    'traer': ['G_VERBS', 'PRET_J'],
+    'traer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS'],
     'caer': ['G_VERBS', 'PRET_J'],
     'valer': ['G_VERBS'],
     
@@ -431,7 +431,7 @@ export function categorizeVerb(lemma, verbData) {
     
     // Diptongación o→ue
     'volver': ['DIPHT_O_UE'],
-    'poder': ['DIPHT_O_UE', 'PRET_U'],
+    'poder': ['DIPHT_O_UE', 'PRET_U', 'IRREG_GERUNDS', 'IRREG_CONDITIONAL'],
     'contar': ['DIPHT_O_UE'],
     'mostrar': ['DIPHT_O_UE'],
     'dormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
@@ -509,7 +509,114 @@ export function categorizeVerb(lemma, verbData) {
     'vencer': ['ZO_VERBS'],
     'ejercer': ['ZO_VERBS'],
     'torcer': ['ZO_VERBS'],
-    'cocer': ['ZO_VERBS']
+    'cocer': ['ZO_VERBS'],
+    
+    // Cambios de acentuación
+    'prohibir': ['ACCENT_CHANGES'],
+    'reunir': ['ACCENT_CHANGES'],
+    'aislar': ['ACCENT_CHANGES'],
+    'aullar': ['ACCENT_CHANGES'],
+    'maullar': ['ACCENT_CHANGES'],
+    'rehusar': ['ACCENT_CHANGES'],
+    
+    // DIPHT_U_UE y ORTH_GUAR combinados
+    'fraguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    'menguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    
+    // GU_DROP y E_I_IR combinados
+    'conseguir': ['GU_DROP', 'E_I_IR'],
+    'perseguir': ['GU_DROP', 'E_I_IR'],
+    
+    // O_U_GER_IR y DIPHT_O_UE combinados
+    'podrir': ['O_U_GER_IR', 'DIPHT_O_UE'],
+    
+    // ORTH_CAR específicos
+    'tocar': ['ORTH_CAR'],
+    'practicar': ['ORTH_CAR'],
+    'explicar': ['ORTH_CAR'],
+    
+    // Imperativos irregulares
+    'tener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
+    'poner': ['G_VERBS', 'PRET_U', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'salir': ['G_VERBS', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
+    'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
+    'hacer': ['G_VERBS', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    
+    // Monosílabos irregulares y formas especiales
+    'ir': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG'],
+    'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG'],
+    'dar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
+    'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG'],
+    
+    // Familias finales
+    'freír': ['E_I_IR', 'DOUBLE_PARTICIPLES'],
+    'soler': ['DIPHT_O_UE', 'DEFECTIVE_VERBS'],
+    
+    // Nuevos verbos agregados en optimización nocturna
+    'abolir': ['DEFECTIVE_VERBS'],
+    'blandir': ['DEFECTIVE_VERBS'],
+    'imprimir': ['DOUBLE_PARTICIPLES'],
+    'proveer': ['HIATUS_Y', 'DOUBLE_PARTICIPLES'],
+    'entregar': ['ORTH_GAR'],
+    'obligar': ['ORTH_GAR'],
+    'almorzar': ['DIPHT_O_UE', 'ORTH_ZAR'],
+    'utilizar': ['ORTH_ZAR'],
+    
+    // Expansión DIPHT_U_UE
+    'amuar': ['DIPHT_U_UE'],
+    'desaguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    'atestiguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    'aguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    'santiguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
+    
+    // Expansión O_U_GER_IR
+    'gruñir': ['O_U_GER_IR'],
+    'adormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
+    'redormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
+    
+    // Expansión JO_VERBS
+    'dirigir': ['JO_VERBS'],
+    'corregir': ['JO_VERBS', 'E_I_IR'],
+    'recoger': ['JO_VERBS'],
+    'escoger': ['JO_VERBS'],
+    
+    // Expansión GU_DROP
+    'extinguir': ['GU_DROP'],
+    'proseguir': ['GU_DROP', 'E_I_IR'],
+    
+    // Expansión PRET_UV
+    'obtener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
+    'contener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
+    'sostener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
+    
+    // Expansión PRET_U
+    'haber': ['PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL'],
+    'deber': ['PRET_U'],
+    
+    // Expansión PRET_I
+    'convenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
+    'prevenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
+    'rehacer': ['G_VERBS', 'PRET_I', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG', 'IRREG_PARTICIPLES'],
+    
+    // Expansión IRREG_GERUNDS
+    'caer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
+    'leer': ['HIATUS_Y', 'IRREG_GERUNDS'],
+    'creer': ['HIATUS_Y', 'IRREG_GERUNDS'],
+    
+    // Expansión IRREG_PARTICIPLES
+    'abrir': ['IRREG_PARTICIPLES'],
+    'cubrir': ['IRREG_PARTICIPLES'],
+    'romper': ['IRREG_PARTICIPLES'],
+    
+    // Expansión DEFECTIVE_VERBS
+    'agredir': ['DEFECTIVE_VERBS'],
+    'empedernir': ['DEFECTIVE_VERBS'],
+    'blandir': ['DEFECTIVE_VERBS'],
+    
+    // Expansión DOUBLE_PARTICIPLES
+    'prender': ['DOUBLE_PARTICIPLES'],
+    'suspender': ['DOUBLE_PARTICIPLES']
   }
   
   if (knownVerbs[lemma]) {
