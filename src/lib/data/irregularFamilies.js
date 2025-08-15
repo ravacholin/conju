@@ -603,7 +603,8 @@ export function categorizeVerb(lemma, verbData) {
     'detener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
     
     // Expansión PRET_U
-    'haber': ['PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL'],
+    'haber': ['PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
+    'saber': ['PRET_U', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
     'deber': ['PRET_U'],
     'componer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'proponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
@@ -619,11 +620,15 @@ export function categorizeVerb(lemma, verbData) {
     'caer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
     'leer': ['HIATUS_Y', 'IRREG_GERUNDS'],
     'creer': ['HIATUS_Y', 'IRREG_GERUNDS'],
+    'oír': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS'],
+    'construir': ['UIR_Y', 'HIATUS_Y', 'IRREG_GERUNDS'],
+    'destruir': ['UIR_Y', 'HIATUS_Y', 'IRREG_GERUNDS'],
     
     // Expansión IRREG_PARTICIPLES
     'abrir': ['IRREG_PARTICIPLES'],
     'cubrir': ['IRREG_PARTICIPLES'],
     'romper': ['IRREG_PARTICIPLES'],
+    'escribir': ['IRREG_PARTICIPLES'],
     
     // Expansión DEFECTIVE_VERBS
     'agredir': ['DEFECTIVE_VERBS'],
@@ -663,7 +668,16 @@ export function categorizeVerb(lemma, verbData) {
     'maullar': ['ACCENT_CHANGES'],
     'rehusar': ['ACCENT_CHANGES'],
     'descafainar': ['ACCENT_CHANGES'],
-    'enraizar': ['ACCENT_CHANGES', 'ORTH_ZAR']
+    'enraizar': ['ACCENT_CHANGES', 'ORTH_ZAR'],
+    
+    // Expansión DIPHT_O_UE (FASE 8)
+    'encontrar': ['DIPHT_O_UE'],
+    
+    // Expansión ORTH_CAR (FASE 8)
+    'comunicar': ['ORTH_CAR'],
+    'educar': ['ORTH_CAR'],
+    'publicar': ['ORTH_CAR'],
+    'provocar': ['ORTH_CAR']
   }
   
   if (knownVerbs[lemma]) {

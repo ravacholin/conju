@@ -6352,6 +6352,223 @@ export const priorityVerbs = [
         ]
       }
     ]
+  },
+
+  // DIPHT_O_UE: encontrar (diptongación o→ue)
+  {
+    "id": "encontrar_priority",
+    "lemma": "encontrar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (o→ue diptongación)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "encuentro" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "encuentras", "accepts": { "vos": "encontrás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "encuentra" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "encontramos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "encontráis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "encuentran" },
+
+          // Pretérito indefinido (regular)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "encontré" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "encontraste", "accepts": { "vos": "encontraste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "encontró" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "encontramos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "encontrasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "encontraron" },
+
+          // Presente subjuntivo (o→ue)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "encuentre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "encuentres", "accepts": { "vos": "encuentres" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "encuentre" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "encontremos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "encontréis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "encuentren" },
+
+          // Imperativo afirmativo
+          { "mood": "imperative", "tense": "impAff", "person": "2s_tu", "value": "encuentra", "accepts": { "vos": "encontrá" } },
+          { "mood": "imperative", "tense": "impAff", "person": "3s", "value": "encuentre" },
+          { "mood": "imperative", "tense": "impAff", "person": "1p", "value": "encontremos" },
+          { "mood": "imperative", "tense": "impAff", "person": "2p_vosotros", "value": "encontrad" },
+          { "mood": "imperative", "tense": "impAff", "person": "3p", "value": "encuentren" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "encontrar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "encontrando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "encontrado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_CAR: comunicar (c→qu)
+  {
+    "id": "comunicar_priority",
+    "lemma": "comunicar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "comunico" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "comunicas", "accepts": { "vos": "comunicás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "comunica" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "comunicamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "comunicáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "comunican" },
+
+          // Pretérito indefinido (c→qu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "comuniqué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "comunicaste", "accepts": { "vos": "comunicaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "comunicó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "comunicamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "comunicasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "comunicaron" },
+
+          // Presente subjuntivo (c→qu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "comunique" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "comuniques", "accepts": { "vos": "comuniques" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "comunique" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "comuniquemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "comuniquéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "comuniquen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "comunicar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "comunicando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "comunicado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_CAR: educar (c→qu)
+  {
+    "id": "educar_priority",
+    "lemma": "educar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "educo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "educas", "accepts": { "vos": "educás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "educa" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "educamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "educáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "educan" },
+
+          // Pretérito indefinido (c→qu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "eduqué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "educaste", "accepts": { "vos": "educaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "educó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "educamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "educasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "educaron" },
+
+          // Presente subjuntivo (c→qu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "eduque" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "eduques", "accepts": { "vos": "eduques" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "eduque" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "eduquemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "eduquéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "eduquen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "educar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "educando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "educado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_CAR: publicar (c→qu)
+  {
+    "id": "publicar_priority",
+    "lemma": "publicar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "publico" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "publicas", "accepts": { "vos": "publicás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "publica" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "publicamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "publicáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "publican" },
+
+          // Pretérito indefinido (c→qu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "publiqué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "publicaste", "accepts": { "vos": "publicaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "publicó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "publicamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "publicasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "publicaron" },
+
+          // Presente subjuntivo (c→qu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "publique" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "publiques", "accepts": { "vos": "publiques" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "publique" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "publiquemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "publiquéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "publiquen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "publicar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "publicando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "publicado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_CAR: provocar (c→qu)
+  {
+    "id": "provocar_priority",
+    "lemma": "provocar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "provoco" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "provocas", "accepts": { "vos": "provocás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "provoca" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "provocamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "provocáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "provocan" },
+
+          // Pretérito indefinido (c→qu)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "provoqué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "provocaste", "accepts": { "vos": "provocaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "provocó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "provocamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "provocasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "provocaron" },
+
+          // Presente subjuntivo (c→qu)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "provoque" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "provoques", "accepts": { "vos": "provoques" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "provoque" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "provoquemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "provoquéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "provoquen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "provocar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "provocando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "provocado" }
+        ]
+      }
+    ]
   }
 ]
 
