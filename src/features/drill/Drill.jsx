@@ -836,14 +836,18 @@ export default function Drill({
       {result ? (
         <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
           <p>
-            {result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}
+            {result.correct
+              ? '¡Correcto!'
+              : result.isAccentError
+                ? <>¡Cuidado! Falta la tilde: <strong>{result.targets.join(' / ')}</strong></>
+                : 'Incorrecto'}
           </p>
           {result.correct && result.note && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
               {result.note}
             </p>
           )}
-          {!result.correct && result.targets && (
+          {!result.correct && !result.isAccentError && result.targets && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
               Respuesta correcta: <strong>{result.targets.join(' / ')}</strong>
             </p>
