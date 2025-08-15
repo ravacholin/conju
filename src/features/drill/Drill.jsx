@@ -154,6 +154,9 @@ export default function Drill({
       setResult({ correct: false, message: 'Error al evaluar la conjugación' })
     } finally {
       setIsSubmitting(false)
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
     }
   }
 
@@ -612,7 +615,7 @@ export default function Drill({
             }
           }}
           placeholder="Escribe la conjugación..."
-          disabled={result !== null}
+          readOnly={result !== null}
           autoFocus
         />
         {/* Accent keypad */}
