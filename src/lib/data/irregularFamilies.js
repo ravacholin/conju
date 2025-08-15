@@ -548,6 +548,7 @@ export function categorizeVerb(lemma, verbData) {
     'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG'],
     'dar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG'],
+    'estar': ['PRET_SUPPL'],
     
     // Familias finales
     'freír': ['E_I_IR', 'DOUBLE_PARTICIPLES'],
@@ -574,6 +575,13 @@ export function categorizeVerb(lemma, verbData) {
     'gruñir': ['O_U_GER_IR'],
     'adormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
     'redormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
+    'reñir': ['E_I_IR', 'O_U_GER_IR'],
+    'teñir': ['E_I_IR', 'O_U_GER_IR'],
+    'ceñir': ['E_I_IR', 'O_U_GER_IR'],
+    'tañir': ['O_U_GER_IR'],
+    'bullir': ['O_U_GER_IR'],
+    'engullir': ['O_U_GER_IR'],
+    'zambullir': ['O_U_GER_IR'],
     
     // Expansión JO_VERBS
     'dirigir': ['JO_VERBS'],
@@ -584,6 +592,8 @@ export function categorizeVerb(lemma, verbData) {
     // Expansión GU_DROP
     'extinguir': ['GU_DROP'],
     'proseguir': ['GU_DROP', 'E_I_IR'],
+    'argüir': ['GU_DROP', 'UIR_Y', 'HIATUS_Y'],
+    'erguir': ['GU_DROP', 'E_I_IR'],
     
     // Expansión PRET_UV
     'obtener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
@@ -616,7 +626,29 @@ export function categorizeVerb(lemma, verbData) {
     
     // Expansión DOUBLE_PARTICIPLES
     'prender': ['DOUBLE_PARTICIPLES'],
-    'suspender': ['DOUBLE_PARTICIPLES']
+    'suspender': ['DOUBLE_PARTICIPLES'],
+    
+    // Expansión ORTH_GAR
+    'llegar': ['ORTH_GAR'],
+    'pagar': ['ORTH_GAR'],
+    'entregar': ['ORTH_GAR'],
+    
+    // Expansión ORTH_ZAR
+    'comenzar': ['DIPHT_E_IE', 'ORTH_ZAR'],
+    'realizar': ['ORTH_ZAR'],
+    
+    // Expansión IAR_VERBS
+    'ampliar': ['IAR_VERBS'],
+    'copiar': ['IAR_VERBS'],
+    'criar': ['IAR_VERBS'], 
+    'variar': ['IAR_VERBS'],
+    
+    // Expansión ACCENT_CHANGES
+    'aullar': ['ACCENT_CHANGES'],
+    'maullar': ['ACCENT_CHANGES'],
+    'rehusar': ['ACCENT_CHANGES'],
+    'descafainar': ['ACCENT_CHANGES'],
+    'enraizar': ['ACCENT_CHANGES', 'ORTH_ZAR']
   }
   
   if (knownVerbs[lemma]) {
