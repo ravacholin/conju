@@ -1722,6 +1722,382 @@ export const priorityVerbs = [
     ]
   },
 
+  // ORTH_GAR: apagar (cambio ortográfico g→gu)
+  {
+    "id": "apagar_priority",
+    "lemma": "apagar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "apago" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "apagas", "accepts": { "vos": "apagás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "apaga" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "apagamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "apagáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "apagan" },
+
+          // Pretérito indefinido (g→gu en 1ª persona)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "apagué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "apagaste", "accepts": { "vos": "apagaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "apagó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "apagamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "apagasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "apagaron" },
+
+          // Presente subjuntivo (g→gu en todas las personas)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "apague" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "apagues", "accepts": { "vos": "apagues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "apague" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "apaguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "apaguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "apaguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "apagar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "apagando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "apagado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_GAR: cargar (cambio ortográfico g→gu)
+  {
+    "id": "cargar_priority",
+    "lemma": "cargar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "cargo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "cargas", "accepts": { "vos": "cargás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "carga" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "cargamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "cargáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "cargan" },
+
+          // Pretérito indefinido (g→gu en 1ª persona)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "cargué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "cargaste", "accepts": { "vos": "cargaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "cargó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "cargamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "cargasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "cargaron" },
+
+          // Presente subjuntivo (g→gu en todas las personas)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "cargue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "cargues", "accepts": { "vos": "cargues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "cargue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "carguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "carguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "carguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "cargar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "cargando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "cargado" }
+        ]
+      }
+    ]
+  },
+
+  // ORTH_GAR: navegar (cambio ortográfico g→gu)
+  {
+    "id": "navegar_priority",
+    "lemma": "navegar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "navego" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "navegas", "accepts": { "vos": "navegás" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "navega" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "navegamos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "navegáis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "navegan" },
+
+          // Pretérito indefinido (g→gu en 1ª persona)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "navegué" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "navegaste", "accepts": { "vos": "navegaste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "navegó" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "navegamos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "navegasteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "navegaron" },
+
+          // Presente subjuntivo (g→gu en todas las personas)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "navegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "navegues", "accepts": { "vos": "navegues" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "navegue" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "naveguemos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "naveguéis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "naveguen" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "navegar" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "navegando" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "navegado" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_UV: obtener (pretérito fuerte -uv-)
+  {
+    "id": "obtener_priority",
+    "lemma": "obtener",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g-verb + diptongación e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "obtengo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "obtienes", "accepts": { "vos": "obtenés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "obtiene" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "obtenemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "obtenéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "obtienen" },
+
+          // Pretérito indefinido (pretérito fuerte -uv-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "obtuve" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "obtuviste", "accepts": { "vos": "obtuviste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "obtuvo" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "obtuvimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "obtuvisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "obtuvieron" },
+
+          // Presente subjuntivo (basado en obtengo)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "obtenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "obtengas", "accepts": { "vos": "obtengas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "obtenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "obtengamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "obtengáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "obtengan" },
+
+          // Condicional (radical irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "obtendría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "obtendrías", "accepts": { "vos": "obtendrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "obtendría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "obtendríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "obtendríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "obtendrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "obtener" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "obteniendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "obtenido" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_UV: retener (pretérito fuerte -uv-)
+  {
+    "id": "retener_priority",
+    "lemma": "retener",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g-verb + diptongación e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "retengo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "retienes", "accepts": { "vos": "retenés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "retiene" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "retenemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "retenéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "retienen" },
+
+          // Pretérito indefinido (pretérito fuerte -uv-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "retuve" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "retuviste", "accepts": { "vos": "retuviste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "retuvo" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "retuvimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "retuvisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "retuvieron" },
+
+          // Presente subjuntivo (basado en retengo)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "retenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "retengas", "accepts": { "vos": "retengas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "retenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "retengamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "retengáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "retengan" },
+
+          // Condicional (radical irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "retendría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "retendrías", "accepts": { "vos": "retendrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "retendría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "retendríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "retendríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "retendrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "retener" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "reteniendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "retenido" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_UV: detener (pretérito fuerte -uv-)
+  {
+    "id": "detener_priority",
+    "lemma": "detener",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g-verb + diptongación e→ie)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "detengo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "detienes", "accepts": { "vos": "detenés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "detiene" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "detenemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "detenéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "detienen" },
+
+          // Pretérito indefinido (pretérito fuerte -uv-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "detuve" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "detuviste", "accepts": { "vos": "detuviste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "detuvo" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "detuvimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "detuvisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "detuvieron" },
+
+          // Presente subjuntivo (basado en detengo)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "detenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "detengas", "accepts": { "vos": "detengas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "detenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "detengamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "detengáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "detengan" },
+
+          // Condicional (radical irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "detendría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "detendrías", "accepts": { "vos": "detendrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "detendría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "detendríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "detendríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "detendrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "detener" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "deteniendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "detenido" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: componer (pretérito fuerte -u-)
+  {
+    "id": "componer_priority",
+    "lemma": "componer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g-verb)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "compongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "compones", "accepts": { "vos": "componés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "compone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "componemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "componéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "componen" },
+
+          // Pretérito indefinido (pretérito fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "compuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "compusiste", "accepts": { "vos": "compusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "compuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "compusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "compusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "compusieron" },
+
+          // Presente subjuntivo (basado en compongo)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "componga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "compongas", "accepts": { "vos": "compongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "componga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "compongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "compongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "compongan" },
+
+          // Condicional (radical irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "compondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "compondrías", "accepts": { "vos": "compondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "compondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "compondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "compondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "compondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "componer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "componiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "compuesto" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_U: proponer (pretérito fuerte -u-)
+  {
+    "id": "proponer_priority",
+    "lemma": "proponer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g-verb)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "propongo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "propones", "accepts": { "vos": "proponés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "propone" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "proponemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "proponéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "proponen" },
+
+          // Pretérito indefinido (pretérito fuerte -u-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "propuse" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "propusiste", "accepts": { "vos": "propusiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "propuso" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "propusimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "propusisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "propusieron" },
+
+          // Presente subjuntivo (basado en propongo)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "proponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "propongas", "accepts": { "vos": "propongas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "proponga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "propongamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "propongáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "propongan" },
+
+          // Condicional (radical irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "propondría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "propondrías", "accepts": { "vos": "propondrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "propondría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "propondríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "propondríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "propondrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "proponer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "proponiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "propuesto" }
+        ]
+      }
+    ]
+  },
+
   {
     "id": "usar_priority",
     "lemma": "usar",

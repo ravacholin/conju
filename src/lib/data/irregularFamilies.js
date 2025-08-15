@@ -599,10 +599,14 @@ export function categorizeVerb(lemma, verbData) {
     'obtener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
     'contener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
     'sostener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
+    'retener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
+    'detener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
     
     // Expansión PRET_U
     'haber': ['PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL'],
     'deber': ['PRET_U'],
+    'componer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'proponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     
     // Expansión PRET_I
     'convenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
@@ -632,6 +636,9 @@ export function categorizeVerb(lemma, verbData) {
     'llegar': ['ORTH_GAR'],
     'pagar': ['ORTH_GAR'],
     'entregar': ['ORTH_GAR'],
+    'apagar': ['ORTH_GAR'],
+    'cargar': ['ORTH_GAR'],
+    'navegar': ['ORTH_GAR'],
     
     // Expansión ORTH_ZAR
     'comenzar': ['DIPHT_E_IE', 'ORTH_ZAR'],
