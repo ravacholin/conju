@@ -261,8 +261,8 @@ function App() {
     return 10
   }
 
-  const generateNextItem = () => {
-    const nextForm = chooseNext({ forms: allFormsForRegion, history })
+  const generateNextItem = (itemToExclude = null) => {
+    const nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
     
     if (nextForm && nextForm.mood && nextForm.tense) {
       // Force a new object to ensure React detects the change
@@ -430,7 +430,7 @@ function App() {
         settings.set({ currentBlock: { ...s.currentBlock, itemsRemaining: n } })
       }
     }
-    generateNextItem()
+    generateNextItem(currentItem)
   }
 
   const startPractice = () => {

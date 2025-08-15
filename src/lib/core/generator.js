@@ -56,7 +56,7 @@ function isVerbTypeAllowedForLevel(verbType, level) {
   return restrictions[verbType] || false
 }
 
-export function chooseNext({forms, history}){
+export function chooseNext({forms, history, currentItem}){
   const { 
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
@@ -300,6 +300,17 @@ export function chooseNext({forms, history}){
     formFilterCache.set(filterKey, eligible)
   }
   
+  // Exclude the exact same item from the list of candidates, if possible
+  if (currentItem && eligible.length > 1) {
+    const { lemma, mood, tense, person } = currentItem;
+    const filteredEligible = eligible.filter(f =>
+      f.lemma !== lemma || f.mood !== mood || f.tense !== tense || f.person !== person
+    );
+    if (filteredEligible.length > 0) {
+      eligible = filteredEligible;
+    }
+  }
+
   // Show which persons were included
   const includedPersons = [...new Set(eligible.map(f => f.person))]
   
