@@ -6014,6 +6014,344 @@ export const priorityVerbs = [
         ]
       }
     ]
+  },
+
+  // PRET_I: deshacer (pretérito fuerte -i-)
+  {
+    "id": "deshacer_priority",
+    "lemma": "deshacer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "deshago" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "deshaces", "accepts": { "vos": "deshacés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "deshace" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "deshacemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "deshacéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "deshacen" },
+
+          // Pretérito indefinido (fuerte -i-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "deshice" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "deshiciste", "accepts": { "vos": "deshiciste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "deshizo" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "deshicimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "deshicisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "deshicieron" },
+
+          // Presente subjuntivo
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "deshaga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "deshagas", "accepts": { "vos": "deshagas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "deshaga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "deshagamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "deshagáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "deshagan" },
+
+          // Futuro
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "desharé" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "desharás", "accepts": { "vos": "desharás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "deshará" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "desharemos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "desharéis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "desharán" },
+
+          // Condicional
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "desharía" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "desharías", "accepts": { "vos": "desharías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "desharía" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "desharíamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "desharíais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "desharían" },
+
+          // Imperativo afirmativo
+          { "mood": "imperative", "tense": "impAff", "person": "2s_tu", "value": "deshaz", "accepts": { "vos": "deshacé" } },
+          { "mood": "imperative", "tense": "impAff", "person": "3s", "value": "deshaga" },
+          { "mood": "imperative", "tense": "impAff", "person": "1p", "value": "deshagamos" },
+          { "mood": "imperative", "tense": "impAff", "person": "2p_vosotros", "value": "deshaced" },
+          { "mood": "imperative", "tense": "impAff", "person": "3p", "value": "deshagan" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "deshacer" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "deshaciendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "deshecho" }
+        ]
+      }
+    ]
+  },
+
+  // PRET_I: intervenir (pretérito fuerte -i-)
+  {
+    "id": "intervenir_priority",
+    "lemma": "intervenir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (g en yo, e→ie diptongación)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "intervengo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "intervienes", "accepts": { "vos": "intervenís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "interviene" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "intervenimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "intervenís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "intervienen" },
+
+          // Pretérito indefinido (fuerte -i-)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "intervine" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "interviniste", "accepts": { "vos": "interviniste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "intervino" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "intervinimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "intervinisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "intervinieron" },
+
+          // Presente subjuntivo (e→ie)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "intervenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "intervengas", "accepts": { "vos": "intervengas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "intervenga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "intervengamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "intervengáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "intervengan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "intervendré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "intervendrás", "accepts": { "vos": "intervendrás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "intervendrá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "intervendremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "intervendréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "intervendrán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "intervendría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "intervendrías", "accepts": { "vos": "intervendrías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "intervendría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "intervendríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "intervendríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "intervendrían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "intervenir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "interviniendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "intervenido" }
+        ]
+      }
+    ]
+  },
+
+  // DEFECTIVE_VERBS: desvaír (verbo defectivo)
+  {
+    "id": "desvaír_priority",
+    "lemma": "desvaír",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Solo 3ª persona del presente
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "desvae" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "desvaen" },
+
+          // Solo 3ª persona del subjuntivo presente
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "desvaya" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "desvayan" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "desvaír" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "desvayendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "desvaído" }
+        ]
+      }
+    ]
+  },
+
+  // DEFECTIVE_VERBS: balbucir (verbo defectivo)
+  {
+    "id": "balbucir_priority",
+    "lemma": "balbucir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Solo 1ª y 2ª persona del presente
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "balbuceo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "balbuces", "accepts": { "vos": "balbucís" } },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "balbucimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "balbucís" },
+
+          // Solo 1ª y 2ª persona del subjuntivo presente
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "balbucea" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "balbuceas", "accepts": { "vos": "balbuceas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "balbuceamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "balbuceáis" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "balbucir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "balbuciendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "balbucido" }
+        ]
+      }
+    ]
+  },
+
+  // DEFECTIVE_VERBS: colorir (verbo defectivo)
+  {
+    "id": "colorir_priority",
+    "lemma": "colorir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Solo infinitivo y participio comúnmente usados
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "colorir" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "colorido" }
+        ]
+      }
+    ]
+  },
+
+  // DOUBLE_PARTICIPLES: elegir (doble participio: elegido/electo)
+  {
+    "id": "elegir_priority",
+    "lemma": "elegir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→i, jo en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "elijo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "eliges", "accepts": { "vos": "elegís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "elige" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "elegimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "elegís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "eligen" },
+
+          // Pretérito indefinido (e→i en 3ª personas)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "elegí" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "elegiste", "accepts": { "vos": "elegiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "eligió" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "elegimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "elegisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "eligieron" },
+
+          // Presente subjuntivo (e→i, jo→ja)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "elija" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "elijas", "accepts": { "vos": "elijas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "elija" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "elijamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "elijáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "elijan" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "elegir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "eligiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "elegido" }
+        ]
+      }
+    ]
+  },
+
+  // DOUBLE_PARTICIPLES: absorber (doble participio: absorbido/absorto)
+  {
+    "id": "absorber_priority",
+    "lemma": "absorber",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (regular)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "absorbo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "absorbes", "accepts": { "vos": "absorbés" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "absorbe" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "absorbemos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "absorbéis" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "absorben" },
+
+          // Pretérito indefinido (regular)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "absorbí" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "absorbiste", "accepts": { "vos": "absorbiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "absorbió" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "absorbimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "absorbisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "absorbieron" },
+
+          // Presente subjuntivo (regular)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "absorba" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "absorbas", "accepts": { "vos": "absorbas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "absorba" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "absorbamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "absorbáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "absorban" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "absorber" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "absorbiendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "absorbido" }
+        ]
+      }
+    ]
+  },
+
+  // DOUBLE_PARTICIPLES: bendecir (doble participio: bendecido/bendito)
+  {
+    "id": "bendecir_priority",
+    "lemma": "bendecir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          // Presente indicativo (e→i, go en yo)
+          { "mood": "indicative", "tense": "pres", "person": "1s", "value": "bendigo" },
+          { "mood": "indicative", "tense": "pres", "person": "2s_tu", "value": "bendices", "accepts": { "vos": "bendecís" } },
+          { "mood": "indicative", "tense": "pres", "person": "3s", "value": "bendice" },
+          { "mood": "indicative", "tense": "pres", "person": "1p", "value": "bendecimos" },
+          { "mood": "indicative", "tense": "pres", "person": "2p_vosotros", "value": "bendecís" },
+          { "mood": "indicative", "tense": "pres", "person": "3p", "value": "bendicen" },
+
+          // Pretérito indefinido (e→i en 3ª personas)
+          { "mood": "indicative", "tense": "pretIndef", "person": "1s", "value": "bendije" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2s_tu", "value": "bendijiste", "accepts": { "vos": "bendijiste" } },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3s", "value": "bendijo" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "1p", "value": "bendijimos" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "2p_vosotros", "value": "bendijisteis" },
+          { "mood": "indicative", "tense": "pretIndef", "person": "3p", "value": "bendijeron" },
+
+          // Presente subjuntivo (e→i, go→ga)
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1s", "value": "bendiga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2s_tu", "value": "bendigas", "accepts": { "vos": "bendigas" } },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3s", "value": "bendiga" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "1p", "value": "bendigamos" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "2p_vosotros", "value": "bendigáis" },
+          { "mood": "subjunctive", "tense": "subjPres", "person": "3p", "value": "bendigan" },
+
+          // Futuro (irregular)
+          { "mood": "indicative", "tense": "fut", "person": "1s", "value": "bendeciré" },
+          { "mood": "indicative", "tense": "fut", "person": "2s_tu", "value": "bendecirás", "accepts": { "vos": "bendecirás" } },
+          { "mood": "indicative", "tense": "fut", "person": "3s", "value": "bendecirá" },
+          { "mood": "indicative", "tense": "fut", "person": "1p", "value": "bendeciremos" },
+          { "mood": "indicative", "tense": "fut", "person": "2p_vosotros", "value": "bendeciréis" },
+          { "mood": "indicative", "tense": "fut", "person": "3p", "value": "bendecirán" },
+
+          // Condicional (irregular)
+          { "mood": "conditional", "tense": "cond", "person": "1s", "value": "bendeciría" },
+          { "mood": "conditional", "tense": "cond", "person": "2s_tu", "value": "bendecirías", "accepts": { "vos": "bendecirías" } },
+          { "mood": "conditional", "tense": "cond", "person": "3s", "value": "bendeciría" },
+          { "mood": "conditional", "tense": "cond", "person": "1p", "value": "bendeciríamos" },
+          { "mood": "conditional", "tense": "cond", "person": "2p_vosotros", "value": "bendeciríais" },
+          { "mood": "conditional", "tense": "cond", "person": "3p", "value": "bendecirían" },
+          
+          // Formas no conjugadas
+          { "mood": "nonfinite", "tense": "inf", "person": "", "value": "bendecir" },
+          { "mood": "nonfinite", "tense": "ger", "person": "", "value": "bendiciendo" },
+          { "mood": "nonfinite", "tense": "part", "person": "", "value": "bendecido" }
+        ]
+      }
+    ]
   }
 ]
 

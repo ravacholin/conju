@@ -548,7 +548,7 @@ export function categorizeVerb(lemma, verbData) {
     'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG'],
     'dar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG'],
-    'estar': ['PRET_SUPPL'],
+    'estar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     
     // Familias finales
     'freír': ['E_I_IR', 'DOUBLE_PARTICIPLES'],
@@ -612,6 +612,8 @@ export function categorizeVerb(lemma, verbData) {
     'convenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
     'prevenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
     'rehacer': ['G_VERBS', 'PRET_I', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG', 'IRREG_PARTICIPLES'],
+    'deshacer': ['G_VERBS', 'PRET_I', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG', 'IRREG_PARTICIPLES'],
+    'intervenir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
     
     // Expansión IRREG_GERUNDS
     'caer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
@@ -627,10 +629,16 @@ export function categorizeVerb(lemma, verbData) {
     'agredir': ['DEFECTIVE_VERBS'],
     'empedernir': ['DEFECTIVE_VERBS'],
     'blandir': ['DEFECTIVE_VERBS'],
+    'desvaír': ['DEFECTIVE_VERBS'],
+    'balbucir': ['DEFECTIVE_VERBS'],
+    'colorir': ['DEFECTIVE_VERBS'],
     
     // Expansión DOUBLE_PARTICIPLES
     'prender': ['DOUBLE_PARTICIPLES'],
     'suspender': ['DOUBLE_PARTICIPLES'],
+    'elegir': ['E_I_IR', 'JO_VERBS', 'DOUBLE_PARTICIPLES'],
+    'absorber': ['DOUBLE_PARTICIPLES'],
+    'bendecir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'DOUBLE_PARTICIPLES'],
     
     // Expansión ORTH_GAR
     'llegar': ['ORTH_GAR'],
