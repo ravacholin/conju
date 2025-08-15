@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'vitest'
-import { grade } from './grader.js'
+import { grade } from './core/grader.js'
 
 // Mock settings for testing
 const mockSettings = {
@@ -29,7 +29,7 @@ describe('Grade function', () => {
   test('should reject form without accent', () => {
     const result = grade('escribis', { value: 'escribís' }, mockSettings)
     expect(result.correct).toBe(false)
-    expect(result.note).toContain('Te faltó la tilde')
+    expect(result.note).toContain('le falta la tilde')
   })
 
   test('should reject tú form in rioplatense', () => {
