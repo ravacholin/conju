@@ -1,5 +1,5 @@
-// Verbos con tiempos simples generados automáticamente
-// Generado el 2025-08-15T22:10:58.074Z
+// Verbos con formas no finitas generadas automáticamente
+// Generado el 2025-08-15T22:23:57.506Z
 
 export const verbs = [
   {
@@ -2207,6 +2207,222 @@ export const verbs = [
             "form": "vivirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "vivié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "vivid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "vivo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "vives",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "vivís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "vive",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "vivimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "vivís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "viven",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "viva",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "vivas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "viva",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "vivamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "viváis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "vivan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "vivundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "vive",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "vivamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "viváis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "vivundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no vivas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no viva",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no vivamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no viváis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no vivan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no vivundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "vivir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -3291,6 +3507,14 @@ export const verbs = [
             "tense": "ger",
             "person": "ger",
             "value": "trabajando"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "trabajar",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -4375,6 +4599,14 @@ export const verbs = [
             "tense": "ger",
             "person": "ger",
             "value": "estudiando"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "estudiar",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -5459,6 +5691,14 @@ export const verbs = [
             "tense": "ger",
             "person": "ger",
             "value": "caminando"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "caminar",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -6037,6 +6277,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "bailarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "bailad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "baila",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "bailamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "bailáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "bailan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "bailar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "bailado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "bailando",
             "tags": [],
             "region": "es"
           }
@@ -6619,6 +6923,70 @@ export const verbs = [
             "form": "cantarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "cantad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "canta",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "cantamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "cantáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "cantan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "cantar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "cantado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "cantando",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -7199,6 +7567,70 @@ export const verbs = [
             "form": "escucharían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "escuchad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "escucha",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "escuchamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "escucháis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "escuchan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "escuchar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "escuchado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "escuchando",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -7777,6 +8209,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "mirarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "mirad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "mira",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "miramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "miráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "miran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "mirar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "mirado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "mirando",
             "tags": [],
             "region": "es"
           }
@@ -8368,6 +8864,70 @@ export const verbs = [
             "form": "pensarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "pensad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "piensa",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "pensamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "pensáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "piensan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "pensar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "pensado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "pensando",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -8955,6 +9515,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "empezarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "empezad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "empieza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "empezamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "empezáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "empiezan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "empezar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "empezado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "empezando",
             "tags": [],
             "region": "es"
           }
@@ -9546,6 +10170,70 @@ export const verbs = [
             "form": "perderían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "perded",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "perde",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "perdemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "perdéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "perden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "perder",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "perdido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "perdiendo",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -10133,6 +10821,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "volverían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "volved",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "vuelve",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "volvemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "volvéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "vuelven",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "volver",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "vuelto",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "volviendo",
             "tags": [],
             "region": "es"
           }
@@ -10944,6 +11696,14 @@ export const verbs = [
             "form": "dormirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "dormid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -11531,6 +12291,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "jugarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "jugad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "juega",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "jugamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "jugáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "juegan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "jugar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "jugado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "jugando",
             "tags": [],
             "region": "es"
           }
@@ -12342,6 +13166,14 @@ export const verbs = [
             "form": "pedirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "pedid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -12929,6 +13761,70 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "seguirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "seguid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "sigue",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "seguimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "seguís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "siguen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "seguir",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "seguido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "siguiendo",
             "tags": [],
             "region": "es"
           }
@@ -13617,6 +14513,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "llegarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "llegaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "llegás",
             "tags": [],
             "region": "es"
           }
@@ -16322,6 +17234,14 @@ export const verbs = [
             "form": "hubieran comprado",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "comprad",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -16993,6 +17913,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "vendrías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no vengas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no vengas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "vienís",
             "tags": [],
             "region": "es"
           }
@@ -17741,6 +18685,38 @@ export const verbs = [
             "form": "serían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "ser",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "sido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "siendo",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -18435,6 +19411,54 @@ export const verbs = [
             "form": "estarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "está",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "está",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "estad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no estés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no estés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "estás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -19108,6 +20132,30 @@ export const verbs = [
             "form": "tendrías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no tengas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no tengas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "tienés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -19779,6 +20827,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "harías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no hagas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no hagas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "hacés",
             "tags": [],
             "region": "es"
           }
@@ -20470,6 +21542,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "irían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no vayas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no vayas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "vas",
             "tags": [],
             "region": "es"
           }
@@ -21303,6 +22399,14 @@ export const verbs = [
             "form": "hubieran decido",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "decid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -22080,6 +23184,14 @@ export const verbs = [
             "form": "hubieran vido",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "ved",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -22732,6 +23844,62 @@ export const verbs = [
             "form": "darían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "dad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "damos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "dais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "dan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "dar",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "dado",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "dando",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -23316,6 +24484,62 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "sabrían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sabed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "sabemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "sabéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "saben",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "saber",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "sabido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "sabiendo",
             "tags": [],
             "region": "es"
           }
@@ -23982,6 +25206,62 @@ export const verbs = [
             "form": "querrían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "quered",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "queremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "queréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "quieren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "querer",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "querido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "queriendo",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -24619,6 +25899,30 @@ export const verbs = [
             "form": "podrías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "podeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "poded",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "puedés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -25215,6 +26519,62 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "saldrían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "salid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "salimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "salís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "salen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "salir",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "part",
+            "form": "salido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "saliendo",
             "tags": [],
             "region": "es"
           }
@@ -25890,6 +27250,30 @@ export const verbs = [
             "form": "pondrías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no pongas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no pongas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ponés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -26543,6 +27927,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "traerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "traeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "traed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "traés",
             "tags": [],
             "region": "es"
           }
@@ -27200,6 +28608,30 @@ export const verbs = [
             "form": "caerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "caeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "caed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "caés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -27822,6 +29254,14 @@ export const verbs = [
             "mood": "subjunctive",
             "person": "3p",
             "form": "hubieran valido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "valed",
             "tags": [],
             "region": "es"
           }
@@ -28511,6 +29951,14 @@ export const verbs = [
             "form": "hubieran amado",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "amad",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -29041,6 +30489,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "escribirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "escribié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "escribid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "escribo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "escribes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "escribís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "escribe",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "escribimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "escribís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "escriben",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "escriba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "escribas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "escriba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "escribamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "escribáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "escriban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "escribundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "escribe",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "escribamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "escribáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "escribundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no escribas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no escriba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no escribamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no escribáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no escriban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no escribundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "escribir",
             "tags": [],
             "region": "es"
           }
@@ -29730,6 +31394,14 @@ export const verbs = [
             "form": "hubieran bebido",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "bebed",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -30260,6 +31932,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "venderían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "vendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "vended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "vendo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "vendes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "vendés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "vende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "vendemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "vendéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "venden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "venda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "vendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "venda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "vendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "vendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "vendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "vendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "vende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "vendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "vendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "vendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no vendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no venda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no vendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no vendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no vendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no vendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "vender",
             "tags": [],
             "region": "es"
           }
@@ -30949,6 +32837,14 @@ export const verbs = [
             "form": "hubieran oido",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "oid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -31636,6 +33532,14 @@ export const verbs = [
             "form": "hubieran cabido",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "cabed",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -32166,6 +34070,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "aprenderían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "aprendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "aprended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "aprendo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "aprendes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "aprendés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "aprende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "aprendemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "aprendéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "aprenden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "aprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "aprendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "aprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "aprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "aprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "aprendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "aprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "aprende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "aprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "aprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "aprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no aprendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no aprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no aprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no aprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no aprendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no aprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "aprender",
             "tags": [],
             "region": "es"
           }
@@ -32700,6 +34820,222 @@ export const verbs = [
             "form": "comprenderían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "comprendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "comprended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "comprendo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "comprendes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "comprendés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "comprende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "comprendemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "comprendéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "comprenden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "comprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "comprendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "comprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "comprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "comprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "comprendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "comprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "comprende",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "comprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "comprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "comprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no comprendas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no comprenda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no comprendamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no comprendáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no comprendan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no comprendundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "comprender",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -33232,6 +35568,222 @@ export const verbs = [
             "form": "responderían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "respondeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "responded",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "respondo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "respondes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "respondés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "responde",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "respondemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "respondéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "responden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "responda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "respondas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "responda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "respondamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "respondáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "respondan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "respondundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "responde",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "respondamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "respondáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "respondundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no respondas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no responda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no respondamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no respondáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no respondan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no respondundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "responder",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -33762,6 +36314,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "correrían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "correé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "corred",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "corro",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "corres",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "corrés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "corre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "corremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "corréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "corren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "corra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "corras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "corra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "corramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "corráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "corran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "corrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "corre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "corramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "corráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "corrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no corras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no corra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no corramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no corráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no corran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no corrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "correr",
             "tags": [],
             "region": "es"
           }
@@ -34419,6 +37187,30 @@ export const verbs = [
             "form": "leerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "leeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "leed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "leés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -35072,6 +37864,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "creerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "creeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "creed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "creés",
             "tags": [],
             "region": "es"
           }
@@ -35729,6 +38545,30 @@ export const verbs = [
             "form": "deberían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "debeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "debed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "debés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -36259,6 +39099,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "recibirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "recibié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "recibid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "recibo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "recibes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "recibís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "recibe",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "recibimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "recibís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "reciben",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "reciba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "recibas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "reciba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "recibamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "recibáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "reciban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "recibundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "recibe",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "recibamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "recibáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "recibundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no recibas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no reciba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no recibamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no recibáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no reciban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no recibundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "recibir",
             "tags": [],
             "region": "es"
           }
@@ -36910,6 +39966,22 @@ export const verbs = [
             "form": "abrirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "abrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "abrís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -37559,6 +40631,22 @@ export const verbs = [
             "form": "cubrirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "cubrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cubrís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -38089,6 +41177,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "descubrirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "descubrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "descubrid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "descubro",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "descubres",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "descubrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "descubre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "descubrimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "descubrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "descubren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "descubra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "descubras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "descubra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "descubramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "descubráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "descubran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "descubrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "descubre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "descubramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "descubráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "descubrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no descubras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no descubra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no descubramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no descubráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no descubran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no descubrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "descubrir",
             "tags": [],
             "region": "es"
           }
@@ -38623,6 +41927,222 @@ export const verbs = [
             "form": "subirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "subié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "subid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "subo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "subes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "subís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "sube",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "subimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "subís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "suben",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "suba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "subas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "suba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "subamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "subáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "suban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "subundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "sube",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "subamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "subáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "subundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no subas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no suba",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no subamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no subáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no suban",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no subundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "subir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -39153,6 +42673,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "decidirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "decidié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "decidid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "decido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "decides",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "decidís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "decide",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "decidimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "decidís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "deciden",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "decida",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "decidas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "decida",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "decidamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "decidáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "decidan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "decidundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "decide",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "decidamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "decidáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "decidundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no decidas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no decida",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no decidamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no decidáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no decidan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no decidundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "decidir",
             "tags": [],
             "region": "es"
           }
@@ -39687,6 +43423,222 @@ export const verbs = [
             "form": "ocurrirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "ocurrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "ocurrid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "ocurro",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "ocurres",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ocurrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "ocurre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "ocurrimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "ocurrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "ocurren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "ocurra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "ocurras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "ocurra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "ocurramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "ocurráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "ocurran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "ocurrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "ocurre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "ocurramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "ocurráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "ocurrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no ocurras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no ocurra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no ocurramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no ocurráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no ocurran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no ocurrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "ocurrir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -40217,6 +44169,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "permitirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "permitié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "permitid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "permito",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "permites",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "permitís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "permite",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "permitimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "permitís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "permiten",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "permita",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "permitas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "permita",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "permitamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "permitáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "permitan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "permitundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "permite",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "permitamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "permitáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "permitundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no permitas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no permita",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no permitamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no permitáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no permitan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no permitundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "permitir",
             "tags": [],
             "region": "es"
           }
@@ -40751,6 +44919,222 @@ export const verbs = [
             "form": "sufrirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "sufrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sufrid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "sufro",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "sufres",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "sufrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "sufre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "sufrimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "sufrís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "sufren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "sufra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "sufras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "sufra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "suframos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "sufráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "sufran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "sufrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "sufre",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "suframos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "sufráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "sufrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no sufras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no sufra",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no suframos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no sufráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no sufran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no sufrundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "sufrir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -41281,6 +45665,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "unirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "unié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "unid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "uno",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "unes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "unís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "une",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "unimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "unís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "unen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "una",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "unas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "una",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "unamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "unáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "unan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "unundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "une",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "unamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "unáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "unundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no unas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no una",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no unamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no unáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no unan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no unundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "unir",
             "tags": [],
             "region": "es"
           }
@@ -41899,6 +46499,30 @@ export const verbs = [
             "form": "conocerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "conoceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "conoced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "conocés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -42513,6 +47137,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "nacerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "naceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "naced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "nacés",
             "tags": [],
             "region": "es"
           }
@@ -43131,6 +47779,30 @@ export const verbs = [
             "form": "crecerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "creceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "creced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "crecés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -43747,6 +48419,30 @@ export const verbs = [
             "form": "parecerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "pareceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "pareced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "parecés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -44277,6 +48973,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "obedecerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "obedeceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "obedeced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "obedeco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "obedeces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "obedecés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "obedece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "obedecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "obedecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "obedecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "obedeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "obedecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "obedeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "obedecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "obedecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "obedecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "obedecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "obedece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "obedecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "obedecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "obedecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no obedecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no obedeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no obedecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no obedecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no obedecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no obedecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "obedecer",
             "tags": [],
             "region": "es"
           }
@@ -44811,6 +49723,222 @@ export const verbs = [
             "form": "merecerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "mereceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "mereced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "mereco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "mereces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "merecés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "merece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "merecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "merecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "merecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "mereca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "merecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "mereca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "merecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "merecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "merecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "merecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "merece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "merecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "merecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "merecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no merecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no mereca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no merecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no merecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no merecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no merecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "merecer",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -45341,6 +50469,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "agradecerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "agradeceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "agradeced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "agradeco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "agradeces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "agradecés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "agradece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "agradecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "agradecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "agradecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "agradeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "agradecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "agradeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "agradecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "agradecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "agradecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "agradecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "agradece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "agradecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "agradecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "agradecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no agradecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no agradeca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no agradecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no agradecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no agradecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no agradecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "agradecer",
             "tags": [],
             "region": "es"
           }
@@ -45875,6 +51219,222 @@ export const verbs = [
             "form": "establecerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "estableceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "estableced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "estableco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "estableces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "establecés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "establece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "establecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "establecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "establecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "estableca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "establecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "estableca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "establecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "establecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "establecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "establecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "establece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "establecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "establecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "establecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no establecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no estableca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no establecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no establecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no establecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no establecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "establecer",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -46405,6 +51965,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "ofrecerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "ofreceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "ofreced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "ofreco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "ofreces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ofrecés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "ofrece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "ofrecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "ofrecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "ofrecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "ofreca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "ofrecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "ofreca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "ofrecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "ofrecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "ofrecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "ofrecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "ofrece",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "ofrecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "ofrecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "ofrecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no ofrecas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no ofreca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no ofrecamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no ofrecáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no ofrecan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no ofrecundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "ofrecer",
             "tags": [],
             "region": "es"
           }
@@ -46939,6 +52715,222 @@ export const verbs = [
             "form": "producirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "producié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "producid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "produzco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "produces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "producís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "produce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "producimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "producís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "producen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "produzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "produzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "produzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "produzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "produzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "produzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "produzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "produce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "produzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "produzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "produzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no produzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no produzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no produzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no produzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no produzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no produzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "producir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -47469,6 +53461,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "conducirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "conducié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "conducid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "conduzco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "conduces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "conducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "conduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "conducimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "conducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "conducen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "conduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "conduzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "conduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "conduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "conduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "conduzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "conduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "conduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "conduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "conduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "conduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no conduzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no conduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no conduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no conduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no conduzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no conduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "conducir",
             "tags": [],
             "region": "es"
           }
@@ -48003,6 +54211,222 @@ export const verbs = [
             "form": "traducirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "traducié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "traducid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "traduzco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "traduces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "traducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "traduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "traducimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "traducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "traducen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "traduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "traduzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "traduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "traduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "traduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "traduzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "traduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "traduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "traduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "traduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "traduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no traduzcas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no traduzca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no traduzcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no traduzcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no traduzcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no traduzcundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "traducir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -48535,6 +54959,222 @@ export const verbs = [
             "form": "introducirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "introducié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "introducid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "introduco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "introduces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "introducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "introduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "introducimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "introducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "introducen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "introduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "introducas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "introduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "introducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "introducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "introducan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "introducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "introduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "introducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "introducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "introducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no introducas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no introduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no introducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no introducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no introducan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no introducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "introducir",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -49065,6 +55705,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "reducirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "reducié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "reducid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "reduco",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "reduces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "reducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "reduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "reducimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "reducís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "reducen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "reduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "reducas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "reduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "reducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "reducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "reducan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "reducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "reduce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "reducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "reducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "reducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no reducas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no reduca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no reducamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no reducáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no reducan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no reducundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "reducir",
             "tags": [],
             "region": "es"
           }
@@ -49722,6 +56578,30 @@ export const verbs = [
             "form": "construirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "construié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "construid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "construís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -50375,6 +57255,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "destruirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "destruié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "destruid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "destruís",
             "tags": [],
             "region": "es"
           }
@@ -51032,6 +57936,30 @@ export const verbs = [
             "form": "incluirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "incluié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "incluid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "incluís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -51685,6 +58613,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "concluirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "concluié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "concluid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "concluís",
             "tags": [],
             "region": "es"
           }
@@ -52342,6 +59294,30 @@ export const verbs = [
             "form": "excluirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "excluié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "excluid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "excluís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -52995,6 +59971,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "huirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "huié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "huid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "huís",
             "tags": [],
             "region": "es"
           }
@@ -53652,6 +60652,30 @@ export const verbs = [
             "form": "contribuirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "contribuié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "contribuid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "contribuís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -54305,6 +61329,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "distribuirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "distribuié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "distribuid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "distribuís",
             "tags": [],
             "region": "es"
           }
@@ -54962,6 +62010,30 @@ export const verbs = [
             "form": "atribuirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "atribuié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "atribuid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "atribuís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -55540,6 +62612,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "andarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "andaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "andad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "inf",
+            "form": "andar",
             "tags": [],
             "region": "es"
           }
@@ -56194,6 +63290,22 @@ export const verbs = [
             "form": "servirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "servié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "servid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -56843,6 +63955,22 @@ export const verbs = [
             "form": "repetirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "repetié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "repetid",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -57490,6 +64618,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "morirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "morié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "morid",
             "tags": [],
             "region": "es"
           }
@@ -58147,6 +65291,30 @@ export const verbs = [
             "form": "sacarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "sacaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sacad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "sacás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -58763,6 +65931,30 @@ export const verbs = [
             "form": "protegerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "protegeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "proteged",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "protegés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -59369,6 +66561,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "cogerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "cogeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "coged",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cogés",
             "tags": [],
             "region": "es"
           }
@@ -59987,6 +67203,30 @@ export const verbs = [
             "form": "cerrarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "cerraá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "cerrad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cierrás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -60603,6 +67843,30 @@ export const verbs = [
             "form": "contarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "contaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "contad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cuentás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -61217,6 +68481,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "mostrarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "mostraá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "mostrad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "muestrás",
             "tags": [],
             "region": "es"
           }
@@ -61874,6 +69162,30 @@ export const verbs = [
             "form": "sentirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "sentié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sentid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "sientís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -62529,6 +69841,30 @@ export const verbs = [
             "form": "organizarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "organizaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "organizad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "organizás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -62680,6 +70016,14 @@ export const verbs = [
             "tense": "part",
             "person": "",
             "value": "oído"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "oíd",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -63333,6 +70677,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "instruirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "instruié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "instruid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "instruís",
             "tags": [],
             "region": "es"
           }
@@ -63990,6 +71358,30 @@ export const verbs = [
             "form": "sustituirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "sustituié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "sustituid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "sustituís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -64643,6 +72035,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "reñirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "reñié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "reñid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "riñís",
             "tags": [],
             "region": "es"
           }
@@ -65300,6 +72716,30 @@ export const verbs = [
             "form": "teñirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "teñié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "teñid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "tiñís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -65953,6 +73393,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "ceñirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "ceñié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "ceñid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ciñís",
             "tags": [],
             "region": "es"
           }
@@ -66610,6 +74074,30 @@ export const verbs = [
             "form": "tañirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "tañié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "tañid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "tañís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -67263,6 +74751,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "bullirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "bullié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "bullid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "bullís",
             "tags": [],
             "region": "es"
           }
@@ -67920,6 +75432,30 @@ export const verbs = [
             "form": "engullirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "engullié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "engullid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "engullís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -68573,6 +76109,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "zambullirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "zambullié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "zambullid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "zambullís",
             "tags": [],
             "region": "es"
           }
@@ -69230,6 +76790,30 @@ export const verbs = [
             "form": "argüirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "argüié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "argüid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "argüís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -69883,6 +77467,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "erguirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "erguié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "erguid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "irguís",
             "tags": [],
             "region": "es"
           }
@@ -70540,6 +78148,30 @@ export const verbs = [
             "form": "apagarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "apagaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "apagad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "apagás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -71193,6 +78825,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "cargarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "cargaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "cargad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cargás",
             "tags": [],
             "region": "es"
           }
@@ -71850,6 +79506,30 @@ export const verbs = [
             "form": "navegarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "navegaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "navegad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "navegás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -72494,6 +80174,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "obtenerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "obteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "obtened",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "obtienés",
             "tags": [],
             "region": "es"
           }
@@ -73142,6 +80846,30 @@ export const verbs = [
             "form": "retenerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "reteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "retened",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "retienés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -73786,6 +81514,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "detenerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "deteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "detened",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "detienés",
             "tags": [],
             "region": "es"
           }
@@ -74434,6 +82186,30 @@ export const verbs = [
             "form": "componerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "componeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "componed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "componés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -75078,6 +82854,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "proponerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "proponeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "proponed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "proponés",
             "tags": [],
             "region": "es"
           }
@@ -75735,6 +83535,30 @@ export const verbs = [
             "form": "usarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "usaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "usad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "usás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -76388,6 +84212,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "entenderían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "entendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "entended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "entendés",
             "tags": [],
             "region": "es"
           }
@@ -77045,6 +84893,30 @@ export const verbs = [
             "form": "averiguarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "averiguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "averiguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "averiguás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -77698,6 +85570,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "apaciguarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "apaciguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "apaciguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "apaciguás",
             "tags": [],
             "region": "es"
           }
@@ -78355,6 +86251,30 @@ export const verbs = [
             "form": "continuarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "continuaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "continuad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "continuás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -79008,6 +86928,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "actuarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "actuaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "actuad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "actuás",
             "tags": [],
             "region": "es"
           }
@@ -79665,6 +87609,30 @@ export const verbs = [
             "form": "evaluarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "evaluaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "evaluad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "evaluás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -80318,6 +88286,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "enviarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "enviaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "enviad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "enviás",
             "tags": [],
             "region": "es"
           }
@@ -80975,6 +88967,30 @@ export const verbs = [
             "form": "confiarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "confiaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "confiad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "confiás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -81628,6 +89644,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "guiarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "guiaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "guiad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "guiás",
             "tags": [],
             "region": "es"
           }
@@ -82285,6 +90325,30 @@ export const verbs = [
             "form": "prohibirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "prohibié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "prohibid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "prohibís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -82938,6 +91002,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "reunirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "reunié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "reunid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "reunís",
             "tags": [],
             "region": "es"
           }
@@ -83595,6 +91683,30 @@ export const verbs = [
             "form": "aislarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "aislaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "aislad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "aislás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -84248,6 +92360,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "fraguarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "fraguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "fraguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "fragueás",
             "tags": [],
             "region": "es"
           }
@@ -84905,6 +93041,30 @@ export const verbs = [
             "form": "menguarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "menguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "menguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "mengueás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -85558,6 +93718,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "podrirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "podrié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "podrid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "puedrís",
             "tags": [],
             "region": "es"
           }
@@ -86215,6 +94399,30 @@ export const verbs = [
             "form": "tocarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "tocaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "tocad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "tocás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -86868,6 +95076,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "practicarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "practicaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "practicad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "practicás",
             "tags": [],
             "region": "es"
           }
@@ -87525,6 +95757,30 @@ export const verbs = [
             "form": "explicarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "explicaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "explicad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "explicás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -87676,6 +95932,14 @@ export const verbs = [
             "tense": "part",
             "person": "",
             "value": "frito"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "freíd",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -88283,6 +96547,30 @@ export const verbs = [
             "form": "solerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "soleé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "soled",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "suelés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -88885,6 +97173,150 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "abolirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "abolié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "abolo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "aboles",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "abolís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "abole",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "abolen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "abola",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "abolas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "abola",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "abolamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "abolundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "abole",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "abolamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "abolundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no abolas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no abola",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no abolamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no abolundefined",
             "tags": [],
             "region": "es"
           }
@@ -89548,6 +97980,30 @@ export const verbs = [
             "form": "imprimirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "imprimié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "imprimid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "imprimís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -90209,6 +98665,30 @@ export const verbs = [
             "form": "proveerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "proveeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "proveed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "proveés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -90862,6 +99342,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "obligarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "obligaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "obligad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "obligás",
             "tags": [],
             "region": "es"
           }
@@ -91519,6 +100023,30 @@ export const verbs = [
             "form": "amuarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "amuaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "amuad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "amueás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -92172,6 +100700,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "desaguarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "desaguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "desaguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "desagueás",
             "tags": [],
             "region": "es"
           }
@@ -92829,6 +101381,30 @@ export const verbs = [
             "form": "atestiguarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "atestiguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "atestiguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "atestigueás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -93482,6 +102058,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "aguarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "aguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "aguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "agueás",
             "tags": [],
             "region": "es"
           }
@@ -94139,6 +102739,30 @@ export const verbs = [
             "form": "santiguarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "santiguaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "santiguad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "santigueás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -94792,6 +103416,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "gruñirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "gruñié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "gruñid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "gruñís",
             "tags": [],
             "region": "es"
           }
@@ -95449,6 +104097,30 @@ export const verbs = [
             "form": "adormirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "adormié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "adormid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "aduermís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -96102,6 +104774,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "redormirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "redormié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "redormid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "reduermís",
             "tags": [],
             "region": "es"
           }
@@ -96759,6 +105455,30 @@ export const verbs = [
             "form": "dirigirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "dirigié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "dirigid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "dirigís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -97412,6 +106132,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "corregirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "corregié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "corregid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "corrigís",
             "tags": [],
             "region": "es"
           }
@@ -98069,6 +106813,30 @@ export const verbs = [
             "form": "recogerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "recogeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "recoged",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "recogés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -98722,6 +107490,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "escogerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "escogeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "escoged",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "escogés",
             "tags": [],
             "region": "es"
           }
@@ -99379,6 +108171,30 @@ export const verbs = [
             "form": "proseguirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "proseguié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "proseguid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "prosiguís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -100032,6 +108848,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "atacarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "atacaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "atacad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "atacás",
             "tags": [],
             "region": "es"
           }
@@ -100689,6 +109529,30 @@ export const verbs = [
             "form": "aplicarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "aplicaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "aplicad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "aplicás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -101344,6 +110208,30 @@ export const verbs = [
             "form": "fabricarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "fabricaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "fabricad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "fabricás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -101979,6 +110867,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "mantenerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "manteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "mantened",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "mantenés",
             "tags": [],
             "region": "es"
           }
@@ -102636,6 +111548,30 @@ export const verbs = [
             "form": "contenerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "conteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "contened",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "contienés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -103291,6 +112227,30 @@ export const verbs = [
             "form": "almorzarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "almorzaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "almorzad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "almuerzás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -103944,6 +112904,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "utilizarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "utilizaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "utilizad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "utilizás",
             "tags": [],
             "region": "es"
           }
@@ -104655,6 +113639,22 @@ export const verbs = [
             "form": "sostenerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "sosteneé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "sostienés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -105329,6 +114329,54 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "habrías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "he",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "habé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "habed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no hayas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no hayas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "has",
             "tags": [],
             "region": "es"
           }
@@ -106016,6 +115064,30 @@ export const verbs = [
             "form": "convenirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "convenié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "convenid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "convienís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -106699,6 +115771,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "prevenirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "prevenié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "prevenid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "previenís",
             "tags": [],
             "region": "es"
           }
@@ -107419,6 +116515,22 @@ export const verbs = [
             "form": "rehacerían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "rehaceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "rehacés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -108068,6 +117180,22 @@ export const verbs = [
             "form": "romperían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "rompeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "rompés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -108636,6 +117764,142 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "agredirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "agredié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "agredid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "agredo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "agredes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "agredís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "agredimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "agredís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "agreda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "agredas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "agreda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "agredáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "agredan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "agredáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no agredas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no agreda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no agredáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no agredan",
             "tags": [],
             "region": "es"
           }
@@ -109208,6 +118472,142 @@ export const verbs = [
             "form": "empedernirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "empedernié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "empedernid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "empederno",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "empedernes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "empedernís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "empedernimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "empedernís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "empederna",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "empedernas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "empederna",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "empedernáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "empedernan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "empedernáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no empedernas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no empederna",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no empedernáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no empedernan",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -109752,6 +119152,190 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "blandirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "blandié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "blandid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "blando",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "blandes",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "blandís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "blandimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "blandís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "blanda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "blandas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "blanda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "blandamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "blandáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "blandan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "blandundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "blandamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "blandáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "blandundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no blandas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no blanda",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no blandamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no blandáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no blandan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no blandundefined",
             "tags": [],
             "region": "es"
           }
@@ -110370,6 +119954,30 @@ export const verbs = [
             "form": "prenderían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "prendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "prended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "prendés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -110984,6 +120592,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "suspenderían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "suspendeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "suspended",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "suspendés",
             "tags": [],
             "region": "es"
           }
@@ -111674,6 +121306,22 @@ export const verbs = [
             "form": "pagarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "pagaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "pagás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -112360,6 +122008,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "entregarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "entregaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "entregás",
             "tags": [],
             "region": "es"
           }
@@ -113050,6 +122714,22 @@ export const verbs = [
             "form": "comenzarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "comenzaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "comienzás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -113738,6 +123418,22 @@ export const verbs = [
             "form": "realizarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "realizaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "realizás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -114385,6 +124081,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "ampliarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "ampliaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ampliás",
             "tags": [],
             "region": "es"
           }
@@ -115036,6 +124748,22 @@ export const verbs = [
             "form": "copiarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "copiaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "copiás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -115683,6 +125411,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "criarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "criaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "criás",
             "tags": [],
             "region": "es"
           }
@@ -116334,6 +126078,22 @@ export const verbs = [
             "form": "variarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "variaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "variás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -116981,6 +126741,22 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "aullarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "aullaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "aullás",
             "tags": [],
             "region": "es"
           }
@@ -117632,6 +127408,22 @@ export const verbs = [
             "form": "maullarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "maullaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "maullás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -118281,6 +128073,22 @@ export const verbs = [
             "form": "rehusarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "rehusaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "rehusás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -118895,6 +128703,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "descafainarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "descafainaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "descafainad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "descafainás",
             "tags": [],
             "region": "es"
           }
@@ -119550,6 +129382,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "enraizarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "enraizaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "enraizad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "enraizás",
             "tags": [],
             "region": "es"
           }
@@ -120222,6 +130078,22 @@ export const verbs = [
             "form": "deshacerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "deshaceé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "deshacés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -120859,6 +130731,30 @@ export const verbs = [
             "form": "intervenirías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "intervenié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "intervenid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "intervienís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -120917,6 +130813,14 @@ export const verbs = [
             "tense": "part",
             "person": "",
             "value": "desvaído"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "desvaíd",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -121509,6 +131413,54 @@ export const verbs = [
             "form": "balbucirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "balbucié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "balbucid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "balbucís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "balbuce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "balbucen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "balbuce",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -122039,6 +131991,222 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "colorirían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "colorié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "colorid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "form": "coloro",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "form": "colores",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "colorís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "form": "colore",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "form": "colorimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "form": "colorís",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "form": "coloren",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "form": "colora",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "form": "coloras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "form": "colora",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "form": "coloramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "form": "coloráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "form": "coloran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "form": "colorundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "colore",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "coloramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "coloráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "colorundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "form": "no coloras",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "no colora",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "form": "no coloramos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "form": "no coloráis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "no coloran",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "form": "no colorundefined",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "ger",
+            "form": "coloriendo",
             "tags": [],
             "region": "es"
           }
@@ -122696,6 +132864,30 @@ export const verbs = [
             "form": "elegirían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "elegié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "elegid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "eligís",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -123351,6 +133543,30 @@ export const verbs = [
             "form": "absorberían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "absorbeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "absorbed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "absorbés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -123986,6 +134202,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "bendecirías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "bendecié",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "bendecid",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "bendicís",
             "tags": [],
             "region": "es"
           }
@@ -124676,6 +134916,22 @@ export const verbs = [
             "form": "encontrarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "encontraá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "encuentrás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -125329,6 +135585,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "comunicarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "comunicaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "comunicad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "comunicás",
             "tags": [],
             "region": "es"
           }
@@ -125986,6 +136266,30 @@ export const verbs = [
             "form": "educarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "educaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "educad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "educás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -126639,6 +136943,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "publicarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "publicaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "publicad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "publicás",
             "tags": [],
             "region": "es"
           }
@@ -127296,6 +137624,30 @@ export const verbs = [
             "form": "provocarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "provocaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "provocad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "provocás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -127949,6 +138301,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "colgarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "colgaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "colgad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "cuelgás",
             "tags": [],
             "region": "es"
           }
@@ -128606,6 +138982,30 @@ export const verbs = [
             "form": "negarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "negaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "negad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "niegás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -129259,6 +139659,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "3p",
             "form": "rogarían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "rogaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "rogad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "ruegás",
             "tags": [],
             "region": "es"
           }
@@ -129916,6 +140340,30 @@ export const verbs = [
             "form": "castigarían",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "castigaá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "castigad",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "castigás",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -130551,6 +140999,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "disponerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "disponeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "disponed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "disponés",
             "tags": [],
             "region": "es"
           }
@@ -131190,6 +141662,30 @@ export const verbs = [
             "form": "exponerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "exponeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "exponed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "exponés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -131827,6 +142323,30 @@ export const verbs = [
             "form": "suponerías",
             "tags": [],
             "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "suponeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "suponed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "suponés",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
@@ -132462,6 +142982,30 @@ export const verbs = [
             "mood": "conditional",
             "person": "2s_vos",
             "form": "imponerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "form": "imponeé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "form": "imponed",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "form": "imponés",
             "tags": [],
             "region": "es"
           }
