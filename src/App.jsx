@@ -272,7 +272,15 @@ function App() {
         mood: nextForm.mood,
         tense: nextForm.tense,
         person: nextForm.person,
-        form: { ...nextForm }, // Create new form object
+        form: {
+          value: nextForm.value || nextForm.form, // Handle both 'value' and 'form' fields from database
+          lemma: nextForm.lemma,
+          mood: nextForm.mood,
+          tense: nextForm.tense,
+          person: nextForm.person,
+          alt: nextForm.alt || [], // Alternative forms if any
+          accepts: nextForm.accepts || {} // Accepted variants (tu/vos/vosotros)
+        },
         settings: { ...settings } // Include settings for grading
       }
           // SOLUCIÓN BULLETPROOF: Modo doble con verificación FINAL
@@ -358,10 +366,26 @@ function App() {
                       newItem.mood = firstForm.mood
                       newItem.tense = firstForm.tense
                       newItem.person = firstForm.person
-                      newItem.form = { ...firstForm }
+                      newItem.form = {
+                        value: firstForm.value || firstForm.form,
+                        lemma: firstForm.lemma,
+                        mood: firstForm.mood,
+                        tense: firstForm.tense,
+                        person: firstForm.person,
+                        alt: firstForm.alt || [],
+                        accepts: firstForm.accepts || {}
+                      }
                       
                       // Agregar la segunda forma
-                      newItem.secondForm = { ...secondForm }
+                      newItem.secondForm = {
+                        value: secondForm.value || secondForm.form,
+                        lemma: secondForm.lemma,
+                        mood: secondForm.mood,
+                        tense: secondForm.tense,
+                        person: secondForm.person,
+                        alt: secondForm.alt || [],
+                        accepts: secondForm.accepts || {}
+                      }
                     } else {
                       // FALLBACK DE EMERGENCIA: buscar otro verbo válido
                       const fallbackVerb = validVerbs.find(v => v.lemma !== selectedVerb.lemma)
