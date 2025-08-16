@@ -1,0 +1,96 @@
+#!/usr/bin/env node
+
+// Script para verificar específicamente el caso que reportó el usuario:
+// Por tema → Indicativo → Imperfecto → Verbos irregulares
+
+console.log('🎯 VERIFICACIÓN ESPECÍFICA: CASO PROBLEMÁTICO')
+console.log('=============================================\n')
+
+console.log('📋 CASO A VERIFICAR:')
+console.log('Por tema → Indicativo → Imperfecto → Verbos irregulares')
+console.log('')
+
+console.log('🔧 CONFIGURACIÓN DESPUÉS DE CADA PASO:')
+console.log('=====================================\n')
+
+console.log('1️⃣ DESPUÉS DE "Por tema":')
+console.log('   settings = {')
+console.log('     practiceMode: "specific",')
+console.log('     level: "ALL",')
+console.log('     cameFromTema: true')
+console.log('   }')
+console.log('')
+
+console.log('2️⃣ DESPUÉS DE "Indicativo":')
+console.log('   settings = {')
+console.log('     practiceMode: "specific",')
+console.log('     level: "ALL",')
+console.log('     cameFromTema: true,')
+console.log('     specificMood: "indicative"')
+console.log('   }')
+console.log('')
+
+console.log('3️⃣ DESPUÉS DE "Imperfecto":')
+console.log('   settings = {')
+console.log('     practiceMode: "specific",')
+console.log('     level: "ALL",')
+console.log('     cameFromTema: true,')
+console.log('     specificMood: "indicative",')
+console.log('     specificTense: "impf"')
+console.log('   }')
+console.log('')
+
+console.log('4️⃣ AL SELECCIONAR "Verbos irregulares":')
+console.log('   • selectVerbType("irregular") se ejecuta')
+console.log('   • shouldShowFamilySelection() debería retornar FALSE')
+console.log('   • Debería ir directo a startPractice()')
+console.log('')
+
+console.log('🧪 LÓGICA DE DETECCIÓN IMPLEMENTADA:')
+console.log('===================================\n')
+
+console.log('shouldShowFamilySelection() {')
+console.log('  const isPorTemaFlow = (level === "ALL" && cameFromTema)')
+console.log('  ')
+console.log('  if (isPorTemaFlow && practiceMode === "specific" && specificTense) {')
+console.log('    return false  // ✅ EVITAR MENÚ - IR DIRECTO')
+console.log('  }')
+console.log('  ...')
+console.log('}')
+console.log('')
+
+console.log('🎯 RESULTADO ESPERADO:')
+console.log('======================')
+console.log('✅ NO debería aparecer menú "Todos los verbos irregulares"')
+console.log('✅ Debería ir directamente a la práctica')
+console.log('✅ En consola debería aparecer: "🚫 Por tema + tiempo específico → No mostrar menú de familias"')
+console.log('')
+
+console.log('🚨 SI AÚN APARECE EL MENÚ:')
+console.log('=========================')
+console.log('1. Verificar que cameFromTema se esté estableciendo correctamente')
+console.log('2. Verificar que level sea exactamente "ALL" (no undefined)')
+console.log('3. Verificar que specificTense sea "impf"')
+console.log('4. Verificar que no haya otra lógica interfiriendo')
+console.log('')
+
+console.log('📝 INSTRUCCIONES DE PRUEBA:')
+console.log('==========================')
+console.log('1. Abrir http://localhost:5174/')
+console.log('2. Seleccionar "Por tema"')
+console.log('3. Seleccionar "Indicativo"')
+console.log('4. Seleccionar "Imperfecto"')
+console.log('5. Seleccionar "Verbos Irregulares"')
+console.log('6. ✅ DEBERÍA ir directo a práctica SIN menú adicional')
+console.log('')
+console.log('🔍 Abrir DevTools y revisar logs en consola para debug')
+
+console.log('\n🛠️  CAMBIOS IMPLEMENTADOS:')
+console.log('==========================')
+console.log('✅ Detección mejorada de flujo "Por tema" (level: "ALL" + cameFromTema)')
+console.log('✅ shouldShowFamilySelection() actualizada')
+console.log('✅ getNextStep() corregida para manejar level: "ALL"') 
+console.log('✅ Step 8 con auto-skip para flujo "Por tema"')
+console.log('✅ Logs de debug agregados para tracking')
+
+console.log('\n🎯 Si funciona correctamente, el problema habrá sido resuelto!')

@@ -755,14 +755,32 @@ function App() {
   
   // Helper function to get next step number
   const getNextStep = () => {
-    if (settings.level && settings.practiceMode === 'mixed') return 5
-    if (settings.level && settings.practiceMode === 'specific') return 7
+    // CASO ESPECIAL: Flujo "Por tema" (level: 'ALL' + cameFromTema)
+    const isPorTemaFlow = (settings.level === 'ALL' && settings.cameFromTema) || 
+                         (!settings.level && settings.cameFromTema)
+    
+    if (isPorTemaFlow && settings.practiceMode === 'specific') {
+      return 6 // Tratar "Por tema" como práctica específica sin nivel fijo
+    }
+    
+    if (settings.level && settings.level !== 'ALL' && settings.practiceMode === 'mixed') return 5
+    if (settings.level && settings.level !== 'ALL' && settings.practiceMode === 'specific') return 7
     if (!settings.level && settings.practiceMode === 'specific') return 6
     return 5
   }
 
   // Helper function to determine if family selection is needed
   const shouldShowFamilySelection = () => {
+    // DETECTAR FLUJO "POR TEMA": level: 'ALL' + cameFromTema + tiempo específico
+    const isPorTemaFlow = (settings.level === 'ALL' && settings.cameFromTema) || 
+                         (!settings.level && settings.cameFromTema)
+    
+    // Si es flujo "Por tema" con tiempo específico, ir directo (evitar menú innecesario)
+    if (isPorTemaFlow && settings.practiceMode === 'specific' && settings.specificTense) {
+      console.log('🚫 Por tema + tiempo específico → No mostrar menú de familias')
+      return false
+    }
+    
     // Si es práctica específica de un tiempo/modo particular, verificar si hay familias relevantes
     if (settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense) {
       // Para tiempos específicos, calcular familias disponibles de la misma forma que Step 8
@@ -785,6 +803,11 @@ function App() {
     
     // Si es práctica específica solo de modo (sin tiempo específico), evaluar familias del modo
     if (settings.practiceMode === 'specific' && settings.specificMood && !settings.specificTense) {
+      // Para flujo "Por tema" sin tiempo específico, también ir directo
+      if (isPorTemaFlow) {
+        return false
+      }
+      
       try {
         const availableFamilies = getFamiliesForMood ? getFamiliesForMood(settings.specificMood) : []
         return availableFamilies && availableFamilies.length > 1
@@ -793,17 +816,12 @@ function App() {
       }
     }
     
-    // Para práctica mixta de nivel, siempre mostrar opciones (hay variedad)
-    if (settings.practiceMode === 'mixed' && settings.level) {
+    // Para práctica mixta de nivel específico (NO "Por tema"), mostrar opciones
+    if (settings.practiceMode === 'mixed' && settings.level && settings.level !== 'ALL') {
       return true
     }
     
-    // Para práctica sin nivel específico (desde "Por tema") con tiempo específico, evaluar relevancia
-    if (!settings.level && settings.practiceMode === 'specific' && settings.specificTense) {
-      return false // Ir directo con todos los irregulares - evitar menú innecesario
-    }
-    
-    // Default: no mostrar menú si no hay contexto claro que lo justifique
+    // Default: no mostrar menú innecesario
     return false
   }
 
@@ -1398,6 +1416,20 @@ function App() {
                   const mood = settings.specificMood
                   const tense = settings.specificTense
                   
+                  // DETECTAR FLUJO "POR TEMA" - ir directo sin menú
+                  const isPorTemaFlow = (settings.level === 'ALL' && settings.cameFromTema) || 
+                                       (!settings.level && settings.cameFromTema)
+                  
+                  if (isPorTemaFlow && settings.practiceMode === 'specific' && tense) {
+                    console.log('🚫 STEP 8: Por tema + tiempo específico → Auto-skip a práctica')
+                    setTimeout(() => selectFamily(null), 0)
+                    return (
+                      <div className="loading">
+                        Iniciando práctica con verbos irregulares...
+                      </div>
+                    )
+                  }
+                  
                   // Calcular familias disponibles para determinar si mostrar menú
                   let availableFamilies = []
                   
@@ -1421,7 +1453,7 @@ function App() {
                   
                   // Si hay pocas familias relevantes (≤1), ir directo a práctica
                   if (!availableFamilies || availableFamilies.length <= 1) {
-                    // Automáticamente iniciar práctica con todos los irregulares
+                    console.log('🚫 STEP 8: Pocas familias disponibles → Auto-skip a práctica')
                     setTimeout(() => selectFamily(null), 0)
                     return (
                       <div className="loading">
