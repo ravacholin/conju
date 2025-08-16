@@ -569,11 +569,22 @@ export default function Drill({
     const okTense = showTenseField ? expected.tense === tenseGuess : true
     const correct = okInf && okPerson && okMood && okTense
 
+    // Provide specific feedback about what was wrong
+    let specificNote = null
+    if (!correct) {
+      const errors = []
+      if (!okInf) errors.push('infinitivo incorrecto')
+      if (!okPerson) errors.push('persona incorrecta')
+      if (!okMood) errors.push('modo incorrecto')
+      if (!okTense) errors.push('tiempo incorrecto')
+      specificNote = `❌ ${errors.join(', ')}. Respuesta correcta: ${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`
+    }
+
     const resultObj = {
       correct,
       isAccentError: false,
       targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`],
-      note: !correct ? '❌ Respuesta incorrecta. Verifica el infinitivo, persona, modo y tiempo.' : null,
+      note: specificNote,
       accepted: correct ? `${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}` : null
     }
     setResult(resultObj)
@@ -879,7 +890,7 @@ export default function Drill({
               ? '¡Correcto!'
               : result.isAccentError
                 ? <>¡Cuidado! Falta la tilde: <strong>{result.targets.join(' / ')}</strong></>
-                : 'Incorrecto'}
+                : result.note || 'Incorrecto'}
           </p>
           {result.correct && result.note && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
