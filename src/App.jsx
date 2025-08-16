@@ -683,29 +683,7 @@ function App() {
     closeTopPanelsAndFeatures()
     
     if (verbType === 'irregular') {
-      // DETECCIÓN DIRECTA Y SIMPLE del caso problemático: "Por tema" + tiempo específico
-      const isPorTemaWithSpecificTense = (
-        settings.level === 'ALL' && 
-        settings.cameFromTema && 
-        settings.practiceMode === 'specific' && 
-        settings.specificTense
-      )
-      
-      if (isPorTemaWithSpecificTense) {
-        console.log('🎯 INTERCEPCIÓN DIRECTA: Por tema + tiempo específico → Ir directo a práctica')
-        // Ir directamente a práctica sin menús intermedios
-        const updates = { verbType, selectedFamily: null }
-        settings.set(updates)
-        
-        // Clear history when changing verb type
-        setHistory({})
-        setCurrentItem(null)
-        
-        startPractice()
-        return // SALIR - no continuar con lógica de menús
-      }
-      
-      // Para otros casos de irregulares, usar lógica normal
+      // Para irregulares, ir a selección de familias
       settings.set({ verbType })
       setOnboardingStep(getNextStep() + 1) // Go to family selection
     } else {
@@ -751,29 +729,12 @@ function App() {
     startPractice()
   }
   
-  // Helper function to get next step number (SIMPLIFICADO)
+  // Helper function to get next step number
   const getNextStep = () => {
-    if (settings.level && settings.level !== 'ALL' && settings.practiceMode === 'mixed') return 5
-    if (settings.level && settings.level !== 'ALL' && settings.practiceMode === 'specific') return 7
+    if (settings.level && settings.practiceMode === 'mixed') return 5
+    if (settings.level && settings.practiceMode === 'specific') return 7
     if (!settings.level && settings.practiceMode === 'specific') return 6
-    if (settings.level === 'ALL' && settings.practiceMode === 'specific') return 6 // Por tema
     return 5
-  }
-
-  // Helper function to determine if family selection is needed (SIMPLIFICADA)
-  const shouldShowFamilySelection = () => {
-    // Para práctica mixta de nivel específico, mostrar opciones de familias
-    if (settings.practiceMode === 'mixed' && settings.level && settings.level !== 'ALL') {
-      return true
-    }
-    
-    // Para casos específicos con múltiples familias relevantes, mostrar menú
-    if (settings.practiceMode === 'specific' && settings.specificMood && !settings.specificTense) {
-      return true // Mostrar familias cuando solo se ha elegido modo, no tiempo
-    }
-    
-    // Default: no mostrar menú (los casos problemáticos ya están interceptados en selectVerbType)
-    return false
   }
 
   // Function to go back in the onboarding flow
@@ -1266,7 +1227,7 @@ function App() {
               <>
                 {(() => {
                   if (settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed') {
-                    // Show family selection for irregular verbs from mixed practice ONLY if needed
+                    // Show family selection for irregular verbs from mixed practice
                     return (
                       <>
                         <div className="options-grid">
@@ -1360,63 +1321,84 @@ function App() {
               </>
             )}
 
-            {/* Step 8: Family Selection (when irregular verbs are chosen) - SIMPLIFICADO */}
-            {onboardingStep === 8 && settings.verbType === 'irregular' && (
+            {/* Step 8: Family Selection (when irregular verbs are chosen) */}
+            {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.level === 'ALL' && settings.cameFromTema && settings.specificTense) && (
               <>
-                {(() => {
-                  const mood = settings.specificMood
-                  const tense = settings.specificTense
-                  
-                  // Calcular familias disponibles
-                  let availableFamilies = []
-                  
-                  if (tense && shouldUseSimplifiedGrouping && shouldUseSimplifiedGrouping(tense)) {
-                    availableFamilies = getSimplifiedGroupsForTense ? getSimplifiedGroupsForTense(tense) : []
-                  } else if (mood && shouldUseSimplifiedGroupingForMood && shouldUseSimplifiedGroupingForMood(mood) && !tense) {
-                    availableFamilies = getSimplifiedGroupsForMood ? getSimplifiedGroupsForMood(mood) : []
-                  } else if (tense) {
-                    availableFamilies = getFamiliesForTense ? getFamiliesForTense(tense) : []
-                  } else if (mood) {
-                    availableFamilies = getFamiliesForMood ? getFamiliesForMood(mood) : []
-                  } else {
-                    availableFamilies = Object.values({
-                      'G_VERBS': { id: 'G_VERBS', name: 'Irregulares en YO', description: 'tener, poner, salir, conocer, vencer' },
-                      'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
-                      'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
-                      'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
-                      'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
-                    })
-                  }
-                  
-                  // Si hay múltiples familias, mostrar selección
-                  return (
-                    <>
-                      <div className="options-grid">
-                        {/* All irregulars option */}
-                        <div className="option-card featured" onClick={() => selectFamily(null)}>
-                          <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
-                          <p>Todas las familias juntas</p>
-                          <p className="example">Máxima variedad</p>
-                        </div>
+                <div className="options-grid">
+                  {/* All irregulars option */}
+                  <div className="option-card featured" onClick={() => selectFamily(null)}>
+                    <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
+                    <p>Todas las familias juntas</p>
+                    <p className="example">Máxima variedad</p>
+                  </div>
 
-                        {/* Show the available families */}
-                        {availableFamilies.slice(0, 8).map(family => (
-                          <div key={family.id} className="option-card compact" onClick={() => selectFamily(family.id)}>
-                            <h3>{family.name}</h3>
-                            {family.hint && <p className="hint">{family.hint}</p>}
-                            {family.explanation && <p className="hint">{family.explanation}</p>}
-                            <p className="conjugation-example">{family.description}</p>
-                          </div>
-                        ))}
-                      </div>
+                  {/* Show simplified groups for present tenses, full families for others */}
+                  {(() => {
+                    const mood = settings.specificMood
+                    const tense = settings.specificTense
+                    
+                    // Use simplified grouping for supported tenses (present, preterite)
+                    if (tense && shouldUseSimplifiedGrouping(tense)) {
+                      const simplifiedGroups = getSimplifiedGroupsForTense(tense)
+                      return simplifiedGroups.map(group => (
+                        <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
+                          <h3>{group.name}</h3>
+                          <p className="hint">{group.explanation}</p>
+                          <p className="conjugation-example">{group.description}</p>
+                        </div>
+                      ))
+                    } else if (mood && shouldUseSimplifiedGroupingForMood(mood) && !tense) {
+                      // For mood selection without specific tense, show all relevant groups
+                      const simplifiedGroups = getSimplifiedGroupsForMood(mood)
+                      return simplifiedGroups.map(group => (
+                        <div key={group.id} className="option-card compact" onClick={() => selectFamily(group.id)}>
+                          <h3>{group.name}</h3>
+                          <p className="hint">{group.explanation}</p>
+                          <p className="conjugation-example">{group.description}</p>
+                        </div>
+                      ))
+                    } else {
+                      // Use families for specific tense, or fallback to mood families
+                      const availableFamilies = tense
+                        ? getFamiliesForTense(tense)
+                        : mood
+                        ? getFamiliesForMood(mood)
+                        : Object.values({
+                            'G_VERBS': { id: 'G_VERBS', name: 'Irregulares en YO', description: 'tener, poner, salir, conocer, vencer' },
+                            'UIR_Y': { id: 'UIR_Y', name: '-uir (inserción y)', description: 'construir, huir' },
+                            'PRET_UV': { id: 'PRET_UV', name: 'Pretérito -uv-', description: 'andar, estar, tener' },
+                            'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
+                            'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
+                          })
                       
-                      <button onClick={goBack} className="back-btn">
-                        <img src="/back.png" alt="Volver" className="back-icon" />
-                      </button>
-                    </>
-                  )
-                })()}
+                      return availableFamilies.slice(0, 8).map(family => (
+                        <div key={family.id} className="option-card compact" onClick={() => selectFamily(family.id)}>
+                          <h3>{family.name}</h3>
+                          <p className="conjugation-example">{family.description}</p>
+                        </div>
+                      ))
+                    }
+                  })()}
+                </div>
+                
+                <button onClick={goBack} className="back-btn">
+                  <img src="/back.png" alt="Volver" className="back-icon" />
+                </button>
               </>
+            )}
+
+            {/* Auto-skip Step 8 for "Por tema" cases - go directly to practice */}
+            {onboardingStep === 8 && settings.verbType === 'irregular' && settings.level === 'ALL' && settings.cameFromTema && settings.specificTense && (
+              <div className="loading" style={{ textAlign: 'center', padding: '50px' }}>
+                <h3>Iniciando práctica con verbos irregulares...</h3>
+                {(() => {
+                  // Auto-advance to practice
+                  setTimeout(() => {
+                    selectFamily(null)
+                  }, 100)
+                  return null
+                })()}
+              </div>
             )}
           </div>
         </div>
