@@ -8,12 +8,18 @@ export function grade(input, expected, settings){
   // Get all possible correct answers based on settings
   const candidates = new Set([expected.value, ...(expected.alt||[])])
   
-  // Add alternative forms if not in strict mode
+  // Add alternative forms based on dialect settings
+  // IMPORTANT: Always add dialect-specific forms regardless of strict mode
+  // When a specific dialect is selected, those forms should be accepted
+  const a = expected.accepts||{}
+  if(settings.useTuteo && a.tu) candidates.add(a.tu)
+  if(settings.useVoseo && a.vos) candidates.add(a.vos)
+  if(settings.useVosotros && a.vosotros) candidates.add(a.vosotros)
+  
+  // Add additional alternative forms only if not in strict mode
   if(!settings.strict){
-    const a = expected.accepts||{}
-    if(settings.useTuteo && a.tu) candidates.add(a.tu)
-    if(settings.useVoseo && a.vos) candidates.add(a.vos)
-    if(settings.useVosotros && a.vosotros) candidates.add(a.vosotros)
+    // Additional alt forms beyond dialect variants
+    // (this is for other types of alternatives, not dialect-specific ones)
   }
   
   // Accent policy by level

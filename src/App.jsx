@@ -283,6 +283,17 @@ function App() {
         },
         settings: { ...settings } // Include settings for grading
       }
+      
+      // Debug logging for voseo item generation
+      if (settings.useVoseo || nextForm.person?.includes('vos') || (nextForm.accepts && nextForm.accepts.vos)) {
+        console.log('🔧 VOSEO DEBUG - Item generation:')
+        console.log('  NextForm from generator:', nextForm)
+        console.log('  Settings passed:', settings)
+        console.log('  Generated item form:', newItem.form)
+        console.log('  useVoseo setting:', settings.useVoseo)
+        console.log('  Person:', nextForm.person)
+        console.log('  Accepts:', nextForm.accepts)
+      }
           // SOLUCIÓN BULLETPROOF: Modo doble con verificación FINAL
           if (useSettings.getState().doubleActive) {
             try {

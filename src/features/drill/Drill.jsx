@@ -107,7 +107,26 @@ export default function Drill({
     setIsSubmitting(true)
     
     try {
+      // Debug logging for voseo issues
+      if (currentItem.settings?.useVoseo || currentItem.person?.includes('vos')) {
+        console.log('🔍 VOSEO DEBUG - Grading attempt:')
+        console.log('  Input:', input.trim())
+        console.log('  Expected form:', currentItem.form)
+        console.log('  Settings:', currentItem.settings)
+        console.log('  Person:', currentItem.person)
+        console.log('  Lemma:', currentItem.lemma)
+      }
+      
       const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
+      
+      // Debug logging for voseo results
+      if (currentItem.settings?.useVoseo || currentItem.person?.includes('vos')) {
+        console.log('🔍 VOSEO DEBUG - Grade result:')
+        console.log('  Correct:', gradeResult.correct)
+        console.log('  Targets:', gradeResult.targets)
+        console.log('  Note:', gradeResult.note)
+      }
+      
       setResult(gradeResult)
       onResult(gradeResult)
       // latency
@@ -141,7 +160,18 @@ export default function Drill({
       }
     } catch (error) {
       console.error('Error grading conjugation:', error)
-      setResult({ correct: false, message: 'Error al evaluar la conjugación' })
+      console.error('Current item:', currentItem)
+      console.error('User input:', input.trim())
+      console.error('Settings:', currentItem.settings)
+      
+      // Create a more informative error result that still shows helpful info
+      setResult({ 
+        correct: false, 
+        message: 'Error al evaluar la conjugación',
+        note: 'Error técnico detectado. Revisa la consola para más detalles.',
+        targets: currentItem?.form?.value ? [currentItem.form.value] : ['Forma no disponible'],
+        isAccentError: false
+      })
     } finally {
       setIsSubmitting(false)
       if (inputRef.current) {
