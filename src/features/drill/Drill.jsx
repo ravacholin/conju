@@ -187,12 +187,19 @@ export default function Drill({
       const firstRes = grade(input.trim(), currentItem.form, currentItem.settings || {})
       // Use explicit second target from secondForm if present, otherwise fall back to same as first
       const secondTarget = currentItem.secondForm ? { ...currentItem.secondForm } : { ...currentItem.form }
-      const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { correct: false }
+      const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { 
+        correct: false, 
+        targets: ['Error: forma no disponible'], 
+        note: '❌ Error: segunda forma no disponible',
+        isAccentError: false 
+      }
       const correct = firstRes.correct && secondRes.correct
       const resultObj = {
         correct,
         isAccentError: firstRes.isAccentError || secondRes.isAccentError,
-        targets: [currentItem.form.value, secondTarget.value]
+        targets: [currentItem.form.value, secondTarget.value],
+        note: !correct ? (firstRes.note || secondRes.note || '❌ Forma incorrecta. Revisa la conjugación y los acentos.') : null,
+        accepted: correct ? `${firstRes.accepted || ''} / ${secondRes.accepted || ''}`.trim() : null
       }
       setResult(resultObj)
       onResult(resultObj)
@@ -565,7 +572,9 @@ export default function Drill({
     const resultObj = {
       correct,
       isAccentError: false,
-      targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`]
+      targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`],
+      note: !correct ? '❌ Respuesta incorrecta. Verifica el infinitivo, persona, modo y tiempo.' : null,
+      accepted: correct ? `${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}` : null
     }
     setResult(resultObj)
     onResult(resultObj)
