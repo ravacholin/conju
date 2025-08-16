@@ -60,13 +60,13 @@ export function chooseNext({forms, history, currentItem}){
   const { 
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
-    currentBlock, selectedFamily
+    currentBlock, selectedFamily, verbFilterMode, extensiveMode
   } = useSettings.getState()
   
   
   
   // Crear cache key para este filtrado
-  const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
+  const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|${verbFilterMode}|${extensiveMode.enabled}`
   
   // Intentar obtener del cache
   let eligible = formFilterCache.get(filterKey)
@@ -234,13 +234,15 @@ export function chooseNext({forms, history, currentItem}){
         }
         
         // Level-based filtering for specific verb types
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const useExtensiveMode = verbFilterMode === 'extensive' && extensiveMode.enabled
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense, useExtensiveMode)) {
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
         const verbFamilies = categorizeVerb(f.lemma, verb)
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const useExtensiveMode = verbFilterMode === 'extensive' && extensiveMode.enabled
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense, useExtensiveMode)) {
           return false
         }
       }

@@ -22,6 +22,18 @@ export const BLACKLIST_LEVELS = ['B2', 'C1', 'C2']
 export const ADVANCED_LEVELS = ['B2', 'C1', 'C2', 'ALL']
 
 // ============================================================================
+// CONFIGURACIÓN DE MODOS DE FILTRADO
+// ============================================================================
+
+// Modo extensivo: usa todo el repertorio con fallback inteligente
+export const EXTENSIVE_MODE_CONFIG = {
+  enabled: true, // Por defecto habilitado para aprovechar todo el repertorio
+  fallbackToHigherLevels: true,
+  includeCategorizedFirst: true,
+  autoCategorizationEnabled: true
+}
+
+// ============================================================================
 // FUNCIÓN PRINCIPAL DE FILTRADO
 // ============================================================================
 
@@ -31,14 +43,63 @@ export const ADVANCED_LEVELS = ['B2', 'C1', 'C2', 'ALL']
  * @param {Array} verbFamilies - Familias irregulares del verbo
  * @param {string} userLevel - Nivel MCER del usuario (A1, A2, B1, B2, C1, C2, ALL)
  * @param {string} tense - Tiempo verbal
+ * @param {boolean} extensiveMode - Si usar modo extensivo (por defecto true)
  * @returns {boolean} true si debe filtrarse (excluirse), false si debe incluirse
  */
-export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense) {
+export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense, extensiveMode = true) {
   // Si es nivel ALL, nunca filtrar
   if (userLevel === 'ALL') {
     return false
   }
   
+  // MODO EXTENSIVO: Usar todo el repertorio con priorización inteligente
+  if (extensiveMode && EXTENSIVE_MODE_CONFIG.enabled) {
+    return shouldFilterVerbExtensive(lemma, verbFamilies, userLevel, tense)
+  }
+  
+  // MODO ESTRICTO ORIGINAL: Mantener lógica anterior para compatibilidad
+  return shouldFilterVerbStrict(lemma, verbFamilies, userLevel, tense)
+}
+
+/**
+ * Filtrado extensivo: prioriza verbos categorizados pero incluye todos con fallback
+ */
+function shouldFilterVerbExtensive(lemma, verbFamilies, userLevel, tense) {
+  // Para niveles avanzados, permitir todo
+  if (['C1', 'C2'].includes(userLevel)) {
+    return false // Usar todo el repertorio en niveles avanzados
+  }
+  
+  // Para niveles básicos e intermedios, usar estrategia progresiva
+  if (STRICT_WHITELIST_LEVELS.includes(userLevel)) {
+    // Si está en la whitelist del nivel actual, siempre incluir
+    if (isVerbAllowedInLevel(lemma, userLevel)) {
+      return false
+    }
+    
+    // Fallback progresivo: permitir verbos de niveles inmediatamente superiores
+    if (EXTENSIVE_MODE_CONFIG.fallbackToHigherLevels) {
+      const nextLevelAllowed = shouldAllowAsNextLevelFallback(lemma, userLevel)
+      return nextLevelAllowed // Si nextLevelAllowed es false, significa que SÍ se debe incluir
+    }
+    
+    return true // Filtrar solo si no hay fallback disponible
+  }
+  
+  // B2: Estrategia más permisiva - usar casi todo
+  if (userLevel === 'B2') {
+    const rarity = getVerbPedagogicalRarity(lemma)
+    // Solo filtrar verbos defectivos extremos en B2
+    return rarity === 'extremely_rare' && lemma.includes('defectiv')
+  }
+  
+  return false
+}
+
+/**
+ * Filtrado estricto original (modo de compatibilidad)
+ */
+function shouldFilterVerbStrict(lemma, verbFamilies, userLevel, tense) {
   // ESTRATEGIA WHITELIST: A1, A2, B1 - Solo verbos específicamente permitidos
   if (STRICT_WHITELIST_LEVELS.includes(userLevel)) {
     return !isVerbAllowedInLevel(lemma, userLevel)
@@ -51,6 +112,57 @@ export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense) {
   
   // Fallback: no filtrar
   return false
+}
+
+/**
+ * Determina si un verbo debe permitirse como fallback del siguiente nivel
+ */
+function shouldAllowAsNextLevelFallback(lemma, currentLevel) {
+  const levelHierarchy = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+  const currentIndex = levelHierarchy.indexOf(currentLevel)
+  
+  if (currentIndex === -1 || currentIndex >= levelHierarchy.length - 1) {
+    return false // Permitir (no filtrar) si no hay nivel superior
+  }
+  
+  // Verificar los próximos 2 niveles inmediatos para progresión suave
+  const checkLevels = levelHierarchy.slice(currentIndex + 1, currentIndex + 3)
+  
+  for (const higherLevel of checkLevels) {
+    if (isVerbAllowedInLevel(lemma, higherLevel)) {
+      return false // Permitir (no filtrar) - está en un nivel cercano
+    }
+  }
+  
+  // Si no está categorizado explícitamente, usar categorización automática
+  if (EXTENSIVE_MODE_CONFIG.autoCategorizationEnabled) {
+    const shouldAllow = shouldAllowUncategorizedVerb(lemma, currentLevel)
+    return !shouldAllow // Invertir porque shouldAllowUncategorizedVerb devuelve si debe permitirse
+  }
+  
+  // Por defecto, permitir verbos no categorizados en modo extensivo
+  return false // Permitir (no filtrar) para máximo aprovechamiento
+}
+
+/**
+ * Determina si permitir un verbo no categorizado basado en heurísticas
+ */
+function shouldAllowUncategorizedVerb(lemma, level) {
+  const frequency = getVerbFrequency(lemma)
+  const rarity = getVerbPedagogicalRarity(lemma)
+  
+  // Mapeo heurístico de niveles a rareza apropiada
+  const levelRarityMap = {
+    'A1': ['essential'],
+    'A2': ['essential', 'important'],
+    'B1': ['essential', 'important', 'useful'],
+    'B2': ['essential', 'important', 'useful', 'specialized'],
+    'C1': ['useful', 'specialized', 'rare'],
+    'C2': ['specialized', 'rare', 'extremely_rare']
+  }
+  
+  const appropriateRarities = levelRarityMap[level] || []
+  return appropriateRarities.includes(rarity)
 }
 
 /**

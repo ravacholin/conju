@@ -47,5 +47,14 @@ export const useSettings = create((set) => ({
   specificMood: null,     // 'indicative' | 'subjunctive' | 'imperative' | 'conditional' | 'nonfinite'
   specificTense: null,    // depends on mood selected
   
+  // Verb filtering mode settings
+  verbFilterMode: 'extensive', // 'strict' | 'extensive'
+  extensiveMode: {
+    enabled: true,                    // Usar todo el repertorio de verbos
+    fallbackToHigherLevels: true,     // Incluir verbos de niveles superiores cuando se agoten
+    autoCategorizationEnabled: true,  // Categorizar automáticamente verbos no asignados
+    prioritizeCategorized: true       // Priorizar verbos categorizados específicamente para el nivel
+  },
+  
   set: (patch) => set((s) => ({...s, ...patch}))
 })) 
