@@ -591,6 +591,34 @@ export default function Drill({
     onResult(resultObj)
   }
 
+  // Helper function to determine what to display for a result
+  const getResultDisplay = (result) => {
+    if (!result) return null
+    
+    if (result.correct) {
+      return {
+        mainMessage: '¡Correcto!',
+        additionalNote: result.note // Show note for correct answers if exists
+      }
+    }
+    
+    if (result.isAccentError) {
+      return {
+        mainMessage: <>¡Cuidado! Falta la tilde: <strong>{result.targets?.join(' / ')}</strong></>,
+        additionalNote: null // No additional note for accent errors
+      }
+    }
+    
+    // For incorrect answers, prioritize the grader's note
+    const mainMessage = result.note || 'Incorrecto'
+    
+    return {
+      mainMessage,
+      additionalNote: result.targets && !result.note ? 
+        `Respuesta correcta: ${result.targets.join(' / ')}` : null
+    }
+  }
+
   const handleReverseKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -882,33 +910,20 @@ export default function Drill({
         )}
       </div>
 
-      {/* Result feedback - ALWAYS SHOW WHEN RESULT EXISTS */}
-      {result ? (
-        <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
-          <p>
-            {result.correct
-              ? '¡Correcto!'
-              : result.isAccentError
-                ? <>¡Cuidado! Falta la tilde: <strong>{result.targets.join(' / ')}</strong></>
-                : result.note || 'Incorrecto'}
-          </p>
-          {result.correct && result.note && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
-              {result.note}
-            </p>
-          )}
-          {!result.correct && !result.isAccentError && result.targets && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
-              Respuesta correcta: <strong>{result.targets.join(' / ')}</strong>
-            </p>
-          )}
-          {!result.correct && result.note && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
-              {result.note}
-            </p>
-          )}
-        </div>
-      ) : null}
+      {/* Result feedback - SIMPLIFIED WITH HELPER FUNCTION */}
+      {result ? (() => {
+        const display = getResultDisplay(result)
+        return display ? (
+          <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
+            <p>{display.mainMessage}</p>
+            {display.additionalNote && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
+                {display.additionalNote}
+              </p>
+            )}
+          </div>
+        ) : null
+      })() : null}
 
       {/* Resistance HUD */}
       {(settings.resistanceActive || showExplosion) && (
