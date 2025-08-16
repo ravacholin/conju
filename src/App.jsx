@@ -247,7 +247,18 @@ function App() {
     return out
   }
   const combosForLevelMixed = (level) => {
-    // Simplificado: no forzar tiempos por nivel; usar todos los de curriculum
+    // Manejar caso especial "Por tema" (level === 'ALL')
+    if (level === 'ALL') {
+      // Para "Por tema", usar todos los gates disponibles
+      const allGates = gates.map(g => ({ mood: g.mood, tense: g.tense }))
+      // Eliminar duplicados
+      const unique = allGates.filter((combo, index, arr) => 
+        arr.findIndex(c => c.mood === combo.mood && c.tense === combo.tense) === index
+      )
+      return pickRandom(unique, Math.min(8, unique.length))
+    }
+    
+    // Lógica original para niveles específicos (A1, A2, B1, etc.)
     const allowed = gates.filter(g => g.level === level).map(g => ({ mood: g.mood, tense: g.tense }))
     return allowed.length ? pickRandom(allowed, Math.min(4, allowed.length)) : []
   }
@@ -1322,7 +1333,7 @@ function App() {
             )}
 
             {/* Step 8: Family Selection (when irregular verbs are chosen) */}
-            {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.level === 'ALL' && settings.cameFromTema && settings.specificTense) && (
+            {onboardingStep === 8 && settings.verbType === 'irregular' && (
               <>
                 <div className="options-grid">
                   {/* All irregulars option */}
@@ -1385,20 +1396,6 @@ function App() {
                   <img src="/back.png" alt="Volver" className="back-icon" />
                 </button>
               </>
-            )}
-
-            {/* Auto-skip Step 8 for "Por tema" cases - go directly to practice */}
-            {onboardingStep === 8 && settings.verbType === 'irregular' && settings.level === 'ALL' && settings.cameFromTema && settings.specificTense && (
-              <div className="loading" style={{ textAlign: 'center', padding: '50px' }}>
-                <h3>Iniciando práctica con verbos irregulares...</h3>
-                {(() => {
-                  // Auto-advance to practice
-                  setTimeout(() => {
-                    selectFamily(null)
-                  }, 100)
-                  return null
-                })()}
-              </div>
             )}
           </div>
         </div>
