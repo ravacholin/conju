@@ -457,6 +457,19 @@ function App() {
 
   // Initialize first item when settings are ready
   useEffect(() => {
+    console.log('🔧 USEEFFECT DEBUG - Checking drill init conditions:', {
+      currentMode,
+      region: settings.region,
+      currentItem: !!currentItem,
+      practiceMode: settings.practiceMode,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense,
+      verbType: settings.verbType,
+      selectedFamily: settings.selectedFamily,
+      conditionMet: currentMode === 'drill' && settings.region && !currentItem && 
+        settings.practiceMode && settings.specificMood && settings.specificTense && settings.verbType
+    })
+    
     if (currentMode === 'drill' && settings.region && !currentItem && 
         settings.practiceMode && settings.specificMood && settings.specificTense && settings.verbType) {
       // Scroll to top when entering drill mode
@@ -747,6 +760,13 @@ function App() {
   const selectFamily = (familyId) => {
     // Cerrar paneles al fijar familia
     closeTopPanelsAndFeatures()
+    console.log('🔧 FAMILY DEBUG - selectFamily called with:', familyId)
+    console.log('🔧 FAMILY DEBUG - Current settings before update:', {
+      verbType: settings.verbType,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense,
+      selectedFamily: settings.selectedFamily
+    })
     const updates = { selectedFamily: familyId }
     
     // Initialize mixed-practice blocks per level

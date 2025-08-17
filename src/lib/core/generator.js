@@ -64,7 +64,12 @@ export function chooseNext({forms, history, currentItem}){
     currentBlock, selectedFamily
   } = useSettings.getState()
   
-  
+  console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
+    level, useVoseo, useTuteo, useVosotros,
+    practiceMode, specificMood, specificTense, practicePronoun, verbType,
+    selectedFamily, currentBlock: !!currentBlock,
+    formsCount: forms.length
+  })
   
   // Crear cache key para este filtrado
   const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
@@ -333,22 +338,32 @@ export function chooseNext({forms, history, currentItem}){
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
+    console.log('🔧 CHOOSENEXT DEBUG - NO ELIGIBLE FORMS! Starting fallback logic...')
     // Failsafe: relax filters progressively to always return something
     let fallback = forms.filter(f => getAllowedCombosForLevel(level).has(`${f.mood}|${f.tense}`))
+    console.log('🔧 FALLBACK DEBUG - After level filter:', fallback.length)
     if (specificMood) fallback = fallback.filter(f => f.mood === specificMood)
+    console.log('🔧 FALLBACK DEBUG - After mood filter:', fallback.length)
     if (specificTense) fallback = fallback.filter(f => f.tense === specificTense)
+    console.log('🔧 FALLBACK DEBUG - After tense filter:', fallback.length)
     // Respect dialect minimally for conjugated forms
     fallback = fallback.filter(f => f.mood === 'nonfinite' || ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person))
+    console.log('🔧 FALLBACK DEBUG - After dialect filter:', fallback.length)
     // If still empty, drop tense constraint
     if (fallback.length === 0 && specificTense) {
       fallback = forms.filter(f => f.mood === specificMood)
+      console.log('🔧 FALLBACK DEBUG - After dropping tense:', fallback.length)
     }
     // If still empty, drop mood constraint
     if (fallback.length === 0 && specificMood) {
       fallback = forms
+      console.log('🔧 FALLBACK DEBUG - After dropping mood:', fallback.length)
     }
     // As last resort, return any form
+    console.log('🔧 FALLBACK DEBUG - Final fallback result:', fallback[0] ? `${fallback[0].lemma} - ${fallback[0].value}` : 'null')
     return fallback[0] || null
+  } else {
+    console.log('🔧 CHOOSENEXT DEBUG - Found', eligible.length, 'eligible forms')
   }
   
   // Apply weighted selection for "all" verb types to balance regular vs irregular per level
