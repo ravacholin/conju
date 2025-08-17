@@ -319,7 +319,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'ir, ser, dar, ver, haber, estar',
     examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
     pattern: 'verbos monosílabos altamente irregulares en múltiples tiempos',
-    affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff'],
+    affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff', 'impf'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
   }
 }
