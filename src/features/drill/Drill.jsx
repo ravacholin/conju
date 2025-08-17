@@ -107,25 +107,13 @@ export default function Drill({
     setIsSubmitting(true)
     
     try {
-      // Debug logging for voseo issues
-      if (currentItem.settings?.useVoseo || currentItem.person?.includes('vos')) {
-        console.log('🔍 VOSEO DEBUG - Grading attempt:')
-        console.log('  Input:', input.trim())
-        console.log('  Expected form:', currentItem.form)
-        console.log('  Settings:', currentItem.settings)
-        console.log('  Person:', currentItem.person)
-        console.log('  Lemma:', currentItem.lemma)
-      }
+      // Debug only for problematic cases
+      // console.log('🔍 DRILL DEBUG - Grading attempt:', {input: input.trim(), form: currentItem.form})
       
       const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
       
-      // Debug logging for voseo results
-      if (currentItem.settings?.useVoseo || currentItem.person?.includes('vos')) {
-        console.log('🔍 VOSEO DEBUG - Grade result:')
-        console.log('  Correct:', gradeResult.correct)
-        console.log('  Targets:', gradeResult.targets)
-        console.log('  Note:', gradeResult.note)
-      }
+      // Debug only for problematic cases
+      // console.log('🔍 DRILL DEBUG - Grade result:', {correct: gradeResult.correct, note: gradeResult.note})
       
       setResult(gradeResult)
       onResult(gradeResult)

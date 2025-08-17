@@ -2,6 +2,42 @@ import { normalize, normalizeInput } from './rules.js'
 
 export function grade(input, expected, settings){
   const startTs = Date.now()
+  
+  // Debug only if there are issues
+  // console.log('🔍 GRADER DEBUG - Input parameters:', {input, expected, settings})
+  
+  // PARAMETER VALIDATION: Ensure we never fail silently
+  if (!input || typeof input !== 'string') {
+    console.error('❌ GRADER ERROR: Invalid input parameter:', input)
+    return {
+      correct: false,
+      accepted: null,
+      targets: ['Error: entrada inválida'],
+      note: '❌ Error: entrada inválida. Revisa la consola para detalles.',
+      warnings: null,
+      isAccentError: false,
+      ts: startTs
+    }
+  }
+  
+  if (!expected || typeof expected !== 'object' || !expected.value) {
+    console.error('❌ GRADER ERROR: Invalid expected parameter:', expected)
+    return {
+      correct: false,
+      accepted: null,
+      targets: ['Error: forma esperada inválida'],
+      note: '❌ Error: forma esperada inválida. Revisa la consola para detalles.',
+      warnings: null,
+      isAccentError: false,
+      ts: startTs
+    }
+  }
+  
+  if (!settings || typeof settings !== 'object') {
+    console.error('❌ GRADER ERROR: Invalid settings parameter:', settings)
+    settings = {} // Use empty settings as fallback
+  }
+  
   // Normalize input with warnings (but keep accents)
   const { normalized: normalizedInput, warnings, wasCorrected } = normalizeInput(input)
   
@@ -167,7 +203,13 @@ export function grade(input, expected, settings){
     }
   }
   
-  return {
+  // FINAL VALIDATION: Only apply fallback for truly undefined feedback on incorrect answers
+  if (!correct && feedback === undefined) {
+    console.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
+    feedback = '❌ Forma incorrecta. Revisa la conjugación y los acentos.'
+  }
+  
+  const result = {
     correct,
     accepted: correct ? input : null,
     targets: [...candidates],
@@ -176,6 +218,11 @@ export function grade(input, expected, settings){
     isAccentError,
     ts: startTs
   }
+  
+  // Debug only for problematic cases
+  // console.log('🔍 GRADER DEBUG - Final result:', {correct: result.correct, note: result.note})
+  
+  return result
 }
 
 function generateFeedback(input, correctAnswers, settings, expected) {
