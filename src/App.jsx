@@ -457,7 +457,8 @@ function App() {
 
   // Initialize first item when settings are ready
   useEffect(() => {
-    if (currentMode === 'drill' && settings.region && !currentItem) {
+    if (currentMode === 'drill' && settings.region && !currentItem && 
+        settings.practiceMode && settings.specificMood && settings.specificTense && settings.verbType) {
       // Scroll to top when entering drill mode
       window.scrollTo(0, 0)
       
