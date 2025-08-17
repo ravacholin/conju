@@ -69,8 +69,15 @@ export function chooseNext({forms, history, currentItem}){
   // Crear cache key para este filtrado
   const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
   
-  // Intentar obtener del cache
-  let eligible = formFilterCache.get(filterKey)
+  // HOTFIX: Invalidar cache para imperfecto irregular mientras depuramos
+  let eligible = null
+  if (verbType === 'irregular' && specificMood === 'indicative' && specificTense === 'impf') {
+    // Forzar recálculo para este caso específico
+    eligible = null
+  } else {
+    // Intentar obtener del cache para otros casos
+    eligible = formFilterCache.get(filterKey)
+  }
   
   if (!eligible) {
     // Si no está en cache, calcular
