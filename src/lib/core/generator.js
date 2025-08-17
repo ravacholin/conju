@@ -81,6 +81,11 @@ export function chooseNext({forms, history, currentItem}){
     // Si no está en cache, calcular
     eligible = forms.filter(f=>{
       
+      // Filter out forms with undefined/null values first
+      if (!f.value && !f.form) {
+        return false
+      }
+      
       // Level filtering (O(1) with precomputed set)
       // Determine allowed combos: from current block if set, else level
       const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length

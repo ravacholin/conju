@@ -21,8 +21,12 @@ export function normalize(str) {
  * @returns {boolean} - true si la forma es regular, false si es irregular
  */
 export function isRegularFormForMood(lemma, mood, tense, person, value) {
-  // Validación de parámetros
+  // Validación de parámetros - si value es undefined/null, no es una forma válida para evaluar
   if (!lemma || !value || typeof lemma !== 'string' || typeof value !== 'string') {
+    // Silenciar warning para forms con value undefined (común en base de datos)
+    if (value === undefined) {
+      return false // No considerar como regular para evitar filtrado incorrecto
+    }
     console.warn('⚠️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
     return false
   }
