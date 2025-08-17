@@ -192,6 +192,7 @@ export function chooseNext({forms, history, currentItem}){
     if (useSettings.getState().allowedLemmas) {
       const set = useSettings.getState().allowedLemmas
       if (!set.has(f.lemma)) {
+        console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
       }
     }

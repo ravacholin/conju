@@ -583,8 +583,8 @@ function App() {
       updates.medianTargetMs = null
       updates.showPronouns = true
       updates.practicePronoun = 'both'
-      // Core frequent lemmas for A1
-      updates.allowedLemmas = new Set(['ser','estar','tener','haber','ir','venir','poder','querer','hacer','decir','poner','dar','vivir','comer','hablar'])
+      // Core frequent lemmas for A1 (including 'ver' for imperfect irregular practice)
+      updates.allowedLemmas = new Set(['ser','estar','tener','haber','ir','ver','venir','poder','querer','hacer','decir','poner','dar','vivir','comer','hablar'])
     } else if (level === 'A2') {
       updates.strict = false
       updates.accentTolerance = 'warn'
