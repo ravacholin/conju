@@ -207,10 +207,16 @@ export function chooseNext({forms, history, currentItem}){
         return false
       }
       // Only include truly irregular forms for the specific category
+      // EXCEPTION: Allow regular forms for tenses that are regular for all verbs
       const isRegularForm = f.mood === 'nonfinite'
         ? isRegularNonfiniteForm(f.lemma, f.tense, f.value)
         : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
-      if (isRegularForm) {
+      
+      // Define tenses that are regular for all verbs (even irregular verbs)
+      const universallyRegularTenses = ['impf'] // Imperfect is regular for all verbs
+      const isUniversallyRegularTense = universallyRegularTenses.includes(f.tense)
+      
+      if (isRegularForm && !isUniversallyRegularTense) {
         return false
       }
       
@@ -708,6 +714,12 @@ function isIrregularVerb(lemma) {
 
 // Function to check if a nonfinite form is regular
 function isRegularFormForMood(lemma, mood, tense, person, value) {
+  // CRITICAL: Add validation for undefined parameters
+  if (!lemma || !value || typeof lemma !== 'string' || typeof value !== 'string') {
+    console.warn('⚠️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
+    return false // Assume irregular if data is invalid
+  }
+  
   // Remove accents for comparison
   const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   
@@ -1019,6 +1031,12 @@ function isRegularFormForMood(lemma, mood, tense, person, value) {
 }
 
 function isRegularNonfiniteForm(lemma, tense, value) {
+  // CRITICAL: Add validation for undefined parameters
+  if (!lemma || !value || typeof lemma !== 'string' || typeof value !== 'string') {
+    console.warn('⚠️ isRegularNonfiniteForm called with invalid params:', { lemma, tense, value })
+    return false // Assume irregular if data is invalid
+  }
+  
   // Remove accents for comparison
   const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   

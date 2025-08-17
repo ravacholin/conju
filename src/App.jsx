@@ -262,7 +262,22 @@ function App() {
   }
 
   const generateNextItem = (itemToExclude = null) => {
+    console.log('🎯 GENERATE NEXT ITEM - Starting with settings:', {
+      verbType: settings.verbType,
+      selectedFamily: settings.selectedFamily,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense,
+      itemToExclude: itemToExclude?.lemma
+    })
+    
     const nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
+    
+    console.log('🎯 GENERATE NEXT ITEM - chooseNext returned:', nextForm ? {
+      lemma: nextForm.lemma,
+      mood: nextForm.mood,
+      tense: nextForm.tense,
+      person: nextForm.person
+    } : null)
     
     if (nextForm && nextForm.mood && nextForm.tense) {
       // Force a new object to ensure React detects the change
@@ -281,7 +296,13 @@ function App() {
           alt: nextForm.alt || [], // Alternative forms if any
           accepts: nextForm.accepts || {} // Accepted variants (tu/vos/vosotros)
         },
-        settings: { ...settings } // Include settings for grading
+        settings: { 
+          ...settings,
+          // CRITICAL FIX: Auto-activate dialect-specific settings based on form person
+          useVoseo: settings.useVoseo || nextForm.person?.includes('vos') || nextForm.person === '2s_vos',
+          useTuteo: settings.useTuteo || nextForm.person?.includes('tu') || nextForm.person === '2s_tu',
+          useVosotros: settings.useVosotros || nextForm.person?.includes('vosotros') || nextForm.person === '2p_vosotros'
+        } // Include settings for grading
       }
       
       // Debug logging for voseo item generation
@@ -415,7 +436,15 @@ function App() {
           }
       setCurrentItem(newItem)
     } else {
-      console.error('❌ No valid form found! This might indicate a bug in the generator or insufficient verbs.')
+      console.error('❌ No valid form found! Settings:', {
+        verbType: settings.verbType,
+        selectedFamily: settings.selectedFamily,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense,
+        level: settings.level,
+        useVoseo: settings.useVoseo,
+        allFormsCount: allFormsForRegion.length
+      })
       
       // Show a user-friendly error instead of infinite retry
       setCurrentItem({
@@ -432,10 +461,17 @@ function App() {
       // Scroll to top when entering drill mode
       window.scrollTo(0, 0)
       
+      console.log('🔧 DRILL INIT - Generating first item with settings:', {
+        verbType: settings.verbType,
+        selectedFamily: settings.selectedFamily,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense
+      })
+      
       // Only generate a new item when entering drill mode or when practice settings change AND there's no current item
       generateNextItem()
     }
-  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense])
+  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily])
 
   const handleDrillResult = (result) => {
     // Only update history if it's not an accent error
