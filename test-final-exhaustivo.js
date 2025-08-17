@@ -2,7 +2,7 @@
 // Simula exactamente lo que hace el usuario: VOS → Por tema → Indicativo → Imperfecto → Verbos Irregulares
 
 import { verbs } from './src/data/verbs.js'
-import { isRegularFormForMood } from './src/lib/core/generator.js'
+import { isRegularFormForMood } from './src/lib/core/conjugationRules.js'
 
 console.log("🔍 TEST EXHAUSTIVO FINAL - SIMULANDO FLUJO COMPLETO")
 console.log("=" * 80)

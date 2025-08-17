@@ -63,13 +63,31 @@ export function grade(input, expected, settings){
   const accentPolicy = settings.accentTolerance || 'warn' // 'accept' (A1), 'warn' (A2/B1), 'strict' (B2+)
   const stripAccents = (s)=> s.normalize('NFD').replace(/\p{Diacritic}+/gu, '')
   const norm = (s)=> s.toLowerCase().trim()
+  
+  // CORRECCIÓN: Detectar errores de tilde ANTES de aplicar política de acentos
+  const normalizedInputStrict = norm(normalizedInput)
+  const candidatesStrict = [...candidates].map(c => norm(c))
+  const isAccentOnlyError = !candidatesStrict.includes(normalizedInputStrict) && 
+                           candidatesStrict.some(c => norm(stripAccents(c)) === norm(stripAccents(normalizedInput)))
+  
+  // Aplicar política de acentos para determinar corrección
   const normalizedCandidates = [...candidates].map(c => norm(accentPolicy==='accept' ? stripAccents(c) : c))
   const normalizedInputCanon = norm(accentPolicy==='accept' ? stripAccents(normalizedInput) : normalizedInput)
-  
-  // Check for exact match (case-insensitive, whitespace-insensitive, but accent-sensitive)
   const correct = normalizedCandidates.includes(normalizedInputCanon)
   
-  // Generate detailed feedback
+  // Manejo especial para A1: aceptar pero informar sobre tilde
+  if (accentPolicy === 'accept' && isAccentOnlyError) {
+    return {
+      correct: true,
+      accepted: input,
+      targets: [...candidates],
+      note: 'A1: acento no estricto (aceptado) — revisá la tilde',
+      warnings: wasCorrected ? warnings : null,
+      isAccentError: false
+    }
+  }
+  
+  // Generate detailed feedback para casos incorrectos
   let feedback = null
   if (!correct) {
     feedback = generateFeedback(normalizedInputCanon, normalizedCandidates, settings, expected)
@@ -77,22 +95,6 @@ export function grade(input, expected, settings){
   
   // Check if this is an accent error
   const isAccentError = feedback && feedback.includes('ERROR DE TILDE')
-  
-  // If accents accepted (A1), downgrade accent-only mismatches to correct with note
-  if (!correct && accentPolicy==='accept') {
-    const inputNo = norm(stripAccents(normalizedInput))
-    const anyMatchNoAcc = [...candidates].some(c => norm(stripAccents(c))===inputNo)
-    if (anyMatchNoAcc) {
-      return {
-        correct: true,
-        accepted: input,
-        targets: [...candidates],
-        note: 'A1: acento no estricto (aceptado) — revisá la tilde',
-        warnings: wasCorrected ? warnings : null,
-        isAccentError: false
-      }
-    }
-  }
 
   // Dieresis enforcement (B2+)
   if (!correct && settings.requireDieresis) {

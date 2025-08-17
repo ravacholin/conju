@@ -245,66 +245,10 @@ function checkClitics(user, spec){
   return { ok:true, reason:null };
 }
 
-/** @returns {{ok:boolean, code:string, details?:any}} */
-export function isCorrect(userRaw, expectedRaw, spec){
-  const orth = spec.policies.orth || { accents:"off", dieresisRequired:false, hardBlockBadForms:false };
-  const strictAccents = (orth.accents==="strict"||orth.accents==="hard");
-
-  // Variante -se/-ra en imperfecto de subjuntivo
-  if (spec.target.tense==="imperfecto_subjuntivo"){
-    const want = spec.policies.variants?.impSubj || "accept_both";
-    if (want==="must_match_prompt" || want==="enforce"){
-      const askedSe = /-se/.test(spec.policies.variants?.note||"");
-      const askedRa = /-ra/.test(spec.policies.variants?.note||"");
-      const expectedNorm = normalize(expectedRaw, false);
-      const isSe = /(se|ses|semos|seis|sen)$/.test(expectedNorm);
-      const isRa = /(ra|ras|ramos|rais|ran)$/.test(expectedNorm);
-      if (askedSe && !isSe) return { ok:false, code:"variant_mismatch" };
-      if (askedRa && !isRa) return { ok:false, code:"variant_mismatch" };
-    }
-  }
-
-  // Defectivos/unipersonales según nivel
-  if (!isPersonAllowed(spec.lemma, spec.target.person, spec.policies.level)){
-    return { ok:false, code:"defective_block" };
-  }
-
-  // Clíticos (imperativo, etc.)
-  const cl = checkClitics(userRaw, spec);
-  if (!cl.ok) return { ok:false, code:cl.reason, details:cl };
-
-  // Ortografía (tildes/diéresis)
-  if (orth.dieresisRequired && /güe|güi/i.test(expectedRaw) && !/ü/i.test(userRaw)){
-    return { ok:false, code:"dieresis_missing" };
-  }
-
-  // Comparación de string (estricta o laxa según nivel)
-  const user = normalize(userRaw, strictAccents);
-  const expected = normalize(expectedRaw, strictAccents);
-
-  if (user === expected) return { ok:true, code:"ok" };
-
-  // Participios dobles aceptados (si aplica)
-  if (spec.policies.scoring?.allowDoubleParticiples){
-    const doubles = {
-      "imprimir":["impreso","imprimido"],
-      "freír":["frito","freído"],
-      "proveer":["provisto","proveído"],
-      "bendecir":["bendito","bendecido"],
-    };
-    const d = doubles[spec.lemma];
-    if (d && d.some(f=>normalize(f,strictAccents)===user) && d.some(f=>normalize(f,strictAccents)===expected)){
-      return { ok:true, code:"ok_double_participle" };
-    }
-  }
-
-  // Si no coincide:
-  // Si los acentos no son estrictos, reportamos “near_miss”
-  if (!strictAccents && normalize(userRaw,true) === normalize(expectedRaw,true)){
-    return { ok:false, code:"accent_only_miss" };
-  }
-  return { ok:false, code:"mismatch" };
-}
+// VALIDADOR ELIMINADO: isCorrect() era un validador alternativo
+// no utilizado que duplicaba funcionalidad del grader principal.
+// Su lógica ha sido consolidada en src/lib/core/grader.js para
+// mantener un solo punto de validación en toda la aplicación.
 
 // ——— Builder de consigna ———————————————————————————————————————————————
 
