@@ -1,4 +1,5 @@
-import { normalize, normalizeInput } from './rules.js'
+import { normalizeInput } from './rules.js'
+import { normalize } from './conjugationRules.js'
 
 export function grade(input, expected, settings){
   const startTs = Date.now()
