@@ -372,6 +372,7 @@ export default function Drill({
   
   // Handle error state
   if (currentItem.error) {
+    console.log('🔧 DRILL DEBUG - Showing error state:', currentItem)
     return (
       <div className="drill-container">
         <div className="error-message">
@@ -390,8 +391,8 @@ export default function Drill({
 
   // SIMPLE AND ROBUST CONTEXT LOGIC
   const getContextText = () => {
-    const mood = currentItem.mood || 'indicative'
-    const tense = currentItem.tense || 'pres'
+    const mood = currentItem?.mood || 'indicative'
+    const tense = currentItem?.tense || 'pres'
     const lvl = settings.level
     
     const moodMap = {
@@ -439,10 +440,10 @@ export default function Drill({
 
   const getPersonText = () => {
     // Para formas no finitas, siempre mostrar "No conjugado"
-    if (currentItem.mood === 'nonfinite' || 
-        currentItem.tense === 'ger' || 
-        currentItem.tense === 'part' || 
-        currentItem.tense === 'nonfiniteMixed') {
+    if (currentItem?.mood === 'nonfinite' || 
+        currentItem?.tense === 'ger' || 
+        currentItem?.tense === 'part' || 
+        currentItem?.tense === 'nonfiniteMixed') {
       return 'No conjugado'
     }
 
@@ -455,7 +456,7 @@ export default function Drill({
       '2p_vosotros': 'Vosotros',
       '3p': 'Ellos/Ustedes'
     }
-    return personMap[currentItem.person] || 'Yo'
+    return personMap[currentItem?.person] || 'Yo'
   }
 
   // Show required enclitics for imperativo afirmativo when present in target
@@ -624,7 +625,7 @@ export default function Drill({
     <div className="drill-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
       {/* Verb lemma (infinitive) - TOP */}
       <div className="verb-lemma">
-        {isReverse ? currentItem.form?.value : currentItem.lemma}
+        {isReverse ? currentItem.form?.value : currentItem?.lemma}
       </div>
 
       {/* Conjugation context - MIDDLE */}
