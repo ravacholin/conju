@@ -208,17 +208,26 @@ export function chooseNext({forms, history, currentItem}){
         return false
       }
       // Only include truly irregular forms for the specific category
-      // EXCEPTION: Allow regular forms for tenses that are regular for all verbs
-      const isRegularForm = f.mood === 'nonfinite'
-        ? isRegularNonfiniteForm(f.lemma, f.tense, f.value)
-        : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
-      
-      // Define tenses that are regular for all verbs (even irregular verbs)  
-      const universallyRegularTenses = [] // No tenses are universally regular (impf has ser/ir/ver irregulars)
-      const isUniversallyRegularTense = universallyRegularTenses.includes(f.tense)
-      
-      if (isRegularForm && !isUniversallyRegularTense) {
-        return false
+      // SPECIAL HANDLING: For imperfect tense, only ser/ir/ver have irregular forms
+      if (f.mood === 'indicative' && f.tense === 'impf') {
+        // For imperfect, only allow ser, ir, ver when requesting irregular verbs
+        const trulyIrregularImperfectVerbs = ['ser', 'ir', 'ver']
+        if (!trulyIrregularImperfectVerbs.includes(f.lemma)) {
+          return false
+        }
+      } else {
+        // For other tenses, apply the regular form filtering
+        const isRegularForm = f.mood === 'nonfinite'
+          ? isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+          : isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+        
+        // Define tenses that are regular for all verbs (even irregular verbs)  
+        const universallyRegularTenses = [] // No tenses are universally regular
+        const isUniversallyRegularTense = universallyRegularTenses.includes(f.tense)
+        
+        if (isRegularForm && !isUniversallyRegularTense) {
+          return false
+        }
       }
       
       // Family filtering for irregular verbs
