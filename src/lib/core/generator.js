@@ -46,7 +46,7 @@ const levelVerbRestrictions = {
   'A2': { regular: true, irregular: true },
   'B1': { regular: true, irregular: true },
   'B2': { regular: true, irregular: true },
-  'C1': { regular: false, irregular: true }, // Only irregular verbs for C1
+  'C1': { regular: true, irregular: true }, // Allow all verb types for C1 (was incorrectly restricted)
   'C2': { regular: true, irregular: true },
   'ALL': { regular: true, irregular: true } // Allow all verb types for ALL level
 }
@@ -178,15 +178,8 @@ export function chooseNext({forms, history, currentItem}){
       return false
     }
 
-    // Additional per-level constraints
-    // C1: en presente e indefinido, solo irregulares
-    if (level === 'C1') {
-      if (f.mood === 'indicative' && (f.tense === 'pres' || f.tense === 'pretIndef')) {
-        if (verb.type !== 'irregular') {
-          return false
-        }
-      }
-    }
+    // Additional per-level constraints  
+    // (C1 specific restrictions removed - now allows all verb types)
 
     // B2+: bloquear personas imposibles para defectivos/unipersonales
     if (level === 'B2' || level === 'C1' || level === 'C2') {
