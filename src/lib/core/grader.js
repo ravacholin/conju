@@ -65,14 +65,17 @@ export function grade(input, expected, settings){
   const norm = (s)=> s.toLowerCase().trim()
   
   // CORRECCIÓN: Detectar errores de tilde ANTES de aplicar política de acentos
+  // Solo detectar errores de acento si accentTolerance no está en 'off'
   const normalizedInputStrict = norm(normalizedInput)
   const candidatesStrict = [...candidates].map(c => norm(c))
-  const isAccentOnlyError = !candidatesStrict.includes(normalizedInputStrict) && 
+  const isAccentOnlyError = accentPolicy !== 'off' && 
+                           !candidatesStrict.includes(normalizedInputStrict) && 
                            candidatesStrict.some(c => norm(stripAccents(c)) === norm(stripAccents(normalizedInput)))
   
   // Aplicar política de acentos para determinar corrección
-  const normalizedCandidates = [...candidates].map(c => norm(accentPolicy==='accept' ? stripAccents(c) : c))
-  const normalizedInputCanon = norm(accentPolicy==='accept' ? stripAccents(normalizedInput) : normalizedInput)
+  const shouldStripAccents = accentPolicy === 'accept' || accentPolicy === 'off'
+  const normalizedCandidates = [...candidates].map(c => norm(shouldStripAccents ? stripAccents(c) : c))
+  const normalizedInputCanon = norm(shouldStripAccents ? stripAccents(normalizedInput) : normalizedInput)
   const correct = normalizedCandidates.includes(normalizedInputCanon)
   
   // Manejo especial para A1: aceptar pero informar sobre tilde
@@ -83,7 +86,8 @@ export function grade(input, expected, settings){
       targets: [...candidates],
       note: 'A1: acento no estricto (aceptado) — revisá la tilde',
       warnings: wasCorrected ? warnings : null,
-      isAccentError: false
+      isAccentError: false,
+      ts: startTs
     }
   }
   
