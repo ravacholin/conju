@@ -1,8 +1,9 @@
 // Módulo centralizado de reglas de conjugación española
 // Consolidación de lógica duplicada de grader.js y generator.js
 
-// Re-export from centralized accent utils
-export { normalize } from '../utils/accentUtils.js'
+// Import and re-export from centralized accent utils
+import { normalize } from '../utils/accentUtils.js'
+export { normalize }
 
 /**
  * Verifica si una forma verbal es regular para un mood/tense/person específico
@@ -369,7 +370,6 @@ export function isRegularNonfiniteForm(lemma, tense, value) {
     return false
   }
   
-  const normalizedLemma = normalize(lemma)
   const normalizedValue = normalize(value)
   
   if (lemma.endsWith('ar')) {
@@ -384,4 +384,77 @@ export function isRegularNonfiniteForm(lemma, tense, value) {
   }
   
   return false
+}
+
+/**
+ * Verifica si un verbo tiene un participio pasado irregular
+ * @param {string} lemma - Infinitivo del verbo
+ * @returns {boolean} - true si el verbo tiene participio irregular, false si es regular
+ */
+export function hasIrregularParticiple(lemma) {
+  if (!lemma || typeof lemma !== 'string') {
+    return false
+  }
+  
+  // Lista de verbos con participios irregulares conocidos
+  const irregularParticiples = {
+    // Participios más comunes
+    'abrir': 'abierto',
+    'escribir': 'escrito', 
+    'hacer': 'hecho',
+    'poner': 'puesto',
+    'ver': 'visto',
+    'volver': 'vuelto',
+    'romper': 'roto',
+    'morir': 'muerto',
+    'cubrir': 'cubierto',
+    'decir': 'dicho',
+    'resolver': 'resuelto',
+    'devolver': 'devuelto',
+    'satisfacer': 'satisfecho',
+    'revolver': 'revuelto',
+    'envolver': 'envuelto',
+    'desenvolver': 'desenvolvuelto',
+    
+    // Compuestos de verbos irregulares
+    'describir': 'descrito',
+    'inscribir': 'inscrito',
+    'prescribir': 'prescrito',
+    'suscribir': 'suscrito',
+    'transcribir': 'transcrito',
+    'reescribir': 'reescrito',
+    'deshacerse': 'deshecho',
+    'deshacer': 'deshecho',
+    'rehacer': 'rehecho',
+    'contrahacer': 'contrahecho',
+    'descubrir': 'descubierto',
+    'encubrir': 'encubierto',
+    'recubrir': 'recubierto',
+    'predecir': 'predicho',
+    'contradecir': 'contradicho',
+    'bendecir': 'bendecido', // En realidad tiene dos: bendecido/bendito
+    'maldecir': 'maldecido', // En realidad tiene dos: maldecido/maldito
+    'anteponer': 'antepuesto',
+    'componer': 'compuesto',
+    'deponer': 'depuesto',
+    'disponer': 'dispuesto',
+    'exponer': 'expuesto',
+    'imponer': 'impuesto',
+    'interponer': 'interpuesto',
+    'oponer': 'opuesto',
+    'posponer': 'pospuesto',
+    'predisponer': 'predispuesto',
+    'presuponer': 'presupuesto',
+    'proponer': 'propuesto',
+    'reponer': 'repuesto',
+    'sobreponer': 'sobrepuesto',
+    'suponer': 'supuesto',
+    'yuxtaponer': 'yuxtapuesto',
+    'entrever': 'entrevisto',
+    'prever': 'previsto',
+    'rever': 'revisto',
+    'antever': 'antevisto'
+  }
+  
+  return Object.prototype.hasOwnProperty.call(irregularParticiples, lemma)
 }
