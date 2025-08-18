@@ -319,8 +319,18 @@ export const IRREGULAR_FAMILIES = {
     description: 'ir, ser, dar, ver, haber, estar',
     examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
     pattern: 'verbos monosílabos altamente irregulares en múltiples tiempos',
-    affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff', 'impf'],
+    affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
+  },
+
+  'IMPERFECT_IRREG': {
+    id: 'IMPERFECT_IRREG',
+    name: 'Irregulares de imperfecto',
+    description: 'ser, ir, ver',
+    examples: ['ser', 'ir', 'ver'],
+    pattern: 'únicos verbos con formas irregulares en imperfecto: era, iba, veía',
+    affectedTenses: ['impf'],
+    paradigmaticVerbs: ['ser', 'ir', 'ver']
   }
 }
 
@@ -544,10 +554,10 @@ export function categorizeVerb(lemma, verbData) {
     'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     
     // Monosílabos irregulares y formas especiales
-    'ir': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG'],
-    'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG'],
+    'ir': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
+    'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
     'dar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
-    'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG'],
+    'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
     'estar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     
     // Familias finales

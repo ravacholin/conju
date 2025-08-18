@@ -733,9 +733,35 @@ function App() {
     closeTopPanelsAndFeatures()
     
     if (verbType === 'irregular') {
-      // Para irregulares, ir a selección de familias
-      settings.set({ verbType })
-      setOnboardingStep(getNextStep() + 1) // Go to family selection
+      // Check if only one family is available for the current tense
+      const tense = settings.specificTense
+      const availableFamilies = tense ? getFamiliesForTense(tense) : []
+      
+      if (availableFamilies.length === 1) {
+        // Only one family available - auto-select it and start practice
+        const singleFamily = availableFamilies[0]
+        const updates = { verbType, selectedFamily: singleFamily.id }
+        
+        // Initialize mixed-practice blocks per level
+        const lvl = settings.level
+        if (settings.practiceMode === 'mixed' && lvl) {
+          const combos = combosForLevelMixed(lvl)
+          updates.currentBlock = { combos, itemsRemaining: blockSizeForLevel(lvl) }
+        } else {
+          updates.currentBlock = null
+        }
+        settings.set(updates)
+        
+        // Clear history when changing verb type
+        setHistory({})
+        setCurrentItem(null)
+        
+        startPractice()
+      } else {
+        // Multiple families available - show family selection
+        settings.set({ verbType })
+        setOnboardingStep(getNextStep() + 1) // Go to family selection
+      }
     } else {
       // Para regulares y todos, continuar como antes
       const updates = { verbType, selectedFamily: null }
