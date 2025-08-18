@@ -339,7 +339,10 @@ export function getFamiliesForTense(tense) {
   const families = []
   for (const [id, family] of Object.entries(IRREGULAR_FAMILIES)) {
     if (family.affectedTenses.includes(tense)) {
-      families.push(family)
+      // Ocultar DOUBLE_PARTICIPLES del menú (mantener en base de datos para clasificación)
+      if (id !== 'DOUBLE_PARTICIPLES') {
+        families.push(family)
+      }
     }
   }
   return families
