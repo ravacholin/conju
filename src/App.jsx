@@ -757,6 +757,25 @@ function App() {
         setCurrentItem(null)
         
         startPractice()
+      } else if (availableFamilies.length === 0) {
+        // No specific families for this tense (compound tenses) - auto-select "all irregulars"
+        const updates = { verbType, selectedFamily: null }
+        
+        // Initialize mixed-practice blocks per level
+        const lvl = settings.level
+        if (settings.practiceMode === 'mixed' && lvl) {
+          const combos = combosForLevelMixed(lvl)
+          updates.currentBlock = { combos, itemsRemaining: blockSizeForLevel(lvl) }
+        } else {
+          updates.currentBlock = null
+        }
+        settings.set(updates)
+        
+        // Clear history when changing verb type
+        setHistory({})
+        setCurrentItem(null)
+        
+        startPractice()
       } else {
         // Multiple families available - show family selection
         settings.set({ verbType })
