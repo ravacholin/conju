@@ -3,6 +3,7 @@
 
 import { verbs } from './src/data/verbs.js'
 import { isRegularFormForMood } from './src/lib/core/conjugationRules.js'
+import { stripAccents } from './src/lib/utils/accentUtils.js'
 
 console.log("🔍 TEST EXHAUSTIVO FINAL - SIMULANDO FLUJO COMPLETO")
 console.log("=" * 80)
@@ -67,37 +68,36 @@ console.log("🔧 PASO 4: Aplicando filtro de formas regulares...")
 function isRegularFormForMoodTest(lemma, mood, tense, person, value) {
   if (!lemma || !value) return false
   
-  const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  const normalizedValue = normalize(value)
+  const normalizedValue = stripAccents(value)
   
   if (lemma.endsWith('ar') && mood === 'indicative' && tense === 'impf') {
-    if (person === '3s' && normalizedValue === normalize(lemma.replace(/ar$/, 'aba'))) return true
-    if (person === '1s' && normalizedValue === normalize(lemma.replace(/ar$/, 'aba'))) return true
-    if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ar$/, 'abas'))) return true
-    if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ar$/, 'abas'))) return true
-    if (person === '1p' && normalizedValue === normalize(lemma.replace(/ar$/, 'ábamos'))) return true
-    if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ar$/, 'abais'))) return true
-    if (person === '3p' && normalizedValue === normalize(lemma.replace(/ar$/, 'aban'))) return true
+    if (person === '3s' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'aba'))) return true
+    if (person === '1s' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'aba'))) return true
+    if (person === '2s_tu' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'abas'))) return true
+    if (person === '2s_vos' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'abas'))) return true
+    if (person === '1p' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'ábamos'))) return true
+    if (person === '2p_vosotros' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'abais'))) return true
+    if (person === '3p' && normalizedValue === stripAccents(lemma.replace(/ar$/, 'aban'))) return true
   }
   
   if (lemma.endsWith('er') && mood === 'indicative' && tense === 'impf') {
-    if (person === '3s' && normalizedValue === normalize(lemma.replace(/er$/, 'ía'))) return true
-    if (person === '1s' && normalizedValue === normalize(lemma.replace(/er$/, 'ía'))) return true
-    if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/er$/, 'ías'))) return true
-    if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/er$/, 'ías'))) return true
-    if (person === '1p' && normalizedValue === normalize(lemma.replace(/er$/, 'íamos'))) return true
-    if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/er$/, 'íais'))) return true
-    if (person === '3p' && normalizedValue === normalize(lemma.replace(/er$/, 'ían'))) return true
+    if (person === '3s' && normalizedValue === stripAccents(lemma.replace(/er$/, 'ía'))) return true
+    if (person === '1s' && normalizedValue === stripAccents(lemma.replace(/er$/, 'ía'))) return true
+    if (person === '2s_tu' && normalizedValue === stripAccents(lemma.replace(/er$/, 'ías'))) return true
+    if (person === '2s_vos' && normalizedValue === stripAccents(lemma.replace(/er$/, 'ías'))) return true
+    if (person === '1p' && normalizedValue === stripAccents(lemma.replace(/er$/, 'íamos'))) return true
+    if (person === '2p_vosotros' && normalizedValue === stripAccents(lemma.replace(/er$/, 'íais'))) return true
+    if (person === '3p' && normalizedValue === stripAccents(lemma.replace(/er$/, 'ían'))) return true
   }
   
   if (lemma.endsWith('ir') && mood === 'indicative' && tense === 'impf') {
-    if (person === '3s' && normalizedValue === normalize(lemma.replace(/ir$/, 'ía'))) return true
-    if (person === '1s' && normalizedValue === normalize(lemma.replace(/ir$/, 'ía'))) return true
-    if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ir$/, 'ías'))) return true
-    if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'ías'))) return true
-    if (person === '1p' && normalizedValue === normalize(lemma.replace(/ir$/, 'íamos'))) return true
-    if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ir$/, 'íais'))) return true
-    if (person === '3p' && normalizedValue === normalize(lemma.replace(/ir$/, 'ían'))) return true
+    if (person === '3s' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'ía'))) return true
+    if (person === '1s' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'ía'))) return true
+    if (person === '2s_tu' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'ías'))) return true
+    if (person === '2s_vos' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'ías'))) return true
+    if (person === '1p' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'íamos'))) return true
+    if (person === '2p_vosotros' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'íais'))) return true
+    if (person === '3p' && normalizedValue === stripAccents(lemma.replace(/ir$/, 'ían'))) return true
   }
   
   return false

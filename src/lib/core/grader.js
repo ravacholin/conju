@@ -1,5 +1,5 @@
 import { normalizeInput } from './rules.js'
-import { normalize } from './conjugationRules.js'
+import { stripAccents, normalizeKeepAccents } from '../utils/accentUtils.js'
 
 export function grade(input, expected, settings){
   const startTs = Date.now()
@@ -61,8 +61,7 @@ export function grade(input, expected, settings){
   
   // UNIFIED ACCENT SYSTEM - Single point of truth
   const accentPolicy = settings.accentTolerance || 'warn' // 'accept' (A1), 'warn' (A2/B1), 'strict' (B2+), 'off'
-  const stripAccents = (s)=> s.normalize('NFD').replace(/\p{Diacritic}+/gu, '')
-  const norm = (s)=> s.toLowerCase().trim()
+  const norm = (s)=> normalizeKeepAccents(s)
   
   // Normalize all candidates and input
   const normalizedInputClean = norm(normalizedInput)
@@ -75,8 +74,8 @@ export function grade(input, expected, settings){
   
   if (accentPolicy === 'off') {
     // No accent checking - compare without accents
-    const inputNoAccents = norm(stripAccents(normalizedInputClean))
-    const candidatesNoAccents = candidatesNormalized.map(c => norm(stripAccents(c)))
+    const inputNoAccents = stripAccents(normalizedInputClean)
+    const candidatesNoAccents = candidatesNormalized.map(c => stripAccents(c))
     correct = candidatesNoAccents.includes(inputNoAccents)
   } else {
     // First check exact match (with accents)
@@ -84,13 +83,13 @@ export function grade(input, expected, settings){
     
     if (!correct) {
       // Check if it's only an accent error
-      const inputNoAccents = norm(stripAccents(normalizedInputClean))
-      const candidatesNoAccents = candidatesNormalized.map(c => norm(stripAccents(c)))
+      const inputNoAccents = stripAccents(normalizedInputClean)
+      const candidatesNoAccents = candidatesNormalized.map(c => stripAccents(c))
       const isOnlyAccentError = candidatesNoAccents.includes(inputNoAccents)
       
       if (isOnlyAccentError) {
         isAccentError = true
-        const correctForm = [...candidates].find(c => norm(stripAccents(c)) === inputNoAccents)
+        const correctForm = [...candidates].find(c => stripAccents(norm(c)) === inputNoAccents)
         
         if (accentPolicy === 'accept') {
           // A1: Accept but warn

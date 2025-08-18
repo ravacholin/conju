@@ -43,10 +43,5 @@ export function normalizeInput(input) {
   }
 }
 
-// Basic canonicalization for comparison (removes accents)
-export function normalize(s){
-  return s
-    .toLowerCase()
-    .normalize('NFD').replace(/\p{Diacritic}+/gu,'') // strip combining marks
-    .replace(/\s+/g,' ').trim()
-} 
+// Re-export from centralized accent utils
+export { normalize } from '../utils/accentUtils.js' 

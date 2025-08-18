@@ -1,15 +1,8 @@
 // Módulo centralizado de reglas de conjugación española
 // Consolidación de lógica duplicada de grader.js y generator.js
 
-/**
- * Normaliza una cadena removiendo acentos para comparación
- * @param {string} str - Cadena a normalizar
- * @returns {string} - Cadena sin acentos
- */
-export function normalize(str) {
-  if (!str || typeof str !== 'string') return ''
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-}
+// Re-export from centralized accent utils
+export { normalize } from '../utils/accentUtils.js'
 
 /**
  * Verifica si una forma verbal es regular para un mood/tense/person específico
