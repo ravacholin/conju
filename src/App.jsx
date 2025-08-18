@@ -1078,7 +1078,7 @@ function App() {
                   </div>
                   
                   <div className="option-card" onClick={() => {
-                    // Formas específicas con inventario completo pero dificultad media
+                    // Formas específicas con inventario completo pero verbos progresivos (empezar con básicos)
                     settings.set({ practiceMode: 'specific', level: 'ALL', cameFromTema: true })
                     settings.set({
                       strict: true,
@@ -1092,7 +1092,13 @@ function App() {
                       timeMode: 'soft',
                       perItemMs: 6000,
                       medianTargetMs: 3000,
-                      allowedLemmas: null
+                      // Verbos básicos para empezar (progresión futura automática)
+                      allowedLemmas: new Set([
+                        'ser','estar','tener','haber','ir','ver','venir','poder','querer','hacer',
+                        'decir','poner','dar','vivir','comer','hablar','saber','salir','llevar','pasar',
+                        'deber','seguir','encontrar','llamar','trabajar','estudiar','comprar','vender',
+                        'escribir','leer','abrir','cerrar','entrar','salir','empezar','terminar'
+                      ])
                     })
                     setOnboardingStep(5)
                   }}>
