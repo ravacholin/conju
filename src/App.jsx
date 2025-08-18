@@ -467,11 +467,13 @@ function App() {
       verbType: settings.verbType,
       selectedFamily: settings.selectedFamily,
       conditionMet: currentMode === 'drill' && settings.region && !currentItem && 
-        settings.practiceMode && settings.specificMood && settings.specificTense && settings.verbType
+        settings.practiceMode && settings.verbType && 
+        (settings.practiceMode === 'mixed' || (settings.specificMood && settings.specificTense))
     })
     
     if (currentMode === 'drill' && settings.region && !currentItem && 
-        settings.practiceMode && settings.specificMood && settings.specificTense && settings.verbType) {
+        settings.practiceMode && settings.verbType && 
+        (settings.practiceMode === 'mixed' || (settings.specificMood && settings.specificTense))) {
       // Scroll to top when entering drill mode
       window.scrollTo(0, 0)
       
