@@ -71,6 +71,14 @@ export function chooseNext({forms, history, currentItem}){
     formsCount: forms.length
   })
   
+  // DIAGNOSTIC: Special focus on C1 mixed practice
+  if (level === 'C1' && practiceMode === 'mixed') {
+    console.log('🚨 C1 MIXED DEBUG - Initial forms count:', forms.length)
+    console.log('🚨 C1 MIXED DEBUG - currentBlock:', currentBlock)
+    console.log('🚨 C1 MIXED DEBUG - verbType:', verbType)
+    console.log('🚨 C1 MIXED DEBUG - First 5 forms:', forms.slice(0,5).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
+  }
+  
   // Crear cache key para este filtrado
   const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
   
@@ -81,8 +89,12 @@ export function chooseNext({forms, history, currentItem}){
     // Si no está en cache, calcular
     eligible = forms.filter(f=>{
       
+      // DIAGNOSTIC: Track C1 filtering step by step
+      const isC1Debug = level === 'C1' && practiceMode === 'mixed'
+      
       // Filter out forms with undefined/null values first
       if (!f.value && !f.form) {
+        if (isC1Debug) console.log('🚨 C1 FILTER - No value/form:', f.lemma, f.mood, f.tense)
         return false
       }
       
@@ -92,6 +104,7 @@ export function chooseNext({forms, history, currentItem}){
         ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
         : getAllowedCombosForLevel(level)
       if(!allowed.has(`${f.mood}|${f.tense}`)) {
+        if (isC1Debug) console.log('🚨 C1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
         return false
       }
     
@@ -169,12 +182,14 @@ export function chooseNext({forms, history, currentItem}){
     // Verb type filtering - check both user selection and MCER level restrictions
     const verb = LEMMA_TO_VERB.get(f.lemma)
     if (!verb) {
+      if (isC1Debug) console.log('🚨 C1 FILTER - No verb found:', f.lemma)
       return false
     }
     
     // Check MCER level restrictions first
     const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
     if (!isCompoundTense && f.mood !== 'nonfinite' && !isVerbTypeAllowedForLevel(verb.type, level)) {
+      if (isC1Debug) console.log('🚨 C1 FILTER - Verb type not allowed for level:', verb.type, level, f.lemma)
       return false
     }
 
@@ -195,6 +210,7 @@ export function chooseNext({forms, history, currentItem}){
     if (useSettings.getState().allowedLemmas) {
       const set = useSettings.getState().allowedLemmas
       if (!set.has(f.lemma)) {
+        if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
         console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
       }
@@ -204,6 +220,7 @@ export function chooseNext({forms, history, currentItem}){
     // isCompoundTense defined above
     if (verbType === 'regular') {
       if (verb.type !== 'regular') {
+        if (isC1Debug) console.log('🚨 C1 FILTER - Not regular:', f.lemma, verb.type)
         return false
       }
     } else if (verbType === 'irregular') {
@@ -315,6 +332,16 @@ export function chooseNext({forms, history, currentItem}){
     
     return true
   })
+  
+    // DIAGNOSTIC: Log C1 filtering results
+    if (level === 'C1' && practiceMode === 'mixed') {
+      console.log('🚨 C1 MIXED DEBUG - After filtering:', eligible.length, 'forms remain')
+      if (eligible.length > 0) {
+        console.log('🚨 C1 MIXED DEBUG - Sample survivors:', eligible.slice(0,3).map(f => `${f.lemma}-${f.mood}-${f.tense}`))
+      } else {
+        console.log('🚨 C1 MIXED DEBUG - NO FORMS SURVIVED FILTERING!')
+      }
+    }
   
     // Guardar en cache para futuros usos
     formFilterCache.set(filterKey, eligible)
