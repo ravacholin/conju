@@ -86,13 +86,32 @@ const INVENTORY = {
   ],
 };
 
-// Packs mínimos (ajustá luego en tu DB)
+// Expanded verb packs with existing verbs only
 const PACKS = {
-  A1_CORE: { id:"A1_CORE", lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar","vivir","comer","hablar"] },
-  A2_PASTS: { id:"A2_PASTS", lemmas:["buscar","llegar","almorzar","poder","poner","estar","tener","venir","hacer","decir","querer","andar","traer","dormir","pedir"] },
-  B1_PARTICIPLES: { id:"B1_PARTICIPLES", lemmas:["ver","escribir","volver","freír","imprimir","romper","resolver","abrir","poner","hacer","decir"] },
-  B2_ALTER: { id:"B2_ALTER", lemmas:["cocer","mecer","convencer","aparecer","conocer","distinguir","seguir","tañer","reír","oír"] },
-  C1_RARE: { id:"C1_RARE", lemmas:["argüir","delinquir","henchir","agorar","esparcir","yacer","abolir","erguir","aullar","zurcir"] },
+  A1_CORE: { 
+    id:"A1_CORE", 
+    lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar","vivir","comer","hablar"] 
+  },
+  A2_PASTS: { 
+    id:"A2_PASTS", 
+    lemmas:["buscar","llegar","almorzar","poder","poner","estar","tener","venir","hacer","decir","querer","andar","traer","dormir","pedir"] 
+  },
+  B1_PARTICIPLES: { 
+    id:"B1_PARTICIPLES", 
+    lemmas:["ver","escribir","volver","freír","imprimir","romper","abrir","poner","hacer","decir","cubrir","descubrir","morir","proveer"] 
+  },
+  B2_ALTER: { 
+    id:"B2_ALTER", 
+    lemmas:["conocer","distinguir","seguir","oír","crecer","nacer","parecer","obedecer","merecer","agradecer","establecer","conducir","traducir","producir","reducir","construir","instruir","contribuir","distribuir","incluir","trabajar","estudiar","organizar","utilizar","comunicar"] 
+  },
+  C1_RARE: { 
+    id:"C1_RARE", 
+    lemmas:["argüir","abolir","erguir","aullar","balbucir","blandir","colorir","empedernir","gruñir","bullir","zambullir","engullir","adecuar","actuar","situar","graduar","evacuar","evaluar","fraguar","atestiguar","menguar","desaguar","aguar","apaciguar","santiguar","absorber","fabricar","practicar","educar","publicar"] 
+  },
+  C2_ADVANCED: { 
+    id:"C2_ADVANCED", 
+    lemmas:["argüir","abolir","erguir","aullar","balbucir","blandir","colorir","empedernir","gruñir","bullir","zambullir","engullir","adecuar","actuar","situar","graduar","evacuar","evaluar","fraguar","atestiguar","menguar","desaguar","aguar","apaciguar","santiguar","podrir","teñir","ceñir","reñir","tañir","desvaír","bendecir","absorber","fabricar","practicar","educar","publicar","navegar","obligar","provocar","castigar","atacar","estudiar","trabajar","organizar","utilizar","comunicar","realizar","explicar"] 
+  }
 };
 
 // Config por nivel (las “perillas”)
@@ -185,7 +204,7 @@ export const LEVELS = {
     mixing:{ switchesPerDrill:12, crossMode:true, fastTreatmentSwitch:true },
     timing:{ perItemMs:2500, targetMedianMs:1200 },
     scoring:{ minAccuracy:98, orthPenalty:1.0, allowDoubleParticiples:true },
-    verbPacks:[PACKS.C1_RARE], rareVerbs:true,
+    verbPacks:[PACKS.C2_ADVANCED], rareVerbs:true,
   },
 };
 

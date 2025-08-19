@@ -280,8 +280,37 @@ body {
 }
 
 .option-card:focus-visible {
-  outline: 2px solid #555555;
+  outline: 2px solid #4A90E2;
   outline-offset: 2px;
+  background: var(--hover);
+  border-color: #4A90E2;
+}
+
+/* Mejorar la visibilidad del foco en modo de alto contraste */
+@media (prefers-contrast: high) {
+  .option-card:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 3px;
+    background: #333333;
+  }
+}
+
+/* Asegurar que elementos con role="button" tengan cursor pointer */
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Indicador visual para elementos enfocados con teclado */
+.option-card:focus-visible::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #4A90E2;
+  border-radius: 14px;
+  pointer-events: none;
 }
 
 .option-card h3 {

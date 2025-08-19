@@ -6,12 +6,69 @@ import { warmupCaches, getCacheStats } from './lib/core/optimizedCache.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/utils/verbLabels.js'
 import { getFamiliesForMood, getFamiliesForTense, getFamilyById } from './lib/data/irregularFamilies.js'
 import { getSimplifiedGroupsForMood, getSimplifiedGroupsForTense, shouldUseSimplifiedGroupingForMood, shouldUseSimplifiedGrouping, expandSimplifiedGroup } from './lib/data/simplifiedFamilyGroups.js'
+import { LEVELS } from './lib/data/levels.js'
 import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
 import './App.css'
 import configIcon from '/config.png'
 import enieIcon from '/enie.png'
+
+/**
+ * Componente accesible para elementos interactivos
+ * 
+ * Este componente reemplaza los <div> con onClick por elementos que cumplen
+ * con estándares de accesibilidad WCAG:
+ * 
+ * - Navegación por teclado (Tab para enfocar, Enter/Espacio para activar)
+ * - Roles ARIA apropiados para lectores de pantalla 
+ * - Etiquetas aria-label descriptivas
+ * - tabIndex=0 para incluir en el orden de tabulación
+ * 
+ * @param {string} className - Clases CSS a aplicar
+ * @param {function} onClick - Función a ejecutar al hacer clic o presionar Enter/Espacio
+ * @param {ReactNode} children - Contenido del elemento
+ * @param {string} title - Título descriptivo para aria-label y title
+ * @param {string} role - Rol ARIA (por defecto "button")
+ */
+function ClickableCard({ className, onClick, children, title, role = "button", ...props }) {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onClick(e)
+    }
+  }
+
+  return (
+    <div
+      className={className}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role={role}
+      tabIndex={0}
+      title={title}
+      aria-label={title}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
+// Helper function to get allowed lemmas from level configuration
+function getAllowedLemmasForLevel(level) {
+  const levelConfig = LEVELS[level]
+  if (!levelConfig || !levelConfig.verbPacks) {
+    return null // No restriction
+  }
+  
+  const allowedLemmas = new Set()
+  levelConfig.verbPacks.forEach(pack => {
+    pack.lemmas.forEach(lemma => allowedLemmas.add(lemma))
+  })
+  
+  return allowedLemmas
+}
 
 function App() {
   
@@ -598,8 +655,8 @@ function App() {
       updates.medianTargetMs = null
       updates.showPronouns = true
       updates.practicePronoun = 'both'
-      // Core frequent lemmas for A1 (including 'ver' for imperfect irregular practice)
-      updates.allowedLemmas = new Set(['ser','estar','tener','haber','ir','ver','venir','poder','querer','hacer','decir','poner','dar','vivir','comer','hablar'])
+      // Use level-based verb packs
+      updates.allowedLemmas = getAllowedLemmasForLevel('A1')
     } else if (level === 'A2') {
       updates.strict = false
       updates.accentTolerance = 'warn'
@@ -614,7 +671,7 @@ function App() {
       updates.perItemMs = 8000
       updates.medianTargetMs = null
       updates.showPronouns = true
-      updates.allowedLemmas = null // allow broader set
+      updates.allowedLemmas = getAllowedLemmasForLevel('A2')
     } else if (level === 'B1') {
       updates.strict = true
       updates.accentTolerance = 'warn'
@@ -628,7 +685,7 @@ function App() {
       updates.timeMode = 'soft'
       updates.perItemMs = 6000
       updates.medianTargetMs = 3000
-      updates.allowedLemmas = null
+      updates.allowedLemmas = getAllowedLemmasForLevel('B1')
     } else if (level === 'B2') {
       updates.strict = true
       updates.accentTolerance = 'strict'
@@ -642,7 +699,7 @@ function App() {
       updates.timeMode = 'strict'
       updates.perItemMs = 5000
       updates.medianTargetMs = 2500
-      updates.allowedLemmas = null
+      updates.allowedLemmas = getAllowedLemmasForLevel('B2')
     } else if (level === 'C1') {
       updates.strict = true
       updates.accentTolerance = 'warn'
@@ -658,7 +715,7 @@ function App() {
       updates.enableFuturoSubjRead = true
       updates.enableFuturoSubjProd = false
       updates.enableC2Conmutacion = false
-      updates.allowedLemmas = null
+      updates.allowedLemmas = getAllowedLemmasForLevel('C1')
     } else if (level === 'C2') {
       updates.strict = true
       updates.accentTolerance = 'strict'
@@ -677,7 +734,7 @@ function App() {
       updates.burstSize = 16
       // Rare but alive families to boost in C2 (can be edited in settings UI later)
       updates.c2RareBoostLemmas = ['argüir','delinquir','henchir','agorar','cocer','esparcir','distinguir','tañer']
-      updates.allowedLemmas = null
+      updates.allowedLemmas = getAllowedLemmasForLevel('C2')
     }
     settings.set(updates)
     setOnboardingStep(4) // Go to practice mode selection
@@ -1046,37 +1103,37 @@ function App() {
     return (
       <div className="App">
         <div className="onboarding">
-                      <div className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
+                      <ClickableCard className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
                         <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-                      </div>
+                      </ClickableCard>
                       { showQuickSwitch || showChallenges || showAccentKeys || showGames ? closeTopPanelsAndFeatures() : null }
             
             {/* Step 1: Dialect Selection */}
             {onboardingStep === 1 && (
               <>
                 <div className="options-grid dialect-selection">
-                  <div className="option-card" onClick={() => selectDialect('rioplatense')}>
+                  <ClickableCard className="option-card" onClick={() => selectDialect('rioplatense')} title="Seleccionar dialecto rioplatense (vos)">
                     <h3><img src="/vos.png" alt="Vos" className="option-icon" /></h3>
                     <p>Argentina, Uruguay, etc.</p>
                     <p className="example">vos tenés, vos hablás</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectDialect('la_general')}>
+                  <ClickableCard className="option-card" onClick={() => selectDialect('la_general')} title="Seleccionar dialecto latinoamericano general (tú)">
                     <h3><img src="/tu.png" alt="Tú" className="option-icon" /></h3>
                     <p>México, Perú, Cuba, etc.</p>
                     <p className="example">tú tienes, tú hablas</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectDialect('peninsular')}>
+                  <ClickableCard className="option-card" onClick={() => selectDialect('peninsular')} title="Seleccionar dialecto peninsular (tú y vosotros)">
                     <h3>
                       <img src="/tu.png" alt="Tú" className="option-icon" />
                       <img src="/vosotros.png" alt="Vosotros" className="option-icon" />
                     </h3>
                     <p>España, etc.</p>
                     <p className="example">tú tienes, vosotros tenéis</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectDialect('both')}>
+                  <ClickableCard className="option-card" onClick={() => selectDialect('both')} title="Seleccionar todos los dialectos (tú, vos y vosotros)">
                     <h3>
                       <img src="/tu.png" alt="Tú" className="option-icon" />
                       <img src="/vos.png" alt="Vos" className="option-icon" />
@@ -1084,7 +1141,7 @@ function App() {
                     </h3>
                     <p>México, Argentina, España, etc.</p>
                     <p className="example">tú tienes / vos tenés / vosotros tenéis</p>
-                  </div>
+                  </ClickableCard>
                 </div>
               </>
             )}
@@ -1138,41 +1195,41 @@ function App() {
             {onboardingStep === 3 && (
               <>
                 <div className="options-grid">
-                  <div className="option-card" onClick={() => selectLevel('A1')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('A1')} title="Seleccionar nivel A1 - Principiante">
                     <h3><img src="/a1.png" alt="A1" className="option-icon" /> Principiante</h3>
                     <p>Te presentás, describís personas y rutinas, pedís y das datos básicos.</p>
                     <p className="example">Indicativo: Presente</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectLevel('A2')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('A2')} title="Seleccionar nivel A2 - Elemental">
                     <h3><img src="/a2.png" alt="A2" className="option-icon" /> Elemental</h3>
                     <p>Contás experiencias y planes, seguís instrucciones y resolvés gestiones simples.</p>
                     <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectLevel('B1')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('B1')} title="Seleccionar nivel B1 - Intermedio">
                     <h3><img src="/B1.png" alt="B1" className="option-icon" /> Intermedio</h3>
                     <p>Narrás con orden, comparás pasados, explicás causas y fundamentás opiniones.</p>
                     <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectLevel('B2')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('B2')} title="Seleccionar nivel B2 - Intermedio alto">
                     <h3><img src="/b2.png" alt="B2" className="option-icon" /> Intermedio alto</h3>
                     <p>Argumentás con matices, manejás hipótesis y concesiones, pedís y das aclaraciones complejas.</p>
                     <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectLevel('C1')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('C1')} title="Seleccionar nivel C1 - Avanzado">
                     <h3><img src="/c1.png" alt="C1" className="option-icon" /> Avanzado</h3>
                     <p>Producís discursos precisos y cohesionados, adaptás registro y reformulás con naturalidad.</p>
                     <p className="example">Todas las formas verbales</p>
-                  </div>
+                  </ClickableCard>
                   
-                  <div className="option-card" onClick={() => selectLevel('C2')}>
+                  <ClickableCard className="option-card" onClick={() => selectLevel('C2')} title="Seleccionar nivel C2 - Superior">
                     <h3><img src="/c2.png" alt="C2" className="option-icon" /> Superior</h3>
                     <p>Usás recursos idiomáticos y tonos variados con dominio casi nativo.</p>
                     <p className="example">Todas las formas verbales</p>
-                  </div>
+                  </ClickableCard>
                 </div>
                 
                 <button onClick={goBack} className="back-btn">
@@ -1228,23 +1285,23 @@ function App() {
                     return (
                       <>
                         <div className="options-grid">
-                          <div className="option-card" onClick={() => selectVerbType('all')}>
+                          <ClickableCard className="option-card" onClick={() => selectVerbType('all')} title="Seleccionar todos los tipos de verbos">
                             <h3><img src="/books.png" alt="Libros" className="option-icon" /> Todos los Verbos</h3>
                             <p>Regulares e irregulares</p>
                             <p className="example">Práctica completa</p>
-                          </div>
+                          </ClickableCard>
                           
-                          <div className="option-card" onClick={() => selectVerbType('regular')}>
+                          <ClickableCard className="option-card" onClick={() => selectVerbType('regular')} title="Seleccionar solo verbos regulares">
                             <h3><img src="/openbook.png" alt="Libro Abierto" className="option-icon" /> Verbos Regulares</h3>
                             <p>Solo verbos que siguen las reglas</p>
                             <p className="example">hablar, comer, vivir</p>
-                          </div>
+                          </ClickableCard>
                           
-                          <div className="option-card" onClick={() => selectVerbType('irregular')}>
+                          <ClickableCard className="option-card" onClick={() => selectVerbType('irregular')} title="Seleccionar solo verbos irregulares">
                             <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Verbos Irregulares</h3>
                             <p>Solo verbos con cambios especiales</p>
                             <p className="example">ser, estar, tener, ir</p>
-                          </div>
+                          </ClickableCard>
                         </div>
                         
                         <button onClick={goBack} className="back-btn">
