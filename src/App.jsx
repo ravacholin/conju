@@ -73,8 +73,11 @@ function App() {
   
   // Initialize app state
   useEffect(() => {
-    // Ensure Resistance mode is off on app load
-    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+    // Hydrate persisted settings first
+    settings.hydrate().then(() => {
+      // Ensure Resistance mode is off on app load (but keep other persisted values)
+      settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
+    })
     
     // Warm up performance caches
     warmupCaches()

@@ -1,6 +1,51 @@
 import { create } from 'zustand'
+import { saveProgress, loadProgress } from '../lib/store.js'
 
-export const useSettings = create((set) => ({
+// Define which keys should be persisted (exclude transient UI state)
+const PERSISTED_KEYS = [
+  'level', 'useTuteo', 'useVoseo', 'useVosotros', 'strict', 'accentTolerance',
+  'requireDieresis', 'blockNonNormativeSpelling', 'cliticStrictness', 'cliticsPercent',
+  'neutralizePronoun', 'rotateSecondPerson', 'nextSecondPerson', 'timeMode', 
+  'perItemMs', 'medianTargetMs', 'enableFuturoSubjRead', 'enableFuturoSubjProd',
+  'enableC2Conmutacion', 'burstSize', 'conmutacionSeq', 'conmutacionIdx', 'c2RareBoostLemmas',
+  'resistanceActive', 'resistanceMsLeft', 'resistanceStartTs', 'resistanceBestMsByLevel',
+  'reverseActive', 'doubleActive', 'region', 'practicePronoun', 'showPronouns',
+  'verbType', 'allowedLemmas', 'currentBlock', 'practiceMode', 'specificMood', 'specificTense'
+]
+
+const STORAGE_KEY = 'spanish-conjugator-settings'
+
+// Debounced persist function to avoid excessive writes
+let persistTimeout = null
+const debouncedPersist = (state) => {
+  if (persistTimeout) clearTimeout(persistTimeout)
+  persistTimeout = setTimeout(async () => {
+    try {
+      const persistedState = {}
+      PERSISTED_KEYS.forEach(key => {
+        if (key in state) {
+          persistedState[key] = state[key]
+        }
+      })
+      await saveProgress(STORAGE_KEY, persistedState)
+    } catch (error) {
+      console.warn('Failed to persist settings:', error)
+    }
+  }, 1000)
+}
+
+// Hydration function to restore persisted state
+const hydrateState = async () => {
+  try {
+    const persistedState = await loadProgress(STORAGE_KEY)
+    return persistedState || {}
+  } catch (error) {
+    console.warn('Failed to load persisted settings:', error)
+    return {}
+  }
+}
+
+export const useSettings = create((set, get) => ({
   level: 'B1',
   useTuteo: true,
   useVoseo: false,
@@ -47,5 +92,20 @@ export const useSettings = create((set) => ({
   specificMood: null,     // 'indicative' | 'subjunctive' | 'imperative' | 'conditional' | 'nonfinite'
   specificTense: null,    // depends on mood selected
   
-  set: (patch) => set((s) => ({...s, ...patch}))
+  set: (patch) => {
+    set((s) => {
+      const newState = {...s, ...patch}
+      // Persist state changes
+      debouncedPersist(newState)
+      return newState
+    })
+  },
+
+  // Hydrate function to restore persisted state
+  hydrate: async () => {
+    const persistedState = await hydrateState()
+    if (Object.keys(persistedState).length > 0) {
+      set((s) => ({...s, ...persistedState}))
+    }
+  }
 })) 
