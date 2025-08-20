@@ -854,76 +854,19 @@ export default function Drill({
 
       {/* Action buttons */}
       <div className="action-buttons">
-        {!isReverse && !isDouble ? (
+        {/* Only the main Verificar/Continuar button remains */}
+        {!isReverse && !isDouble && (
           !result ? (
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button 
-                className="btn" 
-                onClick={handleSubmit}
-                disabled={isSubmitting || !input.trim()}
-              >
-                {isSubmitting ? 'Verificando...' : 'Verificar'}
-              </button>
-              <button
-                className="btn"
-                style={{ padding: '5px' }}
-                onClick={handleContinue}
-                title="Saltar al siguiente verbo"
-              >
-                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
-              </button>
-            </div>
+            <button 
+              className="btn" 
+              onClick={handleSubmit}
+              disabled={isSubmitting || !input.trim()}
+            >
+              {isSubmitting ? 'Verificando...' : 'Verificar'}
+            </button>
           ) : (
             <button className="btn" onClick={handleContinue}>
               {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
-            </button>
-          )
-        ) : isReverse ? (
-          !result ? (
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button 
-                className="btn" 
-                onClick={reverseSubmit}
-                disabled={!(infinitiveGuess.trim() && (!showPersonField || personGuess) && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
-              >
-                Verificar
-              </button>
-              <button
-                className="btn"
-                style={{ padding: '5px' }}
-                onClick={handleContinue}
-                title="Saltar al siguiente verbo"
-              >
-                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
-              </button>
-            </div>
-          ) : (
-            <button className="btn" onClick={handleContinue}>
-              Continuar
-            </button>
-          )
-        ) : (
-          !result ? (
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button 
-                className="btn" 
-                onClick={doubleSubmit}
-                disabled={!(input.trim() && secondInput.trim())}
-              >
-                Verificar
-              </button>
-              <button
-                className="btn"
-                style={{ padding: '5px' }}
-                onClick={handleContinue}
-                title="Saltar al siguiente verbo"
-              >
-                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
-              </button>
-            </div>
-          ) : (
-            <button className="btn" onClick={handleContinue}>
-              Continuar
             </button>
           )
         )}
