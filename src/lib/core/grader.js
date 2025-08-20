@@ -45,6 +45,70 @@ export function grade(input, expected, settings){
   // Get all possible correct answers based on settings
   const candidates = new Set([expected.value, ...(expected.alt||[])])
   
+  // CORRECIÓN CRÍTICA: Generar automáticamente formas alternativas -se para subjuntivo imperfecto y pluscuamperfecto
+  // AMBAS FORMAS SON SIEMPRE CORRECTAS EN TODOS LOS NIVELES (A1-C2)
+  if (expected.mood === 'subjunctive' && (expected.tense === 'subjImpf' || expected.tense === 'subjPlusc')) {
+    const generateSubjunctiveAlternative = (form) => {
+      if (typeof form !== 'string') return null
+      
+      // Transformaciones -ra <-> -se para subjuntivo imperfecto
+      if (expected.tense === 'subjImpf') {
+        // -ra -> -se
+        if (form.endsWith('ara')) return form.replace(/ara$/, 'ase')
+        if (form.endsWith('aras')) return form.replace(/aras$/, 'ases')
+        if (form.endsWith('áramos')) return form.replace(/áramos$/, 'ásemos')
+        if (form.endsWith('arais')) return form.replace(/arais$/, 'aseis')
+        if (form.endsWith('aran')) return form.replace(/aran$/, 'asen')
+        
+        if (form.endsWith('iera')) return form.replace(/iera$/, 'iese')
+        if (form.endsWith('ieras')) return form.replace(/ieras$/, 'ieses')
+        if (form.endsWith('iéramos')) return form.replace(/iéramos$/, 'iésemos')
+        if (form.endsWith('ierais')) return form.replace(/ierais$/, 'ieseis')
+        if (form.endsWith('ieran')) return form.replace(/ieran$/, 'iesen')
+        
+        // -se -> -ra
+        if (form.endsWith('ase')) return form.replace(/ase$/, 'ara')
+        if (form.endsWith('ases')) return form.replace(/ases$/, 'aras')
+        if (form.endsWith('ásemos')) return form.replace(/ásemos$/, 'áramos')
+        if (form.endsWith('aseis')) return form.replace(/aseis$/, 'arais')
+        if (form.endsWith('asen')) return form.replace(/asen$/, 'aran')
+        
+        if (form.endsWith('iese')) return form.replace(/iese$/, 'iera')
+        if (form.endsWith('ieses')) return form.replace(/ieses$/, 'ieras')
+        if (form.endsWith('iésemos')) return form.replace(/iésemos$/, 'iéramos')
+        if (form.endsWith('ieseis')) return form.replace(/ieseis$/, 'ierais')
+        if (form.endsWith('iesen')) return form.replace(/iesen$/, 'ieran')
+      }
+      
+      // Para subjuntivo pluscuamperfecto: transformar la parte del auxiliar
+      if (expected.tense === 'subjPlusc') {
+        // hubiera -> hubiese y viceversa
+        if (form.includes('hubiera ')) return form.replace('hubiera ', 'hubiese ')
+        if (form.includes('hubieras ')) return form.replace('hubieras ', 'hubieses ')
+        if (form.includes('hubiéramos ')) return form.replace('hubiéramos ', 'hubiésemos ')
+        if (form.includes('hubierais ')) return form.replace('hubierais ', 'hubieseis ')
+        if (form.includes('hubieran ')) return form.replace('hubieran ', 'hubiesen ')
+        
+        if (form.includes('hubiese ')) return form.replace('hubiese ', 'hubiera ')
+        if (form.includes('hubieses ')) return form.replace('hubieses ', 'hubieras ')
+        if (form.includes('hubiésemos ')) return form.replace('hubiésemos ', 'hubiéramos ')
+        if (form.includes('hubieseis ')) return form.replace('hubieseis ', 'hubierais ')
+        if (form.includes('hubiesen ')) return form.replace('hubiesen ', 'hubieran ')
+      }
+      
+      return null
+    }
+    
+    // Generar formas alternativas para value y todas las alt existentes
+    const formsToTransform = [expected.value, ...(expected.alt||[])]
+    for (const form of formsToTransform) {
+      const alternative = generateSubjunctiveAlternative(form)
+      if (alternative) {
+        candidates.add(alternative)
+      }
+    }
+  }
+  
   // Add alternative forms based on dialect settings
   // IMPORTANT: Always add dialect-specific forms regardless of strict mode
   // When a specific dialect is selected, those forms should be accepted

@@ -99,6 +99,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/ar$/, 'en'))) return true
       }
       if (tense === 'subjImpf') {
+        // FORMAS EN -RA (SIEMPRE CORRECTAS)
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/ar$/, 'ara'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ar$/, 'aras'))) return true
         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ar$/, 'aras'))) return true
@@ -106,6 +107,14 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/ar$/, 'áramos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ar$/, 'arais'))) return true
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/ar$/, 'aran'))) return true
+        // FORMAS EN -SE (TAMBIÉN SIEMPRE CORRECTAS)
+        if (person === '1s' && normalizedValue === normalize(lemma.replace(/ar$/, 'ase'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ar$/, 'ases'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ar$/, 'ases'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace(/ar$/, 'ase'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace(/ar$/, 'ásemos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ar$/, 'aseis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace(/ar$/, 'asen'))) return true
       }
       if (tense === 'subjPerf' || tense === 'subjPlusc') {
         return isRegularPerfectWithParticiple()
@@ -202,6 +211,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/er$/, 'an'))) return true
       }
       if (tense === 'subjImpf') {
+        // FORMAS EN -RA (SIEMPRE CORRECTAS)
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/er$/, 'iera'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/er$/, 'ieras'))) return true
         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/er$/, 'ieras'))) return true
@@ -209,6 +219,14 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/er$/, 'iéramos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/er$/, 'ierais'))) return true
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/er$/, 'ieran'))) return true
+        // FORMAS EN -SE (TAMBIÉN SIEMPRE CORRECTAS)
+        if (person === '1s' && normalizedValue === normalize(lemma.replace(/er$/, 'iese'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/er$/, 'ieses'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/er$/, 'ieses'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace(/er$/, 'iese'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace(/er$/, 'iésemos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/er$/, 'ieseis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace(/er$/, 'iesen'))) return true
       }
       if (tense === 'subjPerf' || tense === 'subjPlusc') {
         return isRegularPerfectWithParticiple()
@@ -305,6 +323,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/ir$/, 'an'))) return true
       }
       if (tense === 'subjImpf') {
+        // FORMAS EN -RA (SIEMPRE CORRECTAS)
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/ir$/, 'iera'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieras'))) return true
         if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieras'))) return true
@@ -312,6 +331,14 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/ir$/, 'iéramos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ir$/, 'ierais'))) return true
         if (person === '3p' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieran'))) return true
+        // FORMAS EN -SE (TAMBIÉN SIEMPRE CORRECTAS)
+        if (person === '1s' && normalizedValue === normalize(lemma.replace(/ir$/, 'iese'))) return true
+        if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieses'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieses'))) return true
+        if (person === '3s' && normalizedValue === normalize(lemma.replace(/ir$/, 'iese'))) return true
+        if (person === '1p' && normalizedValue === normalize(lemma.replace(/ir$/, 'iésemos'))) return true
+        if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ir$/, 'ieseis'))) return true
+        if (person === '3p' && normalizedValue === normalize(lemma.replace(/ir$/, 'iesen'))) return true
       }
       if (tense === 'subjPerf' || tense === 'subjPlusc') {
         return isRegularPerfectWithParticiple()
