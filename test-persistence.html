@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Persistence Test</title>
+</head>
+<body>
+    <h1>Spanish Conjugator - Persistence Test</h1>
+    <p>This page tests the persistence implementation:</p>
+    
+    <ol>
+        <li>Open <a href="http://localhost:5173" target="_blank">localhost:5173</a></li>
+        <li>Go through onboarding and change some settings (level, region, practice mode, etc.)</li>
+        <li>Open developer console and check for any persistence-related logs</li>
+        <li>Refresh the page (F5) or close/reopen the tab</li>
+        <li>Verify that your settings are preserved</li>
+        <li>Check IndexedDB in DevTools → Application → Storage → IndexedDB</li>
+    </ol>
+
+    <h2>What should persist:</h2>
+    <ul>
+        <li>Learning level (A1-C2)</li>
+        <li>Language preferences (tuteo/voseo/vosotros)</li>
+        <li>Region setting (rioplatense/peninsular/la_general)</li>
+        <li>Practice mode settings</li>
+        <li>Advanced feature toggles</li>
+        <li>Accent tolerance settings</li>
+        <li>All other user preferences</li>
+    </ul>
+
+    <h2>What should NOT persist:</h2>
+    <ul>
+        <li>Active resistance mode (always resets to false on app load)</li>
+        <li>Current practice session state</li>
+        <li>Temporary UI flags</li>
+    </ul>
+
+    <script>
+        // Test direct storage access
+        import('http://localhost:5173/src/lib/store.js').then(({ saveProgress, loadProgress }) => {
+            console.log('Testing storage utilities...')
+            
+            // Test save/load
+            saveProgress('test-key', { test: 'data', timestamp: Date.now() })
+                .then(() => loadProgress('test-key'))
+                .then(data => {
+                    console.log('✅ Storage test passed:', data)
+                })
+                .catch(err => {
+                    console.error('❌ Storage test failed:', err)
+                })
+        }).catch(err => {
+            console.log('Note: Direct module import test failed (expected in static file):', err)
+        })
+    </script>
+</body>
+</html>

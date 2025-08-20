@@ -856,13 +856,23 @@ export default function Drill({
       <div className="action-buttons">
         {!isReverse && !isDouble ? (
           !result ? (
-            <button 
-              className="btn" 
-              onClick={handleSubmit}
-              disabled={isSubmitting || !input.trim()}
-            >
-              {isSubmitting ? 'Verificando...' : 'Verificar'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button 
+                className="btn" 
+                onClick={handleSubmit}
+                disabled={isSubmitting || !input.trim()}
+              >
+                {isSubmitting ? 'Verificando...' : 'Verificar'}
+              </button>
+              <button
+                className="btn"
+                style={{ padding: '5px' }}
+                onClick={handleContinue}
+                title="Saltar al siguiente verbo"
+              >
+                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
+              </button>
+            </div>
           ) : (
             <button className="btn" onClick={handleContinue}>
               {result.isAccentError ? 'Siguiente Verbo (Auto)' : 'Continuar'}
@@ -870,13 +880,23 @@ export default function Drill({
           )
         ) : isReverse ? (
           !result ? (
-            <button 
-              className="btn" 
-              onClick={reverseSubmit}
-              disabled={!(infinitiveGuess.trim() && (!showPersonField || personGuess) && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
-            >
-              Verificar
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button 
+                className="btn" 
+                onClick={reverseSubmit}
+                disabled={!(infinitiveGuess.trim() && (!showPersonField || personGuess) && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
+              >
+                Verificar
+              </button>
+              <button
+                className="btn"
+                style={{ padding: '5px' }}
+                onClick={handleContinue}
+                title="Saltar al siguiente verbo"
+              >
+                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
+              </button>
+            </div>
           ) : (
             <button className="btn" onClick={handleContinue}>
               Continuar
@@ -884,13 +904,23 @@ export default function Drill({
           )
         ) : (
           !result ? (
-            <button 
-              className="btn" 
-              onClick={doubleSubmit}
-              disabled={!(input.trim() && secondInput.trim())}
-            >
-              Verificar
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button 
+                className="btn" 
+                onClick={doubleSubmit}
+                disabled={!(input.trim() && secondInput.trim())}
+              >
+                Verificar
+              </button>
+              <button
+                className="btn"
+                style={{ padding: '5px' }}
+                onClick={handleContinue}
+                title="Saltar al siguiente verbo"
+              >
+                <img src="/next.png" alt="Siguiente" style={{ height: '24px' }} />
+              </button>
+            </div>
           ) : (
             <button className="btn" onClick={handleContinue}>
               Continuar
