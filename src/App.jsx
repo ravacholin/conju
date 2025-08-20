@@ -11,7 +11,6 @@ import gates from './data/curriculum.json'
 import Drill from './features/drill/Drill.jsx'
 
 import './App.css'
-import configIcon from '/config.png'
 import enieIcon from '/enie.png'
 
 /**
@@ -1576,7 +1575,7 @@ function App() {
               className="icon-btn"
               title="Cambiar rápido"
             >
-              <img src={configIcon} alt="Config" className="menu-icon" />
+              <img src="/config.png" alt="Config" className="menu-icon" />
             </button>
             <button
               onClick={() => {
