@@ -93,6 +93,80 @@ describe('Grade function', () => {
       })
     })
   })
+
+  // TESTS CRÍTICOS: Verificar que SIEMPRE se muestre la forma correcta en los errores
+  describe('Error messages must always show correct form', () => {
+    test('should always show correct form in error messages for wrong answers', () => {
+      const expected = { value: 'hablo', mood: 'indicative', tense: 'pres', person: '1s' }
+      
+      // Respuesta completamente incorrecta
+      const result1 = grade('xyz', expected, mockSettings)
+      expect(result1.correct).toBe(false)
+      expect(result1.note).toContain('hablo')
+      expect(result1.note).toContain('La forma correcta es')
+      
+      // Respuesta muy corta
+      const result2 = grade('ab', expected, mockSettings)
+      expect(result2.correct).toBe(false)
+      expect(result2.note).toContain('hablo')
+      expect(result2.note).toContain('La forma correcta es')
+      
+      // Respuesta con error de conjugación
+      const result3 = grade('hablas', expected, mockSettings)
+      expect(result3.correct).toBe(false)
+      expect(result3.note).toContain('hablo')
+      expect(result3.note).toContain('La forma correcta es')
+    })
+
+    test('should show correct form for irregular verbs', () => {
+      const expected = { value: 'soy', mood: 'indicative', tense: 'pres', person: '1s' }
+      
+      const result = grade('so', expected, mockSettings)
+      expect(result.correct).toBe(false)
+      expect(result.note).toContain('soy')
+      expect(result.note).toContain('La forma correcta es')
+    })
+
+    test('should show correct form for complex tenses', () => {
+      const expected = { value: 'había hablado', mood: 'indicative', tense: 'plusc', person: '1s' }
+      
+      const result = grade('hable', expected, mockSettings)
+      expect(result.correct).toBe(false)
+      expect(result.note).toContain('había hablado')
+      expect(result.note).toContain('La forma correcta es')
+    })
+
+    test('should work in all levels (A1-C2)', () => {
+      const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+      const expected = { value: 'escribo', mood: 'indicative', tense: 'pres', person: '1s' }
+      
+      levels.forEach(level => {
+        const settingsWithLevel = { ...mockSettings, level }
+        const result = grade('escriba', expected, settingsWithLevel)
+        expect(result.correct).toBe(false)
+        expect(result.note).toContain('escribo')
+        expect(result.note).toContain('La forma correcta es')
+      })
+    })
+
+    test('should never show generic error without correct form', () => {
+      const expected = { value: 'canto', mood: 'indicative', tense: 'pres', person: '1s' }
+      
+      // Varios tipos de errores
+      const wrongInputs = ['cantas', 'cante', 'cantaba', 'cantaré', 'xyz', 'ab']
+      
+      wrongInputs.forEach(input => {
+        const result = grade(input, expected, mockSettings)
+        expect(result.correct).toBe(false)
+        // NO debe contener mensajes genéricos sin forma correcta
+        expect(result.note).not.toContain('Revisa la conjugación.')
+        expect(result.note).not.toContain('Revisa la conjugación y los acentos.')
+        // SÍ debe contener la forma correcta
+        expect(result.note).toContain('canto')
+      })
+    })
+  })
+
   test('should accept correct form with accent', () => {
     const result = grade('escribís', { value: 'escribís' }, mockSettings)
     expect(result.correct).toBe(true)

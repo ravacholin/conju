@@ -290,7 +290,8 @@ export function grade(input, expected, settings){
   // FINAL VALIDATION: Only apply fallback for truly undefined feedback on incorrect answers
   if (!correct && feedback === undefined) {
     console.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
-    feedback = '❌ Forma incorrecta. Revisa la conjugación y los acentos.'
+    const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
+    feedback = `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
   }
   
   const result = {
@@ -310,6 +311,9 @@ export function grade(input, expected, settings){
 }
 
 function generateGeneralFeedback(input, settings, expected) {
+  // Obtener la forma correcta esperada (primera opción disponible)
+  const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
+  
   // Check for pronoun-specific issues
   if (settings.region === 'rioplatense' && settings.useVoseo && !settings.neutralizePronoun) {
     // Check if user wrote tú form instead of vos form
@@ -333,8 +337,9 @@ function generateGeneralFeedback(input, settings, expected) {
   
   // Check for general form issues
   if (input.length < 3) {
-    return 'La respuesta es muy corta. Revisa la forma verbal.'
+    return `La respuesta es muy corta. La forma correcta es "${correctForm}"`
   }
   
-  return '❌ Forma incorrecta. Revisa la conjugación.'
+  // SIEMPRE mostrar la forma correcta para que el usuario aprenda
+  return `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
 } 
