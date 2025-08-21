@@ -175,12 +175,7 @@ export default function Drill({
       const firstRes = grade(input.trim(), currentItem.form, currentItem.settings || {})
       // Use explicit second target from secondForm if present, otherwise fall back to same as first
       const secondTarget = currentItem.secondForm ? { ...currentItem.secondForm } : { ...currentItem.form }
-      const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { 
-        correct: false, 
-        targets: ['Error: forma no disponible'], 
-        note: '❌ Error: segunda forma no disponible',
-        isAccentError: false 
-      }
+      const secondRes = grade(secondInput.trim(), secondTarget, currentItem.settings || {})
       const correct = firstRes.correct && secondRes.correct
       const resultObj = {
         correct,
@@ -438,15 +433,15 @@ export default function Drill({
   }
 
 
-  const getPersonText = () => {
-    // Para formas no finitas, siempre mostrar "No conjugado"
-    if (currentItem?.mood === 'nonfinite' || 
-        currentItem?.tense === 'ger' || 
-        currentItem?.tense === 'part' || 
-        currentItem?.tense === 'nonfiniteMixed') {
-      return 'No conjugado'
+  // Generalized: get person label for any form object
+  const getPersonText = (formObj = currentItem) => {
+    if (!formObj) return '';
+    if (formObj.mood === 'nonfinite' || 
+        formObj.tense === 'ger' || 
+        formObj.tense === 'part' || 
+        formObj.tense === 'nonfiniteMixed') {
+      return 'No conjugado';
     }
-
     const personMap = {
       '1s': 'Yo',
       '2s_tu': 'Tú',
@@ -455,8 +450,8 @@ export default function Drill({
       '1p': 'Nosotros',
       '2p_vosotros': 'Vosotros',
       '3p': 'Ellos/Ustedes'
-    }
-    return personMap[currentItem?.person] || 'Yo'
+    };
+    return personMap[formObj.person] || 'Yo';
   }
 
   // Show required enclitics for imperativo afirmativo when present in target
@@ -758,7 +753,7 @@ export default function Drill({
           <div className="double-grid">
             <div className="double-field">
               <div className="person-display" style={{marginBottom: '6px'}}>
-                {getMoodLabel(currentItem.mood)} · {getTenseLabel(currentItem.tense)} · {getPersonText()}
+                {getMoodLabel(currentItem.mood)} · {getTenseLabel(currentItem.tense)} · {getPersonText(currentItem)}
               </div>
               <input
                 ref={firstRef}
@@ -777,7 +772,7 @@ export default function Drill({
             </div>
             <div className="double-field">
               <div className="person-display" style={{marginBottom: '6px'}}>
-                {getMoodLabel((currentItem.secondForm||currentItem.form).mood)} · {getTenseLabel((currentItem.secondForm||currentItem.form).tense)} · {getPersonText()}
+                {getMoodLabel((currentItem.secondForm||currentItem.form).mood)} · {getTenseLabel((currentItem.secondForm||currentItem.form).tense)} · {getPersonText(currentItem.secondForm||currentItem.form)}
               </div>
               <input
                 ref={secondRef}
