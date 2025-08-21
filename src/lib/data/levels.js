@@ -92,6 +92,14 @@ const PACKS = {
     id:"A1_CORE", 
     lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar","vivir","comer","hablar"] 
   },
+  A1_REGULAR: {
+    id:"A1_REGULAR",
+    lemmas:["vivir","comer","hablar","trabajar","estudiar","caminar","cantar","comprar","mirar","escuchar","llamar","llevar","tomar","abrir","escribir"]
+  },
+  A1_IRREGULAR: {
+    id:"A1_IRREGULAR", 
+    lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar"]
+  },
   A2_PASTS: { 
     id:"A2_PASTS", 
     lemmas:["buscar","llegar","almorzar","poder","poner","estar","tener","venir","hacer","decir","querer","andar","traer","dormir","pedir"] 
