@@ -1,5 +1,5 @@
 // Sistema de cache avanzado para optimizar el generador de verbos
-import { verbs } from '../../data/verbs.js'
+import { loadVerbs, getVerbsSync } from '../../services/verbsService.js'
 
 // Cache inteligente con expiración y límite de memoria
 class IntelligentCache {
@@ -77,23 +77,39 @@ export const verbCategorizationCache = new IntelligentCache(500, 10 * 60 * 1000)
 export const formFilterCache = new IntelligentCache(1000, 3 * 60 * 1000) // 3 min para filtrado
 export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 min para combinaciones
 
-// Pre-computar mapas frecuentemente utilizados
-export const VERB_LOOKUP_MAP = new Map(verbs.map(v => [v.lemma, v]))
-export const FORM_LOOKUP_MAP = new Map()
+// Pre-computar mapas frecuentemente utilizados (inicializados lazy)
+export let VERB_LOOKUP_MAP = new Map()
+export let FORM_LOOKUP_MAP = new Map()
 
-// Inicializar form lookup map
-verbs.forEach(verb => {
-  verb.paradigms?.forEach(paradigm => {
-    paradigm.forms?.forEach(form => {
-      const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
-      FORM_LOOKUP_MAP.set(key, form)
+// Función para inicializar mapas cuando los verbos estén cargados
+function initializeLookupMaps() {
+  const verbs = getVerbsSync()
+  if (!verbs || VERB_LOOKUP_MAP.size > 0) return // Ya inicializados o verbos no disponibles
+  
+  console.log('🏗️ Initializing lookup maps...')
+  
+  // Inicializar verb lookup map
+  VERB_LOOKUP_MAP = new Map(verbs.map(v => [v.lemma, v]))
+  
+  // Inicializar form lookup map
+  verbs.forEach(verb => {
+    verb.paradigms?.forEach(paradigm => {
+      paradigm.forms?.forEach(form => {
+        const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+        FORM_LOOKUP_MAP.set(key, form)
+      })
     })
   })
-})
+  
+  console.log(`✅ Lookup maps initialized: ${VERB_LOOKUP_MAP.size} verbs, ${FORM_LOOKUP_MAP.size} forms`)
+}
 
 // Función para pre-calentar caches con datos frecuentes
 export function warmupCaches() {
   console.log('🔥 Calentando caches del generador...')
+  
+  // Inicializar lookup maps si los verbos están disponibles
+  initializeLookupMaps()
   
   const commonVerbs = ['ser', 'estar', 'haber', 'tener', 'hacer', 'ir', 'venir', 'decir', 'poder', 'querer']
   const commonCombinations = [
