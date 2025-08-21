@@ -429,7 +429,51 @@ export default function Drill({
     
     // Etiqueta de registro jurídico si es futuro de subjuntivo y lectura/producción está activada
     const isJur = (tense === 'subjFut' || tense === 'subjFutPerf') && (settings.enableFuturoSubjRead || settings.enableFuturoSubjProd)
-    return `${moodText} - ${tenseText}${isJur ? ' · Registro jurídico' : ''}`
+    
+    // Ejemplo de conjugación del verbo hablar en primera persona para este modo y tiempo
+    const getHablarExample = () => {
+      const examples = {
+        'indicative': {
+          'pres': 'hablo',
+          'pretIndef': 'hablé',
+          'impf': 'hablaba',
+          'fut': 'hablaré',
+          'pretPerf': 'he hablado',
+          'plusc': 'había hablado',
+          'futPerf': 'habré hablado',
+          'irAInf': 'voy a hablar',
+          'presFuturate': 'hablo'
+        },
+        'subjunctive': {
+          'subjPres': 'hable',
+          'subjImpf': 'hablara',
+          'subjFut': 'hablare',
+          'subjPerf': 'haya hablado',
+          'subjPlusc': 'hubiera hablado'
+        },
+        'conditional': {
+          'cond': 'hablaría',
+          'condPerf': 'habría hablado'
+        },
+        'imperative': {
+          'impAff': 'habla',
+          'impNeg': 'no hables',
+          'impMixed': 'habla / no hables'
+        },
+        'nonfinite': {
+          'inf': 'hablar',
+          'part': 'hablado',
+          'ger': 'hablando',
+          'nonfiniteMixed': 'hablando / hablado'
+        }
+      }
+      
+      return examples[mood]?.[tense] || 'hablo'
+    }
+    
+    const example = getHablarExample()
+    
+    return `${moodText} - ${tenseText}: ${example}${isJur ? ' · Registro jurídico' : ''}`
   }
 
 
