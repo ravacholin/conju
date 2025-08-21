@@ -90,15 +90,26 @@ const INVENTORY = {
 const PACKS = {
   A1_CORE: { 
     id:"A1_CORE", 
-    lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar","vivir","comer","hablar"] 
+    lemmas:[
+      // Irregulares básicos esenciales
+      "ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar",
+      // Regulares básicos esenciales (TODOS los disponibles)
+      "hablar","comer","vivir","trabajar","estudiar","caminar","bailar","cantar","escuchar","mirar",
+      "comprar","necesitar","usar","ayudar","beber","correr","escribir","aprender","decidir","responder",
+      "subir","vender","amar","buscar","comprender","permitir","recibir","sufrir","unir"
+    ] 
   },
-  A1_REGULAR: {
-    id:"A1_REGULAR",
-    lemmas:["vivir","comer","hablar","trabajar","estudiar","caminar","cantar","comprar","mirar","escuchar","llamar","llevar","tomar","abrir","escribir"]
+  A1_REGULARES_AR: {
+    id:"A1_REGULARES_AR",
+    lemmas:["hablar","trabajar","estudiar","caminar","bailar","cantar","escuchar","mirar","comprar","necesitar","usar","ayudar","amar","buscar"]
   },
-  A1_IRREGULAR: {
-    id:"A1_IRREGULAR", 
-    lemmas:["ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar"]
+  A1_REGULARES_ER: {
+    id:"A1_REGULARES_ER", 
+    lemmas:["comer","beber","correr","aprender","comprender","responder","vender"]
+  },
+  A1_REGULARES_IR: {
+    id:"A1_REGULARES_IR",
+    lemmas:["vivir","escribir","decidir","subir","sufrir","unir","recibir","permitir"]
   },
   A2_PASTS: { 
     id:"A2_PASTS", 

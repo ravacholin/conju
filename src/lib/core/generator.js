@@ -174,12 +174,6 @@ export function chooseNext({forms, history, currentItem}){
       return false
     }
     
-    // DEBUG: Log verb lookup for poder specifically
-    if (f.lemma === 'poder') {
-      console.log('🔍 PODER DEBUG - Found verb:', verb)
-      console.log('🔍 PODER DEBUG - Verb type:', verb.type)
-      console.log('🔍 PODER DEBUG - Current verbType setting:', verbType)
-    }
     
     // Check MCER level restrictions first
     const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
@@ -215,10 +209,8 @@ export function chooseNext({forms, history, currentItem}){
     // isCompoundTense defined above
     if (verbType === 'regular') {
       if (verb.type !== 'regular') {
-        console.log('🚫 REGULAR FILTER - Excluding irregular verb:', f.lemma, 'type:', verb.type)
         return false
       }
-      console.log('✅ REGULAR FILTER - Including regular verb:', f.lemma, 'type:', verb.type)
     } else if (verbType === 'irregular') {
       // For compound tenses, check if the verb has an irregular participle first
       if (isCompoundTense) {
@@ -721,6 +713,26 @@ function estimateCliticSyllables(cl) {
     i += tok.length
   }
   return Math.max(1, count)
+}
+
+// Debug function to test A1 regular filtering specifically
+export function debugA1RegularFiltering() {
+  console.log('=== A1 REGULAR FILTERING DEBUG ===')
+  
+  const testForms = [
+    { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'hablás' },
+    { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'comés' },
+    { lemma: 'vivir', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'vivís' },
+    { lemma: 'poder', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'podés' }
+  ]
+  
+  testForms.forEach(form => {
+    const verb = LEMMA_TO_VERB.get(form.lemma)
+    console.log(`\n${form.lemma}:`)
+    console.log(`  - Verb object:`, verb)
+    console.log(`  - Verb type:`, verb?.type)
+    console.log(`  - Should be included with verbType='regular'?`, verb?.type === 'regular')
+  })
 }
 
 // Debug function to show available verbs for each combination
