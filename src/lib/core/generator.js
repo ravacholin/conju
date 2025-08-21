@@ -116,49 +116,37 @@ export function chooseNext({forms, history, currentItem}){
       }
     }
 
-    // Person filtering (dialect) - exclude forms not used in the selected dialect
+    // Person filtering (dialect) - based on region setting
+    const { region } = useSettings.getState()
     
     // For nonfinite forms (gerundios, participios), skip person filtering - they're invariable
     if (f.mood === 'nonfinite') {
-    } else if (practiceMode === 'specific' && specificMood && specificTense) {
-      // For specific practice, show ALL persons but respect dialect
-      if (useVoseo && !useTuteo) {
-        // Rioplatense: show ALL persons but replace tú with vos, exclude vosotros
+    } else {
+      // Apply dialect filtering based on region setting
+      if (region === 'rioplatense') {
+        // Rioplatense: yo, vos, usted/él/ella, nosotros, ustedes/ellas/ellos
         if (f.person === '2s_tu') {
           return false
         }
         if (f.person === '2p_vosotros') {
           return false
         }
-        // Show ALL other persons (imperative also includes 1p and 3p, exclude 2p_vosotros)
-      } else if (useTuteo && !useVoseo) {
-        // General Latin American: show ALL persons but replace vos with tú, exclude vosotros
+      } else if (region === 'peninsular') {
+        // Peninsular: yo, tú, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
+        if (f.person === '2s_vos') {
+          return false
+        }
+      } else if (region === 'la_general') {
+        // Latin American general: yo, tú, usted/él/ella, nosotros, ustedes/ellas/ellos
         if (f.person === '2s_vos') {
           return false
         }
         if (f.person === '2p_vosotros') {
           return false
         }
-        // Show ALL other persons (imperative also includes 1p and 3p)
-      } else if (useVosotros) {
-        // Peninsular: show ALL persons but replace vos with tú
-        if (f.person === '2s_vos') {
-          return false
-        }
-        // Show ALL other persons
       } else {
-        // Both forms: show ALL persons
-      }
-    } else {
-      // For mixed practice, apply normal dialect filtering
-      if(f.person==='2s_vos' && !useVoseo) {
-        return false
-      }
-      if(f.person==='2s_tu' && !useTuteo) {
-        return false
-      }
-      if(f.person==='2p_vosotros' && !useVosotros) {
-        return false
+        // All variants: yo, tú, vos, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
+        // No filtering, show all persons
       }
     }
     
