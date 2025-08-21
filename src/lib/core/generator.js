@@ -1,6 +1,6 @@
 import gates from '../../data/curriculum.json'
 import { useSettings } from '../../state/settings.js'
-import { loadVerbs, getVerbsSync } from '../../services/verbsService.js'
+import { verbs } from '../../data/verbs.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup, getSimplifiedGroupForVerb } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
@@ -659,8 +659,7 @@ function sampleArray(array, count) {
 
 // Helper function to find a verb by its lemma
 function findVerbByLemma(lemma) {
-  const verbs = getVerbsSync()
-  return verbs ? verbs.find(v => v.lemma === lemma) : null
+  return verbs.find(v => v.lemma === lemma)
 }
 
 // Accent rules for imperativo + clíticos (voseo):
@@ -719,12 +718,6 @@ function estimateCliticSyllables(cl) {
 // Debug function to show available verbs for each combination
 export function debugVerbAvailability() {
   console.log('=== VERB AVAILABILITY DEBUG ===')
-  
-  const verbs = getVerbsSync()
-  if (!verbs) {
-    console.log('❌ Verbs not loaded yet')
-    return
-  }
   
   const moods = ['indicative', 'subjunctive', 'imperative', 'conditional']
   const tenses = ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf', 'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc', 'impAff', 'impNeg', 'cond', 'condPerf']

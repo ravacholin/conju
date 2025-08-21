@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSettings } from './state/settings.js'
-import { loadVerbs, areVerbsLoaded } from './services/verbsService.js'
+import { verbs } from './data/verbs.js'
 import { chooseNext } from './lib/core/generator.js'
 import { warmupCaches, getCacheStats } from './lib/core/optimizedCache.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from './lib/utils/verbLabels.js'
@@ -71,10 +71,6 @@ function getAllowedLemmasForLevel(level) {
 
 function App() {
   
-  // Loading state for verbs dataset
-  const [verbsLoading, setVerbsLoading] = useState(true)
-  const [verbs, setVerbs] = useState([])
-  
   // Initialize app state
   useEffect(() => {
     // Hydrate persisted settings first
@@ -83,32 +79,15 @@ function App() {
       settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
     })
     
-    // Load verbs asynchronously
-    const initializeVerbs = async () => {
-      try {
-        setVerbsLoading(true)
-        const verbsData = await loadVerbs()
-        setVerbs(verbsData)
-        
-        // Warm up performance caches after verbs are loaded
-        warmupCaches()
-        
-        // Log cache stats in development
-        if (process.env.NODE_ENV === 'development') {
-          setTimeout(() => {
-            console.log('📊 Cache Stats:', getCacheStats())
-          }, 1000)
-        }
-      } catch (error) {
-        console.error('Failed to load verbs:', error)
-        // Set empty array as fallback
-        setVerbs([])
-      } finally {
-        setVerbsLoading(false)
-      }
-    }
+    // Warm up performance caches
+    warmupCaches()
     
-    initializeVerbs()
+    // Log cache stats in development
+    if (process.env.NODE_ENV === 'development') {
+      setTimeout(() => {
+        console.log('📊 Cache Stats:', getCacheStats())
+      }, 1000)
+    }
   }, [])
   
   const [currentMode, setCurrentMode] = useState('onboarding') // 'onboarding', 'drill', 'settings'
@@ -135,7 +114,7 @@ function App() {
   }
 
   const allFormsForRegion = useMemo(() => {
-    if (!settings.region || verbsLoading || verbs.length === 0) return []
+    if (!settings.region) return []
     const acc = []
     const existingKey = new Set()
     const lemmaToParticiple = new Map()
@@ -274,7 +253,7 @@ function App() {
       }
     })
     return acc
-  }, [settings.region, verbs, verbsLoading])
+  }, [settings.region])
 
   // History integration: make mobile back gesture act like in-app back
   useEffect(() => {
@@ -2093,30 +2072,10 @@ function App() {
     )
   }
 
-  // Show loading screen while verbs are being loaded
-  if (verbsLoading) {
-    return (
-      <div className="App">
-        <div className="loading-container">
-          <div className="loading-spinner">
-            <img src="/verbosmain_transparent.png" alt="VerbOS" className="loading-logo" />
-            <div className="loading-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-          <h2>Cargando dataset de verbos...</h2>
-          <p>Preparando más de 400 verbos para tu práctica</p>
-        </div>
-      </div>
-    )
-  }
-
   // Fallback - should not reach here
   return (
     <div className="App">
-      <div className="loading">Error: No se pudo cargar la aplicación</div>
+      <div className="loading">Cargando aplicación...</div>
     </div>
   )
 }
