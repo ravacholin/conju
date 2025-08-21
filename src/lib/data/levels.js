@@ -164,8 +164,8 @@ export const LEVELS = {
   B2: {
     level:"B2",
     dialect:"rioplatense",
-    persons:["1sg","2sg","3sg","1pl","2pl","3pl"],
-    treatments:["vos","tu","usted","ustedes","vosotros"],
+    persons:["1sg","2sg","3sg","1pl","3pl"],
+    treatments:["vos","usted","ustedes"],
     inventory:INVENTORY.B2,
     orth:{ accents:"strict", dieresisRequired:true, hardBlockBadForms:false },
     variants:{ impSubj:"accept_both", futureSubjunctive:"off" },
@@ -179,8 +179,8 @@ export const LEVELS = {
   C1: {
     level:"C1",
     dialect:"rioplatense",
-    persons:["1sg","2sg","3sg","1pl","2pl","3pl"],
-    treatments:["vos","tu","usted","ustedes","vosotros"],
+    persons:["1sg","2sg","3sg","1pl","3pl"],
+    treatments:["vos","usted","ustedes"],
     inventory:INVENTORY.C1,
     orth:{ accents:"strict", dieresisRequired:true, hardBlockBadForms:true },
     variants:{ impSubj:"enforce", futureSubjunctive:"labelled_optional" },
@@ -194,8 +194,8 @@ export const LEVELS = {
   C2: {
     level:"C2",
     dialect:"rioplatense",
-    persons:["1sg","2sg","3sg","1pl","2pl","3pl"],
-    treatments:["vos","tu","usted","ustedes","vosotros"],
+    persons:["1sg","2sg","3sg","1pl","3pl"],
+    treatments:["vos","usted","ustedes"],
     inventory:INVENTORY.C2,
     orth:{ accents:"hard", dieresisRequired:true, hardBlockBadForms:true },
     variants:{ impSubj:"must_match_prompt", futureSubjunctive:"labelled_optional" },
