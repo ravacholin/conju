@@ -12,6 +12,20 @@ function MoodTenseSelection({
   getConjugationExample
 }) {
   
+  // DEBUG: Log what we're receiving
+  console.log('🔍 MoodTenseSelection DEBUG:', {
+    level: settings.level,
+    practiceMode: settings.practiceMode,
+    specificMood: settings.specificMood,
+    specificTense: settings.specificTense,
+    cameFromTema: settings.cameFromTema
+  })
+  
+  if (settings.level) {
+    const availableMoods = getAvailableMoodsForLevel(settings.level)
+    console.log('🔍 Available moods for level', settings.level, ':', availableMoods)
+  }
+  
   if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
     // Level-specific practice with mood already selected - show tense selection
     return (
