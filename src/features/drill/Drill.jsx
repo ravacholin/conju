@@ -465,6 +465,16 @@ export default function Drill({
     // Ejemplo de conjugación del verbo hablar en primera persona para este modo y tiempo
     // Solo mostrar tiempos simples, no compuestos
     const getHablarExample = () => {
+      // Get the appropriate imperative example based on dialect
+      const getImperativeExample = () => {
+        // For rioplatense (useVoseo), show vos form
+        if (settings.useVoseo && !settings.useTuteo) {
+          return 'hablá / no hables';
+        }
+        // For other dialects, show tú form
+        return 'habla / no hables';
+      };
+
       const examples = {
         'indicative': {
           'pres': 'hablo',
@@ -483,9 +493,9 @@ export default function Drill({
           'cond': 'hablaría'
         },
         'imperative': {
-          'impAff': 'habla',
-          'impNeg': 'no hables',
-          'impMixed': 'habla / no hables'
+          'impAff': getImperativeExample(),
+          'impNeg': getImperativeExample(),
+          'impMixed': getImperativeExample()
         },
         'nonfinite': {
           'inf': 'hablar',

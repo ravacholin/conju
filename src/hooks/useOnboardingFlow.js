@@ -63,6 +63,24 @@ export function useOnboardingFlow() {
   // Function to get conjugation examples
   // Solo mostrar tiempos simples, no compuestos
   const getConjugationExample = (mood, tense) => {
+    // Get the appropriate imperative examples based on dialect
+    const getImperativeExamples = () => {
+      // For rioplatense (useVoseo), show vos forms
+      if (settings.useVoseo && !settings.useTuteo) {
+        return {
+          'imperative_impAff': 'hablá, hablá',
+          'imperative_impNeg': 'no hables, no habléis'
+        };
+      }
+      // For other dialects, show tú forms
+      return {
+        'imperative_impAff': 'habla, hablad',
+        'imperative_impNeg': 'no hables, no habléis'
+      };
+    };
+
+    const imperativeExamples = getImperativeExamples();
+
     const examples = {
       // Indicativo (solo tiempos simples)
       'indicative_pres': 'hablo, hablas, habla',
@@ -74,9 +92,8 @@ export function useOnboardingFlow() {
       'subjunctive_subjPres': 'hable, hables, hable',
       'subjunctive_subjImpf': 'hablara, hablaras, hablara',
       
-      // Imperativo
-      'imperative_impAff': 'habla, hablad',
-      'imperative_impNeg': 'no hables, no habléis',
+      // Imperativo (dialect-specific)
+      ...imperativeExamples,
       
       // Condicional (solo tiempos simples)
       'conditional_cond': 'hablaría, hablarías, hablaría',
