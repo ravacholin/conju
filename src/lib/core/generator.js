@@ -71,6 +71,17 @@ export function chooseNext({forms, history, currentItem}){
     formsCount: forms.length
   })
   
+  // CRITICAL DEBUG: Special focus on B1 level filtering
+  const isB1Debug = level === 'B1'
+  if (isB1Debug) {
+    console.log('🚨 B1 DEBUG - Initial analysis')
+    console.log('🚨 B1 DEBUG - Total forms:', forms.length)
+    console.log('🚨 B1 DEBUG - Sample forms:', forms.slice(0,10).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
+    console.log('🚨 B1 DEBUG - Settings:', {
+      level, practiceMode, specificMood, specificTense, verbType, selectedFamily
+    })
+  }
+  
   // DIAGNOSTIC: Special focus on C1 mixed practice
   if (level === 'C1' && practiceMode === 'mixed') {
     console.log('🚨 C1 MIXED DEBUG - Initial forms count:', forms.length)
@@ -89,7 +100,7 @@ export function chooseNext({forms, history, currentItem}){
     // Si no está en cache, calcular
     eligible = forms.filter(f=>{
       
-      // DIAGNOSTIC: Track C1 filtering step by step
+      // DIAGNOSTIC: Track C1 and B1 filtering step by step  
       const isC1Debug = level === 'C1' && practiceMode === 'mixed'
       
       // Filter out forms with undefined/null values first
@@ -105,6 +116,7 @@ export function chooseNext({forms, history, currentItem}){
         : getAllowedCombosForLevel(level)
       if(!allowed.has(`${f.mood}|${f.tense}`)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
+        if (isB1Debug) console.log('🚨 B1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
         return false
       }
     
@@ -345,13 +357,33 @@ export function chooseNext({forms, history, currentItem}){
     return true
   })
   
-    // DIAGNOSTIC: Log C1 filtering results
+    // DIAGNOSTIC: Log C1 and B1 filtering results
     if (level === 'C1' && practiceMode === 'mixed') {
       console.log('🚨 C1 MIXED DEBUG - After filtering:', eligible.length, 'forms remain')
       if (eligible.length > 0) {
         console.log('🚨 C1 MIXED DEBUG - Sample survivors:', eligible.slice(0,3).map(f => `${f.lemma}-${f.mood}-${f.tense}`))
       } else {
         console.log('🚨 C1 MIXED DEBUG - NO FORMS SURVIVED FILTERING!')
+      }
+    }
+    
+    if (isB1Debug) {
+      console.log('🚨 B1 DEBUG - After filtering:', eligible.length, 'forms remain')
+      if (eligible.length > 0) {
+        console.log('🚨 B1 DEBUG - Sample survivors:', eligible.slice(0,10).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
+        
+        // Analyze mood/tense diversity
+        const moodTenseCombos = new Set(eligible.map(f => `${f.mood}|${f.tense}`))
+        console.log('🚨 B1 DEBUG - Available mood/tense combinations:', Array.from(moodTenseCombos))
+        
+        // Count by mood
+        const moodCounts = {}
+        eligible.forEach(f => {
+          moodCounts[f.mood] = (moodCounts[f.mood] || 0) + 1
+        })
+        console.log('🚨 B1 DEBUG - Forms by mood:', moodCounts)
+      } else {
+        console.log('🚨 B1 DEBUG - NO FORMS SURVIVED FILTERING!')
       }
     }
   
@@ -473,7 +505,15 @@ export function chooseNext({forms, history, currentItem}){
     if (r <= 0) { randomPerson = availablePersons[i]; break }
   }
   const formsForPerson = candidatesByPerson[randomPerson]
-  let selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
+  // CRITICAL FIX: For participles, prefer the first (standard) form instead of random selection
+  let selectedForm
+  if (formsForPerson.length > 1 && formsForPerson[0].mood === 'nonfinite' && formsForPerson[0].tense === 'part') {
+    // For participles with multiple forms (e.g. provisto/proveído), always choose the first (standard) one
+    selectedForm = formsForPerson[0]
+    console.log(`🔧 PARTICIPLE FIX - Selected standard form: ${selectedForm.value} instead of random from [${formsForPerson.map(f => f.value).join(', ')}]`)
+  } else {
+    selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
+  }
   // Enforce clitics percentage in imperativo afirmativo at high levels
   const s = useSettings.getState()
   if (selectedForm.mood === 'imperative' && selectedForm.tense === 'impAff' && s.cliticsPercent > 0) {
