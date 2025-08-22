@@ -119,6 +119,22 @@ const PACKS = {
     id:"B1_PARTICIPLES", 
     lemmas:["ver","escribir","volver","freír","imprimir","romper","abrir","poner","hacer","decir","cubrir","descubrir","morir","proveer"] 
   },
+  B1_EXPANDED: {
+    id:"B1_EXPANDED",
+    lemmas:[
+      // Verbos regulares esenciales para B1
+      "hablar","comer","vivir","trabajar","estudiar","caminar","bailar","cantar","escuchar","mirar",
+      "comprar","necesitar","usar","ayudar","beber","correr","aprender","decidir","responder",
+      "subir","vender","amar","buscar","comprender","permitir","recibir","sufrir","unir",
+      "entrar","salir","llegar","empezar","terminar","seguir","encontrar","llamar","llevar","pasar",
+      "deber","dejar","parecer","conseguir","sentir","servir","caer","leer","creer","construir",
+      "contar","dormir","morir","pedir","repetir","mentir","convertir","divertir","preferir",
+      // Irregulares importantes para B1 (subjuntivo, imperativo, condicional)
+      "ser","estar","tener","haber","ir","venir","poder","querer","hacer","decir","poner","dar",
+      "saber","salir","valer","conocer","parecer","producir","conducir","traducir","ofrecer",
+      "traer","oír","caer","leer","creer","construir","destruir","huir","incluir","concluir"
+    ]
+  },
   B2_ALTER: { 
     id:"B2_ALTER", 
     lemmas:["conocer","distinguir","seguir","oír","crecer","nacer","parecer","obedecer","merecer","agradecer","establecer","conducir","traducir","producir","reducir","construir","instruir","contribuir","distribuir","incluir","trabajar","estudiar","organizar","utilizar","comunicar"] 
@@ -178,7 +194,7 @@ export const LEVELS = {
     mixing:{ switchesPerDrill:2, crossMode:true, fastTreatmentSwitch:false },
     timing:{ perItemMs:6000, targetMedianMs:3000 },
     scoring:{ minAccuracy:94, orthPenalty:0.5, allowDoubleParticiples:true },
-    verbPacks:[PACKS.A2_PASTS, PACKS.B1_PARTICIPLES], rareVerbs:false,
+    verbPacks:[PACKS.B1_EXPANDED], rareVerbs:false,
   },
   B2: {
     level:"B2",
