@@ -183,7 +183,8 @@ export function validateAllData() {
   const problemVerbs = []
   
   // Validar todos los verbos
-  console.log(`📚 Validando ${verbs.length} verbos...`)
+  console.log(`📚 Validando ${verbs.length} verbos...
+`)
   
   verbs.forEach((verb, index) => {
     const { errors, warnings } = verbValidator.validateVerb(verb)
@@ -200,7 +201,9 @@ export function validateAllData() {
   })
   
   // Validar familias irregulares
-  console.log(`\n🏗️  Validando ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares...`)
+  console.log(`
+🏗️  Validando ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares...
+`)
   
   const familyProblems = []
   Object.values(IRREGULAR_FAMILIES).forEach(family => {
@@ -219,7 +222,9 @@ export function validateAllData() {
   })
   
   // Reportar resultados
-  console.log(`\n📊 RESULTADOS DE VALIDACIÓN:`)
+  console.log(`
+📊 RESULTADOS DE VALIDACIÓN:
+`)
   console.log(`✅ Verbos validados: ${verbs.length}`)
   console.log(`✅ Familias validadas: ${Object.keys(IRREGULAR_FAMILIES).length}`)
   console.log(`❌ Total errores: ${totalErrors}`)
@@ -227,9 +232,12 @@ export function validateAllData() {
   
   // Mostrar problemas más críticos
   if (totalErrors > 0) {
-    console.log(`\n🚨 ERRORES CRÍTICOS:`)
+    console.log(`
+🚨 ERRORES CRÍTICOS:
+`)
     problemVerbs.filter(p => p.errors.length > 0).slice(0, 5).forEach(problem => {
-      console.log(`  ${problem.verb}:`)
+      console.log(`  ${problem.verb}:
+`)
       problem.errors.forEach(error => console.log(`    - ${error}`))
     })
     
@@ -238,21 +246,30 @@ export function validateAllData() {
     }
   }
   
-  if (totalWarnings > 0 && totalWarnings <= 10) {
-    console.log(`\n⚠️  ADVERTENCIAS:`)
-    problemVerbs.filter(p => p.warnings.length > 0).slice(0, 10).forEach(problem => {
-      console.log(`  ${problem.verb}:`)
+  if (totalWarnings > 0) {
+    console.log(`
+⚠️  ADVERTENCIAS:
+`)
+    problemVerbs.filter(p => p.warnings.length > 0).forEach(problem => {
+      console.log(`  ${problem.verb}:
+`)
       problem.warnings.forEach(warning => console.log(`    - ${warning}`))
     })
   }
   
   // Estado general
   if (totalErrors === 0 && totalWarnings === 0) {
-    console.log(`\n🎉 ¡PERFECTO! Todos los datos pasaron la validación.`)
+    console.log(`
+🎉 ¡PERFECTO! Todos los datos pasaron la validación.
+`)
   } else if (totalErrors === 0) {
-    console.log(`\n✅ Sin errores críticos. Solo advertencias menores.`)
+    console.log(`
+✅ Sin errores críticos. Solo advertencias menores.
+`)
   } else {
-    console.log(`\n🔧 Se requieren correcciones antes del deploy.`)
+    console.log(`
+🔧 Se requieren correcciones antes del deploy.
+`)
   }
   
   return {
