@@ -463,6 +463,7 @@ export default function Drill({
     const isJur = (tense === 'subjFut' || tense === 'subjFutPerf') && (settings.enableFuturoSubjRead || settings.enableFuturoSubjProd)
     
     // Ejemplo de conjugación del verbo hablar en primera persona para este modo y tiempo
+    // Solo mostrar tiempos simples, no compuestos
     const getHablarExample = () => {
       const examples = {
         'indicative': {
@@ -470,22 +471,16 @@ export default function Drill({
           'pretIndef': 'hablé',
           'impf': 'hablaba',
           'fut': 'hablaré',
-          'pretPerf': 'he hablado',
-          'plusc': 'había hablado',
-          'futPerf': 'habré hablado',
           'irAInf': 'voy a hablar',
           'presFuturate': 'hablo'
         },
         'subjunctive': {
           'subjPres': 'hable',
           'subjImpf': 'hablara',
-          'subjFut': 'hablare',
-          'subjPerf': 'haya hablado',
-          'subjPlusc': 'hubiera hablado'
+          'subjFut': 'hablare'
         },
         'conditional': {
-          'cond': 'hablaría',
-          'condPerf': 'habría hablado'
+          'cond': 'hablaría'
         },
         'imperative': {
           'impAff': 'habla',

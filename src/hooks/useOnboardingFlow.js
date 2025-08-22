@@ -61,30 +61,25 @@ export function useOnboardingFlow() {
   }
 
   // Function to get conjugation examples
+  // Solo mostrar tiempos simples, no compuestos
   const getConjugationExample = (mood, tense) => {
     const examples = {
-      // Indicativo
+      // Indicativo (solo tiempos simples)
       'indicative_pres': 'hablo, hablas, habla',
       'indicative_pretIndef': 'hablé, hablaste, habló',
       'indicative_impf': 'hablaba, hablabas, hablaba',
       'indicative_fut': 'hablaré, hablarás, hablará',
-      'indicative_pretPerf': 'he hablado, has hablado, ha hablado',
-      'indicative_plusc': 'había hablado, habías hablado, había hablado',
-      'indicative_futPerf': 'habré hablado, habrás hablado, habrá hablado',
       
-      // Subjuntivo
+      // Subjuntivo (solo tiempos simples)
       'subjunctive_subjPres': 'hable, hables, hable',
       'subjunctive_subjImpf': 'hablara, hablaras, hablara',
-      'subjunctive_subjPerf': 'haya hablado, hayas hablado, haya hablado',
-      'subjunctive_subjPlusc': 'hubiera hablado, hubieras hablado, hubiera hablado',
       
       // Imperativo
       'imperative_impAff': 'habla, hablad',
       'imperative_impNeg': 'no hables, no habléis',
       
-      // Condicional
+      // Condicional (solo tiempos simples)
       'conditional_cond': 'hablaría, hablarías, hablaría',
-      'conditional_condPerf': 'habría hablado, habrías hablado, habría hablado',
       
       // Formas no conjugadas
       'nonfinite_ger': 'hablando',
@@ -123,10 +118,10 @@ export function useOnboardingFlow() {
   const getSamplesFromTenses = (mood, tenses) => {
     // Define the order of learning for each mood (simple tenses first, no compound tenses)
     const learningOrder = {
-      'indicative': ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf'],
-      'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
+      'indicative': ['pres', 'pretIndef', 'impf', 'fut'],
+      'subjunctive': ['subjPres', 'subjImpf'],
       'imperative': ['impAff', 'impNeg'], // Exclude impMixed to avoid repetition
-      'conditional': ['cond', 'condPerf'],
+      'conditional': ['cond'],
       'nonfinite': ['ger', 'part'] // Exclude nonfiniteMixed to avoid repetition
     }
     
@@ -158,9 +153,9 @@ export function useOnboardingFlow() {
     const samples = sortedTenses.map(t => singleOf(mood, t)).filter(Boolean)
     const result = samples.join(' · ')
     
-    // Add " · etc." if there are compound tenses available
-    const hasCompoundTenses = tenses.some(t => ['pretPerf', 'plusc', 'futPerf', 'subjPerf', 'subjPlusc', 'condPerf'].includes(t))
-    return hasCompoundTenses && result ? `${result} · etc.` : result
+    // Add " · etc." if there are additional tenses available (but we're only showing simple ones)
+    const hasAdditionalTenses = tenses.some(t => !order.includes(t))
+    return hasAdditionalTenses && result ? `${result} · etc.` : result
   }
 
   const selectDialect = (dialect) => {
