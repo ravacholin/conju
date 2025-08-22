@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
@@ -15,15 +15,19 @@ function AppRouter() {
   const drillMode = useDrillMode()
   const onboardingFlow = useOnboardingFlow()
 
-  // Compute forms for current region
-  const allFormsForRegion = verbs.flatMap(verb =>
-    verb.paradigms
-      .filter(paradigm => paradigm.regionTags.includes(settings.region))
-      .flatMap(paradigm => paradigm.forms.map(form => ({
-        ...form,
-        lemma: verb.lemma
-      })))
-  )
+  // Compute forms for current region (memoized for performance)
+  const allFormsForRegion = useMemo(() => {
+    if (!settings.region) return []
+    
+    return verbs.flatMap(verb =>
+      verb.paradigms
+        .filter(paradigm => paradigm.regionTags.includes(settings.region))
+        .flatMap(paradigm => paradigm.forms.map(form => ({
+          ...form,
+          lemma: verb.lemma
+        })))
+    )
+  }, [settings.region])
 
   // Initialize app state
   useEffect(() => {
