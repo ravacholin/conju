@@ -93,18 +93,33 @@ function OnboardingFlow({ onStartPractice }) {
             </>
           )}
 
-          {/* Step 6: Tense Selection for Level-Specific Practice */}
-          {onboardingStep === 6 && settings.level && (
-            <MoodTenseSelection 
-              settings={settings}
-              onSelectMood={selectMood}
-              onSelectTense={selectTense}
-              onBack={goBack}
-              getAvailableMoodsForLevel={getAvailableMoodsForLevel}
-              getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
-              getModeSamples={getModeSamples}
-              getConjugationExample={getConjugationExample}
-            />
+          {/* Step 6: Multiple cases - Family Selection or Tense Selection */}
+          {onboardingStep === 6 && (
+            <>
+              {settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed' ? (
+                <FamilySelection 
+                  settings={settings}
+                  onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
+                  onBack={goBack}
+                />
+              ) : settings.level ? (
+                <MoodTenseSelection 
+                  settings={settings}
+                  onSelectMood={selectMood}
+                  onSelectTense={selectTense}
+                  onBack={goBack}
+                  getAvailableMoodsForLevel={getAvailableMoodsForLevel}
+                  getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
+                  getModeSamples={getModeSamples}
+                  getConjugationExample={getConjugationExample}
+                />
+              ) : (
+                <VerbTypeSelection 
+                  onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
+                  onBack={goBack}
+                />
+              )}
+            </>
           )}
 
           {/* Step 7: Verb Type Selection for Level-Specific Practice */}

@@ -12,6 +12,31 @@ function MoodTenseSelection({
   getConjugationExample
 }) {
   
+  if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
+    // Level-specific practice with mood already selected - show tense selection
+    return (
+      <>
+        <div className="options-grid">
+          {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
+            <ClickableCard 
+              key={tense} 
+              className="option-card compact" 
+              onClick={() => onSelectTense(tense)}
+              title={`Seleccionar ${getTenseLabel(tense)}`}
+            >
+              <h3>{getTenseLabel(tense)}</h3>
+              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+            </ClickableCard>
+          ))}
+        </div>
+        
+        <button onClick={onBack} className="back-btn">
+          <img src="/back.png" alt="Volver" className="back-icon" />
+        </button>
+      </>
+    )
+  }
+  
   if (settings.level && settings.practiceMode === 'specific') {
     // Specific practice from level - show filtered moods
     const availableMoods = getAvailableMoodsForLevel(settings.level)

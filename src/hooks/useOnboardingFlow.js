@@ -312,10 +312,38 @@ export function useOnboardingFlow() {
 
   const selectPracticeMode = (mode) => {
     closeTopPanelsAndFeatures()
-    settings.set({ practiceMode: mode })
-    if (mode === 'mixed') {
+    
+    if (mode === 'theme') {
+      // Theme-based practice setup with specific configuration
+      settings.set({ 
+        practiceMode: 'specific', 
+        level: 'ALL', 
+        cameFromTema: true,
+        strict: true,
+        accentTolerance: 'warn',
+        requireDieresis: false,
+        blockNonNormativeSpelling: false,
+        cliticStrictness: 'low',
+        cliticsPercent: 0,
+        neutralizePronoun: false,
+        rotateSecondPerson: false,
+        timeMode: 'soft',
+        perItemMs: 6000,
+        medianTargetMs: 3000,
+        // Basic verbs to start with (future automatic progression)
+        allowedLemmas: new Set([
+          'ser','estar','tener','haber','ir','ver','venir','poder','querer','hacer',
+          'decir','poner','dar','vivir','comer','hablar','saber','salir','llevar','pasar',
+          'deber','seguir','encontrar','llamar','trabajar','estudiar','comprar','vender',
+          'escribir','leer','abrir','cerrar','entrar','salir','empezar','terminar'
+        ])
+      })
+      setOnboardingStep(5) // Go to mood selection
+    } else if (mode === 'mixed') {
+      settings.set({ practiceMode: mode })
       setOnboardingStep(5) // Go to verb type selection for mixed practice
-    } else {
+    } else if (mode === 'specific') {
+      settings.set({ practiceMode: mode })
       // For specific practice without level, set to C2 to show all forms
       if (!settings.level) {
         settings.set({ level: 'C2' })
@@ -381,6 +409,19 @@ export function useOnboardingFlow() {
 
   const goBack = () => {
     if (onboardingStep > 1) {
+      // Special case: if we're in step 5 and came from "Por tema", go directly to main menu
+      if (onboardingStep === 5 && settings.cameFromTema) {
+        setOnboardingStep(2) // Go directly to main menu: "¿Qué querés practicar?"
+        return
+      }
+      
+      // Special case: if we're in step 6 and came from "Por tema", go back to step 5
+      if (onboardingStep === 6 && settings.cameFromTema) {
+        setOnboardingStep(5)
+        return
+      }
+      
+      // Default behavior: go back one step
       setOnboardingStep(onboardingStep - 1)
     }
   }
