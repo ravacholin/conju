@@ -93,7 +93,9 @@ verbs.forEach(verb => {
 
 // Función para pre-calentar caches con datos frecuentes
 export function warmupCaches() {
-  console.log('🔥 Calentando caches del generador...')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔥 Calentando caches del generador...')
+  }
   
   const commonVerbs = ['ser', 'estar', 'haber', 'tener', 'hacer', 'ir', 'venir', 'decir', 'poder', 'querer']
   const commonCombinations = [
@@ -120,12 +122,14 @@ export function warmupCaches() {
     combinations++
   })
   
-  const warmupTime = Date.now() - startTime
-  console.log(`✅ Cache warmup completado en ${warmupTime}ms`)
-  console.log(`   - ${categorized} verbos categorizados`)
-  console.log(`   - ${combinations} combinaciones pre-computadas`)
-  console.log(`   - ${VERB_LOOKUP_MAP.size} verbos indexados`)
-  console.log(`   - ${FORM_LOOKUP_MAP.size} formas indexadas`)
+  if (process.env.NODE_ENV === 'development') {
+    const warmupTime = Date.now() - startTime
+    console.log(`✅ Cache warmup completado en ${warmupTime}ms`)
+    console.log(`   - ${categorized} verbos categorizados`)
+    console.log(`   - ${combinations} combinaciones pre-computadas`)
+    console.log(`   - ${VERB_LOOKUP_MAP.size} verbos indexados`)
+    console.log(`   - ${FORM_LOOKUP_MAP.size} formas indexadas`)
+  }
 }
 
 // Función para obtener estadísticas de performance
@@ -144,5 +148,7 @@ export function clearAllCaches() {
   verbCategorizationCache.clear()
   formFilterCache.clear()
   combinationCache.clear()
-  console.log('🧹 Todos los caches limpiados')
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🧹 Todos los caches limpiados')
+  }
 }

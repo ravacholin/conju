@@ -64,15 +64,17 @@ export function chooseNext({forms, history, currentItem}){
     currentBlock, selectedFamily
   } = useSettings.getState()
   
-  console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
-    level, useVoseo, useTuteo, useVosotros,
-    practiceMode, specificMood, specificTense, practicePronoun, verbType,
-    selectedFamily, currentBlock: !!currentBlock,
-    formsCount: forms.length
-  })
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
+      level, useVoseo, useTuteo, useVosotros,
+      practiceMode, specificMood, specificTense, practicePronoun, verbType,
+      selectedFamily, currentBlock: !!currentBlock,
+      formsCount: forms.length
+    })
+  }
   
   // CRITICAL DEBUG: Special focus on B1 level filtering
-  const isB1Debug = level === 'B1'
+  const isB1Debug = level === 'B1' && process.env.NODE_ENV === 'development'
   if (isB1Debug) {
     console.log('🚨 B1 DEBUG - Initial analysis')
     console.log('🚨 B1 DEBUG - Total forms:', forms.length)
@@ -83,7 +85,7 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   // DIAGNOSTIC: Special focus on C1 mixed practice
-  if (level === 'C1' && practiceMode === 'mixed') {
+  if (level === 'C1' && practiceMode === 'mixed' && process.env.NODE_ENV === 'development') {
     console.log('🚨 C1 MIXED DEBUG - Initial forms count:', forms.length)
     console.log('🚨 C1 MIXED DEBUG - currentBlock:', currentBlock)
     console.log('🚨 C1 MIXED DEBUG - verbType:', verbType)
