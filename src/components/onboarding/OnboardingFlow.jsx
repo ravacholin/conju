@@ -5,6 +5,7 @@ import PracticeModeSelection from './PracticeModeSelection.jsx'
 import MoodTenseSelection from './MoodTenseSelection.jsx'
 import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
+import ClickableCard from '../shared/ClickableCard.jsx'
 
 function OnboardingFlow({ onStartPractice }) {
   const {
@@ -18,6 +19,7 @@ function OnboardingFlow({ onStartPractice }) {
     selectFamily,
     goBack,
     goToLevelDetails,
+    handleHome,
     settings,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood,
@@ -30,9 +32,9 @@ function OnboardingFlow({ onStartPractice }) {
       <div className="onboarding">
         <div className="center-column">
           {/* Header with logo */}
-          <div className="logo-container">
+          <ClickableCard className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
             <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-          </div>
+          </ClickableCard>
           
           {/* Step 1: Dialect Selection */}
           {onboardingStep === 1 && (

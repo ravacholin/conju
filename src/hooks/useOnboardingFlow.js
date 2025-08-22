@@ -319,6 +319,8 @@ export function useOnboardingFlow() {
         practiceMode: 'specific', 
         level: 'ALL', 
         cameFromTema: true,
+        specificMood: null, // Clear previous mood selection
+        specificTense: null, // Clear previous tense selection
         strict: true,
         accentTolerance: 'warn',
         requireDieresis: false,
@@ -430,6 +432,12 @@ export function useOnboardingFlow() {
     setOnboardingStep(3)
   }
 
+  const handleHome = () => {
+    // Scroll to top when returning to menu
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setOnboardingStep(1)
+  }
+
   return {
     onboardingStep,
     setOnboardingStep,
@@ -442,6 +450,7 @@ export function useOnboardingFlow() {
     selectFamily,
     goBack,
     goToLevelDetails,
+    handleHome,
     settings,
     // Utility functions for components
     getAvailableMoodsForLevel,
