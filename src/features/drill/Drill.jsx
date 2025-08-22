@@ -745,6 +745,19 @@ export default function Drill({
           placeholder="Escribe la conjugación..."
           readOnly={result !== null}
           autoFocus
+          // Prevent mobile keyboard from hiding on submit
+          onBlur={(e) => {
+            // Only refocus if we have a result (meaning we just submitted)
+            // and we're not in the process of continuing to the next verb
+            if (result && !isSubmitting) {
+              // Small delay to ensure the UI has updated
+              setTimeout(() => {
+                if (inputRef.current) {
+                  inputRef.current.focus()
+                }
+              }, 10)
+            }
+          }}
         />
         {/* Accent keypad */}
         {showAccentKeys && (
@@ -844,6 +857,19 @@ export default function Drill({
                     if(secondRef.current){ secondRef.current.focus() }
                   }
                 }}
+                // Prevent mobile keyboard from hiding on submit
+                onBlur={(e) => {
+                  // Only refocus if we have a result (meaning we just submitted)
+                  // and we're not in the process of continuing to the next verb
+                  if (result && !isSubmitting) {
+                    // Small delay to ensure the UI has updated
+                    setTimeout(() => {
+                      if (firstRef.current) {
+                        firstRef.current.focus()
+                      }
+                    }, 10)
+                  }
+                }}
               />
             </div>
             <div className="double-field">
@@ -861,6 +887,19 @@ export default function Drill({
                     e.preventDefault()
                     if (result) { handleContinue(); return }
                     doubleSubmit()
+                  }
+                }}
+                // Prevent mobile keyboard from hiding on submit
+                onBlur={(e) => {
+                  // Only refocus if we have a result (meaning we just submitted)
+                  // and we're not in the process of continuing to the next verb
+                  if (result && !isSubmitting) {
+                    // Small delay to ensure the UI has updated
+                    setTimeout(() => {
+                      if (secondRef.current) {
+                        secondRef.current.focus()
+                      }
+                    }, 10)
                   }
                 }}
               />
