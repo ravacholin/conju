@@ -122,7 +122,7 @@ function AppRouter() {
   }
 
   if (currentMode === 'onboarding') {
-    return <OnboardingFlow onStartPractice={handleStartPractice} />
+    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} />
   }
 
   if (currentMode === 'drill') {

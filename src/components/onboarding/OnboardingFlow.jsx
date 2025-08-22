@@ -7,7 +7,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice }) {
+function OnboardingFlow({ onStartPractice, setCurrentMode }) {
   const {
     onboardingStep,
     selectDialect,
@@ -32,7 +32,7 @@ function OnboardingFlow({ onStartPractice }) {
       <div className="onboarding">
         <div className="center-column">
           {/* Header with logo */}
-          <ClickableCard className="app-logo" onClick={handleHome} title="Ir al menú ¿Qué querés practicar?">
+          <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
             <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
           </ClickableCard>
           

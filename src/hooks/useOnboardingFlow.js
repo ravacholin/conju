@@ -432,9 +432,12 @@ export function useOnboardingFlow() {
     setOnboardingStep(3)
   }
 
-  const handleHome = () => {
+  const handleHome = (setCurrentMode) => {
     // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (setCurrentMode) {
+      setCurrentMode('onboarding')
+    }
     setOnboardingStep(1)
   }
 
