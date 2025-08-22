@@ -438,7 +438,7 @@ export function useOnboardingFlow() {
     if (setCurrentMode) {
       setCurrentMode('onboarding')
     }
-    setOnboardingStep(1)
+    setOnboardingStep(2) // Go to main menu: "¿Qué querés practicar?" (Por Nivel / Por Tema)
   }
 
   return {
