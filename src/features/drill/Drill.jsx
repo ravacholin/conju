@@ -162,8 +162,17 @@ export default function Drill({
       })
     } finally {
       setIsSubmitting(false)
-      if (inputRef.current) {
-        inputRef.current.focus()
+      // Keep focus in the input field for mobile users to easily press Enter for next verb
+      // Only focus if we're not showing the result (which would disable the input)
+      if (inputRef.current && !result) {
+        // Use a small delay to ensure the DOM has updated
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus()
+            // Select all text to make it easy to replace
+            inputRef.current.select()
+          }
+        }, 10)
       }
     }
   }
@@ -205,6 +214,17 @@ export default function Drill({
       }
     } finally {
       setIsSubmitting(false)
+      // Keep focus in the second input field for mobile users to easily press Enter for next verb
+      if (secondRef.current && !result) {
+        // Use a small delay to ensure the DOM has updated
+        setTimeout(() => {
+          if (secondRef.current) {
+            secondRef.current.focus()
+            // Select all text to make it easy to replace
+            secondRef.current.select()
+          }
+        }, 10)
+      }
     }
   }
 
@@ -242,14 +262,26 @@ export default function Drill({
   const handleContinue = () => {
     setResult(null)
     setInput('')
+    setSecondInput('')
+    
     onContinue()
     
-    // Focus the input after a short delay to ensure the new item is loaded
+    // Focus the appropriate input after a short delay to ensure the new item is loaded
     setTimeout(() => {
-      if (inputRef.current) {
+      // For double mode, focus the first input field
+      if (settings.doubleActive && firstRef.current) {
+        firstRef.current.focus()
+        // Select all text to make it easy to replace
+        firstRef.current.select()
+      } 
+      // For single mode, focus the main input field
+      else if (inputRef.current) {
         inputRef.current.focus()
+        // Select all text to make it easy to replace
+        inputRef.current.select()
       }
     }, 100)
+    
     if (microMode === 'cards') {
       // end if reached target
       if (cardsDone >= cardsTarget) {
