@@ -139,7 +139,11 @@ export function chooseNext({forms, history, currentItem}){
     if (f.mood === 'nonfinite') {
     } else {
       // Apply dialect filtering based on region setting
-      if (region === 'rioplatense') {
+      // UNLESS practicePronoun is 'all' which overrides regional restrictions
+      if (practicePronoun === 'all') {
+        // ALL forms mode: include ALL pronouns regardless of region
+        // yo, tú, vos, él, nosotros, vosotros, ellos - no filtering
+      } else if (region === 'rioplatense') {
         // Rioplatense: yo, vos, usted/él/ella, nosotros, ustedes/ellas/ellos
         if (f.person === '2s_tu') {
           return false
@@ -171,16 +175,27 @@ export function chooseNext({forms, history, currentItem}){
       // For specific practice, show ALL persons of the selected form
       // Don't filter by practicePronoun at all - show variety
     } else {
-      // For mixed practice, apply normal pronoun filtering
+      // For mixed practice, apply pronoun filtering based on practicePronoun setting
       if (practicePronoun === 'tu_only') {
+        // Only tú forms
         if (f.person !== '2s_tu') {
           return false
         }
       } else if (practicePronoun === 'vos_only') {
+        // Only vos forms  
         if (f.person !== '2s_vos') {
           return false
         }
+      } else if (practicePronoun === 'all') {
+        // ALL forms including vosotros - override region restrictions for 2nd person
+        // This means we allow ALL persons regardless of dialect when 'all' is selected
+        // No filtering needed - let all forms through (including vosotros)
+      } else if (practicePronoun === 'both') {
+        // Both tú and vos, but still respect regional vosotros restrictions
+        // No additional filtering beyond regional dialect filtering
       }
+      // Note: 'both' and 'all' both allow the regional dialect filtering to work normally,
+      // but 'all' will override vosotros restrictions later in the dialect filtering
     }
     
     // Verb type filtering - check both user selection and MCER level restrictions
@@ -423,7 +438,11 @@ export function chooseNext({forms, history, currentItem}){
       if (f.mood === 'nonfinite') return true
       
       // Apply same dialect filtering as main logic
-      if (region === 'rioplatense') {
+      // UNLESS practicePronoun is 'all' which overrides regional restrictions
+      if (practicePronoun === 'all') {
+        // ALL forms mode: include ALL pronouns regardless of region
+        return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person)
+      } else if (region === 'rioplatense') {
         return !['2s_tu', '2p_vosotros'].includes(f.person)
       } else if (region === 'peninsular') {
         return f.person !== '2s_vos'

@@ -81,7 +81,11 @@ export const useSettings = create((set, get) => ({
   // Double mode (Dos verbos dos)
   doubleActive: false,
   region: 'la_general',  // 'rioplatense' | 'peninsular' | 'la_general'
-  practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only'
+  practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only' | 'all'
+  // • 'tu_only': solo formas de tú (2s_tu) 
+  // • 'vos_only': solo formas de vos (2s_vos)
+  // • 'both': yo, tú, vos, él, nosotros, ellos (sin vosotros, respeta restricciones dialectales)
+  // • 'all': TODOS los pronombres incluyendo vosotros (yo, tú, vos, él, nosotros, vosotros, ellos)
   showPronouns: false,   // Show pronouns for early learning
   verbType: 'all',       // 'regular' | 'irregular' | 'all'
   allowedLemmas: null,   // restrict practice to these lemmas when set
