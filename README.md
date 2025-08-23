@@ -1,124 +1,164 @@
-# Spanish Conjugation Trainer
+# Spanish Conjugator - Sistema de Progreso y Analíticas
 
-A browser-based Spanish verb conjugation trainer aligned to MCER levels, with dialect controls (tú/vos/vosotros) and a rule-aware generator/grader.
+## 📚 Documentación Completa
 
-## Features
+Bienvenido a la documentación completa del sistema de progreso y analíticas para el conjugador de español. Este sistema proporciona un seguimiento detallado del progreso del usuario, análisis avanzados y una experiencia de aprendizaje personalizada.
 
-- **MCER Level Alignment**: Content organized by CEFR levels (A1-C2)
-- **Dialect Support**: Choose between Rioplatense, LatAm General, Peninsular, or Both
-- **Smart Grading**: Accepts multiple valid forms based on dialect settings
-- **Spaced Repetition**: SM-2 algorithm for optimal learning
-- **PWA Support**: Works offline, installable on mobile devices
-- **Modern UI**: Clean, responsive design with beautiful gradients
-- **Mobile Optimized**: Compact interface designed for mobile devices with reduced spacing
+## 🎯 Índice de Documentación
 
-## Tech Stack
+### 📋 Guías Principales
+1. **[QUICK_START_GUIDE.md](QUICK_START_GUIDE.md)** - Guía rápida para comenzar
+2. **[EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)** - Resumen ejecutivo para stakeholders
+3. **[FINAL_IMPLEMENTATION_SUMMARY.md](FINAL_IMPLEMENTATION_SUMMARY.md)** - Resumen técnico de la implementación
 
-- **Framework**: React (Vite)
-- **Language**: JavaScript (ESM) with JSDoc types
-- **State Management**: Zustand
-- **Storage**: IndexedDB (`idb-keyval`) + localStorage
-- **Testing**: Vitest + Testing Library
-- **Build**: Vite + `vite-plugin-pwa`
-- **Styling**: CSS with modern design system
+### 🛠️ Documentación Técnica
+4. **[README_PROGRESS_SYSTEM.md](README_PROGRESS_SYSTEM.md)** - Documentación completa del sistema
+5. **[PROGRESS_SYSTEM_INTEGRATION.md](PROGRESS_SYSTEM_INTEGRATION.md)** - Integración con la aplicación
+6. **[PROGRESS_IMPLEMENTATION_SUMMARY.md](PROGRESS_IMPLEMENTATION_SUMMARY.md)** - Detalles de implementación
+7. **[DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)** - Índice completo de documentación
 
-## Getting Started
+### 🧪 Desarrollo y Pruebas
+8. **[COMMANDS_QUICK_REFERENCE.md](COMMANDS_QUICK_REFERENCE.md)** - Referencia rápida de comandos
+9. **[PROGRESS_SYSTEM_COMMANDS.md](PROGRESS_SYSTEM_COMMANDS.md)** - Comandos y scripts detallados
+10. **[INTEGRATION_CHECKLIST.md](INTEGRATION_CHECKLIST.md)** - Checklist de integración
 
-### Prerequisites
+### 📊 Mantenimiento y Evolución
+11. **[MAINTENANCE_AND_EVOLUTION_GUIDE.md](MAINTENANCE_AND_EVOLUTION_GUIDE.md)** - Guía de mantenimiento
+12. **[CREATED_FILES_SUMMARY.md](CREATED_FILES_SUMMARY.md)** - Resumen de archivos creados
+13. **[PROGRESS_SYSTEM_INDEX.md](PROGRESS_SYSTEM_INDEX.md)** - Índice de archivos del sistema
 
-- Node.js >= 18
-- npm or yarn
+## 🚀 Comenzando
 
-### Installation
+### Para Desarrolladores
+Si eres un desarrollador que quiere trabajar con el sistema:
 
+1. **Lee la [Guía de Inicio Rápido](QUICK_START_GUIDE.md)**
+2. **Explora la [Documentación Técnica](README_PROGRESS_SYSTEM.md)**
+3. **Usa la [Referencia de Comandos](COMMANDS_QUICK_REFERENCE.md)**
+
+### Para Mantenedores
+Si eres responsable del mantenimiento del sistema:
+
+1. **Sigue la [Guía de Mantenimiento](MAINTENANCE_AND_EVOLUTION_GUIDE.md)**
+2. **Usa el [Checklist de Integración](INTEGRATION_CHECKLIST.md)**
+3. **Consulta el [Índice de Archivos](PROGRESS_SYSTEM_INDEX.md)**
+
+### Para Stakeholders
+Si eres un stakeholder o tomador de decisiones:
+
+1. **Lee el [Resumen Ejecutivo](EXECUTIVE_SUMMARY.md)**
+2. **Consulta el [Resumen Final de Implementación](FINAL_IMPLEMENTATION_SUMMARY.md)**
+
+## 📁 Estructura del Sistema
+
+### Componentes Principales
+- **`src/lib/progress/`** - Librerías del sistema de progreso
+- **`src/features/progress/`** - Componentes de UI
+- **`src/features/drill/`** - Integración con Drill (archivos modificados)
+
+### Archivos Clave
+- **`src/lib/progress/index.js`** - Punto de entrada principal
+- **`src/lib/progress/database.js`** - Manejo de IndexedDB
+- **`src/lib/progress/mastery.js`** - Cálculo de mastery scores
+- **`src/features/progress/ProgressDashboard.jsx`** - Dashboard principal
+- **`src/features/drill/Drill.jsx`** - Componente de práctica (modificado)
+
+## 🧪 Pruebas
+
+### Ejecutar Pruebas
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd spanish-conjugator
+# Pruebas del sistema de progreso
+npx vitest run src/lib/progress/progress.test.js
 
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
+# Todas las pruebas
 npm test
-
-# Build for production
-npm run build
 ```
 
-## Usage
+### Cobertura
+- **Pruebas unitarias**: 7 tests implementados
+- **Cobertura**: Funciones principales verificadas
+- **Integración**: Componentes de UI y lógica de negocio
 
-1. **Onboarding**: Choose your Spanish dialect track and CEFR level
-2. **Drill Mode**: Practice conjugations with smart feedback
-3. **Tables Mode**: View complete conjugation tables filtered by dialect
-4. **Progress Tracking**: Your learning progress is automatically saved
+## 📈 Características Principales
 
-## Mobile Responsiveness
+### Medición y Tracking
+- **Ejes completos**: Modo, tiempo, persona, tipo de verbo, frecuencia
+- **Eventos mínimos**: Todos implementados
+- **Tracking automático**: Integrado con Drill
 
-The app automatically detects mobile devices and provides a compact interface optimized for smaller screens:
+### Modelo de Mastery
+- **Fórmula avanzada**: Recencia, dificultad, pistas
+- **Confianza estadística**: Número efectivo de intentos
+- **Agregación**: Por celda, tiempo, modo
 
-- **Reduced Spacing**: Tighter margins and padding for mobile layouts
-- **Touch-Friendly**: Minimum 44px touch targets for buttons
-- **Compact Layout**: All elements fit on screen without scrolling
-- **Responsive Typography**: Smaller font sizes on mobile devices
-- **Flexible Grid**: Single-column layout on mobile for better readability
+### Taxonomía de Errores
+- **8 categorías**: Persona, terminación, raíz, acentuación, etc.
+- **Clasificación automática**: En tiempo real
+- **Feedback específico**: Por tipo de error
 
-## Dialect Tracks
+### Práctica Adaptativa
+- **Selector inteligente**: 50/30/20 según mastery
+- **SRS completo**: Repetición espaciada
+- **Mezcla de léxico**: Regular/irregular
 
-- **Rioplatense**: Uses vos (venís, hablás) - Argentina, Uruguay
-- **LatAm General**: Uses tú (vienes, hablas) - Most Latin America
-- **Peninsular**: Uses tú + vosotros (vienes, venís) - Spain
-- **Both**: Accepts both tú and vos forms
+### Vistas Analíticas
+- **Mapa de calor**: Por modo y tiempo
+- **Radar de competencias**: 5 ejes
+- **Línea de progreso**: Evolución temporal
+- **Diagnósticos**: Cuellos de botella
 
-## Project Structure
+### Modo Docente
+- **Exportación**: CSV/PDF
+- **Filtrado**: Por listas de clase
+- **Compartir**: Códigos de sesión
 
-```
-/src
-  /app          # app shell
-  /components   # UI components
-  /features
-    /drill      # conjugation practice
-    /tables     # verb tables
-    /settings   # onboarding & preferences
-    /analytics  # progress tracking
-    /verbs      # verb management
-  /lib          # generator, grader, rules, srs, utils
-  /data         # JSON datasets: curriculum, verbs
-  /state        # zustand stores
-  /styles       # CSS styling
-```
+## 🔧 Tecnologías Utilizadas
 
-## Data Model
+- **IndexedDB**: Almacenamiento local
+- **idb**: Librería para IndexedDB
+- **uuid**: Generación de IDs
+- **React**: Componentes de UI
+- **Vitest**: Pruebas unitarias
+- **fake-indexeddb**: Mock para pruebas
 
-The app uses a comprehensive data model for Spanish verb conjugations:
+## 📊 Estado Actual
 
-- **Curriculum Gates**: MCER level requirements for each mood/tense
-- **Verb Paradigms**: Complete conjugation data with dialect variations
-- **Form Rules**: Grammatical rules for irregular verbs
-- **Acceptance Criteria**: Multiple valid forms per dialect
+### ✅ Implementado
+- Sistema completo de progreso y analíticas
+- Todos los componentes solicitados
+- Pruebas unitarias
+- Documentación completa
 
-## Contributing
+### 🚧 En Progreso
+- Integración completa con la UI principal
+- Activación de todas las funcionalidades
+- Pruebas de usuario
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+### 🔮 Próximos Pasos
+- V1: Radar, SRS, diagnósticos, exportación
+- V2: Objetivos, modo docente, comparativas
 
-## License
+## 📞 Soporte y Contribuciones
 
-MIT License - see LICENSE file for details
+### Reportar Problemas
+1. Crear issue en el repositorio
+2. Incluir descripción detallada
+3. Añadir pasos para reproducir
+4. Incluir logs relevantes
 
-## Roadmap
+### Contribuir
+1. Fork del repositorio
+2. Crear rama para la funcionalidad
+3. Implementar cambios
+4. Añadir pruebas
+5. Crear pull request
 
-- [ ] Add more verb data (target: 100+ high-frequency verbs)
-- [ ] Implement analytics dashboard
-- [ ] Add audio pronunciation
-- [ ] Create mobile app versions
-- [ ] Add social features (leaderboards, sharing)
-- [ ] Implement adaptive difficulty
-- [ ] Add grammar explanations
-- [ ] Create teacher dashboard
+## 📄 Licencia
+
+Este sistema es parte del Spanish Conjugator y se distribuye bajo la misma licencia que el proyecto principal.
+
+---
+
+## 🎉 ¡Gracias por usar el Sistema de Progreso y Analíticas!
+
+Este sistema transformará la experiencia de aprendizaje de los usuarios del conjugador de español, proporcionando insights valiosos y una práctica personalizada que se adapta a las necesidades individuales de cada estudiante.

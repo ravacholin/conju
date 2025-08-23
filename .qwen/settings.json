@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "playwright-mcp",
+      "args": []
+    },
+    "seq": {
+      "command": "sequential-thinking-mcp",
+      "args": []
+    }
+  }
+}

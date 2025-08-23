@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { grade } from '../../lib/core/grader.js'
 import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
+import { useProgressTracking } from './useProgressTracking.js'
+import { ProgressTrackingWrapper } from './ProgressTrackingWrapper.jsx'
 
 
 export default function Drill({ 
@@ -37,6 +39,9 @@ export default function Drill({
   const touchStart = useRef({ x: 0, y: 0 })
   const settings = useSettings()
   const [resistTick, setResistTick] = useState(0)
+  
+  // Hook para tracking de progreso
+  const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
 
   // Reset input when currentItem changes
   useEffect(() => {
@@ -112,17 +117,32 @@ export default function Drill({
       
       const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
       
-      // Debug only for problematic cases
-      // console.log('🔍 DRILL DEBUG - Grade result:', {correct: gradeResult.correct, note: gradeResult.note})
+      // Clasificar errores para tracking
+      let errorTags = []
+      if (!gradeResult.correct && !gradeResult.isAccentError) {
+        // Importar classifyError localmente para evitar problemas de dependencias
+        // En una implementación completa, esto se haría de manera más robusta
+        errorTags = ['error_general'] // Placeholder hasta que se implemente classifyError correctamente
+      }
       
-      setResult(gradeResult)
-      onResult(gradeResult)
+      // Crear resultado extendido con información de tracking
+      const extendedResult = {
+        ...gradeResult,
+        hintsUsed: hint ? 1 : 0, // Si se mostró pista, contar como usada
+        errorTags
+      }
+      
+      // Debug only for problematic cases
+      // console.log('🔍 DRILL DEBUG - Grade result:', {correct: extendedResult.correct, note: extendedResult.note})
+      
+      setResult(extendedResult)
+      handleResult(extendedResult)
       // latency
       const elapsed = Date.now() - itemStart
       setLatencies(v => [...v, elapsed])
       // local counters
-      if (!gradeResult.isAccentError) {
-        if (gradeResult.correct) {
+      if (!extendedResult.isAccentError) {
+        if (extendedResult.correct) {
           setLocalCorrect(c => c + 1)
           setCurrentStreak(s => {
             const ns = s + 1
@@ -153,13 +173,16 @@ export default function Drill({
       console.error('Settings:', currentItem.settings)
       
       // Create a more informative error result that still shows helpful info
-      setResult({ 
+      const errorResult = { 
         correct: false, 
         message: 'Error al evaluar la conjugación',
         note: 'Error técnico detectado. Revisa la consola para más detalles.',
         targets: currentItem?.form?.value ? [currentItem.form.value] : ['Forma no disponible'],
         isAccentError: false
-      })
+      }
+      
+      setResult(errorResult)
+      handleResult(errorResult)
     } finally {
       setIsSubmitting(false)
       // Keep focus in the input field for mobile users to easily press Enter for next verb
@@ -191,10 +214,12 @@ export default function Drill({
         isAccentError: firstRes.isAccentError || secondRes.isAccentError,
         targets: [currentItem.form.value, secondTarget.value],
         note: !correct ? (firstRes.note || secondRes.note || '❌ Forma incorrecta. Revisa la conjugación y los acentos.') : null,
-        accepted: correct ? `${firstRes.accepted || ''} / ${secondRes.accepted || ''}`.trim() : null
+        accepted: correct ? `${firstRes.accepted || ''} / ${secondRes.accepted || ''}`.trim() : null,
+        hintsUsed: hint ? 1 : 0, // Si se mostró pista, contar como usada
+        errorTags: [] // En modo doble, no clasificamos errores específicos
       }
       setResult(resultObj)
-      onResult(resultObj)
+      handleResult(resultObj)
       const elapsed = Date.now() - itemStart
       setLatencies(v => [...v, elapsed])
       if (correct) {
@@ -317,6 +342,8 @@ export default function Drill({
     if (!target) return
     const slice = target.slice(0, Math.min(3, target.length))
     setHint(`Pista: empieza con "${slice}"`)
+    // Registrar que se mostró una pista
+    handleHintShown()
   }
 
   const handleTouchStart = (e) => {
@@ -650,10 +677,12 @@ export default function Drill({
       isAccentError: false,
       targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`],
       note: specificNote,
-      accepted: correct ? `${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}` : null
+      accepted: correct ? `${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}` : null,
+      hintsUsed: 0, // No hay pistas en modo reverso
+      errorTags: correct ? [] : ['error_general'] // En modo reverso, error general si es incorrecto
     }
     setResult(resultObj)
-    onResult(resultObj)
+    handleResult(resultObj)
   }
 
   // Helper function to determine what to display for a result
@@ -1039,6 +1068,13 @@ export default function Drill({
           )}
         </div>
       )}
+      {/* Wrapper para tracking de progreso */}
+      <ProgressTrackingWrapper 
+        currentItem={currentItem}
+        onResult={onResult}
+        onContinue={onContinue}
+        result={result}
+      />
     </div>
   )
 } 

@@ -1,115 +1,132 @@
 import { create } from 'zustand'
-import { saveProgress, loadProgress } from '../lib/store.js'
+import { persist } from 'zustand/middleware'
+import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
+import { initProgressSystem } from '../lib/progress/index.js'
 
-// Define which keys should be persisted (exclude transient UI state)
-const PERSISTED_KEYS = [
-  'level', 'useTuteo', 'useVoseo', 'useVosotros', 'strict', 'accentTolerance',
-  'requireDieresis', 'blockNonNormativeSpelling', 'cliticStrictness', 'cliticsPercent',
-  'neutralizePronoun', 'rotateSecondPerson', 'nextSecondPerson', 'timeMode', 
-  'perItemMs', 'medianTargetMs', 'enableFuturoSubjRead', 'enableFuturoSubjProd',
-  'enableC2Conmutacion', 'burstSize', 'conmutacionSeq', 'conmutacionIdx', 'c2RareBoostLemmas',
-  'resistanceActive', 'resistanceMsLeft', 'resistanceStartTs', 'resistanceBestMsByLevel',
-  'reverseActive', 'doubleActive', 'region', 'practicePronoun', 'showPronouns',
-  'verbType', 'allowedLemmas', 'currentBlock', 'practiceMode', 'specificMood', 'specificTense'
-]
+// Niveles disponibles
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
 
-const STORAGE_KEY = 'spanish-conjugator-settings'
+// Inicializar caches al cargar
+if (typeof window !== 'undefined') {
+  import('../lib/core/optimizedCache.js').then(({ warmupCaches }) => {
+    warmupCaches()
+  })
+  
+  // Inicializar sistema de progreso
+  initProgressSystem().catch(error => {
+    console.error('Error al inicializar el sistema de progreso:', error)
+  })
+}
 
-// Debounced persist function to avoid excessive writes
-let persistTimeout = null
-const debouncedPersist = (state) => {
-  if (persistTimeout) clearTimeout(persistTimeout)
-  persistTimeout = setTimeout(async () => {
-    try {
-      const persistedState = {}
-      PERSISTED_KEYS.forEach(key => {
-        if (key in state) {
-          persistedState[key] = state[key]
+const useSettings = create(
+  persist(
+    (set, get) => ({
+      // Configuración de usuario
+      level: 'A1',
+      useVoseo: true,
+      useTuteo: false,
+      useVosotros: false,
+      region: 'rioplatense', // por defecto rioplatense
+      
+      // Modo de práctica
+      practiceMode: 'mixed',
+      specificMood: null,
+      specificTense: null,
+      practicePronoun: 'all', // 'tu_only', 'vos_only', 'both', 'all'
+      verbType: 'all', // 'all', 'regular', 'irregular'
+      selectedFamily: null,
+      
+      // Verbos permitidos (por nivel/packs)
+      allowedLemmas: null,
+      
+      // Features
+      resistanceActive: false,
+      resistanceMsLeft: 0,
+      resistanceStartTs: null,
+      resistanceBestMsByLevel: {},
+      reverseActive: false,
+      doubleActive: false,
+      
+      // Configuración de futuro subjuntivo
+      enableFuturoSubjProd: false,
+      enableFuturoSubjRead: false,
+      
+      // C2 conmutación
+      enableC2Conmutacion: false,
+      conmutacionSeq: ['2s_vos','3p','3s'],
+      conmutacionIdx: 0,
+      
+      // Rotación de segunda persona
+      rotateSecondPerson: false,
+      nextSecondPerson: '2s_vos',
+      
+      // Porcentaje de clíticos en imperativo afirmativo
+      cliticsPercent: 0,
+      
+      // Verbos raros para C2
+      c2RareBoostLemmas: [],
+      
+      // Métodos para actualizar configuración
+      set: (newSettings) => set({ ...get(), ...newSettings }),
+      setLevel: (level) => set({ level }),
+      toggleVoseo: () => set((state) => ({ useVoseo: !state.useVoseo })),
+      toggleTuteo: () => set((state) => ({ useTuteo: !state.useTuteo })),
+      toggleVosotros: () => set((state) => ({ useVosotros: !state.useVosotros })),
+      setRegion: (region) => set({ region }),
+      setPracticeMode: (mode) => set({ practiceMode: mode }),
+      setSpecificMood: (mood) => set({ specificMood: mood }),
+      setSpecificTense: (tense) => set({ specificTense: tense }),
+      setPracticePronoun: (pronoun) => set({ practicePronoun: pronoun }),
+      setVerbType: (type) => set({ verbType: type }),
+      setSelectedFamily: (family) => set({ selectedFamily: family }),
+      setAllowedLemmas: (lemmas) => set({ allowedLemmas: lemmas }),
+      toggleResistance: () => set((state) => ({ 
+        resistanceActive: !state.resistanceActive,
+        resistanceMsLeft: !state.resistanceActive ? 30000 : 0,
+        resistanceStartTs: !state.resistanceActive ? Date.now() : null
+      })),
+      toggleReverse: () => set((state) => ({ reverseActive: !state.reverseActive })),
+      toggleDouble: () => set((state) => ({ doubleActive: !state.doubleActive })),
+      toggleFuturoSubjProd: () => set((state) => ({ enableFuturoSubjProd: !state.enableFuturoSubjProd })),
+      toggleFuturoSubjRead: () => set((state) => ({ enableFuturoSubjRead: !state.enableFuturoSubjRead })),
+      setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
+      setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
+      
+      // Métodos para debugging
+      getCacheStats: () => {
+        if (typeof window !== 'undefined') {
+          return getCacheStats()
         }
+        return {}
+      },
+      clearCaches: () => {
+        if (typeof window !== 'undefined') {
+          clearAllCaches()
+        }
+      }
+    }),
+    {
+      name: 'spanish-conjugator-settings',
+      partialize: (state) => ({
+        // Solo persistir configuración de usuario, no estado temporal
+        level: state.level,
+        useVoseo: state.useVoseo,
+        useTuteo: state.useTuteo,
+        useVosotros: state.useVosotros,
+        region: state.region,
+        practiceMode: state.practiceMode,
+        specificMood: state.specificMood,
+        specificTense: state.specificTense,
+        practicePronoun: state.practicePronoun,
+        verbType: state.verbType,
+        selectedFamily: state.selectedFamily,
+        enableFuturoSubjProd: state.enableFuturoSubjProd,
+        enableFuturoSubjRead: state.enableFuturoSubjRead,
+        cliticsPercent: state.cliticsPercent,
+        resistanceBestMsByLevel: state.resistanceBestMsByLevel
       })
-      await saveProgress(STORAGE_KEY, persistedState)
-    } catch (error) {
-      console.warn('Failed to persist settings:', error)
     }
-  }, 1000)
-}
+  )
+)
 
-// Hydration function to restore persisted state
-const hydrateState = async () => {
-  try {
-    const persistedState = await loadProgress(STORAGE_KEY)
-    return persistedState || {}
-  } catch (error) {
-    console.warn('Failed to load persisted settings:', error)
-    return {}
-  }
-}
-
-export const useSettings = create((set, get) => ({
-  level: 'B1',
-  useTuteo: true,
-  useVoseo: false,
-  useVosotros: false,
-  strict: true,          // strict: only target accepted; lenient: accept alternates
-  accentTolerance: 'warn', // 'off' | 'warn' | 'accept'
-  requireDieresis: false, // require ü in güe/güi contexts
-  blockNonNormativeSpelling: false, // block forms like "fué"
-  cliticStrictness: 'off', // 'off' | 'low' | 'high'
-  cliticsPercent: 0,      // % de ítems que requieren clíticos en impAff
-  // Imperfecto de subjuntivo: siempre se aceptan ambas variantes (-ra/-se)
-  neutralizePronoun: false, // accept tu<->vos when requested
-  rotateSecondPerson: false, // alternate 2s forms at high levels
-  nextSecondPerson: '2s_vos',
-  timeMode: 'none', // 'none' | 'soft' | 'strict'
-  perItemMs: null,
-  medianTargetMs: null,
-  // C1/C2 advanced toggles
-  enableFuturoSubjRead: false,
-  enableFuturoSubjProd: false,
-  enableC2Conmutacion: false,
-  burstSize: 12,
-  conmutacionSeq: ['2s_vos','3p','3s'],
-  conmutacionIdx: 0,
-  c2RareBoostLemmas: [],
-  // Resistance mode (Survivor)
-  resistanceActive: false,
-  resistanceMsLeft: 0,
-  resistanceStartTs: null,
-  resistanceBestMsByLevel: {},
-  // Reverse mode (Reverso)
-  reverseActive: false,
-  // Double mode (Dos verbos dos)
-  doubleActive: false,
-  region: 'la_general',  // 'rioplatense' | 'peninsular' | 'la_general'
-  practicePronoun: 'both', // 'both' | 'tu_only' | 'vos_only' | 'all'
-  // • 'tu_only': solo formas de tú (2s_tu) 
-  // • 'vos_only': solo formas de vos (2s_vos)
-  // • 'both': yo, tú, vos, él, nosotros, ellos (sin vosotros, respeta restricciones dialectales)
-  // • 'all': TODOS los pronombres incluyendo vosotros (yo, tú, vos, él, nosotros, vosotros, ellos)
-  showPronouns: false,   // Show pronouns for early learning
-  verbType: 'all',       // 'regular' | 'irregular' | 'all'
-  allowedLemmas: null,   // restrict practice to these lemmas when set
-  currentBlock: null,    // { combos: [{mood,tense}], itemsRemaining: number }
-  
-  // Practice mode settings
-  practiceMode: 'mixed',  // 'mixed' | 'specific'
-  specificMood: null,     // 'indicative' | 'subjunctive' | 'imperative' | 'conditional' | 'nonfinite'
-  specificTense: null,    // depends on mood selected
-  
-  set: (patch) => {
-    set((s) => {
-      const newState = {...s, ...patch}
-      // Persist state changes
-      debouncedPersist(newState)
-      return newState
-    })
-  },
-
-  // Hydrate function to restore persisted state
-  hydrate: async () => {
-    const persistedState = await hydrateState()
-    if (Object.keys(persistedState).length > 0) {
-      set((s) => ({...s, ...persistedState}))
-    }
-  }
-})) 
+export { useSettings, LEVELS } 
