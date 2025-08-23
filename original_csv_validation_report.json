@@ -1,0 +1,385 @@
+{
+  "total": 5504,
+  "resolved": 5481,
+  "stillBroken": 23,
+  "unknownTense": 0,
+  "verbNotFound": 0,
+  "formNotFound": 0,
+  "byStatus": {
+    "Mismatch": {
+      "total": 3938,
+      "resolved": 3925,
+      "stillBroken": 13
+    },
+    "Unknown-tense": {
+      "total": 1566,
+      "resolved": 1556,
+      "stillBroken": 10
+    }
+  },
+  "resolvedExamples": [
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1s",
+      "value": "hablara",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_tu",
+      "value": "hablaras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_vos",
+      "value": "hablaras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3s",
+      "value": "hablara",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "habláramos",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2p_vosotros",
+      "value": "hablarais",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "hablar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3p",
+      "value": "hablaran",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1s",
+      "value": "comiera",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_tu",
+      "value": "comieras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_vos",
+      "value": "comieras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3s",
+      "value": "comiera",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "comiéramos",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2p_vosotros",
+      "value": "comierais",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "comer",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3p",
+      "value": "comieran",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjPres",
+      "person": "2s_vos",
+      "value": "viva",
+      "status": "Mismatch",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1s",
+      "value": "viviera",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_tu",
+      "value": "vivieras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_vos",
+      "value": "vivieras",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3s",
+      "value": "viviera",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2p_vosotros",
+      "value": "vivierais",
+      "status": "Unknown-tense",
+      "reason": "Now accepts the original form correctly"
+    }
+  ],
+  "stillBrokenExamples": [
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjPres",
+      "person": "3s",
+      "value": "vivamos",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"viva\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjPres",
+      "person": "1p",
+      "value": "viváis",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"viva\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjPres",
+      "person": "2p_vosotros",
+      "value": "vivan",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"viva\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjPres",
+      "person": "3p",
+      "value": "viv",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"vivamos\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impAff",
+      "person": "3s",
+      "value": "vivamos",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"viva\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impAff",
+      "person": "1p",
+      "value": "viváis",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"vivamos\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impAff",
+      "person": "3p",
+      "value": "viv",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"vivan\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impNeg",
+      "person": "2s_vos",
+      "value": "no viva",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"no vivas\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impNeg",
+      "person": "3s",
+      "value": "no vivamos",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"no viva\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impNeg",
+      "person": "1p",
+      "value": "no viváis",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"no vivamos\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impNeg",
+      "person": "2p_vosotros",
+      "value": "no vivan",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"no viváis\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "imperative",
+      "tense": "impNeg",
+      "person": "3p",
+      "value": "no viv",
+      "status": "Mismatch",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"no vivan\""
+    },
+    {
+      "lemma": "vivir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "viváramos",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"viviéramos\""
+    },
+    {
+      "lemma": "llegar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "llégramos",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"llegáramos\""
+    },
+    {
+      "lemma": "buscar",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "búscramos",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"buscáramos\""
+    },
+    {
+      "lemma": "imprimir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1s",
+      "value": "imprimra",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"imprimiera\""
+    },
+    {
+      "lemma": "imprimir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_tu",
+      "value": "imprimras",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"imprimieras\""
+    },
+    {
+      "lemma": "imprimir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "2s_vos",
+      "value": "imprimras",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"imprimieras\""
+    },
+    {
+      "lemma": "imprimir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "3s",
+      "value": "imprimra",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"imprimiera\""
+    },
+    {
+      "lemma": "imprimir",
+      "mood": "subjunctive",
+      "tense": "subjImpf",
+      "person": "1p",
+      "value": "imprímramos",
+      "status": "Unknown-tense",
+      "reason": "Still rejected: ❌ Forma incorrecta. La forma correcta es \"imprimiéramos\""
+    }
+  ],
+  "unknownTenseExamples": []
+}
