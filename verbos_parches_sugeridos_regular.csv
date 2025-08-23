@@ -1,0 +1,56 @@
+lemma,mood,tense,person,current_value,correct_value
+aprender,imperative,impAff,1p,aprendáis,aprendamos
+aprender,imperative,impAff,3p,aprend,aprendan
+aprender,imperative,impAff,3s,aprendamos,aprenda
+aprender,imperative,impNeg,1p,no aprendáis,no aprendamos
+aprender,imperative,impNeg,2p_vosotros,no aprendan,no aprendáis
+aprender,imperative,impNeg,2s_vos,no aprenda,no aprendas
+aprender,imperative,impNeg,3p,no aprend,no aprendan
+aprender,imperative,impNeg,3s,no aprendamos,no aprenda
+aprender,subjunctive,subjPres,1p,aprendáis,aprendamos
+aprender,subjunctive,subjPres,2p_vosotros,aprendan,aprendáis
+aprender,subjunctive,subjPres,2s_vos,aprenda,aprendas
+aprender,subjunctive,subjPres,3p,aprend,aprendan
+aprender,subjunctive,subjPres,3s,aprendamos,aprenda
+comprender,imperative,impAff,1p,comprendáis,comprendamos
+comprender,imperative,impAff,3p,comprend,comprendan
+comprender,imperative,impAff,3s,comprendamos,comprenda
+comprender,imperative,impNeg,1p,no comprendáis,no comprendamos
+comprender,imperative,impNeg,2p_vosotros,no comprendan,no comprendáis
+comprender,imperative,impNeg,2s_vos,no comprenda,no comprendas
+comprender,imperative,impNeg,3p,no comprend,no comprendan
+comprender,imperative,impNeg,3s,no comprendamos,no comprenda
+comprender,subjunctive,subjPres,1p,comprendáis,comprendamos
+comprender,subjunctive,subjPres,2p_vosotros,comprendan,comprendáis
+comprender,subjunctive,subjPres,2s_vos,comprenda,comprendas
+comprender,subjunctive,subjPres,3p,comprend,comprendan
+comprender,subjunctive,subjPres,3s,comprendamos,comprenda
+escribir,subjunctive,subjPres,1p,escribáis,escribamos
+escribir,subjunctive,subjPres,2s_vos,escriba,escribas
+escribir,subjunctive,subjPres,3s,escribamos,escriba
+recibir,imperative,impAff,1p,recibáis,recibamos
+recibir,imperative,impAff,3p,recib,reciban
+recibir,imperative,impAff,3s,recibamos,reciba
+recibir,imperative,impNeg,1p,no recibáis,no recibamos
+recibir,imperative,impNeg,2p_vosotros,no reciban,no recibáis
+recibir,imperative,impNeg,2s_vos,no reciba,no recibas
+recibir,imperative,impNeg,3p,no recib,no reciban
+recibir,imperative,impNeg,3s,no recibamos,no reciba
+recibir,subjunctive,subjPres,1p,recibáis,recibamos
+recibir,subjunctive,subjPres,2p_vosotros,reciban,recibáis
+recibir,subjunctive,subjPres,2s_vos,reciba,recibas
+recibir,subjunctive,subjPres,3p,recib,reciban
+recibir,subjunctive,subjPres,3s,recibamos,reciba
+vivir,imperative,impAff,1p,viváis,vivamos
+vivir,imperative,impAff,3p,viv,vivan
+vivir,imperative,impAff,3s,vivamos,viva
+vivir,imperative,impNeg,1p,no viváis,no vivamos
+vivir,imperative,impNeg,2p_vosotros,no vivan,no viváis
+vivir,imperative,impNeg,2s_vos,no viva,no vivas
+vivir,imperative,impNeg,3p,no viv,no vivan
+vivir,imperative,impNeg,3s,no vivamos,no viva
+vivir,subjunctive,subjPres,1p,viváis,vivamos
+vivir,subjunctive,subjPres,2p_vosotros,vivan,viváis
+vivir,subjunctive,subjPres,2s_vos,viva,vivas
+vivir,subjunctive,subjPres,3p,viv,vivan
+vivir,subjunctive,subjPres,3s,vivamos,viva
