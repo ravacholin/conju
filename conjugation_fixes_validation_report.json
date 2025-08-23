@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-08-23T13:59:47.341Z",
+  "testSuites": [
+    {
+      "name": "subjImpf Support",
+      "passed": 9,
+      "total": 10,
+      "percentage": 90
+    },
+    {
+      "name": "Critical Paradigm Fixes",
+      "passed": 5,
+      "total": 6,
+      "percentage": 83
+    },
+    {
+      "name": "Enhanced Irregular Patterns",
+      "passed": 6,
+      "total": 7,
+      "percentage": 86
+    },
+    {
+      "name": "Original Error Sample",
+      "passed": 6,
+      "total": 6,
+      "percentage": 100
+    }
+  ],
+  "overallSummary": {
+    "totalTests": 29,
+    "totalPassed": 26,
+    "overallPercentage": 90
+  }
+}

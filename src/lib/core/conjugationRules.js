@@ -418,6 +418,70 @@ export function isRegularNonfiniteForm(lemma, tense, value) {
  * @param {string} lemma - Infinitivo del verbo
  * @returns {boolean} - true si el verbo tiene participio irregular, false si es regular
  */
+
+
+// ENHANCED IRREGULAR VERB PATTERNS 
+// Handles edge cases and complex irregular verbs better
+function isEnhancedIrregularForm(lemma, mood, tense, person, value) {
+  const normalizedLemma = normalize(lemma)
+  const normalizedValue = normalize(value)
+  
+  // Enhanced irregular patterns for common problematic verbs
+  const irregularPatterns = {
+    'pensar': {
+      'indicative-pres': {
+        '1s': ['pienso'], '2s_tu': ['piensas'], '3s': ['piensa'], '3p': ['piensan']
+      },
+      'subjunctive-subjPres': {
+        '1s': ['piense'], '2s_tu': ['pienses'], '2s_vos': ['pienses'], '3s': ['piense'], '3p': ['piensen']
+      }
+    },
+    'volver': {
+      'indicative-pres': {
+        '1s': ['vuelvo'], '2s_tu': ['vuelves'], '3s': ['vuelve'], '3p': ['vuelven']
+      },
+      'nonfinite-part': { '': ['vuelto'] }
+    },
+    'hacer': {
+      'nonfinite-part': { '': ['hecho'] },
+      'indicative-pres': { '1s': ['hago'] }
+    },
+    'ver': {
+      'nonfinite-part': { '': ['visto'] },
+      'indicative-impf': {
+        '1s': ['veia'], '2s_tu': ['veias'], '2s_vos': ['veias'], '3s': ['veia'],
+        '1p': ['veiamos'], '2p_vosotros': ['veiais'], '3p': ['veian']
+      }
+    },
+    'decir': {
+      'nonfinite-part': { '': ['dicho'] },
+      'nonfinite-ger': { '': ['diciendo'] }
+    }
+  }
+  
+  const verbPatterns = irregularPatterns[normalizedLemma]
+  if (verbPatterns) {
+    const tenseKey = mood + '-' + tense
+    const tenseForms = verbPatterns[tenseKey]
+    if (tenseForms && tenseForms[person]) {
+      return tenseForms[person].some(form => normalize(form) === normalizedValue)
+    }
+  }
+  
+  return false
+}
+
+// Enhanced main function that includes irregular patterns
+function isEnhancedRegularForm(lemma, mood, tense, person, value) {
+  // First check enhanced irregular patterns
+  if (isEnhancedIrregularForm(lemma, mood, tense, person, value)) {
+    return true // Irregular form is "regular" for this verb
+  }
+  
+  // Fall back to original logic
+  return isRegularFormForMood(lemma, mood, tense, person, value)
+}
+
 export function hasIrregularParticiple(lemma) {
   if (!lemma || typeof lemma !== 'string') {
     return false
@@ -485,3 +549,4 @@ export function hasIrregularParticiple(lemma) {
   
   return Object.prototype.hasOwnProperty.call(irregularParticiples, lemma)
 }
+export { isEnhancedRegularForm }
