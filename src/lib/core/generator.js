@@ -58,11 +58,15 @@ function isVerbTypeAllowedForLevel(verbType, level) {
 }
 
 export function chooseNext({forms, history, currentItem}){
+  // Extract all settings once to avoid repeated state access
+  const allSettings = useSettings.getState()
   const { 
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
-    currentBlock, selectedFamily
-  } = useSettings.getState()
+    currentBlock, selectedFamily, region, enableFuturoSubjProd, allowedLemmas,
+    enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
+    nextSecondPerson, cliticsPercent
+  } = allSettings
   
   if (process.env.NODE_ENV === 'development') {
     console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
@@ -123,15 +127,13 @@ export function chooseNext({forms, history, currentItem}){
       }
     
     // Gate futuro de subjuntivo por toggle de producción
-    const sAll = useSettings.getState()
     if (f.mood === 'subjunctive' && (f.tense === 'subjFut' || f.tense === 'subjFutPerf')) {
-      if (!sAll.enableFuturoSubjProd) {
+      if (!enableFuturoSubjProd) {
         return false
       }
     }
 
     // Person filtering (dialect) - based on region setting
-    const { region } = useSettings.getState()
     
     // For nonfinite forms (gerundios, participios), skip person filtering - they're invariable
     if (f.mood === 'nonfinite') {
@@ -210,9 +212,8 @@ export function chooseNext({forms, history, currentItem}){
     }
     
     // Restrict lemmas if configured by level/packs
-    if (useSettings.getState().allowedLemmas) {
-      const set = useSettings.getState().allowedLemmas
-      if (!set.has(f.lemma)) {
+    if (allowedLemmas) {
+      if (!allowedLemmas.has(f.lemma)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
         console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
@@ -418,7 +419,21 @@ export function chooseNext({forms, history, currentItem}){
     if (specificTense) fallback = fallback.filter(f => f.tense === specificTense)
     console.log('🔧 FALLBACK DEBUG - After tense filter:', fallback.length)
     // Respect dialect minimally for conjugated forms
-    fallback = fallback.filter(f => f.mood === 'nonfinite' || ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person))
+    fallback = fallback.filter(f => {
+      if (f.mood === 'nonfinite') return true
+      
+      // Apply same dialect filtering as main logic
+      if (region === 'rioplatense') {
+        return !['2s_tu', '2p_vosotros'].includes(f.person)
+      } else if (region === 'peninsular') {
+        return f.person !== '2s_vos'
+      } else if (region === 'la_general') {
+        return !['2s_vos', '2p_vosotros'].includes(f.person)
+      } else {
+        // All variants allowed
+        return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person)
+      }
+    })
     console.log('🔧 FALLBACK DEBUG - After dialect filter:', fallback.length)
     // If still empty, drop tense constraint
     if (fallback.length === 0 && specificTense) {
@@ -443,15 +458,14 @@ export function chooseNext({forms, history, currentItem}){
   }
 
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
-  eligible = applyLevelFormWeighting(eligible, useSettings.getState())
+  eligible = applyLevelFormWeighting(eligible, allSettings)
 
   // C2 conmutación: asegurar variedad pero sin ocultar otras personas
   // Suavizamos: priorizamos la persona objetivo si existe, pero mantenemos el resto disponible
-  const st = useSettings.getState()
-  if (st.enableC2Conmutacion && level === 'C2' && eligible.length > 0) {
+  if (enableC2Conmutacion && level === 'C2' && eligible.length > 0) {
     const base = eligible[Math.floor(Math.random() * eligible.length)]
-    const seq = st.conmutacionSeq || ['2s_vos','3p','3s']
-    const idx = st.conmutacionIdx || 0
+    const seq = conmutacionSeq || ['2s_vos','3p','3s']
+    const idx = conmutacionIdx || 0
     const targetPerson = seq[idx % seq.length]
     const boosted = []
     eligible.forEach(f => {
@@ -486,11 +500,11 @@ export function chooseNext({forms, history, currentItem}){
   })
   
   // Select a person using level-based weights, then a random form from that person
-  const personWeights = getPersonWeightsForLevel(useSettings.getState())
+  const personWeights = getPersonWeightsForLevel(allSettings)
   const availablePersons = personsInCandidates
   // Optional rotation of second person at high levels
-  const rot = useSettings.getState().rotateSecondPerson
-  const next2 = useSettings.getState().nextSecondPerson
+  const rot = rotateSecondPerson
+  const next2 = nextSecondPerson
   const weights = availablePersons.map(p => {
     let w = personWeights[p] || 1
     if (rot && (p === '2s_tu' || p === '2s_vos')) {
@@ -517,9 +531,8 @@ export function chooseNext({forms, history, currentItem}){
     selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
   }
   // Enforce clitics percentage in imperativo afirmativo at high levels
-  const s = useSettings.getState()
-  if (selectedForm.mood === 'imperative' && selectedForm.tense === 'impAff' && s.cliticsPercent > 0) {
-    const needClitic = Math.random()*100 < s.cliticsPercent
+  if (selectedForm.mood === 'imperative' && selectedForm.tense === 'impAff' && cliticsPercent > 0) {
+    const needClitic = Math.random()*100 < cliticsPercent
     if (needClitic) {
       // Simple heuristic: attach 'me' to 1s/2s targets, else 'se lo'
       const part = selectedForm.value
