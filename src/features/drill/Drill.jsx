@@ -3,6 +3,7 @@ import { grade } from '../../lib/core/grader.js'
 import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
 import { useProgressTracking } from './useProgressTracking.js'
+import { classifyError } from './tracking.js'
 import MasteryIndicator from './MasteryIndicator.jsx'
 import SessionStats from './SessionStats.jsx'
 import FeedbackNotification from './FeedbackNotification.jsx'
@@ -126,16 +127,23 @@ export default function Drill({
       // Clasificar errores para tracking
       let errorTags = []
       if (!gradeResult.correct && !gradeResult.isAccentError) {
-        // Importar classifyError localmente para evitar problemas de dependencias
-        // En una implementación completa, esto se haría de manera más robusta
-        errorTags = ['error_general'] // Placeholder hasta que se implemente classifyError correctamente
+        try {
+          const userAnswer = input.trim()
+          const correctAnswer = currentItem?.form?.value || (gradeResult.targets?.[0] ?? '')
+          errorTags = classifyError(userAnswer, correctAnswer, currentItem)
+        } catch (e) {
+          console.error('Error clasificando el error:', e)
+          errorTags = ['error_general']
+        }
       }
       
       // Crear resultado extendido con información de tracking
       const extendedResult = {
         ...gradeResult,
         hintsUsed: hint ? 1 : 0, // Si se mostró pista, contar como usada
-        errorTags
+        errorTags,
+        userAnswer: input.trim(),
+        correctAnswer: currentItem?.form?.value || (gradeResult.targets?.[0] ?? null)
       }
       
       // Debug only for problematic cases

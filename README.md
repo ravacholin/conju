@@ -135,6 +135,28 @@ npm run preview
 - Si hay errores, el Error Boundary los mostrará claramente
 - La consola mostrará logs de inicialización exitosa
 
+## 🧭 Plan de Continuación del Proyecto
+
+Este plan define pasos grandes y verificables para continuar el desarrollo y sirve como hoja de ruta. Cada hito importante se documentará en el registro de progreso.
+
+- [ ] Paso 1: Integrar clasificación real de errores en Drill (reemplazar placeholder) y propagar `userAnswer/correctAnswer` al tracking
+- [ ] Paso 2: Completar flujo de tracking (latencia, hints, rachas) en DB y validar registros mínimos en IndexedDB
+- [ ] Paso 3: Activar vistas analíticas mínimas (Heatmap y Radar) con datos reales; proteger en caso de datos vacíos
+- [ ] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
+- [ ] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
+- [ ] Paso 6: Rendimiento: revisar tamaños de bundles y memoización de listas pesadas
+
+Notas:
+- Importar APIs agregadas desde `src/lib/progress/all.js` cuando se requiera la superficie completa; evitar círculos con `index.js`.
+- Priorizar cambios pequeños y verificables, con build limpio y vista previa.
+
+## 📝 Registro de Progreso
+
+- 2025-08-24 — Paso 0A (Infra): Eliminadas exportaciones circulares, añadido ErrorBoundary global y fijado host del dev server a `127.0.0.1`. Build OK.
+- 2025-08-24 — Paso 1 (Completado): Integrada clasificación real de errores en `Drill` y propagados `userAnswer` y `correctAnswer` al sistema de tracking.
+  - Archivos: `src/features/drill/Drill.jsx`, `src/features/drill/tracking.js`
+  - Resultado: cuando la respuesta es incorrecta y no es sólo un error de tilde, se clasifican errores usando `classifyError(userAnswer, correctAnswer, item)`.
+
 ## 🚀 Plan de Implementación del Sistema de Progreso Completo
 
 ### 📊 Estado Actual del Sistema de Progreso
