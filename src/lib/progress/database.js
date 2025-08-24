@@ -468,6 +468,11 @@ export async function getMastery(masteryId) {
 }
 
 /**
+ * Obtiene todos los mastery de un usuario
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object[]>}
+ */
+/**
  * Busca mastery score por celda
  * @param {string} userId - ID del usuario
  * @param {string} mood - Modo
