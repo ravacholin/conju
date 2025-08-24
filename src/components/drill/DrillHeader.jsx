@@ -3,10 +3,12 @@ function DrillHeader({
   onToggleChallenges, 
   onToggleAccentKeys, 
   onToggleGames, 
+  onToggleProgress,
   onHome,
   showQuickSwitch,
   showChallenges,
-  showGames 
+  showGames,
+  showProgress
 }) {
   return (
     <header className="header">
@@ -59,6 +61,20 @@ function DrillHeader({
           title="Juegos"
         >
           <img src="/dice.png" alt="Juegos" className="menu-icon" />
+        </button>
+        
+        <button
+          onClick={() => {
+            if (showProgress) {
+              onToggleProgress(false)
+            } else {
+              onToggleProgress(true)
+            }
+          }}
+          className="icon-btn"
+          title="Progreso"
+        >
+          <img src="/diana.png" alt="Progreso" className="menu-icon" />
         </button>
         
         <button 

@@ -1,9 +1,7 @@
 // Componente principal del dashboard de progreso
 
 import { useEffect, useState } from 'react'
-import { getHeatMapData, getCompetencyRadarData } from '../../lib/progress/analytics.js'
-import { getUserStats } from '../../lib/progress/tracking.js'
-import { getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/goals.js'
+import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
@@ -27,6 +25,9 @@ export default function ProgressDashboard() {
       try {
         setLoading(true)
         
+        // Obtener el ID del usuario (por ahora usamos un ID por defecto)
+        const userId = 'default-user'
+        
         // Cargar todos los datos en paralelo
         const [
           heatMap,
@@ -36,12 +37,12 @@ export default function ProgressDashboard() {
           progress,
           recs
         ] = await Promise.all([
-          getHeatMapData(),
-          getCompetencyRadarData(),
-          getUserStats(),
-          getWeeklyGoals(),
-          checkWeeklyProgress(),
-          getRecommendations()
+          getHeatMapData(userId),
+          getCompetencyRadarData(userId),
+          getUserStats(userId),
+          getWeeklyGoals(userId),
+          checkWeeklyProgress(userId),
+          getRecommendations(userId)
         ])
         
         setHeatMapData(heatMap)

@@ -4,6 +4,7 @@ import QuickSwitchPanel from './QuickSwitchPanel.jsx'
 import GamesPanel from './GamesPanel.jsx'
 import SettingsPanel from './SettingsPanel.jsx'
 import Drill from '../../features/drill/Drill.jsx'
+import ProgressDashboard from '../../features/progress/ProgressDashboard.jsx'
 
 function DrillMode({
   currentItem,
@@ -26,12 +27,14 @@ function DrillMode({
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showProgress, setShowProgress] = useState(false)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
     setShowChallenges(false)
     setShowGames(false)
     setShowSettings(false)
+    setShowProgress(false)
   }
 
   const handleToggleQuickSwitch = (show = null) => {
@@ -68,6 +71,16 @@ function DrillMode({
     setShowAccentKeys(prev => !prev)
   }
 
+  const handleToggleProgress = (show = null) => {
+    const newShow = show !== null ? show : !showProgress
+    if (newShow) {
+      closeAllPanels()
+      setShowProgress(true)
+    } else {
+      setShowProgress(false)
+    }
+  }
+
   const handleQuickSwitchApply = () => {
     onRegenerateItem()
     setShowQuickSwitch(false)
@@ -80,10 +93,12 @@ function DrillMode({
         onToggleChallenges={handleToggleChallenges}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
+        onToggleProgress={handleToggleProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showChallenges={showChallenges}
         showGames={showGames}
+        showProgress={showProgress}
       />
 
       {showSettings && (
@@ -115,6 +130,20 @@ function DrillMode({
           onClose={() => setShowGames(false)}
           onRegenerateItem={onRegenerateItem}
         />
+      )}
+
+      {showProgress && (
+        <div className="panel-overlay">
+          <div className="panel-content progress-panel">
+            <button 
+              className="close-btn"
+              onClick={() => setShowProgress(false)}
+            >
+              ×
+            </button>
+            <ProgressDashboard />
+          </div>
+        </div>
       )}
 
       <main className="main-content">
