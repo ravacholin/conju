@@ -3,13 +3,12 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
   plugins: [
     react(),
     VitePWA({
-      // Allow disabling PWA generation in environments where workbox/terser
-      // combination is unstable (e.g., some Node 22 builds)
-      disable: process.env.DISABLE_PWA === 'true' || process.versions?.node?.startsWith?.('22.'),
+      // Disable PWA in non‑production or when explicitly requested, or on some Node 22 builds
+      disable: mode !== 'production' || process.env.DISABLE_PWA === 'true' || process.versions?.node?.startsWith?.('22.'),
       // Avoid terser renderChunk issues on some Node/terser combos
       minify: false,
       registerType: 'autoUpdate',
@@ -39,4 +38,4 @@ export default defineConfig({
     port: 5173,
     strictPort: true
   }
-})
+}))

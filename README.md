@@ -143,7 +143,7 @@ Este plan define pasos grandes y verificables para continuar el desarrollo y sir
 - [x] Paso 2: Completar flujo de tracking (latencia, hints, rachas) en DB y validar registros mínimos en IndexedDB
 - [x] Paso 3: Activar vistas analíticas mínimas (Heatmap y Radar) con datos reales; proteger en caso de datos vacíos
 - [x] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
-- [ ] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
+- [x] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
 - [ ] Paso 6: Rendimiento: revisar tamaños de bundles y memoización de listas pesadas
 
 Notas:
@@ -162,9 +162,31 @@ Notas:
 - 2025-08-24 — Paso 3 (Completado): Vistas analíticas enlazadas a datos reales y tolerantes a vacío.
   - Archivos: `src/lib/progress/analytics.js`, `src/lib/progress/realTimeAnalytics.js`, `src/lib/progress/database.js`, `src/lib/progress/userManager.js`, `src/features/progress/ProgressDashboard.jsx`
   - Detalles: Confirmado `getMasteryByUser` en DB, creado `userManager.js` (ID/ajustes y conteo de sesiones), y verificados componentes `HeatMap` y `CompetencyRadar` con fallbacks para datos vacíos. `ProgressDashboard` consume el ID de usuario y maneja errores.
- - 2025-08-24 — Paso 4 (Completado): SRS básico integrado: selección prioritaria por ítems vencidos y actualización de schedule después de cada intento.
-   - Archivos: `src/lib/progress/srs.js`, `src/lib/progress/database.js`, `src/hooks/useDrillMode.js`
-   - Detalles: `getDueItems(userId)` usa `getDueSchedules` y ordena por `nextDue`. `useDrillMode.generateNextItem` prioriza celdas vencidas para elegir la próxima forma; `handleDrillResult` llama a `updateSchedule` con `correct` y `hintsUsed`.
+- 2025-08-24 — Paso 4 (Completado): SRS básico integrado: selección prioritaria por ítems vencidos y actualización de schedule después de cada intento.
+  - Archivos: `src/lib/progress/srs.js`, `src/lib/progress/database.js`, `src/hooks/useDrillMode.js`
+  - Detalles: `getDueItems(userId)` usa `getDueSchedules` y ordena por `nextDue`. `useDrillMode.generateNextItem` prioriza celdas vencidas para elegir la próxima forma; `handleDrillResult` llama a `updateSchedule` con `correct` y `hintsUsed`.
+- 2025-08-24 — Paso 5 (Completado): Estabilidad y PWA.
+  - Archivos: `vite.config.js`, `src/main.jsx`
+  - Detalles: PWA deshabilitado por defecto en desarrollo (config en `defineConfig(({mode})...)`) y configurable con `DISABLE_PWA=true` al build. Registro de SW en runtime controlado por `VITE_ENABLE_PWA` (poner `false` para desactivar). Se añadieron `window.onerror` y `unhandledrejection` para evitar fallos silenciosos en producción y mostrar un banner amigable.
+
+### Flags y ejecución
+
+- Build-time:
+  - `DISABLE_PWA=true` desactiva la generación del PWA en cualquier modo (útil para CI o entornos inestables).
+- Runtime:
+  - `VITE_ENABLE_PWA=false` evita registrar el Service Worker incluso en producción.
+
+Ejemplos:
+```bash
+# Desarrollo (PWA off automáticamente por config)
+npm run dev
+
+# Producción sin PWA
+DISABLE_PWA=true npm run build && npm run preview
+
+# Producción con PWA generado pero sin registrar SW
+VITE_ENABLE_PWA=false npm run preview
+```
 
 ## 🚀 Plan de Implementación del Sistema de Progreso Completo
 
