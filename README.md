@@ -139,8 +139,8 @@ npm run preview
 
 Este plan define pasos grandes y verificables para continuar el desarrollo y sirve como hoja de ruta. Cada hito importante se documentará en el registro de progreso.
 
-- [ ] Paso 1: Integrar clasificación real de errores en Drill (reemplazar placeholder) y propagar `userAnswer/correctAnswer` al tracking
-- [ ] Paso 2: Completar flujo de tracking (latencia, hints, rachas) en DB y validar registros mínimos en IndexedDB
+- [x] Paso 1: Integrar clasificación real de errores en Drill (reemplazar placeholder) y propagar `userAnswer/correctAnswer` al tracking
+- [x] Paso 2: Completar flujo de tracking (latencia, hints, rachas) en DB y validar registros mínimos en IndexedDB
 - [ ] Paso 3: Activar vistas analíticas mínimas (Heatmap y Radar) con datos reales; proteger en caso de datos vacíos
 - [ ] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
 - [ ] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
@@ -156,6 +156,9 @@ Notas:
 - 2025-08-24 — Paso 1 (Completado): Integrada clasificación real de errores en `Drill` y propagados `userAnswer` y `correctAnswer` al sistema de tracking.
   - Archivos: `src/features/drill/Drill.jsx`, `src/features/drill/tracking.js`
   - Resultado: cuando la respuesta es incorrecta y no es sólo un error de tilde, se clasifican errores usando `classifyError(userAnswer, correctAnswer, item)`.
+- 2025-08-24 — Paso 2 (Completado): Guardado robusto de intentos en IndexedDB con `itemId`, `latencyMs`, `hintsUsed`, `errorTags`, `userAnswer`, `correctAnswer`; se disparan eventos de racha.
+  - Archivos: `src/lib/progress/tracking.js`, `src/features/drill/Drill.jsx`
+  - Detalles: `trackAttemptSubmitted` ahora infiere `itemId` desde `result.item?.id` cuando no viene explícito, prioriza `errorTags` desde la UI y persiste campos adicionales. `Drill` invoca `handleStreakIncremented()` al acertar.
 
 ## 🚀 Plan de Implementación del Sistema de Progreso Completo
 

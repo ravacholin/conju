@@ -63,9 +63,9 @@ export async function trackAttemptSubmitted(attemptId, result) {
   }
   
   try {
-    // Clasificar errores si es incorrecto
-    let errorTags = []
-    if (!result.correct && !result.isAccentError) {
+    // Usar etiquetas si vienen desde la UI; si no, clasificar
+    let errorTags = Array.isArray(result.errorTags) ? result.errorTags : []
+    if (errorTags.length === 0 && !result.correct && !result.isAccentError) {
       errorTags = classifyError(result.userAnswer, result.correctAnswer, result.item)
     }
     
@@ -73,11 +73,13 @@ export async function trackAttemptSubmitted(attemptId, result) {
     const attempt = {
       id: attemptId,
       userId: currentSession.userId,
-      itemId: result.itemId,
+      itemId: result.itemId || result.item?.id || null,
       correct: result.correct,
       latencyMs: result.latencyMs,
       hintsUsed: result.hintsUsed || 0,
       errorTags,
+      userAnswer: result.userAnswer ?? null,
+      correctAnswer: result.correctAnswer ?? null,
       createdAt: new Date()
     }
     

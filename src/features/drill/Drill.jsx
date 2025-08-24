@@ -182,6 +182,7 @@ export default function Drill({
             const inc = lvl==='C2'?2500: lvl==='C1'?3000: lvl==='B2'?3500: lvl==='B1'?4000: lvl==='A2'?4500:5000
             settings.set({ resistanceMsLeft: Math.min(useSettings.getState().resistanceMsLeft + inc, 120000) })
           }
+          handleStreakIncremented().catch(()=>{})
         } else {
           setCurrentStreak(0)
           setErrorsCount(e => e + 1)
@@ -263,6 +264,7 @@ export default function Drill({
           }
           return ns
         })
+        handleStreakIncremented().catch(()=>{})
       } else {
         setCurrentStreak(0)
         setErrorsCount(e => e + 1)
