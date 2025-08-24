@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getMasteryScore } from '../../lib/progress/mastery.js'
+import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
  * Componente que muestra el puntaje de mastery actual para la combinación mood/tense
@@ -20,7 +21,7 @@ export default function MasteryIndicator({ currentItem }) {
 
       try {
         setLoading(true)
-        const userId = 'default-user'
+        const userId = getCurrentUserId()
         
         // Obtener el puntaje de mastery para esta combinación
         const score = await getMasteryScore(userId, {

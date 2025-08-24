@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
+import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
@@ -25,8 +26,8 @@ export default function ProgressDashboard() {
       try {
         setLoading(true)
         
-        // Obtener el ID del usuario (por ahora usamos un ID por defecto)
-        const userId = 'default-user'
+        // Obtener el ID del usuario actual
+        const userId = getCurrentUserId()
         
         // Cargar todos los datos en paralelo
         const [

@@ -9,6 +9,7 @@ import {
   trackTenseDrillStarted,
   trackTenseDrillEnded
 } from './tracking.js'
+import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
  * Hook personalizado para tracking de progreso en Drill
@@ -19,10 +20,23 @@ import {
 export function useProgressTracking(currentItem, onResult) {
   const attemptIdRef = useRef(null)
   const itemStartTimeRef = useRef(null)
+  const sessionInitializedRef = useRef(false)
 
   // Efecto para iniciar el tracking cuando cambia el ítem
   useEffect(() => {
     if (currentItem && currentItem.id) {
+      // Inicializar sesión solo una vez
+      if (!sessionInitializedRef.current) {
+        try {
+          const userId = getCurrentUserId()
+          incrementSessionCount(userId)
+          sessionInitializedRef.current = true
+          console.log('📊 Nueva sesión de práctica iniciada')
+        } catch (error) {
+          console.warn('Error al inicializar sesión:', error)
+        }
+      }
+      
       // Registrar inicio de intento
       attemptIdRef.current = trackAttemptStarted(currentItem)
       itemStartTimeRef.current = Date.now()

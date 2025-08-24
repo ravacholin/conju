@@ -1,6 +1,7 @@
 // Objetivos semanales para el sistema de progreso
 
 import { getMasteryByUser } from './database.js'
+import { getUserSettings, updateUserSettings } from './userManager.js'
 
 // Configuración de objetivos predeterminados
 const DEFAULT_WEEKLY_GOALS = {
@@ -18,11 +19,11 @@ const DEFAULT_WEEKLY_GOALS = {
  */
 export async function getWeeklyGoals(userId) {
   try {
-    // En una implementación completa, esto obtendría los objetivos
-    // guardados para el usuario
+    // Obtener configuraciones del usuario desde localStorage
+    const userSettings = getUserSettings(userId)
     
-    // Por ahora, devolvemos los objetivos predeterminados
-    return DEFAULT_WEEKLY_GOALS
+    // Devolver objetivos guardados o usar predeterminados
+    return userSettings.weeklyGoals || DEFAULT_WEEKLY_GOALS
   } catch (error) {
     console.error('Error al obtener objetivos semanales:', error)
     return DEFAULT_WEEKLY_GOALS

@@ -191,13 +191,23 @@ npm run preview
 - 🎯 Los usuarios ahora reciben feedback visual inmediato durante toda su sesión de práctica
 
 #### Fase 3: Completar Integración de Analytics
-- **Estado**: ⏳ Pendiente
+- **Estado**: 🔄 En Progreso
 - **Objetivo**: Conectar dashboard con datos reales del usuario
 - **Tareas**:
-  - [ ] Conectar dashboard de progreso con datos reales de usuario
-  - [ ] Implementar mapa de calor con datos de práctica reales
-  - [ ] Añadir radar de competencias mostrando desarrollo de habilidades
-  - [ ] Crear seguimiento de progreso y objetivos
+  - [ ] Implementar sistema de gestión de usuarios persistente
+  - [ ] Conectar dashboard de progreso con datos reales almacenados
+  - [ ] Mejorar precisión del mapa de calor con datos de práctica reales
+  - [ ] Actualizar radar de competencias con cálculos basados en datos históricos
+  - [ ] Crear agregación de datos para estadísticas precisas
+  - [ ] Implementar persistencia de sesiones y objetivos del usuario
+
+**Plan de implementación**:
+1. **Sistema de Usuario**: Crear gestión de ID de usuario persistente (localStorage/sessionStorage)
+2. **Conexión de Datos Reales**: Reemplazar datos simulados con consultas reales a IndexedDB
+3. **Mejora del Mapa de Calor**: Usar datos reales de mastery por combinación mood/tense
+4. **Radar de Competencias Real**: Calcular métricas basadas en intentos y latencias históricas
+5. **Agregación de Estadísticas**: Implementar cálculos precisos para todas las métricas del dashboard
+6. **Persistencia de Objetivos**: Sistema para guardar y recuperar objetivos semanales del usuario
 
 #### Fase 4: Características de Práctica Adaptativa
 - **Estado**: ⏳ Pendiente
