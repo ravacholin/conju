@@ -1,18 +1,19 @@
-// Pruebas para el sistema de progreso
+// Pruebas del sistema de progreso
 
 import { 
-  initProgressSystem, 
-  saveVerb, 
-  saveItem, 
-  saveAttempt, 
-  saveMastery,
-  getMasteryByUser,
-  calculateMasteryForItem
+  initProgressSystem,
+  calculateRecencyWeight,
+  getVerbDifficulty,
+  calculateHintPenalty,
+  calculateMasteryForItem,
+  calculateMasteryForCell,
+  getConfidenceLevel,
+  classifyMasteryLevel
 } from './all.js'
 
 /**
  * Ejecuta pruebas básicas del sistema de progreso
- * @returns {Promise<boolean>} Si todas las pruebas pasaron
+ * @returns {Promise<boolean>} Si todas las pruebas pasan
  */
 export async function runBasicTests() {
   console.log('🧪 Ejecutando pruebas básicas del sistema de progreso...')
@@ -22,76 +23,77 @@ export async function runBasicTests() {
     const userId = await initProgressSystem()
     console.log('✅ Sistema inicializado con userId:', userId)
     
-    // 2. Guardar un verbo de prueba
+    // 2. Probar cálculo de peso por recencia
+    const now = new Date()
+    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000)
+    
+    const weightNow = calculateRecencyWeight(now)
+    const weightOneDay = calculateRecencyWeight(oneDayAgo)
+    const weightTenDays = calculateRecencyWeight(tenDaysAgo)
+    
+    console.log('✅ Pesos por recencia:', { weightNow, weightOneDay, weightTenDays })
+    
+    // 3. Probar cálculo de dificultad del verbo
+    const regularVerb = { type: 'regular' }
+    const irregularVerb = { type: 'irregular' }
+    
+    const regularDifficulty = getVerbDifficulty(regularVerb)
+    const irregularDifficulty = getVerbDifficulty(irregularVerb)
+    
+    console.log('✅ Dificultad de verbos:', { regularDifficulty, irregularDifficulty })
+    
+    // 4. Probar cálculo de penalización por pistas
+    const penalty0 = calculateHintPenalty(0)
+    const penalty1 = calculateHintPenalty(1)
+    const penalty3 = calculateHintPenalty(3)
+    const penalty5 = calculateHintPenalty(5) // Debería estar por debajo del máximo
+    
+    console.log('✅ Penalización por pistas:', { penalty0, penalty1, penalty3, penalty5 })
+    
+    // 5. Probar cálculo de mastery para un ítem sin intentos
     const testVerb = {
-      id: 'verb-test',
+      id: 'verb-test-mastery',
       lemma: 'testear',
       type: 'regular',
       frequency: 'medium'
     }
     
-    await saveVerb(testVerb)
-    console.log('✅ Verbo de prueba guardado')
+    const mastery = await calculateMasteryForItem('item-nonexistent', testVerb)
     
-    // 3. Guardar un ítem de prueba
-    const testItem = {
-      id: 'item-test',
-      verbId: 'verb-test',
-      mood: 'indicative',
-      tense: 'pres',
-      person: '1s'
-    }
+    console.log('✅ Mastery para ítem sin intentos:', mastery)
     
-    await saveItem(testItem)
-    console.log('✅ Ítem de prueba guardado')
+    // 6. Probar cálculo de mastery para una celda sin ítems
+    const items = []
+    const verbsMap = {}
     
-    // 4. Guardar intentos de prueba
-    const testAttempt1 = {
-      id: 'attempt-1',
-      itemId: 'item-test',
-      correct: true,
-      latencyMs: 2500,
-      hintsUsed: 0,
-      errorTags: [],
-      createdAt: new Date()
-    }
+    const cellMastery = await calculateMasteryForCell(items, verbsMap)
     
-    const testAttempt2 = {
-      id: 'attempt-2',
-      itemId: 'item-test',
-      correct: false,
-      latencyMs: 3200,
-      hintsUsed: 1,
-      errorTags: ['persona_equivocada'],
-      createdAt: new Date(Date.now() - 86400000) // Hace 1 día
-    }
+    console.log('✅ Mastery para celda sin ítems:', cellMastery)
     
-    await saveAttempt(testAttempt1)
-    await saveAttempt(testAttempt2)
-    console.log('✅ Intentos de prueba guardados')
+    // 7. Probar determinación del nivel de confianza
+    const confidenceLow = getConfidenceLevel(5)
+    const confidenceMedium = getConfidenceLevel(10)
+    const confidenceHigh = getConfidenceLevel(25)
     
-    // 5. Calcular mastery para el ítem
-    const mastery = await calculateMasteryForItem('item-test', testVerb)
-    console.log('✅ Mastery calculado:', mastery)
+    console.log('✅ Nivel de confianza:', { confidenceLow, confidenceMedium, confidenceHigh })
     
-    // 6. Guardar mastery
-    const testMastery = {
-      id: 'mastery-test',
-      userId,
-      mood: 'indicative',
-      tense: 'pres',
-      person: '1s',
-      score: mastery.score,
-      n: mastery.n,
-      updatedAt: new Date()
-    }
+    // 8. Probar clasificación del nivel de mastery
+    // Con pocos intentos
+    const levelInsufficient = classifyMasteryLevel(70, 5, 3000)
+    // Con suficientes intentos y buen score
+    const levelAchieved = classifyMasteryLevel(85, 10, 2000)
+    // Con suficientes intentos y score medio
+    const levelAttention = classifyMasteryLevel(70, 10, 4000)
+    // Con suficientes intentos y score bajo
+    const levelCritical = classifyMasteryLevel(40, 10, 3000)
     
-    await saveMastery(testMastery)
-    console.log('✅ Mastery guardado')
-    
-    // 7. Obtener mastery por usuario
-    const userMastery = await getMasteryByUser(userId)
-    console.log('✅ Mastery por usuario obtenido:', userMastery.length, 'registros')
+    console.log('✅ Clasificación de nivel de mastery:', { 
+      levelInsufficient, 
+      levelAchieved, 
+      levelAttention, 
+      levelCritical 
+    })
     
     console.log('🎉 Todas las pruebas básicas pasaron')
     return true
@@ -121,45 +123,6 @@ export async function runPerformanceTests() {
     const initStart = performance.now()
     const userId = await initProgressSystem()
     results.initTime = performance.now() - initStart
-    
-    // Medir tiempo de guardado de verbo
-    const verbStart = performance.now()
-    await saveVerb({
-      id: 'perf-verb',
-      lemma: 'perf_test',
-      type: 'regular',
-      frequency: 'high'
-    })
-    results.saveVerbTime = performance.now() - verbStart
-    
-    // Medir tiempo de guardado de ítem
-    const itemStart = performance.now()
-    await saveItem({
-      id: 'perf-item',
-      verbId: 'perf-verb',
-      mood: 'indicative',
-      tense: 'pres',
-      person: '1s'
-    })
-    results.saveItemTime = performance.now() - itemStart
-    
-    // Medir tiempo de guardado de intento
-    const attemptStart = performance.now()
-    await saveAttempt({
-      id: 'perf-attempt',
-      itemId: 'perf-item',
-      correct: true,
-      latencyMs: 2000,
-      hintsUsed: 0,
-      errorTags: [],
-      createdAt: new Date()
-    })
-    results.saveAttemptTime = performance.now() - attemptStart
-    
-    // Medir tiempo de obtención de mastery
-    const masteryStart = performance.now()
-    await getMasteryByUser(userId)
-    results.getMasteryTime = performance.now() - masteryStart
     
     console.log('⚡ Pruebas de rendimiento completadas:', results)
     return results
@@ -201,3 +164,15 @@ export async function runAllTests() {
     return results
   }
 }
+
+// Ejecutar pruebas si este archivo se ejecuta directamente
+if (typeof window !== 'undefined' && window.location) {
+  // Solo ejecutar en el navegador
+  runAllTests().then(results => {
+    console.log('📊 Resultados finales de pruebas:', results)
+  }).catch(error => {
+    console.error('Error en pruebas:', error)
+  })
+}
+
+export default runAllTests

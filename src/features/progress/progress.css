@@ -1,75 +1,164 @@
-/* Estilos para los componentes de progreso y analíticas */
+/* Estilos para el sistema de progreso y analíticas */
 
-/* Progress Tracker */
-.progress-tracker {
+/* Variables CSS */
+:root {
+  --mastery-high: #28a745;
+  --mastery-medium: #ffc107;
+  --mastery-low: #dc3545;
+  --mastery-no-data: #6c757d;
+  
+  --success-bg: #d4edda;
+  --success-border: #c3e6cb;
+  --success-text: #155724;
+  
+  --warning-bg: #fff3cd;
+  --warning-border: #ffeaa7;
+  --warning-text: #856404;
+  
+  --error-bg: #f8d7da;
+  --error-border: #f5c6cb;
+  --error-text: #721c24;
+  
+  --primary: #007bff;
+  --secondary: #6c757d;
+  --light: #f8f9fa;
+  --dark: #343a40;
+}
+
+/* Dashboard principal */
+.progress-dashboard {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  color: var(--dark);
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  color: var(--secondary);
+  font-size: 1.1em;
+}
+
+.dashboard-section {
+  margin-bottom: 40px;
+  padding: 20px;
+  background: white;
   border-radius: 8px;
-  background-color: #f8f9fa;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.progress-tracker.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+.dashboard-section h2 {
+  color: var(--dark);
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--light);
 }
 
-.progress-tracker h3 {
-  margin-top: 0;
-  color: #333;
+/* Tracker de progreso */
+.progress-tracker {
+  width: 100%;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 .stat-card {
   background: white;
-  border-radius: 6px;
-  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 2.5em;
   font-weight: bold;
-  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.stat-value.success {
+  color: var(--mastery-high);
+}
+
+.stat-value.warning {
+  color: var(--mastery-medium);
+}
+
+.stat-value.error {
+  color: var(--mastery-low);
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  color: #6c757d;
-  margin-top: 5px;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: var(--dark);
+  margin-bottom: 5px;
 }
 
-.last-active {
-  text-align: center;
-  color: #6c757d;
-  font-size: 0.875rem;
+.stat-sublabel {
+  font-size: 0.9em;
+  color: var(--secondary);
 }
 
-/* Heat Map */
-.heat-map {
+.mastery-high {
+  color: var(--mastery-high);
+}
+
+.mastery-medium {
+  color: var(--mastery-medium);
+}
+
+.mastery-low {
+  color: var(--mastery-low);
+}
+
+.progress-summary {
+  background: var(--light);
   padding: 20px;
   border-radius: 8px;
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid var(--primary);
 }
 
-.heat-map-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.progress-summary h3 {
+  margin-top: 0;
+  color: var(--dark);
+}
+
+.progress-summary p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+/* Mapa de calor */
+.heat-map {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.heat-map-controls {
   margin-bottom: 20px;
-}
-
-.heat-map-header h3 {
-  margin: 0;
-  color: #333;
+  display: flex;
+  justify-content: center;
 }
 
 .time-range-selector {
@@ -78,94 +167,135 @@
 }
 
 .time-range-selector button {
-  padding: 5px 10px;
-  background: white;
+  padding: 8px 16px;
   border: 1px solid #ddd;
+  background: white;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.time-range-selector button:hover {
+  background: #f8f9fa;
 }
 
 .time-range-selector button.active {
-  background: #007bff;
+  background: var(--primary);
   color: white;
-  border-color: #007bff;
+  border-color: var(--primary);
 }
 
 .heat-map-grid {
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 2px;
-  margin-bottom: 20px;
+  min-width: 800px;
 }
 
-.header-cell, .row-label {
-  background: #e9ecef;
+.header-cell {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
   padding: 10px;
   text-align: center;
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.9em;
+}
+
+.row-label {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.header-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
 }
 
 .data-cell {
-  aspect-ratio: 1;
+  border: 1px solid #e9ecef;
+  padding: 10px;
+  text-align: center;
+  min-height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   position: relative;
 }
 
 .data-cell:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  z-index: 1;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.data-cell.high-mastery {
-  background: #28a745;
+.data-cell.mastery-high {
+  background: var(--mastery-high);
   color: white;
 }
 
-.data-cell.medium-mastery {
-  background: #ffc107;
+.data-cell.mastery-medium {
+  background: var(--mastery-medium);
   color: #212529;
 }
 
-.data-cell.low-mastery {
-  background: #dc3545;
+.data-cell.mastery-low {
+  background: var(--mastery-low);
   color: white;
 }
 
 .data-cell.no-data {
-  background: #6c757d;
+  background: var(--mastery-no-data);
   color: white;
+  opacity: 0.6;
+}
+
+.cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .mastery-score {
+  font-size: 1.2em;
   font-weight: bold;
-  font-size: 1rem;
+  margin-bottom: 5px;
 }
 
 .attempt-count {
-  font-size: 0.7rem;
+  font-size: 0.8em;
   opacity: 0.8;
+}
+
+.no-data-indicator {
+  font-size: 0.8em;
+  opacity: 0.6;
 }
 
 .heat-map-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 15px;
+  background: var(--light);
+  border-radius: 8px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.8rem;
+  gap: 8px;
 }
 
 .legend-color {
@@ -174,151 +304,240 @@
   border-radius: 3px;
 }
 
-.legend-color.high {
-  background: #28a745;
+.legend-color.mastery-high {
+  background: var(--mastery-high);
 }
 
-.legend-color.medium {
-  background: #ffc107;
+.legend-color.mastery-medium {
+  background: var(--mastery-medium);
 }
 
-.legend-color.low {
-  background: #dc3545;
+.legend-color.mastery-low {
+  background: var(--mastery-low);
 }
 
 .legend-color.no-data {
-  background: #6c757d;
+  background: var(--mastery-no-data);
+  opacity: 0.6;
 }
 
-/* Competency Radar */
+.heat-map-tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 250px;
+}
+
+.tooltip-header {
+  font-weight: bold;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+}
+
+.tooltip-content div {
+  margin: 3px 0;
+}
+
+/* Radar de competencias */
 .competency-radar {
-  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+}
+
+.radar-canvas {
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #f8f9fa;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.competency-radar h3 {
+.radar-summary {
+  flex: 1;
+  min-width: 300px;
+}
+
+.radar-summary h3 {
   margin-top: 0;
-  color: #333;
+  color: var(--dark);
 }
 
-.radar-chart {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+.competency-stats {
+  margin-bottom: 20px;
 }
 
-.radar-grid {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.radar-circle {
-  position: absolute;
-  border: 1px solid #dee2e6;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.radar-label {
-  position: absolute;
-  font-size: 0.7rem;
-  color: #6c757d;
-}
-
-.radar-axes {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.radar-axis {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.radar-point {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #007bff;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-.competency-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.competency-item {
+.stat-item {
   display: flex;
   justify-content: space-between;
-  padding: 8px;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
 }
 
-.competency-label {
+.stat-label {
   font-weight: 500;
 }
 
-.competency-value {
+.stat-value {
   font-weight: bold;
-  color: #007bff;
+  color: var(--primary);
 }
 
-/* Responsive Design */
+.overall-assessment h4 {
+  margin-top: 0;
+  color: var(--dark);
+}
+
+.overall-assessment p {
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+/* Objetivos semanales */
+.weekly-goals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.goal-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.goal-card h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--dark);
+}
+
+.goal-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+/* Recomendaciones */
+.recommendations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.recommendation-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.recommendation-card h3 {
+  margin-top: 0;
+  color: var(--dark);
+  margin-bottom: 10px;
+}
+
+.recommendation-card p {
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+/* Estados generales */
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid var(--primary);
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: 8px;
+  color: var(--error-text);
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  background: var(--light);
+  border-radius: 8px;
+  color: var(--secondary);
+}
+
+/* Media queries para responsividad */
 @media (max-width: 768px) {
+  .progress-dashboard {
+    padding: 10px;
+  }
+  
+  .dashboard-section {
+    padding: 15px;
+  }
+  
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .heat-map-grid {
-    grid-template-columns: repeat(9, 12px);
-    gap: 1px;
-  }
-  
-  .header-cell, .row-label {
-    padding: 5px;
-    font-size: 0.7rem;
-  }
-  
-  .data-cell {
-    padding: 2px;
-  }
-  
-  .mastery-score {
-    font-size: 0.7rem;
-  }
-  
-  .attempt-count {
-    font-size: 0.6rem;
-  }
-  
-  .heat-map-legend {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .competency-details {
     grid-template-columns: 1fr;
   }
   
-  .radar-grid {
-    width: 200px;
-    height: 200px;
+  .weekly-goals {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendations {
+    grid-template-columns: 1fr;
+  }
+  
+  .competency-radar {
+    flex-direction: column;
+  }
+  
+  .radar-canvas {
+    width: 100%;
+    height: auto;
+  }
+  
+  .heat-map-grid {
+    min-width: 600px;
+  }
+  
+  .header-text {
+    font-size: 0.8em;
+  }
+  
+  .data-cell {
+    min-height: 60px;
+    padding: 5px;
+  }
+  
+  .mastery-score {
+    font-size: 1em;
+  }
+  
+  .attempt-count {
+    font-size: 0.7em;
   }
 }

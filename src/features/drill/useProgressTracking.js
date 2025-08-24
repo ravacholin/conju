@@ -1,24 +1,22 @@
-// Hook personalizado para integrar el tracking de progreso con el componente de práctica
+// Hook personalizado para tracking de progreso en Drill
 
 import { useEffect, useRef } from 'react'
-import { useSettings } from '../../state/settings.js'
 import { 
   trackAttemptStarted, 
-  trackAttemptSubmitted, 
-  trackSessionEnded,
+  trackAttemptSubmitted,
   trackHintShown,
   trackStreakIncremented,
   trackTenseDrillStarted,
   trackTenseDrillEnded
-} from '../../lib/progress/tracking.js'
+} from './tracking.js'
 
 /**
- * Hook para manejar el tracking de progreso en el componente de práctica
+ * Hook personalizado para tracking de progreso en Drill
  * @param {Object} currentItem - Ítem actual que se está practicando
  * @param {Function} onResult - Función que se llama cuando hay un resultado
+ * @returns {Object} Funciones para manejar el tracking
  */
 export function useProgressTracking(currentItem, onResult) {
-  const settings = useSettings()
   const attemptIdRef = useRef(null)
   const itemStartTimeRef = useRef(null)
 
@@ -29,22 +27,24 @@ export function useProgressTracking(currentItem, onResult) {
       attemptIdRef.current = trackAttemptStarted(currentItem)
       itemStartTimeRef.current = Date.now()
       
-      // Si el ítem tiene un tiempo específico, registrar inicio de drill
-      if (currentItem.tense) {
-        trackTenseDrillStarted(currentItem.tense)
-      }
+      console.log(`🎯 Intento iniciado para ítem ${currentItem.id}`)
     }
     
-    // Cleanup: registrar fin de drill si es necesario
+    // Cleanup: registrar fin de intento si es necesario
     return () => {
-      if (currentItem && currentItem.tense) {
-        trackTenseDrillEnded(currentItem.tense)
+      if (attemptIdRef.current) {
+        console.log(`🔚 Intento ${attemptIdRef.current} finalizado (cleanup)`)
+        attemptIdRef.current = null
+        itemStartTimeRef.current = null
       }
     }
   }, [currentItem?.id])
 
-  // Función para manejar el resultado de un intento
-  const handleResult = (result) => {
+  /**
+   * Maneja el resultado de un intento
+   * @param {Object} result - Resultado del intento
+   */
+  const handleResult = async (result) => {
     // Llamar al callback original
     if (onResult) {
       onResult(result)
@@ -54,17 +54,17 @@ export function useProgressTracking(currentItem, onResult) {
     if (attemptIdRef.current && itemStartTimeRef.current) {
       const latencyMs = Date.now() - itemStartTimeRef.current
       
-      trackAttemptSubmitted(attemptIdRef.current, {
+      // Registrar intento completado
+      await trackAttemptSubmitted(attemptIdRef.current, {
         correct: result.correct,
         latencyMs,
         hintsUsed: result.hintsUsed || 0,
-        errorTags: result.errorTags || []
+        errorTags: result.errorTags || [],
+        userAnswer: result.userAnswer,
+        correctAnswer: result.correctAnswer
       })
       
-      // Si fue correcto, registrar incremento de racha
-      if (result.correct) {
-        trackStreakIncremented()
-      }
+      console.log(`✅ Intento ${attemptIdRef.current} registrado`)
       
       // Limpiar referencias
       attemptIdRef.current = null
@@ -72,13 +72,45 @@ export function useProgressTracking(currentItem, onResult) {
     }
   }
 
-  // Función para registrar que se mostró una pista
-  const handleHintShown = () => {
-    trackHintShown()
+  /**
+   * Registra que se mostró una pista
+   */
+  const handleHintShown = async () => {
+    await trackHintShown()
+    console.log('💡 Pista mostrada')
+  }
+
+  /**
+   * Registra que se incrementó una racha
+   */
+  const handleStreakIncremented = async () => {
+    await trackStreakIncremented()
+    console.log('🔥 Racha incrementada')
+  }
+
+  /**
+   * Registra que se inició un drill de tiempo
+   * @param {string} tense - Tiempo que se practica
+   */
+  const handleTenseDrillStarted = async (tense) => {
+    await trackTenseDrillStarted(tense)
+    console.log(`🔁 Drill de tiempo ${tense} iniciado`)
+  }
+
+  /**
+   * Registra que se finalizó un drill de tiempo
+   * @param {string} tense - Tiempo que se practicaba
+   */
+  const handleTenseDrillEnded = async (tense) => {
+    await trackTenseDrillEnded(tense)
+    console.log(`✅ Drill de tiempo ${tense} finalizado`)
   }
 
   return {
     handleResult,
-    handleHintShown
+    handleHintShown,
+    handleStreakIncremented,
+    handleTenseDrillStarted,
+    handleTenseDrillEnded
   }
 }

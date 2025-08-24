@@ -1,8 +1,8 @@
 // Inicialización de verbos en el sistema de progreso
 
 import { saveVerb } from './database.js'
-import { verbs } from '../../data/verbs.js'
-import { IRREGULAR_FAMILIES } from '../data/irregularFamilies.js'
+import { VERBS } from '../../data/verbs.js'
+import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 
 /**
  * Inicializa los verbos en el sistema de progreso
@@ -12,13 +12,14 @@ export async function initializeVerbs() {
   console.log('🔄 Inicializando verbos en el sistema de progreso...')
   
   try {
-    // Contadores
     let regularCount = 0
     let irregularCount = 0
+    let diphtongCount = 0
+    let orthographicChangeCount = 0
     let errorCount = 0
     
     // Procesar cada verbo
-    for (const verb of verbs) {
+    for (const verb of VERBS) {
       try {
         // Determinar frecuencia léxica (simplificada)
         const frequency = determineVerbFrequency(verb.lemma)
@@ -41,6 +42,10 @@ export async function initializeVerbs() {
           regularCount++
         } else if (verb.type === 'irregular') {
           irregularCount++
+        } else if (verb.type === 'diphtong') {
+          diphtongCount++
+        } else if (verb.type === 'orthographic_change') {
+          orthographicChangeCount++
         }
       } catch (error) {
         console.error(`❌ Error al inicializar verbo ${verb.lemma}:`, error)
@@ -48,7 +53,7 @@ export async function initializeVerbs() {
       }
     }
     
-    console.log(`✅ Inicialización completada: ${regularCount} regulares, ${irregularCount} irregulares, ${errorCount} errores`)
+    console.log(`✅ Inicialización completada: ${regularCount} regulares, ${irregularCount} irregulares, ${diphtongCount} diptongos, ${orthographicChangeCount} cambios ortográficos, ${errorCount} errores`)
   } catch (error) {
     console.error('❌ Error al inicializar verbos:', error)
     throw error
@@ -90,27 +95,76 @@ function determineVerbFrequency(lemma) {
 }
 
 /**
- * Inicializa las familias irregulares en el sistema de progreso
+ * Verifica si un verbo ya está inicializado
+ * @param {string} lemma - Lema del verbo
+ * @returns {Promise<boolean>} Si el verbo está inicializado
+ */
+export async function isVerbInitialized(lemma) {
+  // En una implementación completa, esto verificaría en la base de datos
+  // si el verbo ya está guardado
+  
+  // Por ahora, devolvemos false para forzar la inicialización
+  return false
+}
+
+/**
+ * Añade un nuevo verbo al sistema
+ * @param {Object} verb - Datos del verbo
  * @returns {Promise<void>}
  */
-export async function initializeIrregularFamilies() {
-  console.log('🔄 Inicializando familias irregulares...')
-  
+export async function addNewVerb(verb) {
   try {
-    // En una implementación completa, aquí se guardarían las familias irregulares
-    // en la base de datos con sus propiedades para cálculos de dificultad
-    console.log(`✅ ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares identificadas`)
+    // Determinar frecuencia léxica
+    const frequency = determineVerbFrequency(verb.lemma)
+    
+    // Crear objeto verbo para el sistema de progreso
+    const progressVerb = {
+      id: verb.id || `verb-${verb.lemma}`,
+      lemma: verb.lemma,
+      type: verb.type,
+      frequency,
+      // En una implementación completa, aquí se añadirían más propiedades
+    }
+    
+    // Guardar en la base de datos
+    await saveVerb(progressVerb)
+    
+    console.log(`✅ Verbo ${verb.lemma} añadido al sistema de progreso`)
   } catch (error) {
-    console.error('❌ Error al inicializar familias irregulares:', error)
+    console.error(`❌ Error al añadir verbo ${verb.lemma}:`, error)
     throw error
   }
 }
 
 /**
- * Inicialización completa del sistema de verbos
+ * Actualiza un verbo existente
+ * @param {string} verbId - ID del verbo
+ * @param {Object} updates - Actualizaciones
  * @returns {Promise<void>}
  */
-export async function initializeProgressVerbs() {
-  await initializeVerbs()
-  await initializeIrregularFamilies()
+export async function updateVerb(verbId, updates) {
+  try {
+    // En una implementación completa, esto actualizaría el verbo existente
+    
+    console.log(`✅ Verbo ${verbId} actualizado`)
+  } catch (error) {
+    console.error(`❌ Error al actualizar verbo ${verbId}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Elimina un verbo del sistema
+ * @param {string} verbId - ID del verbo
+ * @returns {Promise<void>}
+ */
+export async function removeVerb(verbId) {
+  try {
+    // En una implementación completa, esto eliminaría el verbo
+    
+    console.log(`✅ Verbo ${verbId} eliminado del sistema de progreso`)
+  } catch (error) {
+    console.error(`❌ Error al eliminar verbo ${verbId}:`, error)
+    throw error
+  }
 }

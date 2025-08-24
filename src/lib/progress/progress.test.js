@@ -1,7 +1,10 @@
-// Pruebas para el sistema de progreso
+// Pruebas para el sistema de progreso y analíticas
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { 
+  initProgressSystem,
+  isProgressSystemInitialized,
+  getCurrentUserId,
   calculateRecencyWeight,
   getVerbDifficulty,
   calculateHintPenalty,
@@ -18,6 +21,20 @@ describe('Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
+    console.log('🔧 Configurando entorno de pruebas...')
+  })
+
+  afterEach(() => {
+    // Limpiar después de cada prueba
+    console.log('🧹 Limpiando entorno de pruebas...')
+  })
+
+  it('debería inicializar el sistema de progreso', async () => {
+    const userId = await initProgressSystem()
+    expect(userId).toBeDefined()
+    expect(typeof userId).toBe('string')
+    expect(isProgressSystemInitialized()).toBe(true)
+    expect(getCurrentUserId()).toBe(userId)
   })
 
   it('debería calcular el peso por recencia correctamente', () => {

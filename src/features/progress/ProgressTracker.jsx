@@ -1,76 +1,86 @@
-// Componente básico para mostrar el progreso del usuario
+// Componente para mostrar el tracker de progreso
 
-import { useEffect, useState } from 'react'
-import { getUserStats } from '../lib/progress/tracking.js'
-import { isProgressSystemInitialized, getCurrentUserId } from '../lib/progress/index.js'
+import { formatPercentage, getMasteryColorClass, getMasteryLevelText } from '../../lib/progress/uiUtils.js'
 
-export default function ProgressTracker() {
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    const loadStats = async () => {
-      try {
-        setLoading(true)
-        
-        // Verificar si el sistema de progreso está inicializado
-        if (!isProgressSystemInitialized()) {
-          throw new Error('Sistema de progreso no inicializado')
-        }
-        
-        // Obtener estadísticas del usuario
-        const userId = getCurrentUserId()
-        const userStats = await getUserStats()
-        
-        setStats(userStats)
-        setError(null)
-      } catch (err) {
-        console.error('Error al cargar estadísticas:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadStats()
-  }, [])
-
-  if (loading) {
-    return <div className="progress-tracker">Cargando estadísticas...</div>
-  }
-
-  if (error) {
-    return <div className="progress-tracker error">Error: {error}</div>
-  }
-
+/**
+ * Componente para mostrar el tracker de progreso
+ * @param {Object} props - Propiedades del componente
+ * @param {Object} props.stats - Estadísticas del usuario
+ */
+export function ProgressTracker({ stats }) {
   if (!stats) {
-    return <div className="progress-tracker">No hay datos disponibles</div>
+    return (
+      <div className="progress-tracker loading">
+        <p>Cargando estadísticas...</p>
+      </div>
+    )
   }
+
+  const {
+    totalMastery,
+    masteredCells,
+    inProgressCells,
+    strugglingCells,
+    totalAttempts,
+    avgLatency
+  } = stats
 
   return (
     <div className="progress-tracker">
-      <h3>Estadísticas de Progreso</h3>
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-value">{stats.totalAttempts}</div>
+          <div className="stat-value">
+            <span className={getMasteryColorClass(totalMastery)}>
+              {formatPercentage(totalMastery)}
+            </span>
+          </div>
+          <div className="stat-label">Mastery Global</div>
+          <div className="stat-sublabel">{getMasteryLevelText(totalMastery)}</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value success">{masteredCells}</div>
+          <div className="stat-label">Celdas Dominadas</div>
+          <div className="stat-sublabel">M ≥ 80%</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value warning">{inProgressCells}</div>
+          <div className="stat-label">En Progreso</div>
+          <div className="stat-sublabel">60% ≤ M &lt; 80%</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value error">{strugglingCells}</div>
+          <div className="stat-label">En Dificultades</div>
+          <div className="stat-sublabel">M &lt; 60%</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value">{totalAttempts}</div>
           <div className="stat-label">Intentos Totales</div>
+          <div className="stat-sublabel">Práctica acumulada</div>
         </div>
+
         <div className="stat-card">
-          <div className="stat-value">{stats.correctAttempts}</div>
-          <div className="stat-label">Respuestas Correctas</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{stats.currentStreak}</div>
-          <div className="stat-label">Racha Actual</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">{stats.longestStreak}</div>
-          <div className="stat-label">Mejor Racha</div>
+          <div className="stat-value">
+            {avgLatency ? `${(avgLatency / 1000).toFixed(1)}s` : 'N/A'}
+          </div>
+          <div className="stat-label">Latencia Promedio</div>
+          <div className="stat-sublabel">Tiempo de respuesta</div>
         </div>
       </div>
-      <div className="last-active">
-        Última actividad: {new Date(stats.lastActive).toLocaleDateString('es-ES')}
+
+      <div className="progress-summary">
+        <h3>Resumen del Progreso</h3>
+        <p>
+          Has dominado <strong>{masteredCells}</strong> celdas de un total de{' '}
+          <strong>{masteredCells + inProgressCells + strugglingCells}</strong>.
+        </p>
+        <p>
+          Tu mastery global es de <strong>{formatPercentage(totalMastery)}</strong>,
+          lo que indica un nivel <strong>{getMasteryLevelText(totalMastery).toLowerCase()}</strong>.
+        </p>
       </div>
     </div>
   )

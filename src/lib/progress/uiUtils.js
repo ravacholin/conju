@@ -1,4 +1,4 @@
-// Interfaz de usuario para el sistema de progreso
+// Utilidades para la interfaz de usuario del sistema de progreso
 
 /**
  * Formatea un número como porcentaje
@@ -80,4 +80,29 @@ export function formatRelativeDate(date) {
   if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semanas`
   
   return date.toLocaleDateString('es-ES')
+}
+
+/**
+ * Formatea una fecha como texto legible
+ * @param {Date} date - Fecha a formatear
+ * @returns {string} Fecha formateada
+ */
+export function formatDate(date) {
+  return new Date(date).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+/**
+ * Formatea una hora como texto legible
+ * @param {Date} date - Hora a formatear
+ * @returns {string} Hora formateada
+ */
+export function formatTimeOnly(date) {
+  return new Date(date).toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }

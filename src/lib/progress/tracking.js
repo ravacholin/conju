@@ -1,48 +1,37 @@
-// Sistema de tracking de eventos y progreso
+// Sistema de tracking de eventos para el sistema de progreso
 
-import { v4 as uuidv4 } from 'uuid'
-import { 
-  saveUser, saveVerb, saveItem, saveAttempt, 
-  saveMastery, saveSchedule, getUser 
-} from './database.js'
-import { calculateMasteryForItem } from './mastery.js'
-import { ERROR_TAGS } from './dataModels.js'
-import { classifyError } from './errorClassification.js'
+import { saveAttempt, saveMastery, saveSchedule } from './database.js'
+import { calculateMasteryForItem, calculateNextInterval, updateSchedule } from './srs.js'
+import { CLASSIFICATION_RULES, ERROR_TAGS } from './dataModels.js'
 
-// Estado del usuario actual
-let currentUser = null
+// Estado del tracking
 let currentSession = null
+let currentUserId = null
 
 /**
- * Inicializa el sistema de tracking para un usuario
+ * Inicializa el sistema de tracking
  * @param {string} userId - ID del usuario
  * @returns {Promise<void>}
  */
 export async function initTracking(userId) {
-  // Verificar si el usuario existe, si no, crearlo
-  let user = await getUser(userId)
-  if (!user) {
-    user = {
-      id: userId,
-      createdAt: new Date(),
-      lastActive: new Date()
+  console.log(`🎯 Inicializando tracking para usuario ${userId}`)
+  
+  try {
+    // Crear sesión actual
+    currentSession = {
+      id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      userId,
+      startedAt: new Date(),
+      endedAt: null
     }
-    await saveUser(user)
-  } else {
-    // Actualizar última actividad
-    user.lastActive = new Date()
-    await saveUser(user)
+    
+    currentUserId = userId
+    
+    console.log(`✅ Tracking inicializado para sesión ${currentSession.id}`)
+  } catch (error) {
+    console.error('❌ Error al inicializar el sistema de tracking:', error)
+    throw error
   }
-  
-  currentUser = user
-  currentSession = {
-    id: uuidv4(),
-    userId: userId,
-    startedAt: new Date(),
-    endedAt: null
-  }
-  
-  console.log(`✅ Sistema de tracking inicializado para usuario ${userId}`)
 }
 
 /**
@@ -51,22 +40,13 @@ export async function initTracking(userId) {
  * @returns {string} ID del intento
  */
 export function trackAttemptStarted(item) {
-  if (!currentUser) {
+  if (!currentSession) {
     throw new Error('Sistema de tracking no inicializado')
   }
   
-  const attemptId = uuidv4()
+  const attemptId = `attempt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   
-  // Guardar en el estado de la sesión
-  if (!currentSession.attempts) {
-    currentSession.attempts = {}
-  }
-  
-  currentSession.attempts[attemptId] = {
-    itemId: item.id,
-    startedAt: new Date()
-  }
-  
+  console.log(`🎯 Intento iniciado: ${attemptId} para ítem ${item.id}`)
   return attemptId
 }
 
@@ -74,38 +54,40 @@ export function trackAttemptStarted(item) {
  * Registra la finalización de un intento
  * @param {string} attemptId - ID del intento
  * @param {Object} result - Resultado del intento
- * @param {boolean} result.correct - Si fue correcto
- * @param {number} result.latencyMs - Tiempo de respuesta en ms
- * @param {number} result.hintsUsed - Pistas utilizadas
- * @param {string[]} result.errorTags - Etiquetas de error
  * @returns {Promise<void>}
  */
 export async function trackAttemptSubmitted(attemptId, result) {
-  if (!currentUser || !currentSession.attempts || !currentSession.attempts[attemptId]) {
-    throw new Error('Intento no encontrado')
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
   }
   
-  const attemptRecord = currentSession.attempts[attemptId]
-  
-  // Crear objeto de intento
-  const attempt = {
-    id: attemptId,
-    itemId: attemptRecord.itemId,
-    correct: result.correct,
-    latencyMs: result.latencyMs,
-    hintsUsed: result.hintsUsed || 0,
-    errorTags: result.errorTags || [],
-    createdAt: attemptRecord.startedAt
+  try {
+    // Clasificar errores si es incorrecto
+    let errorTags = []
+    if (!result.correct && !result.isAccentError) {
+      errorTags = classifyError(result.userAnswer, result.correctAnswer, result.item)
+    }
+    
+    // Crear objeto de intento
+    const attempt = {
+      id: attemptId,
+      userId: currentSession.userId,
+      itemId: result.itemId,
+      correct: result.correct,
+      latencyMs: result.latencyMs,
+      hintsUsed: result.hintsUsed || 0,
+      errorTags,
+      createdAt: new Date()
+    }
+    
+    // Guardar intento en la base de datos
+    await saveAttempt(attempt)
+    
+    console.log(`✅ Intento registrado: ${attemptId}`, attempt)
+  } catch (error) {
+    console.error(`❌ Error al registrar intento ${attemptId}:`, error)
+    throw error
   }
-  
-  // Guardar en la base de datos
-  await saveAttempt(attempt)
-  
-  // Eliminar del estado de sesión
-  delete currentSession.attempts[attemptId]
-  
-  // Actualizar mastery score para este ítem
-  await updateMasteryForItem(attempt.itemId)
 }
 
 /**
@@ -114,18 +96,19 @@ export async function trackAttemptSubmitted(attemptId, result) {
  * @returns {Promise<void>}
  */
 export async function trackSessionEnded(sessionData = {}) {
-  if (!currentUser || !currentSession) {
+  if (!currentSession) {
     throw new Error('Sistema de tracking no inicializado')
   }
   
-  // Marcar fin de sesión
-  currentSession.endedAt = new Date()
-  
-  // Aquí se podrían guardar estadísticas de la sesión
-  console.log(`✅ Sesión finalizada para usuario ${currentUser.id}`)
-  
-  // Limpiar estado
-  currentSession = null
+  try {
+    // Marcar fin de sesión
+    currentSession.endedAt = new Date()
+    
+    console.log(`🔚 Sesión finalizada: ${currentSession.id}`, sessionData)
+  } catch (error) {
+    console.error('❌ Error al finalizar sesión:', error)
+    throw error
+  }
 }
 
 /**
@@ -133,8 +116,13 @@ export async function trackSessionEnded(sessionData = {}) {
  * @returns {Promise<void>}
  */
 export async function trackHintShown() {
-  // En una implementación completa, se guardaría este evento
-  console.log('💡 Pista mostrada')
+  try {
+    // En una implementación completa, esto guardaría el evento
+    console.log('💡 Pista mostrada')
+  } catch (error) {
+    console.error('❌ Error al mostrar pista:', error)
+    throw error
+  }
 }
 
 /**
@@ -142,8 +130,13 @@ export async function trackHintShown() {
  * @returns {Promise<void>}
  */
 export async function trackStreakIncremented() {
-  // En una implementación completa, se guardaría este evento
-  console.log('🔥 Racha incrementada')
+  try {
+    // En una implementación completa, esto guardaría el evento
+    console.log('🔥 Racha incrementada')
+  } catch (error) {
+    console.error('❌ Error al incrementar racha:', error)
+    throw error
+  }
 }
 
 /**
@@ -152,8 +145,13 @@ export async function trackStreakIncremented() {
  * @returns {Promise<void>}
  */
 export async function trackTenseDrillStarted(tense) {
-  // En una implementación completa, se guardaría este evento
-  console.log(`🔁 Drill de tiempo ${tense} iniciado`)
+  try {
+    // En una implementación completa, esto guardaría el evento
+    console.log(`🔁 Drill de tiempo ${tense} iniciado`)
+  } catch (error) {
+    console.error('❌ Error al iniciar drill de tiempo:', error)
+    throw error
+  }
 }
 
 /**
@@ -162,19 +160,13 @@ export async function trackTenseDrillStarted(tense) {
  * @returns {Promise<void>}
  */
 export async function trackTenseDrillEnded(tense) {
-  // En una implementación completa, se guardaría este evento
-  console.log(`✅ Drill de tiempo ${tense} finalizado`)
-}
-
-/**
- * Actualiza el mastery score para un ítem específico
- * @param {string} itemId - ID del ítem
- * @returns {Promise<void>}
- */
-async function updateMasteryForItem(itemId) {
-  // En una implementación completa, se obtendría el verbo asociado al ítem
-  // y se calcularía el mastery score usando calculateMasteryForItem
-  console.log(`🔄 Mastery actualizado para ítem ${itemId}`)
+  try {
+    // En una implementación completa, esto guardaría el evento
+    console.log(`✅ Drill de tiempo ${tense} finalizado`)
+  } catch (error) {
+    console.error('❌ Error al finalizar drill de tiempo:', error)
+    throw error
+  }
 }
 
 /**
@@ -182,40 +174,76 @@ async function updateMasteryForItem(itemId) {
  * @returns {Promise<Object>} Estadísticas del usuario
  */
 export async function getUserStats() {
-  if (!currentUser) {
+  if (!currentUserId) {
     throw new Error('Sistema de tracking no inicializado')
   }
   
-  // En una implementación completa, se calcularían estadísticas reales
-  return {
-    userId: currentUser.id,
-    totalAttempts: 0,
-    correctAttempts: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    lastActive: currentUser.lastActive
+  try {
+    // En una implementación completa, esto calcularía estadísticas reales
+    // basadas en los datos de la base de datos
+    
+    return {
+      userId: currentUserId,
+      totalAttempts: 0,
+      correctAttempts: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastActive: new Date()
+    }
+  } catch (error) {
+    console.error('❌ Error al obtener estadísticas del usuario:', error)
+    throw error
   }
 }
 
 /**
- * Clasifica un error en una o más categorías
+ * Clasifica un error específico
  * @param {string} userAnswer - Respuesta del usuario
  * @param {string} correctAnswer - Respuesta correcta
  * @param {Object} item - Ítem practicado
  * @returns {string[]} Etiquetas de error
  */
 export function classifyError(userAnswer, correctAnswer, item) {
-  // Usar la implementación completa de clasificación de errores
-  return classifyError(userAnswer, correctAnswer, item)
+  const errors = []
+  
+  // Normalizar las respuestas para comparación
+  const normalizedUser = normalizeAnswer(userAnswer)
+  const normalizedCorrect = normalizeAnswer(correctAnswer)
+  
+  // Si las respuestas son idénticas, no hay error
+  if (normalizedUser === normalizedCorrect) {
+    return []
+  }
+  
+  // Verificar errores específicos
+  
+  // 1. Persona equivocada (simplificado)
+  // En una implementación completa, esto requeriría un análisis más detallado
+  if (item.person && userAnswer && correctAnswer) {
+    // Lógica simplificada para detectar errores
+    // En la práctica, esto requeriría un análisis lingüístico más complejo
+  }
+  
+  // Si no se identifican errores específicos, marcar como error general
+  if (errors.length === 0) {
+    errors.push(ERROR_TAGS.WRONG_PERSON) // Por defecto
+  }
+  
+  return errors
 }
 
-// Exportar funciones de tracking
-export {
-  trackAttemptStarted,
-  trackAttemptSubmitted,
-  trackSessionEnded,
-  trackHintShown,
-  trackStreakIncremented,
-  trackTenseDrillStarted,
-  trackTenseDrillEnded
+/**
+ * Normaliza una respuesta para comparación
+ * @param {string} answer - Respuesta a normalizar
+ * @returns {string} Respuesta normalizada
+ */
+function normalizeAnswer(answer) {
+  if (!answer || typeof answer !== 'string') return ''
+  
+  return answer
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remover acentos
+    .replace(/\s+/g, ' ') // Normalizar espacios
+    .trim()
 }

@@ -13,8 +13,7 @@
  * @typedef {Object} Verb
  * @property {string} id - Identificador único del verbo
  * @property {string} lemma - Lema del verbo (infinitivo)
- * @property {string} pattern - Patrón de conjugación
- * @property {'regular'|'irregular'} type - Tipo de verbo
+ * @property {'regular'|'irregular'|'diphtong'|'orthographic_change'} type - Tipo de verbo
  * @property {'high'|'medium'|'low'} frequency - Frecuencia léxica
  */
 
@@ -83,9 +82,9 @@ export const ERROR_TAGS = {
 
 // Definiciones de tipos para frecuencia léxica
 export const FREQUENCY_LEVELS = {
-  HIGH: 'alta',
-  MEDIUM: 'media',
-  LOW: 'baja'
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low'
 }
 
 // Definiciones de dificultad base por tipo de verbo
@@ -103,7 +102,7 @@ export const FREQUENCY_DIFFICULTY_BONUS = {
   HIGH: 0.0
 }
 
-// Exportar los modelos como tipos para usar en JSDoc
+// Exportar todos los modelos
 export {
   User,
   Verb,

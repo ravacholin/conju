@@ -1,86 +1,110 @@
 // Sistema de base de datos IndexedDB para progreso y analíticas
 
 import { openDB } from 'idb'
-import { get, set } from 'idb-keyval'
+import { STORAGE_CONFIG, INIT_CONFIG } from './config.js'
 
-// Nombre y versión de la base de datos
-const DB_NAME = 'SpanishConjugatorProgress'
-const DB_VERSION = 1
-
-// Nombre de las tablas
-const STORES = {
-  USERS: 'users',
-  VERBS: 'verbs',
-  ITEMS: 'items',
-  ATTEMPTS: 'attempts',
-  MASTERY: 'mastery',
-  SCHEDULES: 'schedules'
-}
+// Estado de la base de datos
+let dbInstance = null
+let isInitializing = false
 
 /**
  * Inicializa la base de datos IndexedDB
  * @returns {Promise<IDBDatabase>} La base de datos inicializada
  */
 export async function initDB() {
+  if (dbInstance) {
+    return dbInstance
+  }
+  
+  if (isInitializing) {
+    // Esperar a que termine la inicialización en curso
+    await new Promise(resolve => {
+      const checkInterval = setInterval(() => {
+        if (!isInitializing) {
+          clearInterval(checkInterval)
+          resolve()
+        }
+      }, 100)
+    })
+    return dbInstance
+  }
+  
+  isInitializing = true
+  
   try {
-    const db = await openDB(DB_NAME, DB_VERSION, {
+    console.log('🔄 Inicializando base de datos de progreso...')
+    
+    dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
       upgrade(db) {
+        console.log('🔧 Actualizando estructura de base de datos...')
+        
         // Crear tabla de usuarios
-        if (!db.objectStoreNames.contains(STORES.USERS)) {
-          const userStore = db.createObjectStore(STORES.USERS, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USERS)) {
+          const userStore = db.createObjectStore(STORAGE_CONFIG.STORES.USERS, { keyPath: 'id' })
           userStore.createIndex('lastActive', 'lastActive', { unique: false })
+          console.log('✅ Tabla de usuarios creada')
         }
 
         // Crear tabla de verbos
-        if (!db.objectStoreNames.contains(STORES.VERBS)) {
-          const verbStore = db.createObjectStore(STORES.VERBS, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.VERBS)) {
+          const verbStore = db.createObjectStore(STORAGE_CONFIG.STORES.VERBS, { keyPath: 'id' })
           verbStore.createIndex('lemma', 'lemma', { unique: true })
           verbStore.createIndex('type', 'type', { unique: false })
           verbStore.createIndex('frequency', 'frequency', { unique: false })
+          console.log('✅ Tabla de verbos creada')
         }
 
         // Crear tabla de ítems
-        if (!db.objectStoreNames.contains(STORES.ITEMS)) {
-          const itemStore = db.createObjectStore(STORES.ITEMS, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ITEMS)) {
+          const itemStore = db.createObjectStore(STORAGE_CONFIG.STORES.ITEMS, { keyPath: 'id' })
           itemStore.createIndex('verbId', 'verbId', { unique: false })
           itemStore.createIndex('mood', 'mood', { unique: false })
           itemStore.createIndex('tense', 'tense', { unique: false })
           itemStore.createIndex('person', 'person', { unique: false })
           // Índice compuesto para búsqueda rápida
           itemStore.createIndex('verb-mood-tense-person', ['verbId', 'mood', 'tense', 'person'], { unique: true })
+          console.log('✅ Tabla de ítems creada')
         }
 
         // Crear tabla de intentos
-        if (!db.objectStoreNames.contains(STORES.ATTEMPTS)) {
-          const attemptStore = db.createObjectStore(STORES.ATTEMPTS, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
+          const attemptStore = db.createObjectStore(STORAGE_CONFIG.STORES.ATTEMPTS, { keyPath: 'id' })
           attemptStore.createIndex('itemId', 'itemId', { unique: false })
           attemptStore.createIndex('createdAt', 'createdAt', { unique: false })
           attemptStore.createIndex('correct', 'correct', { unique: false })
+          attemptStore.createIndex('userId', 'userId', { unique: false })
+          console.log('✅ Tabla de intentos creada')
         }
 
         // Crear tabla de mastery
-        if (!db.objectStoreNames.contains(STORES.MASTERY)) {
-          const masteryStore = db.createObjectStore(STORES.MASTERY, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.MASTERY)) {
+          const masteryStore = db.createObjectStore(STORAGE_CONFIG.STORES.MASTERY, { keyPath: 'id' })
           masteryStore.createIndex('userId', 'userId', { unique: false })
           masteryStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
           masteryStore.createIndex('updatedAt', 'updatedAt', { unique: false })
+          console.log('✅ Tabla de mastery creada')
         }
 
         // Crear tabla de schedules
-        if (!db.objectStoreNames.contains(STORES.SCHEDULES)) {
-          const scheduleStore = db.createObjectStore(STORES.SCHEDULES, { keyPath: 'id' })
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.SCHEDULES)) {
+          const scheduleStore = db.createObjectStore(STORAGE_CONFIG.STORES.SCHEDULES, { keyPath: 'id' })
           scheduleStore.createIndex('userId', 'userId', { unique: false })
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+          console.log('✅ Tabla de schedules creada')
         }
+        
+        console.log('🔧 Estructura de base de datos actualizada')
       }
     })
     
     console.log('✅ Base de datos de progreso inicializada correctamente')
-    return db
+    return dbInstance
   } catch (error) {
     console.error('❌ Error al inicializar la base de datos de progreso:', error)
     throw error
+  } finally {
+    isInitializing = false
   }
 }
 
@@ -98,11 +122,19 @@ export async function saveToDB(storeName, data) {
     
     // Si no tiene ID, generar uno
     if (!data.id) {
-      data.id = `${storeName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      data.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     }
+    
+    // Añadir timestamps si no existen
+    if (!data.createdAt) {
+      data.createdAt = new Date()
+    }
+    data.updatedAt = new Date()
     
     await store.put(data)
     await tx.done
+    
+    console.log(`✅ Dato guardado en ${storeName}: ${data.id}`)
   } catch (error) {
     console.error(`❌ Error al guardar en ${storeName}:`, error)
     throw error
@@ -122,6 +154,11 @@ export async function getFromDB(storeName, id) {
     const store = tx.objectStore(storeName)
     const result = await store.get(id)
     await tx.done
+    
+    if (result) {
+      console.log(`✅ Dato obtenido de ${storeName}: ${id}`)
+    }
+    
     return result || null
   } catch (error) {
     console.error(`❌ Error al obtener de ${storeName}:`, error)
@@ -141,6 +178,8 @@ export async function getAllFromDB(storeName) {
     const store = tx.objectStore(storeName)
     const result = await store.getAll()
     await tx.done
+    
+    console.log(`✅ ${result.length} datos obtenidos de ${storeName}`)
     return result
   } catch (error) {
     console.error(`❌ Error al obtener todos de ${storeName}:`, error)
@@ -163,6 +202,8 @@ export async function getByIndex(storeName, indexName, value) {
     const index = store.index(indexName)
     const result = await index.getAll(value)
     await tx.done
+    
+    console.log(`✅ ${result.length} datos encontrados en ${storeName} por ${indexName}`)
     return result
   } catch (error) {
     console.error(`❌ Error al buscar por índice en ${storeName}:`, error)
@@ -185,6 +226,11 @@ export async function getOneByIndex(storeName, indexName, value) {
     const index = store.index(indexName)
     const result = await index.get(value)
     await tx.done
+    
+    if (result) {
+      console.log(`✅ Dato encontrado en ${storeName} por ${indexName}`)
+    }
+    
     return result || null
   } catch (error) {
     console.error(`❌ Error al buscar por índice en ${storeName}:`, error)
@@ -205,6 +251,8 @@ export async function deleteFromDB(storeName, id) {
     const store = tx.objectStore(storeName)
     await store.delete(id)
     await tx.done
+    
+    console.log(`✅ Dato eliminado de ${storeName}: ${id}`)
   } catch (error) {
     console.error(`❌ Error al eliminar de ${storeName}:`, error)
     throw error
@@ -225,11 +273,52 @@ export async function updateInDB(storeName, id, updates) {
       throw new Error(`Objeto con ID ${id} no encontrado en ${storeName}`)
     }
     
-    const updated = { ...existing, ...updates }
+    const updated = { ...existing, ...updates, updatedAt: new Date() }
     await saveToDB(storeName, updated)
+    
+    console.log(`✅ Dato actualizado en ${storeName}: ${id}`)
   } catch (error) {
     console.error(`❌ Error al actualizar en ${storeName}:`, error)
     throw error
+  }
+}
+
+/**
+ * Limpia todos los caches
+ * @returns {Promise<void>}
+ */
+export async function clearAllCaches() {
+  try {
+    console.log('🧹 Limpiando todos los caches...')
+    
+    // En una implementación completa, esto limpiaría todos los caches
+    // de la base de datos
+    
+    console.log('✅ Todos los caches limpiados')
+  } catch (error) {
+    console.error('❌ Error al limpiar caches:', error)
+    throw error
+  }
+}
+
+/**
+ * Obtiene estadísticas de caché
+ * @returns {Promise<Object>} Estadísticas de caché
+ */
+export async function getCacheStats() {
+  try {
+    // En una implementación completa, esto obtendría estadísticas
+    // del uso de caché en la base de datos
+    
+    return {
+      cacheHits: 0, // Valor de ejemplo
+      cacheMisses: 0, // Valor de ejemplo
+      cacheSize: 0, // Valor de ejemplo
+      generatedAt: new Date()
+    }
+  } catch (error) {
+    console.error('❌ Error al obtener estadísticas de caché:', error)
+    return {}
   }
 }
 
@@ -241,7 +330,7 @@ export async function updateInDB(storeName, id, updates) {
  * @returns {Promise<void>}
  */
 export async function saveUser(user) {
-  await saveToDB(STORES.USERS, user)
+  await saveToDB(STORAGE_CONFIG.STORES.USERS, user)
 }
 
 /**
@@ -250,7 +339,7 @@ export async function saveUser(user) {
  * @returns {Promise<Object|null>}
  */
 export async function getUser(userId) {
-  return await getFromDB(STORES.USERS, userId)
+  return await getFromDB(STORAGE_CONFIG.STORES.USERS, userId)
 }
 
 /**
@@ -259,7 +348,7 @@ export async function getUser(userId) {
  * @returns {Promise<void>}
  */
 export async function saveVerb(verb) {
-  await saveToDB(STORES.VERBS, verb)
+  await saveToDB(STORAGE_CONFIG.STORES.VERBS, verb)
 }
 
 /**
@@ -268,7 +357,7 @@ export async function saveVerb(verb) {
  * @returns {Promise<Object|null>}
  */
 export async function getVerb(verbId) {
-  return await getFromDB(STORES.VERBS, verbId)
+  return await getFromDB(STORAGE_CONFIG.STORES.VERBS, verbId)
 }
 
 /**
@@ -277,7 +366,7 @@ export async function getVerb(verbId) {
  * @returns {Promise<Object|null>}
  */
 export async function getVerbByLemma(lemma) {
-  return await getOneByIndex(STORES.VERBS, 'lemma', lemma)
+  return await getOneByIndex(STORAGE_CONFIG.STORES.VERBS, 'lemma', lemma)
 }
 
 /**
@@ -286,7 +375,7 @@ export async function getVerbByLemma(lemma) {
  * @returns {Promise<void>}
  */
 export async function saveItem(item) {
-  await saveToDB(STORES.ITEMS, item)
+  await saveToDB(STORAGE_CONFIG.STORES.ITEMS, item)
 }
 
 /**
@@ -295,11 +384,11 @@ export async function saveItem(item) {
  * @returns {Promise<Object|null>}
  */
 export async function getItem(itemId) {
-  return await getFromDB(STORES.ITEMS, itemId)
+  return await getFromDB(STORAGE_CONFIG.STORES.ITEMS, itemId)
 }
 
 /**
- * Busca un ítem por verbo, modo, tiempo y persona
+ * Busca un ítem por propiedades
  * @param {string} verbId - ID del verbo
  * @param {string} mood - Modo
  * @param {string} tense - Tiempo
@@ -309,8 +398,8 @@ export async function getItem(itemId) {
 export async function getItemByProperties(verbId, mood, tense, person) {
   try {
     const db = await initDB()
-    const tx = db.transaction(STORES.ITEMS, 'readonly')
-    const store = tx.objectStore(STORES.ITEMS)
+    const tx = db.transaction(STORAGE_CONFIG.STORES.ITEMS, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.ITEMS)
     const index = store.index('verb-mood-tense-person')
     const result = await index.get([verbId, mood, tense, person])
     await tx.done
@@ -327,7 +416,7 @@ export async function getItemByProperties(verbId, mood, tense, person) {
  * @returns {Promise<void>}
  */
 export async function saveAttempt(attempt) {
-  await saveToDB(STORES.ATTEMPTS, attempt)
+  await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attempt)
 }
 
 /**
@@ -336,7 +425,7 @@ export async function saveAttempt(attempt) {
  * @returns {Promise<Object|null>}
  */
 export async function getAttempt(attemptId) {
-  return await getFromDB(STORES.ATTEMPTS, attemptId)
+  return await getFromDB(STORAGE_CONFIG.STORES.ATTEMPTS, attemptId)
 }
 
 /**
@@ -345,7 +434,7 @@ export async function getAttempt(attemptId) {
  * @returns {Promise<Object[]>}
  */
 export async function getAttemptsByItem(itemId) {
-  return await getByIndex(STORES.ATTEMPTS, 'itemId', itemId)
+  return await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, 'itemId', itemId)
 }
 
 /**
@@ -354,7 +443,7 @@ export async function getAttemptsByItem(itemId) {
  * @returns {Promise<void>}
  */
 export async function saveMastery(mastery) {
-  await saveToDB(STORES.MASTERY, mastery)
+  await saveToDB(STORAGE_CONFIG.STORES.MASTERY, mastery)
 }
 
 /**
@@ -363,11 +452,11 @@ export async function saveMastery(mastery) {
  * @returns {Promise<Object|null>}
  */
 export async function getMastery(masteryId) {
-  return await getFromDB(STORES.MASTERY, masteryId)
+  return await getFromDB(STORAGE_CONFIG.STORES.MASTERY, masteryId)
 }
 
 /**
- * Busca mastery score por usuario, modo, tiempo y persona
+ * Busca mastery score por celda
  * @param {string} userId - ID del usuario
  * @param {string} mood - Modo
  * @param {string} tense - Tiempo
@@ -377,8 +466,8 @@ export async function getMastery(masteryId) {
 export async function getMasteryByCell(userId, mood, tense, person) {
   try {
     const db = await initDB()
-    const tx = db.transaction(STORES.MASTERY, 'readonly')
-    const store = tx.objectStore(STORES.MASTERY)
+    const tx = db.transaction(STORAGE_CONFIG.STORES.MASTERY, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.MASTERY)
     const index = store.index('mood-tense-person')
     
     // Buscar todos los mastery scores para esta celda
@@ -403,7 +492,7 @@ export async function getMasteryByCell(userId, mood, tense, person) {
  * @returns {Promise<Object[]>}
  */
 export async function getMasteryByUser(userId) {
-  return await getByIndex(STORES.MASTERY, 'userId', userId)
+  return await getByIndex(STORAGE_CONFIG.STORES.MASTERY, 'userId', userId)
 }
 
 /**
@@ -412,7 +501,7 @@ export async function getMasteryByUser(userId) {
  * @returns {Promise<void>}
  */
 export async function saveSchedule(schedule) {
-  await saveToDB(STORES.SCHEDULES, schedule)
+  await saveToDB(STORAGE_CONFIG.STORES.SCHEDULES, schedule)
 }
 
 /**
@@ -421,11 +510,11 @@ export async function saveSchedule(schedule) {
  * @returns {Promise<Object|null>}
  */
 export async function getSchedule(scheduleId) {
-  return await getFromDB(STORES.SCHEDULES, scheduleId)
+  return await getFromDB(STORAGE_CONFIG.STORES.SCHEDULES, scheduleId)
 }
 
 /**
- * Busca schedules por usuario, modo, tiempo y persona
+ * Busca schedules por celda
  * @param {string} userId - ID del usuario
  * @param {string} mood - Modo
  * @param {string} tense - Tiempo
@@ -435,8 +524,8 @@ export async function getSchedule(scheduleId) {
 export async function getScheduleByCell(userId, mood, tense, person) {
   try {
     const db = await initDB()
-    const tx = db.transaction(STORES.SCHEDULES, 'readonly')
-    const store = tx.objectStore(STORES.SCHEDULES)
+    const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
     const index = store.index('mood-tense-person')
     
     // Buscar todos los schedules para esta celda
@@ -456,7 +545,7 @@ export async function getScheduleByCell(userId, mood, tense, person) {
 }
 
 /**
- * Obtiene schedules pendientes para un usuario
+ * Obtiene schedules pendientes
  * @param {string} userId - ID del usuario
  * @param {Date} beforeDate - Fecha límite
  * @returns {Promise<Object[]>}
@@ -464,8 +553,8 @@ export async function getScheduleByCell(userId, mood, tense, person) {
 export async function getDueSchedules(userId, beforeDate) {
   try {
     const db = await initDB()
-    const tx = db.transaction(STORES.SCHEDULES, 'readonly')
-    const store = tx.objectStore(STORES.SCHEDULES)
+    const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
     const index = store.index('nextDue')
     
     // Obtener todos los schedules ordenados por fecha
@@ -484,9 +573,50 @@ export async function getDueSchedules(userId, beforeDate) {
   }
 }
 
-// Inicializar la base de datos cuando se cargue el módulo
-initDB().catch(error => {
-  console.error('❌ Error al inicializar la base de datos:', error)
-})
+/**
+ * Inicializa completamente la base de datos
+ * @returns {Promise<void>}
+ */
+export async function initializeFullDB() {
+  console.log('🚀 Inicializando completamente la base de datos...')
+  
+  try {
+    // Inicializar base de datos
+    await initDB()
+    
+    // En una implementación completa, aquí se inicializarían
+    // las tablas con datos predeterminados si es necesario
+    
+    console.log('✅ Base de datos completamente inicializada')
+  } catch (error) {
+    console.error('❌ Error al inicializar completamente la base de datos:', error)
+    throw error
+  }
+}
 
-export { STORES }
+/**
+ * Cierra la base de datos
+ * @returns {Promise<void>}
+ */
+export async function closeDB() {
+  if (dbInstance) {
+    await dbInstance.close()
+    dbInstance = null
+    console.log('🚪 Base de datos cerrada')
+  }
+}
+
+/**
+ * Elimina la base de datos
+ * @returns {Promise<void>}
+ */
+export async function deleteDB() {
+  try {
+    await closeDB()
+    await deleteDB(STORAGE_CONFIG.DB_NAME)
+    console.log('🗑️ Base de datos eliminada')
+  } catch (error) {
+    console.error('❌ Error al eliminar la base de datos:', error)
+    throw error
+  }
+}

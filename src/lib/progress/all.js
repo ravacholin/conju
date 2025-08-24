@@ -1,10 +1,26 @@
-// Exportar todos los componentes del sistema de progreso
+// Exportar todas las funciones del sistema de progreso y analíticas
 
-// Modelos de datos
-export { ERROR_TAGS, FREQUENCY_LEVELS, VERB_DIFFICULTY } from './dataModels.js'
+// Configuración y modelos de datos
+export { 
+  PROGRESS_CONFIG, 
+  VERB_DIFFICULTY, 
+  FREQUENCY_DIFFICULTY_BONUS,
+  ERROR_TAGS,
+  FREQUENCY_LEVELS
+} from './config.js'
+
+export { 
+  User,
+  Verb,
+  Item,
+  Attempt,
+  Mastery,
+  Schedule
+} from './dataModels.js'
 
 // Base de datos
 export {
+  initDB,
   saveToDB,
   getFromDB,
   getAllFromDB,
@@ -30,7 +46,12 @@ export {
   saveSchedule,
   getSchedule,
   getScheduleByCell,
-  getDueSchedules
+  getDueSchedules,
+  initializeFullDB,
+  closeDB,
+  deleteDB,
+  clearAllCaches,
+  getCacheStats
 } from './database.js'
 
 // Mastery
@@ -76,7 +97,13 @@ export {
   groupBy,
   average,
   maxBy,
-  minBy
+  minBy,
+  formatPercentage,
+  formatTime,
+  getMasteryColorClass,
+  getMasteryLevelText,
+  getMasteryIcon,
+  formatRelativeDate
 } from './utils.js'
 
 // UI
@@ -130,14 +157,38 @@ export {
   importDataFromBackup
 } from './cloudSync.js'
 
-// Inicialización
+// Initialization
 export {
   initProgressSystem,
   isProgressSystemInitialized,
-  getCurrentUserId
+  getCurrentUserId,
+  endCurrentSession,
+  resetProgressSystem,
+  getProgressSystemConfig,
+  getVerbDifficultyConfig,
+  getProgressSystemStatus,
+  diagnoseProgressSystem,
+  getSystemStats,
+  exportSystemData,
+  importSystemData,
+  clearSystemData,
+  getSystemVersionInfo
 } from './index.js'
 
+// Full Initialization
 export {
   initializeFullProgressSystem,
   isFullProgressSystemInitialized
 } from './fullInitialization.js'
+
+// Progress Tracking Hook
+export { useProgressTracking } from '../features/drill/useProgressTracking.js'
+
+// Componentes de UI
+export { default as ProgressDashboard } from '../features/progress/ProgressDashboard.jsx'
+export { default as ProgressTracker } from '../features/progress/ProgressTracker.jsx'
+export { default as HeatMap } from '../features/progress/HeatMap.jsx'
+export { default as CompetencyRadar } from '../features/progress/CompetencyRadar.jsx'
+
+// Todos los componentes
+export * from '../features/progress/index.js'

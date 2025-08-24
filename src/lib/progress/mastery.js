@@ -1,31 +1,9 @@
-// Sistema de cálculo de mastery score
+// Funciones de cálculo de mastery para el sistema de progreso
 
 import { getAttemptsByItem } from './database.js'
-import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './dataModels.js'
-
-// Constante de decaimiento para el cálculo de recencia (en días)
-const DECAY_TAU = 10 // Valor recomendado en la propuesta
-
-// Penalización por pistas usadas
-const HINT_PENALTY = 5 // puntos por pista
-const MAX_HINT_PENALTY = 15 // penalización máxima por intento
-
-/**
- * Calcula el peso de un intento basado en su recencia
- * @param {Date} attemptDate - Fecha del intento
- * @returns {number} Peso (entre 0 y 1)
- */
-export function calculateRecencyWeight(attemptDate) {
-  const now = new Date()
-  const diffTime = Math.abs(now - attemptDate)
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  // Fórmula de decaimiento exponencial: w = e^(-Δdías/τ)
-  const weight = Math.exp(-diffDays / DECAY_TAU)
-  
-  // Redondear a 2 decimales para evitar micro-ruido
-  return Math.round(weight * 100) / 100
-}
+import { PROGRESS_CONFIG, VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
+import { calculateRecencyWeight } from './helpers.js'
+import { applyPenalties } from './penalties.js'
 
 /**
  * Obtiene la dificultad base de un verbo
@@ -37,10 +15,12 @@ export function getVerbDifficulty(verb) {
   
   // Asignar dificultad base según tipo
   if (verb.type === 'irregular') {
-    // Para verbos irregulares, determinar nivel de irregularidad
-    // En una implementación completa, esto se basaría en las familias irregulares
-    // Por ahora, asignamos una dificultad genérica alta
+    // Para verbos irregulares, usar dificultad alta
     difficulty = VERB_DIFFICULTY.HIGHLY_IRREGULAR
+  } else if (verb.type === 'diphtong') {
+    difficulty = VERB_DIFFICULTY.DIPHTHONG
+  } else if (verb.type === 'orthographic_change') {
+    difficulty = VERB_DIFFICULTY.ORTHOGRAPHIC_CHANGE
   }
   
   // Añadir bonus por frecuencia
@@ -53,16 +33,7 @@ export function getVerbDifficulty(verb) {
 }
 
 /**
- * Calcula la penalización por pistas
- * @param {number} hintsUsed - Número de pistas usadas
- * @returns {number} Penalización en puntos
- */
-export function calculateHintPenalty(hintsUsed) {
-  return Math.min(MAX_HINT_PENALTY, hintsUsed * HINT_PENALTY)
-}
-
-/**
- * Calcula el mastery score para una celda específica
+ * Calcula el mastery score para un ítem específico
  * @param {string} itemId - ID del ítem
  * @param {Object} verb - Objeto verbo asociado
  * @returns {Promise<{score: number, n: number, weightedAttempts: number}>} Mastery score y estadísticas
@@ -100,7 +71,12 @@ export async function calculateMasteryForItem(itemId, verb) {
     
     // Acumular penalización por pistas (solo para intentos correctos)
     if (attempt.correct) {
-      totalHintPenalty += calculateHintPenalty(attempt.hintsUsed)
+      // Calcular penalización por pistas
+      const hintPenalty = Math.min(
+        PROGRESS_CONFIG.MAX_HINT_PENALTY, 
+        (attempt.hintsUsed || 0) * PROGRESS_CONFIG.HINT_PENALTY
+      )
+      totalHintPenalty += hintPenalty
     }
   }
   
@@ -207,12 +183,12 @@ export function calculateMasteryForTimeOrMood(cells, weights) {
  * @returns {Object} Nivel de confianza y si es suficiente
  */
 export function getConfidenceLevel(weightedN) {
-  const sufficient = weightedN >= 8
+  const sufficient = weightedN >= PROGRESS_CONFIG.MIN_CONFIDENCE_N
   let level = 'bajo'
   
-  if (weightedN >= 20) {
+  if (weightedN >= PROGRESS_CONFIG.CONFIDENCE_LEVELS.HIGH) {
     level = 'alto'
-  } else if (weightedN >= 8) {
+  } else if (weightedN >= PROGRESS_CONFIG.CONFIDENCE_LEVELS.MEDIUM) {
     level = 'medio'
   }
   
@@ -247,10 +223,10 @@ export function classifyMasteryLevel(score, weightedN, avgLatency) {
   let level = 'crítico'
   let recommendation = ''
   
-  if (score >= 80) {
+  if (score >= PROGRESS_CONFIG.MASTERY_LEVELS.ACHIEVED) {
     level = 'logrado'
     recommendation = 'Dominio consolidado. Revisar ocasionalmente para mantener el nivel.'
-  } else if (score >= 60) {
+  } else if (score >= PROGRESS_CONFIG.MASTERY_LEVELS.ATTENTION) {
     level = 'atención'
     recommendation = 'Practicar regularmente para consolidar el conocimiento.'
   }

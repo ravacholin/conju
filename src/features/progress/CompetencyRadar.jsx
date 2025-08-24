@@ -1,154 +1,211 @@
-// Componente para el radar de competencias
+// Componente para mostrar el radar de competencias
 
-import { useEffect, useState } from 'react'
-import { getMasteryByUser, getAttemptsByItem } from '../../lib/progress/database.js'
-import { getCurrentUserId } from '../../lib/progress/index.js'
-import { average, msToSeconds } from '../../lib/progress/utils.js'
+import { useEffect, useRef } from 'react'
+import { formatPercentage } from '../../lib/progress/uiUtils.js'
 
-export default function CompetencyRadar() {
-  const [competencies, setCompetencies] = useState({
-    accuracy: 0,
-    speed: 0,
-    consistency: 0,
-    lexicalBreadth: 0,
-    transfer: 0
-  })
-  const [loading, setLoading] = useState(true)
+/**
+ * Componente para mostrar el radar de competencias
+ * @param {Object} props - Propiedades del componente
+ * @param {Object} props.data - Datos para el radar
+ */
+export function CompetencyRadar({ data }) {
+  const canvasRef = useRef(null)
+
+  // Definir ejes del radar
+  const axes = [
+    { key: 'accuracy', label: 'Precisión', max: 100 },
+    { key: 'speed', label: 'Velocidad', max: 100 },
+    { key: 'consistency', label: 'Constancia', max: 100 },
+    { key: 'lexicalBreadth', label: 'Amplitud Léxica', max: 100 },
+    { key: 'transfer', label: 'Transferencia', max: 100 }
+  ]
 
   useEffect(() => {
-    const loadCompetencyData = async () => {
-      try {
-        setLoading(true)
-        const userId = getCurrentUserId()
-        if (!userId) return
+    const canvas = canvasRef.current
+    if (!canvas || !data) return
 
-        // Obtener todos los mastery scores del usuario
-        const masteryRecords = await getMasteryByUser(userId)
-        
-        // Calcular precisión (accuracy)
-        const accuracy = masteryRecords.length > 0 
-          ? average(masteryRecords.map(r => r.score)) 
-          : 0
+    const ctx = canvas.getContext('2d')
+    const width = canvas.width
+    const height = canvas.height
+    const centerX = width / 2
+    const centerY = height / 2
+    const radius = Math.min(width, height) * 0.4
 
-        // Calcular velocidad promedio
-        let totalLatency = 0
-        let totalAttempts = 0
-        
-        // Obtener latencias de todos los intentos
-        for (const mastery of masteryRecords) {
-          const attempts = await getAttemptsByItem(mastery.id)
-          totalLatency += attempts.reduce((sum, attempt) => sum + attempt.latencyMs, 0)
-          totalAttempts += attempts.length
-        }
-        
-        const avgLatencyMs = totalAttempts > 0 ? totalLatency / totalAttempts : 0
-        const speed = avgLatencyMs > 0 ? Math.max(0, 100 - (msToSeconds(avgLatencyMs) / 10 * 100)) : 0
+    // Limpiar canvas
+    ctx.clearRect(0, 0, width, height)
 
-        // Calcular consistencia (desviación estándar de los scores)
-        const scores = masteryRecords.map(r => r.score)
-        const mean = accuracy
-        const variance = scores.length > 0 
-          ? scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length 
-          : 0
-        const stdDev = Math.sqrt(variance)
-        const consistency = Math.max(0, 100 - (stdDev / 100 * 100))
+    // Dibujar rejilla polar
+    drawPolarGrid(ctx, centerX, centerY, radius, axes.length)
 
-        // Calcular amplitud léxica (número de verbos diferentes)
-        const uniqueVerbs = new Set(masteryRecords.map(r => r.verbId)).size
-        const lexicalBreadth = Math.min(100, uniqueVerbs * 2) // Ajustar escala
+    // Dibujar ejes
+    drawAxes(ctx, centerX, centerY, radius, axes)
 
-        // Calcular transferencia sin pistas
-        let totalWithoutHints = 0
-        let correctWithoutHints = 0
-        
-        for (const mastery of masteryRecords) {
-          const attempts = await getAttemptsByItem(mastery.id)
-          const withoutHints = attempts.filter(a => a.hintsUsed === 0)
-          totalWithoutHints += withoutHints.length
-          correctWithoutHints += withoutHints.filter(a => a.correct).length
-        }
-        
-        const transfer = totalWithoutHints > 0 
-          ? (correctWithoutHints / totalWithoutHints) * 100 
-          : 0
+    // Dibujar datos del usuario
+    drawUserData(ctx, centerX, centerY, radius, axes, data)
 
-        setCompetencies({
-          accuracy: Math.round(accuracy),
-          speed: Math.round(speed),
-          consistency: Math.round(consistency),
-          lexicalBreadth: Math.round(lexicalBreadth),
-          transfer: Math.round(transfer)
-        })
-      } catch (err) {
-        console.error('Error al cargar datos de competencia:', err)
-      } finally {
-        setLoading(false)
-      }
+    // Dibujar leyenda
+    drawLegend(ctx, width, height, axes)
+  }, [data])
+
+  /**
+   * Dibuja la rejilla polar
+   */
+  function drawPolarGrid(ctx, centerX, centerY, radius, numAxes) {
+    ctx.strokeStyle = '#e0e0e0'
+    ctx.lineWidth = 1
+
+    // Dibujar círculos concéntricos
+    for (let i = 1; i <= 4; i++) {
+      const r = (radius * i) / 4
+      ctx.beginPath()
+      ctx.arc(centerX, centerY, r, 0, 2 * Math.PI)
+      ctx.stroke()
     }
 
-    loadCompetencyData()
-  }, [])
-
-  if (loading) {
-    return <div className="competency-radar">Cargando radar de competencias...</div>
+    // Dibujar líneas radiales
+    for (let i = 0; i < numAxes; i++) {
+      const angle = (2 * Math.PI * i) / numAxes - Math.PI / 2
+      const x = centerX + radius * Math.cos(angle)
+      const y = centerY + radius * Math.sin(angle)
+      
+      ctx.beginPath()
+      ctx.moveTo(centerX, centerY)
+      ctx.lineTo(x, y)
+      ctx.stroke()
+    }
   }
 
-  // Datos para el gráfico de radar
-  const data = [
-    { label: 'Precisión', value: competencies.accuracy },
-    { label: 'Velocidad', value: competencies.speed },
-    { label: 'Consistencia', value: competencies.consistency },
-    { label: 'Amplitud Léxica', value: competencies.lexicalBreadth },
-    { label: 'Transferencia', value: competencies.transfer }
-  ]
+  /**
+   * Dibuja los ejes con etiquetas
+   */
+  function drawAxes(ctx, centerX, centerY, radius, axes) {
+    ctx.fillStyle = '#333'
+    ctx.font = '12px Arial'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    axes.forEach((axis, index) => {
+      const angle = (2 * Math.PI * index) / axes.length - Math.PI / 2
+      const x = centerX + (radius + 30) * Math.cos(angle)
+      const y = centerY + (radius + 30) * Math.sin(angle)
+      
+      ctx.fillText(axis.label, x, y)
+    })
+  }
+
+  /**
+   * Dibuja los datos del usuario
+   */
+  function drawUserData(ctx, centerX, centerY, radius, axes, userData) {
+    if (!userData) return
+
+    ctx.strokeStyle = '#007bff'
+    ctx.fillStyle = 'rgba(0, 123, 255, 0.2)'
+    ctx.lineWidth = 2
+
+    ctx.beginPath()
+
+    axes.forEach((axis, index) => {
+      const value = userData[axis.key] || 0
+      const normalizedValue = Math.min(100, Math.max(0, value)) / 100
+      const angle = (2 * Math.PI * index) / axes.length - Math.PI / 2
+      const r = radius * normalizedValue
+      const x = centerX + r * Math.cos(angle)
+      const y = centerY + r * Math.sin(angle)
+
+      if (index === 0) {
+        ctx.moveTo(x, y)
+      } else {
+        ctx.lineTo(x, y)
+      }
+    })
+
+    ctx.closePath()
+    ctx.fill()
+    ctx.stroke()
+  }
+
+  /**
+   * Dibuja la leyenda
+   */
+  function drawLegend(ctx, width, height, axes) {
+    ctx.fillStyle = '#333'
+    ctx.font = '14px Arial'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'middle'
+
+    // Título
+    ctx.fillText('Nivel de Competencia', 20, 30)
+
+    // Valores de cada eje
+    let yOffset = 60
+    axes.forEach(axis => {
+      const value = data?.[axis.key] || 0
+      ctx.fillText(
+        `${axis.label}: ${formatPercentage(value)}`,
+        20,
+        yOffset
+      )
+      yOffset += 25
+    })
+  }
+
+  if (!data) {
+    return (
+      <div className="competency-radar loading">
+        <p>Cargando radar de competencias...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="competency-radar">
-      <h3>Radar de Competencias</h3>
-      <div className="radar-chart">
-        <div className="radar-grid">
-          {/* Líneas radiales */}
-          {[0, 25, 50, 75, 100].map(level => (
-            <div key={level} className="radar-circle" style={{width: `${level}%`, height: `${level}%`}}>
-              <span className="radar-label">{level}%</span>
+      <canvas
+        ref={canvasRef}
+        width={500}
+        height={500}
+        className="radar-canvas"
+      />
+      
+      <div className="radar-summary">
+        <h3>Resumen de Competencias</h3>
+        <div className="competency-stats">
+          {axes.map(axis => (
+            <div key={axis.key} className="stat-item">
+              <span className="stat-label">{axis.label}:</span>
+              <span className="stat-value">{formatPercentage(data[axis.key] || 0)}</span>
             </div>
           ))}
-          
-          {/* Ejes y datos */}
-          <div className="radar-axes">
-            {data.map((item, index) => {
-              const angle = (index * 72) * (Math.PI / 180) // 72 = 360/5
-              const value = item.value
-              const x = 50 + value * 0.4 * Math.sin(angle) // 0.4 para escalar dentro del círculo
-              const y = 50 - value * 0.4 * Math.cos(angle)
-              
-              return (
-                <div key={item.label} className="radar-axis">
-                  <div 
-                    className="radar-point" 
-                    style={{left: `${x}%`, top: `${y}%`}}
-                  ></div>
-                  <div 
-                    className="radar-label" 
-                    style={{left: `${50 + 45 * Math.sin(angle)}%`, top: `${50 - 45 * Math.cos(angle)}%`}}
-                  >
-                    {item.label}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
         </div>
-      </div>
-      
-      <div className="competency-details">
-        {data.map(item => (
-          <div key={item.label} className="competency-item">
-            <span className="competency-label">{item.label}:</span>
-            <span className="competency-value">{item.value}%</span>
-          </div>
-        ))}
+        
+        <div className="overall-assessment">
+          <h4>Evaluación General</h4>
+          <p>{getOverallAssessment(data)}</p>
+        </div>
       </div>
     </div>
   )
+}
+
+/**
+ * Obtiene una evaluación general basada en los datos
+ */
+function getOverallAssessment(data) {
+  if (!data) return 'Datos insuficientes para evaluación.'
+
+  const avgScore = (
+    (data.accuracy || 0) +
+    (data.speed || 0) +
+    (data.consistency || 0) +
+    (data.lexicalBreadth || 0) +
+    (data.transfer || 0)
+  ) / 5
+
+  if (avgScore >= 80) {
+    return '¡Excelente nivel de competencia! Dominas todas las áreas evaluadas.'
+  } else if (avgScore >= 60) {
+    return 'Buen nivel de competencia con áreas para mejorar.'
+  } else {
+    return 'Nivel de competencia básico. Se recomienda práctica adicional.'
+  }
 }

@@ -1,10 +1,10 @@
-// Configuración del sistema de progreso
+// Configuración del sistema de progreso y analíticas
 
-// Configuración general
+// Configuración general del sistema de progreso
 export const PROGRESS_CONFIG = {
-  // Constantes para cálculos
+  // Constantes para cálculos de mastery
   DECAY_TAU: 10, // Días para decaimiento exponencial
-  HINT_PENALTY: 5, // Puntos por pista
+  HINT_PENALTY: 5, // Puntos por pista usada
   MAX_HINT_PENALTY: 15, // Penalización máxima por intento
   MIN_CONFIDENCE_N: 8, // Número mínimo de intentos para confianza
   
@@ -66,7 +66,7 @@ export const PROGRESS_CONFIG = {
 }
 
 // Configuración de dificultad por tipo de verbo
-export const VERB_DIFFICULTY_CONFIG = {
+export const VERB_DIFFICULTY = {
   REGULAR: 1.0,
   DIPHTHONG: 1.1,
   ORTHOGRAPHIC_CHANGE: 1.15,
@@ -81,19 +81,17 @@ export const FREQUENCY_DIFFICULTY_BONUS = {
 }
 
 // Configuración de errores
-export const ERROR_CONFIG = {
-  TAGS: {
-    WRONG_PERSON: 'persona_equivocada',
-    VERBAL_ENDING: 'terminación_verbal',
-    IRREGULAR_STEM: 'raíz_irregular',
-    ACCENT: 'acentuación',
-    CLITIC_PRONOUNS: 'pronombres_clíticos',
-    ORTHOGRAPHY_G_GU: 'ortografía_g/gu',
-    ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
-    ORTHOGRAPHY_Z_C: 'ortografía_z/c',
-    NUMBER_AGREEMENT: 'concordancia_número',
-    WRONG_MOOD: 'modo_equivocado'
-  }
+export const ERROR_TAGS = {
+  WRONG_PERSON: 'persona_equivocada',
+  VERBAL_ENDING: 'terminación_verbal',
+  IRREGULAR_STEM: 'raíz_irregular',
+  ACCENT: 'acentuación',
+  CLITIC_PRONOUNS: 'pronombres_clíticos',
+  ORTHOGRAPHY_G_GU: 'ortografía_g/gu',
+  ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
+  ORTHOGRAPHY_Z_C: 'ortografía_z/c',
+  NUMBER_AGREEMENT: 'concordancia_número',
+  WRONG_MOOD: 'modo_equivocado'
 }
 
 // Configuración de almacenamiento

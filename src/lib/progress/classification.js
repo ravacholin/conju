@@ -1,4 +1,4 @@
-// Clasificación de errores para el sistema de progreso
+// Reglas de clasificación de errores para el sistema de progreso
 
 import { ERROR_TAGS } from './dataModels.js'
 

@@ -1,70 +1,76 @@
-// Componente para el mapa de calor de mastery por modo y tiempo
+// Componente para mostrar el mapa de calor
 
 import { useEffect, useState } from 'react'
-import { getMasteryByUser } from '../../lib/progress/database.js'
-import { getCurrentUserId } from '../../lib/progress/index.js'
-import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js'
+import { formatPercentage, getMasteryColorClass } from '../../lib/progress/uiUtils.js'
 
-export default function HeatMap() {
-  const [masteryData, setMasteryData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [timeRange, setTimeRange] = useState('last_30_days') // 'last_7_days', 'last_30_days', 'all_time'
+/**
+ * Componente para mostrar el mapa de calor
+ * @param {Object} props - Propiedades del componente
+ * @param {Array} props.data - Datos para el mapa de calor
+ */
+export function HeatMap({ data }) {
+  const [timeRange, setTimeRange] = useState('last_30_days')
+  const [hoveredCell, setHoveredCell] = useState(null)
 
-  useEffect(() => {
-    const loadMasteryData = async () => {
-      try {
-        setLoading(true)
-        const userId = getCurrentUserId()
-        if (!userId) return
+  // Mapeo de modos a nombres en español
+  const moodLabels = {
+    'indicative': 'Indicativo',
+    'subjunctive': 'Subjuntivo',
+    'imperative': 'Imperativo',
+    'conditional': 'Condicional',
+    'nonfinite': 'No Finito'
+  }
 
-        const masteryRecords = await getMasteryByUser(userId)
-        setMasteryData(masteryRecords)
-      } catch (err) {
-        console.error('Error al cargar datos de mastery:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadMasteryData()
-  }, [timeRange])
+  // Mapeo de tiempos a nombres en español
+  const tenseLabels = {
+    'pres': 'Presente',
+    'pretIndef': 'Pretérito',
+    'impf': 'Imperfecto',
+    'fut': 'Futuro',
+    'pretPerf': 'Pret. Perfecto',
+    'plusc': 'Pluscuamperfecto',
+    'futPerf': 'Fut. Perfecto',
+    'subjPres': 'Presente',
+    'subjImpf': 'Imperfecto',
+    'subjFut': 'Futuro',
+    'subjPerf': 'Pret. Perfecto',
+    'subjPlusc': 'Pluscuamperfecto',
+    'impAff': 'Afirmativo',
+    'impNeg': 'Negativo',
+    'cond': 'Condicional',
+    'condPerf': 'Cond. Perfecto',
+    'inf': 'Infinitivo',
+    'part': 'Participio',
+    'ger': 'Gerundio'
+  }
 
   // Agrupar datos por modo y tiempo
-  const groupedData = masteryData.reduce((acc, record) => {
-    const key = `${record.mood}|${record.tense}`
-    if (!acc[key]) {
-      acc[key] = []
-    }
-    acc[key].push(record)
-    return acc
-  }, {})
+  const groupedData = {}
+  if (data && Array.isArray(data)) {
+    data.forEach(cell => {
+      if (!groupedData[cell.mood]) {
+        groupedData[cell.mood] = {}
+      }
+      groupedData[cell.mood][cell.tense] = cell
+    })
+  }
 
-  // Calcular promedio por celda
-  const cellAverages = Object.keys(groupedData).reduce((acc, key) => {
-    const records = groupedData[key]
-    const avgScore = records.reduce((sum, record) => sum + record.score, 0) / records.length
-    const [mood, tense] = key.split('|')
-    acc[key] = {
-      mood,
-      tense,
-      score: Math.round(avgScore),
-      count: records.length
-    }
-    return acc
-  }, {})
+  // Obtener todos los modos y tiempos únicos
+  const allMoods = Object.keys(groupedData)
+  const allTenses = [...new Set(data?.map(cell => cell.tense) || [])]
 
-  // Organizar datos en una matriz
-  const moods = ['indicative', 'subjunctive', 'imperative', 'conditional']
-  const tenses = ['pres', 'pretIndef', 'impf', 'fut', 'subjPres', 'subjImpf', 'impAff', 'cond']
-
-  if (loading) {
-    return <div className="heat-map">Cargando mapa de calor...</div>
+  if (!data || data.length === 0) {
+    return (
+      <div className="heat-map empty">
+        <p>No hay datos de progreso disponibles aún.</p>
+        <p>¡Practica algunos verbos para comenzar a ver tu mapa de calor!</p>
+      </div>
+    )
   }
 
   return (
     <div className="heat-map">
-      <div className="heat-map-header">
-        <h3>Mapa de Calor de Mastery</h3>
+      <div className="heat-map-controls">
         <div className="time-range-selector">
           <button 
             className={timeRange === 'last_7_days' ? 'active' : ''}
@@ -86,75 +92,86 @@ export default function HeatMap() {
           </button>
         </div>
       </div>
-      
+
       <div className="heat-map-grid">
         {/* Encabezado de tiempos */}
         <div className="header-cell"></div>
-        {tenses.map(tense => (
+        {allTenses.map(tense => (
           <div key={tense} className="header-cell">
-            {TENSE_LABELS[tense] || tense}
+            <div className="header-text" title={tenseLabels[tense] || tense}>
+              {tenseLabels[tense] || tense}
+            </div>
           </div>
         ))}
         
         {/* Filas por modo */}
-        {moods.map(mood => (
-          <>
-            <div key={`${mood}-label`} className="row-label">
-              {MOOD_LABELS[mood] || mood}
+        {allMoods.map(mood => (
+          <React.Fragment key={mood}>
+            <div className="row-label">
+              <div className="header-text" title={moodLabels[mood] || mood}>
+                {moodLabels[mood] || mood}
+              </div>
             </div>
-            {tenses.map(tense => {
-              const key = `${mood}|${tense}`
-              const cellData = cellAverages[key]
+            {allTenses.map(tense => {
+              const cellData = groupedData[mood]?.[tense]
+              const masteryScore = cellData?.score || 0
+              const attemptCount = cellData?.count || 0
               
               let cellClass = 'data-cell'
-              let cellContent = ''
-              
               if (cellData) {
                 // Determinar color basado en el score
-                if (cellData.score >= 80) {
-                  cellClass += ' high-mastery'
-                } else if (cellData.score >= 60) {
-                  cellClass += ' medium-mastery'
+                if (masteryScore >= 80) {
+                  cellClass += ' mastery-high'
+                } else if (masteryScore >= 60) {
+                  cellClass += ' mastery-medium'
                 } else {
-                  cellClass += ' low-mastery'
+                  cellClass += ' mastery-low'
                 }
-                
-                cellContent = (
-                  <>
-                    <div className="mastery-score">{cellData.score}</div>
-                    <div className="attempt-count">{cellData.count} intentos</div>
-                  </>
-                )
               } else {
                 cellClass += ' no-data'
-                cellContent = 'ND'
               }
               
               return (
                 <div 
-                  key={key} 
+                  key={`${mood}-${tense}`}
                   className={cellClass}
-                  onClick={() => console.log('Detalle para:', mood, tense)}
+                  onMouseEnter={() => setHoveredCell({ mood, tense, data: cellData })}
+                  onMouseLeave={() => setHoveredCell(null)}
+                  title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense}`}
                 >
-                  {cellContent}
+                  {cellData ? (
+                    <div className="cell-content">
+                      <div className="mastery-score">
+                        {formatPercentage(masteryScore)}
+                      </div>
+                      <div className="attempt-count">
+                        {attemptCount} intentos
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="cell-content">
+                      <div className="no-data-indicator">ND</div>
+                    </div>
+                  )}
                 </div>
               )
             })}
-          </>
+          </React.Fragment>
         ))}
       </div>
-      
+
+      {/* Leyenda */}
       <div className="heat-map-legend">
         <div className="legend-item">
-          <div className="legend-color high"></div>
+          <div className="legend-color mastery-high"></div>
           <span>80-100% Mastery</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color medium"></div>
+          <div className="legend-color mastery-medium"></div>
           <span>60-79% Mastery</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color low"></div>
+          <div className="legend-color mastery-low"></div>
           <span>0-59% Mastery</span>
         </div>
         <div className="legend-item">
@@ -162,6 +179,28 @@ export default function HeatMap() {
           <span>Sin datos</span>
         </div>
       </div>
+
+      {/* Tooltip al pasar el mouse */}
+      {hoveredCell && hoveredCell.data && (
+        <div className="heat-map-tooltip">
+          <div className="tooltip-header">
+            <strong>{moodLabels[hoveredCell.mood] || hoveredCell.mood}</strong> -{' '}
+            <strong>{tenseLabels[hoveredCell.tense] || hoveredCell.tense}</strong>
+          </div>
+          <div className="tooltip-content">
+            <div>Mastery: {formatPercentage(hoveredCell.data.score)}</div>
+            <div>Intentos: {hoveredCell.data.count}</div>
+            <div>Nivel: {getMasteryLevelText(hoveredCell.data.score)}</div>
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+// Función auxiliar para determinar el nivel de mastery como texto
+function getMasteryLevelText(score) {
+  if (score >= 80) return 'Dominado'
+  if (score >= 60) return 'En progreso'
+  return 'En dificultades'
 }
