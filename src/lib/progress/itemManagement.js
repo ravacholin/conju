@@ -1,7 +1,7 @@
 // Gestión de ítems de práctica en el sistema de progreso
 
 import { saveItem, getItemByProperties } from './database.js'
-import { VERBS } from '../../data/verbs.js'
+import { verbs } from '../../data/verbs.js'
 
 /**
  * Inicializa los ítems de práctica en el sistema de progreso
@@ -15,7 +15,7 @@ export async function initializeItems() {
     let skippedCount = 0
     
     // Procesar cada verbo
-    for (const verb of VERBS) {
+    for (const verb of verbs) {
       // Procesar cada paradigma del verbo
       for (const paradigm of verb.paradigms || []) {
         // Procesar cada forma del paradigma

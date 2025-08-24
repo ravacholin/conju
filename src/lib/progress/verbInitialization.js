@@ -1,7 +1,7 @@
 // Inicialización de verbos en el sistema de progreso
 
 import { saveVerb } from './database.js'
-import { VERBS } from '../../data/verbs.js'
+import { verbs } from '../../data/verbs.js'
 import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 
 /**
@@ -19,7 +19,7 @@ export async function initializeVerbs() {
     let errorCount = 0
     
     // Procesar cada verbo
-    for (const verb of VERBS) {
+    for (const verb of verbs) {
       try {
         // Determinar frecuencia léxica (simplificada)
         const frequency = determineVerbFrequency(verb.lemma)

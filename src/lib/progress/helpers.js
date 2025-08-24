@@ -85,3 +85,21 @@ export function minBy(array, property) {
   if (array.length === 0) return null
   return array.reduce((min, item) => item[property] < min[property] ? item : min)
 }
+
+/**
+ * Calcula el peso basado en la recencia de una fecha
+ * @param {Date} attemptDate - Fecha del intento
+ * @returns {number} Peso de recencia (1.0 = reciente, ~0.1 = antiguo)
+ */
+export function calculateRecencyWeight(attemptDate) {
+  if (!attemptDate || !(attemptDate instanceof Date)) {
+    return 0.1 // Peso mínimo para fechas inválidas
+  }
+  
+  const now = new Date()
+  const diffDays = Math.abs(now - attemptDate) / (1000 * 60 * 60 * 24)
+  
+  // Función exponencial decreciente: peso = e^(-days/30)
+  // Los intentos de hoy tienen peso 1.0, hace 30 días ~0.37, hace 90 días ~0.05
+  return Math.max(0.05, Math.exp(-diffDays / 30))
+}

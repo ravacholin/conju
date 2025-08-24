@@ -102,12 +102,5 @@ export const FREQUENCY_DIFFICULTY_BONUS = {
   HIGH: 0.0
 }
 
-// Exportar todos los modelos
-export {
-  User,
-  Verb,
-  Item,
-  Attempt,
-  Mastery,
-  Schedule
-}
+// Las definiciones de tipos están disponibles via JSDoc typedef
+// No necesitan exportaciones explícitas

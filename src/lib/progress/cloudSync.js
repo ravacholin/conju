@@ -1,6 +1,7 @@
 // Sincronización con la nube para el sistema de progreso
 
-import { getAllFromDB, saveToDB, STORAGE_CONFIG } from './database.js'
+import { getAllFromDB, saveToDB } from './database.js'
+import { STORAGE_CONFIG } from './config.js'
 import { getCurrentUserId } from './index.js'
 
 // Estado de sincronización

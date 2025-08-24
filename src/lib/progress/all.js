@@ -2,21 +2,18 @@
 
 // Configuración y modelos de datos
 export { 
-  PROGRESS_CONFIG, 
+  PROGRESS_CONFIG 
+} from './config.js'
+
+export { 
   VERB_DIFFICULTY, 
   FREQUENCY_DIFFICULTY_BONUS,
   ERROR_TAGS,
   FREQUENCY_LEVELS
-} from './config.js'
-
-export { 
-  User,
-  Verb,
-  Item,
-  Attempt,
-  Mastery,
-  Schedule
 } from './dataModels.js'
+
+// Las definiciones de tipos JSDoc están disponibles desde dataModels.js
+// No necesitan ser re-exportadas
 
 // Base de datos
 export {
@@ -56,15 +53,18 @@ export {
 
 // Mastery
 export {
-  calculateRecencyWeight,
   getVerbDifficulty,
-  calculateHintPenalty,
   calculateMasteryForItem,
   calculateMasteryForCell,
   calculateMasteryForTimeOrMood,
   getConfidenceLevel,
   classifyMasteryLevel
 } from './mastery.js'
+
+// Penalties
+export {
+  calculateHintPenalty
+} from './penalties.js'
 
 // Tracking
 export {
@@ -99,21 +99,16 @@ export {
   maxBy,
   minBy,
   formatPercentage,
-  formatTime,
   getMasteryColorClass,
   getMasteryLevelText,
   getMasteryIcon,
-  formatRelativeDate
+  formatRelativeDate,
+  formatTimeOnly
 } from './utils.js'
 
 // UI
 export {
-  formatPercentage,
-  formatTime,
-  getMasteryColorClass,
-  getMasteryLevelText,
-  getMasteryIcon,
-  formatRelativeDate
+  formatTime
 } from './uiUtils.js'
 
 // Analytics
@@ -163,16 +158,7 @@ export {
   isProgressSystemInitialized,
   getCurrentUserId,
   endCurrentSession,
-  resetProgressSystem,
-  getProgressSystemConfig,
-  getVerbDifficultyConfig,
-  getProgressSystemStatus,
-  diagnoseProgressSystem,
-  getSystemStats,
-  exportSystemData,
-  importSystemData,
-  clearSystemData,
-  getSystemVersionInfo
+  resetProgressSystem
 } from './index.js'
 
 // Full Initialization
@@ -181,14 +167,24 @@ export {
   isFullProgressSystemInitialized
 } from './fullInitialization.js'
 
+// Item Management
+export {
+  initializeItems
+} from './itemManagement.js'
+
+// Verb Initialization
+export {
+  initializeVerbs
+} from './verbInitialization.js'
+
 // Progress Tracking Hook
-export { useProgressTracking } from '../features/drill/useProgressTracking.js'
+export { useProgressTracking } from '../../features/drill/useProgressTracking.js'
 
 // Componentes de UI
-export { default as ProgressDashboard } from '../features/progress/ProgressDashboard.jsx'
-export { default as ProgressTracker } from '../features/progress/ProgressTracker.jsx'
-export { default as HeatMap } from '../features/progress/HeatMap.jsx'
-export { default as CompetencyRadar } from '../features/progress/CompetencyRadar.jsx'
+export { default as ProgressDashboard } from '../../features/progress/ProgressDashboard.jsx'
+export { default as ProgressTracker } from '../../features/progress/ProgressTracker.jsx'
+export { default as HeatMap } from '../../features/progress/HeatMap.jsx'
+export { default as CompetencyRadar } from '../../features/progress/CompetencyRadar.jsx'
 
 // Todos los componentes
-export * from '../features/progress/index.js'
+export * from '../../features/progress/index.js'

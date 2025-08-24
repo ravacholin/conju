@@ -8,7 +8,7 @@ import {
   getWeeklyGoals,
   checkWeeklyProgress,
   getRecommendations
-} from '../lib/progress/all.js'
+} from '../../lib/progress/all.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'

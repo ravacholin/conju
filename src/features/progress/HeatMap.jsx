@@ -1,7 +1,7 @@
 // Componente para mostrar el mapa de calor
 
 import { useEffect, useState } from 'react'
-import { formatPercentage, getMasteryColorClass } from '../../lib/progress/uiUtils.js'
+import { formatPercentage, getMasteryColorClass } from '../../lib/progress/all.js'
 
 /**
  * Componente para mostrar el mapa de calor
@@ -204,3 +204,5 @@ function getMasteryLevelText(score) {
   if (score >= 60) return 'En progreso'
   return 'En dificultades'
 }
+
+export default HeatMap

@@ -209,3 +209,5 @@ function getOverallAssessment(data) {
     return 'Nivel de competencia básico. Se recomienda práctica adicional.'
   }
 }
+
+export default CompetencyRadar

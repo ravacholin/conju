@@ -205,9 +205,10 @@ export async function testFullInitialization() {
 // Ejecutar inicialización completa si este archivo se ejecuta directamente
 if (typeof window !== 'undefined' && window.location) {
   // Solo ejecutar en el navegador
-  initializeFullProgressSystem().catch(error => {
-    console.error('Error en inicialización completa:', error)
-  })
+  // DISABLED: initializeFullProgressSystem().catch(error => {
+  //   console.error('Error en inicialización completa:', error)
+  // })
+  console.log('⏸️ Inicialización completa automática deshabilitada temporalmente')
 }
 
 export default {

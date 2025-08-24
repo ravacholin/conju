@@ -1,8 +1,9 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
 import { saveAttempt, saveMastery, saveSchedule } from './database.js'
-import { calculateMasteryForItem, calculateNextInterval, updateSchedule } from './srs.js'
-import { CLASSIFICATION_RULES, ERROR_TAGS } from './dataModels.js'
+import { calculateNextInterval, updateSchedule } from './srs.js'
+// import { calculateMasteryForItem } from './mastery.js'  // Temporarily disabled
+import { ERROR_TAGS } from './dataModels.js'
 
 // Estado del tracking
 let currentSession = null
