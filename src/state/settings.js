@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
-import { initProgressSystem } from '../lib/progress/index.js'
 
 // Niveles disponibles
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
@@ -12,10 +11,7 @@ if (typeof window !== 'undefined') {
     warmupCaches()
   })
   
-  // Inicializar sistema de progreso
-  initProgressSystem().catch(error => {
-    console.error('Error al inicializar el sistema de progreso:', error)
-  })
+  // Note: Progress system initialization moved to AppRouter for better error handling
 }
 
 const useSettings = create(

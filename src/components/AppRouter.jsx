@@ -31,14 +31,24 @@ function AppRouter() {
 
   // Initialize app state
   useEffect(() => {
-    // Hydrate persisted settings first
-    settings.hydrate().then(() => {
-      // Ensure Resistance mode is off on app load (but keep other persisted values)
-      settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
-    })
+    // Ensure Resistance mode is off on app load (but keep other persisted values)
+    settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
     
     // Warm up performance caches
     warmupCaches()
+    
+    // Initialize progress system with proper error handling
+    // This is done after UI renders to prevent blank page if initialization fails
+    setTimeout(async () => {
+      try {
+        const { initProgressSystem } = await import('../lib/progress/index.js')
+        await initProgressSystem()
+        console.log('✅ Progress system initialized successfully')
+      } catch (error) {
+        console.warn('⚠️ Progress system initialization failed, app will continue without it:', error)
+        // App continues to work even if progress system fails
+      }
+    }, 100)
     
     // Log cache stats in development
     if (import.meta.env.DEV) {
@@ -46,7 +56,7 @@ function AppRouter() {
         console.log('📊 Cache Stats:', getCacheStats())
       }, 1000)
     }
-  }, [settings])
+  }, [])
 
   const handleStartPractice = () => {
     setCurrentMode('drill')

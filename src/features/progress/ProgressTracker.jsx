@@ -1,6 +1,6 @@
 // Componente para mostrar el tracker de progreso
 
-import { formatPercentage, getMasteryColorClass, getMasteryLevelText } from '../../lib/progress/all.js'
+import { formatPercentage, getMasteryColorClass, getMasteryLevelText } from '../../lib/progress/utils.js'
 
 /**
  * Componente para mostrar el tracker de progreso

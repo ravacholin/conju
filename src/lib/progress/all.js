@@ -155,39 +155,6 @@ export {
   importDataFromBackup
 } from './cloudSync.js'
 
-// Initialization
-export {
-  initProgressSystem,
-  isProgressSystemInitialized,
-  getCurrentUserId,
-  endCurrentSession,
-  resetProgressSystem
-} from './index.js'
-
-// Full Initialization
-export {
-  initializeFullProgressSystem,
-  isFullProgressSystemInitialized
-} from './fullInitialization.js'
-
-// Item Management
-export {
-  initializeItems
-} from './itemManagement.js'
-
-// Verb Initialization
-export {
-  initializeVerbs
-} from './verbInitialization.js'
-
-// Progress Tracking Hook
-export { useProgressTracking } from '../../features/drill/useProgressTracking.js'
-
-// Componentes de UI
-export { default as ProgressDashboard } from '../../features/progress/ProgressDashboard.jsx'
-export { default as ProgressTracker } from '../../features/progress/ProgressTracker.jsx'
-export { default as HeatMap } from '../../features/progress/HeatMap.jsx'
-export { default as CompetencyRadar } from '../../features/progress/CompetencyRadar.jsx'
-
-// Todos los componentes
-export * from '../../features/progress/index.js'
+// Note: Removed circular dependency exports that were causing blank page issues
+// Components and hooks should import directly from their specific modules
+// instead of through this all.js file to avoid circular dependencies

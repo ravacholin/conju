@@ -1,14 +1,9 @@
 // Componente principal del dashboard de progreso
 
 import { useEffect, useState } from 'react'
-import { 
-  getHeatMapData, 
-  getCompetencyRadarData, 
-  getUserStats,
-  getWeeklyGoals,
-  checkWeeklyProgress,
-  getRecommendations
-} from '../../lib/progress/all.js'
+import { getHeatMapData, getCompetencyRadarData } from '../../lib/progress/analytics.js'
+import { getUserStats } from '../../lib/progress/tracking.js'
+import { getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/goals.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
