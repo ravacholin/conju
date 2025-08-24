@@ -38,6 +38,10 @@ export default function Drill({
   const settings = useSettings()
   const [resistTick, setResistTick] = useState(0)
   
+  // Variables derived from settings - moved here to fix initialization order
+  const isReverse = !!settings.reverseActive
+  const isDouble = !!settings.doubleActive
+  
   // Hook para tracking de progreso
   const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
 
@@ -579,8 +583,6 @@ export default function Drill({
     return tokens.join(' ')
   }
 
-  const isReverse = !!settings.reverseActive
-  const isDouble = !!settings.doubleActive
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
 
   // Campos visibles según modo
