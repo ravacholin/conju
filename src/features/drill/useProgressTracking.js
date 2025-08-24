@@ -61,7 +61,8 @@ export function useProgressTracking(currentItem, onResult) {
         hintsUsed: result.hintsUsed || 0,
         errorTags: result.errorTags || [],
         userAnswer: result.userAnswer,
-        correctAnswer: result.correctAnswer
+        correctAnswer: result.correctAnswer,
+        item: currentItem
       })
       
       console.log(`✅ Intento ${attemptIdRef.current} registrado`)

@@ -38,8 +38,8 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
         console.error('📊 Detalles del error de Service Worker:', errorDetails)
         
         // Optional: Send error to analytics service in production
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'exception', {
+        if (typeof window.gtag !== 'undefined') {
+          window.gtag('event', 'exception', {
             description: `SW Registration Failed: ${error.message}`,
             fatal: false
           })

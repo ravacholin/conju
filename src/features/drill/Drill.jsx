@@ -3,8 +3,6 @@ import { grade } from '../../lib/core/grader.js'
 import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
 import { useProgressTracking } from './useProgressTracking.js'
-// import { ProgressTrackingWrapper } from './ProgressTrackingWrapper.jsx'  // Temporarily disabled
-
 
 export default function Drill({ 
   currentItem, 
@@ -56,7 +54,7 @@ export default function Drill({
       if (settings.doubleActive && firstRef.current) firstRef.current.focus()
       else if (inputRef.current) inputRef.current.focus()
     }
-  }, [currentItem?.id, result])
+  }, [currentItem?.id, result, settings.doubleActive])
 
   // Resistance countdown
   useEffect(() => {
@@ -93,7 +91,7 @@ export default function Drill({
       }
     }, 100)
     return () => clearInterval(id)
-  }, [settings.resistanceActive, settings.resistanceMsLeft])
+  }, [settings.resistanceActive, settings.resistanceMsLeft, settings])
 
   // Add 5 seconds when countdown is activated
   useEffect(() => {
@@ -102,9 +100,7 @@ export default function Drill({
       const currentMs = settings.resistanceMsLeft
       settings.set({ resistanceMsLeft: currentMs + 5000 })
     }
-  }, [settings.resistanceActive])
-
-  
+  }, [settings.resistanceActive, settings.resistanceMsLeft])
 
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return
@@ -282,7 +278,7 @@ export default function Drill({
 
     document.addEventListener('keydown', handleKeyPress)
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [result])
+  }, [result, isDouble, isReverse])
 
   const handleContinue = () => {
     setResult(null)
@@ -872,7 +868,7 @@ export default function Drill({
       {isDouble && (
         <div className="double-container">
           <div className="conjugation-context" style={{marginBottom: '10px'}}>
-                            <strong>Dos verbos dos: {currentItem.lemma}</strong>
+                        <strong>Dos verbos dos: {currentItem.lemma}</strong>
           </div>
           <div className="double-grid">
             <div className="double-field">
@@ -1069,13 +1065,6 @@ export default function Drill({
           )}
         </div>
       )}
-      {/* Wrapper para tracking de progreso */}
-      {/* <ProgressTrackingWrapper 
-        currentItem={currentItem}
-        onResult={onResult}
-        onContinue={onContinue}
-        result={result}
-      /> */}
     </div>
   )
 } 

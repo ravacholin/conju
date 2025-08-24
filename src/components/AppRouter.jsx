@@ -46,7 +46,7 @@ function AppRouter() {
         console.log('📊 Cache Stats:', getCacheStats())
       }, 1000)
     }
-  }, [])
+  }, [settings])
 
   const handleStartPractice = () => {
     setCurrentMode('drill')
@@ -69,7 +69,7 @@ function AppRouter() {
       window.scrollTo(0, 0)
       drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
     }
-  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily])
+  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
 
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {
