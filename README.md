@@ -173,13 +173,21 @@ npm run preview
 - ⚡ El dashboard muestra datos de analíticas, mapas de calor, radar de competencias y recomendaciones
 
 #### Fase 2: Mejorar Feedback de Progreso en Tiempo Real
-- **Estado**: ⏳ Pendiente
+- **Estado**: 🔄 En Progreso
 - **Objetivo**: Mostrar progreso en vivo durante las sesiones de práctica
 - **Tareas**:
-  - [ ] Indicadores de puntuación de mastery en vivo
-  - [ ] Contadores de rachas y barras de progreso
-  - [ ] Estadísticas de sesión (precisión, velocidad)
-  - [ ] Notificaciones de progreso y logros
+  - [ ] Indicadores de puntuación de mastery en vivo para la celda actual
+  - [ ] Contadores de sesión (respuestas correctas/incorrectas, racha actual)
+  - [ ] Barra de progreso de sesión y estadísticas en tiempo real
+  - [ ] Notificaciones de progreso y feedback inmediato post-respuesta
+  - [ ] Mini-display de estadísticas en la interfaz de práctica
+
+**Plan de implementación**:
+1. **Indicadores de Mastery Live**: Mostrar el puntaje de mastery actual para la combinación modo/tiempo que se está practicando
+2. **Contadores de Sesión**: Añadir counters para respuestas correctas/incorrectas, racha actual, tiempo de sesión
+3. **Feedback Post-Respuesta**: Mostrar notificaciones inmediatas después de cada respuesta (✅ ¡Correcto! / ❌ Incorrecto)
+4. **Mini-Panel de Estadísticas**: Pequeño panel colapsible con stats de sesión actual
+5. **Integración con Tracking**: Conectar cada resultado de drill con el sistema de progreso existente
 
 #### Fase 3: Completar Integración de Analytics
 - **Estado**: ⏳ Pendiente

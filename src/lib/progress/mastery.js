@@ -244,3 +244,32 @@ export function classifyMasteryLevel(score, weightedN, avgLatency) {
     recommendation
   }
 }
+
+/**
+ * Obtiene el mastery score para una combinación específica mood/tense
+ * @param {string} userId - ID del usuario
+ * @param {Object} params - Parámetros de la consulta
+ * @param {string} params.mood - Modo gramatical
+ * @param {string} params.tense - Tiempo gramatical
+ * @param {string} params.verbId - ID del verbo (opcional)
+ * @returns {Promise<number>} Mastery score (0-100)
+ */
+export async function getMasteryScore(userId, { mood, tense, verbId }) {
+  try {
+    // Si tenemos un verbId específico, calcular para ese ítem
+    if (verbId) {
+      const itemId = `${verbId}-${mood}-${tense}`
+      const verb = { id: verbId } // Objeto verbo simplificado
+      const result = await calculateMasteryForItem(itemId, verb)
+      return result.score
+    }
+    
+    // Si no tenemos verbId, devolver un valor por defecto o promedio
+    // En una implementación completa, esto consultaría todos los verbos
+    // para esta combinación mood/tense
+    return 50 // Valor neutral por defecto
+  } catch (error) {
+    console.error('Error al obtener mastery score:', error)
+    return null
+  }
+}

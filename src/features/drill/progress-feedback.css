@@ -1,0 +1,269 @@
+/* Estilos para componentes de progreso en tiempo real */
+
+/* Mastery Indicator */
+.mastery-indicator {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  font-size: 0.85rem;
+  backdrop-filter: blur(10px);
+}
+
+.mastery-indicator.loading {
+  background: rgba(248, 249, 250, 0.95);
+  border-color: #e9ecef;
+}
+
+.mastery-indicator.new {
+  background: rgba(255, 248, 220, 0.95);
+  border-color: #ffc107;
+}
+
+.mastery-indicator.high {
+  background: rgba(220, 255, 220, 0.95);
+  border-color: #28a745;
+  color: #155724;
+}
+
+.mastery-indicator.medium {
+  background: rgba(255, 248, 220, 0.95);
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.mastery-indicator.low {
+  background: rgba(255, 235, 235, 0.95);
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.mastery-label {
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+.mastery-score {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Session Stats */
+.session-stats {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.session-stats.collapsed {
+  padding: 8px 12px;
+}
+
+.session-stats.expanded {
+  padding: 12px 16px;
+  min-width: 280px;
+}
+
+.stats-toggle {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #495057;
+  transition: color 0.2s ease;
+}
+
+.stats-toggle:hover {
+  color: #007bff;
+}
+
+.stats-content {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.stat-value.correct {
+  color: #28a745;
+}
+
+.stat-value.errors {
+  color: #dc3545;
+}
+
+.stat-value.streak {
+  color: #fd7e14;
+}
+
+.stat-value.best-streak {
+  color: #6f42c1;
+}
+
+.stat-value.speed {
+  color: #17a2b8;
+}
+
+/* Feedback Notification */
+.feedback-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 200px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.feedback-notification.success {
+  background: rgba(220, 255, 220, 0.95);
+  border: 2px solid #28a745;
+  color: #155724;
+}
+
+.feedback-notification.error {
+  background: rgba(255, 235, 235, 0.95);
+  border: 2px solid #dc3545;
+  color: #721c24;
+}
+
+.feedback-notification.fade-in {
+  animation: feedbackFadeIn 0.3s ease-out;
+}
+
+.feedback-notification.fade-out {
+  animation: feedbackFadeOut 0.3s ease-in;
+}
+
+.feedback-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.feedback-emoji {
+  font-size: 2rem;
+}
+
+.feedback-text {
+  text-align: left;
+}
+
+.feedback-message {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.feedback-extra {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Animations */
+@keyframes feedbackFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes feedbackFadeOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mastery-indicator {
+    top: 60px;
+    right: 10px;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+
+  .session-stats {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .session-stats.expanded {
+    min-width: 250px;
+    padding: 10px 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .feedback-notification {
+    min-width: 180px;
+    padding: 16px 24px;
+  }
+
+  .feedback-emoji {
+    font-size: 1.5rem;
+  }
+
+  .feedback-message {
+    font-size: 1rem;
+  }
+}

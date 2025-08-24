@@ -3,6 +3,10 @@ import { grade } from '../../lib/core/grader.js'
 import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
 import { useProgressTracking } from './useProgressTracking.js'
+import MasteryIndicator from './MasteryIndicator.jsx'
+import SessionStats from './SessionStats.jsx'
+import FeedbackNotification from './FeedbackNotification.jsx'
+import './progress-feedback.css'
 
 export default function Drill({ 
   currentItem, 
@@ -30,6 +34,8 @@ export default function Drill({
   const [clockClickFeedback, setClockClickFeedback] = useState(false)
   const [showExplosion, setShowExplosion] = useState(false)
   const [urgentTick, setUrgentTick] = useState(false)
+  const [sessionStartTime] = useState(Date.now())
+  const [feedbackNotification, setFeedbackNotification] = useState(null)
 
   const inputRef = useRef(null)
   const firstRef = useRef(null)
@@ -137,6 +143,14 @@ export default function Drill({
       
       setResult(extendedResult)
       handleResult(extendedResult)
+      
+      // Mostrar notificación de feedback
+      setFeedbackNotification({
+        correct: extendedResult.correct,
+        correctAnswer: extendedResult.targets?.[0],
+        userAnswer: input.trim()
+      })
+      
       // latency
       const elapsed = Date.now() - itemStart
       setLatencies(v => [...v, elapsed])
@@ -220,6 +234,14 @@ export default function Drill({
       }
       setResult(resultObj)
       handleResult(resultObj)
+      
+      // Mostrar notificación de feedback
+      setFeedbackNotification({
+        correct: resultObj.correct,
+        correctAnswer: resultObj.targets?.[0],
+        userAnswer: `${input.trim()} / ${secondInput.trim()}`
+      })
+      
       const elapsed = Date.now() - itemStart
       setLatencies(v => [...v, elapsed])
       if (correct) {
@@ -1067,6 +1089,24 @@ export default function Drill({
           )}
         </div>
       )}
+
+      {/* Live Progress Components */}
+      <MasteryIndicator currentItem={currentItem} />
+      
+      <SessionStats
+        localCorrect={localCorrect}
+        errorsCount={errorsCount}
+        currentStreak={currentStreak}
+        bestStreak={bestStreak}
+        latencies={latencies}
+        sessionStartTime={sessionStartTime}
+      />
+
+      <FeedbackNotification
+        result={feedbackNotification}
+        currentStreak={currentStreak}
+        onClose={() => setFeedbackNotification(null)}
+      />
     </div>
   )
 } 
