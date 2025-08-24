@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, Suspense, lazy } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 import QuickSwitchPanel from './QuickSwitchPanel.jsx'
 import GamesPanel from './GamesPanel.jsx'
 import SettingsPanel from './SettingsPanel.jsx'
 import Drill from '../../features/drill/Drill.jsx'
-import ProgressDashboard from '../../features/progress/ProgressDashboard.jsx'
+const ProgressDashboard = lazy(() => import('../../features/progress/ProgressDashboard.jsx'))
 
 function DrillMode({
   currentItem,
@@ -141,7 +141,9 @@ function DrillMode({
             >
               ×
             </button>
-            <ProgressDashboard />
+            <Suspense fallback={<div className="loading">Cargando panel de progreso...</div>}>
+              <ProgressDashboard />
+            </Suspense>
           </div>
         </div>
       )}

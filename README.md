@@ -144,7 +144,7 @@ Este plan define pasos grandes y verificables para continuar el desarrollo y sir
 - [x] Paso 3: Activar vistas analíticas mínimas (Heatmap y Radar) con datos reales; proteger en caso de datos vacíos
 - [x] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
 - [x] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
-- [ ] Paso 6: Rendimiento: revisar tamaños de bundles y memoización de listas pesadas
+- [x] Paso 6: Rendimiento: revisar tamaños de bundles y memoización de listas pesadas
 
 Notas:
 - Importar APIs agregadas desde `src/lib/progress/all.js` cuando se requiera la superficie completa; evitar círculos con `index.js`.
@@ -168,6 +168,9 @@ Notas:
 - 2025-08-24 — Paso 5 (Completado): Estabilidad y PWA.
   - Archivos: `vite.config.js`, `src/main.jsx`
   - Detalles: PWA deshabilitado por defecto en desarrollo (config en `defineConfig(({mode})...)`) y configurable con `DISABLE_PWA=true` al build. Registro de SW en runtime controlado por `VITE_ENABLE_PWA` (poner `false` para desactivar). Se añadieron `window.onerror` y `unhandledrejection` para evitar fallos silenciosos en producción y mostrar un banner amigable.
+ - 2025-08-24 — Paso 6 (Completado): Optimización de rendimiento (carga diferida y división de código).
+   - Archivos: `src/components/drill/DrillMode.jsx`
+   - Detalles: `ProgressDashboard` se carga de forma diferida con `React.lazy` y `Suspense`, separando ~16 KB de JS y ~6.5 KB de CSS del bundle principal. El bundle principal bajó y las analíticas solo se cargan al abrir el panel.
 
 ### Flags y ejecución
 
