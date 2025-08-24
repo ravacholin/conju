@@ -1,7 +1,7 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
 
 import { PROGRESS_CONFIG } from './config.js'
-import { saveSchedule, getScheduleByCell } from './database.js'
+import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 
 /**
  * Calcula el próximo intervalo basado en el desempeño
@@ -84,9 +84,16 @@ export async function updateSchedule(userId, cell, correct, hintsUsed) {
  * @returns {Promise<Array>} Ítems pendientes
  */
 export async function getDueItems(userId, currentDate = new Date()) {
-  // En una implementación completa, esto buscaría en la base de datos
-  // los ítems cuya fecha de revisión sea anterior o igual a currentDate
-  return []
+  try {
+    const schedules = await getDueSchedules(userId, currentDate)
+    // Normalizar a celdas básicas y ordenar por fecha próxima
+    return schedules
+      .sort((a, b) => new Date(a.nextDue) - new Date(b.nextDue))
+      .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue }))
+  } catch (error) {
+    console.error('Error obteniendo ítems SRS pendientes:', error)
+    return []
+  }
 }
 
 /**

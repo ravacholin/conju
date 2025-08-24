@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
+import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
+import { getCurrentUserId } from '../lib/progress/userManager.js'
 
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
@@ -8,7 +10,7 @@ export function useDrillMode() {
   const settings = useSettings()
 
   // Generate the next item based on current settings
-  const generateNextItem = (itemToExclude = null, allFormsForRegion, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood) => {
+  const generateNextItem = async (itemToExclude = null, allFormsForRegion, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood) => {
     console.log('🎯 GENERATE NEXT ITEM - Starting with settings:', {
       verbType: settings.verbType,
       selectedFamily: settings.selectedFamily,
@@ -17,7 +19,28 @@ export function useDrillMode() {
       itemToExclude: itemToExclude?.lemma
     })
     
-    const nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
+    // Prefer SRS due cells if available
+    let nextForm = null
+    try {
+      const userId = getCurrentUserId()
+      const dueCells = userId ? await getDueItems(userId, new Date()) : []
+      const pickFromDue = dueCells.find(Boolean)
+      if (pickFromDue) {
+        // Find forms that match the due cell and current level constraints
+        const candidateForms = allFormsForRegion.filter(f =>
+          f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
+        )
+        if (candidateForms.length > 0) {
+          nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+        }
+      }
+    } catch (e) {
+      console.warn('SRS due selection failed; falling back to generator', e)
+    }
+
+    if (!nextForm) {
+      nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
+    }
     
     console.log('🎯 GENERATE NEXT ITEM - chooseNext returned:', nextForm ? {
       lemma: nextForm.lemma,
@@ -215,6 +238,15 @@ export function useDrillMode() {
           correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0)
         }
       }))
+    }
+    // Update SRS schedule for the practiced cell
+    try {
+      const userId = getCurrentUserId()
+      if (userId && currentItem && currentItem.mood && currentItem.tense && currentItem.person) {
+        updateSchedule(userId, { mood: currentItem.mood, tense: currentItem.tense, person: currentItem.person }, !!result.correct, result.hintsUsed || 0)
+      }
+    } catch (e) {
+      console.warn('SRS schedule update failed:', e)
     }
     // NO generate next item automatically
   }

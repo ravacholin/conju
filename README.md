@@ -142,7 +142,7 @@ Este plan define pasos grandes y verificables para continuar el desarrollo y sir
 - [x] Paso 1: Integrar clasificación real de errores en Drill (reemplazar placeholder) y propagar `userAnswer/correctAnswer` al tracking
 - [x] Paso 2: Completar flujo de tracking (latencia, hints, rachas) en DB y validar registros mínimos en IndexedDB
 - [x] Paso 3: Activar vistas analíticas mínimas (Heatmap y Radar) con datos reales; proteger en caso de datos vacíos
-- [ ] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
+- [x] Paso 4: Integración SRS básica (lectura de due items) con regeneración en Drill
 - [ ] Paso 5: Estabilidad y PWA: flag de entorno y verificación de SW en producción; saneamiento de errores globales
 - [ ] Paso 6: Rendimiento: revisar tamaños de bundles y memoización de listas pesadas
 
@@ -159,9 +159,12 @@ Notas:
 - 2025-08-24 — Paso 2 (Completado): Guardado robusto de intentos en IndexedDB con `itemId`, `latencyMs`, `hintsUsed`, `errorTags`, `userAnswer`, `correctAnswer`; se disparan eventos de racha.
   - Archivos: `src/lib/progress/tracking.js`, `src/features/drill/Drill.jsx`
   - Detalles: `trackAttemptSubmitted` ahora infiere `itemId` desde `result.item?.id` cuando no viene explícito, prioriza `errorTags` desde la UI y persiste campos adicionales. `Drill` invoca `handleStreakIncremented()` al acertar.
- - 2025-08-24 — Paso 3 (Completado): Vistas analíticas enlazadas a datos reales y tolerantes a vacío.
-   - Archivos: `src/lib/progress/analytics.js`, `src/lib/progress/realTimeAnalytics.js`, `src/lib/progress/database.js`, `src/lib/progress/userManager.js`, `src/features/progress/ProgressDashboard.jsx`
-   - Detalles: Confirmado `getMasteryByUser` en DB, creado `userManager.js` (ID/ajustes y conteo de sesiones), y verificados componentes `HeatMap` y `CompetencyRadar` con fallbacks para datos vacíos. `ProgressDashboard` consume el ID de usuario y maneja errores.
+- 2025-08-24 — Paso 3 (Completado): Vistas analíticas enlazadas a datos reales y tolerantes a vacío.
+  - Archivos: `src/lib/progress/analytics.js`, `src/lib/progress/realTimeAnalytics.js`, `src/lib/progress/database.js`, `src/lib/progress/userManager.js`, `src/features/progress/ProgressDashboard.jsx`
+  - Detalles: Confirmado `getMasteryByUser` en DB, creado `userManager.js` (ID/ajustes y conteo de sesiones), y verificados componentes `HeatMap` y `CompetencyRadar` con fallbacks para datos vacíos. `ProgressDashboard` consume el ID de usuario y maneja errores.
+ - 2025-08-24 — Paso 4 (Completado): SRS básico integrado: selección prioritaria por ítems vencidos y actualización de schedule después de cada intento.
+   - Archivos: `src/lib/progress/srs.js`, `src/lib/progress/database.js`, `src/hooks/useDrillMode.js`
+   - Detalles: `getDueItems(userId)` usa `getDueSchedules` y ordena por `nextDue`. `useDrillMode.generateNextItem` prioriza celdas vencidas para elegir la próxima forma; `handleDrillResult` llama a `updateSchedule` con `correct` y `hintsUsed`.
 
 ## 🚀 Plan de Implementación del Sistema de Progreso Completo
 
