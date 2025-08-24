@@ -1,6 +1,6 @@
 // Componente para mostrar el mapa de calor
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState, memo } from 'react'
 import { formatPercentage, getMasteryColorClass } from '../../lib/progress/utils.js'
 
 /**
@@ -45,19 +45,20 @@ export function HeatMap({ data }) {
   }
 
   // Agrupar datos por modo y tiempo
-  const groupedData = {}
-  if (data && Array.isArray(data)) {
-    data.forEach(cell => {
-      if (!groupedData[cell.mood]) {
-        groupedData[cell.mood] = {}
-      }
-      groupedData[cell.mood][cell.tense] = cell
-    })
-  }
+  const groupedData = useMemo(() => {
+    const g = {}
+    if (data && Array.isArray(data)) {
+      data.forEach(cell => {
+        if (!g[cell.mood]) g[cell.mood] = {}
+        g[cell.mood][cell.tense] = cell
+      })
+    }
+    return g
+  }, [data])
 
   // Obtener todos los modos y tiempos únicos
-  const allMoods = Object.keys(groupedData)
-  const allTenses = [...new Set(data?.map(cell => cell.tense) || [])]
+  const allMoods = useMemo(() => Object.keys(groupedData), [groupedData])
+  const allTenses = useMemo(() => [...new Set(data?.map(cell => cell.tense) || [])], [data])
 
   if (!data || data.length === 0) {
     return (
@@ -205,4 +206,4 @@ function getMasteryLevelText(score) {
   return 'En dificultades'
 }
 
-export default HeatMap
+export default memo(HeatMap)

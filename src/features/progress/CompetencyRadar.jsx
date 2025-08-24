@@ -1,6 +1,6 @@
 // Componente para mostrar el radar de competencias
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import { formatPercentage } from '../../lib/progress/uiUtils.js'
 
 /**
@@ -210,4 +210,4 @@ function getOverallAssessment(data) {
   }
 }
 
-export default CompetencyRadar
+export default memo(CompetencyRadar)

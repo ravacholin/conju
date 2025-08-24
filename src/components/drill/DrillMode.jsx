@@ -1,8 +1,8 @@
 import { useState, Suspense, lazy } from 'react'
 import DrillHeader from './DrillHeader.jsx'
-import QuickSwitchPanel from './QuickSwitchPanel.jsx'
-import GamesPanel from './GamesPanel.jsx'
-import SettingsPanel from './SettingsPanel.jsx'
+const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
+const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
+const SettingsPanel = lazy(() => import('./SettingsPanel.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 const ProgressDashboard = lazy(() => import('../../features/progress/ProgressDashboard.jsx'))
 
@@ -102,34 +102,40 @@ function DrillMode({
       />
 
       {showSettings && (
-        <SettingsPanel
-          settings={settings}
-          onClose={() => setShowSettings(false)}
-          onDialectChange={onDialectChange}
-          onLevelChange={onLevelChange}
-          onPracticeModeChange={onPracticeModeChange}
-          onPronounPracticeChange={onPronounPracticeChange}
-          onVerbTypeChange={onVerbTypeChange}
-          onStartSpecificPractice={onStartSpecificPractice}
-        />
+        <Suspense fallback={<div className="loading">Cargando configuración...</div>}>
+          <SettingsPanel
+            settings={settings}
+            onClose={() => setShowSettings(false)}
+            onDialectChange={onDialectChange}
+            onLevelChange={onLevelChange}
+            onPracticeModeChange={onPracticeModeChange}
+            onPronounPracticeChange={onPronounPracticeChange}
+            onVerbTypeChange={onVerbTypeChange}
+            onStartSpecificPractice={onStartSpecificPractice}
+          />
+        </Suspense>
       )}
 
       {showQuickSwitch && (
-        <QuickSwitchPanel
-          settings={settings}
-          onApply={handleQuickSwitchApply}
-          onClose={() => setShowQuickSwitch(false)}
-          getAvailableMoodsForLevel={getAvailableMoodsForLevel}
-          getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
-        />
+        <Suspense fallback={<div className="loading">Cargando opciones rápidas...</div>}>
+          <QuickSwitchPanel
+            settings={settings}
+            onApply={handleQuickSwitchApply}
+            onClose={() => setShowQuickSwitch(false)}
+            getAvailableMoodsForLevel={getAvailableMoodsForLevel}
+            getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
+          />
+        </Suspense>
       )}
 
       {showGames && (
-        <GamesPanel
-          settings={settings}
-          onClose={() => setShowGames(false)}
-          onRegenerateItem={onRegenerateItem}
-        />
+        <Suspense fallback={<div className="loading">Cargando juegos...</div>}>
+          <GamesPanel
+            settings={settings}
+            onClose={() => setShowGames(false)}
+            onRegenerateItem={onRegenerateItem}
+          />
+        </Suspense>
       )}
 
       {showProgress && (

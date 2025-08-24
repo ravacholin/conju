@@ -168,9 +168,10 @@ Notas:
 - 2025-08-24 — Paso 5 (Completado): Estabilidad y PWA.
   - Archivos: `vite.config.js`, `src/main.jsx`
   - Detalles: PWA deshabilitado por defecto en desarrollo (config en `defineConfig(({mode})...)`) y configurable con `DISABLE_PWA=true` al build. Registro de SW en runtime controlado por `VITE_ENABLE_PWA` (poner `false` para desactivar). Se añadieron `window.onerror` y `unhandledrejection` para evitar fallos silenciosos en producción y mostrar un banner amigable.
- - 2025-08-24 — Paso 6 (Completado): Optimización de rendimiento (carga diferida y división de código).
-   - Archivos: `src/components/drill/DrillMode.jsx`
-   - Detalles: `ProgressDashboard` se carga de forma diferida con `React.lazy` y `Suspense`, separando ~16 KB de JS y ~6.5 KB de CSS del bundle principal. El bundle principal bajó y las analíticas solo se cargan al abrir el panel.
+- 2025-08-24 — Paso 6 (Completado): Optimización de rendimiento (carga diferida y división de código).
+  - Archivos: `src/components/drill/DrillMode.jsx`
+  - Detalles: `ProgressDashboard` se carga de forma diferida con `React.lazy` y `Suspense`, separando ~16 KB de JS y ~6.5 KB de CSS del bundle principal. Las analíticas solo se cargan al abrir el panel.
+  - Extra: Se aplicó carga diferida a `SettingsPanel`, `QuickSwitchPanel` y `GamesPanel`; y `HeatMap`, `CompetencyRadar`, `ProgressTracker` se memorizaron con `React.memo`. Build confirmó chunks separados.
 
 ### Flags y ejecución
 

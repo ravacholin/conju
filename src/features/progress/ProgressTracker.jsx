@@ -1,5 +1,6 @@
 // Componente para mostrar el tracker de progreso
 
+import { memo } from 'react'
 import { formatPercentage, getMasteryColorClass, getMasteryLevelText } from '../../lib/progress/utils.js'
 
 /**
@@ -86,4 +87,4 @@ export function ProgressTracker({ stats }) {
   )
 }
 
-export default ProgressTracker
+export default memo(ProgressTracker)
