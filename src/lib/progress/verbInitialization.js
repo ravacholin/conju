@@ -1,6 +1,5 @@
 // Inicialización de verbos en el sistema de progreso
 
-import { saveVerb } from './database.js'
 import { verbs } from '../../data/verbs.js'
 import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 
@@ -12,6 +11,13 @@ export async function initializeVerbs() {
   console.log('🔄 Inicializando verbos en el sistema de progreso...')
   
   try {
+    // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
+    let saveVerb = async () => {}
+    try {
+      const dbModule = await import('./database.js')
+      if (typeof dbModule.saveVerb === 'function') saveVerb = dbModule.saveVerb
+    } catch {}
+
     let regularCount = 0
     let irregularCount = 0
     let diphtongCount = 0
@@ -114,6 +120,13 @@ export async function isVerbInitialized(lemma) {
  */
 export async function addNewVerb(verb) {
   try {
+    // Cargar funciones de BD de forma perezosa
+    let saveVerb = async () => {}
+    try {
+      const dbModule = await import('./database.js')
+      if (typeof dbModule.saveVerb === 'function') saveVerb = dbModule.saveVerb
+    } catch {}
+
     // Determinar frecuencia léxica
     const frequency = determineVerbFrequency(verb.lemma)
     

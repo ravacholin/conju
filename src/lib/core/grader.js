@@ -66,6 +66,13 @@ export function grade(input, expected, settings){
         if (form.endsWith('ierais')) return form.replace(/ierais$/, 'ieseis')
         if (form.endsWith('ieran')) return form.replace(/ieran$/, 'iesen')
         
+        // irregular patterns without 'i': fuera->fuese, eras->eses, etc.
+        if (form.endsWith('era')) return form.replace(/era$/, 'ese')
+        if (form.endsWith('eras')) return form.replace(/eras$/, 'eses')
+        if (form.endsWith('éramos')) return form.replace(/éramos$/, 'ésemos')
+        if (form.endsWith('erais')) return form.replace(/erais$/, 'eseis')
+        if (form.endsWith('eran')) return form.replace(/eran$/, 'esen')
+        
         // -se -> -ra
         if (form.endsWith('ase')) return form.replace(/ase$/, 'ara')
         if (form.endsWith('ases')) return form.replace(/ases$/, 'aras')
@@ -78,6 +85,13 @@ export function grade(input, expected, settings){
         if (form.endsWith('iésemos')) return form.replace(/iésemos$/, 'iéramos')
         if (form.endsWith('ieseis')) return form.replace(/ieseis$/, 'ierais')
         if (form.endsWith('iesen')) return form.replace(/iesen$/, 'ieran')
+        
+        // reverse for irregular without 'i': fuese->fuera, ses->ras analog
+        if (form.endsWith('ese')) return form.replace(/ese$/, 'era')
+        if (form.endsWith('eses')) return form.replace(/eses$/, 'eras')
+        if (form.endsWith('ésemos')) return form.replace(/ésemos$/, 'éramos')
+        if (form.endsWith('eseis')) return form.replace(/eseis$/, 'erais')
+        if (form.endsWith('esen')) return form.replace(/esen$/, 'eran')
       }
       
       // Para subjuntivo pluscuamperfecto: transformar la parte del auxiliar
@@ -160,8 +174,8 @@ export function grade(input, expected, settings){
           correct = true
           feedback = `A1: acento no estricto (aceptado) — revisá la tilde. Forma correcta: "${correctForm}"`
         } else if (accentPolicy === 'warn') {
-          // A2/B1: Accept but warn more strongly
-          correct = true  
+          // A2/B1: Reject, but message is instructive
+          correct = false
           feedback = `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
         } else {
           // B2+: Reject
@@ -315,7 +329,11 @@ function generateGeneralFeedback(input, settings, expected) {
   const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
   
   // Check for pronoun-specific issues
-  if (settings.region === 'rioplatense' && settings.useVoseo && !settings.neutralizePronoun) {
+  if (
+    settings.region === 'rioplatense' &&
+    settings.useVoseo &&
+    !settings.neutralizePronoun
+  ) {
     // Check if user wrote tú form instead of vos form
     const tuVosPairs = {
       'escribes': 'escribís',
@@ -330,7 +348,14 @@ function generateGeneralFeedback(input, settings, expected) {
       'llegas': 'llegás'
     }
     
-    if (tuVosPairs[input]) {
+    // Trigger this guidance only when it makes sense for the expected target
+    // Either the target explicitly is 2s, or the expected form equals the vos form
+    if (
+      tuVosPairs[input] && (
+        (typeof expected?.person === 'string' && expected.person.startsWith('2s')) ||
+        tuVosPairs[input] === correctForm
+      )
+    ) {
       return `⚠️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`
     }
   }

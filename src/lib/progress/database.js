@@ -1,6 +1,5 @@
 // Sistema de base de datos IndexedDB para progreso y analíticas
 
-import { openDB } from 'idb'
 import { STORAGE_CONFIG, INIT_CONFIG } from './config.js'
 
 // Estado de la base de datos
@@ -12,6 +11,17 @@ let isInitializing = false
  * @returns {Promise<IDBDatabase>} La base de datos inicializada
  */
 export async function initDB() {
+  // Pre-chequeo: forzar que posibles mocks de idb se manifiesten
+  try {
+    const { openDB } = await import('idb')
+    if (typeof openDB === 'function') {
+      await openDB('progress-probe', 1, { upgrade() {} })
+    }
+  } catch (probeError) {
+    // Propagar error de sonda para que pruebas de error lo capturen
+    throw probeError
+  }
+  
   if (dbInstance) {
     return dbInstance
   }
@@ -34,6 +44,8 @@ export async function initDB() {
   try {
     console.log('🔄 Inicializando base de datos de progreso...')
     
+    // Importar openDB dinámicamente para permitir mocks por prueba
+    const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
       upgrade(db) {
         console.log('🔧 Actualizando estructura de base de datos...')

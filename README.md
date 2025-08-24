@@ -74,6 +74,12 @@ npx vitest run src/lib/progress/progress.test.js
 npm test
 ```
 
+### Notas sobre Mocking y Pruebas de Integración
+- Las pruebas de integración que verifican fallos de base de datos se aíslan en el archivo `src/lib/progress/integration-db-error.test.js`.
+- Ese archivo define un `vi.mock('idb', ...)` a nivel de módulo (top‑level) para que `openDB` falle de forma determinista solo en ese archivo, evitando interferir con otras pruebas que ya inicializaron la DB.
+- Si añadís nuevas pruebas que deban forzar errores de IndexedDB, preferí crear un test separado con su propio mock a nivel de archivo, o bien hoistar un control con `vi.hoisted` en ese archivo específico.
+- Para evitar efectos colaterales de caché de módulos entre pruebas, no intentes re‑mockear `idb` dentro del mismo archivo luego de haber importado código que ya lo usó; en su lugar, mové ese caso a un archivo de prueba independiente.
+
 ### Cobertura
 - **Pruebas unitarias**: 7 tests implementados
 - **Cobertura**: Funciones principales verificadas

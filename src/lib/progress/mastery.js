@@ -11,21 +11,23 @@ import { applyPenalties } from './penalties.js'
  * @returns {number} Valor de dificultad (0.8 - 1.3)
  */
 export function getVerbDifficulty(verb) {
+  // Tolerancia a entradas inválidas
+  const safeVerb = verb && typeof verb === 'object' ? verb : {}
   let difficulty = VERB_DIFFICULTY.REGULAR
   
   // Asignar dificultad base según tipo
-  if (verb.type === 'irregular') {
+  if (safeVerb.type === 'irregular') {
     // Para verbos irregulares, usar dificultad alta
     difficulty = VERB_DIFFICULTY.HIGHLY_IRREGULAR
-  } else if (verb.type === 'diphtong') {
+  } else if (safeVerb.type === 'diphtong') {
     difficulty = VERB_DIFFICULTY.DIPHTHONG
-  } else if (verb.type === 'orthographic_change') {
+  } else if (safeVerb.type === 'orthographic_change') {
     difficulty = VERB_DIFFICULTY.ORTHOGRAPHIC_CHANGE
   }
   
   // Añadir bonus por frecuencia
-  if (verb.frequency) {
-    difficulty += FREQUENCY_DIFFICULTY_BONUS[verb.frequency] || 0
+  if (safeVerb.frequency) {
+    difficulty += FREQUENCY_DIFFICULTY_BONUS[safeVerb.frequency] || 0
   }
   
   // Asegurar que esté en el rango válido

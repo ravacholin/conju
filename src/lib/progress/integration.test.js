@@ -1,6 +1,8 @@
 // Pruebas de integración para el sistema de progreso y analíticas
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+
+// Nota: los mocks específicos se aplican dentro de cada prueba para reducir acoplamiento
 import { 
   initProgressSystem,
   isProgressSystemInitialized,
@@ -11,7 +13,8 @@ import {
   calculateMasteryForItem,
   calculateMasteryForCell,
   getConfidenceLevel,
-  classifyMasteryLevel
+  classifyMasteryLevel,
+  resetProgressSystem
 } from './all.js'
 
 // Mock de IndexedDB para pruebas
@@ -233,17 +236,7 @@ describe('Pruebas de Integración del Sistema de Progreso', () => {
     console.log('✅ Integración completa de todas las funciones completada')
   })
 
-  it('debería manejar errores de integración correctamente', async () => {
-    // Mock de IndexedDB para lanzar un error
-    vi.mock('idb', () => ({
-      openDB: vi.fn().mockRejectedValue(new Error('Error de base de datos'))
-    }))
-    
-    // Verificar que el sistema maneja errores de integración correctamente
-    await expect(initProgressSystem()).rejects.toThrow('Error de base de datos')
-    
-    console.log('✅ Manejo de errores de integración completado')
-  })
+  // El caso de error de integración se prueba en integration-db-error.test.js
 
   it('debería mantener la coherencia entre todas las funciones', async () => {
     // Inicializar el sistema

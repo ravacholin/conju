@@ -106,6 +106,9 @@ export {
   formatTimeOnly
 } from './utils.js'
 
+// Helpers
+export { calculateRecencyWeight } from './helpers.js'
+
 // UI
 export {
   formatTime

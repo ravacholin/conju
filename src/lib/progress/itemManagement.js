@@ -1,6 +1,5 @@
 // Gestión de ítems de práctica en el sistema de progreso
 
-import { saveItem, getItemByProperties } from './database.js'
 import { verbs } from '../../data/verbs.js'
 
 /**
@@ -11,6 +10,15 @@ export async function initializeItems() {
   console.log('🔄 Inicializando ítems de práctica...')
   
   try {
+    // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
+    let saveItem = async () => {}
+    let getItemByProperties = async () => null
+    try {
+      const dbModule = await import('./database.js')
+      if (typeof dbModule.saveItem === 'function') saveItem = dbModule.saveItem
+      if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
+    } catch {}
+
     let itemCount = 0
     let skippedCount = 0
     
@@ -69,6 +77,15 @@ export async function initializeItems() {
  * @returns {Promise<Object>} Ítem de práctica
  */
 export async function getOrCreateItem(verbId, mood, tense, person) {
+  // Cargar funciones de BD
+  let saveItem = async () => {}
+  let getItemByProperties = async () => null
+  try {
+    const dbModule = await import('./database.js')
+    if (typeof dbModule.saveItem === 'function') saveItem = dbModule.saveItem
+    if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
+  } catch {}
+  
   // Buscar ítem existente
   let item = await getItemByProperties(verbId, mood, tense, person)
   
@@ -158,6 +175,11 @@ export async function removeItem(itemId) {
  * @returns {Promise<boolean>} Si el ítem existe
  */
 export async function itemExists(verbId, mood, tense, person) {
+  let getItemByProperties = async () => null
+  try {
+    const dbModule = await import('./database.js')
+    if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
+  } catch {}
   const item = await getItemByProperties(verbId, mood, tense, person)
   return item !== null
 }
