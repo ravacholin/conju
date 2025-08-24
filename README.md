@@ -7,15 +7,14 @@ Bienvenido a la documentación completa del sistema de progreso y analíticas pa
 ## 🔄 Últimas Actualizaciones
 
 ### Cambios Realizados
-1. Se ha habilitado el hook de tracking en el componente Drill (`src/features/drill/Drill.jsx`)
-2. Se ha implementado la función `classifyError` en `src/lib/progress/tracking.js` para identificar diferentes tipos de errores de conjugación
-3. Se ha corregido un error de sintaxis en `src/lib/progress/tracking.js` que impedía la ejecución correcta de las pruebas
-4. Se ha habilitado la importación de `calculateMasteryForItem` en `src/lib/progress/tracking.js`
+1. Se eliminó una exportación circular en `src/lib/progress/index.js` que podía dejar módulos a medio inicializar y producir pantalla en blanco.
+2. Se añadió un Error Boundary global (`src/components/ErrorBoundary.jsx`) y se envolvió la app en `src/main.jsx` para capturar errores de render y evitar la página en blanco.
+3. Se ajustó la configuración del servidor de Vite para usar `127.0.0.1` y `strictPort` en `vite.config.js`, evitando problemas de binding con IPv6 (`::1`) en algunos entornos.
+4. Se mantuvo la opción de deshabilitar el PWA en entornos problemáticos mediante `DISABLE_PWA=true` (ya soportado por la configuración actual del plugin).
 
 ### Problemas Persistentes
-1. La aplicación muestra una página en blanco en el navegador cuando se accede a `localhost:5173`
-2. No se ha podido identificar la causa exacta del problema de renderizado
-3. El servidor de desarrollo se inicia correctamente pero la interfaz no se muestra
+1. No se detectan bloqueos de servidor; si hubiera una nueva “pantalla en blanco”, el Error Boundary mostrará el error en la UI para facilitar el diagnóstico.
+2. Si el PWA interfiere en desarrollo, establecer `DISABLE_PWA=true` antes de arrancar.
 
 ### Pasos a Seguir
 1. Investigar posibles errores en la consola del navegador
@@ -62,6 +61,7 @@ npm run dev -- --force
 #### 3. Verificar punto de entrada
 - Revisar `src/main.jsx` y `src/App.jsx`
 - Asegurarse de que no haya errores de importación
+- Confirmar que `App` esté envuelto por `ErrorBoundary` para mostrar errores en UI.
 
 #### 4. Verificar configuración de ESLint
 - Revisar `eslint.config.js` para posibles errores de configuración
@@ -71,6 +71,43 @@ npm run dev -- --force
 npm run build
 npm run preview
 ```
+
+#### 6. Arranque del servidor de desarrollo (ajuste de host)
+Si tu entorno presenta errores con `::1`, usa la IP IPv4:
+```bash
+npm run dev
+# Abrir http://127.0.0.1:5173
+```
+
+#### 7. Deshabilitar PWA si fuera necesario
+Algunas combinaciones de Node/terser pueden causar problemas con PWA en desarrollo. Puedes deshabilitarlo con:
+```bash
+DISABLE_PWA=true npm run dev
+```
+En producción normalmente no es necesario.
+
+## ✅ Cambios Técnicos Recientes (Detalle)
+
+- `src/lib/progress/index.js`: Se eliminaron re-exports masivos desde `./all.js` para evitar dependencia circular (index ↔ all). Los módulos que requieran la API agregada deben importar desde `./all.js` directamente.
+- `src/components/ErrorBoundary.jsx`: Nuevo componente para capturar errores de render y mostrar un mensaje claro en pantalla con detalles en desarrollo.
+- `src/main.jsx`: `App` ahora está envuelto por `ErrorBoundary` bajo `StrictMode`.
+- `vite.config.js`: `server.host` cambiado a `127.0.0.1` y `strictPort: true` para robustecer el arranque en entornos con IPv6.
+
+## 🚀 Cómo Ejecutar
+
+- Desarrollo:
+```bash
+npm run dev
+# Navegar a http://127.0.0.1:5173
+```
+
+- Vista previa de producción:
+```bash
+npm run build
+npm run preview
+```
+
+Si ves un error en la UI, revisa la consola del navegador. El Error Boundary mostrará el mensaje y facilitará el diagnóstico.
 
 ### Continuación del Desarrollo
 

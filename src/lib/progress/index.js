@@ -141,78 +141,11 @@ export async function resetProgressSystem() {
 }
 
 // Exportar todas las funciones principales
-export {
-  // Database
-  initDB,
-  
-  // Tracking
-  initTracking,
-  
-  // Verb Initialization
-  initializeVerbs,
-  
-  // Item Management
-  initializeItems,
-  
-  // Mastery
-  calculateMasteryForItem,
-  calculateMasteryForCell,
-  calculateMasteryForTimeOrMood,
-  
-  // SRS
-  updateSchedule,
-  getDueItems,
-  isItemDue,
-  
-  // Utils
-  generateId,
-  formatDate,
-  dateDiffInDays,
-  msToSeconds,
-  groupBy,
-  average,
-  maxBy,
-  minBy,
-  
-  // UI Utils
-  formatPercentage,
-  formatTime,
-  getMasteryColorClass,
-  getMasteryLevelText,
-  getMasteryIcon,
-  formatRelativeDate,
-  
-  // Analytics
-  getHeatMapData,
-  getCompetencyRadarData,
-  getProgressLineData,
-  getUserStats,
-  
-  // Goals
-  getWeeklyGoals,
-  checkWeeklyProgress,
-  getRecommendations,
-  
-  // Teacher Mode
-  generateStudentReport,
-  exportToCSV,
-  generateSessionCode,
-  getClassStats,
-  
-  // Diagnosis
-  performInitialDiagnosis,
-  scheduleMonthlyRecalibration,
-  performRecalibration,
-  
-  // Cloud Sync
-  syncWithCloud,
-  getSyncStatus,
-  setIncognitoMode,
-  hasPendingSyncData,
-  forceSync,
-  exportDataForBackup,
-  importDataFromBackup
-} from './all.js'
+// Nota importante sobre exports:
+// Evitamos re-exportar en masa desde './all.js' para prevenir dependencias
+// circulares (all.js importa de index.js). Los módulos que necesiten la API
+// agregada pueden importar directamente desde './all.js'. Este archivo expone
+// únicamente la superficie mínima necesaria de inicialización y estado.
 
 // Exportar tipos y constantes
 export { ERROR_TAGS, FREQUENCY_LEVELS, VERB_DIFFICULTY } from './dataModels.js'

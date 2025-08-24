@@ -34,7 +34,9 @@ export default defineConfig({
     })
   ],
   server: {
-    host: 'localhost',
-    port: 5173
+    // Force IPv4 to avoid rare ::1 issues on some setups
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true
   }
 })
