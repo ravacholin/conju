@@ -7,6 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // Allow disabling PWA generation in environments where workbox/terser
+      // combination is unstable (e.g., some Node 22 builds)
+      disable: process.env.DISABLE_PWA === 'true' || process.versions?.node?.startsWith?.('22.'),
+      // Avoid terser renderChunk issues on some Node/terser combos
+      minify: false,
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt'],
       workbox: {

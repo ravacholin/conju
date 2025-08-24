@@ -1,6 +1,6 @@
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function PracticeModeSelection({ onSelectPracticeMode, onBack, settings }) {
+function PracticeModeSelection({ onSelectPracticeMode, onBack }) {
   return (
     <>
       <div className="options-grid">

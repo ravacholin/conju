@@ -41,7 +41,7 @@ function AppRouter() {
     warmupCaches()
     
     // Log cache stats in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       setTimeout(() => {
         console.log('📊 Cache Stats:', getCacheStats())
       }, 1000)

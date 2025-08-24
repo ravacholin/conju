@@ -333,7 +333,8 @@ export default function Drill({
     if (el === secondRef.current) setSecondInput(next)
     else setInput(next)
     requestAnimationFrame(() => {
-      try { el.setSelectionRange(start + ch.length, start + ch.length) } catch {}
+      try { el.setSelectionRange(start + ch.length, start + ch.length) }
+      catch (err) { /* ignore selection errors */ }
       el.focus()
     })
   }
