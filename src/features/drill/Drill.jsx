@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { grade } from '../../lib/core/grader.js'
 import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useSettings } from '../../state/settings.js'
-// import { useProgressTracking } from './useProgressTracking.js'  // Temporarily disabled
+import { useProgressTracking } from './useProgressTracking.js'
 // import { ProgressTrackingWrapper } from './ProgressTrackingWrapper.jsx'  // Temporarily disabled
 
 
@@ -41,9 +41,7 @@ export default function Drill({
   const [resistTick, setResistTick] = useState(0)
   
   // Hook para tracking de progreso
-  // const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)  // Temporarily disabled
-  const handleResult = onResult  // Fallback to original onResult
-  const handleHintShown = () => {}  // No-op fallback
+  const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
 
   // Reset input when currentItem changes
   useEffect(() => {

@@ -2,7 +2,7 @@
 
 import { saveAttempt, saveMastery, saveSchedule } from './database.js'
 import { calculateNextInterval, updateSchedule } from './srs.js'
-// import { calculateMasteryForItem } from './mastery.js'  // Temporarily disabled
+import { calculateMasteryForItem } from './mastery.js'
 import { ERROR_TAGS } from './dataModels.js'
 
 // Estado del tracking
@@ -218,11 +218,58 @@ export function classifyError(userAnswer, correctAnswer, item) {
   
   // Verificar errores específicos
   
-  // 1. Persona equivocada (simplificado)
-  // En una implementación completa, esto requeriría un análisis más detallado
+  // 1. Persona equivocada
   if (item.person && userAnswer && correctAnswer) {
-    // Lógica simplificada para detectar errores
-    // En la práctica, esto requeriría un análisis lingüístico más complejo
+    // Extraer la persona de la respuesta correcta si está disponible
+    const correctPerson = item.person
+    
+    // Esta es una implementación simplificada
+    // En la práctica, se necesitaría un análisis más complejo
+    // Por ahora, marcamos como error de persona si hay diferencia
+    errors.push(ERROR_TAGS.WRONG_PERSON)
+  }
+  
+  // 2. Terminación verbal
+  // Verificar si la raíz es correcta pero la terminación no
+  if (item.form && item.form.lemma) {
+    const lemma = item.form.lemma
+    // Verificar si la respuesta del usuario contiene la raíz correcta
+    // pero tiene una terminación incorrecta
+    if (normalizedUser && normalizedCorrect && 
+        normalizedCorrect.startsWith(lemma.slice(0, -2)) && 
+        !normalizedUser.startsWith(lemma.slice(0, -2))) {
+      errors.push(ERROR_TAGS.VERBAL_ENDING)
+    }
+  }
+  
+  // 3. Raíz irregular
+  // Verificar si la terminación es correcta pero la raíz no
+  if (item.form && item.form.value) {
+    const correctEnding = normalizedCorrect.slice(-2)
+    const userEnding = normalizedUser.slice(-2)
+    
+    if (correctEnding === userEnding && normalizedUser !== normalizedCorrect) {
+      errors.push(ERROR_TAGS.IRREGULAR_STEM)
+    }
+  }
+  
+  // 4. Acentuación
+  // Verificar si la diferencia es solo en acentuación
+  if (normalizedUser.replace(/[\u0300-\u036f]/g, '') === 
+      normalizedCorrect.replace(/[\u0300-\u036f]/g, '') && 
+      normalizedUser !== normalizedCorrect) {
+    errors.push(ERROR_TAGS.ACCENT)
+  }
+  
+  // 5. Ortografía (g/gu, c/qu, z/c)
+  // Verificar errores comunes de ortografía
+  if (normalizedUser.replace(/gu/g, 'g') === normalizedCorrect ||
+      normalizedUser.replace(/g/g, 'gu') === normalizedCorrect ||
+      normalizedUser.replace(/qu/g, 'c') === normalizedCorrect ||
+      normalizedUser.replace(/c/g, 'qu') === normalizedCorrect ||
+      normalizedUser.replace(/z/g, 'c') === normalizedCorrect ||
+      normalizedUser.replace(/c/g, 'z') === normalizedCorrect) {
+    errors.push(ERROR_TAGS.ORTHOGRAPHY_G_GU)
   }
   
   // Si no se identifican errores específicos, marcar como error general
