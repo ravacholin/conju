@@ -5,6 +5,7 @@ import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } from './conjugationRules.js'
+import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
 
 
 // Imports optimizados
@@ -479,6 +480,36 @@ export function chooseNext({forms, history, currentItem}){
     eligible = applyWeightedSelection(eligible)
   }
 
+  // LEVEL-AWARE PRIORITIZATION: Apply curriculum-driven tense weighting
+  try {
+    // Get user's mastery data for context (if available from state)
+    let userProgress = null
+    try {
+      // Try to get mastery data from the progress system if available
+      const userId = useSettings.getState().userId
+      if (userId && typeof getMasteryByUser === 'function') {
+        userProgress = getMasteryByUser(userId)
+      }
+    } catch (e) {
+      // Progress system might not be available, continue without it
+    }
+
+    // Apply level-driven weighted selection 
+    const levelWeightedForms = getWeightedFormsSelection(eligible, level, userProgress)
+    
+    if (levelWeightedForms.length > 0) {
+      console.log(`🎯 Level-aware prioritization applied for ${level}:`, {
+        original: eligible.length,
+        weighted: levelWeightedForms.length,
+        sampleWeighted: levelWeightedForms.slice(0, 3).map(f => `${f.mood}/${f.tense}`)
+      })
+      eligible = levelWeightedForms
+    }
+  } catch (error) {
+    console.warn('Level-aware prioritization failed, using fallback:', error)
+    // Continue with traditional approach as fallback
+  }
+
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
 
@@ -499,17 +530,46 @@ export function chooseNext({forms, history, currentItem}){
     useSettings.getState().set({ conmutacionIdx: (idx + 1) % seq.length })
   }
   
-  // Compute lowest accuracy and candidates in O(n)
-  let lowestAcc = Infinity
-  const accCache = new Map()
-  for (let i = 0; i < eligible.length; i++) {
-    const a = acc(eligible[i], history)
-    accCache.set(eligible[i], a)
-    if (a < lowestAcc) lowestAcc = a
-  }
-  const candidates = []
-  for (let i = 0; i < eligible.length; i++) {
-    if (accCache.get(eligible[i]) === lowestAcc) candidates.push(eligible[i])
+  // ENHANCED SELECTION: Combine accuracy-based and level-priority selection
+  // Instead of pure lowest-accuracy selection, use hybrid approach
+  let candidates = []
+  
+  // Method 1: Pure level-weighted selection (for new users or when accuracy is similar)
+  const hasSignificantAccuracyDifferences = eligible.length > 10 && 
+    Object.keys(history).length > 5 // Only use accuracy if we have enough history
+  
+  if (!hasSignificantAccuracyDifferences) {
+    // New user or insufficient history - use pure level-driven selection
+    candidates = eligible
+    console.log('🎯 Using pure level-driven selection (insufficient history)')
+  } else {
+    // Experienced user - blend accuracy and level priorities
+    const accCache = new Map()
+    let minAcc = Infinity
+    let maxAcc = -Infinity
+    
+    // Compute accuracy for all forms
+    for (let i = 0; i < eligible.length; i++) {
+      const a = acc(eligible[i], history)
+      accCache.set(eligible[i], a)
+      minAcc = Math.min(minAcc, a)
+      maxAcc = Math.max(maxAcc, a)
+    }
+    
+    // If accuracy range is small, prioritize level-appropriate content
+    const accuracyRange = maxAcc - minAcc
+    if (accuracyRange < 0.3) {
+      // Similar accuracy - use level prioritization
+      candidates = eligible
+      console.log('🎯 Using level-driven selection (similar accuracy scores)')
+    } else {
+      // Significant accuracy differences - focus on lowest accuracy but bias toward level-appropriate
+      const lowAccThreshold = minAcc + (accuracyRange * 0.3) // Bottom 30% accuracy
+      const lowAccuracyForms = eligible.filter(f => accCache.get(f) <= lowAccThreshold)
+      
+      candidates = lowAccuracyForms.length > 0 ? lowAccuracyForms : eligible
+      console.log(`🎯 Using accuracy-driven selection with level bias: ${candidates.length} candidates`)
+    }
   }
   
   // Balance selection by person to ensure variety

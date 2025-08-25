@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
 import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
 import { getCurrentUserId } from '../lib/progress/userManager.js'
-import { getNextRecommendedItem, needsMorePractice } from '../lib/progress/AdaptivePracticeEngine.js'
+import { getNextRecommendedItem } from '../lib/progress/AdaptivePracticeEngine.js'
 import { shouldAdjustDifficulty, getRecommendedAdjustments } from '../lib/progress/DifficultyManager.js'
+import { debugLevelPrioritization } from '../lib/core/levelDrivenPrioritizer.js'
+import { getCoachingRecommendations, getMotivationalInsights } from '../lib/progress/personalizedCoaching.js'
 
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
@@ -18,10 +20,20 @@ export function useDrillMode() {
       selectedFamily: settings.selectedFamily,
       specificMood: settings.specificMood,
       specificTense: settings.specificTense,
+      level: settings.level,
       itemToExclude: itemToExclude?.lemma
     })
     
-    // Multi-tier selection: SRS > Adaptive Recommendations > Standard Generator
+    // LEVEL-AWARE DEBUG: Show level prioritization for debugging
+    if (settings.level && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+      try {
+        debugLevelPrioritization(settings.level)
+      } catch (e) {
+        console.warn('Level prioritization debug failed:', e)
+      }
+    }
+    
+    // Multi-tier selection: SRS > Adaptive Recommendations > Level-Aware Standard Generator
     let nextForm = null
     let selectionMethod = 'standard'
     
@@ -54,26 +66,60 @@ export function useDrillMode() {
         if (candidateForms.length > 0) {
           nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
           selectionMethod = 'srs_due'
+          console.log('📅 SRS Due item selected:', `${nextForm.mood}/${nextForm.tense}`)
         }
       }
       
-      // Tier 2: Adaptive recommendations (medium priority)
+      // Tier 2: Enhanced Adaptive recommendations (now level-aware)
       if (!nextForm) {
-        const recommendation = await getNextRecommendedItem()
-        if (recommendation && recommendation.targetCombination) {
-          const { mood, tense, verbId } = recommendation.targetCombination
-          
-          // If practicing a specific topic, ignore recommendations that don't match
-          if (isSpecific) {
-            // Map mixed tenses for comparison
-            const matchesSpecific = (
-              (specificTense === 'impMixed' && mood === specificMood && (tense === 'impAff' || tense === 'impNeg')) ||
-              (specificTense === 'nonfiniteMixed' && mood === specificMood && (tense === 'ger' || tense === 'part')) ||
-              (mood === specificMood && tense === specificTense)
-            )
-            if (!matchesSpecific) {
-              // Skip this recommendation
+        try {
+          // Pass user level to adaptive recommendations
+          const recommendation = await getNextRecommendedItem(settings.level)
+          if (recommendation && recommendation.targetCombination) {
+            const { mood, tense, verbId, priority, category } = recommendation.targetCombination
+            
+            // Enhanced logging for level-aware recommendations
+            console.log('🤖 Level-aware recommendation received:', {
+              type: recommendation.type,
+              mood,
+              tense,
+              priority,
+              category,
+              reason: recommendation.reason,
+              userLevel: settings.level
+            })
+            
+            // If practicing a specific topic, ignore recommendations that don't match
+            if (isSpecific) {
+              // Map mixed tenses for comparison
+              const matchesSpecific = (
+                (specificTense === 'impMixed' && mood === specificMood && (tense === 'impAff' || tense === 'impNeg')) ||
+                (specificTense === 'nonfiniteMixed' && mood === specificMood && (tense === 'ger' || tense === 'part')) ||
+                (mood === specificMood && tense === specificTense)
+              )
+              if (!matchesSpecific) {
+                console.log('❌ Adaptive recommendation skipped (doesn\'t match specific practice)')
+              } else {
+                // Filter forms based on recommendation
+                let candidateForms = allFormsForRegion.filter(f => 
+                  f.mood === mood && f.tense === tense
+                )
+                
+                // If specific verb recommended, prioritize it
+                if (verbId) {
+                  const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
+                  if (specificVerbForms.length > 0) {
+                    candidateForms = specificVerbForms
+                  }
+                }
+                
+                if (candidateForms.length > 0) {
+                  nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+                  selectionMethod = 'adaptive_recommendation'
+                }
+              }
             } else {
+              // Mixed practice: free to use recommendation
               // Filter forms based on recommendation
               let candidateForms = allFormsForRegion.filter(f => 
                 f.mood === mood && f.tense === tense
@@ -90,55 +136,39 @@ export function useDrillMode() {
               if (candidateForms.length > 0) {
                 nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
                 selectionMethod = 'adaptive_recommendation'
-                
-                console.log('🤖 Using adaptive recommendation:', {
-                  type: recommendation.type,
-                  mood,
-                  tense,
-                  reason: recommendation.reason
-                })
               }
             }
           } else {
-            // Mixed practice: free to use recommendation
-            // Filter forms based on recommendation
-            let candidateForms = allFormsForRegion.filter(f => 
-              f.mood === mood && f.tense === tense
-            )
-            
-            // If specific verb recommended, prioritize it
-            if (verbId) {
-              const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
-              if (specificVerbForms.length > 0) {
-                candidateForms = specificVerbForms
-              }
-            }
-            
-            if (candidateForms.length > 0) {
-              nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-              selectionMethod = 'adaptive_recommendation'
-              
-              console.log('🤖 Using adaptive recommendation:', {
-                type: recommendation.type,
-                mood,
-                tense,
-                reason: recommendation.reason
-              })
-            }
+            console.log('🤖 No adaptive recommendation available')
           }
+        } catch (e) {
+          console.warn('Adaptive recommendation failed:', e)
         }
       }
     } catch (e) {
       console.warn('Advanced selection failed; falling back to standard generator', e)
     }
 
-    // Tier 3: Standard generator (fallback)
+    // Tier 3: Level-Aware Standard generator (enhanced fallback)
     if (!nextForm) {
       nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
-      selectionMethod = 'standard_generator'
+      selectionMethod = 'level_aware_standard'
+      console.log('🎯 Level-aware standard selection applied')
     }
     
-    console.log('🎯 Item selection method:', selectionMethod)
+    console.log('🎯 Final selection method:', selectionMethod)
+    
+    // COACHING INSIGHTS: Periodically show coaching recommendations
+    if (Math.random() < 0.1 && settings.level) { // 10% chance
+      try {
+        const insights = await getMotivationalInsights(settings.level)
+        if (insights.length > 0) {
+          console.log('💡 Coaching insight:', insights[0])
+        }
+      } catch (e) {
+        console.warn('Coaching insights failed:', e)
+      }
+    }
     
     console.log('🎯 GENERATE NEXT ITEM - chooseNext returned:', nextForm ? {
       lemma: nextForm.lemma,
@@ -405,6 +435,39 @@ export function useDrillMode() {
     generateNextItem(null, allFormsForRegion, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
 
+  // NEW: Level-driven coaching and insights functions
+  const getCoachingInsights = async () => {
+    try {
+      if (!settings.level) return { recommendations: [], insights: [] }
+      
+      const [recommendations, insights] = await Promise.all([
+        getCoachingRecommendations(settings.level),
+        getMotivationalInsights(settings.level)
+      ])
+      
+      return { recommendations, insights }
+    } catch (error) {
+      console.error('Failed to get coaching insights:', error)
+      return { recommendations: [], insights: [] }
+    }
+  }
+
+  const debugCurrentLevelPrioritization = () => {
+    if (settings.level && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+      console.log(`\n🔍 DEBUG: Level prioritization for ${settings.level}`)
+      debugLevelPrioritization(settings.level)
+      
+      // Show current user's context
+      console.log('Current drill context:', {
+        level: settings.level,
+        practiceMode: settings.practiceMode,
+        verbType: settings.verbType,
+        historySize: Object.keys(history).length,
+        currentTense: currentItem ? `${currentItem.mood}/${currentItem.tense}` : 'none'
+      })
+    }
+  }
+
   return {
     currentItem,
     history,
@@ -413,6 +476,10 @@ export function useDrillMode() {
     generateNextItem,
     handleDrillResult,
     handleContinue,
-    clearHistoryAndRegenerate
+    clearHistoryAndRegenerate,
+    
+    // NEW: Level-driven features
+    getCoachingInsights,
+    debugCurrentLevelPrioritization
   }
 }

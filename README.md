@@ -6,6 +6,95 @@ Bienvenido a la documentación completa del sistema de progreso y analíticas pa
 
 ## 🔄 Últimas Actualizaciones
 
+### 🧠 **REVOLUCIÓN CURRICULAR**: Sistema Completo de Algoritmo Curricular Inteligente (25/08/2025)
+
+**¡PROBLEMA MAYOR RESUELTO!** 🎉 El algoritmo ahora utiliza completamente la información del `curriculum.json` para selección inteligente de verbos/tiempos.
+
+#### **El Problema Original:**
+- **B1** usuarios siempre recibían "presente indicativo" sin importar el nivel seleccionado
+- Algoritmo ignoraba la progresión pedagógica y dependencias entre tiempos
+- Falta de análisis de prerequisitos y familias de tiempos verbales
+- Sistema de priorización básico sin considerar la estructura curricular
+
+#### **🚀 La Solución Completa:**
+
+**1. Motor de Análisis Curricular Avanzado** (`levelDrivenPrioritizer.js`)
+- **📚 Mapeo completo del curriculum**: Analiza toda la estructura de `curriculum.json`
+- **🔗 Cadenas de prerequisitos**: Trackea dependencias (ej: subjuntivo imperfecto requiere subjuntivo presente)
+- **👨‍👩‍👧‍👦 Familias pedagógicas**: Agrupa tiempos relacionados (`sistema_perfecto`, `subjuntivo_presente`, etc.)
+- **📊 Puntuación de complejidad**: 1-9 basada en progresión curricular real
+- **🎯 Niveles de introducción**: Distingue cuándo se introduce vs. cuándo se revisa cada tiempo
+
+**2. Sistema de Priorización Multi-Nivel**
+```
+🚨 Prerequisite Gaps (6x peso) - Máxima prioridad
+👨‍👩‍👧‍👦 Family Completion (4x peso) - Completar familias iniciadas  
+🆕 Core Ready (3x peso) - Nuevos tiempos con prerequisitos listos
+🛤️ Progression Path (3x peso) - Secuencia de aprendizaje óptima
+📚 Review (2x peso) - Refuerzo de niveles anteriores
+⏳ Core Not Ready (1x peso) - Esperar prerequisitos
+🔮 Exploration (1x peso) - Preview del siguiente nivel
+🎲 Other (0.05x peso) - Fallback mínimo
+```
+
+**3. Algoritmo Dinámico por Nivel**
+- **A1**: 90% presente indicativo + no finitos (construcción base)
+- **B1**: 65% **subjuntivo + tiempos perfectos** (introducción complejidad)
+- **B2**: 50% **subjuntivo imperfecto** + avanzados (construcción maestría)
+- **C1/C2**: Práctica comprensiva mixta (desarrollo fluencia)
+
+**4. Evaluación de Preparación Inteligente**
+- **Análisis de prerequisitos**: Solo recomienda contenido cuando el usuario está preparado
+- **Momentum familiar**: Impulsa completar grupos de tiempos parcialmente aprendidos
+- **Ajuste de pesos dinámico**: Se adapta según rendimiento del usuario
+
+#### **✨ Resultado: Transformación Completa**
+
+| Nivel | **Antes** | **Ahora** |
+|-------|-----------|-----------|
+| **A1** | presente indicativo | ✅ presente indicativo (apropiado) |
+| **B1** | 🚫 presente indicativo | ✅ **subjuntivo presente + perfectos** |
+| **B2** | 🚫 presente indicativo | ✅ **subjuntivo imperfecto + avanzados** |
+| **C1** | 🚫 presente indicativo | ✅ **práctica comprensiva mixta** |
+
+#### **🔧 Archivos Clave Creados/Mejorados:**
+- **NUEVO**: `src/lib/core/levelDrivenPrioritizer.js` - Motor curricular completo
+- **NUEVO**: `src/lib/progress/personalizedCoaching.js` - Sistema de coaching curricular
+- **NUEVO**: `src/lib/core/levelDrivenTesting.js` - Suite de pruebas comprensivas
+- **NUEVO**: `src/lib/core/quickLevelTest.js` - Pruebas rápidas de verificación
+- **MEJORADO**: `src/lib/core/generator.js` - Integración con nuevo algoritmo
+- **MEJORADO**: `src/lib/progress/AdaptivePracticeEngine.js` - Lógica curricular integrada
+- **MEJORADO**: `src/hooks/useDrillMode.js` - Sistema 3-tier mejorado
+
+#### **🧪 Cómo Probar:**
+```javascript
+// En consola del navegador:
+window.quickLevelTest.runAll()          // Pruebas completas
+window.testLevelDriven.debugAll()       // Debug todos los niveles  
+window.testLevelDriven.testLevel('B1')  // Probar nivel específico
+```
+
+#### **📊 Debug Mejorado:**
+```
+📚 === ENHANCED LEVEL B1 CURRICULUM DEBUG ===
+
+🆕 CORE TENSES (New for B1):
+  • subjunctive/subjPres
+    Priority: 145 | Readiness: 100% | Urgency: 80 | Family: subjunctive_present
+
+👨‍👩‍👧‍👦 TENSE FAMILIES:
+  🔄 subjunctive_present: 65% avg mastery (2 tenses)
+    Still need: subjunctive/subjPerf
+
+🧠 CURRICULUM INSIGHTS:
+  Recommended focus: core_learning
+  Learning stage: skill_development
+```
+
+**🎉 Los usuarios ahora reciben desafíos pedagógicamente óptimos y apropiados para su nivel desde la primera pregunta!**
+
+---
+
 ### ✅ Variantes y Modo Inverso (25/08/2025)
 
 - Variante seleccionada en el primer menú se respeta SIEMPRE en todo el flujo (incluyendo SRS/adaptativo y seguimiento de errores). Opciones:
@@ -191,6 +280,10 @@ Notas:
   - Archivos: `src/features/progress/progress.css`, `src/features/progress/practice-recommendations.css`, `src/features/drill/progress-feedback.css`, `src/features/drill/FeedbackNotification.jsx`
   - Detalles: Rediseño completo de todos los elementos visuales del sistema de progreso para match perfecto con la estética dark elegante de la webapp principal. Eliminación de feedback redundante, implementación de glass-morphism coherente, y optimización de elementos en tiempo real para máxima sutileza.
   - Resultado: Sistema de progreso visualmente integrado que mantiene toda la funcionalidad mientras proporciona una experiencia estética coherente, elegante y minimalista que complementa perfectamente el diseño existente de la aplicación.
+- 2025-08-25 — **REVOLUCIÓN CURRICULAR**: Sistema Completo de Algoritmo Curricular Inteligente implementado.
+  - Archivos: `src/lib/core/levelDrivenPrioritizer.js` (NUEVO), `src/lib/progress/personalizedCoaching.js` (NUEVO), `src/lib/core/levelDrivenTesting.js` (NUEVO), `src/lib/core/quickLevelTest.js` (NUEVO), `src/lib/core/generator.js`, `src/lib/progress/AdaptivePracticeEngine.js`, `src/hooks/useDrillMode.js`
+  - Detalles: **PROBLEMA MAYOR RESUELTO** - El algoritmo ahora utiliza completamente la información del `curriculum.json` para selección inteligente de verbos/tiempos. Implementado motor de análisis curricular avanzado con mapeo completo del curriculum, cadenas de prerequisitos, familias pedagógicas, puntuación de complejidad 1-9, y sistema de priorización multi-nivel (8 categorías desde Prerequisite Gaps hasta Other). Algoritmo dinámico por nivel: A1 (90% presente), B1 (65% subjuntivo+perfectos), B2 (50% subjuntivo imperfecto), C1/C2 (práctica mixta). Evaluación de preparación inteligente que solo recomienda contenido cuando el usuario está preparado.
+  - Resultado: **Los usuarios B1 ahora reciben subjuntivo presente y tiempos perfectos en lugar de presente indicativo.** Transformación completa de la experiencia de aprendizaje con desafíos pedagógicamente óptimos y apropiados para cada nivel desde la primera pregunta. Sistema de coaching curricular personalizado, debug comprehensivo, y suite de pruebas completa para verificar funcionamiento.
 
 ### Flags y ejecución
 

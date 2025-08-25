@@ -3,6 +3,7 @@
 import { getMasteryByUser, getDueSchedules } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
+import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
 
 /**
  * Motor principal para generar recomendaciones de práctica adaptativa
@@ -123,7 +124,7 @@ export class AdaptivePracticeEngine {
   }
 
   /**
-   * Genera recomendaciones de contenido nuevo
+   * Genera recomendaciones de contenido nuevo usando nivel-driven logic
    */
   async getNewContentRecommendations(masteryRecords, userLevel) {
     const masteredCombinations = new Set(
@@ -132,44 +133,152 @@ export class AdaptivePracticeEngine {
         .map(r => `${r.mood}|${r.tense}`)
     )
 
-    const levelCombinations = this.getLevelAppropriateCombinations(userLevel)
-    const newCombinations = levelCombinations.filter(
-      combo => !masteredCombinations.has(`${combo.mood}|${combo.tense}`)
-    )
+    // Get level-appropriate combinations with user progress context
+    const levelCombinations = this.getLevelAppropriateCombinations(userLevel, masteryRecords)
+    
+    // Focus on core tenses first (new to current level), then review tenses with low mastery
+    const newCombinations = levelCombinations.filter(combo => {
+      const key = `${combo.mood}|${combo.tense}`
+      
+      // Skip already mastered combinations
+      if (masteredCombinations.has(key)) return false
+      
+      // Prefer core tenses (new to this level) for learning
+      if (combo.category === 'core') return true
+      
+      // Include review tenses that need work
+      if (combo.category === 'review') {
+        const masteryRecord = masteryRecords.find(r => `${r.mood}|${r.tense}` === key)
+        return !masteryRecord || masteryRecord.score < 70
+      }
+      
+      // Include some exploration for advanced learners
+      return combo.category === 'exploration'
+    })
 
-    return newCombinations.slice(0, 3).map((combo, index) => ({
-      type: 'new_content',
-      priority: 60 - (index * 10),
-      title: `Aprende ${combo.mood}/${combo.tense}`,
-      description: `Nueva combinación para tu nivel ${userLevel}`,
-      targetCombination: combo,
-      estimatedDuration: '15-20 min',
-      difficulty: 'learning',
-      reason: 'skill_expansion'
-    }))
+    // Sort by priority from the level prioritizer
+    const sortedNew = newCombinations
+      .sort((a, b) => b.priority - a.priority)
+      .slice(0, 4) // Top 4 new content recommendations
+
+    return sortedNew.map((combo, index) => {
+      const isCore = combo.category === 'core'
+      const isExploration = combo.category === 'exploration'
+      
+      return {
+        type: 'new_content',
+        priority: combo.priority * 0.6 + (60 - (index * 10)), // Blend prioritizer priority with ordering
+        title: isCore ? `🆕 Aprende ${combo.mood}/${combo.tense}` : 
+               isExploration ? `🔮 Explora ${combo.mood}/${combo.tense}` :
+               `📚 Mejora ${combo.mood}/${combo.tense}`,
+        description: isCore ? `Nueva habilidad clave para nivel ${userLevel}` :
+                    isExploration ? `Contenido avanzado - prepárate para el siguiente nivel` :
+                    `Refuerza esta combinación importante`,
+        targetCombination: {
+          mood: combo.mood,
+          tense: combo.tense,
+          priority: combo.priority,
+          category: combo.category
+        },
+        estimatedDuration: isCore ? '15-20 min' : 
+                          isExploration ? '10-15 min' : '12-18 min',
+        difficulty: isCore ? 'learning' :
+                   isExploration ? 'challenging' : 'review',
+        reason: isCore ? 'level_progression' : 
+               isExploration ? 'advanced_preparation' : 'skill_reinforcement'
+      }
+    })
   }
 
   /**
-   * Genera recomendaciones balanceadas
+   * Genera recomendaciones balanceadas con nivel-driven logic
    */
-  async getBalancedRecommendations(masteryRecords, dueItems, userStats, includeNewContent) {
+  async getBalancedRecommendations(masteryRecords, dueItems, userStats, includeNewContent, userLevel = 'B1') {
     const recommendations = []
 
-    // 40% áreas débiles
+    // Get user's level-specific information
+    const prioritized = levelPrioritizer.getPrioritizedTenses(userLevel, masteryRecords)
+    const levelWeights = prioritized.weights
+
+    // Adjust recommendation distribution based on level
+    const distribution = this.calculateRecommendationDistribution(levelWeights, includeNewContent)
+
+    // 1. Áreas débiles (priority based on level)
     const weakAreas = await this.getWeakAreaRecommendations(masteryRecords, userStats)
-    recommendations.push(...weakAreas.slice(0, 2))
+    recommendations.push(...weakAreas.slice(0, distribution.weakAreas))
 
-    // 30% repaso SRS
+    // 2. Repaso SRS (espaciado)
     const reviews = await this.getReviewRecommendations(dueItems, masteryRecords)
-    recommendations.push(...reviews.slice(0, 2))
+    recommendations.push(...reviews.slice(0, distribution.srsReview))
 
-    // 30% contenido nuevo (si está habilitado)
+    // 3. Contenido nuevo (level-appropriate)
     if (includeNewContent) {
-      const newContent = await this.getNewContentRecommendations(masteryRecords, 'intermediate')
-      recommendations.push(...newContent.slice(0, 1))
+      const newContent = await this.getNewContentRecommendations(masteryRecords, userLevel)
+      recommendations.push(...newContent.slice(0, distribution.newContent))
     }
 
+    // 4. Add level-specific boosts for core tenses
+    const coreTenseBoosts = this.getCoreContentRecommendations(prioritized.core, masteryRecords)
+    recommendations.push(...coreTenseBoosts.slice(0, distribution.coreBoosts))
+
     return recommendations
+  }
+
+  /**
+   * Calculate recommendation distribution based on level characteristics
+   */
+  calculateRecommendationDistribution(levelWeights, includeNewContent) {
+    // Base distribution
+    let distribution = {
+      weakAreas: 2,
+      srsReview: 2, 
+      newContent: includeNewContent ? 2 : 0,
+      coreBoosts: 1
+    }
+
+    // Adjust based on level focus
+    if (levelWeights.core > 0.6) {
+      // High core focus (A1, A2) - emphasize new content
+      distribution.newContent += 1
+      distribution.coreBoosts += 1
+      distribution.srsReview -= 1
+    } else if (levelWeights.review > 0.4) {
+      // High review focus (C1, C2) - emphasize review and weak areas
+      distribution.weakAreas += 1
+      distribution.srsReview += 1
+      distribution.newContent = Math.max(0, distribution.newContent - 1)
+    }
+
+    return distribution
+  }
+
+  /**
+   * Get recommendations specifically for core tenses of current level
+   */
+  getCoreContentRecommendations(coreTenses, masteryRecords) {
+    const masteryMap = new Map(masteryRecords.map(r => [`${r.mood}|${r.tense}`, r.score]))
+    
+    return coreTenses
+      .filter(tense => {
+        const key = `${tense.mood}|${tense.tense}`
+        const mastery = masteryMap.get(key) || 0
+        return mastery < 75 // Focus on unmastered core tenses
+      })
+      .slice(0, 3)
+      .map((tense, index) => ({
+        type: 'core_focus',
+        priority: tense.priority + 20, // Boost core tense priority
+        title: `🎯 Domina ${tense.mood}/${tense.tense}`,
+        description: `Habilidad fundamental para tu nivel actual`,
+        targetCombination: {
+          mood: tense.mood,
+          tense: tense.tense,
+          priority: tense.priority
+        },
+        estimatedDuration: '8-12 min',
+        difficulty: 'focused',
+        reason: 'core_competency'
+      }))
   }
 
   /**
@@ -185,51 +294,208 @@ export class AdaptivePracticeEngine {
   }
 
   /**
-   * Obtiene combinaciones apropiadas para el nivel del usuario
+   * Obtiene combinaciones apropiadas para el nivel del usuario usando curriculum-driven logic
+   * @param {string} userLevel - CEFR level (A1, A2, B1, B2, C1, C2) or legacy level
+   * @param {Array} userProgress - Optional user progress data
    */
-  getLevelAppropriateCombinations(userLevel) {
-    const baseCombinations = [
-      { mood: 'indicative', tense: 'pres' },
-      { mood: 'indicative', tense: 'pretIndef' },
-      { mood: 'indicative', tense: 'impf' },
-      { mood: 'indicative', tense: 'fut' }
-    ]
-
-    const intermediateCombinations = [
-      { mood: 'subjunctive', tense: 'subjPres' },
-      { mood: 'subjunctive', tense: 'subjImpf' },
-      { mood: 'conditional', tense: 'cond' }
-    ]
-
-    const advancedCombinations = [
-      { mood: 'indicative', tense: 'pretPerf' },
-      { mood: 'subjunctive', tense: 'subjPerf' },
-      { mood: 'imperative', tense: 'impAff' }
-    ]
-
-    switch (userLevel) {
-      case 'beginner':
-        return baseCombinations
-      case 'intermediate':
-        return [...baseCombinations, ...intermediateCombinations]
-      case 'advanced':
-        return [...baseCombinations, ...intermediateCombinations, ...advancedCombinations]
-      default:
-        return baseCombinations
+  getLevelAppropriateCombinations(userLevel, userProgress = null) {
+    // Convert legacy level names to CEFR levels
+    const levelMapping = {
+      'beginner': 'A2',
+      'intermediate': 'B1', 
+      'advanced': 'B2'
+    }
+    
+    const cefrLevel = levelMapping[userLevel] || userLevel
+    
+    // Use the Level-Driven Prioritizer for intelligent combination selection
+    try {
+      const prioritized = levelPrioritizer.getPrioritizedTenses(cefrLevel, userProgress)
+      
+      // Combine all categories into a single array with proper priorities
+      const allCombinations = [
+        ...prioritized.core,
+        ...prioritized.review,
+        ...prioritized.exploration
+      ]
+      
+      // Sort by priority and return top combinations
+      return allCombinations
+        .sort((a, b) => b.priority - a.priority)
+        .slice(0, 12) // Limit to top 12 combinations
+        .map(combo => ({
+          mood: combo.mood,
+          tense: combo.tense,
+          priority: combo.priority,
+          category: this.categorizeByPriority(combo, prioritized)
+        }))
+      
+    } catch (error) {
+      console.error('Error getting curriculum-driven combinations, falling back to basic:', error)
+      
+      // Fallback to basic combinations for the level
+      return this.getFallbackCombinations(cefrLevel)
     }
   }
 
   /**
-   * Evalúa la dificultad percibida de una práctica
-   * @param {Object} targetCombination - Combinación objetivo
-   * @param {Object} userStats - Estadísticas del usuario
-   * @returns {string} Nivel de dificultad
+   * Categorize a combination by its priority level
    */
-  evaluateDifficulty(targetCombination, userStats) {
+  categorizeByPriority(combo, prioritized) {
+    const key = `${combo.mood}|${combo.tense}`
+    
+    if (prioritized.core.some(c => `${c.mood}|${c.tense}` === key)) return 'core'
+    if (prioritized.review.some(c => `${c.mood}|${c.tense}` === key)) return 'review'
+    if (prioritized.exploration.some(c => `${c.mood}|${c.tense}` === key)) return 'exploration'
+    
+    return 'other'
+  }
+
+  /**
+   * Fallback combinations for when curriculum system fails
+   */
+  getFallbackCombinations(cefrLevel) {
+    const fallbackMap = {
+      'A1': [
+        { mood: 'indicative', tense: 'pres', priority: 80 }
+      ],
+      'A2': [
+        { mood: 'indicative', tense: 'pres', priority: 70 },
+        { mood: 'indicative', tense: 'pretIndef', priority: 80 },
+        { mood: 'indicative', tense: 'impf', priority: 75 },
+        { mood: 'indicative', tense: 'fut', priority: 70 }
+      ],
+      'B1': [
+        { mood: 'subjunctive', tense: 'subjPres', priority: 90 },
+        { mood: 'indicative', tense: 'pretPerf', priority: 85 },
+        { mood: 'conditional', tense: 'cond', priority: 75 }
+      ],
+      'B2': [
+        { mood: 'subjunctive', tense: 'subjImpf', priority: 90 },
+        { mood: 'subjunctive', tense: 'subjPlusc', priority: 85 },
+        { mood: 'conditional', tense: 'condPerf', priority: 80 }
+      ],
+      'C1': [
+        { mood: 'indicative', tense: 'pres', priority: 60 },
+        { mood: 'subjunctive', tense: 'subjPres', priority: 80 },
+        { mood: 'subjunctive', tense: 'subjImpf', priority: 85 }
+      ],
+      'C2': [
+        { mood: 'indicative', tense: 'pres', priority: 50 },
+        { mood: 'subjunctive', tense: 'subjPres', priority: 70 },
+        { mood: 'subjunctive', tense: 'subjImpf', priority: 80 }
+      ]
+    }
+    
+    return fallbackMap[cefrLevel] || fallbackMap['B1']
+  }
+
+  /**
+   * Evalúa la dificultad percibida de una práctica usando curriculum-driven analysis
+   * @param {Object} targetCombination - Combinación objetivo
+   * @param {Object} userStats - Estadísticas del usuario  
+   * @param {string} userLevel - Nivel CEFR del usuario
+   * @returns {Object} Análisis de dificultad detallado
+   */
+  evaluateDifficulty(targetCombination, userStats, userLevel = 'B1') {
     const { mood, tense } = targetCombination
     
-    // Factores de dificultad por modo/tiempo
-    const difficultyMap = {
+    try {
+      // Get level-appropriate analysis from prioritizer
+      const prioritized = levelPrioritizer.getPrioritizedTenses(userLevel)
+      const key = `${mood}|${tense}`
+      
+      // Find the tense in prioritized categories
+      let category = 'other'
+      let intrinsicDifficulty = 3
+      
+      const coreTense = prioritized.core.find(c => `${c.mood}|${c.tense}` === key)
+      if (coreTense) {
+        category = 'core'
+        intrinsicDifficulty = Math.min(5, Math.max(2, Math.round(coreTense.priority / 20)))
+      } else {
+        const reviewTense = prioritized.review.find(c => `${c.mood}|${c.tense}` === key)
+        if (reviewTense) {
+          category = 'review' 
+          intrinsicDifficulty = Math.max(1, Math.round(reviewTense.priority / 25))
+        } else {
+          const explorationTense = prioritized.exploration.find(c => `${c.mood}|${c.tense}` === key)
+          if (explorationTense) {
+            category = 'exploration'
+            intrinsicDifficulty = Math.min(5, Math.round(explorationTense.priority / 15))
+          }
+        }
+      }
+
+      // User performance adjustments
+      let personalizedDifficulty = intrinsicDifficulty
+      
+      if (userStats) {
+        // Reduce difficulty if user is performing well
+        if (userStats.accuracy >= 85) personalizedDifficulty -= 1
+        else if (userStats.accuracy >= 70) personalizedDifficulty -= 0.5
+        else if (userStats.accuracy < 50) personalizedDifficulty += 1
+        
+        // Speed adjustments
+        if (userStats.averageTime && userStats.averageTime > 15000) { // >15 seconds
+          personalizedDifficulty += 0.5
+        }
+      }
+      
+      // Level-relative difficulty
+      const levelDifficultyMap = {
+        'A1': { threshold: 2, multiplier: 1.5 },
+        'A2': { threshold: 2.5, multiplier: 1.3 },
+        'B1': { threshold: 3, multiplier: 1.0 },
+        'B2': { threshold: 3.5, multiplier: 0.9 },
+        'C1': { threshold: 4, multiplier: 0.8 },
+        'C2': { threshold: 4.5, multiplier: 0.7 }
+      }
+      
+      const levelConfig = levelDifficultyMap[userLevel] || levelDifficultyMap.B1
+      const relativeDifficulty = personalizedDifficulty * levelConfig.multiplier
+      
+      // Final difficulty classification
+      let difficultyLevel
+      if (relativeDifficulty <= levelConfig.threshold - 1) difficultyLevel = 'easy'
+      else if (relativeDifficulty <= levelConfig.threshold) difficultyLevel = 'medium'
+      else if (relativeDifficulty <= levelConfig.threshold + 1) difficultyLevel = 'hard'
+      else difficultyLevel = 'very_hard'
+      
+      return {
+        level: difficultyLevel,
+        score: Math.round(relativeDifficulty * 10) / 10,
+        category,
+        intrinsic: intrinsicDifficulty,
+        personalized: Math.round(personalizedDifficulty * 10) / 10,
+        factors: {
+          userAccuracy: userStats?.accuracy || 0,
+          userSpeed: userStats?.averageTime || 0,
+          levelAppropriate: category === 'core' || category === 'review'
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error evaluating difficulty, using fallback:', error)
+      
+      // Fallback to basic difficulty evaluation
+      const basicDifficulty = this.getBasicDifficulty(mood, tense, userStats)
+      return {
+        level: basicDifficulty,
+        score: 3.0,
+        category: 'unknown',
+        intrinsic: 3,
+        personalized: 3,
+        factors: { fallback: true }
+      }
+    }
+  }
+
+  /**
+   * Fallback basic difficulty evaluation
+   */
+  getBasicDifficulty(mood, tense, userStats) {
+    const basicMap = {
       'indicative-pres': 1,
       'indicative-pretIndef': 2,
       'indicative-impf': 2,
@@ -238,14 +504,12 @@ export class AdaptivePracticeEngine {
       'imperative-impAff': 3,
       'conditional-cond': 3
     }
-
-    const baseDifficulty = difficultyMap[`${mood}-${tense}`] || 3
     
-    // Ajustar según estadísticas del usuario
-    const adjustedDifficulty = baseDifficulty + (userStats.accuracy < 70 ? 1 : 0)
+    const base = basicMap[`${mood}-${tense}`] || 3
+    const adjusted = base + (userStats?.accuracy < 70 ? 1 : 0)
     
-    if (adjustedDifficulty <= 2) return 'easy'
-    if (adjustedDifficulty <= 3) return 'medium'
+    if (adjusted <= 2) return 'easy'
+    if (adjusted <= 3) return 'medium'
     return 'hard'
   }
 
