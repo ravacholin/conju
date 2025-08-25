@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
@@ -85,6 +85,25 @@ function DrillMode({
     onRegenerateItem()
     setShowQuickSwitch(false)
   }
+
+  // Listen for navigation requests from ProgressDashboard
+  useEffect(() => {
+    const handler = (e) => {
+      try {
+        // Close panel and start specific practice with current settings
+        setShowProgress(false)
+        // Kick off specific practice flow
+        if (typeof onStartSpecificPractice === 'function') {
+          onStartSpecificPractice()
+        } else {
+          // Fallback: regenerate item after settings change
+          onRegenerateItem()
+        }
+      } catch {}
+    }
+    window.addEventListener('progress:navigate', handler)
+    return () => window.removeEventListener('progress:navigate', handler)
+  }, [onStartSpecificPractice, onRegenerateItem])
 
   return (
     <div className="App">

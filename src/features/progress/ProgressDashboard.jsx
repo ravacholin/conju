@@ -7,6 +7,7 @@ import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
+import { useSettings } from '../../state/settings.js'
 import './progress.css'
 import './practice-recommendations.css'
 
@@ -14,6 +15,7 @@ import './practice-recommendations.css'
  * Componente principal del dashboard de progreso
  */
 export default function ProgressDashboard() {
+  const settings = useSettings()
   const [heatMapData, setHeatMapData] = useState([])
   const [radarData, setRadarData] = useState({})
   const [userStats, setUserStats] = useState({})
@@ -139,9 +141,18 @@ export default function ProgressDashboard() {
           maxRecommendations={5}
           showDetailedView={true}
           onSelectRecommendation={(recommendation) => {
-            console.log('Recomendación seleccionada:', recommendation)
-            // Implementar navegación a práctica específica en el futuro
-            alert(`Navegando a práctica: ${recommendation.title || 'Práctica seleccionada'}`)
+            try {
+              const mood = recommendation?.targetCombination?.mood
+              const tense = recommendation?.targetCombination?.tense
+              if (mood && tense) {
+                // Actualizar configuración a práctica específica
+                settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
+                // Notificar al contenedor para arrancar práctica específica y cerrar panel
+                window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+              }
+            } catch (e) {
+              console.warn('No se pudo aplicar la recomendación:', e)
+            }
           }}
         />
       </section>

@@ -89,6 +89,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     const attempt = {
       id: attemptId,
       userId: currentSession.userId,
+      sessionId: currentSession.id,
       itemId: canonicalItemId,
       mood,
       tense,

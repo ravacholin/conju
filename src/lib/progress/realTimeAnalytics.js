@@ -12,7 +12,8 @@ export async function getRealUserStats(userId) {
   try {
     const masteryRecords = await getMasteryByUser(userId)
     const userSettings = getUserSettings(userId)
-    
+    const attempts = await getAttemptsByUser(userId)
+
     if (masteryRecords.length === 0) {
       return {
         totalMastery: 0,
@@ -20,10 +21,12 @@ export async function getRealUserStats(userId) {
         inProgressCells: 0,
         strugglingCells: 0,
         avgLatency: 0,
-        totalAttempts: 0,
+        totalAttempts: attempts.length,
         totalSessions: userSettings.totalSessions || 0,
         accuracy: 0,
-        bestStreak: 0
+        bestStreak: 0,
+        currentSessionStreak: 0,
+        sessionBestStreak: 0
       }
     }
     
@@ -37,16 +40,54 @@ export async function getRealUserStats(userId) {
     const struggling = masteryRecords.filter(r => r.score < 60).length
     
     // Calcular latencias y precisión agregadas desde intentos reales del usuario
-    const attempts = await getAttemptsByUser(userId)
     let totalLatency = 0
     let totalAttempts = 0
     let correctAttempts = 0
-    let bestStreak = 0 // pendiente: se puede calcular por sesión si se guarda
+    // Rachas: por sesión y global
+    let bestStreak = 0
+    let sessionBestStreak = 0
+    let currentSessionStreak = 0
+
+    // Ordenar intentos por fecha
+    const attemptsSorted = [...attempts].sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
+    // Agrupar por sesión y calcular rachas
+    const sessions = new Map()
+    for (const a of attemptsSorted) {
+      const sid = a.sessionId || 'unknown'
+      if (!sessions.has(sid)) sessions.set(sid, [])
+      sessions.get(sid).push(a)
+    }
+    // Determinar sesión actual (la más reciente por createdAt)
+    let latestSessionId = null
+    let latestSessionTime = 0
+    sessions.forEach((arr, sid) => {
+      const t = new Date(arr[arr.length-1]?.createdAt || 0).getTime()
+      if (t >= latestSessionTime) { latestSessionTime = t; latestSessionId = sid }
+    })
+
     for (const attempt of attempts) {
       totalLatency += attempt.latencyMs || 0
       totalAttempts++
       if (attempt.correct) correctAttempts++
     }
+
+    // Calcular mejor racha global y racha actual/mejor de la sesión más reciente
+    const calcBest = (arr) => {
+      let best = 0, cur = 0
+      for (const a of arr) {
+        if (a.correct) { cur += 1; best = Math.max(best, cur) }
+        else { cur = 0 }
+      }
+      return { best, cur }
+    }
+    // Global
+    const g = calcBest(attemptsSorted)
+    bestStreak = g.best
+    // Sesión actual
+    const latestArr = sessions.get(latestSessionId) || []
+    const s = calcBest(latestArr)
+    sessionBestStreak = s.best
+    currentSessionStreak = s.cur
     
     const avgLatency = totalAttempts > 0 ? totalLatency / totalAttempts : 0
     const accuracy = totalAttempts > 0 ? (correctAttempts / totalAttempts) * 100 : 0
@@ -60,7 +101,9 @@ export async function getRealUserStats(userId) {
       totalAttempts: totalAttempts,
       totalSessions: userSettings.totalSessions || 0,
       accuracy: Math.round(accuracy),
-      bestStreak: bestStreak // Esta métrica necesitaría tracking adicional
+      bestStreak,
+      sessionBestStreak,
+      currentSessionStreak
     }
   } catch (error) {
     console.error('Error al obtener estadísticas reales del usuario:', error)

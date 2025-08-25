@@ -23,7 +23,9 @@ export function ProgressTracker({ stats }) {
     inProgressCells,
     strugglingCells,
     totalAttempts,
-    avgLatency
+    avgLatency,
+    bestStreak,
+    currentSessionStreak
   } = stats
 
   return (
@@ -69,6 +71,18 @@ export function ProgressTracker({ stats }) {
           </div>
           <div className="stat-label">Latencia Promedio</div>
           <div className="stat-sublabel">Tiempo de respuesta</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value success">{bestStreak || 0}</div>
+          <div className="stat-label">Mejor Racha</div>
+          <div className="stat-sublabel">Histórico</div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-value warning">{currentSessionStreak || 0}</div>
+          <div className="stat-label">Racha Actual</div>
+          <div className="stat-sublabel">Sesión</div>
         </div>
       </div>
 
