@@ -1368,6 +1368,202 @@ export class LevelDrivenPrioritizer {
 // Singleton instance for global use
 export const levelPrioritizer = new LevelDrivenPrioritizer()
 
+/**
+ * Level-specific verb pool management for enhanced variety
+ */
+const ENHANCED_LEVEL_VERB_POOLS = {
+  A1: {
+    priority: ['ser', 'estar', 'tener', 'hacer', 'ir', 'venir', 'hablar', 'comer', 'vivir', 'dar'],
+    frequency_boost: ['ser', 'estar', 'tener', 'hacer'],
+    max_irregular_ratio: 0.4,
+    complexity_cap: 3
+  },
+  A2: {
+    priority: ['poder', 'querer', 'decir', 'ver', 'saber', 'conocer', 'poner', 'salir', 'llegar'],
+    frequency_boost: ['poder', 'querer', 'decir'],
+    max_irregular_ratio: 0.5,
+    complexity_cap: 4
+  },
+  B1: {
+    priority: ['parecer', 'seguir', 'sentir', 'creer', 'recordar', 'olvidar', 'preocupar', 'conseguir'],
+    frequency_boost: ['haber', 'parecer'],
+    max_irregular_ratio: 0.6,
+    complexity_cap: 7
+  },
+  B2: {
+    priority: ['lograr', 'evitar', 'sugerir', 'proponer', 'convencer', 'manifestar', 'expresar'],
+    frequency_boost: ['resultar', 'implicar'],
+    max_irregular_ratio: 0.7,
+    complexity_cap: 8
+  },
+  C1: {
+    priority: ['evidenciar', 'demostrar', 'constatar', 'corroborar', 'refutar', 'suscitar'],
+    frequency_boost: ['concernir', 'atañer'],
+    max_irregular_ratio: 0.8,
+    complexity_cap: 9
+  },
+  C2: {
+    priority: ['concernir', 'atañer', 'incumbir', 'yacer', 'asir', 'raer', 'roer', 'abolir'],
+    frequency_boost: ['yacer', 'asir', 'raer'],
+    max_irregular_ratio: 1.0,
+    complexity_cap: 10
+  }
+}
+
+/**
+ * Apply level-specific verb filtering and prioritization
+ */
+function applyLevelVerbFiltering(forms, levelConfig) {
+  const filtered = []
+  const verbCounts = new Map()
+  
+  // Count verbs and apply priorities
+  forms.forEach(form => {
+    verbCounts.set(form.lemma, (verbCounts.get(form.lemma) || 0) + 1)
+  })
+  
+  forms.forEach(form => {
+    let weight = 1
+    
+    // Priority verb boosting
+    if (levelConfig.priority.includes(form.lemma)) {
+      weight *= 2
+    }
+    
+    // High-frequency verb boosting
+    if (levelConfig.frequency_boost.includes(form.lemma)) {
+      weight *= 1.5
+    }
+    
+    // Add multiple copies based on weight
+    for (let i = 0; i < Math.ceil(weight); i++) {
+      filtered.push(form)
+    }
+  })
+  
+  return filtered
+}
+
+/**
+ * Apply tense family balancing for variety
+ */
+function applyTenseVarietyBalancing(forms, level) {
+  const familyGroups = new Map()
+  
+  // Group by tense family
+  forms.forEach(form => {
+    const family = getTenseFamily(form.mood, form.tense)
+    if (!familyGroups.has(family)) {
+      familyGroups.set(family, [])
+    }
+    familyGroups.get(family).push(form)
+  })
+  
+  // Balance representation from each family
+  const balanced = []
+  const maxFromFamily = Math.max(5, Math.floor(forms.length / Math.max(1, familyGroups.size)))
+  
+  familyGroups.forEach((familyForms, family) => {
+    // Shuffle and take up to maxFromFamily
+    const shuffled = familyForms.sort(() => Math.random() - 0.5)
+    balanced.push(...shuffled.slice(0, maxFromFamily))
+  })
+  
+  return balanced
+}
+
+/**
+ * Apply progressive difficulty weighting within sessions
+ */
+function applyProgressiveDifficultyWeighting(forms, level, sessionHistory) {
+  if (!sessionHistory || sessionHistory.selectionCount < 5) {
+    // Early session - prefer easier forms
+    return forms.filter(form => {
+      const complexity = getFormComplexity(form, level)
+      const levelBase = getLevelBaseComplexity(level)
+      return complexity <= levelBase + 1 // Stay within level + 1
+    })
+  }
+  
+  // Later session - allow more complex forms
+  const boosted = []
+  const sessionDifficulty = Math.min(3, Math.floor(sessionHistory.selectionCount / 10))
+  
+  forms.forEach(form => {
+    const complexity = getFormComplexity(form, level)
+    const levelBase = getLevelBaseComplexity(level)
+    const targetComplexity = levelBase + sessionDifficulty
+    
+    let weight = 1
+    if (Math.abs(complexity - targetComplexity) <= 1) {
+      weight = 2 // Prefer forms near target complexity
+    } else if (complexity < targetComplexity - 1) {
+      weight = 1.5 // Slightly boost easier forms
+    }
+    
+    for (let i = 0; i < weight; i++) {
+      boosted.push(form)
+    }
+  })
+  
+  return boosted
+}
+
+/**
+ * Apply semantic category rotation for verb variety
+ */
+function applySemanticCategoryRotation(forms, level) {
+  // This would integrate with the semantic categories from advancedVarietyEngine
+  // For now, return forms as-is but this is where verb semantic balancing would occur
+  return forms
+}
+
+/**
+ * Helper functions
+ */
+function getTenseFamily(mood, tense) {
+  const families = {
+    'present': ['indicative|pres'],
+    'past': ['indicative|pretIndef', 'indicative|impf'],
+    'future': ['indicative|fut', 'conditional|cond'],
+    'perfect': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf'],
+    'subjunctive_pres': ['subjunctive|subjPres', 'subjunctive|subjPerf'],
+    'subjunctive_past': ['subjunctive|subjImpf', 'subjunctive|subjPlusc'],
+    'commands': ['imperative|impAff', 'imperative|impNeg'],
+    'nonfinite': ['nonfinite|ger', 'nonfinite|part']
+  }
+  
+  const tenseKey = `${mood}|${tense}`
+  for (const [family, tenses] of Object.entries(families)) {
+    if (tenses.includes(tenseKey)) return family
+  }
+  return 'other'
+}
+
+function getFormComplexity(form, level) {
+  const complexityScores = {
+    'indicative|pres': 1,
+    'nonfinite|ger': 2,
+    'nonfinite|part': 2,
+    'indicative|pretIndef': 3,
+    'indicative|impf': 3,
+    'indicative|fut': 3,
+    'imperative|impAff': 4,
+    'indicative|pretPerf': 5,
+    'conditional|cond': 5,
+    'subjunctive|subjPres': 7,
+    'subjunctive|subjImpf': 8
+  }
+  return complexityScores[`${form.mood}|${form.tense}`] || 5
+}
+
+function getLevelBaseComplexity(level) {
+  const baseComplexity = {
+    'A1': 1.5, 'A2': 3.0, 'B1': 5.0, 'B2': 7.0, 'C1': 8.0, 'C2': 9.0
+  }
+  return baseComplexity[level] || 5.0
+}
+
 // Convenience functions for easy access
 export function getPrioritizedTensesForLevel(level, userProgress = null) {
   return levelPrioritizer.getPrioritizedTenses(level, userProgress)
@@ -1375,6 +1571,33 @@ export function getPrioritizedTensesForLevel(level, userProgress = null) {
 
 export function getWeightedFormsSelection(forms, level, userProgress = null) {
   return levelPrioritizer.getWeightedSelection(forms, level, userProgress)  
+}
+
+/**
+ * Enhanced mixed practice selection with sophisticated variety algorithms
+ */
+export function getEnhancedMixedPracticeSelection(forms, level, sessionHistory = null) {
+  if (!forms || forms.length === 0) return []
+  
+  console.log(`🎯 Enhanced mixed practice selection for ${level}:`, forms.length, 'forms')
+  
+  const levelConfig = ENHANCED_LEVEL_VERB_POOLS[level] || ENHANCED_LEVEL_VERB_POOLS.B1
+  
+  // Apply level-specific verb filtering
+  const levelFilteredForms = applyLevelVerbFiltering(forms, levelConfig)
+  
+  // Apply tense variety balancing
+  const varietyBalancedForms = applyTenseVarietyBalancing(levelFilteredForms, level)
+  
+  // Apply progressive difficulty weighting
+  const difficultyWeightedForms = applyProgressiveDifficultyWeighting(varietyBalancedForms, level, sessionHistory)
+  
+  // Apply semantic category rotation
+  const semanticBalancedForms = applySemanticCategoryRotation(difficultyWeightedForms, level)
+  
+  console.log(`🎯 Enhanced selection pipeline: ${forms.length} → ${levelFilteredForms.length} → ${varietyBalancedForms.length} → ${difficultyWeightedForms.length} → ${semanticBalancedForms.length}`)
+  
+  return semanticBalancedForms
 }
 
 export function debugLevelPrioritization(level, userProgress = null) {

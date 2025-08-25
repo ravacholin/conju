@@ -6,6 +6,7 @@ import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } from './conjugationRules.js'
 import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
+import { varietyEngine } from './advancedVarietyEngine.js'
 
 
 // Imports optimizados
@@ -530,47 +531,35 @@ export function chooseNext({forms, history, currentItem}){
     useSettings.getState().set({ conmutacionIdx: (idx + 1) % seq.length })
   }
   
-  // ENHANCED SELECTION: Combine accuracy-based and level-priority selection
-  // Instead of pure lowest-accuracy selection, use hybrid approach
-  let candidates = []
+  // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection
+  console.log(`🚀 Using Advanced Variety Engine for ${practiceMode} practice (${level})`)
   
-  // Method 1: Pure level-weighted selection (for new users or when accuracy is similar)
-  const hasSignificantAccuracyDifferences = eligible.length > 10 && 
-    Object.keys(history).length > 5 // Only use accuracy if we have enough history
+  // Use the advanced variety engine for all selection
+  const selectedForm = varietyEngine.selectVariedForm(eligible, level, practiceMode, history)
   
-  if (!hasSignificantAccuracyDifferences) {
-    // New user or insufficient history - use pure level-driven selection
-    candidates = eligible
-    console.log('🎯 Using pure level-driven selection (insufficient history)')
-  } else {
-    // Experienced user - blend accuracy and level priorities
-    const accCache = new Map()
-    let minAcc = Infinity
-    let maxAcc = -Infinity
+  if (selectedForm) {
+    console.log(`🎯 Advanced selection result: ${selectedForm.lemma} - ${selectedForm.mood}/${selectedForm.tense} - ${selectedForm.person}`)
     
-    // Compute accuracy for all forms
-    for (let i = 0; i < eligible.length; i++) {
-      const a = acc(eligible[i], history)
-      accCache.set(eligible[i], a)
-      minAcc = Math.min(minAcc, a)
-      maxAcc = Math.max(maxAcc, a)
+    // Apply any final transformations (clitics, etc.)
+    let finalForm = selectedForm
+    
+    // Enforce clitics percentage in imperativo afirmativo at high levels
+    if (finalForm.mood === 'imperative' && finalForm.tense === 'impAff' && cliticsPercent > 0) {
+      const needClitic = Math.random() * 100 < cliticsPercent
+      if (needClitic) {
+        const part = finalForm.value
+        const attach = (finalForm.person === '1s' || finalForm.person === '2s_tu' || finalForm.person === '2s_vos') ? 'me' : 'se lo'
+        const adjusted = adjustAccentForImperativeWithClitics(finalForm.lemma, finalForm.person, part, attach)
+        finalForm = { ...finalForm, value: adjusted }
+      }
     }
     
-    // If accuracy range is small, prioritize level-appropriate content
-    const accuracyRange = maxAcc - minAcc
-    if (accuracyRange < 0.3) {
-      // Similar accuracy - use level prioritization
-      candidates = eligible
-      console.log('🎯 Using level-driven selection (similar accuracy scores)')
-    } else {
-      // Significant accuracy differences - focus on lowest accuracy but bias toward level-appropriate
-      const lowAccThreshold = minAcc + (accuracyRange * 0.3) // Bottom 30% accuracy
-      const lowAccuracyForms = eligible.filter(f => accCache.get(f) <= lowAccThreshold)
-      
-      candidates = lowAccuracyForms.length > 0 ? lowAccuracyForms : eligible
-      console.log(`🎯 Using accuracy-driven selection with level bias: ${candidates.length} candidates`)
-    }
+    return finalForm
   }
+  
+  // Fallback to legacy selection if advanced engine fails
+  console.log('⚠️  Advanced Variety Engine failed, using fallback selection')
+  let candidates = eligible
   
   // Balance selection by person to ensure variety
   const personsInCandidates = [...new Set(candidates.map(f => f.person))]
@@ -604,23 +593,23 @@ export function chooseNext({forms, history, currentItem}){
   }
   const formsForPerson = candidatesByPerson[randomPerson]
   // CRITICAL FIX: For participles, prefer the first (standard) form instead of random selection
-  let selectedForm
+  let fallbackSelectedForm
   if (formsForPerson.length > 1 && formsForPerson[0].mood === 'nonfinite' && formsForPerson[0].tense === 'part') {
     // For participles with multiple forms (e.g. provisto/proveído), always choose the first (standard) one
-    selectedForm = formsForPerson[0]
-    console.log(`🔧 PARTICIPLE FIX - Selected standard form: ${selectedForm.value} instead of random from [${formsForPerson.map(f => f.value).join(', ')}]`)
+    fallbackSelectedForm = formsForPerson[0]
+    console.log(`🔧 PARTICIPLE FIX - Selected standard form: ${fallbackSelectedForm.value} instead of random from [${formsForPerson.map(f => f.value).join(', ')}]`)
   } else {
-    selectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
+    fallbackSelectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
   }
   // Enforce clitics percentage in imperativo afirmativo at high levels
-  if (selectedForm.mood === 'imperative' && selectedForm.tense === 'impAff' && cliticsPercent > 0) {
+  if (fallbackSelectedForm.mood === 'imperative' && fallbackSelectedForm.tense === 'impAff' && cliticsPercent > 0) {
     const needClitic = Math.random()*100 < cliticsPercent
     if (needClitic) {
       // Simple heuristic: attach 'me' to 1s/2s targets, else 'se lo'
-      const part = selectedForm.value
-      const attach = (selectedForm.person === '1s' || selectedForm.person === '2s_tu' || selectedForm.person === '2s_vos') ? 'me' : 'se lo'
-      const adjusted = adjustAccentForImperativeWithClitics(selectedForm.lemma, selectedForm.person, part, attach)
-      selectedForm = { ...selectedForm, value: adjusted }
+      const part = fallbackSelectedForm.value
+      const attach = (fallbackSelectedForm.person === '1s' || fallbackSelectedForm.person === '2s_tu' || fallbackSelectedForm.person === '2s_vos') ? 'me' : 'se lo'
+      const adjusted = adjustAccentForImperativeWithClitics(fallbackSelectedForm.lemma, fallbackSelectedForm.person, part, attach)
+      fallbackSelectedForm = { ...fallbackSelectedForm, value: adjusted }
     }
   }
   // Update rotation pointer
@@ -629,7 +618,7 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   
-  return selectedForm
+  return fallbackSelectedForm
 }
 
 // Apply weighted selection to balance regular vs irregular verbs
