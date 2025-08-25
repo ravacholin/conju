@@ -3,7 +3,7 @@
 // Script to validate the entire verb dataset for correctness and consistency.
 // This script will be used to detect errors, duplicates, and inconsistencies in verb conjugations.
 
-import { verbs } from './data/verbs.js';
+import { verbs as _UNUSED_verbs } from './data/verbs.js';
 import { IRREGULAR_FAMILIES } from './lib/data/irregularFamilies.js';
 
 // Load validation logic

@@ -1,8 +1,8 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
-import { saveAttempt, saveMastery, saveSchedule } from './database.js'
-import { calculateNextInterval, updateSchedule } from './srs.js'
-import { calculateMasteryForItem } from './mastery.js'
+import { saveAttempt } from './database.js'
+// import { calculateNextInterval, updateSchedule } from './srs.js'
+// import { calculateMasteryForItem } from './mastery.js'
 import { ERROR_TAGS } from './dataModels.js'
 
 // Estado del tracking
@@ -223,7 +223,7 @@ export function classifyError(userAnswer, correctAnswer, item) {
   // 1. Persona equivocada
   if (item.person && userAnswer && correctAnswer) {
     // Extraer la persona de la respuesta correcta si está disponible
-    const correctPerson = item.person
+    const _unused_correctPerson = item.person
     
     // Esta es una implementación simplificada
     // En la práctica, se necesitaría un análisis más complejo

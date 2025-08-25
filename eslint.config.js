@@ -34,10 +34,10 @@ export default [
       ],
     },
   },
-  // Node.js scripts at repo root (exclude src/ and public/)
+  // Node.js scripts at repo root and src/lib/utils (exclude src/ and public/ except utils)
   {
-    files: ['*.js'],
-    ignores: ['src/**/*', 'public/**/*', 'node_modules/**/*', 'dist/**/*'],
+    files: ['*.js', 'src/lib/utils/*.js', 'src/validate-data.js'],
+    ignores: ['src/**/*', 'public/**/*', 'node_modules/**/*', 'dist/**/*', '!src/lib/utils/*.js', '!src/validate-data.js'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,

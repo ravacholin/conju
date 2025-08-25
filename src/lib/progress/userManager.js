@@ -12,7 +12,7 @@ export function getCurrentUserId() {
   }
 }
 
-export function getUserSettings(userId) {
+export function getUserSettings(_userId) {
   try {
     if (typeof window === 'undefined') {
       return defaultSettings()
@@ -25,7 +25,7 @@ export function getUserSettings(userId) {
       ...defaultSettings(),
       ...parsed
     }
-  } catch (e) {
+  } catch {
     console.warn('Fallo leyendo user settings; usando valores por defecto', e)
     return defaultSettings()
   }
@@ -44,7 +44,7 @@ function defaultSettings() {
   }
 }
 
-export function incrementSessionCount(userId) {
+export function incrementSessionCount(_userId) {
   try {
     if (typeof window === 'undefined') return
     const raw = window.localStorage.getItem(LS_KEY)
@@ -55,7 +55,7 @@ export function incrementSessionCount(userId) {
       lastActiveAt: new Date().toISOString()
     }
     window.localStorage.setItem(LS_KEY, JSON.stringify(next))
-  } catch (e) {
+  } catch {
     // Silencioso en producción; no bloquear UX
   }
 }

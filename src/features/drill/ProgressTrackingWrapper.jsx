@@ -12,14 +12,10 @@ import { useProgressTracking } from './useProgressTracking.js'
  * @param {Object} props.result - Resultado actual
  * @returns {null} No renderiza nada, solo maneja tracking
  */
-export function ProgressTrackingWrapper({ currentItem, onResult, onContinue, result }) {
+export function ProgressTrackingWrapper({ currentItem, onResult, result }) {
   // Hook para tracking de progreso
   const { 
-    handleResult, 
-    handleHintShown, 
-    handleStreakIncremented,
-    handleTenseDrillStarted,
-    handleTenseDrillEnded
+    handleResult 
   } = useProgressTracking(currentItem, onResult)
 
   // Efecto para manejar continuación de sesión

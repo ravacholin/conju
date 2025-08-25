@@ -12,7 +12,6 @@ class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     // Log for debugging; could be sent to analytics in production
-    // eslint-disable-next-line no-console
     console.error('Unhandled render error:', error, info)
   }
 

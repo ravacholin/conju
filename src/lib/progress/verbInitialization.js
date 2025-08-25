@@ -16,7 +16,7 @@ export async function initializeVerbs() {
     try {
       const dbModule = await import('./database.js')
       if (typeof dbModule.saveVerb === 'function') saveVerb = dbModule.saveVerb
-    } catch {}
+    } catch {/* ignore errors */}
 
     let regularCount = 0
     let irregularCount = 0
@@ -105,7 +105,7 @@ function determineVerbFrequency(lemma) {
  * @param {string} lemma - Lema del verbo
  * @returns {Promise<boolean>} Si el verbo está inicializado
  */
-export async function isVerbInitialized(lemma) {
+export async function isVerbInitialized(_lemma) {
   // En una implementación completa, esto verificaría en la base de datos
   // si el verbo ya está guardado
   
@@ -125,7 +125,7 @@ export async function addNewVerb(verb) {
     try {
       const dbModule = await import('./database.js')
       if (typeof dbModule.saveVerb === 'function') saveVerb = dbModule.saveVerb
-    } catch {}
+    } catch {/* ignore errors */}
 
     // Determinar frecuencia léxica
     const frequency = determineVerbFrequency(verb.lemma)
@@ -155,7 +155,7 @@ export async function addNewVerb(verb) {
  * @param {Object} updates - Actualizaciones
  * @returns {Promise<void>}
  */
-export async function updateVerb(verbId, updates) {
+export async function updateVerb(verbId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el verbo existente
     

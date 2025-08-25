@@ -43,7 +43,7 @@ export default function Drill({
   const secondRef = useRef(null)
   const touchStart = useRef({ x: 0, y: 0 })
   const settings = useSettings()
-  const [resistTick, setResistTick] = useState(0)
+  const [_UNUSED_resistTick, _UNUSED_setResistTick] = useState(0)
   
   // Variables derived from settings - moved here to fix initialization order
   const isReverse = !!settings.reverseActive
@@ -90,7 +90,7 @@ export default function Drill({
         setTimeout(() => {
           setShowExplosion(false)
           // update best by level
-          const lvl = settings.level || 'A1'
+          const _unused_lvl = settings.level || 'A1'
           const best = useSettings.getState().resistanceBestMsByLevel || {}
           const survived = (Date.now() - (useSettings.getState().resistanceStartTs||Date.now()))
           if (!best[lvl] || survived > best[lvl]) {
@@ -364,7 +364,7 @@ export default function Drill({
     else setInput(next)
     requestAnimationFrame(() => {
       try { el.setSelectionRange(start + ch.length, start + ch.length) }
-      catch (_err) { /* ignore selection errors */ }
+      catch {/* ignore selection errors */ }
       el.focus()
     })
   }
@@ -416,13 +416,13 @@ export default function Drill({
     return () => clearTimeout(id)
   }, [microMode, timeLeft])
 
-  const startTimeDrill = () => {
+  const _UNUSED_startTimeDrill = () => {
     setMicroMode('time')
     setTimeLeft(60)
     setCardsDone(0)
     setLocalCorrect(0)
   }
-  const startCardsDrill = () => {
+  const _UNUSED_startCardsDrill = () => {
     setMicroMode('cards')
     setCardsTarget(10)
     setCardsDone(0)
@@ -430,19 +430,19 @@ export default function Drill({
   }
 
   // Quick switch handlers (use global store)
-  const changeMood = (mood) => {
+  const _UNUSED_changeMood = (mood) => {
     settings.set({ specificMood: mood, specificTense: null })
     setResult(null)
     setInput('')
     onContinue()
   }
-  const changeTense = (tense) => {
+  const _UNUSED_changeTense = (tense) => {
     settings.set({ specificTense: tense })
     setResult(null)
     setInput('')
     onContinue()
   }
-  const changeVerbType = (vt) => {
+  const _UNUSED_changeVerbType = (vt) => {
     settings.set({ verbType: vt })
     setResult(null)
     setInput('')
@@ -618,7 +618,7 @@ export default function Drill({
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
 
   // Campos visibles según modo
-  const showInfinitiveField = isReverse
+  const _UNUSED_showInfinitiveField = isReverse
   const showPersonField = isReverse && currentItem?.mood !== 'nonfinite'
   const showMoodField = isReverse && !inSpecific
   const showTenseField = isReverse && !inSpecific

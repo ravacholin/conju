@@ -29,7 +29,7 @@ export function addMissingForms() {
   
   verbs.forEach(verb => {
     const updatedVerb = { ...verb }
-    let hasChanges = false
+    let _UNUSED_hasChanges = false
     
     // Check for missing nonfinite forms
     const hasParticiple = verb.paradigms.some(paradigm => 

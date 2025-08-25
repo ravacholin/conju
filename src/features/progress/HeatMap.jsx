@@ -1,7 +1,7 @@
 // Componente para mostrar el mapa de calor
 
-import { useEffect, useMemo, useState, memo } from 'react'
-import { formatPercentage, getMasteryColorClass } from '../../lib/progress/utils.js'
+import { useMemo, useState, memo } from 'react'
+import { formatPercentage } from '../../lib/progress/utils.js'
 
 /**
  * Componente para mostrar el mapa de calor
