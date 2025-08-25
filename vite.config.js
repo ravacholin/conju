@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig(({ command, mode }) => ({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     VitePWA({
@@ -32,6 +32,39 @@ export default defineConfig(({ command, mode }) => ({
       }
     })
   ],
+  build: {
+    // Optimize bundle size
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core vendor libraries
+          vendor: ['react', 'react-dom'],
+          // Progress system (heavy analytical components)
+          progress: [
+            './src/lib/progress/database.js',
+            './src/lib/progress/analytics.js',
+            './src/lib/progress/realTimeAnalytics.js',
+            './src/lib/progress/AdaptivePracticeEngine.js',
+            './src/lib/progress/DifficultyManager.js'
+          ],
+          // Data chunks (verb data)
+          data: ['./src/data/verbs.js'],
+          // Utilities and helpers
+          utils: [
+            './src/lib/progress/utils.js',
+            './src/lib/progress/helpers.js',
+            './src/lib/core/optimizedCache.js'
+          ]
+        }
+      }
+    },
+    // Increase warning limit for large bundles (progress system is complex)
+    chunkSizeWarningLimit: 800,
+    // Enable minification for production
+    minify: mode === 'production' ? 'terser' : false,
+    // Generate source maps for debugging
+    sourcemap: mode === 'development'
+  },
   server: {
     // Force IPv4 to avoid rare ::1 issues on some setups
     host: '127.0.0.1',
