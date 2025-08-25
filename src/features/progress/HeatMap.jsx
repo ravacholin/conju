@@ -146,7 +146,9 @@ export function HeatMap({ data }) {
                       window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
                     } catch {}
                   }}
-                  title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense}`}
+                  title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense} — Haz clic para practicar esta celda`}
+                  role="button"
+                  tabIndex={0}
                 >
                   {cellData ? (
                     <div className="cell-content">
@@ -200,6 +202,7 @@ export function HeatMap({ data }) {
             <div>Mastery: {formatPercentage(hoveredCell.data.score)}</div>
             <div>Intentos: {hoveredCell.data.count}</div>
             <div>Nivel: {getMasteryLevelText(hoveredCell.data.score)}</div>
+            <div style={{ marginTop: 6, opacity: 0.8 }}>Haz clic para practicar esta celda</div>
           </div>
         </div>
       )}

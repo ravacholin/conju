@@ -169,6 +169,7 @@ export function CompetencyRadar({ data }) {
         width={500}
         height={500}
         className="radar-canvas"
+        title="Haz clic para practicar tu área más débil"
         onClick={async () => {
           try {
             const userId = getCurrentUserId()
@@ -202,6 +203,10 @@ export function CompetencyRadar({ data }) {
         <div className="overall-assessment">
           <h4>Evaluación General</h4>
           <p>{getOverallAssessment(data)}</p>
+        </div>
+
+        <div className="hint" style={{ marginTop: 8, opacity: 0.8 }}>
+          Consejo: haz clic en el radar para practicar tu área más débil.
         </div>
       </div>
     </div>
