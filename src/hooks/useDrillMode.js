@@ -22,30 +22,27 @@ export function useDrillMode() {
     })
     
     // Multi-tier selection: SRS > Adaptive Recommendations > Standard Generator
-    // QUICK FIX: Reducir probabilidad de usar sistemas avanzados para aumentar variedad
     let nextForm = null
     let selectionMethod = 'standard'
     
     try {
       const userId = getCurrentUserId()
       
-      // Tier 1: SRS due cells (reduced priority for more variety)
-      if (Math.random() < 0.3) { // Solo 30% de probabilidad
-        const dueCells = userId ? await getDueItems(userId, new Date()) : []
-        const pickFromDue = dueCells.find(Boolean)
-        if (pickFromDue) {
-          const candidateForms = allFormsForRegion.filter(f =>
-            f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
-          )
-          if (candidateForms.length > 0) {
-            nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-            selectionMethod = 'srs_due'
-          }
+      // Tier 1: SRS due cells (highest priority)
+      const dueCells = userId ? await getDueItems(userId, new Date()) : []
+      const pickFromDue = dueCells.find(Boolean)
+      if (pickFromDue) {
+        const candidateForms = allFormsForRegion.filter(f =>
+          f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
+        )
+        if (candidateForms.length > 0) {
+          nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+          selectionMethod = 'srs_due'
         }
       }
       
-      // Tier 2: Adaptive recommendations (reduced priority for more variety)
-      if (!nextForm && Math.random() < 0.4) { // Solo 40% de probabilidad
+      // Tier 2: Adaptive recommendations (medium priority)
+      if (!nextForm) {
         const recommendation = await getNextRecommendedItem()
         if (recommendation && recommendation.targetCombination) {
           const { mood, tense, verbId } = recommendation.targetCombination
