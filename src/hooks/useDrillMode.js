@@ -156,6 +156,33 @@ export function useDrillMode() {
       console.log('🎯 Level-aware standard selection applied')
     }
     
+    // Integrity guards: never let progress system override Specific mode or Variant
+    const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
+    const specificMood = isSpecific ? settings.specificMood : null
+    const specificTense = isSpecific ? settings.specificTense : null
+    const region = settings.region
+    const pronounMode = settings.practicePronoun
+    const allowsPerson = (person) => {
+      if (pronounMode === 'all') return true
+      if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
+      if (region === 'la_general') return person !== '2s_vos' && person !== '2p_vosotros'
+      if (region === 'peninsular') return person !== '2s_vos'
+      return true
+    }
+    const matchesSpecific = (form) => {
+      if (!isSpecific) return true
+      if (specificTense === 'impMixed') return form.mood === specificMood && (form.tense === 'impAff' || form.tense === 'impNeg')
+      if (specificTense === 'nonfiniteMixed') return form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
+      return form.mood === specificMood && form.tense === specificTense
+    }
+    if (nextForm && (!matchesSpecific(nextForm) || !allowsPerson(nextForm.person))) {
+      const compliant = allFormsForRegion.filter(f => matchesSpecific(f) && allowsPerson(f.person))
+      if (compliant.length > 0) {
+        nextForm = compliant[Math.floor(Math.random() * compliant.length)]
+        selectionMethod += '+guarded'
+      }
+    }
+
     console.log('🎯 Final selection method:', selectionMethod)
     
     // COACHING INSIGHTS: Periodically show coaching recommendations
