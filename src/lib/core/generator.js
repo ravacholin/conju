@@ -275,11 +275,11 @@ export function chooseNext({forms, history, currentItem}){
           return false
         }
         
-        // RELAXED: For imperfect tense, allow more irregular verbs for variety
+        // CORRECT: For imperfect tense, ONLY ser/ir/ver have irregular forms
         if (f.mood === 'indicative' && f.tense === 'impf') {
-          // For imperfect, allow more common irregular verbs (not just ser/ir/ver)
-          const commonIrregularVerbs = ['ser', 'ir', 'ver', 'hacer', 'estar', 'tener', 'dar', 'poder', 'decir', 'venir']
-          if (!commonIrregularVerbs.includes(f.lemma)) {
+          // For imperfect, ONLY allow ser, ir, ver (the ONLY truly irregular verbs in imperfect)
+          const trulyIrregularImperfectVerbs = ['ser', 'ir', 'ver']
+          if (!trulyIrregularImperfectVerbs.includes(f.lemma)) {
             return false
           }
         } else {
