@@ -235,13 +235,16 @@ export function chooseNext({forms, history, currentItem}){
       }
     }
 
-    // Then check user's verb type preference
+    // Then check user's verb type preference  
     // isCompoundTense defined above
-    if (verbType === 'regular') {
+    // QUICK FIX: Para práctica mixta (sin verbType específico), permitir todos los verbos
+    const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
+    
+    if (verbType === 'regular' && !isMixedPractice) {
       if (verb.type !== 'regular') {
         return false
       }
-    } else if (verbType === 'irregular') {
+    } else if (verbType === 'irregular' && !isMixedPractice) {
       // For compound tenses, check if the verb has an irregular participle first
       if (isCompoundTense) {
         if (!hasIrregularParticiple(f.lemma)) {
@@ -272,11 +275,11 @@ export function chooseNext({forms, history, currentItem}){
           return false
         }
         
-        // SPECIAL HANDLING: For imperfect tense, only ser/ir/ver have irregular forms
+        // RELAXED: For imperfect tense, allow more irregular verbs for variety
         if (f.mood === 'indicative' && f.tense === 'impf') {
-          // For imperfect, only allow ser, ir, ver when requesting irregular verbs
-          const trulyIrregularImperfectVerbs = ['ser', 'ir', 'ver']
-          if (!trulyIrregularImperfectVerbs.includes(f.lemma)) {
+          // For imperfect, allow more common irregular verbs (not just ser/ir/ver)
+          const commonIrregularVerbs = ['ser', 'ir', 'ver', 'hacer', 'estar', 'tener', 'dar', 'poder', 'decir', 'venir']
+          if (!commonIrregularVerbs.includes(f.lemma)) {
             return false
           }
         } else {
