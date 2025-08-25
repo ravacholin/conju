@@ -3,6 +3,8 @@ import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
 import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
 import { getCurrentUserId } from '../lib/progress/userManager.js'
+import { getNextRecommendedItem, needsMorePractice } from '../lib/progress/AdaptivePracticeEngine.js'
+import { shouldAdjustDifficulty, getRecommendedAdjustments } from '../lib/progress/DifficultyManager.js'
 
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
@@ -19,28 +21,69 @@ export function useDrillMode() {
       itemToExclude: itemToExclude?.lemma
     })
     
-    // Prefer SRS due cells if available
+    // Multi-tier selection: SRS > Adaptive Recommendations > Standard Generator
     let nextForm = null
+    let selectionMethod = 'standard'
+    
     try {
       const userId = getCurrentUserId()
+      
+      // Tier 1: SRS due cells (highest priority)
       const dueCells = userId ? await getDueItems(userId, new Date()) : []
       const pickFromDue = dueCells.find(Boolean)
       if (pickFromDue) {
-        // Find forms that match the due cell and current level constraints
         const candidateForms = allFormsForRegion.filter(f =>
           f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
         )
         if (candidateForms.length > 0) {
           nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+          selectionMethod = 'srs_due'
+        }
+      }
+      
+      // Tier 2: Adaptive recommendations (medium priority)
+      if (!nextForm) {
+        const recommendation = await getNextRecommendedItem()
+        if (recommendation && recommendation.targetCombination) {
+          const { mood, tense, verbId } = recommendation.targetCombination
+          
+          // Filter forms based on recommendation
+          let candidateForms = allFormsForRegion.filter(f => 
+            f.mood === mood && f.tense === tense
+          )
+          
+          // If specific verb recommended, prioritize it
+          if (verbId) {
+            const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
+            if (specificVerbForms.length > 0) {
+              candidateForms = specificVerbForms
+            }
+          }
+          
+          if (candidateForms.length > 0) {
+            nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+            selectionMethod = 'adaptive_recommendation'
+            
+            console.log('🤖 Using adaptive recommendation:', {
+              type: recommendation.type,
+              mood,
+              tense,
+              reason: recommendation.reason
+            })
+          }
         }
       }
     } catch (e) {
-      console.warn('SRS due selection failed; falling back to generator', e)
+      console.warn('Advanced selection failed; falling back to standard generator', e)
     }
 
+    // Tier 3: Standard generator (fallback)
     if (!nextForm) {
       nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
+      selectionMethod = 'standard_generator'
     }
+    
+    console.log('🎯 Item selection method:', selectionMethod)
     
     console.log('🎯 GENERATE NEXT ITEM - chooseNext returned:', nextForm ? {
       lemma: nextForm.lemma,
@@ -227,7 +270,7 @@ export function useDrillMode() {
     }
   }
 
-  const handleDrillResult = (result) => {
+  const handleDrillResult = async (result) => {
     // Only update history if it's not an accent error
     if (!result.isAccentError) {
       const key = `${currentItem.mood}:${currentItem.tense}:${currentItem.person}:${currentItem.form.value}`
@@ -235,19 +278,55 @@ export function useDrillMode() {
         ...prev,
         [key]: {
           seen: (prev[key]?.seen || 0) + 1,
-          correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0)
+          correct: (prev[key]?.correct || 0) + (result.correct ? 1 : 0),
+          lastAttempt: Date.now(),
+          latency: result.latency || 0
         }
       }))
     }
+    
     // Update SRS schedule for the practiced cell
     try {
       const userId = getCurrentUserId()
       if (userId && currentItem && currentItem.mood && currentItem.tense && currentItem.person) {
-        updateSchedule(userId, { mood: currentItem.mood, tense: currentItem.tense, person: currentItem.person }, !!result.correct, result.hintsUsed || 0)
+        await updateSchedule(userId, { 
+          mood: currentItem.mood, 
+          tense: currentItem.tense, 
+          person: currentItem.person 
+        }, !!result.correct, result.hintsUsed || 0)
       }
     } catch (e) {
       console.warn('SRS schedule update failed:', e)
     }
+
+    // Adaptive difficulty assessment (asynchronous, non-blocking)
+    try {
+      const userId = getCurrentUserId()
+      if (userId) {
+        // Collect session performance data for difficulty assessment
+        const sessionData = {
+          recentCorrect: Object.values(history).reduce((sum, item) => sum + item.correct, 0),
+          recentErrors: Object.values(history).reduce((sum, item) => sum + (item.seen - item.correct), 0),
+          currentStreak: result.correct ? (currentItem.streak || 0) + 1 : 0,
+          averageTime: Object.values(history)
+            .filter(item => item.latency)
+            .reduce((sum, item, _, arr) => sum + item.latency / arr.length, 0)
+        }
+
+        // Check if difficulty should be adjusted (non-blocking)
+        const shouldAdjust = await shouldAdjustDifficulty(sessionData)
+        if (shouldAdjust) {
+          const adjustments = await getRecommendedAdjustments(sessionData)
+          console.log('🎛️ Difficulty adjustment recommended:', adjustments)
+          
+          // Note: In a full implementation, these adjustments would be applied
+          // to the settings or stored for the next session
+        }
+      }
+    } catch (e) {
+      console.warn('Adaptive difficulty assessment failed:', e)
+    }
+    
     // NO generate next item automatically
   }
 

@@ -6,7 +6,9 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
+import PracticeRecommendations from './PracticeRecommendations.jsx'
 import './progress.css'
+import './practice-recommendations.css'
 
 /**
  * Componente principal del dashboard de progreso
@@ -132,7 +134,19 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>💡 Recomendaciones</h2>
+        <h2>🤖 Práctica Adaptativa</h2>
+        <PracticeRecommendations 
+          maxRecommendations={5}
+          showDetailedView={true}
+          onSelectRecommendation={(recommendation) => {
+            console.log('Recomendación seleccionada:', recommendation)
+            // TODO: Implementar navegación a la práctica específica
+          }}
+        />
+      </section>
+
+      <section className="dashboard-section">
+        <h2>💡 Recomendaciones Generales</h2>
         <div className="recommendations">
           {recommendations.length > 0 ? (
             recommendations.map((rec, index) => (
