@@ -1,6 +1,7 @@
 // Componente para mostrar el mapa de calor
 
 import { useMemo, useState, memo } from 'react'
+import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 
 /**
@@ -9,6 +10,7 @@ import { formatPercentage } from '../../lib/progress/utils.js'
  * @param {Array} props.data - Datos para el mapa de calor
  */
 export function HeatMap({ data }) {
+  const settings = useSettings()
   const [timeRange, setTimeRange] = useState('last_30_days')
   const [hoveredCell, setHoveredCell] = useState(null)
 
@@ -138,6 +140,12 @@ export function HeatMap({ data }) {
                   className={cellClass}
                   onMouseEnter={() => setHoveredCell({ mood, tense, data: cellData })}
                   onMouseLeave={() => setHoveredCell(null)}
+                  onClick={() => {
+                    try {
+                      settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
+                      window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+                    } catch {}
+                  }}
                   title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense}`}
                 >
                   {cellData ? (

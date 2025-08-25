@@ -1,6 +1,9 @@
 // Componente para mostrar el radar de competencias
 
 import { useEffect, useRef, memo } from 'react'
+import { getHeatMapData } from '../../lib/progress/analytics.js'
+import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/uiUtils.js'
 
 /**
@@ -10,6 +13,7 @@ import { formatPercentage } from '../../lib/progress/uiUtils.js'
  */
 export function CompetencyRadar({ data }) {
   const canvasRef = useRef(null)
+  const settings = useSettings()
 
   // Definir ejes del radar
   const axes = [
@@ -165,6 +169,23 @@ export function CompetencyRadar({ data }) {
         width={500}
         height={500}
         className="radar-canvas"
+        onClick={async () => {
+          try {
+            const userId = getCurrentUserId()
+            const heatmap = await getHeatMapData(userId)
+            if (heatmap && heatmap.length > 0) {
+              // Elegir la celda con menor score; si hay sin datos, tomar una de nivel intermedio por defecto
+              const withScore = heatmap.filter(c => typeof c.score === 'number')
+              const target = (withScore.length > 0 ? withScore : heatmap)
+                .slice()
+                .sort((a,b)=> (a.score ?? 50) - (b.score ?? 50))[0]
+              if (target && target.mood && target.tense) {
+                settings.set({ practiceMode: 'specific', specificMood: target.mood, specificTense: target.tense })
+                window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood: target.mood, tense: target.tense } }))
+              }
+            }
+          } catch {}
+        }}
       />
       
       <div className="radar-summary">
