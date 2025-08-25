@@ -50,7 +50,7 @@ export default function Drill({
   const isDouble = !!settings.doubleActive
   
   // Hook para tracking de progreso
-  const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
+  const { handleResult, handleHintShown, handleStreakIncremented } = useProgressTracking(currentItem, onResult)
 
   // Reset input when currentItem changes
   useEffect(() => {
@@ -364,7 +364,7 @@ export default function Drill({
     else setInput(next)
     requestAnimationFrame(() => {
       try { el.setSelectionRange(start + ch.length, start + ch.length) }
-      catch (err) { /* ignore selection errors */ }
+      catch (_err) { /* ignore selection errors */ }
       el.focus()
     })
   }

@@ -140,7 +140,8 @@ export default function ProgressDashboard() {
           showDetailedView={true}
           onSelectRecommendation={(recommendation) => {
             console.log('Recomendación seleccionada:', recommendation)
-            // TODO: Implementar navegación a la práctica específica
+            // Implementar navegación a práctica específica en el futuro
+            alert(`Navegando a práctica: ${recommendation.title || 'Práctica seleccionada'}`)
           }}
         />
       </section>
