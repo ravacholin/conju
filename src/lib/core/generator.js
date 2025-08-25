@@ -2,7 +2,7 @@ import gates from '../../data/curriculum.json'
 import { useSettings } from '../../state/settings.js'
 import { verbs } from '../../data/verbs.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
-import { expandSimplifiedGroup, getSimplifiedGroupForVerb } from '../data/simplifiedFamilyGroups.js'
+import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } from './conjugationRules.js'
 
@@ -11,9 +11,9 @@ import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } 
 import { 
   VERB_LOOKUP_MAP, 
   FORM_LOOKUP_MAP,
-  verbCategorizationCache,
+  // verbCategorizationCache,  // UNUSED
   formFilterCache,
-  combinationCache,
+  // combinationCache,        // UNUSED
   warmupCaches 
 } from './optimizedCache.js'
 

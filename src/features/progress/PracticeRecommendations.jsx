@@ -11,12 +11,13 @@ export default function PracticeRecommendations({
   onSelectRecommendation, 
   maxRecommendations = 3,
   showDetailedView = false,
-  focusMode = 'balanced' 
+  focusMode: initialFocusMode = 'balanced' 
 }) {
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedSession, setSelectedSession] = useState(null)
+  const [focusMode, setFocusMode] = useState(initialFocusMode)
 
   useEffect(() => {
     loadRecommendations()
