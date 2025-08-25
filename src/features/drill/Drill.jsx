@@ -8,6 +8,7 @@ import MasteryIndicator from './MasteryIndicator.jsx'
 import SessionStats from './SessionStats.jsx'
 import FeedbackNotification from './FeedbackNotification.jsx'
 import './progress-feedback.css'
+import { verbs } from '../../data/verbs.js'
 
 export default function Drill({ 
   currentItem, 
@@ -647,6 +648,31 @@ export default function Drill({
     { v:'3p', l:'ellos/ustedes' }
   ]
 
+  // Filter reverse-mode person choices by selected variant
+  const getVariantFilteredPersonOptions = () => {
+    const region = settings.region
+    const pronounMode = settings.practicePronoun // 'all' only for TODOS
+    if (pronounMode === 'all') {
+      // TODOS: allow tú, vos, vosotros (all remain)
+      return personOptions
+    }
+    if (region === 'rioplatense') {
+      // Solo vos: hide tú and vosotros
+      return personOptions.filter(p => p.v !== '2s_tu' && p.v !== '2p_vosotros')
+    }
+    if (region === 'la_general') {
+      // Solo tú: hide vos and vosotros
+      return personOptions.filter(p => p.v !== '2s_vos' && p.v !== '2p_vosotros')
+    }
+    if (region === 'peninsular') {
+      // España: tú y vosotros (hide vos)
+      return personOptions.filter(p => p.v !== '2s_vos')
+    }
+    // Default: no filtering
+    return personOptions
+  }
+  const uiPersonOptions = getVariantFilteredPersonOptions()
+
   const moodOptions = [
     { v:'indicative', l:'Indicativo' },
     { v:'subjunctive', l:'Subjuntivo' },
@@ -673,21 +699,44 @@ export default function Drill({
     // Comprobar contra currentItem.form
     const expected = currentItem.form
     const okInf = expected.lemma ? expected.lemma.toLowerCase() === infinitiveGuess.trim().toLowerCase() : false
-    // Aceptar sincretismos de persona cuando la forma es idéntica (p. ej., 1s/3s)
-    const key = `${expected.mood}|${expected.tense}`
-    const EQUIV = {
-      'subjunctive|subjImpf': [['1s','3s']],
-      'subjunctive|subjPres': [['1s','3s']],
-      'subjunctive|subjPerf': [['1s','3s']],
-      'subjunctive|subjPlusc': [['1s','3s']],
-      'indicative|impf': [['1s','3s']],
-      'indicative|plusc': [['1s','3s']],
-      'conditional|cond': [['1s','3s']],
-      'conditional|condPerf': [['1s','3s']]
+    // Aceptar sincretismos de persona cuando la forma es idéntica (p. ej., 1s/3s, 2s_tu/2s_vos en varios tiempos)
+    const normalize = (s='') => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ')
+    const targetVal = normalize(expected.value)
+    const candidates = new Set()
+    try {
+      const verb = verbs.find(v => v.lemma === expected.lemma)
+      if (verb) {
+        for (const paradigm of verb.paradigms || []) {
+          for (const f of paradigm.forms || []) {
+            if (f.mood === expected.mood && f.tense === expected.tense) {
+              const val = normalize(f.value)
+              if (val && val === targetVal) {
+                candidates.add(f.person)
+              }
+            }
+          }
+        }
+      }
+    } catch {}
+    // Si no encontramos candidatos por dataset, aplicar equivalencias mínimas conocidas 1s/3s para seguridad
+    if (candidates.size === 0) {
+      const key = `${expected.mood}|${expected.tense}`
+      const EQUIV = {
+        'subjunctive|subjImpf': [['1s','3s']],
+        'subjunctive|subjPres': [['1s','3s']],
+        'subjunctive|subjPerf': [['1s','3s']],
+        'subjunctive|subjPlusc': [['1s','3s']],
+        'indicative|impf': [['1s','3s']],
+        'indicative|plusc': [['1s','3s']],
+        'conditional|cond': [['1s','3s']],
+        'conditional|condPerf': [['1s','3s']]
+      }
+      const groups = EQUIV[key] || []
+      const group = groups.find(g => g.includes(expected.person))
+      if (group) group.forEach(p => candidates.add(p))
+      if (candidates.size === 0 && expected.person) candidates.add(expected.person)
     }
-    const groups = EQUIV[key] || []
-    const sameGroup = groups.some(g => g.includes(expected.person) && g.includes(personGuess))
-    const okPerson = showPersonField ? (expected.person ? (expected.person === personGuess || sameGroup) : false) : true
+    const okPerson = showPersonField ? (expected.person ? candidates.has(personGuess) : false) : true
     const okMood = showMoodField ? expected.mood === moodGuess : true
     const okTense = showTenseField ? expected.tense === tenseGuess : true
     const correct = okInf && okPerson && okMood && okTense
@@ -871,7 +920,7 @@ export default function Drill({
                 <label className="reverse-label">Persona</label>
                 <select className="reverse-select" value={personGuess} onChange={(e)=>setPersonGuess(e.target.value)} onKeyDown={handleReverseKeyDown}>
                   <option value="">Seleccioná persona...</option>
-                  {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
+                  {uiPersonOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
                 </select>
               </div>
             )}

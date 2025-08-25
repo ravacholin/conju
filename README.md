@@ -6,6 +6,17 @@ Bienvenido a la documentación completa del sistema de progreso y analíticas pa
 
 ## 🔄 Últimas Actualizaciones
 
+### ✅ Variantes y Modo Inverso (25/08/2025)
+
+- Variante seleccionada en el primer menú se respeta SIEMPRE en todo el flujo (incluyendo SRS/adaptativo y seguimiento de errores). Opciones:
+  - Solo vos (sin tú ni vosotros)
+  - Solo tú (sin vos ni vosotros)
+  - España: tú y vosotros (sin vos)
+  - Todos: tú, vos y vosotros
+- Modo inverso: el selector de persona ahora muestra solo las personas permitidas por la variante elegida. En “Todos” se muestran tú, vos y vosotros; en variantes estrictas se ocultan los que no apliquen.
+- Aceptación en modo inverso: si la misma forma superficial vale para varias personas (p. ej., 1s/3s «hablaba», tú/vos «hablaste», «no hables», «hables»), TODAS esas personas se aceptan como correctas automáticamente.
+- Práctica por temas: cuando se elige un modo/tiempo específico, SRS y recomendaciones adaptativas se limitan a ese tema (incluye casos mixtos como «impMixed» y «nonfiniteMixed»).
+
 ### ✅ PROBLEMA RESUELTO - Página en Blanco Solucionada (24/08/2025)
 
 **El problema de la página en blanco ha sido completamente solucionado!** 🎉

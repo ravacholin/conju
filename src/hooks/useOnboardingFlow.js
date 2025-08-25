@@ -185,7 +185,9 @@ export function useOnboardingFlow() {
           useTuteo: false,
           useVosotros: false,
           strict: true,
-          region: 'rioplatense'
+          region: 'rioplatense',
+          // Ensure regional restrictions are honored (no global override)
+          practicePronoun: 'both'
         })
         break
       case 'la_general':
@@ -194,7 +196,9 @@ export function useOnboardingFlow() {
           useVoseo: false,
           useVosotros: false,
           strict: true,
-          region: 'la_general'
+          region: 'la_general',
+          // Ensure regional restrictions are honored (no global override)
+          practicePronoun: 'both'
         })
         break
       case 'peninsular':
@@ -203,7 +207,9 @@ export function useOnboardingFlow() {
           useVoseo: false,
           useVosotros: true,
           strict: true,
-          region: 'peninsular'
+          region: 'peninsular',
+          // Ensure regional restrictions are honored (no global override)
+          practicePronoun: 'both'
         })
         break
       case 'both':

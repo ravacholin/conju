@@ -33,16 +33,16 @@ function SettingsPanel({
       <h3>Configuración</h3>
       
       <div className="setting-group">
-        <label>Variedad de español:</label>
+        <label>Variante:</label>
         <select 
           value={getDialectValue()}
           onChange={(e) => onDialectChange(e.target.value)}
           className="setting-select"
         >
-          <option value="rioplatense">Español Rioplatense</option>
-          <option value="la_general">Latinoamérica</option>
-          <option value="peninsular">Español Peninsular</option>
-          <option value="both">Todas las Formas</option>
+          <option value="rioplatense">Solo vos (sin tú ni vosotros)</option>
+          <option value="la_general">Solo tú (sin vos ni vosotros)</option>
+          <option value="peninsular">España: tú y vosotros (sin vos)</option>
+          <option value="both">Todos: tú, vos y vosotros</option>
         </select>
       </div>
       

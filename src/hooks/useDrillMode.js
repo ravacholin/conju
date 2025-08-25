@@ -27,9 +27,25 @@ export function useDrillMode() {
     
     try {
       const userId = getCurrentUserId()
-      
+      const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
+      const specificMood = isSpecific ? settings.specificMood : null
+      const specificTense = isSpecific ? settings.specificTense : null
+
       // Tier 1: SRS due cells (highest priority)
-      const dueCells = userId ? await getDueItems(userId, new Date()) : []
+      let dueCells = userId ? await getDueItems(userId, new Date()) : []
+      // Respect topic selection: constrain SRS to current mood/tense when in specific mode
+      if (isSpecific) {
+        dueCells = dueCells.filter(dc => {
+          if (!dc) return false
+          if (specificTense === 'impMixed') {
+            return dc.mood === specificMood && (dc.tense === 'impAff' || dc.tense === 'impNeg')
+          }
+          if (specificTense === 'nonfiniteMixed') {
+            return dc.mood === specificMood && (dc.tense === 'ger' || dc.tense === 'part')
+          }
+          return dc.mood === specificMood && dc.tense === specificTense
+        })
+      }
       const pickFromDue = dueCells.find(Boolean)
       if (pickFromDue) {
         const candidateForms = allFormsForRegion.filter(f =>
@@ -47,29 +63,68 @@ export function useDrillMode() {
         if (recommendation && recommendation.targetCombination) {
           const { mood, tense, verbId } = recommendation.targetCombination
           
-          // Filter forms based on recommendation
-          let candidateForms = allFormsForRegion.filter(f => 
-            f.mood === mood && f.tense === tense
-          )
-          
-          // If specific verb recommended, prioritize it
-          if (verbId) {
-            const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
-            if (specificVerbForms.length > 0) {
-              candidateForms = specificVerbForms
+          // If practicing a specific topic, ignore recommendations that don't match
+          if (isSpecific) {
+            // Map mixed tenses for comparison
+            const matchesSpecific = (
+              (specificTense === 'impMixed' && mood === specificMood && (tense === 'impAff' || tense === 'impNeg')) ||
+              (specificTense === 'nonfiniteMixed' && mood === specificMood && (tense === 'ger' || tense === 'part')) ||
+              (mood === specificMood && tense === specificTense)
+            )
+            if (!matchesSpecific) {
+              // Skip this recommendation
+            } else {
+              // Filter forms based on recommendation
+              let candidateForms = allFormsForRegion.filter(f => 
+                f.mood === mood && f.tense === tense
+              )
+              
+              // If specific verb recommended, prioritize it
+              if (verbId) {
+                const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
+                if (specificVerbForms.length > 0) {
+                  candidateForms = specificVerbForms
+                }
+              }
+              
+              if (candidateForms.length > 0) {
+                nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+                selectionMethod = 'adaptive_recommendation'
+                
+                console.log('🤖 Using adaptive recommendation:', {
+                  type: recommendation.type,
+                  mood,
+                  tense,
+                  reason: recommendation.reason
+                })
+              }
             }
-          }
-          
-          if (candidateForms.length > 0) {
-            nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-            selectionMethod = 'adaptive_recommendation'
+          } else {
+            // Mixed practice: free to use recommendation
+            // Filter forms based on recommendation
+            let candidateForms = allFormsForRegion.filter(f => 
+              f.mood === mood && f.tense === tense
+            )
             
-            console.log('🤖 Using adaptive recommendation:', {
-              type: recommendation.type,
-              mood,
-              tense,
-              reason: recommendation.reason
-            })
+            // If specific verb recommended, prioritize it
+            if (verbId) {
+              const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
+              if (specificVerbForms.length > 0) {
+                candidateForms = specificVerbForms
+              }
+            }
+            
+            if (candidateForms.length > 0) {
+              nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+              selectionMethod = 'adaptive_recommendation'
+              
+              console.log('🤖 Using adaptive recommendation:', {
+                type: recommendation.type,
+                mood,
+                tense,
+                reason: recommendation.reason
+              })
+            }
           }
         }
       }
