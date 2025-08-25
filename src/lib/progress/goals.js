@@ -1,7 +1,7 @@
 // Objetivos semanales para el sistema de progreso
 
 import { getMasteryByUser } from './database.js'
-import { getUserSettings, updateUserSettings } from './userManager.js'
+import { getUserSettings } from './userManager.js'
 
 // Configuración de objetivos predeterminados
 const DEFAULT_WEEKLY_GOALS = {
