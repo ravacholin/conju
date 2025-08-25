@@ -450,6 +450,15 @@ export async function getAttemptsByItem(itemId) {
 }
 
 /**
+ * Obtiene intentos por usuario
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object[]>}
+ */
+export async function getAttemptsByUser(userId) {
+  return await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, 'userId', userId)
+}
+
+/**
  * Guarda un mastery score
  * @param {Object} mastery - Datos del mastery
  * @returns {Promise<void>}

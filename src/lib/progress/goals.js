@@ -1,6 +1,6 @@
 // Objetivos semanales para el sistema de progreso
 
-import { getMasteryByUser } from './database.js'
+import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { getUserSettings } from './userManager.js'
 
 // Configuración de objetivos predeterminados
@@ -39,19 +39,27 @@ export async function checkWeeklyProgress(userId) {
   try {
     const goals = await getWeeklyGoals(userId)
     const masteryRecords = await getMasteryByUser(userId)
-    
-    // Calcular progreso
+    const attempts = await getAttemptsByUser(userId)
+
+    // Calcular progreso real de los últimos 7 días
+    const now = Date.now()
+    const weekAgo = now - 7 * 24 * 60 * 60 * 1000
+    const weeklyAttempts = attempts.filter(a => new Date(a.createdAt).getTime() >= weekAgo)
+    const sessionsCompleted = new Set(weeklyAttempts.map(a => new Date(a.createdAt).toDateString())).size
+    const attemptsMade = weeklyAttempts.length
+    const focusTimeMs = weeklyAttempts.reduce((sum, a) => sum + (a.latencyMs || 0), 0)
+    const focusTime = Math.round(focusTimeMs / 60000) // minutos
+
+    // Celdas que superan el umbral de dominio
     const masteredCells = masteryRecords.filter(r => r.score >= goals.MIN_SCORE).length
     const cellsToImprove = Math.max(0, goals.CELLS_TO_IMPROVE - masteredCells)
-    
-    // En una implementación completa, esto calcularía el progreso real
-    // basado en datos de sesiones, intentos y tiempo de enfoque
-    
+
     return {
       cellsToImprove,
-      sessionsCompleted: 3, // Valor de ejemplo
-      attemptsMade: 35, // Valor de ejemplo
-      focusTime: 45, // Valor de ejemplo
+      sessionsCompleted,
+      attemptsMade,
+      focusTime,
+      masteredCells,
       goals
     }
   } catch (error) {
@@ -108,9 +116,13 @@ export async function getRecommendations(userId) {
  */
 export async function setCustomWeeklyGoals(userId, customGoals) {
   try {
-    // En una implementación completa, esto guardaría los objetivos
-    // personalizados para el usuario
-    
+    // Persistir en localStorage via userSettings
+    if (typeof window !== 'undefined') {
+      const raw = window.localStorage.getItem('progress-user-settings')
+      const base = raw ? JSON.parse(raw) : {}
+      const next = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS, ...customGoals } }
+      window.localStorage.setItem('progress-user-settings', JSON.stringify(next))
+    }
     console.log(`✅ Objetivos personalizados establecidos para usuario ${userId}:`, customGoals)
   } catch (error) {
     console.error('Error al establecer objetivos personalizados:', error)
@@ -125,9 +137,12 @@ export async function setCustomWeeklyGoals(userId, customGoals) {
  */
 export async function resetWeeklyGoals(userId) {
   try {
-    // En una implementación completa, esto reiniciaría los objetivos
-    // a los valores predeterminados
-    
+    if (typeof window !== 'undefined') {
+      const raw = window.localStorage.getItem('progress-user-settings')
+      const base = raw ? JSON.parse(raw) : {}
+      const next = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS } }
+      window.localStorage.setItem('progress-user-settings', JSON.stringify(next))
+    }
     console.log(`✅ Objetivos semanales reiniciados para usuario ${userId}`)
   } catch (error) {
     console.error('Error al reiniciar objetivos semanales:', error)

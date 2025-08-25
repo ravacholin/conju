@@ -1,6 +1,8 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
-import { saveAttempt } from './database.js'
+import { saveAttempt, saveMastery, getMasteryByCell, getByIndex } from './database.js'
+import { getOrCreateItem } from './itemManagement.js'
+import { PROGRESS_CONFIG } from './config.js'
 // import { calculateNextInterval, updateSchedule } from './srs.js'
 // import { calculateMasteryForItem } from './mastery.js'
 import { ERROR_TAGS } from './dataModels.js'
@@ -68,12 +70,30 @@ export async function trackAttemptSubmitted(attemptId, result) {
     if (errorTags.length === 0 && !result.correct && !result.isAccentError) {
       errorTags = classifyError(result.userAnswer, result.correctAnswer, result.item)
     }
-    
-    // Crear objeto de intento
+    // Derivar identidad canónica del ítem/celda
+    const lemma = result.item?.lemma || result.item?.form?.lemma || 'unknown_verb'
+    const mood = result.item?.mood || result.item?.form?.mood
+    const tense = result.item?.tense || result.item?.form?.tense
+    const person = result.item?.person || result.item?.form?.person
+    const verbId = result.item?.verbId || lemma
+    // Asegurar que exista un ítem canónico en DB (no bloqueante si falla)
+    let canonicalItemId = `item-${verbId}-${mood}-${tense}-${person}`
+    try {
+      const item = await getOrCreateItem(verbId, mood, tense, person)
+      canonicalItemId = item.id
+    } catch (e) {
+      // Continuar con ID canónico aunque falle la creación
+    }
+
+    // Crear objeto de intento (enriquecido con celda para analíticas reales)
     const attempt = {
       id: attemptId,
       userId: currentSession.userId,
-      itemId: result.itemId || result.item?.id || null,
+      itemId: canonicalItemId,
+      mood,
+      tense,
+      person,
+      verbId,
       correct: result.correct,
       latencyMs: result.latencyMs,
       hintsUsed: result.hintsUsed || 0,
@@ -87,6 +107,42 @@ export async function trackAttemptSubmitted(attemptId, result) {
     await saveAttempt(attempt)
     
     console.log(`✅ Intento registrado: ${attemptId}`, attempt)
+
+    // Recalcular y guardar mastery de la celda basada en intentos reales del usuario
+    try {
+      // Obtener intentos del usuario y filtrar por celda actual
+      const allUserAttempts = await getByIndex('attempts', 'userId', currentSession.userId)
+      const windowMs = 90 * 24 * 60 * 60 * 1000 // 90 días de ventana para recencia
+      const now = Date.now()
+      let weightedCorrect = 0
+      let weightedTotal = 0
+      let weightedN = 0
+      for (const a of allUserAttempts) {
+        if (a.mood === mood && a.tense === tense && a.person === person && a.verbId) {
+          const ageDays = (now - new Date(a.createdAt).getTime()) / (24*60*60*1000)
+          const recencyWeight = Math.exp(-ageDays / PROGRESS_CONFIG.DECAY_TAU)
+          weightedTotal += recencyWeight
+          weightedN += recencyWeight
+          weightedCorrect += recencyWeight * (a.correct ? 1 : 0)
+        }
+      }
+      let score = 50
+      if (weightedTotal > 0) {
+        score = 100 * (weightedCorrect / weightedTotal)
+      }
+      const masteryRecord = {
+        id: `${currentSession.userId}|${mood}|${tense}|${person}`,
+        userId: currentSession.userId,
+        mood,
+        tense,
+        person,
+        score: Math.round(score * 100) / 100,
+        updatedAt: new Date()
+      }
+      await saveMastery(masteryRecord)
+    } catch (e) {
+      console.warn('No se pudo actualizar mastery de la celda:', e)
+    }
   } catch (error) {
     console.error(`❌ Error al registrar intento ${attemptId}:`, error)
     throw error

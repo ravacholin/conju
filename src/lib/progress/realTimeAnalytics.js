@@ -1,6 +1,6 @@
 // Análisis en tiempo real basado en datos reales del usuario
 
-import { getMasteryByUser, getAttemptsByItem } from './database.js'
+import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { getCurrentUserId, getUserSettings } from './userManager.js'
 
 /**
@@ -36,25 +36,16 @@ export async function getRealUserStats(userId) {
     const inProgress = masteryRecords.filter(r => r.score >= 60 && r.score < 80).length
     const struggling = masteryRecords.filter(r => r.score < 60).length
     
-    // Calcular latencias y precisión agregadas
+    // Calcular latencias y precisión agregadas desde intentos reales del usuario
+    const attempts = await getAttemptsByUser(userId)
     let totalLatency = 0
     let totalAttempts = 0
     let correctAttempts = 0
-    let bestStreak = 0
-    
-    for (const record of masteryRecords) {
-      try {
-        const itemId = `${record.verbId}-${record.mood}-${record.tense}`
-        const attempts = await getAttemptsByItem(itemId)
-        
-        for (const attempt of attempts) {
-          totalLatency += attempt.latencyMs || 0
-          totalAttempts++
-          if (attempt.correct) correctAttempts++
-        }
-      } catch (error) {
-        console.warn(`Error procesando intentos para ${record.verbId}:`, error)
-      }
+    let bestStreak = 0 // pendiente: se puede calcular por sesión si se guarda
+    for (const attempt of attempts) {
+      totalLatency += attempt.latencyMs || 0
+      totalAttempts++
+      if (attempt.correct) correctAttempts++
     }
     
     const avgLatency = totalAttempts > 0 ? totalLatency / totalAttempts : 0
@@ -113,25 +104,16 @@ export async function getRealCompetencyRadarData(userId) {
     // Precisión: basado en puntaje promedio de mastery
     const accuracy = Math.round(avgScore)
     
-    // Velocidad: basado en latencias promedio (necesita cálculo de intentos)
+    // Velocidad: basado en latencias promedio de intentos reales del usuario
+    const attempts = await getAttemptsByUser(userId)
     let totalLatency = 0
     let attemptCount = 0
-    
-    for (const record of masteryRecords) {
-      try {
-        const itemId = `${record.verbId}-${record.mood}-${record.tense}`
-        const attempts = await getAttemptsByItem(itemId)
-        
-        attempts.forEach(attempt => {
-          if (attempt.latencyMs) {
-            totalLatency += attempt.latencyMs
-            attemptCount++
-          }
-        })
-      } catch (error) {
-        // Continuar con otros records si hay error
+    attempts.forEach(attempt => {
+      if (attempt.latencyMs) {
+        totalLatency += attempt.latencyMs
+        attemptCount++
       }
-    }
+    })
     
     // Velocidad inversa: menos latencia = mayor velocidad
     const avgLatency = attemptCount > 0 ? totalLatency / attemptCount : 10000
@@ -144,8 +126,8 @@ export async function getRealCompetencyRadarData(userId) {
     const stdDev = Math.sqrt(variance)
     const consistency = Math.round(Math.max(0, 100 - (stdDev * 2))) // Escalar la variabilidad
     
-    // Amplitud léxica: basado en número de verbos únicos
-    const uniqueVerbs = new Set(masteryRecords.map(r => r.verbId)).size
+    // Amplitud léxica: basado en número de verbos únicos practicados en intentos
+    const uniqueVerbs = new Set(attempts.map(a => a.verbId)).size
     const lexicalBreadth = Math.round(Math.min(100, uniqueVerbs * 3)) // Escalar apropiadamente
     
     // Transferencia: analizar rendimiento en diferentes contextos

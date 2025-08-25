@@ -73,6 +73,13 @@ export async function initProgressSystem(userId = null) {
       await initTracking(userId)
       console.log('✅ Tracking inicializado')
       
+      // Inicializar ítems canónicos para analíticas (no bloqueante)
+      try {
+        await initializeItems()
+      } catch (e) {
+        console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', e)
+      }
+      
       // Marcar como inicializado
       isInitialized = true
       currentUserId = userId
