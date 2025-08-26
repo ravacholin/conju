@@ -38,7 +38,7 @@ export const FlowIndicator = ({
     switch (state) {
       case 'deep_flow':
         return {
-          color: '#00ff88',
+          color: 'var(--accent-green)',
           emoji: '🔥',
           label: 'En la Zona',
           description: 'Rendimiento máximo',
@@ -47,7 +47,7 @@ export const FlowIndicator = ({
         }
       case 'light_flow':
         return {
-          color: '#4ade80',
+          color: 'var(--success)',
           emoji: '✨',
           label: 'Buen Ritmo',
           description: 'Flow ligero',
@@ -56,7 +56,7 @@ export const FlowIndicator = ({
         }
       case 'neutral':
         return {
-          color: '#64b5f6',
+          color: 'var(--text-secondary)',
           emoji: '📚',
           label: 'Normal',
           description: 'Aprendizaje constante',
@@ -65,7 +65,7 @@ export const FlowIndicator = ({
         }
       case 'struggling':
         return {
-          color: '#ffb74d',
+          color: 'var(--warning)',
           emoji: '💪',
           label: 'Desafiado',
           description: 'Necesita apoyo',
@@ -74,7 +74,7 @@ export const FlowIndicator = ({
         }
       case 'frustrated':
         return {
-          color: '#ff7043',
+          color: 'var(--error)',
           emoji: '🌱',
           label: 'Recuperación',
           description: 'Tómate tu tiempo',
@@ -83,7 +83,7 @@ export const FlowIndicator = ({
         }
       default:
         return {
-          color: '#9e9e9e',
+          color: 'var(--text-muted)',
           emoji: '⚪',
           label: 'Iniciando',
           description: 'Preparándose...',
@@ -97,19 +97,19 @@ export const FlowIndicator = ({
   const getMomentumConfig = (momentum) => {
     switch (momentum) {
       case 'peak_performance':
-        return { icon: '🚀', label: 'Pico', color: '#ff6b00' }
+        return { icon: '🚀', label: 'Pico', color: 'var(--accent-gold)' }
       case 'confidence_building':
-        return { icon: '📈', label: 'Creciendo', color: '#4caf50' }
+        return { icon: '📈', label: 'Creciendo', color: 'var(--accent-green)' }
       case 'steady_progress':
-        return { icon: '⚡', label: 'Constante', color: '#2196f3' }
+        return { icon: '⚡', label: 'Constante', color: 'var(--accent-blue)' }
       case 'minor_setback':
-        return { icon: '🔄', label: 'Ajustando', color: '#ff9800' }
+        return { icon: '🔄', label: 'Ajustando', color: 'var(--warning)' }
       case 'recovery_mode':
-        return { icon: '💚', label: 'Recuperando', color: '#8bc34a' }
+        return { icon: '💚', label: 'Recuperando', color: 'var(--success)' }
       case 'confidence_crisis':
-        return { icon: '🌱', label: 'Reconstruyendo', color: '#795548' }
+        return { icon: '🌱', label: 'Reconstruyendo', color: 'var(--text-muted)' }
       default:
-        return { icon: '⚪', label: 'Normal', color: '#9e9e9e' }
+        return { icon: '⚪', label: 'Normal', color: 'var(--text-muted)' }
     }
   }
 

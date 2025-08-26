@@ -56,7 +56,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 25px;
-  border: 2px solid var(--flow-color, #64b5f6);
+  border: 2px solid var(--flow-color, var(--border));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -74,7 +74,7 @@
 
 .flow-label {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--background-secondary);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
@@ -204,13 +204,13 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 .state-description {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: #7f8c8d;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -231,7 +231,7 @@
 .section-title {
   font-size: 14px;
   font-weight: 600;
-  color: #34495e;
+  color: var(--text-primary);
 }
 
 /* Momentum */
@@ -251,7 +251,7 @@
 .momentum-label {
   font-size: 14px;
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 /* Métricas */
@@ -270,7 +270,7 @@
 .metric-label {
   font-size: 12px;
   font-weight: 500;
-  color: #7f8c8d;
+  color: var(--text-secondary);
   width: 70px;
   flex-shrink: 0;
 }
@@ -291,21 +291,21 @@
 }
 
 .metric-fill.confidence {
-  background: linear-gradient(90deg, #4ade80, #22c55e);
+  background: linear-gradient(90deg, var(--success), var(--accent-green));
 }
 
 .metric-fill.flow-time {
-  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  background: linear-gradient(90deg, var(--accent-blue), var(--primary));
 }
 
 .metric-fill.consistency {
-  background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+  background: linear-gradient(90deg, var(--accent-purple), var(--secondary));
 }
 
 .metric-value {
   font-size: 12px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
   width: 35px;
   text-align: right;
   flex-shrink: 0;
@@ -322,7 +322,7 @@
 .streak-number {
   font-size: 18px;
   font-weight: 700;
-  color: #e74c3c;
+  color: var(--error);
 }
 
 .streak-icon {
@@ -353,13 +353,13 @@
 
 .stat-label {
   font-size: 12px;
-  color: #7f8c8d;
+  color: var(--text-secondary);
 }
 
 .stat-value {
   font-size: 13px;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 /* Responsividad */
@@ -389,16 +389,16 @@
 }
 
 /* Estados de color específicos */
-.flow-indicator[style*="--flow-color: #00ff88"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 255, 255, 0.95));
+.flow-indicator[style*="--flow-color: var(--accent-green)"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(var(--accent-green-rgb), 0.1), var(--background-elevated));
 }
 
-.flow-indicator[style*="--flow-color: #4ade80"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(255, 255, 255, 0.95));
+.flow-indicator[style*="--flow-color: var(--success)"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1), var(--background-elevated));
 }
 
-.flow-indicator[style*="--flow-color: #ff7043"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(255, 112, 67, 0.1), rgba(255, 255, 255, 0.95));
+.flow-indicator[style*="--flow-color: var(--error)"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(var(--error-rgb), 0.1), var(--background-elevated));
 }
 
 /* Modo oscuro */
@@ -415,13 +415,13 @@
   .section-title,
   .momentum-label,
   .stat-value {
-    color: #e5e7eb;
+    color: var(--text-primary);
   }
   
   .state-description,
   .stat-label,
   .metric-label {
-    color: #9ca3af;
+    color: var(--text-secondary);
   }
   
   .metric-bar {
