@@ -48,7 +48,9 @@ El sistema de progreso y analíticas para el conjugador de español está diseñ
 ```
 src/lib/progress/
 ├── index.js              # Punto de entrada principal
-├── config.js             # Configuración del sistema
+├── config.js             # Configuración centralizada del sistema
+├── logger.js             # Sistema de logging inteligente (dev/prod)
+├── memoryManager.js      # Prevención de memory leaks y cleanup
 ├── dataModels.js         # Modelos de datos y tipos
 ├── database.js           # Manejo de IndexedDB
 ├── mastery.js            # Cálculo de mastery scores
@@ -63,6 +65,11 @@ src/lib/progress/
 ├── uiUtils.js            # Utilidades para la interfaz
 ├── fullInitialization.js  # Inicialización completa
 ├── progressOrchestrator.js # Orquestador (flow, momentum, confianza, temporal)
+├── flowStateDetection.js   # Detección de estados de flujo
+├── momentumTracker.js      # Seguimiento de momentum emocional
+├── confidenceEngine.js     # Motor de análisis de confianza
+├── temporalIntelligence.js # Inteligencia temporal/circadiana
+├── dynamicGoals.js         # Sistema de micro-objetivos dinámicos
 └── all.js                # Exportación de todos los componentes
 
 src/features/progress/
@@ -79,16 +86,21 @@ src/features/drill/
 
 #### Componentes Clave
 
-1. **Modelos de Datos** - Definen la estructura de datos para usuarios, verbos, ítems, intentos, mastery y schedules
-2. **Base de Datos** - Implementa almacenamiento local usando IndexedDB con idb
-3. **Cálculo de Mastery** - Implementa la fórmula de mastery score con recencia, dificultad y penalización por pistas
-4. **Tracking de Eventos** - Registra eventos mínimos como attempt_started, attempt_submitted, session_ended, hint_shown, streak_incremented, tense_drill_started/ended
-5. **Sistema SRS** - Implementa repetición espaciada con intervalos crecientes
-6. **Clasificación de Errores** - Etiqueta errores en 8 categorías específicas
-7. **Vistas Analíticas** - Proporciona componentes de UI para visualizar el progreso
-8. **Modo Docente** - Ofrece funcionalidades para exportar datos y compartir con docentes
-9. **Diagnóstico** - Realiza test adaptativo inicial y recalibración mensual
-10. **Sincronización** - Maneja sincronización con la nube y modo incógnito
+1. **Configuración Centralizada** - `config.js` con configuración unificada bajo `EMOTIONAL_INTELLIGENCE`
+2. **Sistema de Logging Inteligente** - `logger.js` con logging condicional por ambiente (dev/prod)
+3. **Gestión de Memoria** - `memoryManager.js` previene memory leaks con cleanup de intervals
+4. **Modelos de Datos** - Definen la estructura de datos para usuarios, verbos, ítems, intentos, mastery y schedules
+5. **Base de Datos** - Implementa almacenamiento local usando IndexedDB con idb
+6. **Cálculo de Mastery** - Implementa la fórmula de mastery score con recencia, dificultad y penalización por pistas
+7. **Tracking de Eventos** - Registra eventos mínimos como attempt_started, attempt_submitted, session_ended, hint_shown, streak_incremented, tense_drill_started/ended
+8. **Sistema SRS** - Implementa repetición espaciada con intervalos crecientes
+9. **Clasificación de Errores** - Etiqueta errores en 8 categorías específicas
+10. **Inteligencia Emocional** - Suite completa: flow detection, momentum tracking, confidence engine, temporal intelligence, dynamic goals
+11. **Vistas Analíticas** - Proporciona componentes de UI para visualizar el progreso
+12. **Modo Docente** - Ofrece funcionalidades para exportar datos y compartir con docentes
+13. **Diagnóstico** - Realiza test adaptativo inicial y recalibración mensual
+14. **Sincronización** - Maneja sincronización con la nube y modo incógnito
+15. **API Unificada** - Debugging consistente bajo `window.SpanishConjugator.*`
 
 ---
 
