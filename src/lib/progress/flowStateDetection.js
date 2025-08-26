@@ -1,37 +1,23 @@
 // Sistema de Detección de Estados de Flow y Momentum
 // Algoritmo inteligente para detectar cuándo el usuario está "en la zona"
 
+import { PROGRESS_CONFIG } from './config.js'
+import { logger, logFlow, logError, logWarn } from './logger.js'
+import { memoryManager } from './memoryManager.js'
+
 /**
  * Estados posibles de flow del usuario
  */
 export const FLOW_STATES = {
-  DEEP_FLOW: 'deep_flow',           // En la zona profunda - máxima productividad
-  LIGHT_FLOW: 'light_flow',         // Flow ligero - buen ritmo
-  NEUTRAL: 'neutral',               // Estado neutral - aprendizaje normal  
-  STRUGGLING: 'struggling',         // Luchando - necesita apoyo
-  FRUSTRATED: 'frustrated'          // Frustrado - necesita recovery
+  DEEP_FLOW: 'deep_flow',     // En la zona profunda - máxima productividad
+  LIGHT_FLOW: 'light_flow',   // Flow ligero - buen ritmo
+  NEUTRAL: 'neutral',         // Estado neutral - aprendizaje normal  
+  STRUGGLING: 'struggling',   // Luchando - necesita apoyo
+  FRUSTRATED: 'frustrated'    // Frustrado - necesita recovery
 }
 
-/**
- * Thresholds para detección de flow
- */
-const FLOW_THRESHOLDS = {
-  // Velocidad de respuesta (ms)
-  FAST_RESPONSE: 3000,      // Respuestas rápidas indican confianza
-  SLOW_RESPONSE: 8000,      // Respuestas lentas indican vacilación
-  
-  // Accuracy patterns
-  HIGH_ACCURACY: 0.85,      // 85%+ accuracy indica dominio
-  LOW_ACCURACY: 0.60,       // <60% accuracy indica dificultad
-  
-  // Streaks para momentum
-  FLOW_STREAK: 5,           // 5 respuestas correctas rápidas = flow
-  STRUGGLE_STREAK: 3,       // 3 errores o respuestas lentas = struggle
-  
-  // Consistency patterns
-  VELOCITY_CONSISTENCY: 0.3, // Variación en velocidad <30% = consistent
-  ACCURACY_CONSISTENCY: 0.2  // Variación en accuracy <20% = consistent
-}
+// Usar configuración centralizada
+const FLOW_CONFIG = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.FLOW
 
 /**
  * Motor de Detección de Estados de Flow
@@ -115,8 +101,8 @@ export class FlowStateDetector {
       timestamp: now,
       responseTime: response.responseTime || (now - (response.startTime || now)),
       isCorrect: response.correct,
-      isFast: response.responseTime < FLOW_THRESHOLDS.FAST_RESPONSE,
-      isSlow: response.responseTime > FLOW_THRESHOLDS.SLOW_RESPONSE,
+      isFast: response.responseTime < FLOW_CONFIG.FAST_RESPONSE,
+      isSlow: response.responseTime > FLOW_CONFIG.SLOW_RESPONSE,
       confidence: this.calculateConfidence(response),
       complexity: this.estimateComplexity(response)
     }
@@ -128,10 +114,10 @@ export class FlowStateDetector {
   calculateConfidence(response) {
     const responseTime = response.responseTime || 5000
     
-    if (responseTime < FLOW_THRESHOLDS.FAST_RESPONSE) {
-      return response.correct ? 0.9 : 0.3 // Rápido correcto = muy confiado, rápido incorrecto = impulsivo
-    } else if (responseTime > FLOW_THRESHOLDS.SLOW_RESPONSE) {
-      return response.correct ? 0.6 : 0.2 // Lento correcto = poco confiado, lento incorrecto = confundido
+    if (responseTime < FLOW_CONFIG.FAST_RESPONSE) {
+      return response.correct ? 0.9 : 0.3
+    } else if (responseTime > FLOW_CONFIG.SLOW_RESPONSE) {
+      return response.correct ? 0.6 : 0.2
     } else {
       return response.correct ? 0.7 : 0.4 // Tiempo normal
     }
@@ -207,10 +193,10 @@ export class FlowStateDetector {
     
     // DEEP FLOW: Alto rendimiento consistente
     if (
-      recentAccuracy >= FLOW_THRESHOLDS.HIGH_ACCURACY && 
-      recentAvgResponseTime <= FLOW_THRESHOLDS.FAST_RESPONSE * 1.2 &&
-      velocityVariation < FLOW_THRESHOLDS.VELOCITY_CONSISTENCY &&
-      this.streakCounter.correct >= FLOW_THRESHOLDS.FLOW_STREAK
+      recentAccuracy >= FLOW_CONFIG.HIGH_ACCURACY && 
+      recentAvgResponseTime <= FLOW_CONFIG.FAST_RESPONSE * 1.2 &&
+      velocityVariation < FLOW_CONFIG.VELOCITY_CONSISTENCY &&
+      this.streakCounter.correct >= FLOW_CONFIG.FLOW_STREAK
     ) {
       return FLOW_STATES.DEEP_FLOW
     }
@@ -218,7 +204,7 @@ export class FlowStateDetector {
     // LIGHT FLOW: Buen rendimiento con alguna inconsistencia
     if (
       recentAccuracy >= 0.75 &&
-      recentAvgResponseTime <= FLOW_THRESHOLDS.FAST_RESPONSE * 1.5 &&
+      recentAvgResponseTime <= FLOW_CONFIG.FAST_RESPONSE * 1.5 &&
       recentAvgConfidence > 0.6 &&
       this.streakCounter.correct >= 3
     ) {
@@ -227,9 +213,9 @@ export class FlowStateDetector {
     
     // FRUSTRATED: Múltiples errores o respuestas muy lentas
     if (
-      recentAccuracy < FLOW_THRESHOLDS.LOW_ACCURACY ||
-      this.streakCounter.errors >= FLOW_THRESHOLDS.STRUGGLE_STREAK ||
-      veryRecent.filter(r => r.responseTime > FLOW_THRESHOLDS.SLOW_RESPONSE * 1.5).length >= 3
+      recentAccuracy < FLOW_CONFIG.LOW_ACCURACY ||
+      this.streakCounter.errors >= FLOW_CONFIG.STRUGGLE_STREAK ||
+      veryRecent.filter(r => r.responseTime > FLOW_CONFIG.SLOW_RESPONSE * 1.5).length >= 3
     ) {
       return FLOW_STATES.FRUSTRATED
     }
@@ -237,8 +223,8 @@ export class FlowStateDetector {
     // STRUGGLING: Bajo rendimiento pero no completamente frustrado
     if (
       recentAccuracy < 0.70 ||
-      recentAvgResponseTime > FLOW_THRESHOLDS.SLOW_RESPONSE ||
-      this.streakCounter.slow >= FLOW_THRESHOLDS.STRUGGLE_STREAK
+      recentAvgResponseTime > FLOW_CONFIG.SLOW_RESPONSE ||
+      this.streakCounter.slow >= FLOW_CONFIG.STRUGGLE_STREAK
     ) {
       return FLOW_STATES.STRUGGLING
     }
@@ -287,7 +273,7 @@ export class FlowStateDetector {
           if (!r.isCorrect || r.isSlow || r.confidence < 0.4) supportCount++
           break
         case FLOW_STATES.STRUGGLING:
-          if (!r.isCorrect || r.responseTime > FLOW_THRESHOLDS.SLOW_RESPONSE) supportCount++
+          if (!r.isCorrect || r.responseTime > FLOW_CONFIG.SLOW_RESPONSE) supportCount++
           break
       }
     })
@@ -329,7 +315,7 @@ export class FlowStateDetector {
       this.flowMetrics.recoveryCount++
     }
     
-    console.log(`🌊 Flow State Changed: ${previousState} → ${newState}`)
+    logFlow('Cambio de estado', `${previousState} → ${newState}`)
   }
 
   /**
@@ -489,7 +475,7 @@ export const flowDetector = new FlowStateDetector()
  */
 export function initializeFlowDetection() {
   flowDetector.reset()
-  console.log('🌊 Flow State Detection initialized')
+  logger.systemInit('Flow State Detection')
   return flowDetector
 }
 
@@ -509,9 +495,15 @@ export function getFlowRecommendations() {
   return flowDetector.getStateRecommendations()
 }
 
-// Browser console integration
+// Registrar sistema para cleanup
+memoryManager.registerSystem('FlowDetector', () => {
+  flowDetector.reset()
+})
+
+// Debugging unificado en navegador
 if (typeof window !== 'undefined') {
-  window.flowDetector = {
+  window.SpanishConjugator = window.SpanishConjugator || {}
+  window.SpanishConjugator.FlowDetector = {
     getState: () => flowDetector.getCurrentState(),
     getMetrics: () => flowDetector.getFlowMetrics(),
     getRecommendations: () => flowDetector.getStateRecommendations(),
@@ -519,14 +511,5 @@ if (typeof window !== 'undefined') {
     reset: () => flowDetector.reset()
   }
   
-  console.log(`
-🌊 Flow State Detection Available!
-
-Browser console commands:
-  window.flowDetector.getState()          // Current flow state
-  window.flowDetector.getMetrics()        // Flow metrics and analytics  
-  window.flowDetector.getRecommendations() // Current recommendations
-  window.flowDetector.getDetailedState()  // Detailed debugging info
-  window.flowDetector.reset()             // Reset for new session
-`)
+  logger.systemInit('Flow Detector Debug Interface')
 }

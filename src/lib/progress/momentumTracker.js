@@ -598,7 +598,7 @@ export class MomentumTracker {
     this.currentMomentum = newMomentum
     this.lastMomentumChange = now
     
-    console.log(`📈 Momentum Changed: ${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
+    logMomentum('Cambio de momentum', `${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
   }
 
   /**
@@ -767,7 +767,7 @@ export const momentumTracker = new MomentumTracker()
 // Utility functions
 export function initializeMomentumTracking() {
   momentumTracker.reset()
-  console.log('📈 Momentum Tracking initialized')
+  logger.systemInit('Momentum Tracker')
   return momentumTracker
 }
 
@@ -789,7 +789,8 @@ export function getMomentumRecommendations() {
 
 // Browser console integration
 if (typeof window !== 'undefined') {
-  window.momentumTracker = {
+  window.SpanishConjugator = window.SpanishConjugator || {}
+  window.SpanishConjugator.MomentumTracker = {
     getMomentum: () => momentumTracker.currentMomentum,
     getMetrics: () => momentumTracker.getMomentumMetrics(),
     getRecommendations: () => momentumTracker.getMomentumRecommendations(),
@@ -797,14 +798,5 @@ if (typeof window !== 'undefined') {
     reset: () => momentumTracker.reset()
   }
   
-  console.log(`
-📈 Momentum Tracking Available!
-
-Browser console commands:
-  window.momentumTracker.getMomentum()          // Current momentum type
-  window.momentumTracker.getMetrics()           // Detailed momentum metrics
-  window.momentumTracker.getRecommendations()   // Momentum-based recommendations  
-  window.momentumTracker.getInsights()          // Learning insights
-  window.momentumTracker.reset()                // Reset for new session
-`)
+  logger.systemInit('Momentum Tracker Debug Interface')
 }

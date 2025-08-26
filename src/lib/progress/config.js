@@ -62,6 +62,105 @@ export const PROGRESS_CONFIG = {
       DEFAULT_ATTEMPTS: 50,
       DEFAULT_FOCUS_TIME: 60 // minutos
     }
+  },
+  
+  // Configuración de Inteligencia Emocional
+  EMOTIONAL_INTELLIGENCE: {
+    // Flow State Detection Thresholds
+    FLOW: {
+      FAST_RESPONSE: 3000,        // ms - Respuestas rápidas indican confianza
+      SLOW_RESPONSE: 8000,        // ms - Respuestas lentas indican vacilación
+      HIGH_ACCURACY: 0.85,        // 85%+ accuracy indica dominio
+      LOW_ACCURACY: 0.60,         // <60% accuracy indica dificultad
+      FLOW_STREAK: 5,             // 5 respuestas correctas rápidas = flow
+      STRUGGLE_STREAK: 3,         // 3 errores o respuestas lentas = struggle
+      VELOCITY_CONSISTENCY: 0.3,  // Variación en velocidad <30% = consistent
+      ACCURACY_CONSISTENCY: 0.2   // Variación en accuracy <20% = consistent
+    },
+    
+    // Momentum Tracking Configuration
+    MOMENTUM: {
+      FACTORS: {
+        ACCURACY: 0.30,           // 30% - Correctness matters
+        RESPONSE_TIME: 0.25,      // 25% - Speed indicates confidence  
+        CONSISTENCY: 0.20,        // 20% - Consistency builds momentum
+        DIFFICULTY_PROGRESS: 0.15, // 15% - Handling harder content
+        RECOVERY_RATE: 0.10       // 10% - Bouncing back from errors
+      },
+      THRESHOLDS: {
+        PEAK_PERFORMANCE: 0.85,      // 85%+ momentum score
+        CONFIDENCE_BUILDING: 0.70,   // 70-84% momentum score
+        STEADY_PROGRESS: 0.55,       // 55-69% momentum score
+        MINOR_SETBACK: 0.40,        // 40-54% momentum score
+        RECOVERY_MODE: 0.25,         // 25-39% momentum score
+        CONFIDENCE_CRISIS: 0.25      // <25% momentum score
+      }
+    },
+    
+    // Confidence Engine Configuration
+    CONFIDENCE: {
+      THRESHOLDS: {
+        HESITANT: 0.3,
+        UNCERTAIN: 0.5,
+        CONFIDENT: 0.7,
+        OVERCONFIDENT: 0.9
+      },
+      SPEED_FACTORS: {
+        OPTIMAL_MIN: 2000,        // ms - Tiempo óptimo mínimo
+        OPTIMAL_MAX: 4000,        // ms - Tiempo óptimo máximo
+        FAST_THRESHOLD: 1000,     // ms - Muy rápido (posible adivinanza)
+        SLOW_THRESHOLD: 6000      // ms - Muy lento (vacilación)
+      }
+    },
+    
+    // Temporal Intelligence Configuration  
+    TEMPORAL: {
+      CIRCADIAN: {
+        PEAK_DETECTION_MIN_SESSIONS: 2,  // Mínimo sesiones para detectar pico
+        OPTIMAL_SESSION_DEFAULT: 20,     // minutos - Duración por defecto
+        FATIGUE_RECOVERY_RATE: 0.1,      // por minuto
+        COGNITIVE_LOAD_THRESHOLD: 0.8     // Umbral de sobrecarga
+      },
+      POST_LUNCH_DIP_START: 13,         // hora
+      POST_LUNCH_DIP_END: 15,           // hora  
+      NIGHT_FATIGUE_START: 22,          // hora
+      MORNING_PEAK_START: 9,            // hora
+      MORNING_PEAK_END: 11              // hora
+    },
+    
+    // Dynamic Goals Configuration
+    GOALS: {
+      ACTIVE_GOALS_MIN: 3,
+      ACTIVE_GOALS_MAX: 5,
+      CACHE_EXPIRY: 5 * 60 * 1000,     // 5 minutos
+      GOAL_TYPES: {
+        ACCURACY: { DEFAULT_POINTS: 100, MIN_ATTEMPTS: 10 },
+        SPEED: { DEFAULT_POINTS: 150, MIN_ATTEMPTS: 15 },
+        STREAK: { DEFAULT_POINTS: 200, MIN_TARGET: 10 },
+        EXPLORATION: { DEFAULT_POINTS: 100, TIME_LIMIT: 7 * 24 * 60 * 60 * 1000 },
+        MASTERY: { DEFAULT_POINTS: 500, MIN_ACCURACY: 0.95, MIN_ATTEMPTS: 20 },
+        SESSION: { DEFAULT_POINTS: 150, DEFAULT_DURATION: 20 * 60 * 1000 }
+      }
+    }
+  },
+  
+  // Configuración de Logging
+  LOGGING: {
+    ENABLED: typeof process !== 'undefined' && process.env?.NODE_ENV === 'development',
+    LEVELS: {
+      ERROR: 0,
+      WARN: 1, 
+      INFO: 2,
+      DEBUG: 3
+    },
+    DEFAULT_LEVEL: 2 // INFO
+  },
+  
+  // Configuración de Auto-save
+  AUTO_SAVE: {
+    CONFIDENCE_ENGINE: 30000,    // 30 segundos
+    TEMPORAL_INTELLIGENCE: 60000, // 60 segundos  
+    DYNAMIC_GOALS: 120000        // 120 segundos
   }
 }
 

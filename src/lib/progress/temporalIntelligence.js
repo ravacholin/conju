@@ -1,29 +1,30 @@
 // Sistema de Inteligencia Temporal y Circadiana
 // Optimiza el aprendizaje basado en patrones temporales y ritmos biológicos
 
+import { PROGRESS_CONFIG } from './config.js'
+import { logger, logTemporal, logError, logWarn } from './logger.js'
+import { memoryManager, registerInterval } from './memoryManager.js'
+
 /**
  * Inteligencia Temporal para Optimización del Aprendizaje
- * - Análisis de patrones de rendimiento por hora del día
- * - Detección de ventanas óptimas de aprendizaje
- * - Adaptación de dificultad según fatiga cognitiva
- * - Recomendaciones de timing para diferentes tipos de práctica
  */
-class TemporalIntelligence {
+export class TemporalIntelligence {
   constructor() {
     this.timeSlots = new Map() // hour -> performance data
     this.sessionPatterns = []
+    const temporalConfig = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.TEMPORAL
     this.circadianProfile = {
-      peakHours: [], // Horas de mejor rendimiento
-      lowHours: [], // Horas de menor rendimiento
-      optimalSessionLength: 20, // minutos
+      peakHours: [],
+      lowHours: [],
+      optimalSessionLength: temporalConfig.CIRCADIAN.OPTIMAL_SESSION_DEFAULT,
       fatigueTolerance: 0.7,
-      learningRhythm: 'neutral' // morning_person, night_owl, consistent
+      learningRhythm: 'neutral'
     }
     this.cognitiveLoad = {
       current: 0.5,
       history: [],
-      threshold: 0.8,
-      recoveryRate: 0.1 // por minuto
+      threshold: temporalConfig.CIRCADIAN.COGNITIVE_LOAD_THRESHOLD,
+      recoveryRate: temporalConfig.CIRCADIAN.FATIGUE_RECOVERY_RATE
     }
     this.init()
   }
@@ -257,7 +258,8 @@ class TemporalIntelligence {
       .filter(([_, stats]) => stats.sessions.length >= 2) // Al menos 2 sesiones
       .sort((a, b) => b[1].avgPerformance - a[1].avgPerformance)
 
-    if (sortedHours.length >= 4) {
+    const minSessions = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.TEMPORAL.CIRCADIAN.PEAK_DETECTION_MIN_SESSIONS
+    if (sortedHours.length >= minSessions * 2) {
       this.circadianProfile.peakHours = sortedHours.slice(0, 2).map(([hour, _]) => hour)
       this.circadianProfile.lowHours = sortedHours.slice(-2).map(([hour, _]) => hour)
     }
@@ -334,11 +336,18 @@ class TemporalIntelligence {
     const now = Date.now()
     const hour = new Date(now).getHours()
 
-    // Fatiga base según hora del día (curva circadiana típica)
+    // Fatiga base según hora del día usando configuración
+    const temporalConfig = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.TEMPORAL
     let baseFatigue = 0.3
-    if (hour >= 13 && hour <= 15) baseFatigue = 0.6 // Post-lunch dip
-    if (hour >= 22 || hour <= 6) baseFatigue = 0.7 // Night hours
-    if (hour >= 9 && hour <= 11) baseFatigue = 0.2 // Morning peak
+    if (hour >= temporalConfig.POST_LUNCH_DIP_START && hour <= temporalConfig.POST_LUNCH_DIP_END) {
+      baseFatigue = 0.6
+    }
+    if (hour >= temporalConfig.NIGHT_FATIGUE_START || hour <= 6) {
+      baseFatigue = 0.7
+    }
+    if (hour >= temporalConfig.MORNING_PEAK_START && hour <= temporalConfig.MORNING_PEAK_END) {
+      baseFatigue = 0.2
+    }
 
     // Ajustar según patrón personal
     const slot = this.timeSlots.get(hour)
@@ -655,21 +664,31 @@ export const getCurrentTemporalState = () => {
   return temporalIntelligence.getCurrentTemporalStats()
 }
 
-// Guardar datos cada minuto
+// Configurar auto-save con memory management
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    temporalIntelligence.saveTemporalData()
-  }, 60000)
+  registerInterval(
+    'TemporalIntelligence',
+    () => temporalIntelligence.saveTemporalData(),
+    PROGRESS_CONFIG.AUTO_SAVE.TEMPORAL_INTELLIGENCE,
+    'Auto-save temporal data'
+  )
 }
 
-// Testing/Debug en navegador
+// Registrar sistema para cleanup
+memoryManager.registerSystem('TemporalIntelligence', () => {
+  temporalIntelligence.reset()
+})
+
+// Debugging unificado en navegador
 if (typeof window !== 'undefined') {
-  window.TemporalIntelligence = {
-    engine: temporalIntelligence,
-    processSession: processSessionForTempo,
+  window.SpanishConjugator = window.SpanishConjugator || {}
+  window.SpanishConjugator.TemporalIntelligence = {
     getState: getCurrentTemporalState,
+    processSession: processSessionForTempo,
     reset: () => temporalIntelligence.reset()
   }
+  
+  logger.systemInit('Temporal Intelligence Debug Interface')
 }
 
 export default temporalIntelligence

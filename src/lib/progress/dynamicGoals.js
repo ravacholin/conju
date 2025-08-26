@@ -1,14 +1,14 @@
 // Sistema de Micro-objetivos Dinámicos
 // Genera y adapta objetivos granulares basados en el progreso del usuario
 
+import { PROGRESS_CONFIG } from './config.js'
+import { logger, logGoals, logError, logWarn } from './logger.js'
+import { memoryManager, registerInterval } from './memoryManager.js'
+
 /**
  * Sistema de Micro-objetivos que se adapta dinámicamente
- * - Objetivos granulares (por verbo, tiempo, persona)
- * - Evolución automática de dificultad
- * - Reconocimiento de logros específicos
- * - Gamificación inteligente
  */
-class DynamicGoalsSystem {
+export class DynamicGoalsSystem {
   constructor() {
     this.activeGoals = new Map() // goalId -> goal data
     this.completedGoals = []
@@ -179,8 +179,8 @@ class DynamicGoalsSystem {
    * Genera objetivos iniciales basado en el perfil del usuario
    */
   generateInitialGoals() {
-    // Siempre tener 3-5 objetivos activos
-    while (this.activeGoals.size < 4) {
+    const { ACTIVE_GOALS_MIN } = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.GOALS
+    while (this.activeGoals.size < ACTIVE_GOALS_MIN + 1) {
       const goal = this.generateGoal()
       if (goal) {
         this.activeGoals.set(goal.id, goal)
@@ -325,50 +325,23 @@ class DynamicGoalsSystem {
    * Inicializa el progreso según el tipo de objetivo
    */
   initializeProgress(goalType) {
+    const goalConfig = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.GOALS.GOAL_TYPES
+    
     switch (goalType) {
       case 'accuracy':
-        return {
-          attempts: 0,
-          correct: 0,
-          currentAccuracy: 0
-        }
+        return { attempts: 0, correct: 0, currentAccuracy: 0 }
       case 'speed':
-        return {
-          fastResponses: 0,
-          totalResponses: 0,
-          averageTime: 0
-        }
+        return { fastResponses: 0, totalResponses: 0, averageTime: 0 }
       case 'streak':
-        return {
-          currentStreak: 0,
-          bestStreak: 0
-        }
+        return { currentStreak: 0, bestStreak: 0 }
       case 'exploration':
-        return {
-          uniqueVerbs: new Set(),
-          totalVerbs: 0
-        }
+        return { uniqueVerbs: new Set(), totalVerbs: 0 }
       case 'mastery':
-        return {
-          attempts: 0,
-          correct: 0,
-          recentAccuracy: [],
-          variance: 0
-        }
+        return { attempts: 0, correct: 0, recentAccuracy: [], variance: 0 }
       case 'recovery':
-        return {
-          startingAccuracy: 0,
-          currentAccuracy: 0,
-          attempts: 0,
-          improving: false
-        }
+        return { startingAccuracy: 0, currentAccuracy: 0, attempts: 0, improving: false }
       case 'session':
-        return {
-          sessionStart: null,
-          sessionDuration: 0,
-          sessionAccuracy: 0,
-          sessionAttempts: 0
-        }
+        return { sessionStart: null, sessionDuration: 0, sessionAccuracy: 0, sessionAttempts: 0 }
       default:
         return {}
     }
@@ -787,13 +760,26 @@ class DynamicGoalsSystem {
    * Mantiene el pool de objetivos activos
    */
   maintainGoalPool() {
-    // Generar nuevos objetivos para mantener 3-5 activos
-    while (this.activeGoals.size < 4) {
+    const { ACTIVE_GOALS_MIN, ACTIVE_GOALS_MAX } = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.GOALS
+    
+    // Generar nuevos objetivos para mantener el mínimo
+    while (this.activeGoals.size < ACTIVE_GOALS_MIN + 1) {
       const context = this.buildCurrentContext()
       const newGoal = this.generateGoal(context)
       if (newGoal) {
         this.activeGoals.set(newGoal.id, newGoal)
       }
+    }
+    
+    // Remover exceso si hay demasiados
+    if (this.activeGoals.size > ACTIVE_GOALS_MAX) {
+      const oldestGoals = Array.from(this.activeGoals.entries())
+        .sort((a, b) => a[1].createdAt - b[1].createdAt)
+        .slice(0, this.activeGoals.size - ACTIVE_GOALS_MAX)
+      
+      oldestGoals.forEach(([goalId]) => {
+        this.activeGoals.delete(goalId)
+      })
     }
 
     // Remover objetivos expirados
@@ -1002,21 +988,31 @@ export const getCurrentGoalsState = () => {
   return dynamicGoalsSystem.getCurrentGoalsState()
 }
 
-// Guardar datos cada 2 minutos
+// Configurar auto-save con memory management
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    dynamicGoalsSystem.saveGoalsData()
-  }, 120000)
+  registerInterval(
+    'DynamicGoals',
+    () => dynamicGoalsSystem.saveGoalsData(),
+    PROGRESS_CONFIG.AUTO_SAVE.DYNAMIC_GOALS,
+    'Auto-save goals data'
+  )
 }
 
-// Testing/Debug en navegador
+// Registrar sistema para cleanup
+memoryManager.registerSystem('DynamicGoals', () => {
+  dynamicGoalsSystem.reset()
+})
+
+// Debugging unificado en navegador
 if (typeof window !== 'undefined') {
-  window.DynamicGoals = {
-    system: dynamicGoalsSystem,
-    processResponse: processResponseForGoals,
+  window.SpanishConjugator = window.SpanishConjugator || {}
+  window.SpanishConjugator.DynamicGoals = {
     getState: getCurrentGoalsState,
+    processResponse: processResponseForGoals,
     reset: () => dynamicGoalsSystem.reset()
   }
+  
+  logger.systemInit('Dynamic Goals Debug Interface')
 }
 
 export default dynamicGoalsSystem

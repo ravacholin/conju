@@ -77,6 +77,13 @@ export function chooseNext({forms, history, currentItem}){
       selectedFamily, currentBlock: !!currentBlock,
       formsCount: forms.length
     })
+    
+    // CRITICAL DEBUG: Show specific practice settings
+    if (practiceMode === 'specific') {
+      console.log('🚨 SPECIFIC PRACTICE DEBUG - Settings:', {
+        practiceMode, specificMood, specificTense
+      })
+    }
   }
   
   // CRITICAL DEBUG: Special focus on B1 level filtering
@@ -333,7 +340,14 @@ export function chooseNext({forms, history, currentItem}){
     
     // Specific practice filtering
     if(practiceMode === 'specific') {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 SPECIFIC FILTER - Checking form:', `${f.lemma}-${f.mood}-${f.tense}`, 'against settings:', { specificMood, specificTense })
+      }
+      
       if(specificMood && f.mood !== specificMood) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🚫 SPECIFIC FILTER - Mood mismatch:', f.mood, '!==', specificMood)
+        }
         return false
       }
       
@@ -367,6 +381,9 @@ export function chooseNext({forms, history, currentItem}){
             }
           }
         } else if(f.tense !== specificTense) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🚫 SPECIFIC FILTER - Tense mismatch:', f.tense, '!==', specificTense)
+          }
           return false
         }
       }

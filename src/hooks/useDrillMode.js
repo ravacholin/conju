@@ -23,11 +23,22 @@ export function useDrillMode() {
     console.log('🎯 GENERATE NEXT ITEM - Starting with settings:', {
       verbType: settings.verbType,
       selectedFamily: settings.selectedFamily,
+      practiceMode: settings.practiceMode,
       specificMood: settings.specificMood,
       specificTense: settings.specificTense,
       level: settings.level,
       itemToExclude: itemToExclude?.lemma
     })
+    
+    // CRITICAL DEBUG: For specific practice mode
+    if (settings.practiceMode === 'specific') {
+      console.log('🚨 DRILL MODE SPECIFIC PRACTICE - Full settings check:', {
+        practiceMode: settings.practiceMode,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense,
+        hasValidConfig: !!(settings.specificMood && settings.specificTense)
+      })
+    }
     
     // LEVEL-AWARE DEBUG: Show level prioritization for debugging
     if (settings.level && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
@@ -208,6 +219,18 @@ export function useDrillMode() {
       tense: nextForm.tense,
       person: nextForm.person
     } : null)
+    
+    // CRITICAL DEBUG: Show if the returned form matches specific settings
+    if (settings.practiceMode === 'specific' && nextForm) {
+      console.log('🚨 FINAL FORM CHECK - Does it match specific practice?', {
+        returnedMood: nextForm.mood,
+        expectedMood: settings.specificMood,
+        moodMatches: nextForm.mood === settings.specificMood,
+        returnedTense: nextForm.tense,
+        expectedTense: settings.specificTense,
+        tenseMatches: nextForm.tense === settings.specificTense
+      })
+    }
     
     if (nextForm && nextForm.mood && nextForm.tense) {
       // Force a new object to ensure React detects the change

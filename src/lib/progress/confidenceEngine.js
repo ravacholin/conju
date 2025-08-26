@@ -1,14 +1,14 @@
 // Motor de Confianza y Auto-eficacia
 // Analiza patrones de respuesta para construir perfiles de confianza granulares
 
+import { PROGRESS_CONFIG } from './config.js'
+import { logger, logConfidence, logError, logWarn } from './logger.js'
+import { memoryManager, registerInterval } from './memoryManager.js'
+
 /**
  * Sistema de análisis de confianza basado en múltiples dimensiones
- * - Velocidad de respuesta vs. precisión
- * - Patterns de corrección (primera vs. segunda oportunidad)
- * - Consistencia temporal por categorías
- * - Auto-eficacia percibida vs. rendimiento real
  */
-class ConfidenceEngine {
+export class ConfidenceEngine {
   constructor() {
     this.confidenceProfiles = new Map() // verb/tense/mood -> confidence data
     this.responsePatterns = []
@@ -18,12 +18,7 @@ class ConfidenceEngine {
       trends: [],
       calibration: 0.5 // qué tan bien calibrada está la confianza percibida vs. real
     }
-    this.confidenceThresholds = {
-      hesitant: 0.3,
-      uncertain: 0.5,
-      confident: 0.7,
-      overconfident: 0.9
-    }
+    this.confidenceThresholds = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.CONFIDENCE.THRESHOLDS
     this.init()
   }
 
@@ -192,11 +187,14 @@ class ConfidenceEngine {
    * Calcula factor de confianza basado en velocidad
    */
   calculateSpeedConfidenceFactor(avgTime) {
-    // Curva óptima: ~2-4 segundos es ideal
-    if (avgTime >= 2000 && avgTime <= 4000) return 1.0
-    if (avgTime >= 1000 && avgTime <= 6000) return 0.8
-    if (avgTime < 1000) return 0.4 // Muy rápido puede indicar adivinanza
-    if (avgTime > 6000) return Math.max(0.2, 1.0 - (avgTime - 6000) / 10000)
+    const { OPTIMAL_MIN, OPTIMAL_MAX, FAST_THRESHOLD, SLOW_THRESHOLD } = 
+      PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.CONFIDENCE.SPEED_FACTORS
+    
+    // Curva óptima basada en configuración
+    if (avgTime >= OPTIMAL_MIN && avgTime <= OPTIMAL_MAX) return 1.0
+    if (avgTime >= FAST_THRESHOLD && avgTime <= SLOW_THRESHOLD) return 0.8
+    if (avgTime < FAST_THRESHOLD) return 0.4 // Muy rápido puede indicar adivinanza
+    if (avgTime > SLOW_THRESHOLD) return Math.max(0.2, 1.0 - (avgTime - SLOW_THRESHOLD) / 10000)
     return 0.3
   }
 
@@ -598,21 +596,31 @@ export const getCurrentConfidenceState = () => {
   return confidenceEngine.getCurrentConfidenceState()
 }
 
-// Guardar datos cada 30 segundos
+// Configurar auto-save con memory management
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    confidenceEngine.saveConfidenceData()
-  }, 30000)
+  registerInterval(
+    'ConfidenceEngine',
+    () => confidenceEngine.saveConfidenceData(),
+    PROGRESS_CONFIG.AUTO_SAVE.CONFIDENCE_ENGINE,
+    'Auto-save confidence data'
+  )
 }
 
-// Testing/Debug en navegador
+// Registrar sistema para cleanup
+memoryManager.registerSystem('ConfidenceEngine', () => {
+  confidenceEngine.reset()
+})
+
+// Debugging unificado en navegador
 if (typeof window !== 'undefined') {
-  window.ConfidenceEngine = {
-    engine: confidenceEngine,
-    processResponse: processResponseForConfidence,
+  window.SpanishConjugator = window.SpanishConjugator || {}
+  window.SpanishConjugator.ConfidenceEngine = {
     getState: getCurrentConfidenceState,
+    processResponse: processResponseForConfidence,
     reset: () => confidenceEngine.reset()
   }
+  
+  logger.systemInit('Confidence Engine Debug Interface')
 }
 
 export default confidenceEngine

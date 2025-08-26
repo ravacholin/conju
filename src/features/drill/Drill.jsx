@@ -841,6 +841,26 @@ export default function Drill({
           {getContextText()}
         </div>
       )}
+      
+      {/* DEBUG: Show specific practice settings vs actual */}
+      {!isReverse && !isDouble && settings.practiceMode === 'specific' && currentItem && (
+        <div style={{ 
+          fontSize: '0.8rem', 
+          color: '#666', 
+          margin: '5px 0',
+          padding: '5px 10px',
+          backgroundColor: '#f0f8ff',
+          border: '1px solid #cce7ff',
+          borderRadius: '5px'
+        }}>
+          <strong>Práctica específica:</strong> {getMoodLabel(settings.specificMood)} → {getTenseLabel(settings.specificTense)}
+          <br />
+          <strong>Ejercicio actual:</strong> {getMoodLabel(currentItem.mood)} → {getTenseLabel(currentItem.tense)}
+          {(settings.specificMood !== currentItem.mood || settings.specificTense !== currentItem.tense) && (
+            <span style={{ color: '#d63384', fontWeight: 'bold' }}> ❌ MISMATCH!</span>
+          )}
+        </div>
+      )}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}
       {!isReverse && !isDouble && currentItem.mood !== 'nonfinite' && (
