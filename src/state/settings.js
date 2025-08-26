@@ -19,16 +19,18 @@ const useSettings = create(
     (set, get) => ({
       // Configuración de usuario
       level: 'A1',
-      useVoseo: true,
+      // Variante: no se fija por defecto. Se define en Onboarding.
+      useVoseo: false,
       useTuteo: false,
       useVosotros: false,
-      region: 'rioplatense', // por defecto rioplatense
+      region: null,
       
       // Modo de práctica
       practiceMode: 'mixed',
       specificMood: null,
       specificTense: null,
-      practicePronoun: 'all', // 'tu_only', 'vos_only', 'both', 'all'
+      // Se definirá al elegir variante; sin valor inicial
+      practicePronoun: null,
       verbType: 'all', // 'all', 'regular', 'irregular'
       selectedFamily: null,
       

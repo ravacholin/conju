@@ -55,7 +55,9 @@ export function CompetencyRadar({ data }) {
    * Dibuja la rejilla polar
    */
   function drawPolarGrid(ctx, centerX, centerY, radius, numAxes) {
-    ctx.strokeStyle = '#e0e0e0'
+    const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
+    const gridColor = styles?.getPropertyValue('--border-2')?.trim() || 'rgba(245,245,245,0.12)'
+    ctx.strokeStyle = gridColor
     ctx.lineWidth = 1
 
     // Dibujar círculos concéntricos
@@ -83,7 +85,9 @@ export function CompetencyRadar({ data }) {
    * Dibuja los ejes con etiquetas
    */
   function drawAxes(ctx, centerX, centerY, radius, axes) {
-    ctx.fillStyle = '#333'
+    const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
+    const textColor = styles?.getPropertyValue('--muted')?.trim() || '#cccccc'
+    ctx.fillStyle = textColor
     ctx.font = '12px Arial'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
@@ -102,9 +106,19 @@ export function CompetencyRadar({ data }) {
    */
   function drawUserData(ctx, centerX, centerY, radius, axes, userData) {
     if (!userData) return
-
-    ctx.strokeStyle = '#007bff'
-    ctx.fillStyle = 'rgba(0, 123, 255, 0.2)'
+    const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
+    const accentBlue = styles?.getPropertyValue('--accent-blue')?.trim() || '#8eb4e3'
+    // Helper: hex to rgba with alpha
+    const hexToRgba = (hex, a = 0.2) => {
+      const m = hex.replace('#','')
+      const bigint = parseInt(m.length===3 ? m.split('').map(c=>c+c).join('') : m, 16)
+      const r = (bigint >> 16) & 255
+      const g = (bigint >> 8) & 255
+      const b = bigint & 255
+      return `rgba(${r}, ${g}, ${b}, ${a})`
+    }
+    ctx.strokeStyle = accentBlue
+    ctx.fillStyle = hexToRgba(accentBlue, 0.20)
     ctx.lineWidth = 2
 
     ctx.beginPath()
@@ -133,7 +147,9 @@ export function CompetencyRadar({ data }) {
    * Dibuja la leyenda
    */
   function drawLegend(ctx, width, height, axes) {
-    ctx.fillStyle = '#333'
+    const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
+    const textColor = styles?.getPropertyValue('--muted')?.trim() || '#cccccc'
+    ctx.fillStyle = textColor
     ctx.font = '14px Arial'
     ctx.textAlign = 'left'
     ctx.textBaseline = 'middle'

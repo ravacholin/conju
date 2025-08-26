@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(10px);
   border-radius: 25px;
   border: 2px solid var(--flow-color, var(--border));
@@ -104,14 +104,14 @@
   right: -8px;
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(10px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  border: 2px solid var(--background-secondary);
+  border: 2px solid var(--border-2);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
@@ -140,12 +140,12 @@
   right: 0;
   margin-top: 12px;
   width: 320px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(15px);
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(245, 245, 245, 0.08);
   animation: panel-slide-in 0.3s ease-out;
   z-index: 1001;
 }
@@ -240,7 +240,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
 }
 
@@ -388,18 +388,7 @@
   }
 }
 
-/* Estados de color específicos */
-.flow-indicator[style*="--flow-color: var(--accent-green)"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(var(--accent-green-rgb), 0.1), var(--background-elevated));
-}
-
-.flow-indicator[style*="--flow-color: var(--success)"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1), var(--background-elevated));
-}
-
-.flow-indicator[style*="--flow-color: var(--error)"] .flow-indicator-main {
-  background: linear-gradient(135deg, rgba(var(--error-rgb), 0.1), var(--background-elevated));
-}
+/* Estados de color: el color solo afecta borde y glow (no fondo) para tema oscuro */
 
 /* Modo oscuro */
 @media (prefers-color-scheme: dark) {
@@ -410,19 +399,19 @@
     border-color: rgba(255, 255, 255, 0.1);
   }
   
-  .flow-label,
-  .state-title,
-  .section-title,
-  .momentum-label,
-  .stat-value {
-    color: var(--text-primary);
-  }
+.flow-label,
+.state-title,
+.section-title,
+.momentum-label,
+.stat-value {
+  color: var(--text);
+}
   
-  .state-description,
-  .stat-label,
-  .metric-label {
-    color: var(--text-secondary);
-  }
+.state-description,
+.stat-label,
+.metric-label {
+  color: var(--muted);
+}
   
   .metric-bar {
     background: rgba(255, 255, 255, 0.1);

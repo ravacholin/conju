@@ -139,8 +139,9 @@ export const FlowIndicator = ({
       <div 
         className={`flow-indicator-main ${stateConfig.pulse ? 'pulse' : ''} ${stateConfig.glow ? 'glow' : ''}`}
         style={{ 
-          backgroundColor: stateConfig.color,
-          boxShadow: stateConfig.glow ? `0 0 20px ${stateConfig.color}40` : 'none'
+          // Fondo neutro oscuro; el color de estado se aplica al borde vía --flow-color
+          backgroundColor: 'rgba(17, 17, 17, 0.92)',
+          boxShadow: stateConfig.glow ? `0 0 16px ${stateConfig.color}35` : 'none'
         }}
       >
         <span className="flow-emoji">{stateConfig.emoji}</span>
@@ -153,7 +154,7 @@ export const FlowIndicator = ({
       {momentum && size !== 'minimal' && (
         <div 
           className="momentum-indicator"
-          style={{ backgroundColor: momentumConfig.color }}
+          style={{ borderColor: momentumConfig.color, color: momentumConfig.color }}
         >
           <span className="momentum-icon">{momentumConfig.icon}</span>
         </div>
