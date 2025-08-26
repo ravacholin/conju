@@ -8,6 +8,8 @@ import MasteryIndicator from './MasteryIndicator.jsx'
 import SessionStats from './SessionStats.jsx'
 import FeedbackNotification from './FeedbackNotification.jsx'
 import './progress-feedback.css'
+import { FlowIndicator } from '../progress/FlowIndicator.jsx'
+import orchestrator from '../../lib/progress/progressOrchestrator.js'
 import { verbs } from '../../data/verbs.js'
 
 export default function Drill({ 
@@ -38,6 +40,9 @@ export default function Drill({
   const [urgentTick, setUrgentTick] = useState(false)
   const [sessionStartTime] = useState(Date.now())
   const [feedbackNotification, setFeedbackNotification] = useState(null)
+  const [flowState, setFlowState] = useState('neutral')
+  const [momentumType, setMomentumType] = useState('steady_progress')
+  const [emoMetrics, setEmoMetrics] = useState({})
 
   const inputRef = useRef(null)
   const firstRef = useRef(null)
@@ -52,6 +57,21 @@ export default function Drill({
   
   // Hook para tracking de progreso
   const { handleResult, handleHintShown, handleStreakIncremented } = useProgressTracking(currentItem, onResult)
+
+  // Suscribirse a actualizaciones del orquestador emocional para UI
+  useEffect(() => {
+    const update = (e) => {
+      const st = e?.detail || orchestrator.getOrchestratorState?.() || {}
+      setFlowState(st.flowState || 'neutral')
+      setMomentumType(st.momentumType || 'steady_progress')
+      setEmoMetrics(st.metrics || {})
+    }
+    // Inicial
+    try { update({ detail: orchestrator.getOrchestratorState?.() }) } catch {}
+    // Eventos
+    window.addEventListener('progress-emo-update', update)
+    return () => window.removeEventListener('progress-emo-update', update)
+  }, [])
 
   // Reset input when currentItem changes
   useEffect(() => {
@@ -808,6 +828,8 @@ export default function Drill({
 
   return (
     <div className="drill-container" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {/* Indicador de Flow/Momentum */}
+      <FlowIndicator flowState={flowState} momentum={momentumType} metrics={emoMetrics} position="top-right" size="normal" />
       {/* Verb lemma (infinitive) - TOP */}
       <div className="verb-lemma">
         {isReverse ? currentItem.form?.value : currentItem?.lemma}

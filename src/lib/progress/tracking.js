@@ -6,6 +6,8 @@ import { PROGRESS_CONFIG } from './config.js'
 // import { calculateNextInterval, updateSchedule } from './srs.js'
 // import { calculateMasteryForItem } from './mastery.js'
 import { ERROR_TAGS } from './dataModels.js'
+import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
+import { updateSchedule } from './srs.js'
 
 // Estado del tracking
 let currentSession = null
@@ -85,8 +87,8 @@ export async function trackAttemptSubmitted(attemptId, result) {
       // Continuar con ID canónico aunque falle la creación
     }
 
-    // Crear objeto de intento (enriquecido con celda para analíticas reales)
-    const attempt = {
+    // Datos básicos comunes
+    const baseAttempt = {
       id: attemptId,
       userId: currentSession.userId,
       sessionId: currentSession.id,
@@ -103,11 +105,42 @@ export async function trackAttemptSubmitted(attemptId, result) {
       correctAnswer: result.correctAnswer ?? null,
       createdAt: new Date()
     }
+
+    // Ejecutar orquestador emocional y adjuntar al intento antes de guardar
+    let orchestrated = null
+    try {
+      orchestrated = processAttemptOrchestrated({
+        correct: baseAttempt.correct,
+        latencyMs: baseAttempt.latencyMs,
+        hintsUsed: baseAttempt.hintsUsed,
+        item: { mood, tense, person, verbId, lemma: result.item?.lemma || result.item?.form?.lemma },
+        errorTags
+      })
+    } catch (e) {
+      orchestrated = null
+    }
+
+    // Crear objeto de intento (enriquecido con analíticas emocionales)
+    const attempt = {
+      ...baseAttempt,
+      flowState: orchestrated?.flowState,
+      momentumType: orchestrated?.momentumType,
+      momentumScore: orchestrated?.momentumScore,
+      confidenceOverall: orchestrated?.confidenceOverall,
+      confidenceCategory: orchestrated?.confidenceCategory
+    }
     
     // Guardar intento en la base de datos
     await saveAttempt(attempt)
     
     console.log(`✅ Intento registrado: ${attemptId}`, attempt)
+
+    // Actualizar SRS para la celda practicada
+    try {
+      await updateSchedule(currentSession.userId, { mood, tense, person }, attempt.correct, attempt.hintsUsed)
+    } catch (e) {
+      console.warn('No se pudo actualizar SRS:', e)
+    }
 
     // Recalcular y guardar mastery de la celda basada en intentos reales del usuario
     try {

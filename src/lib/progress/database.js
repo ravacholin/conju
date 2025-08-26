@@ -669,7 +669,9 @@ export async function closeDB() {
 export async function deleteDB() {
   try {
     await closeDB()
-    await deleteDB(STORAGE_CONFIG.DB_NAME)
+    // Importar deleteDB de idb con alias para evitar sombra
+    const { deleteDB: idbDeleteDB } = await import('idb')
+    await idbDeleteDB(STORAGE_CONFIG.DB_NAME)
     console.log('🗑️ Base de datos eliminada')
   } catch (error) {
     console.error('❌ Error al eliminar la base de datos:', error)

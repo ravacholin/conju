@@ -62,6 +62,7 @@ src/lib/progress/
 ├── utils.js              # Utilidades generales
 ├── uiUtils.js            # Utilidades para la interfaz
 ├── fullInitialization.js  # Inicialización completa
+├── progressOrchestrator.js # Orquestador (flow, momentum, confianza, temporal)
 └── all.js                # Exportación de todos los componentes
 
 src/features/progress/
