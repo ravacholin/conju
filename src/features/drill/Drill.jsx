@@ -842,61 +842,7 @@ export default function Drill({
         </div>
       )}
       
-      {/* 🚨 SPECIFIC PRACTICE VALIDATION PANEL */}
-      {!isReverse && !isDouble && settings.practiceMode === 'specific' && currentItem && (
-        <div style={{ 
-          fontSize: '0.75rem', 
-          margin: '8px 0',
-          padding: '10px 12px',
-          background: (settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
-            ? 'var(--success)' : 'var(--error)',
-          border: (settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
-            ? '1px solid var(--success-border)' : '1px solid var(--error-border)',
-          borderRadius: '8px',
-          fontFamily: 'Inter, monospace'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
-            {(settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
-              ? '✅ ' : '❌ '}
-            <strong style={{ color: 'var(--text)', fontSize: '0.7rem', letterSpacing: '0.5px' }}>
-              CONTROL DE PRÁCTICA ESPECÍFICA
-            </strong>
-          </div>
-          
-          <div style={{ marginLeft: '16px', color: 'var(--muted)' }}>
-            <div><strong>Seleccionado:</strong> {getMoodLabel(settings.specificMood)} → {getTenseLabel(settings.specificTense)}</div>
-            <div><strong>Recibido:</strong> {getMoodLabel(currentItem.mood)} → {getTenseLabel(currentItem.tense)}</div>
-            
-            {(settings.specificMood !== currentItem.mood || settings.specificTense !== currentItem.tense) && (
-              <div style={{ 
-                color: 'var(--accent-red)', 
-                fontWeight: '600', 
-                marginTop: '6px',
-                padding: '6px 10px',
-                background: 'rgba(255, 159, 122, 0.08)',
-                border: '1px solid rgba(255, 159, 122, 0.15)',
-                borderRadius: '6px',
-                fontSize: '0.7rem'
-              }}>
-                🚨 ALGORITMO ANULANDO SELECCIÓN DEL USUARIO
-                <br />
-                <span style={{ opacity: '0.8' }}>Verifica la consola para logs detallados</span>
-              </div>
-            )}
-            
-            {(settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) && (
-              <div style={{ 
-                color: 'var(--accent-green)', 
-                fontWeight: '600', 
-                marginTop: '6px',
-                fontSize: '0.7rem'
-              }}>
-                ✅ Control del usuario respetado
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Debug panel for specific practice was removed to avoid redundant/obtrusive UI */}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}
       {!isReverse && !isDouble && currentItem.mood !== 'nonfinite' && (
