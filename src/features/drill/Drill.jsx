@@ -58,6 +58,32 @@ export default function Drill({
   // Hook para tracking de progreso
   const { handleResult, handleHintShown, handleStreakIncremented } = useProgressTracking(currentItem, onResult)
 
+  // Ensure target comes from dataset for exact person/mood/tense to avoid mismatches
+  const getCanonicalTarget = (item) => {
+    try {
+      if (!item?.lemma || !item?.mood || !item?.tense || !item?.person) return item?.form
+      const verb = verbs.find(v => v.lemma === item.lemma)
+      if (!verb) return item?.form
+      for (const paradigm of verb.paradigms || []) {
+        for (const f of paradigm.forms || []) {
+          if (f.mood === item.mood && f.tense === item.tense && f.person === item.person) {
+            return {
+              value: f.value,
+              lemma: item.lemma,
+              mood: item.mood,
+              tense: item.tense,
+              person: item.person,
+              alt: f.alt || [],
+              accepts: f.accepts || {}
+            }
+          }
+        }
+      }
+    } catch {}
+    // Fallback
+    return item?.form
+  }
+
   // Suscribirse a actualizaciones del orquestador emocional para UI
   useEffect(() => {
     const update = (e) => {
@@ -143,14 +169,15 @@ export default function Drill({
       // Debug only for problematic cases
       // console.log('🔍 DRILL DEBUG - Grading attempt:', {input: input.trim(), form: currentItem.form})
       
-      const gradeResult = grade(input.trim(), currentItem.form, currentItem.settings || {})
+      const canonicalForm = getCanonicalTarget(currentItem)
+      const gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {})
       
       // Clasificar errores para tracking
       let errorTags = []
       if (!gradeResult.correct && !gradeResult.isAccentError) {
         try {
           const userAnswer = input.trim()
-          const correctAnswer = currentItem?.form?.value || (gradeResult.targets?.[0] ?? '')
+          const correctAnswer = canonicalForm?.value || currentItem?.form?.value || (gradeResult.targets?.[0] ?? '')
           errorTags = classifyError(userAnswer, correctAnswer, currentItem)
         } catch (e) {
           console.error('Error clasificando el error:', e)
@@ -164,7 +191,7 @@ export default function Drill({
         hintsUsed: hint ? 1 : 0, // Si se mostró pista, contar como usada
         errorTags,
         userAnswer: input.trim(),
-        correctAnswer: currentItem?.form?.value || (gradeResult.targets?.[0] ?? null)
+        correctAnswer: canonicalForm?.value || currentItem?.form?.value || (gradeResult.targets?.[0] ?? null)
       }
       
       // Debug only for problematic cases
@@ -248,15 +275,17 @@ export default function Drill({
     if (!input.trim() || !secondInput.trim() || isSubmitting) return
     setIsSubmitting(true)
     try {
-      const firstRes = grade(input.trim(), currentItem.form, currentItem.settings || {})
+      const canonicalFirst = getCanonicalTarget(currentItem) || currentItem.form
+      const firstRes = grade(input.trim(), canonicalFirst, currentItem.settings || {})
       // Use explicit second target from secondForm if present, otherwise fall back to same as first
-      const secondTarget = currentItem.secondForm ? { ...currentItem.secondForm } : { ...currentItem.form }
-      const secondRes = grade(secondInput.trim(), secondTarget, currentItem.settings || {})
+      const rawSecond = currentItem.secondForm ? { ...currentItem.secondForm } : { ...currentItem.form }
+      const canonicalSecond = getCanonicalTarget({ ...currentItem, form: rawSecond, mood: rawSecond.mood, tense: rawSecond.tense, person: rawSecond.person }) || rawSecond
+      const secondRes = grade(secondInput.trim(), canonicalSecond, currentItem.settings || {})
       const correct = firstRes.correct && secondRes.correct
       const resultObj = {
         correct,
         isAccentError: firstRes.isAccentError || secondRes.isAccentError,
-        targets: [currentItem.form.value, secondTarget.value],
+        targets: [canonicalFirst?.value || currentItem.form.value, canonicalSecond?.value || rawSecond.value],
         note: !correct ? (firstRes.note || secondRes.note || '❌ Forma incorrecta. Revisa la conjugación y los acentos.') : null,
         accepted: correct ? `${firstRes.accepted || ''} / ${secondRes.accepted || ''}`.trim() : null,
         hintsUsed: hint ? 1 : 0, // Si se mostró pista, contar como usada
