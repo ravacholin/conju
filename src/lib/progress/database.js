@@ -459,6 +459,36 @@ export async function getAttemptsByUser(userId) {
 }
 
 /**
+ * Obtiene intentos recientes por usuario
+ * @param {string} userId - ID del usuario
+ * @param {number} limit - Número máximo de intentos
+ * @returns {Promise<Object[]>}
+ */
+export async function getRecentAttempts(userId, limit = 100) {
+  try {
+    const db = await initDB()
+    const tx = db.transaction(STORAGE_CONFIG.STORES.ATTEMPTS, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+    const index = store.index('createdAt')
+    
+    // Obtener todos los intentos ordenados por fecha
+    const allAttempts = await index.getAll()
+    
+    // Filtrar por usuario y ordenar por fecha descendente
+    const userAttempts = allAttempts
+      .filter(a => a.userId === userId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, limit)
+    
+    await tx.done
+    return userAttempts
+  } catch (error) {
+    console.error('❌ Error al obtener intentos recientes:', error)
+    return []
+  }
+}
+
+/**
  * Guarda un mastery score
  * @param {Object} mastery - Datos del mastery
  * @returns {Promise<void>}
