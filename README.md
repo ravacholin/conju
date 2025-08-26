@@ -35,9 +35,13 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
   - Alinear referencias a `useProgressTracking` y actualizar guías rápidas.
 
 ## Uso rápido (desarrollo)
-- Indicador de estado: visible en Drill (esquina superior derecha) vía `FlowIndicator`.
-- Evento UI: orquestador emite `progress-emo-update` con `{ flowState, momentumType, metrics }`.
-- Tracking: `features/drill/useProgressTracking.js` → `lib/progress/tracking.js` (persiste intento, actualiza SRS, recalcula mastery).
+- **Indicador de estado**: visible en Drill (esquina superior derecha) vía `FlowIndicator`.
+- **Evento UI**: orquestador emite `progress-emo-update` con `{ flowState, momentumType, metrics }`.
+- **Tracking**: `features/drill/useProgressTracking.js` → `lib/progress/tracking.js` (persiste intento, actualiza SRS, recalcula mastery).
+- **Debugging**: 
+  - Panel visual en práctica específica muestra configuración vs ejercicio actual
+  - Console logs detallados para filtrado de formas verbales
+  - API unificada: `window.SpanishConjugator.{FlowDetector, MomentumTracker, ConfidenceEngine, etc.}`
 
 ## Contribución
 - Issues: descripción, pasos para reproducir, logs relevantes.
@@ -47,4 +51,9 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
-- 2025-08-26: Integrado orquestador emocional, indicador UI y cableado SRS post‑intento. Arreglo `database.deleteDB()` (usa `idb.deleteDB`).
+- 2025-08-26 (Tarde): 
+  - **Housekeeping completo**: Centralizó configuración, agregó sistema de logging inteligente, prevención de memory leaks
+  - **API unificada**: Estandarizó debugging bajo `window.SpanishConjugator.*`
+  - **Bug fix crítico**: Corrigió selección de tiempos verbales en práctica específica
+  - **Debugging mejorado**: Panel visual para validar configuración vs ejercicio actual
+- 2025-08-26 (Mañana): Integrado orquestador emocional, indicador UI y cableado SRS post‑intento. Arreglo `database.deleteDB()` (usa `idb.deleteDB`).
