@@ -842,23 +842,50 @@ export default function Drill({
         </div>
       )}
       
-      {/* DEBUG: Show specific practice settings vs actual */}
+      {/* 🚨 SPECIFIC PRACTICE VALIDATION PANEL */}
       {!isReverse && !isDouble && settings.practiceMode === 'specific' && currentItem && (
         <div style={{ 
           fontSize: '0.8rem', 
-          color: '#666', 
-          margin: '5px 0',
-          padding: '5px 10px',
-          backgroundColor: '#f0f8ff',
-          border: '1px solid #cce7ff',
-          borderRadius: '5px'
+          margin: '8px 0',
+          padding: '8px 12px',
+          backgroundColor: (settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
+            ? '#d1edff' : '#ffe6e6',
+          border: (settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
+            ? '2px solid #0066cc' : '2px solid #cc0000',
+          borderRadius: '8px',
+          fontFamily: 'monospace'
         }}>
-          <strong>Práctica específica:</strong> {getMoodLabel(settings.specificMood)} → {getTenseLabel(settings.specificTense)}
-          <br />
-          <strong>Ejercicio actual:</strong> {getMoodLabel(currentItem.mood)} → {getTenseLabel(currentItem.tense)}
-          {(settings.specificMood !== currentItem.mood || settings.specificTense !== currentItem.tense) && (
-            <span style={{ color: '#d63384', fontWeight: 'bold' }}> ❌ MISMATCH!</span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+            {(settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) 
+              ? '✅ ' : '❌ '}
+            <strong>CONTROL DE PRÁCTICA ESPECÍFICA</strong>
+          </div>
+          
+          <div style={{ marginLeft: '20px' }}>
+            <div><strong>Seleccionado:</strong> {getMoodLabel(settings.specificMood)} → {getTenseLabel(settings.specificTense)}</div>
+            <div><strong>Recibido:</strong> {getMoodLabel(currentItem.mood)} → {getTenseLabel(currentItem.tense)}</div>
+            
+            {(settings.specificMood !== currentItem.mood || settings.specificTense !== currentItem.tense) && (
+              <div style={{ 
+                color: '#cc0000', 
+                fontWeight: 'bold', 
+                marginTop: '4px',
+                padding: '4px 8px',
+                backgroundColor: '#fff',
+                borderRadius: '4px'
+              }}>
+                🚨 ALGORITMO ANULANDO SELECCIÓN DEL USUARIO
+                <br />
+                <small>Verifica la consola para logs detallados</small>
+              </div>
+            )}
+            
+            {(settings.specificMood === currentItem.mood && settings.specificTense === currentItem.tense) && (
+              <div style={{ color: '#0066cc', fontWeight: 'bold', marginTop: '4px' }}>
+                ✅ Control del usuario respetado
+              </div>
+            )}
+          </div>
         </div>
       )}
 

@@ -41,7 +41,7 @@ export function useDrillMode() {
     }
     
     // LEVEL-AWARE DEBUG: Show level prioritization for debugging
-    if (settings.level && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+    if (settings.level && import.meta.env?.DEV) {
       try {
         debugLevelPrioritization(settings.level)
       } catch (e) {
@@ -49,19 +49,53 @@ export function useDrillMode() {
       }
     }
     
-    // Multi-tier selection: SRS > Adaptive Recommendations > Level-Aware Standard Generator
+    // 🚨 USER-FIRST LOGIC: Specific practice has ABSOLUTE PRIORITY
     let nextForm = null
     let selectionMethod = 'standard'
     
+    // Define variables in outer scope to avoid scope issues
+    const userId = getCurrentUserId()
+    const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
+    const specificMood = isSpecific ? settings.specificMood : null
+    const specificTense = isSpecific ? settings.specificTense : null
+    
+    // 🎯 CRITICAL: For specific practice, filter forms FIRST, then apply algorithms
+    let eligibleForms = allFormsForRegion
+    
     try {
-      const userId = getCurrentUserId()
-      const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
-      const specificMood = isSpecific ? settings.specificMood : null
-      const specificTense = isSpecific ? settings.specificTense : null
+      
+      if (isSpecific) {
+        console.log('🚨 SPECIFIC PRACTICE - User selection:', { specificMood, specificTense })
+        
+        // STEP 1: Filter forms to ONLY those matching user selection
+        eligibleForms = allFormsForRegion.filter(f => {
+          // Handle mixed tenses
+          if (specificTense === 'impMixed') {
+            return f.mood === specificMood && (f.tense === 'impAff' || f.tense === 'impNeg')
+          }
+          if (specificTense === 'nonfiniteMixed') {
+            return f.mood === specificMood && (f.tense === 'ger' || f.tense === 'part')
+          }
+          // Standard specific filtering
+          return f.mood === specificMood && f.tense === specificTense
+        })
+        
+        console.log('🚨 SPECIFIC PRACTICE - Filtered forms:', {
+          total: allFormsForRegion.length,
+          eligible: eligibleForms.length,
+          sample: eligibleForms.slice(0, 3).map(f => `${f.lemma}-${f.mood}-${f.tense}`)
+        })
+        
+        // CRITICAL VALIDATION: Ensure we have eligible forms
+        if (eligibleForms.length === 0) {
+          console.error('❌ CRITICAL: No forms found for specific practice:', { specificMood, specificTense })
+          throw new Error(`No forms available for ${specificMood} ${specificTense}. Check your configuration.`)
+        }
+      }
 
-      // Tier 1: SRS due cells (highest priority)
+      // Tier 1: SRS due cells (now working within eligible forms)
       let dueCells = userId ? await getDueItems(userId, new Date()) : []
-      // Respect topic selection: constrain SRS to current mood/tense when in specific mode
+      // Filter due cells by the same specific practice constraints (if any)
       if (isSpecific) {
         dueCells = dueCells.filter(dc => {
           if (!dc) return false
@@ -76,13 +110,22 @@ export function useDrillMode() {
       }
       const pickFromDue = dueCells.find(Boolean)
       if (pickFromDue) {
-        const candidateForms = allFormsForRegion.filter(f =>
+        // CRITICAL: Use eligibleForms instead of allFormsForRegion
+        const candidateForms = eligibleForms.filter(f =>
           f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
         )
         if (candidateForms.length > 0) {
           nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
           selectionMethod = 'srs_due'
           console.log('📅 SRS Due item selected:', `${nextForm.mood}/${nextForm.tense}`)
+          
+          if (isSpecific) {
+            console.log('🚨 SRS VALIDATION - Selected form matches specific practice:', {
+              selected: `${nextForm.mood}/${nextForm.tense}`,
+              expected: `${specificMood}/${specificTense}`,
+              matches: nextForm.mood === specificMood && nextForm.tense === specificTense
+            })
+          }
         }
       }
       
@@ -105,54 +148,32 @@ export function useDrillMode() {
               userLevel: settings.level
             })
             
-            // If practicing a specific topic, ignore recommendations that don't match
-            if (isSpecific) {
-              // Map mixed tenses for comparison
-              const matchesSpecific = (
-                (specificTense === 'impMixed' && mood === specificMood && (tense === 'impAff' || tense === 'impNeg')) ||
-                (specificTense === 'nonfiniteMixed' && mood === specificMood && (tense === 'ger' || tense === 'part')) ||
-                (mood === specificMood && tense === specificTense)
-              )
-              if (!matchesSpecific) {
-                console.log('❌ Adaptive recommendation skipped (doesn\'t match specific practice)')
-              } else {
-                // Filter forms based on recommendation
-                let candidateForms = allFormsForRegion.filter(f => 
-                  f.mood === mood && f.tense === tense
-                )
-                
-                // If specific verb recommended, prioritize it
-                if (verbId) {
-                  const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
-                  if (specificVerbForms.length > 0) {
-                    candidateForms = specificVerbForms
-                  }
-                }
-                
-                if (candidateForms.length > 0) {
-                  nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-                  selectionMethod = 'adaptive_recommendation'
-                }
+            // SIMPLIFIED: Work only within eligibleForms (already filtered for specific practice)
+            let candidateForms = eligibleForms.filter(f => 
+              f.mood === mood && f.tense === tense
+            )
+            
+            // If specific verb recommended, prioritize it
+            if (verbId) {
+              const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
+              if (specificVerbForms.length > 0) {
+                candidateForms = specificVerbForms
               }
-            } else {
-              // Mixed practice: free to use recommendation
-              // Filter forms based on recommendation
-              let candidateForms = allFormsForRegion.filter(f => 
-                f.mood === mood && f.tense === tense
-              )
+            }
+            
+            if (candidateForms.length > 0) {
+              nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+              selectionMethod = 'adaptive_recommendation'
               
-              // If specific verb recommended, prioritize it
-              if (verbId) {
-                const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
-                if (specificVerbForms.length > 0) {
-                  candidateForms = specificVerbForms
-                }
+              if (isSpecific) {
+                console.log('🚨 ADAPTIVE VALIDATION - Selected form matches specific practice:', {
+                  selected: `${nextForm.mood}/${nextForm.tense}`,
+                  expected: `${specificMood}/${specificTense}`,
+                  matches: nextForm.mood === specificMood && nextForm.tense === specificTense
+                })
               }
-              
-              if (candidateForms.length > 0) {
-                nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-                selectionMethod = 'adaptive_recommendation'
-              }
+            } else if (isSpecific) {
+              console.log('❌ Adaptive recommendation has no eligible forms for specific practice')
             }
           } else {
             console.log('🤖 No adaptive recommendation available')
@@ -165,19 +186,25 @@ export function useDrillMode() {
       console.warn('Advanced selection failed; falling back to standard generator', e)
     }
 
-    // Tier 3: Level-Aware Standard generator (enhanced fallback)
+    // Tier 3: Standard generator (now working within eligible forms)
     if (!nextForm) {
-      nextForm = chooseNext({ forms: allFormsForRegion, history, currentItem: itemToExclude })
-      selectionMethod = 'level_aware_standard'
-      console.log('🎯 Level-aware standard selection applied')
+      nextForm = chooseNext({ forms: eligibleForms, history, currentItem: itemToExclude })
+      selectionMethod = 'standard_generator'
+      console.log('🎯 Standard generator applied to eligible forms:', eligibleForms.length)
+      
+      if (isSpecific && nextForm) {
+        console.log('🚨 STANDARD VALIDATION - Selected form matches specific practice:', {
+          selected: `${nextForm.mood}/${nextForm.tense}`,
+          expected: `${specificMood}/${specificTense}`,
+          matches: nextForm.mood === specificMood && nextForm.tense === specificTense
+        })
+      }
     }
     
-    // Integrity guards: never let progress system override Specific mode or Variant
-    const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
-    const specificMood = isSpecific ? settings.specificMood : null
-    const specificTense = isSpecific ? settings.specificTense : null
+    // 🚨 STRENGTHENED INTEGRITY GUARDS: Final validation
     const region = settings.region
     const pronounMode = settings.practicePronoun
+    
     const allowsPerson = (person) => {
       if (pronounMode === 'all') return true
       if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
@@ -185,17 +212,31 @@ export function useDrillMode() {
       if (region === 'peninsular') return person !== '2s_vos'
       return true
     }
+    
     const matchesSpecific = (form) => {
       if (!isSpecific) return true
       if (specificTense === 'impMixed') return form.mood === specificMood && (form.tense === 'impAff' || form.tense === 'impNeg')
       if (specificTense === 'nonfiniteMixed') return form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
       return form.mood === specificMood && form.tense === specificTense
     }
+    
+    // CRITICAL VALIDATION: This should NEVER trigger if our logic is correct
     if (nextForm && (!matchesSpecific(nextForm) || !allowsPerson(nextForm.person))) {
-      const compliant = allFormsForRegion.filter(f => matchesSpecific(f) && allowsPerson(f.person))
+      console.error('🚨 INTEGRITY GUARD TRIGGERED - Algorithm produced invalid form!', {
+        selected: nextForm ? `${nextForm.mood}/${nextForm.tense}/${nextForm.person}` : 'null',
+        expected: isSpecific ? `${specificMood}/${specificTense}` : 'any',
+        method: selectionMethod
+      })
+      
+      // Use eligibleForms instead of allFormsForRegion for consistency
+      const compliant = eligibleForms.filter(f => matchesSpecific(f) && allowsPerson(f.person))
       if (compliant.length > 0) {
         nextForm = compliant[Math.floor(Math.random() * compliant.length)]
-        selectionMethod += '+guarded'
+        selectionMethod += '+emergency_guard'
+        console.log('✅ Emergency guard fixed the selection:', `${nextForm.mood}/${nextForm.tense}`)
+      } else {
+        console.error('❌ CRITICAL FAILURE: No compliant forms available!')
+        throw new Error(`Critical failure: No forms available for ${specificMood || 'mixed'} practice`)
       }
     }
 
@@ -616,7 +657,7 @@ export function useDrillMode() {
   }
 
   const debugCurrentLevelPrioritization = () => {
-    if (settings.level && typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+    if (settings.level && import.meta.env?.DEV) {
       console.log(`\n🔍 DEBUG: Level prioritization for ${settings.level}`)
       debugLevelPrioritization(settings.level)
       

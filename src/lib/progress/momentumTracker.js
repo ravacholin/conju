@@ -1,6 +1,8 @@
 // Sistema de Tracking de Momentum Emocional
 // Rastrea las rachas emocionales del usuario más allá de simple acierto/error
 
+import { logger } from './logger.js'
+
 /**
  * Tipos de momentum emocional
  */

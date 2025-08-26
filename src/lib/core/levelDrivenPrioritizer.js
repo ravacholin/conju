@@ -128,8 +128,8 @@ const CURRICULUM_ANALYSIS = {
  */
 export class LevelDrivenPrioritizer {
   constructor() {
-    this.curriculumData = this.processCurriculumData()
     this.levelHierarchy = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+    this.curriculumData = this.processCurriculumData()
   }
 
   /**
