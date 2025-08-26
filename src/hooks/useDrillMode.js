@@ -274,6 +274,14 @@ export function useDrillMode() {
     }
     
     if (nextForm && nextForm.mood && nextForm.tense) {
+      // Canonicalize forms to ensure exact dataset alignment
+      const canonicalFromPool = (lemma, mood, tense, person) => {
+        try {
+          return (eligibleForms || allFormsForRegion).find(f => 
+            f.lemma === lemma && f.mood === mood && f.tense === tense && f.person === person
+          ) || null
+        } catch { return null }
+      }
       // Force a new object to ensure React detects the change
       const newItem = {
         id: Date.now(), // Unique identifier to force re-render
@@ -281,15 +289,19 @@ export function useDrillMode() {
         mood: nextForm.mood,
         tense: nextForm.tense,
         person: nextForm.person,
-        form: {
-          value: nextForm.value || nextForm.form, // Handle both 'value' and 'form' fields from database
-          lemma: nextForm.lemma,
-          mood: nextForm.mood,
-          tense: nextForm.tense,
-          person: nextForm.person,
-          alt: nextForm.alt || [], // Alternative forms if any
-          accepts: nextForm.accepts || {} // Accepted variants (tu/vos/vosotros)
-        },
+        form: (() => {
+          const c = canonicalFromPool(nextForm.lemma, nextForm.mood, nextForm.tense, nextForm.person)
+          const base = c || nextForm
+          return {
+            value: base.value || base.form,
+            lemma: base.lemma,
+            mood: base.mood,
+            tense: base.tense,
+            person: base.person,
+            alt: base.alt || [],
+            accepts: base.accepts || {}
+          }
+        })(),
         settings: { 
           ...settings,
           // CRITICAL FIX: Auto-activate dialect-specific settings based on form person
@@ -393,25 +405,31 @@ export function useDrillMode() {
                   newItem.mood = firstForm.mood
                   newItem.tense = firstForm.tense
                   newItem.person = firstForm.person
-                  newItem.form = {
-                    value: firstForm.value || firstForm.form,
-                    lemma: firstForm.lemma,
-                    mood: firstForm.mood,
-                    tense: firstForm.tense,
-                    person: firstForm.person,
-                    alt: firstForm.alt || [],
-                    accepts: firstForm.accepts || {}
+                  {
+                    const c1 = canonicalFromPool(firstForm.lemma, firstForm.mood, firstForm.tense, firstForm.person) || firstForm
+                    newItem.form = {
+                      value: c1.value || c1.form,
+                      lemma: c1.lemma,
+                      mood: c1.mood,
+                      tense: c1.tense,
+                      person: c1.person,
+                      alt: c1.alt || [],
+                      accepts: c1.accepts || {}
+                    }
                   }
                   
                   // Add second form
-                  newItem.secondForm = {
-                    value: secondForm.value || secondForm.form,
-                    lemma: secondForm.lemma,
-                    mood: secondForm.mood,
-                    tense: secondForm.tense,
-                    person: secondForm.person,
-                    alt: secondForm.alt || [],
-                    accepts: secondForm.accepts || {}
+                  {
+                    const c2 = canonicalFromPool(secondForm.lemma, secondForm.mood, secondForm.tense, secondForm.person) || secondForm
+                    newItem.secondForm = {
+                      value: c2.value || c2.form,
+                      lemma: c2.lemma,
+                      mood: c2.mood,
+                      tense: c2.tense,
+                      person: c2.person,
+                      alt: c2.alt || [],
+                      accepts: c2.accepts || {}
+                    }
                   }
                 } else {
                   // EMERGENCY FALLBACK: try another valid verb
