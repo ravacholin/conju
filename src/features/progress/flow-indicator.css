@@ -1,0 +1,435 @@
+/* Estilos para el Indicador de Estado de Flow */
+
+.flow-indicator {
+  position: relative;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+
+/* Posicionamiento */
+.flow-indicator.top-right {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.flow-indicator.top-left {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+}
+
+.flow-indicator.static {
+  position: relative;
+  margin: 0 auto;
+}
+
+/* Tamaños */
+.flow-indicator.minimal .flow-indicator-main {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+.flow-indicator.normal .flow-indicator-main {
+  min-width: 120px;
+  height: 45px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.flow-indicator.large .flow-indicator-main {
+  min-width: 160px;
+  height: 55px;
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+/* Indicador principal */
+.flow-indicator-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  border: 2px solid var(--flow-color, #64b5f6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.flow-indicator-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
+
+.flow-emoji {
+  font-size: 1.2em;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.flow-label {
+  font-weight: 600;
+  color: #2c3e50;
+  white-space: nowrap;
+}
+
+/* Animaciones de pulso y brillo */
+.flow-indicator-main.pulse {
+  animation: flow-pulse 2s ease-in-out infinite;
+}
+
+.flow-indicator-main.glow {
+  animation: flow-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes flow-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes flow-glow {
+  0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+  100% { box-shadow: 0 4px 30px var(--flow-color)40; }
+}
+
+/* Indicador de momentum */
+.momentum-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.momentum-indicator:hover {
+  transform: scale(1.1);
+}
+
+/* Animación de cambio de estado */
+.flow-state-change .flow-indicator-main {
+  animation: state-change-flash 1s ease-in-out;
+}
+
+@keyframes state-change-flash {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.1); filter: brightness(1.2); }
+  50% { transform: scale(1.05); }
+  75% { transform: scale(1.08); filter: brightness(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Panel de detalles */
+.flow-details-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: panel-slide-in 0.3s ease-out;
+  z-index: 1001;
+}
+
+.flow-indicator.static .flow-details-panel {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-top: 16px;
+  animation: none;
+}
+
+@keyframes panel-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Secciones del panel */
+.flow-state-section,
+.momentum-section,
+.metrics-section,
+.session-section {
+  margin-bottom: 16px;
+}
+
+.flow-state-section:last-child,
+.momentum-section:last-child,
+.metrics-section:last-child,
+.session-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Estado principal */
+.state-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.state-emoji-large {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.state-info {
+  flex: 1;
+}
+
+.state-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.state-description {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #7f8c8d;
+  line-height: 1.4;
+}
+
+/* Headers de sección */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.section-icon {
+  font-size: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Momentum */
+.momentum-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.momentum-icon-large {
+  font-size: 20px;
+}
+
+.momentum-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Métricas */
+.metrics-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #7f8c8d;
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.metric-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.metric-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.metric-fill.confidence {
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.metric-fill.flow-time {
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+}
+
+.metric-fill.consistency {
+  background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+}
+
+.metric-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c3e50;
+  width: 35px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Display de racha */
+.streak-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.streak-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e74c3c;
+}
+
+.streak-icon {
+  font-size: 16px;
+  animation: streak-flicker 2s ease-in-out infinite;
+}
+
+@keyframes streak-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Estadísticas de sesión */
+.session-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.stat-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Responsividad */
+@media (max-width: 480px) {
+  .flow-details-panel {
+    width: 280px;
+    right: -20px;
+  }
+  
+  .flow-indicator.top-right {
+    top: 15px;
+    right: 15px;
+  }
+  
+  .metrics-grid {
+    gap: 10px;
+  }
+  
+  .metric-item {
+    gap: 8px;
+  }
+  
+  .metric-label {
+    width: 60px;
+    font-size: 11px;
+  }
+}
+
+/* Estados de color específicos */
+.flow-indicator[style*="--flow-color: #00ff88"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 255, 255, 0.95));
+}
+
+.flow-indicator[style*="--flow-color: #4ade80"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.1), rgba(255, 255, 255, 0.95));
+}
+
+.flow-indicator[style*="--flow-color: #ff7043"] .flow-indicator-main {
+  background: linear-gradient(135deg, rgba(255, 112, 67, 0.1), rgba(255, 255, 255, 0.95));
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .flow-indicator-main,
+  .momentum-indicator,
+  .flow-details-panel {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .flow-label,
+  .state-title,
+  .section-title,
+  .momentum-label,
+  .stat-value {
+    color: #e5e7eb;
+  }
+  
+  .state-description,
+  .stat-label,
+  .metric-label {
+    color: #9ca3af;
+  }
+  
+  .metric-bar {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .session-stat,
+  .momentum-info {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}

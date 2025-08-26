@@ -7,6 +7,11 @@ import { getNextRecommendedItem } from '../lib/progress/AdaptivePracticeEngine.j
 import { shouldAdjustDifficulty, getRecommendedAdjustments } from '../lib/progress/DifficultyManager.js'
 import { debugLevelPrioritization } from '../lib/core/levelDrivenPrioritizer.js'
 import { getCoachingRecommendations, getMotivationalInsights } from '../lib/progress/personalizedCoaching.js'
+import { flowDetector, processUserResponse } from '../lib/progress/flowStateDetection.js'
+import { momentumTracker, processResponseForMomentum } from '../lib/progress/momentumTracker.js'
+import { confidenceEngine, processResponseForConfidence } from '../lib/progress/confidenceEngine.js'
+import { temporalIntelligence, processSessionForTempo } from '../lib/progress/temporalIntelligence.js'
+import { dynamicGoalsSystem, processResponseForGoals } from '../lib/progress/dynamicGoals.js'
 
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
@@ -396,6 +401,114 @@ export function useDrillMode() {
         }
       }))
     }
+
+    // FLOW STATE DETECTION: Process user response for emotional intelligence
+    try {
+      const flowResponse = processUserResponse({
+        isCorrect: result.correct,
+        responseTime: result.latency || 0,
+        hintsUsed: result.hintsUsed || 0,
+        difficulty: currentItem.difficulty || 'medium',
+        sessionContext: {
+          totalResponses: Object.values(history).reduce((sum, item) => sum + item.seen, 0) + 1,
+          recentAccuracy: Object.values(history).slice(-10).reduce((sum, item) => sum + (item.correct / item.seen), 0) / Math.min(10, Object.keys(history).length)
+        }
+      })
+      
+      if (flowResponse) {
+        console.log('🔥 Flow state update:', {
+          state: flowResponse.state,
+          confidence: Math.round(flowResponse.confidence * 100) + '%',
+          recommendation: flowResponse.recommendation
+        })
+      }
+    } catch (e) {
+      console.warn('Flow state detection failed:', e)
+    }
+
+    // MOMENTUM TRACKING: Analyze emotional patterns
+    try {
+      const momentumUpdate = processResponseForMomentum({
+        isCorrect: result.correct,
+        responseTime: result.latency || 0,
+        timestamp: Date.now(),
+        difficulty: currentItem.difficulty || 'medium',
+        previousMomentum: momentumTracker.getCurrentMomentum()
+      })
+      
+      if (momentumUpdate) {
+        console.log('📈 Momentum update:', {
+          type: momentumUpdate.type,
+          score: Math.round(momentumUpdate.score * 100) + '%',
+          insight: momentumUpdate.insight
+        })
+      }
+    } catch (e) {
+      console.warn('Momentum tracking failed:', e)
+    }
+
+    // CONFIDENCE ENGINE: Analyze response patterns for confidence building
+    try {
+      const confidenceUpdate = processResponseForConfidence({
+        isCorrect: result.correct,
+        responseTime: result.latency || 0,
+        verb: currentItem.lemma,
+        mood: currentItem.mood,
+        tense: currentItem.tense,
+        person: currentItem.person,
+        hintsUsed: result.hintsUsed || 0,
+        previousAttempts: result.previousAttempts || 0,
+        sessionContext: {
+          totalResponses: Object.values(history).reduce((sum, item) => sum + item.seen, 0) + 1,
+          currentStreak: result.correct ? (currentItem.streak || 0) + 1 : 0
+        }
+      })
+      
+      if (confidenceUpdate && confidenceUpdate.recommendations.length > 0) {
+        console.log('🎯 Confidence analysis:', {
+          level: confidenceUpdate.level,
+          overall: Math.round(confidenceUpdate.overall * 100) + '%',
+          category: Math.round(confidenceUpdate.category * 100) + '%',
+          calibration: Math.round(confidenceUpdate.calibration * 100) + '%',
+          recommendations: confidenceUpdate.recommendations.map(r => r.message)
+        })
+      }
+    } catch (e) {
+      console.warn('Confidence engine failed:', e)
+    }
+
+    // DYNAMIC GOALS SYSTEM: Update micro-objectives based on performance
+    try {
+      const goalsUpdate = processResponseForGoals({
+        isCorrect: result.correct,
+        responseTime: result.latency || 0,
+        verb: currentItem.lemma,
+        mood: currentItem.mood,
+        tense: currentItem.tense,
+        person: currentItem.person,
+        currentStreak: result.correct ? (currentItem.streak || 0) + 1 : 0,
+        sessionStartTime: result.sessionStartTime,
+        recentAccuracy: Object.values(history).length > 0 ? 
+          Object.values(history).slice(-10).reduce((sum, item) => sum + (item.correct / item.seen), 0) / Math.min(10, Object.keys(history).length) : 0.5
+      })
+      
+      if (goalsUpdate && goalsUpdate.completedGoals.length > 0) {
+        console.log('🏆 Goals completed!', goalsUpdate.completedGoals.map(g => ({
+          name: g.name,
+          points: g.pointsAwarded,
+          badge: g.badge?.name
+        })))
+      }
+      
+      if (goalsUpdate && goalsUpdate.goalUpdates.length > 0) {
+        const importantUpdates = goalsUpdate.goalUpdates.filter(u => u.isComplete || Math.random() < 0.3)
+        importantUpdates.forEach(update => {
+          console.log('🔄 Goal update:', update.message)
+        })
+      }
+    } catch (e) {
+      console.warn('Dynamic goals system failed:', e)
+    }
     
     // Update SRS schedule for the practiced cell
     try {
@@ -495,6 +608,60 @@ export function useDrillMode() {
     }
   }
 
+  // Get current flow state and momentum for UI display
+  const getCurrentFlowState = () => {
+    try {
+      const state = flowDetector.getCurrentState()
+      const momentum = momentumTracker.getCurrentMomentum()
+      const confidenceState = confidenceEngine.getCurrentConfidenceState()
+      const temporalState = temporalIntelligence.getCurrentTemporalStats()
+      const goalsState = dynamicGoalsSystem.getCurrentGoalsState()
+      const metrics = {
+        confidence: flowDetector.getConfidenceLevel(),
+        currentStreak: flowDetector.getCurrentStreak(),
+        flowPercentage: Math.round(flowDetector.getFlowPercentage()),
+        consistencyScore: Math.round(flowDetector.getConsistencyScore() * 100),
+        sessionDuration: flowDetector.getSessionDuration(),
+        totalResponses: flowDetector.getTotalResponses(),
+        deepFlowSessions: flowDetector.getDeepFlowSessions(),
+        // Confidence metrics
+        overallConfidence: Math.round(confidenceState.overall * 100),
+        confidenceLevel: confidenceState.level,
+        confidenceCalibration: Math.round(confidenceState.calibration * 100),
+        strongAreas: confidenceState.strongAreas,
+        improvementAreas: confidenceState.improvementAreas,
+        // Temporal metrics
+        currentFatigue: Math.round(temporalState.currentFatigue * 100),
+        optimalPracticeTime: temporalState.optimalPracticeTime,
+        sessionRecommendation: temporalState.sessionRecommendation,
+        // Goals metrics
+        activeGoals: goalsState.activeGoals.length,
+        completedToday: goalsState.recentCompleted.length,
+        totalPoints: goalsState.userProfile.totalPoints,
+        nextMilestone: goalsState.progressSummary.nextMilestone
+      }
+      
+      return { 
+        flowState: state, 
+        momentum, 
+        metrics, 
+        confidenceState, 
+        temporalState, 
+        goalsState 
+      }
+    } catch (e) {
+      console.warn('Failed to get comprehensive state:', e)
+      return { 
+        flowState: 'neutral', 
+        momentum: 'steady_progress', 
+        metrics: {}, 
+        confidenceState: null, 
+        temporalState: null, 
+        goalsState: null 
+      }
+    }
+  }
+
   return {
     currentItem,
     history,
@@ -507,6 +674,9 @@ export function useDrillMode() {
     
     // NEW: Level-driven features
     getCoachingInsights,
-    debugCurrentLevelPrioritization
+    debugCurrentLevelPrioritization,
+    
+    // NEW: Complete progress intelligence suite
+    getCurrentFlowState
   }
 }
