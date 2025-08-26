@@ -1,8 +1,8 @@
 # Spanish Conjugator - Sistema de Progreso y Analíticas
 
-## Integración Completa
+## Integración Actual
 
-Hemos implementado un sistema completo de progreso y analíticas para el conjugador de español que funciona local-first con sincronización opcional a la nube. El sistema está completamente integrado en la arquitectura existente de la aplicación.
+El núcleo del sistema de progreso/analíticas está integrado (tracking, mastery, SRS, orquestador emocional y UI de indicador). La app funciona local-first con sincronización opcional. Este documento refleja la integración vigente y los pendientes relevantes.
 
 ## Componentes Implementados
 
@@ -45,10 +45,9 @@ Hemos implementado un sistema completo de progreso y analíticas para el conjuga
 - **Códigos de sesión** para compartir progreso
 
 ### 8. UX Integrada
-- **Botón "Progreso"** en el tab bar
-- **Dashboard completo** con todas las vistas
-- **Detalles por celda** con semáforo y errores comunes
-- **Tarjetas de retos** automáticos con estimación de tiempo
+- **Indicador de Flow/Momentum** en Drill (esquina superior derecha)
+- **Dashboard de progreso** con analíticas
+- **Detalles por celda** y errores comunes
 
 ## Archivos Creados
 
@@ -92,7 +91,7 @@ initProgressSystem().catch(error => {
 })
 ```
 
-### Tracking en Drill
+### Tracking y señales en Drill
 El componente de práctica (`src/features/drill/Drill.jsx`) está integrado con el sistema de tracking:
 ```javascript
 // En src/features/drill/Drill.jsx
@@ -107,38 +106,30 @@ handleResult(extendedResult)
 handleHintShown()
 ```
 
+Además, el indicador visual de estado se alimenta del orquestador a través de un evento:
+```javascript
+// Evento del orquestador para UI
+useEffect(() => {
+  const onUpdate = (e) => setState(e.detail)
+  window.addEventListener('progress-emo-update', onUpdate)
+  return () => window.removeEventListener('progress-emo-update', onUpdate)
+}, [])
+```
+
 ## Estado de la Implementación
 
-✅ **Completamente implementado** con todos los componentes funcionales:
-- Modelo de datos completo
-- Cálculo de mastery scores
-- Tracking de eventos
-- Sistema SRS
-- Clasificación de errores
-- Práctica adaptativa
-- Vistas analíticas
-- Modo docente
-- Sincronización local-first
-- UX integrada
-- Pruebas unitarias
+✅ Núcleo integrado: tracking, mastery por celda, SRS por celda, orquestador emocional (flow/momentum/confianza/temporal), indicador de Flow/Momentum en Drill.
 
-## Próximos Pasos para Integración Completa
+🟨 En curso/próximo:
+- Review Mode (SRS) en UI con `getDueItems(userId)` y métricas de due/overdue.
+- Integrar señales de confianza/momentum en `ProgressDashboard` y recomendaciones.
+- Tests adicionales: thresholds de momentum, calibración de confianza y ventanas circadianas.
 
-1. **V0**: 
-   - Integrar eventos y mastery por celda
-   - Mostrar mapa de calor en la UI
-   - Implementar botón "practicar 6"
+## Próximos Pasos
 
-2. **V1**:
-   - Añadir radar de competencias
-   - Implementar sistema SRS completo
-   - Crear diagnósticos automáticos
-   - Habilitar exportación CSV
-
-3. **V2**:
-   - Implementar objetivos semanales
-   - Desarrollar modo docente completo
-   - Añadir comparativas por listas de verbos
+1) UI de Review Mode (SRS) y filtro de items pendientes.
+2) Recomendaciones basadas en señales emocionales en dashboard.
+3) Suite de pruebas unitarias/integración ampliada.
 
 ## Beneficios para el Usuario
 

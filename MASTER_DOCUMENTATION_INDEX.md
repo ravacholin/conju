@@ -47,6 +47,7 @@
 26. **[mastery.js](src/lib/progress/mastery.js)** - Cálculo de mastery
 27. **[tracking.js](src/lib/progress/tracking.js)** - Tracking de eventos
 28. **[srs.js](src/lib/progress/srs.js)** - Sistema SRS
+29. **[progressOrchestrator.js](src/lib/progress/progressOrchestrator.js)** - Orquestador Flow/Momentum/Confianza/Temporal
 29. **[errorClassification.js](src/lib/progress/errorClassification.js)** - Clasificación de errores
 30. **[analytics.js](src/lib/progress/analytics.js)** - Vistas analíticas
 31. **[uiUtils.js](src/lib/progress/uiUtils.js)** - Utilidades de UI
@@ -69,8 +70,10 @@
 46. **[ProgressTracker.jsx](src/features/progress/ProgressTracker.jsx)** - Tracker de estadísticas
 47. **[HeatMap.jsx](src/features/progress/HeatMap.jsx)** - Mapa de calor
 48. **[CompetencyRadar.jsx](src/features/progress/CompetencyRadar.jsx)** - Radar de competencias
-49. **[progress.css](src/features/progress/progress.css)** - Estilos CSS
-50. **[index.js](src/features/progress/index.js)** - Exportación de componentes
+49. **[FlowIndicator.jsx](src/features/progress/FlowIndicator.jsx)** - Indicador de Flow/Momentum
+50. **[flow-indicator.css](src/features/progress/flow-indicator.css)** - Estilos del indicador
+51. **[progress.css](src/features/progress/progress.css)** - Estilos CSS
+52. **[index.js](src/features/progress/index.js)** - Exportación de componentes
 
 #### **Integración con Drill** (`src/features/drill/`)
 51. **[useProgressTracking.js](src/features/drill/useProgressTracking.js)** - Hook de tracking

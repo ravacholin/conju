@@ -65,6 +65,22 @@ handleResult(extendedResult)
 handleHintShown()
 ```
 
+### Señales Emocionales en la UI
+```javascript
+// Indicador visual de Flow/Momentum en Drill
+import { FlowIndicator } from './features/progress/FlowIndicator.jsx'
+
+// El orquestador emite el evento 'progress-emo-update' en window con el estado actual
+useEffect(() => {
+  const onUpdate = (e) => setState(e.detail)
+  window.addEventListener('progress-emo-update', onUpdate)
+  return () => window.removeEventListener('progress-emo-update', onUpdate)
+}, [])
+
+// En el JSX del Drill
+<FlowIndicator flowState={state.flowState} momentum={state.momentumType} metrics={state.metrics} />
+```
+
 ### Vistas Analíticas
 ```javascript
 // Dashboard principal

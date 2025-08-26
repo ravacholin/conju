@@ -45,8 +45,10 @@
 23. **[src/features/progress/ProgressTracker.jsx](src/features/progress/ProgressTracker.jsx)** - Tracker de estadísticas
 24. **[src/features/progress/HeatMap.jsx](src/features/progress/HeatMap.jsx)** - Mapa de calor
 25. **[src/features/progress/CompetencyRadar.jsx](src/features/progress/CompetencyRadar.jsx)** - Radar de competencias
-26. **[src/features/progress/progress.css](src/features/progress/progress.css)** - Estilos CSS
-27. **[src/features/progress/index.js](src/features/progress/index.js)** - Exportación de componentes
+26. **[src/features/progress/FlowIndicator.jsx](src/features/progress/FlowIndicator.jsx)** - Indicador de Flow/Momentum
+27. **[src/features/progress/flow-indicator.css](src/features/progress/flow-indicator.css)** - Estilos del indicador
+28. **[src/features/progress/progress.css](src/features/progress/progress.css)** - Estilos CSS
+29. **[src/features/progress/index.js](src/features/progress/index.js)** - Exportación de componentes
 
 ## Librerías del Sistema
 
@@ -57,20 +59,21 @@
 32. **[src/lib/progress/mastery.js](src/lib/progress/mastery.js)** - Cálculo de mastery
 33. **[src/lib/progress/tracking.js](src/lib/progress/tracking.js)** - Tracking de eventos
 34. **[src/lib/progress/srs.js](src/lib/progress/srs.js)** - Sistema SRS
-35. **[src/lib/progress/errorClassification.js](src/lib/progress/errorClassification.js)** - Clasificación de errores
-36. **[src/lib/progress/analytics.js](src/lib/progress/analytics.js)** - Vistas analíticas
-37. **[src/lib/progress/uiUtils.js](src/lib/progress/uiUtils.js)** - Utilidades de UI
-38. **[src/lib/progress/utils.js](src/lib/progress/utils.js)** - Utilidades generales
-39. **[src/lib/progress/verbInitialization.js](src/lib/progress/verbInitialization.js)** - Inicialización de verbos
-40. **[src/lib/progress/itemManagement.js](src/lib/progress/itemManagement.js)** - Gestión de ítems
-41. **[src/lib/progress/goals.js](src/lib/progress/goals.js)** - Objetivos semanales
-42. **[src/lib/progress/teacherMode.js](src/lib/progress/teacherMode.js)** - Modo docente
-43. **[src/lib/progress/diagnosis.js](src/lib/progress/diagnosis.js)** - Diagnóstico inicial
-44. **[src/lib/progress/cloudSync.js](src/lib/progress/cloudSync.js)** - Sincronización con la nube
-45. **[src/lib/progress/fullInitialization.js](src/lib/progress/fullInitialization.js)** - Inicialización completa
-46. **[src/lib/progress/autoInit.js](src/lib/progress/autoInit.js)** - Inicialización automática
-47. **[src/lib/progress/integrationCheck.js](src/lib/progress/integrationCheck.js)** - Verificación de integración
-48. **[src/lib/progress/tests.js](src/lib/progress/tests.js)** - Pruebas del sistema
+35. **[src/lib/progress/progressOrchestrator.js](src/lib/progress/progressOrchestrator.js)** - Orquestador Flow/Momentum/Confianza/Temporal
+36. **[src/lib/progress/errorClassification.js](src/lib/progress/errorClassification.js)** - Clasificación de errores
+37. **[src/lib/progress/analytics.js](src/lib/progress/analytics.js)** - Vistas analíticas
+38. **[src/lib/progress/uiUtils.js](src/lib/progress/uiUtils.js)** - Utilidades de UI
+39. **[src/lib/progress/utils.js](src/lib/progress/utils.js)** - Utilidades generales
+40. **[src/lib/progress/verbInitialization.js](src/lib/progress/verbInitialization.js)** - Inicialización de verbos
+41. **[src/lib/progress/itemManagement.js](src/lib/progress/itemManagement.js)** - Gestión de ítems
+42. **[src/lib/progress/goals.js](src/lib/progress/goals.js)** - Objetivos semanales
+43. **[src/lib/progress/teacherMode.js](src/lib/progress/teacherMode.js)** - Modo docente
+44. **[src/lib/progress/diagnosis.js](src/lib/progress/diagnosis.js)** - Diagnóstico inicial
+45. **[src/lib/progress/cloudSync.js](src/lib/progress/cloudSync.js)** - Sincronización con la nube
+46. **[src/lib/progress/fullInitialization.js](src/lib/progress/fullInitialization.js)** - Inicialización completa
+47. **[src/lib/progress/autoInit.js](src/lib/progress/autoInit.js)** - Inicialización automática
+48. **[src/lib/progress/integrationCheck.js](src/lib/progress/integrationCheck.js)** - Verificación de integración
+49. **[src/lib/progress/tests.js](src/lib/progress/tests.js)** - Pruebas del sistema
 
 ## Archivos de Configuración y Dependencias
 
