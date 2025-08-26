@@ -239,4 +239,35 @@ describe('Grade function', () => {
     const result = grade('ven', expected, mockSettings)
     expect(result.correct).toBe(false)
   })
-}) 
+})
+
+// Tests para el sistema de análisis de errores
+describe('Error Analysis', () => {
+  test('should detect stem-changing verb errors (e → ie)', () => {
+    const expected = { value: 'pienso', tags: ['stem-e-ie'] };
+    const result = grade('penso', expected, mockSettings);
+    expect(result.correct).toBe(false);
+    expect(result.note).toContain('cambio de raíz (e → ie)');
+  });
+
+  test('should detect stem-changing verb errors (o → ue)', () => {
+    const expected = { value: 'puedo', tags: ['stem-o-ue'] };
+    const result = grade('podo', expected, mockSettings);
+    expect(result.correct).toBe(false);
+    expect(result.note).toContain('cambio de raíz (o → ue)');
+  });
+
+  test('should detect spelling change errors (c → qu)', () => {
+    const expected = { value: 'busqué', tags: ['spell-c-qu'], tense: 'pret' };
+    const result = grade('buscé', expected, mockSettings);
+    expect(result.correct).toBe(false);
+    expect(result.note).toContain('cambio ortográfico (c → qu)');
+  });
+
+  test('should detect irregular preterite errors', () => {
+    const expected = { value: 'tuve', tags: ['irregular'], tense: 'pret' };
+    const result = grade('tení', expected, mockSettings);
+    expect(result.correct).toBe(false);
+    expect(result.note).toContain('pretérito irregular');
+  });
+}); 

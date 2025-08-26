@@ -324,47 +324,73 @@ export function grade(input, expected, settings){
   return result
 }
 
+function analyzeError(input, correctForm, expected) {
+  // Stem-changing verbs: e.g., "pEnsar" -> "pIEnso"
+  if (expected.tags?.includes('stem-e-ie') && input.includes('e') && correctForm.includes('ie')) {
+    return `Ojo, este es un verbo con cambio de raíz (e → ie). La forma correcta es "${correctForm}".`;
+  }
+  if (expected.tags?.includes('stem-o-ue') && input.includes('o') && correctForm.includes('ue')) {
+    return `Ojo, este es un verbo con cambio de raíz (o → ue). La forma correcta es "${correctForm}".`;
+  }
+  if (expected.tags?.includes('stem-e-i') && input.includes('e') && correctForm.includes('i')) {
+    return `Ojo, este es un verbo con cambio de raíz (e → i). La forma correcta es "${correctForm}".`;
+  }
+
+  // Spelling changes: e.g., "saCar" -> "saQUé"
+  if (expected.tags?.includes('spell-c-qu') && input.endsWith('ce') && correctForm.endsWith('que')) {
+    return `Cuidado con el cambio ortográfico (c → qu). La forma correcta es "${correctForm}".`;
+  }
+  if (expected.tags?.includes('spell-g-gu') && input.endsWith('ge') && correctForm.endsWith('gue')) {
+    return `Cuidado con el cambio ortográfico (g → gu). La forma correcta es "${correctForm}".`;
+  }
+  if (expected.tags?.includes('spell-z-c') && input.endsWith('ze') && correctForm.endsWith('ce')) {
+    return `Cuidado con el cambio ortográfico (z → c). La forma correcta es "${correctForm}".`;
+  }
+
+  // Irregular preterites
+  if (expected.tense === 'pret' && expected.tags?.includes('irregular')) {
+    return `Este verbo tiene un pretérito irregular. La forma correcta es "${correctForm}".`;
+  }
+
+  return null; // No specific error found
+}
+
 function generateGeneralFeedback(input, settings, expected) {
   // Obtener la forma correcta esperada (primera opción disponible)
   const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
-  
-  // Check for pronoun-specific issues
+
+  // 1. Check for pronoun-specific issues (tú/vos)
   if (
     settings.region === 'rioplatense' &&
     settings.useVoseo &&
     !settings.neutralizePronoun
   ) {
-    // Check if user wrote tú form instead of vos form
     const tuVosPairs = {
-      'escribes': 'escribís',
-      'comes': 'comés', 
-      'vives': 'vivís',
-      'vales': 'valés',
-      'hablas': 'hablás',
-      'necesitas': 'necesitás',
-      'ayudas': 'ayudás',
-      'buscas': 'buscás',
-      'compras': 'comprás',
-      'llegas': 'llegás'
-    }
-    
-    // Trigger this guidance only when it makes sense for the expected target
-    // Either the target explicitly is 2s, or the expected form equals the vos form
+      'escribes': 'escribís', 'comes': 'comés', 'vives': 'vivís',
+      'vales': 'valés', 'hablas': 'hablás', 'necesitas': 'necesitás',
+      'ayudas': 'ayudás', 'buscas': 'buscás', 'compras': 'comprás', 'llegas': 'llegás'
+    };
     if (
       tuVosPairs[input] && (
         (typeof expected?.person === 'string' && expected.person.startsWith('2s')) ||
         tuVosPairs[input] === correctForm
       )
     ) {
-      return `⚠️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`
+      return `⚠️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`;
     }
   }
-  
-  // Check for general form issues
-  if (input.length < 3) {
-    return `La respuesta es muy corta. La forma correcta es "${correctForm}"`
+
+  // 2. Analyze for common conjugation errors
+  const specificError = analyzeError(input, correctForm, expected);
+  if (specificError) {
+    return specificError;
   }
-  
-  // SIEMPRE mostrar la forma correcta para que el usuario aprenda
-  return `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
+
+  // 3. Check for general form issues
+  if (input.length < 3) {
+    return `La respuesta es muy corta. La forma correcta es "${correctForm}"`;
+  }
+
+  // 4. Default fallback: always show the correct form
+  return `❌ Forma incorrecta. La forma correcta es "${correctForm}"`;
 } 
