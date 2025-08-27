@@ -1,9 +1,9 @@
 // Motor de Confianza y Auto-eficacia
 // Analiza patrones de respuesta para construir perfiles de confianza granulares
 
-import { PROGRESS_CONFIG } from './config.js'
-import { logger, logConfidence, logError, logWarn } from './logger.js'
-import { memoryManager, registerInterval } from './memoryManager.js'
+import { PROGRESS_CONFIG } from './config.js';
+import { logger } from './logger.js';
+import { memoryManager, registerInterval } from './memoryManager.js';
 
 /**
  * Sistema de análisis de confianza basado en múltiples dimensiones
@@ -166,13 +166,11 @@ export class ConfidenceEngine {
     const accuracy = profile.correctAttempts / profile.totalAttempts
     const speedFactor = this.calculateSpeedConfidenceFactor(profile.averageResponseTime)
     const consistencyFactor = this.calculateConsistencyFactor(key)
-    const behavioralFactor = responseEntry.confidenceIndicators.behavioral_confidence
 
     profile.confidence = (
       accuracy * 0.4 + 
       speedFactor * 0.2 + 
-      consistencyFactor * 0.2 + 
-      behavioralFactor * 0.2
+      consistencyFactor * 0.2
     )
 
     // Actualizar tendencia
@@ -254,7 +252,6 @@ export class ConfidenceEngine {
     if (responseEntry.selfReportedConfidence === null) return
 
     // Calcular discrepancia entre confianza reportada y rendimiento real
-    const behavioralConfidence = responseEntry.confidenceIndicators.behavioral_confidence
     const reportedConfidence = responseEntry.selfReportedConfidence
     const accuracy = responseEntry.isCorrect ? 1 : 0
 
@@ -333,7 +330,7 @@ export class ConfidenceEngine {
    */
   generateConfidenceRecommendations(confidenceData) {
     const recommendations = []
-    const { overall, category, level, calibration, trend } = confidenceData
+    const { level, calibration, trend } = confidenceData
 
     // Recomendaciones basadas en nivel de confianza
     if (level === 'struggling') {
@@ -412,7 +409,7 @@ export class ConfidenceEngine {
   /**
    * Sugiere próximos objetivos de práctica basado en confianza
    */
-  getNextPracticeTargets(confidenceData) {
+  getNextPracticeTargets() {
     // Analizar todas las categorías por confianza
     const categoriesByConfidence = Array.from(this.confidenceProfiles.entries())
       .map(([key, profile]) => ({

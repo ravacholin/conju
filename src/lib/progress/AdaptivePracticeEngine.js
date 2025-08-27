@@ -72,7 +72,7 @@ export class AdaptivePracticeEngine {
   /**
    * Genera recomendaciones enfocadas en áreas débiles
    */
-  async getWeakAreaRecommendations(masteryRecords, userStats) {
+  async getWeakAreaRecommendations(masteryRecords) {
     const weakAreas = masteryRecords
       .filter(record => record.score < 60)
       .sort((a, b) => a.score - b.score)
@@ -265,7 +265,7 @@ export class AdaptivePracticeEngine {
         return mastery < 75 // Focus on unmastered core tenses
       })
       .slice(0, 3)
-      .map((tense, index) => ({
+      .map((tense) => ({
         type: 'core_focus',
         priority: tense.priority + 20, // Boost core tense priority
         title: `🎯 Domina ${tense.mood}/${tense.tense}`,

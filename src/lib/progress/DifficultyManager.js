@@ -39,7 +39,6 @@ export class DifficultyManager {
   async evaluateDifficultyLevel(sessionData = {}) {
     try {
       const userStats = await getRealUserStats(this.userId)
-      const masteryRecords = await getMasteryByUser(this.userId)
       
       // Analizar rendimiento actual
       const analysis = this.analyzePerformance(userStats, sessionData)
