@@ -99,6 +99,8 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
+- 2025-08-27 (Hotfix):
+  - **fix(progress/UI)**: Arreglado crash al abrir el panel de Progreso desde Drill causado por uso de `React.Fragment` sin import explícito. Se sustituyó por `Fragment` importado desde `react` en `src/features/progress/HeatMap.jsx`.
 - 2025-08-27 (Noche):
   - **CRÍTICO**: Habilitado acceso completo a verbos irregulares en práctica por tema
   - **fix(irregulares)**: TODOS los temas específicos ahora incluyen verbos irregulares (ser, estar, tener, hacer, venir, etc.)

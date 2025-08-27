@@ -1,6 +1,6 @@
 // Componente para mostrar el mapa de calor
 
-import { useMemo, useState, memo } from 'react'
+import { useMemo, useState, memo, Fragment } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 
@@ -109,7 +109,7 @@ export function HeatMap({ data }) {
         
         {/* Filas por modo */}
         {allMoods.map(mood => (
-          <React.Fragment key={mood}>
+          <Fragment key={mood}>
             <div className="row-label">
               <div className="header-text" title={moodLabels[mood] || mood}>
                 {moodLabels[mood] || mood}
@@ -167,7 +167,7 @@ export function HeatMap({ data }) {
                 </div>
               )
             })}
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
 
