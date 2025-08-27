@@ -4,9 +4,15 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 
 ## Estado
 - Base operativa activa: tracking de intentos, mastery por celda (con decaimiento), SRS por celda, orquestador emocional (flow/momentum/confianza/temporal) y UI de indicador en Drill.
+- **Filtrado robusto**: Sistema de validación de nivel y dialecto completamente operativo con guardias de integridad
 - Para detalles técnicos de arquitectura ver `src/lib/progress/README.md`.
 
 ## Mejoras recientes (algoritmo, UX y estética)
+- **CRITICAL FIXES (2025-08-27 - Fase 3)**: Sistema de filtrado de nivel y dialecto completamente reforzado
+  - **A1 restringido**: Guardia de integridad evita formas avanzadas (pluscuamperfecto, subjuntivo) en nivel A1 
+  - **Dialectos precisos**: Validación dialecto rioplatense (vos) excluye vosotros correctamente
+  - **Auto-corrección**: Sistema detecta y corrige automáticamente formas inválidas en tiempo real
+  - **Limpieza base datos**: Eliminados 7 verbos inexistentes (tañir, redormir, empedernir, colorir, balbucir, amuar, adormir)
 - **MAJOR FIXES (2025-08-27 - Fase 2)**: Completado acceso total a verbos irregulares en práctica por tema
   - **Irregulares habilitados**: TODOS los temas específicos ahora incluyen verbos irregulares (ser→fui, estar→estuve, tener→tuve)
   - **Alcance universal**: Aplica a presente de subjuntivo, imperativo, condicional, futuro - no solo pretérito indefinido
@@ -99,6 +105,13 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
+- 2025-08-27 (Final):
+  - **CRÍTICO**: Sistema de filtrado nivel/dialecto completamente reforzado
+  - **fix(nivel A1)**: Guardia de integridad impide formas avanzadas (pluscuamperfecto, subjuntivo perfecto) en nivel A1
+  - **fix(dialecto vos)**: Validación dialecto rioplatense excluye vosotros correctamente en toda práctica
+  - **fix(auto-corrección)**: Sistema detecta y corrige automáticamente formas inválidas generadas por algoritmos
+  - **fix(base datos)**: Eliminados 7 verbos inexistentes que causaban confusión (tañir, redormir, empedernir, colorir, balbucir, amuar, adormir)
+  - **arquitectura**: Enhanced Integrity Guard en `useDrillMode.js` + level parameter fixes en `AdaptivePracticeEngine.js`
 - 2025-08-27 (Hotfix):
   - **fix(progress/UI)**: Arreglado crash al abrir el panel de Progreso desde Drill causado por uso de `React.Fragment` sin import explícito. Se sustituyó por `Fragment` importado desde `react` en `src/features/progress/HeatMap.jsx`.
 - 2025-08-27 (Noche):
