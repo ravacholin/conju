@@ -1,8 +1,7 @@
 // Análisis de progreso para el sistema de progreso
 
-import { getMasteryByUser, getAttemptsByItem } from './database.js'
-import { calculateMasteryForCell, calculateMasteryForItem } from './mastery.js'
-import { getWeeklyGoals as getGoals, checkWeeklyProgress as checkProgress } from './goals.js'
+import { getMasteryByUser } from './database.js'
+// Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 
 /**

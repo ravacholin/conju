@@ -6,6 +6,39 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Base operativa activa: tracking de intentos, mastery por celda (con decaimiento), SRS por celda, orquestador emocional (flow/momentum/confianza/temporal) y UI de indicador en Drill.
 - Para detalles técnicos de arquitectura ver `src/lib/progress/README.md`.
 
+## Mejoras recientes (algoritmo, UX y estética)
+- SRS sensible a pistas: correcto sin pista sube intervalo; con pista avanza medio paso; error reinicia a 1 día. Ver `src/lib/progress/srs.js` y tests `src/lib/progress/srs.test.js`.
+- Grader: análisis de errores más informativo (p. ej., “cambio ortográfico (c → qu)”) en `src/lib/core/grader.js`.
+- UX en Drill: atajos de teclado (Enter verificar/continuar; Cmd/Ctrl+Enter “No sé”; Esc limpiar/continuar; D ver diferencias) en `src/features/drill/Drill.jsx`.
+- Tokens de diseño unificados (FlowIndicator): variables añadidas en `src/App.css`.
+
+## Cómo continuar (plan práctico)
+1) Fase 2 de lint (progreso):
+   - Objetivo: limpiar imports/variables no usados y casos simples sin refactors.
+   - Archivos sugeridos: `AdaptivePracticeEngine.js`, `DifficultyManager.js`, `confidenceEngine.js`, `dynamicGoals.js`, `dataExport.js`, `dataRestore.js`, `diagnosis.js`, `enhancedCloudSync.js`, `flowStateDetection.js`.
+   - Comando: `npx eslint src/lib/progress --max-warnings=0` y aplicar mínimos cambios (renombrar a `_var`, quitar imports, mover declaraciones fuera de `case`).
+
+2) Estabilizar prueba de rendimiento (opcional en CI):
+   - Archivo: `src/lib/progress/compatibility.test.js` (bloque “configuraciones de rendimiento”).
+   - Si el entorno es lento, subir umbral a 150–200 ms o condicionar por `process.env.CI`.
+
+3) “Review Now” (SRS):
+   - Usar `getDueItems(userId)` de `src/lib/progress/srs.js` para una vista de repaso rápido.
+   - Sugerencia UI: botón en dashboard que liste celdas pendientes y permita lanzar Drill filtrado.
+
+4) Métricas en FlowIndicator (opcional):
+   - Añadir métricas de sesión y due count (`getDueItems`) al panel de detalles en `src/features/progress/FlowIndicator.jsx`.
+
+5) Verificación rápida:
+   - Dev: `npm run dev`.
+   - Lint: `npm run lint` (o `npx eslint src/...`).
+   - Tests: `npm test` (o `node node_modules/vitest/dist/cli.js run`). Cobertura: `npm test -- --coverage`.
+
+## Notas para PRs
+- Mantener commits pequeños y descriptivos (prefijos tipo `feat:`, `fix(scope):`, `docs:`).
+- Ejecutar `npm run lint` y `npm test` antes de abrir PR.
+- Documentar cambios de comportamiento en `src/lib/progress/README.md` cuando aplique.
+
 ## Pendientes Prioritarios
 - Review Mode (SRS):
   - Superficie “Revisar ahora” con `getDueItems(userId)` y selector de items pendientes.

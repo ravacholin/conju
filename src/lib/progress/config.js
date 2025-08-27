@@ -146,7 +146,7 @@ export const PROGRESS_CONFIG = {
   
   // Configuración de Logging
   LOGGING: {
-    ENABLED: typeof process !== 'undefined' && process.env?.NODE_ENV === 'development',
+    ENABLED: (typeof globalThis !== 'undefined' && globalThis.process?.env?.NODE_ENV === 'development'),
     LEVELS: {
       ERROR: 0,
       WARN: 1, 

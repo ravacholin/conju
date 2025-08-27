@@ -325,25 +325,28 @@ export function grade(input, expected, settings){
 }
 
 function analyzeError(input, correctForm, expected) {
+  // Normalizar para comparaciones ortográficas (sin tildes, minúsculas)
+  const inNorm = stripAccents(normalizeKeepAccents(String(input || ''))).toLowerCase()
+  const corrNorm = stripAccents(normalizeKeepAccents(String(correctForm || ''))).toLowerCase()
   // Stem-changing verbs: e.g., "pEnsar" -> "pIEnso"
-  if (expected.tags?.includes('stem-e-ie') && input.includes('e') && correctForm.includes('ie')) {
+  if (expected.tags?.includes('stem-e-ie') && inNorm.includes('e') && corrNorm.includes('ie')) {
     return `Ojo, este es un verbo con cambio de raíz (e → ie). La forma correcta es "${correctForm}".`;
   }
-  if (expected.tags?.includes('stem-o-ue') && input.includes('o') && correctForm.includes('ue')) {
+  if (expected.tags?.includes('stem-o-ue') && inNorm.includes('o') && corrNorm.includes('ue')) {
     return `Ojo, este es un verbo con cambio de raíz (o → ue). La forma correcta es "${correctForm}".`;
   }
-  if (expected.tags?.includes('stem-e-i') && input.includes('e') && correctForm.includes('i')) {
+  if (expected.tags?.includes('stem-e-i') && inNorm.includes('e') && corrNorm.includes('i')) {
     return `Ojo, este es un verbo con cambio de raíz (e → i). La forma correcta es "${correctForm}".`;
   }
 
   // Spelling changes: e.g., "saCar" -> "saQUé"
-  if (expected.tags?.includes('spell-c-qu') && input.endsWith('ce') && correctForm.endsWith('que')) {
+  if (expected.tags?.includes('spell-c-qu') && inNorm.endsWith('ce') && corrNorm.endsWith('que')) {
     return `Cuidado con el cambio ortográfico (c → qu). La forma correcta es "${correctForm}".`;
   }
-  if (expected.tags?.includes('spell-g-gu') && input.endsWith('ge') && correctForm.endsWith('gue')) {
+  if (expected.tags?.includes('spell-g-gu') && inNorm.endsWith('ge') && corrNorm.endsWith('gue')) {
     return `Cuidado con el cambio ortográfico (g → gu). La forma correcta es "${correctForm}".`;
   }
-  if (expected.tags?.includes('spell-z-c') && input.endsWith('ze') && correctForm.endsWith('ce')) {
+  if (expected.tags?.includes('spell-z-c') && inNorm.endsWith('ze') && corrNorm.endsWith('ce')) {
     return `Cuidado con el cambio ortográfico (z → c). La forma correcta es "${correctForm}".`;
   }
 

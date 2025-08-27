@@ -1,6 +1,6 @@
 // Sincronización con la nube para el sistema de progreso
 
-import { getAllFromDB, saveToDB } from './database.js'
+import { getAllFromDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import { getCurrentUserId } from './index.js'
 
@@ -135,7 +135,7 @@ export async function exportDataForBackup() {
  * @param {Object} data - Datos a importar
  * @returns {Promise<void>}
  */
-export async function importDataFromBackup(data) {
+export async function importDataFromBackup() {
   try {
     console.log('🔄 Importando datos desde respaldo...')
     
@@ -241,15 +241,9 @@ export function resetSyncState() {
  * @returns {Promise<boolean>} Si la conexión es saludable
  */
 export async function checkConnectionHealth() {
-  try {
-    // En una implementación completa, esto verificaría
-    // la salud de la conexión con el backend
-    
-    return true
-  } catch (error) {
-    console.error('Error al verificar salud de la conexión:', error)
-    return false
-  }
+  // En una implementación completa, esto verificaría
+  // la salud de la conexión con el backend
+  return true
 }
 
 /**

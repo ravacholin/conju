@@ -1,43 +1,35 @@
 import { useState, useEffect, useRef } from 'react';
 import { grade } from '../../lib/core/grader.js';
-import { getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js';
-import { useSettings } from '../../state/settings.js';
+// Removed unused imports to satisfy lint
 import { useProgressTracking } from './useProgressTracking.js';
-import { classifyError } from './tracking.js';
 import MasteryIndicator from './MasteryIndicator.jsx';
 import FeedbackNotification from './FeedbackNotification.jsx';
 import './progress-feedback.css';
-import { FlowIndicator } from '../progress/FlowIndicator.jsx';
-import orchestrator from '../../lib/progress/progressOrchestrator.js';
-import { verbs } from '../../data/verbs.js';
 import Diff from './Diff.jsx';
 
 export default function Drill({ 
   currentItem, 
   onResult, 
-  onContinue,
-  showChallenges = false,
-  showAccentKeys = true
+  onContinue
 }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hint, setHint] = useState('');
+  // Removed unused hint state
   const [showDiff, setShowDiff] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
 
   const inputRef = useRef(null);
 
-  const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult);
+  const { handleResult } = useProgressTracking(currentItem, onResult);
 
-  const getCanonicalTarget = (item) => {
+  const getCanonicalTarget = () => {
     // ... (same as before)
   };
 
   useEffect(() => {
     setInput('');
     setResult(null);
-    setHint('');
     setShowDiff(false);
     setShowAnimation(true);
     if (inputRef.current) {
@@ -48,7 +40,7 @@ export default function Drill({
   }, [currentItem]);
 
   const handleShowAnswer = () => {
-    const correctForm = getCanonicalTarget(currentItem);
+    const correctForm = getCanonicalTarget();
     const resultObj = {
       correct: false,
       isAccentError: false,
@@ -69,7 +61,7 @@ export default function Drill({
     setIsSubmitting(true);
     setShowDiff(false);
 
-    const canonicalForm = getCanonicalTarget(currentItem);
+    const canonicalForm = getCanonicalTarget();
     const gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
 
     if (!gradeResult.correct) {
@@ -91,7 +83,7 @@ export default function Drill({
     onContinue();
   };
 
-  const getPersonText = (formObj = currentItem) => {
+  const getPersonText = () => {
     // ... (same as before)
   };
 
@@ -118,6 +110,16 @@ export default function Drill({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              // Cmd/Ctrl+Enter: mostrar respuesta (o continuar si ya hay resultado)
+              e.preventDefault();
+              if (!result) {
+                handleShowAnswer();
+              } else {
+                handleContinue();
+              }
+              return;
+            }
             if (e.key === 'Enter') {
               e.preventDefault();
               if (!result) {
@@ -125,12 +127,39 @@ export default function Drill({
               } else {
                 handleContinue();
               }
+              return;
+            }
+            if (e.key === 'Escape') {
+              // Esc: limpiar o continuar
+              e.preventDefault();
+              if (!result) {
+                setInput('');
+              } else {
+                handleContinue();
+              }
+              return;
+            }
+            if (!result && (e.key === 'd' || e.key === 'D')) {
+              // Toggle de diff solo cuando ya hay resultado incorrecto
+              if (result && !result.correct) {
+                setShowDiff((v) => !v);
+              }
             }
           }}
           placeholder="Escribe la conjugación..."
           readOnly={result !== null}
           autoFocus
         />
+      </div>
+
+      {/* Atajos de teclado para eficiencia */}
+      <div className="shortcut-hint" aria-hidden>
+        <span>Enter: Verificar/Continuar</span>
+        <span>·</span>
+        <span>Cmd/Ctrl+Enter: No sé</span>
+        <span>·</span>
+        <span>Esc: Limpiar/Continuar</span>
+        {result && !result.correct && <><span>·</span><span>D: Ver diferencias</span></>}
       </div>
 
       <div className="action-buttons">

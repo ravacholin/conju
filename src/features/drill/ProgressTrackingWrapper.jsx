@@ -13,10 +13,8 @@ import { useProgressTracking } from './useProgressTracking.js'
  * @returns {null} No renderiza nada, solo maneja tracking
  */
 export function ProgressTrackingWrapper({ currentItem, onResult, result }) {
-  // Hook para tracking de progreso
-  const { 
-    handleResult 
-  } = useProgressTracking(currentItem, onResult)
+  // Hook para tracking de progreso (no necesitamos el retorno aquí)
+  useProgressTracking(currentItem, onResult)
 
   // Efecto para manejar continuación de sesión
   useEffect(() => {

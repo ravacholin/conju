@@ -54,6 +54,15 @@
   --accent-green: #28a745;
   --accent-orange: #fd7e14;
   --accent-red: #dc3545;
+  /* Added tokens used by Progress/FlowIndicator */
+  --accent-gold: #ffd166;
+  --accent-purple: #a78bfa;
+  --primary: var(--accent-blue);
+  --secondary: #8892b0;
+  --warning: #f59e0b;
+  --text-primary: var(--text);
+  --text-secondary: var(--muted);
+  --text-muted: var(--muted);
   --success: rgba(40, 167, 69, 0.12);
   --success-border: rgba(40, 167, 69, 0.25);
   --error: rgba(220, 53, 69, 0.12);

@@ -122,6 +122,15 @@ export {
   getUserStats as getAnalyticsUserStats
 } from './analytics.js'
 
+// Initialization API (re-exported for test compatibility)
+export {
+  initProgressSystem,
+  isProgressSystemInitialized,
+  getCurrentUserId,
+  endCurrentSession,
+  resetProgressSystem
+} from './index.js'
+
 // Goals
 export {
   getWeeklyGoals,

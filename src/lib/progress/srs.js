@@ -12,33 +12,41 @@ import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
  */
 export function calculateNextInterval(schedule, correct, hintsUsed) {
   let { interval = 0, ease = 2.5, reps = 0 } = schedule
-  
+
+  const intervals = PROGRESS_CONFIG.SRS_INTERVALS
+  const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1))
+  const currentInterval = reps > 0 ? intervals[currentIdx] : 1
+
   if (!correct) {
-    // Si falla, reiniciar al intervalo anterior
+    // Error: refuerzo inmediato
     reps = Math.max(0, reps - 1)
-    interval = reps > 0 ? PROGRESS_CONFIG.SRS_INTERVALS[Math.min(reps, PROGRESS_CONFIG.SRS_INTERVALS.length - 1)] : 1
+    interval = 1
+    // Decremento suave del ease (mínimo 1.3)
+    ease = Math.max(1.3, ease - 0.1)
   } else {
-    // Si acierta
     if (hintsUsed > 0) {
-      // Si usó pistas, no subir de nivel
-      // Mantener el mismo intervalo
+      // Correcto con pista: progreso moderado
+      const nextIdx = Math.min(reps, intervals.length - 1)
+      const nextInterval = intervals[nextIdx]
+      // Avanzar ~50% hacia el siguiente intervalo sin subir reps
+      interval = Math.max(1, Math.round((currentInterval + nextInterval) / 2))
+      // Pequeño ajuste negativo al ease
+      ease = Math.max(1.3, ease - 0.05)
     } else {
-      // Si acierta sin pistas, subir de nivel
+      // Correcto sin pista: subir de nivel
       reps += 1
-      interval = PROGRESS_CONFIG.SRS_INTERVALS[Math.min(reps - 1, PROGRESS_CONFIG.SRS_INTERVALS.length - 1)]
+      const newIdx = Math.min(reps - 1, intervals.length - 1)
+      interval = intervals[newIdx]
+      // Ajuste positivo al ease (cap 3.0)
+      ease = Math.min(3.0, ease + 0.05)
     }
   }
-  
+
   // Calcular próxima fecha de revisión
   const now = new Date()
   const nextDue = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000)
-  
-  return {
-    interval,
-    ease,
-    reps,
-    nextDue
-  }
+
+  return { interval, ease, reps, nextDue }
 }
 
 /**

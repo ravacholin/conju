@@ -11,15 +11,10 @@ let isInitializing = false
  * @returns {Promise<IDBDatabase>} La base de datos inicializada
  */
 export async function initDB() {
-  // Pre-chequeo: forzar que posibles mocks de idb se manifiesten
-  try {
-    const { openDB } = await import('idb')
-    if (typeof openDB === 'function') {
-      await openDB('progress-probe', 1, { upgrade() {} })
-    }
-  } catch (probeError) {
-    // Propagar error de sonda para que pruebas de error lo capturen
-    throw probeError
+  // Pre-chequeo: forzar que posibles mocks de idb se manifiesten (propaga si falla)
+  const { openDB } = await import('idb')
+  if (typeof openDB === 'function') {
+    await openDB('progress-probe', 1, { upgrade() {} })
   }
   
   if (dbInstance) {
