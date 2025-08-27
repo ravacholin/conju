@@ -7,7 +7,12 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Para detalles técnicos de arquitectura ver `src/lib/progress/README.md`.
 
 ## Mejoras recientes (algoritmo, UX y estética)
-- **MAJOR FIXES (2025-08-27)**: Resueltos problemas críticos de experiencia de usuario
+- **MAJOR FIXES (2025-08-27 - Fase 2)**: Completado acceso total a verbos irregulares en práctica por tema
+  - **Irregulares habilitados**: TODOS los temas específicos ahora incluyen verbos irregulares (ser→fui, estar→estuve, tener→tuve)
+  - **Alcance universal**: Aplica a presente de subjuntivo, imperativo, condicional, futuro - no solo pretérito indefinido
+  - **Bypass inteligente**: Preserva estructura educativa por nivel mientras permite exploración libre por tema
+  - **Verbos avanzados**: Incluye irregulares complejos (poseer→poseyó, instruir→instruyó) en práctica específica
+- **MAJOR FIXES (2025-08-27 - Fase 1)**: Resueltos problemas críticos de experiencia de usuario
   - **Variedad total**: "Todos los verbos" ahora da acceso completo a ~90 verbos (regulares + irregulares)
   - **VOS restaurado**: Pronombre vos aparece correctamente en práctica rioplatense
   - **Anti-repetición**: Eliminada repetición monolítica - algoritmo diversificado con bonificaciones por variedad
@@ -94,6 +99,12 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
+- 2025-08-27 (Noche):
+  - **CRÍTICO**: Habilitado acceso completo a verbos irregulares en práctica por tema
+  - **fix(irregulares)**: TODOS los temas específicos ahora incluyen verbos irregulares (ser, estar, tener, hacer, venir, etc.)
+  - **fix(alcance universal)**: Aplica a presente subjuntivo, imperativo, condicional, futuro - no solo pretérito indefinido
+  - **fix(verbos avanzados)**: Incluidos irregulares complejos (poseer, proveer, instruir) en práctica específica
+  - **arquitectura**: Bypass inteligente preserva funcionalidad educativa por nivel mientras permite exploración libre
 - 2025-08-27 (Tarde):
   - **MAJOR**: Solucionados problemas críticos de variedad y dialecto en generador
   - **fix(variedad)**: "Todos los verbos" ahora accede a la base completa (~90 verbos) saltando restricciones `allowedLemmas`
