@@ -256,17 +256,19 @@ export function chooseNext({forms, history, currentItem}){
     }
     
     // Restrict lemmas if configured by level/packs
-    // BUT skip this restriction when user explicitly selects "all" verbs
-    if (allowedLemmas && verbType !== 'all') {
+    // BUT skip this restriction when user explicitly selects "all" verbs OR practices by specific topic
+    const shouldBypassLemmaRestrictions = (verbType === 'all') || isSpecificTopicPractice
+    if (allowedLemmas && !shouldBypassLemmaRestrictions) {
       if (!allowedLemmas.has(f.lemma)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
         console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
       }
-    } else if (verbType === 'all') {
-      // When user selects "all verbs", ignore level-based lemma restrictions
+    } else if (shouldBypassLemmaRestrictions) {
+      // When user selects "all verbs" OR practices by topic, ignore level-based lemma restrictions
       if (process.env.NODE_ENV === 'development') {
-        console.log('🌟 ALL VERBS MODE - Bypassing allowedLemmas restriction for:', f.lemma)
+        const reason = verbType === 'all' ? 'ALL VERBS MODE' : 'SPECIFIC TOPIC PRACTICE'
+        console.log(`🌟 ${reason} - Bypassing allowedLemmas restriction for:`, f.lemma)
       }
     }
 
@@ -351,14 +353,23 @@ export function chooseNext({forms, history, currentItem}){
         }
         
         // Level-based filtering for specific verb types
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        // BUT skip this filtering for specific topic practice
+        if (!isSpecificTopicPractice && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
-        const verbFamilies = categorizeVerb(f.lemma, verb)
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-          return false
+        // BUT skip this filtering for specific topic practice - user chose to practice specific forms
+        if (!isSpecificTopicPractice) {
+          const verbFamilies = categorizeVerb(f.lemma, verb)
+          if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+            return false
+          }
+        } else {
+          // For specific topic practice, allow all irregular verbs regardless of level
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🎯 TOPIC PRACTICE - Bypassing level-based verb filtering for irregular:', f.lemma)
+          }
         }
       }
     }

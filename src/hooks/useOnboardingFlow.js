@@ -350,13 +350,9 @@ export function useOnboardingFlow() {
         timeMode: 'soft',
         perItemMs: 6000,
         medianTargetMs: 3000,
-        // Basic verbs to start with (future automatic progression)
-        allowedLemmas: new Set([
-          'ser','estar','tener','haber','ir','ver','venir','poder','querer','hacer',
-          'decir','poner','dar','vivir','comer','hablar','saber','salir','llevar','pasar',
-          'deber','seguir','encontrar','llamar','trabajar','estudiar','comprar','vender',
-          'escribir','leer','abrir','cerrar','entrar','salir','empezar','terminar'
-        ])
+        // NO RESTRICT verbs for theme-based practice - let user choose verb types later
+        // When verbType='all' is selected, full database should be available
+        allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
     } else if (mode === 'mixed') {
