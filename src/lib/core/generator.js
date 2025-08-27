@@ -138,14 +138,23 @@ export function chooseNext({forms, history, currentItem}){
       }
       
       // Level filtering (O(1) with precomputed set)
-      // Determine allowed combos: from current block if set, else level
-      const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
-        ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
-        : getAllowedCombosForLevel(level)
-      if(!allowed.has(`${f.mood}|${f.tense}`)) {
-        if (isC1Debug) console.log('🚨 C1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
-        if (isB1Debug) console.log('🚨 B1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
-        return false
+      // SKIP level filtering for specific topic practice - when practicing by theme, levels don't matter
+      const isSpecificTopicPractice = practiceMode === 'specific' && specificMood && specificTense
+      if (!isSpecificTopicPractice) {
+        // Determine allowed combos: from current block if set, else level
+        const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
+          ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
+          : getAllowedCombosForLevel(level)
+        if(!allowed.has(`${f.mood}|${f.tense}`)) {
+          if (isC1Debug) console.log('🚨 C1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
+          if (isB1Debug) console.log('🚨 B1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
+          return false
+        }
+      } else {
+        // For specific topic practice, log that we're bypassing level restrictions
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🎯 SPECIFIC TOPIC - Bypassing level restrictions for:', `${f.mood}|${f.tense}`, f.lemma)
+        }
       }
     
     // Gate futuro de subjuntivo por toggle de producción
@@ -161,11 +170,8 @@ export function chooseNext({forms, history, currentItem}){
     if (f.mood === 'nonfinite') {
     } else {
       // Apply dialect filtering based on region setting
-      // UNLESS practicePronoun is 'all' which overrides regional restrictions
-      if (practicePronoun === 'all') {
-        // ALL forms mode: include ALL pronouns regardless of region
-        // yo, tú, vos, él, nosotros, vosotros, ellos - no filtering
-      } else if (region === 'rioplatense') {
+      // Even with 'all' pronouns, we respect regional restrictions to preserve dialectal consistency
+      if (region === 'rioplatense') {
         // Rioplatense: yo, vos, usted/él/ella, nosotros, ustedes/ellas/ellos
         if (f.person === '2s_tu') {
           return false
@@ -187,7 +193,8 @@ export function chooseNext({forms, history, currentItem}){
           return false
         }
       } else {
-        // All variants: yo, tú, vos, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
+        // No specific region set: allow all variants
+        // yo, tú, vos, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
         // No filtering, show all persons
       }
     }
@@ -249,11 +256,17 @@ export function chooseNext({forms, history, currentItem}){
     }
     
     // Restrict lemmas if configured by level/packs
-    if (allowedLemmas) {
+    // BUT skip this restriction when user explicitly selects "all" verbs
+    if (allowedLemmas && verbType !== 'all') {
       if (!allowedLemmas.has(f.lemma)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
         console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
+      }
+    } else if (verbType === 'all') {
+      // When user selects "all verbs", ignore level-based lemma restrictions
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🌟 ALL VERBS MODE - Bypassing allowedLemmas restriction for:', f.lemma)
       }
     }
 
@@ -462,8 +475,12 @@ export function chooseNext({forms, history, currentItem}){
   if (eligible.length === 0) {
     console.log('🔧 CHOOSENEXT DEBUG - NO ELIGIBLE FORMS! Starting fallback logic...')
     // Failsafe: relax filters progressively to always return something
-    let fallback = forms.filter(f => getAllowedCombosForLevel(level).has(`${f.mood}|${f.tense}`))
-    console.log('🔧 FALLBACK DEBUG - After level filter:', fallback.length)
+    // Apply same specific topic practice logic in fallback
+    const isSpecificTopicPractice = practiceMode === 'specific' && specificMood && specificTense
+    let fallback = isSpecificTopicPractice 
+      ? forms // For specific practice, don't filter by level at all
+      : forms.filter(f => getAllowedCombosForLevel(level).has(`${f.mood}|${f.tense}`))
+    console.log('🔧 FALLBACK DEBUG - After level filter:', fallback.length, isSpecificTopicPractice ? '(bypassed for specific practice)' : '')
     if (specificMood) fallback = fallback.filter(f => f.mood === specificMood)
     console.log('🔧 FALLBACK DEBUG - After mood filter:', fallback.length)
     if (specificTense) fallback = fallback.filter(f => f.tense === specificTense)
@@ -472,19 +489,19 @@ export function chooseNext({forms, history, currentItem}){
     fallback = fallback.filter(f => {
       if (f.mood === 'nonfinite') return true
       
-      // Apply same dialect filtering as main logic
-      // UNLESS practicePronoun is 'all' which overrides regional restrictions
-      if (practicePronoun === 'all') {
-        // ALL forms mode: include ALL pronouns regardless of region
-        return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person)
-      } else if (region === 'rioplatense') {
+      // Apply dialect filtering - preserve regional selection even with 'all' pronouns
+      // 'all' should mean all pronouns WITHIN the selected dialect, not globally
+      if (region === 'rioplatense') {
+        // Rioplatense: yo, vos, usted/él/ella, nosotros, ustedes/ellas/ellos
         return !['2s_tu', '2p_vosotros'].includes(f.person)
       } else if (region === 'peninsular') {
+        // Peninsular: yo, tú, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
         return f.person !== '2s_vos'
       } else if (region === 'la_general') {
+        // Latin American general: yo, tú, usted/él/ella, nosotros, ustedes/ellas/ellos  
         return !['2s_vos', '2p_vosotros'].includes(f.person)
       } else {
-        // All variants allowed
+        // No specific region set: allow all variants
         return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person)
       }
     })

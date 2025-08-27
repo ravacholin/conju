@@ -186,8 +186,8 @@ export function useOnboardingFlow() {
           useVosotros: false,
           strict: true,
           region: 'rioplatense',
-          // Ensure regional restrictions are honored (no global override)
-          practicePronoun: 'both'
+          // For rioplatense: include all pronouns within the dialect (including vos!)
+          practicePronoun: 'all'
         })
         break
       case 'la_general':

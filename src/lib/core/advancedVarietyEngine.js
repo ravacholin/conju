@@ -282,24 +282,47 @@ export class AdvancedVarietyEngine {
   }
 
   /**
-   * Basic form selection (for specific practice modes)
+   * Basic form selection (for specific practice modes) - ENHANCED for better variety
    */
   selectBasicForm(forms, history) {
-    // Apply light anti-repetition and accuracy-based selection
+    // ENHANCED: Apply stronger variety algorithms even for basic selection
+    console.log('🔄 BASIC SELECTION - Enhancing variety algorithms')
+    
+    // Group forms by lemma to ensure verb variety
+    const verbGroups = new Map()
+    forms.forEach(form => {
+      if (!verbGroups.has(form.lemma)) {
+        verbGroups.set(form.lemma, [])
+      }
+      verbGroups.get(form.lemma).push(form)
+    })
+    
+    console.log(`🔄 VARIETY DEBUG - ${verbGroups.size} different verbs available:`, Array.from(verbGroups.keys()).slice(0, 10))
+    
     const scoredForms = forms.map(form => {
       const accuracyScore = this.getAccuracyScore(form, history)
       const repetitionPenalty = this.sessionMemory.getRepetitionPenalty(form)
-      const varietyScore = 1 - repetitionPenalty
+      
+      // ENHANCED: Strong verb variety bonus
+      const recentVerbUse = this.sessionMemory.recentVerbs.has(form.lemma)
+      const verbVarietyBonus = recentVerbUse ? 0 : 0.5
+      
+      // ENHANCED: Person variety bonus
+      const personVarietyBonus = this.getPersonVarietyBonus(form.person)
+      
+      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus
       
       return {
         form,
-        score: accuracyScore * 0.7 + varietyScore * 0.3
+        score: accuracyScore * 0.4 + varietyScore * 0.6 // More emphasis on variety
       }
     })
     
-    // Select from top candidates
-    scoredForms.sort((a, b) => a.score - b.score) // Lower score = higher priority
-    const topCandidates = scoredForms.slice(0, Math.min(5, Math.ceil(forms.length * 0.3)))
+    // Select from top candidates with enhanced randomization
+    scoredForms.sort((a, b) => b.score - a.score) // Higher score = higher priority
+    const topCandidates = scoredForms.slice(0, Math.min(8, Math.ceil(forms.length * 0.4)))
+    
+    console.log('🔄 TOP CANDIDATES:', topCandidates.slice(0, 5).map(c => `${c.form.lemma}(${c.score.toFixed(2)})`))
     
     const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)].form
     
@@ -307,7 +330,19 @@ export class AdvancedVarietyEngine {
     const category = this.getVerbSemanticCategory(selected.lemma)
     this.sessionMemory.recordSelection(selected, category)
     
+    console.log('🔄 SELECTED:', `${selected.lemma} - ${selected.mood}/${selected.tense} - ${selected.person}`)
+    
     return selected
+  }
+  
+  /**
+   * Get person variety bonus to encourage different pronouns
+   */
+  getPersonVarietyBonus(person) {
+    const recentPersonCount = this.sessionMemory.recentPersons.get(person) || 0
+    if (recentPersonCount === 0) return 0.3 // Bonus for unused persons
+    if (recentPersonCount === 1) return 0.1 // Small bonus for lightly used
+    return -0.2 // Penalty for overused persons
   }
 
   /**
