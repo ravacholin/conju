@@ -7,9 +7,14 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Para detalles técnicos de arquitectura ver `src/lib/progress/README.md`.
 
 ## Mejoras recientes (algoritmo, UX y estética)
+- **MAJOR FIXES (2025-08-27)**: Resueltos problemas críticos de experiencia de usuario
+  - **Variedad total**: "Todos los verbos" ahora da acceso completo a ~90 verbos (regulares + irregulares)
+  - **VOS restaurado**: Pronombre vos aparece correctamente en práctica rioplatense
+  - **Anti-repetición**: Eliminada repetición monolítica - algoritmo diversificado con bonificaciones por variedad
+  - **Práctica libre por tema**: Sin restricciones MCER para práctica específica de subjuntivo/imperativo/etc
 - SRS sensible a pistas: correcto sin pista sube intervalo; con pista avanza medio paso; error reinicia a 1 día. Ver `src/lib/progress/srs.js` y tests `src/lib/progress/srs.test.js`.
-- Grader: análisis de errores más informativo (p. ej., “cambio ortográfico (c → qu)”) en `src/lib/core/grader.js`.
-- UX en Drill: atajos de teclado (Enter verificar/continuar; Cmd/Ctrl+Enter “No sé”; Esc limpiar/continuar; D ver diferencias) en `src/features/drill/Drill.jsx`.
+- Grader: análisis de errores más informativo (p. ej., "cambio ortográfico (c → qu)") en `src/lib/core/grader.js`.
+- UX en Drill: atajos de teclado (Enter verificar/continuar; Cmd/Ctrl+Enter "No sé"; Esc limpiar/continuar; D ver diferencias) en `src/features/drill/Drill.jsx`.
 - Tokens de diseño unificados (FlowIndicator): variables añadidas en `src/App.css`.
 
 ### Correcciones de conjugación (críticas)
@@ -89,10 +94,17 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
-- 2025-08-27:
+- 2025-08-27 (Tarde):
+  - **MAJOR**: Solucionados problemas críticos de variedad y dialecto en generador
+  - **fix(variedad)**: "Todos los verbos" ahora accede a la base completa (~90 verbos) saltando restricciones `allowedLemmas`
+  - **fix(repetición)**: Algoritmo de selección mejorado elimina repetición monolítica (hablar/comer constantes)
+  - **fix(vos)**: Pronombre VOS ahora aparece correctamente en práctica rioplatense (era `practicePronoun='both'`, ahora `='all'`)
+  - **fix(práctica por tema)**: Bypassed restricciones MCER cuando se practica por tema específico
+  - **fix(dialecto consistente)**: `practicePronoun='all'` ahora respeta restricciones regionales en lugar de globales
+- 2025-08-27 (Mañana):
   - fix(conjugación): Subjuntivo vos=tú y ajuste de imperativo negativo (2ª persona) → `conjugationRules.js`, `grader.js`.
   - fix(data): Saneador de Presente de Subjuntivo (re-etiquetado de persona, reconstrucción zc) → `dataSanitizer.js` + hook en `optimizedCache.js`.
-  - fix(generator): Invalida caché por `region` y `allowedLemmas` para que “Por tema” no se quede con un solo verbo.
+  - fix(generator): Invalida caché por `region` y `allowedLemmas` para que "Por tema" no se quede con un solo verbo.
 - 2025-08-26 (Tarde): 
   - **Housekeeping completo**: Centralizó configuración, agregó sistema de logging inteligente, prevención de memory leaks
   - **API unificada**: Estandarizó debugging bajo `window.SpanishConjugator.*`
