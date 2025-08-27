@@ -30,7 +30,7 @@ export class AdaptivePracticeEngine {
         maxRecommendations = 5,
         includeNewContent = true,
         focusMode = 'balanced', // 'balanced', 'weak_areas', 'review', 'new'
-        userLevel = 'intermediate'
+        userLevel = 'B1' // Default to B1 if no level specified
       } = options
 
       // Obtener datos del usuario
@@ -620,10 +620,10 @@ export async function needsMorePractice(mood, tense) {
  * Obtiene el próximo elemento recomendado para práctica
  * @returns {Promise<Object|null>} Elemento recomendado o null
  */
-export async function getNextRecommendedItem() {
+export async function getNextRecommendedItem(userLevel = null) {
   try {
     const engine = new AdaptivePracticeEngine()
-    const recommendations = await engine.getPracticeRecommendations({ maxRecommendations: 1 })
+    const recommendations = await engine.getPracticeRecommendations({ maxRecommendations: 1, userLevel })
     
     return recommendations.length > 0 ? recommendations[0] : null
   } catch (error) {

@@ -220,16 +220,37 @@ export function useDrillMode() {
       return form.mood === specificMood && form.tense === specificTense
     }
     
+    // CRITICAL: Level validation - check if tense is allowed for current level
+    const allowsLevel = (form) => {
+      const userLevel = settings.level
+      
+      // Simple hardcoded validation for A1 (most restrictive)
+      if (userLevel === 'A1') {
+        const allowedA1 = [
+          { mood: 'indicative', tense: 'pres' },
+          { mood: 'nonfinite', tense: 'part' }, 
+          { mood: 'nonfinite', tense: 'ger' },
+          { mood: 'nonfinite', tense: 'nonfiniteMixed' }
+        ]
+        return allowedA1.some(combo => combo.mood === form.mood && combo.tense === form.tense)
+      }
+      
+      // For other levels, be more permissive (this can be enhanced later)
+      return true
+    }
+    
     // CRITICAL VALIDATION: This should NEVER trigger if our logic is correct
-    if (nextForm && (!matchesSpecific(nextForm) || !allowsPerson(nextForm.person))) {
+    if (nextForm && (!matchesSpecific(nextForm) || !allowsPerson(nextForm.person) || !allowsLevel(nextForm))) {
       console.error('🚨 INTEGRITY GUARD TRIGGERED - Algorithm produced invalid form!', {
         selected: nextForm ? `${nextForm.mood}/${nextForm.tense}/${nextForm.person}` : 'null',
         expected: isSpecific ? `${specificMood}/${specificTense}` : 'any',
-        method: selectionMethod
+        method: selectionMethod,
+        level: settings.level,
+        levelValid: allowsLevel(nextForm)
       })
       
       // Use eligibleForms instead of allFormsForRegion for consistency
-      const compliant = eligibleForms.filter(f => matchesSpecific(f) && allowsPerson(f.person))
+      const compliant = eligibleForms.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
       if (compliant.length > 0) {
         nextForm = compliant[Math.floor(Math.random() * compliant.length)]
         selectionMethod += '+emergency_guard'
