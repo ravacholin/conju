@@ -302,6 +302,11 @@ export function grade(input, expected, settings){
   }
   
   // FINAL VALIDATION: Only apply fallback for truly undefined feedback on incorrect answers
+  // Generate positive feedback for correct answers
+  if (correct && !feedback) {
+    feedback = '¡Correcto!'
+  }
+  
   if (!correct && feedback === undefined) {
     console.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
     const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
