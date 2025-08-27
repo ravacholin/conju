@@ -1,5 +1,6 @@
 // Sistema de cache avanzado para optimizar el generador de verbos
 import { verbs } from '../../data/verbs.js'
+import { sanitizeVerbsInPlace } from './dataSanitizer.js'
 
 // Cache inteligente con expiración y límite de memoria
 class IntelligentCache {
@@ -76,6 +77,9 @@ class IntelligentCache {
 export const verbCategorizationCache = new IntelligentCache(500, 10 * 60 * 1000) // 10 min para categorización
 export const formFilterCache = new IntelligentCache(1000, 3 * 60 * 1000) // 3 min para filtrado
 export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 min para combinaciones
+
+// Sanitize known data issues before building indexes
+try { sanitizeVerbsInPlace(verbs) } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('Data sanitizer failed:', e) }
 
 // Pre-computar mapas frecuentemente utilizados
 export const VERB_LOOKUP_MAP = new Map(verbs.map(v => [v.lemma, v]))

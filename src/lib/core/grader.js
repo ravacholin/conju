@@ -127,8 +127,10 @@ export function grade(input, expected, settings){
   // IMPORTANT: Always add dialect-specific forms regardless of strict mode
   // When a specific dialect is selected, those forms should be accepted
   const a = expected.accepts||{}
+  // Dialect alternatives are NOT applied in subjunctive (vos = tú)
+  const allowDialectAlts = expected.mood !== 'subjunctive'
   if(settings.useTuteo && a.tu) candidates.add(a.tu)
-  if(settings.useVoseo && a.vos) candidates.add(a.vos)
+  if(allowDialectAlts && settings.useVoseo && a.vos) candidates.add(a.vos)
   if(settings.useVosotros && a.vosotros) candidates.add(a.vosotros)
   
   // Add additional alternative forms only if not in strict mode

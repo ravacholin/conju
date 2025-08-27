@@ -12,6 +12,11 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - UX en Drill: atajos de teclado (Enter verificar/continuar; Cmd/Ctrl+Enter “No sé”; Esc limpiar/continuar; D ver diferencias) en `src/features/drill/Drill.jsx`.
 - Tokens de diseño unificados (FlowIndicator): variables añadidas en `src/App.css`.
 
+### Correcciones de conjugación (críticas)
+- Subjuntivo (vos = tú): la 2ª persona singular de vos y tú son idénticas en todo el subjuntivo y en el imperativo negativo. Se eliminan variantes con acento tipo “hablés” en estos modos/tiempos. Reglas en `src/lib/core/conjugationRules.js` y validación en `src/lib/core/grader.js`.
+- Saneador de datos en tiempo de ejecución: corrige formas truncadas y personas mal rotuladas en Presente de Subjuntivo, y reconstituye ortografía zc para verbos en `-cer/-cir` (p. ej. “agradezca/agradezcan/agradezcamos/agradezcáis”). Implementado en `src/lib/core/dataSanitizer.js` e integrado antes del indexado en `src/lib/core/optimizedCache.js`.
+- Estabilidad del generador: la clave del caché ahora incluye `region` y una firma de `allowedLemmas` para evitar pools obsoletos al cambiar de tema/dialecto. Ver `src/lib/core/generator.js`.
+
 ## Cómo continuar (plan práctico)
 1) Fase 2 de lint (progreso):
    - Objetivo: limpiar imports/variables no usados y casos simples sin refactors.
@@ -84,6 +89,10 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
+- 2025-08-27:
+  - fix(conjugación): Subjuntivo vos=tú y ajuste de imperativo negativo (2ª persona) → `conjugationRules.js`, `grader.js`.
+  - fix(data): Saneador de Presente de Subjuntivo (re-etiquetado de persona, reconstrucción zc) → `dataSanitizer.js` + hook en `optimizedCache.js`.
+  - fix(generator): Invalida caché por `region` y `allowedLemmas` para que “Por tema” no se quede con un solo verbo.
 - 2025-08-26 (Tarde): 
   - **Housekeeping completo**: Centralizó configuración, agregó sistema de logging inteligente, prevención de memory leaks
   - **API unificada**: Estandarizó debugging bajo `window.SpanishConjugator.*`

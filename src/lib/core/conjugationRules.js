@@ -92,7 +92,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       if (tense === 'subjPres') {
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/ar$/, 'e'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ar$/, 'es'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ar$/, 'és'))) return true
+        // Subjuntivo: vos = tú (misma forma, sin acento)
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ar$/, 'es'))) return true
         if (person === '3s' && normalizedValue === normalize(lemma.replace(/ar$/, 'e'))) return true
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/ar$/, 'emos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ar$/, 'éis'))) return true
@@ -132,7 +133,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       }
       if (tense === 'impNeg') {
         if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'es'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'és'))) return true
+        // Subjuntivo/imperativo negativo: vos = tú
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'es'))) return true
         if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'e'))) return true
         if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'emos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace(/ar$/, 'éis'))) return true
@@ -204,7 +206,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       if (tense === 'subjPres') {
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/er$/, 'a'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/er$/, 'as'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/er$/, 'ás'))) return true
+        // Subjuntivo: vos = tú
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/er$/, 'as'))) return true
         if (person === '3s' && normalizedValue === normalize(lemma.replace(/er$/, 'a'))) return true
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/er$/, 'amos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/er$/, 'áis'))) return true
@@ -244,7 +247,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       }
       if (tense === 'impNeg') {
         if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'as'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'ás'))) return true
+        // Imperativo negativo: vos = tú
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'as'))) return true
         if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'a'))) return true
         if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'amos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace(/er$/, 'áis'))) return true
@@ -316,7 +320,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       if (tense === 'subjPres') {
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/ir$/, 'a'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ir$/, 'as'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'ás'))) return true
+        // Subjuntivo: vos = tú
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'as'))) return true
         if (person === '3s' && normalizedValue === normalize(lemma.replace(/ir$/, 'a'))) return true
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/ir$/, 'amos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ir$/, 'áis'))) return true
@@ -357,7 +362,8 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       }
       if (tense === 'impNeg') {
         if (person === '2s_tu' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'as'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'ás'))) return true
+        // Imperativo negativo: vos = tú
+        if (person === '2s_vos' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'as'))) return true
         if (person === '3s' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'a'))) return true
         if (person === '1p' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'amos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize('no ' + lemma.replace(/ir$/, 'áis'))) return true
