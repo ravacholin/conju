@@ -24,7 +24,16 @@ export default function Drill({
   const { handleResult } = useProgressTracking(currentItem, onResult);
 
   const getCanonicalTarget = () => {
-    // ... (same as before)
+    if (!currentItem) return null;
+    
+    // For currentItem structure, return the item itself as it contains the canonical form
+    return {
+      value: currentItem.value || currentItem.form?.value || '',
+      lemma: currentItem.lemma || '',
+      mood: currentItem.mood || '',
+      tense: currentItem.tense || '',
+      person: currentItem.person || ''
+    };
   };
 
   useEffect(() => {
@@ -39,21 +48,6 @@ export default function Drill({
     return () => clearTimeout(timer);
   }, [currentItem]);
 
-  const handleShowAnswer = () => {
-    const correctForm = getCanonicalTarget();
-    const resultObj = {
-      correct: false,
-      isAccentError: false,
-      targets: [correctForm?.value || currentItem.form.value],
-      note: `La forma correcta es "${correctForm?.value || currentItem.form.value}"`,
-      accepted: null,
-      hintsUsed: 0,
-      errorTags: ['idk']
-    };
-    setResult(resultObj);
-    handleResult(resultObj);
-    setShowDiff(false);
-  };
 
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return;
@@ -84,11 +78,58 @@ export default function Drill({
   };
 
   const getPersonText = () => {
-    // ... (same as before)
+    if (!currentItem) return '';
+    
+    // Import labels locally to avoid issues
+    const PERSON_LABELS = {
+      '1s': 'yo',
+      '2s_tu': 'tú', 
+      '2s_vos': 'vos',
+      '3s': 'él/ella',
+      '1p': 'nosotros',
+      '2p_vosotros': 'vosotros', 
+      '3p': 'ellos'
+    };
+    
+    return PERSON_LABELS[currentItem.person] || currentItem.person;
   };
 
   const getContextText = () => {
-    // ... (same as before)
+    if (!currentItem) return '';
+    
+    // Import labels locally to avoid issues
+    const MOOD_LABELS = {
+      'indicative': 'Indicativo',
+      'subjunctive': 'Subjuntivo', 
+      'imperative': 'Imperativo',
+      'conditional': 'Condicional',
+      'nonfinite': 'Formas no conjugadas'
+    };
+    
+    const TENSE_LABELS = {
+      'pres': 'Presente',
+      'pretPerf': 'Pretérito perfecto',
+      'pretIndef': 'Pretérito indefinido', 
+      'impf': 'Imperfecto',
+      'plusc': 'Pluscuamperfecto',
+      'fut': 'Futuro',
+      'futPerf': 'Futuro perfecto',
+      'subjPres': 'Presente',
+      'subjImpf': 'Imperfecto',
+      'subjPerf': 'Perfecto',
+      'subjPlusc': 'Pluscuamperfecto',
+      'impAff': 'Afirmativo',
+      'impNeg': 'Negativo', 
+      'cond': 'Condicional',
+      'condPerf': 'Condicional perfecto',
+      'ger': 'Gerundio',
+      'part': 'Participio'
+    };
+    
+    const moodLabel = MOOD_LABELS[currentItem.mood] || currentItem.mood;
+    const tenseLabel = TENSE_LABELS[currentItem.tense] || currentItem.tense;
+    
+    return `${moodLabel} - ${tenseLabel}`;
   };
 
   return (
@@ -110,16 +151,6 @@ export default function Drill({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-              // Cmd/Ctrl+Enter: mostrar respuesta (o continuar si ya hay resultado)
-              e.preventDefault();
-              if (!result) {
-                handleShowAnswer();
-              } else {
-                handleContinue();
-              }
-              return;
-            }
             if (e.key === 'Enter') {
               e.preventDefault();
               if (!result) {
@@ -156,8 +187,6 @@ export default function Drill({
       <div className="shortcut-hint" aria-hidden>
         <span>Enter: Verificar/Continuar</span>
         <span>·</span>
-        <span>Cmd/Ctrl+Enter: No sé</span>
-        <span>·</span>
         <span>Esc: Limpiar/Continuar</span>
         {result && !result.correct && <><span>·</span><span>D: Ver diferencias</span></>}
       </div>
@@ -171,13 +200,6 @@ export default function Drill({
               disabled={isSubmitting || !input.trim()}
             >
               {isSubmitting ? 'Verificando...' : 'Verificar'}
-            </button>
-            <button 
-              className="btn btn-secondary" 
-              onClick={handleShowAnswer}
-              disabled={isSubmitting}
-            >
-              No sé
             </button>
           </>
         ) : (
