@@ -60,6 +60,15 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Ejecutar `npm run lint` y `npm test` antes de abrir PR.
 - Documentar cambios de comportamiento en `src/lib/progress/README.md` cuando aplique.
 
+## PWA/Service Worker y caché
+- Comportamiento: la app usa un Service Worker para funcionar offline. Desde 2025‑08‑27 el SW aplica estrategia network‑first para HTML/navegación y cache‑first para assets estáticos con hash. Esto asegura que los cambios de la web se vean sin tener que borrar caché.
+- Archivo: `public/sw.js` (registrado en producción desde `src/main.jsx`).
+- Forzar actualización: cerrar y reabrir la pestaña suele bastar; una recarga adicional tras el despliegue toma la versión nueva. Con red caída, servirá la versión en caché.
+- Desactivar PWA temporalmente:
+  - No registrar SW: exporta `VITE_ENABLE_PWA=false` en el entorno de build/deploy.
+  - Desactivar plugin PWA de Vite: exporta `DISABLE_PWA=true` (ver `vite.config.js`).
+- Problemas de caché: si el dispositivo quedó con un SW muy antiguo, abrir el sitio, refrescar 2 veces o cerrar/reabrir debería adoptar el SW nuevo. Como último recurso, “Borrar datos del sitio” elimina el SW y la caché.
+
 ## Pendientes Prioritarios
 - Review Mode (SRS):
   - Superficie “Revisar ahora” con `getDueItems(userId)` y selector de items pendientes.
