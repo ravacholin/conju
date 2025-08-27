@@ -183,13 +183,6 @@ export default function Drill({
         />
       </div>
 
-      {/* Atajos de teclado para eficiencia */}
-      <div className="shortcut-hint" aria-hidden>
-        <span>Enter: Verificar/Continuar</span>
-        <span>·</span>
-        <span>Esc: Limpiar/Continuar</span>
-        {result && !result.correct && <><span>·</span><span>D: Ver diferencias</span></>}
-      </div>
 
       <div className="action-buttons">
         {!result ? (

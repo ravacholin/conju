@@ -106,7 +106,20 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   // Crear cache key para este filtrado
-  const filterKey = `filter|${level}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}`
+  // Include region and allowedLemmas signature in the cache key to avoid stale pools
+  const allowedSig = (() => {
+    try {
+      if (!allowedLemmas) return 'none'
+      // Create a compact, deterministic signature of the allowed lemmas set
+      const arr = Array.from(allowedLemmas)
+      arr.sort()
+      return `len:${arr.length}|${arr.slice(0, 20).join(',')}`
+    } catch {
+      return 'err'
+    }
+  })()
+
+  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|allowed:${allowedSig}`
   
   // Intentar obtener del cache
   let eligible = formFilterCache.get(filterKey)
