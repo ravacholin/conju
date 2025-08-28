@@ -472,12 +472,10 @@ export function useOnboardingFlow() {
       }
       
       // Special handling for step 5 (mood/tense selection)
-      // When in step 5 with a specific mood selected, go back to mood selection (step 5 without specific mood)
+      // If a mood is selected, go back to previous screen (step 4) instead of staying in step 5
       if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
-        settings.set({ 
-          specificMood: null
-        })
-        // Stay in step 5 but without specific mood
+        settings.set({ specificMood: null })
+        setOnboardingStep(4)
         return
       }
       
