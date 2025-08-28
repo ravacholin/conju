@@ -27,7 +27,7 @@ export function useOnboardingFlow() {
   // Push a browser history entry to align hardware back with app back
   const pushHistory = (nextStep) => {
     try {
-      window.history.pushState({ appNav: true, step: nextStep ?? onboardingStep, ts: Date.now() }, '')
+      window.history.pushState({ appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, ts: Date.now() }, '')
     } catch {
       /* ignore */
     }

@@ -76,13 +76,14 @@ function AppRouter() {
 
   const handleStartPractice = () => {
     // Push a history entry so the hardware back goes back to onboarding from drill
-    try { window.history.pushState({ appNav: true, mode: 'drill', ts: Date.now() }, '') } catch {}
+    try { window.history.pushState({ appNav: true, mode: 'drill', step: null, ts: Date.now() }, '') } catch {}
     setCurrentMode('drill')
   }
 
   const handleHome = () => {
     // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
+    try { window.history.pushState({ appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }, '') } catch {}
     setCurrentMode('onboarding')
     drillMode.setCurrentItem(null)
     drillMode.setHistory({})
@@ -99,18 +100,49 @@ function AppRouter() {
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
 
-  // Map browser/hardware back to in-app back/home behavior
+  // Sync browser/hardware back with in-app state using History API state
   useEffect(() => {
-    const onPopState = () => {
-      if (currentMode === 'drill') {
-        handleHome()
+    // Mark current entry if not already marked
+    try {
+      const st = window.history.state
+      if (!st || !st.appNav) {
+        window.history.replaceState({ appNav: true, mode: 'onboarding', step: onboardingFlow.onboardingStep || 1, ts: Date.now() }, '')
+      }
+    } catch {}
+
+    const onPopState = (e) => {
+      const st = e.state || window.history.state || {}
+      if (st && st.appNav) {
+        if (st.mode === 'drill') {
+          setCurrentMode('drill')
+        } else {
+          setCurrentMode('onboarding')
+          // Drive onboarding step directly from history state
+          if (typeof st.step === 'number') {
+            try { 
+              onboardingFlow.setOnboardingStep(st.step)
+              // Clean transient selections when stepping back before specific selections
+              if (st.step <= 4) {
+                settings.set({ cameFromTema: false, specificMood: null, specificTense: null, verbType: null, selectedFamily: null })
+              } else if (st.step === 5) {
+                settings.set({ specificTense: null, selectedFamily: null })
+              } else if (st.step === 6) {
+                settings.set({ selectedFamily: null })
+              }
+            } catch {}
+          } else {
+            try { onboardingFlow.setOnboardingStep(1) } catch {}
+          }
+        }
       } else {
-        try { onboardingFlow.goBack() } catch {}
+        // Not our state; default to onboarding step 1
+        setCurrentMode('onboarding')
+        try { onboardingFlow.setOnboardingStep(1) } catch {}
       }
     }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-  }, [currentMode])
+  }, [])
 
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {
