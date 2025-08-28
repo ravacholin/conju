@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
 import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
@@ -204,12 +205,28 @@ export function useDrillMode() {
     // 🚨 STRENGTHENED INTEGRITY GUARDS: Final validation
     const region = settings.region
     const pronounMode = settings.practicePronoun
+
+    // Helper: cumulative combos allowed up to the user's level
+    const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
+    const getAllowedCombosForLevel = (level) => {
+      if (!level) return new Set()
+      if (level === 'ALL') return new Set(gates.map(g => `${g.mood}|${g.tense}`))
+      const maxIdx = levelOrder(level)
+      return new Set(
+        gates
+          .filter(g => levelOrder(g.level) <= maxIdx)
+          .map(g => `${g.mood}|${g.tense}`)
+      )
+    }
     
     const allowsPerson = (person) => {
-      if (pronounMode === 'all') return true
+      // Always enforce dialectal constraints regardless of pronounMode
       if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
       if (region === 'la_general') return person !== '2s_vos' && person !== '2p_vosotros'
       if (region === 'peninsular') return person !== '2s_vos'
+      // If region not set, optionally apply pronoun filters
+      if (pronounMode === 'tu_only') return person === '2s_tu'
+      if (pronounMode === 'vos_only') return person === '2s_vos'
       return true
     }
     
@@ -222,21 +239,9 @@ export function useDrillMode() {
     
     // CRITICAL: Level validation - check if tense is allowed for current level
     const allowsLevel = (form) => {
-      const userLevel = settings.level
-      
-      // Simple hardcoded validation for A1 (most restrictive)
-      if (userLevel === 'A1') {
-        const allowedA1 = [
-          { mood: 'indicative', tense: 'pres' },
-          { mood: 'nonfinite', tense: 'part' }, 
-          { mood: 'nonfinite', tense: 'ger' },
-          { mood: 'nonfinite', tense: 'nonfiniteMixed' }
-        ]
-        return allowedA1.some(combo => combo.mood === form.mood && combo.tense === form.tense)
-      }
-      
-      // For other levels, be more permissive (this can be enhanced later)
-      return true
+      const userLevel = settings.level || 'A1'
+      const allowed = getAllowedCombosForLevel(userLevel)
+      return allowed.has(`${form.mood}|${form.tense}`)
     }
     
     // CRITICAL VALIDATION: This should NEVER trigger if our logic is correct
