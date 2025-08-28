@@ -1,5 +1,6 @@
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
+import { useEffect } from 'react'
 
 function MoodTenseSelection({ 
   settings, 
@@ -12,6 +13,15 @@ function MoodTenseSelection({
   getConjugationExample
 }) {
   
+  // Log state changes for debugging
+  useEffect(() => {
+    console.log('MoodTenseSelection: settings changed', {
+      level: settings.level,
+      practiceMode: settings.practiceMode,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense
+    });
+  }, [settings.level, settings.practiceMode, settings.specificMood, settings.specificTense]);
   
   if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
     // Level-specific practice with mood already selected - show tense selection
@@ -66,6 +76,9 @@ function MoodTenseSelection({
   
   if (!settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
     // Coming from main menu - show tense selection
+    console.log('MoodTenseSelection: Showing tense selection', {
+      specificMood: settings.specificMood
+    });
     return (
       <>
         <div className="options-grid">
@@ -91,6 +104,7 @@ function MoodTenseSelection({
   
   if (!settings.level && settings.practiceMode === 'specific') {
     // Coming from forms specific without level - show mood selection
+    console.log('MoodTenseSelection: Showing mood selection');
     return (
       <>
         <div className="options-grid">
