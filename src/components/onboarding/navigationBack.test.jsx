@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 import AppRouter from '../../components/AppRouter.jsx'
 import { useSettings } from '../../state/settings.js'
 

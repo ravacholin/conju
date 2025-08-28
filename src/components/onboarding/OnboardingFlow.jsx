@@ -1,3 +1,4 @@
+import React from 'react'
 import { useOnboardingFlow } from '../../hooks/useOnboardingFlow.js'
 import DialectSelection from './DialectSelection.jsx'
 import LevelSelection from './LevelSelection.jsx'
@@ -27,9 +28,13 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
     getConjugationExample
   } = useOnboardingFlow()
 
-  // Deterministic in-app Back (UI button) using onboarding flow logic
+  // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {
-    try { goBack() } catch { /* ignore */ }
+    try { 
+      window.history.back() 
+    } catch { 
+      /* ignore */ 
+    }
   }
 
   return (

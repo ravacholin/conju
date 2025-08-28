@@ -1,3 +1,4 @@
+import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
 function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false }) {

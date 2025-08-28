@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
@@ -106,15 +106,11 @@ function AppRouter() {
           if (typeof st.step === 'number') {
             try { 
               onboardingFlow.setOnboardingStep(st.step)
-              // Clean transient selections when stepping back before specific selections
-              if (st.step <= 4) {
-                settings.set({ cameFromTema: false, specificMood: null, specificTense: null, verbType: null, selectedFamily: null })
-              } else if (st.step === 5) {
-                settings.set({ specificTense: null, selectedFamily: null })
-              } else if (st.step === 6) {
-                settings.set({ selectedFamily: null })
-              }
-            } catch {}
+              // Enhanced state cleanup based on navigation target
+              cleanupStateForStep(st.step)
+            } catch (err) {
+              console.error('Error setting onboarding step:', err)
+            }
           } else {
             try { onboardingFlow.setOnboardingStep(1) } catch {}
           }
@@ -131,7 +127,82 @@ function AppRouter() {
     }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-  }, [])
+  }, [onboardingFlow, settings])
+
+  // Enhanced state cleanup function
+  const cleanupStateForStep = (targetStep) => {
+    const updates = {}
+    
+    // Step 1: Clear everything when going back to dialect selection
+    if (targetStep === 1) {
+      updates.cameFromTema = false
+      updates.specificMood = null
+      updates.specificTense = null
+      updates.verbType = null
+      updates.selectedFamily = null
+      updates.level = null
+      updates.practiceMode = null
+    }
+    
+    // Step 2: Clear practice-specific settings when going back to main menu
+    else if (targetStep === 2) {
+      updates.cameFromTema = false
+      updates.specificMood = null
+      updates.specificTense = null
+      updates.verbType = null
+      updates.selectedFamily = null
+    }
+    
+    // Step 3: Clear practice mode when going back to level details
+    else if (targetStep === 3) {
+      updates.practiceMode = null
+      updates.specificMood = null
+      updates.specificTense = null
+      updates.verbType = null
+      updates.selectedFamily = null
+    }
+    
+    // Step 4: Clear mood/tense selections when going back to practice mode
+    else if (targetStep === 4) {
+      updates.specificMood = null
+      updates.specificTense = null
+      updates.verbType = null
+      updates.selectedFamily = null
+    }
+    
+    // Step 5: Clear tense selection when going back to mood selection
+    else if (targetStep === 5) {
+      // For theme-based practice, we might need to clear mood
+      if (settings.cameFromTema && settings.specificMood && !settings.specificTense) {
+        updates.specificMood = null
+      } else {
+        updates.specificTense = null
+        updates.selectedFamily = null
+      }
+    }
+    
+    // Step 6: Clear family selection when going back to verb type
+    else if (targetStep === 6) {
+      // If we have both mood and tense, we're going back to tense selection
+      if (settings.specificMood && settings.specificTense) {
+        updates.specificTense = null
+      }
+      // If we have only mood, we're going back to mood selection
+      else if (settings.specificMood && !settings.specificTense) {
+        updates.specificMood = null
+      }
+      updates.selectedFamily = null
+    }
+    
+    // Step 7: Clear family when going back to verb type selection
+    else if (targetStep === 7) {
+      updates.selectedFamily = null
+    }
+
+    if (Object.keys(updates).length > 0) {
+      settings.set(updates)
+    }
+  }
 
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {

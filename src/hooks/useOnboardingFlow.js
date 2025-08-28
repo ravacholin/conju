@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSettings } from '../state/settings.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../lib/utils/verbLabels.js'
 import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
@@ -24,6 +24,7 @@ function getAllowedLemmasForLevel(level) {
 export function useOnboardingFlow() {
   const [onboardingStep, setOnboardingStep] = useState(1)
   const settings = useSettings()
+  
 
   // Push a browser history entry to align hardware back with app back
   const pushHistory = (nextStep) => {
@@ -465,108 +466,15 @@ export function useOnboardingFlow() {
   }
 
   const goBack = () => {
-    // Store the current step for debugging
-    const currentStep = onboardingStep;
-    
-    if (currentStep > 1) {
-      // Theme-based practice specific handling
-      if (settings.cameFromTema) {
-        // Step 5: if a mood was selected (no tense yet), go back to step 4 (practice mode)
-        if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
-          settings.set({ specificMood: null })
-          setOnboardingStep(4)
-          pushHistory(4)
-          return
-        }
-        // Step 5: if no mood selected, go back to main menu (step 2) and clear theme flags
-        if (currentStep === 5 && !settings.specificMood) {
-          settings.set({ cameFromTema: false, specificMood: null, specificTense: null })
-          setOnboardingStep(2)
-          pushHistory(2)
-          return
-        }
-        // Step 6: if a mood was selected but no tense yet, go back to mood selection (step 5) and clear mood
-        if (currentStep === 6 && settings.specificMood && !settings.specificTense) {
-          settings.set({ specificMood: null })
-          setOnboardingStep(5)
-          pushHistory(5)
-          return
-        }
-        // Step 6: if a tense was selected under a chosen mood, go back to step 5 and clear tense
-        if (currentStep === 6 && settings.specificMood && settings.specificTense) {
-          settings.set({ specificTense: null })
-          setOnboardingStep(5)
-          pushHistory(5)
-          return
-        }
-        // Step 7 (verb type) in topic flow: go back to tense selection and clear specificTense
-        if (currentStep === 7 && settings.specificTense) {
-          settings.set({ specificTense: null })
-          setOnboardingStep(6)
-          pushHistory(6)
-          return
-        }
-      }
-      // Special handling for step 2 (main menu: "¿Qué querés practicar?")
-      // When going back from this step, we should go to step 1 (dialect selection)
-      if (currentStep === 2) {
-        setOnboardingStep(1)
-        pushHistory(1)
-        return
-      }
-      
-      // Special handling for step 3 (specific level selection)
-      // When going back from this step, we should go to step 2 (level selection mode)
-      if (currentStep === 3) {
-        setOnboardingStep(2)
-        pushHistory(2)
-        return
-      }
-      
-      // Special handling for step 4 (practice mode selection)
-      // When going back from this step, we should go to step 2 (level selection mode)
-      if (currentStep === 4) {
-        setOnboardingStep(2)
-        pushHistory(2)
-        return
-      }
-      
-      // Special handling for step 5 (mood/tense selection)
-      // If a mood is selected, go back to previous screen (step 4) instead of staying in step 5
-      if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
-        settings.set({ specificMood: null })
-        setOnboardingStep(4)
-        pushHistory(4)
-        return
-      }
-      
-      // Special handling for step 6 (tense/verb type selection)
-      // When in step 6 with a specific tense selected, go back to mood selection (step 5 with specific mood)
-      if (currentStep === 6 && settings.specificMood && settings.specificTense) {
-        settings.set({ specificTense: null })
-        setOnboardingStep(5)
-        pushHistory(5)
-        return
-      }
-      // When in step 6 with a specific mood selected (and no tense), go back to step 5 and clear mood (general flow)
-      if (currentStep === 6 && settings.specificMood && !settings.specificTense) {
-        settings.set({ specificMood: null })
-        setOnboardingStep(5)
-        pushHistory(5)
-        return
-      }
-      // Special handling for step 7 (verb type selection): clear tense and go back to step 6
-      if (currentStep === 7 && settings.specificTense) {
-        settings.set({ specificTense: null })
-        setOnboardingStep(6)
-        pushHistory(6)
-        return
-      }
-      
-      // Default behavior: go back one step
-      const target = currentStep - 1
-      setOnboardingStep(target)
-      pushHistory(target)
+    // Unified back behavior: always use browser history
+    // State cleanup will be handled by the popstate listener in AppRouter
+    try {
+      window.history.back()
+    } catch {
+      // Fallback: go to main menu if history is empty
+      const step = 2
+      setOnboardingStep(step)
+      pushHistory(step)
     }
   }
 
