@@ -72,6 +72,17 @@ function AppRouter() {
         console.log('📊 Cache Stats:', getCacheStats())
       }, 1000)
     }
+
+    // Ensure we have a guard history entry so hardware back doesn't exit immediately
+    try {
+      const st = window.history.state
+      const step = onboardingFlow.onboardingStep || 1
+      if (!st || !st.appNav) {
+        window.history.replaceState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
+      }
+      // Push guard entry to keep one step inside the app
+      window.history.pushState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
+    } catch {}
   }, [])
 
   const handleStartPractice = () => {
@@ -135,9 +146,13 @@ function AppRouter() {
           }
         }
       } else {
-        // Not our state; default to onboarding step 1
-        setCurrentMode('onboarding')
-        try { onboardingFlow.setOnboardingStep(1) } catch {}
+        // Not our state; re-insert a guard state to keep navigation inside app
+        try {
+          const step = onboardingFlow.onboardingStep || 1
+          window.history.pushState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
+          setCurrentMode('onboarding')
+          onboardingFlow.setOnboardingStep(step)
+        } catch {}
       }
     }
     window.addEventListener('popstate', onPopState)

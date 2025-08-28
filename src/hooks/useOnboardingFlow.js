@@ -559,6 +559,13 @@ export function useOnboardingFlow() {
         pushHistory(5)
         return
       }
+      // When in step 6 with a specific mood selected (and no tense), go back to step 5 and clear mood (general flow)
+      if (currentStep === 6 && settings.specificMood && !settings.specificTense) {
+        settings.set({ specificMood: null })
+        setOnboardingStep(5)
+        pushHistory(5)
+        return
+      }
       // Special handling for step 7 (verb type selection): clear tense and go back to step 6
       if (currentStep === 7 && settings.specificTense) {
         settings.set({ specificTense: null })
