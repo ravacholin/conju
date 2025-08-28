@@ -510,6 +510,13 @@ export function useOnboardingFlow() {
           pushHistory(5)
           return
         }
+        // Step 7 (verb type) in topic flow: go back to tense selection and clear specificTense
+        if (currentStep === 7 && settings.specificTense) {
+          settings.set({ specificTense: null })
+          setOnboardingStep(6)
+          pushHistory(6)
+          return
+        }
       }
       // Special handling for step 2 (main menu: "¿Qué querés practicar?")
       // When going back from this step, we should go to step 1 (dialect selection)
@@ -550,6 +557,13 @@ export function useOnboardingFlow() {
         settings.set({ specificTense: null })
         setOnboardingStep(5)
         pushHistory(5)
+        return
+      }
+      // Special handling for step 7 (verb type selection): clear tense and go back to step 6
+      if (currentStep === 7 && settings.specificTense) {
+        settings.set({ specificTense: null })
+        setOnboardingStep(6)
+        pushHistory(6)
         return
       }
       
