@@ -450,38 +450,6 @@ export function useOnboardingFlow() {
     const currentStep = onboardingStep;
     
     if (currentStep > 1) {
-      // Special handling for theme-based practice (cameFromTema = true)
-      if (settings.cameFromTema) {
-        // When in step 5 with a specific mood selected, go back to mood selection (step 5 without specific mood)
-        if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
-          settings.set({ 
-            specificMood: null
-          })
-          // Stay in step 5 but without specific mood
-          return
-        }
-        
-        // When in step 5 without a specific mood, go directly to main menu (step 2)
-        if (currentStep === 5 && !settings.specificMood) {
-          settings.set({ 
-            cameFromTema: false,
-            specificMood: null,
-            specificTense: null
-          })
-          setOnboardingStep(2) // Go directly to main menu: "¿Qué querés practicar?"
-          return
-        }
-        
-        // When in step 6 with a specific tense selected, go back to tense selection (step 5 with specific mood)
-        if (currentStep === 6 && settings.specificMood && settings.specificTense) {
-          settings.set({ 
-            specificTense: null
-          })
-          setOnboardingStep(5)
-          return
-        }
-      }
-      
       // Special handling for step 2 (main menu: "¿Qué querés practicar?")
       // When going back from this step, we should go to step 1 (dialect selection)
       if (currentStep === 2) {
@@ -505,7 +473,6 @@ export function useOnboardingFlow() {
       
       // Special handling for step 5 (mood/tense selection)
       // When in step 5 with a specific mood selected, go back to mood selection (step 5 without specific mood)
-      // This applies to both theme-based practice and level-specific practice
       if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
         settings.set({ 
           specificMood: null
@@ -516,7 +483,6 @@ export function useOnboardingFlow() {
       
       // Special handling for step 6 (tense/verb type selection)
       // When in step 6 with a specific tense selected, go back to mood selection (step 5 with specific mood)
-      // This applies to both theme-based practice and level-specific practice
       if (currentStep === 6 && settings.specificMood && settings.specificTense) {
         settings.set({ 
           specificTense: null
