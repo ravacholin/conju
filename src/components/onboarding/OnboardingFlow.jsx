@@ -57,15 +57,6 @@ function OnboardingFlow({
     console.log(`📋 Flow selected from menu: ${selectedFlowType}`)
     if (onFlowSelection) {
       onFlowSelection(selectedFlowType)
-      
-      // Navigate to the next step in the selected flow
-      if (selectedFlowType === 'por_nivel') {
-        // Por nivel: go to level selection (step 3)
-        goToLevelDetails()
-      } else if (selectedFlowType === 'por_tema') {
-        // Por tema: go directly to mood/tense selection (skip level selection)
-        selectPracticeMode('theme')
-      }
     }
   }
 
