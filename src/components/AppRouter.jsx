@@ -6,6 +6,7 @@ import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
 import { verbs } from '../data/verbs.js'
+import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
@@ -18,15 +19,30 @@ function AppRouter() {
   // Compute forms for current region (memoized for performance)
   const allFormsForRegion = useMemo(() => {
     if (!settings.region) return []
-    
-    return verbs.flatMap(verb =>
-      verb.paradigms
-        .filter(paradigm => paradigm.regionTags.includes(settings.region))
-        .flatMap(paradigm => paradigm.forms.map(form => ({
-          ...form,
-          lemma: verb.lemma
-        })))
-    )
+
+    const regionForms = []
+    const eligibleLemmas = new Set()
+
+    for (const verb of verbs) {
+      const paradigms = verb.paradigms || []
+      const hasRegion = paradigms.some(p => (p.regionTags || []).includes(settings.region))
+      if (!hasRegion) continue
+      eligibleLemmas.add(verb.lemma)
+      for (const p of paradigms) {
+        if (!p.regionTags || !p.regionTags.includes(settings.region)) continue
+        for (const f of p.forms || []) {
+          regionForms.push({ ...f, lemma: verb.lemma })
+        }
+      }
+    }
+
+    // Agregar formas no finitas sintetizadas (gerundio/participio) por verbo elegible
+    for (const lemma of eligibleLemmas) {
+      const nf = buildNonfiniteFormsForLemma(lemma)
+      regionForms.push(...nf)
+    }
+
+    return regionForms
   }, [settings.region])
 
   // Initialize app state
