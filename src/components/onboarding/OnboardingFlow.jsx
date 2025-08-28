@@ -7,7 +7,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice, setCurrentMode }) {
+function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
   const {
     onboardingStep,
     selectDialect,
@@ -87,6 +87,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
                 />
               ) : (
                 <MoodTenseSelection 
+                  formsForRegion={formsForRegion}
                   settings={settings}
                   onSelectMood={selectMood}
                   onSelectTense={selectTense}
@@ -111,6 +112,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
                 />
               ) : settings.level ? (
                 <MoodTenseSelection 
+                  formsForRegion={formsForRegion}
                   settings={settings}
                   onSelectMood={selectMood}
                   onSelectTense={selectTense}

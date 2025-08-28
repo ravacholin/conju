@@ -1,9 +1,11 @@
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { useEffect } from 'react'
+import { getEligibleFormsForSettings } from '../../lib/core/eligibility.js'
 
 function MoodTenseSelection({ 
   settings, 
+  formsForRegion,
   onSelectMood, 
   onSelectTense,
   onBack,
@@ -25,6 +27,13 @@ function MoodTenseSelection({
   
   if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
     // Level-specific practice with mood already selected - show tense selection
+    const countForTense = (tense) => {
+      try {
+        const candidate = { ...settings, specificTense: tense }
+        const pool = getEligibleFormsForSettings(formsForRegion || [], candidate)
+        return pool.length
+      } catch { return undefined }
+    }
     return (
       <>
         <div className="options-grid">
@@ -36,7 +45,10 @@ function MoodTenseSelection({
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
               <h3>{getTenseLabel(tense)}</h3>
-              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+              <p className="conjugation-example">
+                {getConjugationExample(settings.specificMood, tense)}
+                {(() => { const c = countForTense(tense); return typeof c === 'number' ? ` · ${c}` : '' })()}
+              </p>
             </ClickableCard>
           ))}
         </div>
@@ -51,6 +63,13 @@ function MoodTenseSelection({
   if (settings.level && settings.practiceMode === 'specific') {
     // Specific practice from level - show filtered moods
     const availableMoods = getAvailableMoodsForLevel(settings.level)
+    const countForMood = (mood) => {
+      try {
+        const candidate = { ...settings, specificMood: mood }
+        const pool = getEligibleFormsForSettings(formsForRegion || [], candidate)
+        return pool.length
+      } catch { return undefined }
+    }
     return (
       <>
         <div className="options-grid">
@@ -62,7 +81,7 @@ function MoodTenseSelection({
               title={`Seleccionar ${getMoodLabel(mood)}`}
             >
               <h3>{getMoodLabel(mood)}</h3>
-              <p className="conjugation-example">{getModeSamples(mood)}</p>
+              <p className="conjugation-example">{getModeSamples(mood)}{(() => { const c = countForMood(mood); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
             </ClickableCard>
           ))}
         </div>
@@ -79,6 +98,13 @@ function MoodTenseSelection({
     console.log('MoodTenseSelection: Showing tense selection', {
       specificMood: settings.specificMood
     });
+    const countForTenseTheme = (tense) => {
+      try {
+        const candidate = { ...settings, specificTense: tense, cameFromTema: true }
+        const pool = getEligibleFormsForSettings(formsForRegion || [], candidate)
+        return pool.length
+      } catch { return undefined }
+    }
     return (
       <>
         <div className="options-grid">
@@ -90,7 +116,10 @@ function MoodTenseSelection({
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
               <h3>{getTenseLabel(tense)}</h3>
-              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+              <p className="conjugation-example">
+                {getConjugationExample(settings.specificMood, tense)}
+                {(() => { const c = countForTenseTheme(tense); return typeof c === 'number' ? ` · ${c}` : '' })()}
+              </p>
             </ClickableCard>
           ))}
         </div>
@@ -105,6 +134,13 @@ function MoodTenseSelection({
   if (!settings.level && settings.practiceMode === 'specific') {
     // Coming from forms specific without level - show mood selection
     console.log('MoodTenseSelection: Showing mood selection');
+    const countForMoodTheme = (mood) => {
+      try {
+        const candidate = { ...settings, specificMood: mood, cameFromTema: true }
+        const pool = getEligibleFormsForSettings(formsForRegion || [], candidate)
+        return pool.length
+      } catch { return undefined }
+    }
     return (
       <>
         <div className="options-grid">
@@ -114,7 +150,7 @@ function MoodTenseSelection({
             title="Seleccionar modo indicativo"
           >
             <h3>Indicativo</h3>
-            <p className="conjugation-example">{getModeSamples('indicative')}</p>
+            <p className="conjugation-example">{getModeSamples('indicative')}{(() => { const c = countForMoodTheme('indicative'); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -123,7 +159,7 @@ function MoodTenseSelection({
             title="Seleccionar modo subjuntivo"
           >
             <h3>Subjuntivo</h3>
-            <p className="conjugation-example">{getModeSamples('subjunctive')}</p>
+            <p className="conjugation-example">{getModeSamples('subjunctive')}{(() => { const c = countForMoodTheme('subjunctive'); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -132,7 +168,7 @@ function MoodTenseSelection({
             title="Seleccionar modo imperativo"
           >
             <h3>Imperativo</h3>
-            <p className="conjugation-example">{getModeSamples('imperative')}</p>
+            <p className="conjugation-example">{getModeSamples('imperative')}{(() => { const c = countForMoodTheme('imperative'); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -141,7 +177,7 @@ function MoodTenseSelection({
             title="Seleccionar modo condicional"
           >
             <h3>Condicional</h3>
-            <p className="conjugation-example">{getModeSamples('conditional')}</p>
+            <p className="conjugation-example">{getModeSamples('conditional')}{(() => { const c = countForMoodTheme('conditional'); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -150,7 +186,7 @@ function MoodTenseSelection({
             title="Seleccionar formas no conjugadas"
           >
             <h3>Formas no conjugadas</h3>
-            <p className="conjugation-example">{getModeSamples('nonfinite')}</p>
+            <p className="conjugation-example">{getModeSamples('nonfinite')}{(() => { const c = countForMoodTheme('nonfinite'); return typeof c === 'number' ? ` · ${c}` : '' })()}</p>
           </ClickableCard>
         </div>
         
