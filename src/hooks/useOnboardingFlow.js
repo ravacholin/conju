@@ -434,6 +434,17 @@ export function useOnboardingFlow() {
     closeTopPanelsAndFeatures()
     
     if (verbType === 'irregular') {
+      // Do NOT branch into family selection for gerunds: mix all irregular patterns
+      const isGerundFlow = settings.specificMood === 'nonfinite' && (
+        settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed' || !settings.specificTense
+      )
+      if (isGerundFlow) {
+        const updates = { verbType, selectedFamily: null }
+        settings.set(updates)
+        onStartPractice && onStartPractice()
+        return
+      }
+
       // Check if only one family is available for the current tense
       const tense = settings.specificTense
       const availableFamilies = tense ? getFamiliesForTense(tense) : []

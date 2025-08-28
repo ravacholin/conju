@@ -103,7 +103,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
           {/* Step 6: Multiple cases - Family Selection or Tense Selection */}
           {onboardingStep === 6 && (
             <>
-              {settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed' ? (
+              {settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
                 <FamilySelection 
                   settings={settings}
                   onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
@@ -114,7 +114,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
                   settings={settings}
                   onSelectMood={selectMood}
                   onSelectTense={selectTense}
-                  onBack={goBack}
+                  onBack={handleBack}
                   getAvailableMoodsForLevel={getAvailableMoodsForLevel}
                   getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
                   getModeSamples={getModeSamples}
@@ -123,7 +123,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
               ) : (
                 <VerbTypeSelection 
                   onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
-                  onBack={goBack}
+                  onBack={handleBack}
                 />
               )}
             </>
@@ -138,7 +138,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
           )}
 
           {/* Step 8: Family Selection for Irregular Verbs */}
-          {onboardingStep === 8 && settings.verbType === 'irregular' && (
+          {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
             <FamilySelection 
               settings={settings}
               onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
