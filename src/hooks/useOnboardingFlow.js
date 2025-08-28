@@ -486,18 +486,21 @@ export function useOnboardingFlow() {
         if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
           settings.set({ specificMood: null })
           setOnboardingStep(4)
+          pushHistory(4)
           return
         }
         // Step 5: if no mood selected, go back to main menu (step 2) and clear theme flags
         if (currentStep === 5 && !settings.specificMood) {
           settings.set({ cameFromTema: false, specificMood: null, specificTense: null })
           setOnboardingStep(2)
+          pushHistory(2)
           return
         }
         // Step 6: if a tense was selected under a chosen mood, go back to step 5 and clear tense
         if (currentStep === 6 && settings.specificMood && settings.specificTense) {
           settings.set({ specificTense: null })
           setOnboardingStep(5)
+          pushHistory(5)
           return
         }
       }
@@ -505,6 +508,7 @@ export function useOnboardingFlow() {
       // When going back from this step, we should go to step 1 (dialect selection)
       if (currentStep === 2) {
         setOnboardingStep(1)
+        pushHistory(1)
         return
       }
       
@@ -512,6 +516,7 @@ export function useOnboardingFlow() {
       // When going back from this step, we should go to step 2 (level selection mode)
       if (currentStep === 3) {
         setOnboardingStep(2)
+        pushHistory(2)
         return
       }
       
@@ -519,6 +524,7 @@ export function useOnboardingFlow() {
       // When going back from this step, we should go to step 2 (level selection mode)
       if (currentStep === 4) {
         setOnboardingStep(2)
+        pushHistory(2)
         return
       }
       
@@ -527,21 +533,23 @@ export function useOnboardingFlow() {
       if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
         settings.set({ specificMood: null })
         setOnboardingStep(4)
+        pushHistory(4)
         return
       }
       
       // Special handling for step 6 (tense/verb type selection)
       // When in step 6 with a specific tense selected, go back to mood selection (step 5 with specific mood)
       if (currentStep === 6 && settings.specificMood && settings.specificTense) {
-        settings.set({ 
-          specificTense: null
-        })
+        settings.set({ specificTense: null })
         setOnboardingStep(5)
+        pushHistory(5)
         return
       }
       
       // Default behavior: go back one step
-      setOnboardingStep(currentStep - 1)
+      const target = currentStep - 1
+      setOnboardingStep(target)
+      pushHistory(target)
     }
   }
 

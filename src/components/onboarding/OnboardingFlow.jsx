@@ -27,9 +27,9 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
     getConjugationExample
   } = useOnboardingFlow()
 
-  // Make app Back button mirror browser back (hardware back gesture)
+  // Deterministic in-app Back (UI button) using onboarding flow logic
   const handleBack = () => {
-    try { window.history.back() } catch { /* ignore */ }
+    try { goBack() } catch { /* ignore */ }
   }
 
   return (
