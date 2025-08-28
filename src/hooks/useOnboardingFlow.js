@@ -496,6 +496,13 @@ export function useOnboardingFlow() {
           pushHistory(2)
           return
         }
+        // Step 6: if a mood was selected but no tense yet, go back to mood selection (step 5) and clear mood
+        if (currentStep === 6 && settings.specificMood && !settings.specificTense) {
+          settings.set({ specificMood: null })
+          setOnboardingStep(5)
+          pushHistory(5)
+          return
+        }
         // Step 6: if a tense was selected under a chosen mood, go back to step 5 and clear tense
         if (currentStep === 6 && settings.specificMood && settings.specificTense) {
           settings.set({ specificTense: null })
