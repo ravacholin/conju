@@ -11,10 +11,15 @@ export default defineConfig(({ mode }) => ({
       disable: mode !== 'production' || process.env.DISABLE_PWA === 'true' || process.versions?.node?.startsWith?.('22.'),
       // Avoid terser renderChunk issues on some Node/terser combos
       minify: false,
+      // Inject registration automatically to avoid manual SW registration
+      injectRegister: 'auto',
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt'],
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB limit
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true
       },
       manifest: {
         name: 'VerbOS - Conjugador de Español',
