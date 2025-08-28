@@ -1,3 +1,4 @@
+import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
 function VerbTypeSelection({ onSelectVerbType, onBack }) {

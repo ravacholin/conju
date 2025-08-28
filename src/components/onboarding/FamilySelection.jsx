@@ -1,3 +1,4 @@
+import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { getFamiliesForMood, getFamiliesForTense } from '../../lib/data/irregularFamilies.js'
 import { 

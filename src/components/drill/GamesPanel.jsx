@@ -1,3 +1,5 @@
+import React from 'react'
+
 function GamesPanel({ settings, onClose, onRegenerateItem }) {
   const handleResistanceToggle = () => {
     if (settings.resistanceActive) {

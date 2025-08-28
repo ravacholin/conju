@@ -1,3 +1,4 @@
+import React from 'react'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 
 function QuickSwitchPanel({ 
