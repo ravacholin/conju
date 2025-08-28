@@ -27,6 +27,10 @@ const IRREGULAR_GERUNDS = {
   'medir': 'midiendo',
   'vestir': 'vistiendo',
   'seguir': 'siguiendo',
+  'conseguir': 'consiguiendo',
+  'perseguir': 'persiguiendo',
+  'elegir': 'eligiendo',
+  'repetir': 'repitiendo',
   'servir': 'sirviendo',
   'reír': 'riendo'
 }
@@ -101,4 +105,3 @@ export function buildNonfiniteFormsForLemma(lemma) {
   }
   return forms
 }
-

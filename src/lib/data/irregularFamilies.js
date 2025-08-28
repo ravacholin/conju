@@ -39,7 +39,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'pedir, servir, repetir, seguir, sentir, preferir',
     examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir'],
     pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
-    affectedTenses: ['pres', 'subjPres', 'pretIndef'],
+    affectedTenses: ['pres', 'subjPres', 'pretIndef', 'ger'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']
   },
   
@@ -49,7 +49,7 @@ export const IRREGULAR_FAMILIES = {
     description: 'dormir, morir, adormecerse, gruñir, podrir, promorir',
     examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir', 'gruñir'],
     pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
-    affectedTenses: ['pretIndef'],
+    affectedTenses: ['pretIndef', 'ger'],
     paradigmaticVerbs: ['dormir', 'morir']
   },
   
@@ -447,25 +447,25 @@ export function categorizeVerb(lemma, verbData) {
     'poder': ['DIPHT_O_UE', 'PRET_U', 'IRREG_GERUNDS', 'IRREG_CONDITIONAL'],
     'contar': ['DIPHT_O_UE'],
     'mostrar': ['DIPHT_O_UE'],
-    'dormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
-    'morir': ['DIPHT_O_UE', 'O_U_GER_IR'],
+    'dormir': ['DIPHT_O_UE', 'O_U_GER_IR', 'IRREG_GERUNDS'],
+    'morir': ['DIPHT_O_UE', 'O_U_GER_IR', 'IRREG_GERUNDS'],
     
     // Diptongación u→ue
     'jugar': ['DIPHT_U_UE', 'ORTH_GAR'],
     
     // e→i (-ir)
-    'pedir': ['E_I_IR'],
-    'servir': ['E_I_IR'],
-    'repetir': ['E_I_IR'],
-    'seguir': ['E_I_IR', 'GU_DROP'],
-    'elegir': ['E_I_IR', 'JO_VERBS'],
-    'medir': ['E_I_IR'],
-    'reír': ['E_I_IR'],
-    'sentir': ['DIPHT_E_IE', 'E_I_IR'],
-    'preferir': ['DIPHT_E_IE', 'E_I_IR'],
-    'mentir': ['DIPHT_E_IE', 'E_I_IR'],
-    'competir': ['E_I_IR'],
-    'vestir': ['E_I_IR'],
+    'pedir': ['E_I_IR', 'IRREG_GERUNDS'],
+    'servir': ['E_I_IR', 'IRREG_GERUNDS'],
+    'repetir': ['E_I_IR', 'IRREG_GERUNDS'],
+    'seguir': ['E_I_IR', 'GU_DROP', 'IRREG_GERUNDS'],
+    'elegir': ['E_I_IR', 'JO_VERBS', 'IRREG_GERUNDS'],
+    'medir': ['E_I_IR', 'IRREG_GERUNDS'],
+    'reír': ['E_I_IR', 'IRREG_GERUNDS'],
+    'sentir': ['DIPHT_E_IE', 'E_I_IR', 'IRREG_GERUNDS'],
+    'preferir': ['DIPHT_E_IE', 'E_I_IR', 'IRREG_GERUNDS'],
+    'mentir': ['DIPHT_E_IE', 'E_I_IR', 'IRREG_GERUNDS'],
+    'competir': ['E_I_IR', 'IRREG_GERUNDS'],
+    'vestir': ['E_I_IR', 'IRREG_GERUNDS'],
     
     // Pretéritos fuertes
     'andar': ['PRET_UV'],
@@ -552,9 +552,9 @@ export function categorizeVerb(lemma, verbData) {
     'tener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
     'poner': ['G_VERBS', 'PRET_U', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'salir': ['G_VERBS', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
-    'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL'],
+    'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
     'hacer': ['G_VERBS', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
-    'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
+    'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES', 'IRREG_GERUNDS'],
     
     // Monosílabos irregulares y formas especiales
     'ir': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
