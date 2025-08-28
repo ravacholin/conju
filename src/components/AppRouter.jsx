@@ -7,14 +7,37 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
 import { getEligiblePool, buildFormsForRegion } from '../lib/core/eligibility.js'
 import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
+// New flow-based navigation imports
+import { getFlowConfig, getFlowTypeFromUrl, porNivelFlowConfig, porTemaFlowConfig } from '../lib/flows/flowConfigs.js'
+import { useFlowNavigation } from '../lib/flows/useFlowNavigation.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
   const settings = useSettings()
   
+  // Detect flow type from URL or settings
+  const [flowType, setFlowType] = useState(() => {
+    // First try to get from URL
+    const urlFlowType = getFlowTypeFromUrl(window.location.pathname)
+    if (urlFlowType) return urlFlowType
+    
+    // Then try to get from settings
+    if (settings.flowType) return settings.flowType
+    
+    // Default to null (will show main menu)
+    return null
+  })
+  
+  // Feature flag for gradual migration
+  const useNewFlowSystem = true // TODO: Make this configurable
+  
   // Import hooks
   const drillMode = useDrillMode()
   const onboardingFlow = useOnboardingFlow()
+  
+  // Initialize flow navigation (only if using new system and flow type is set)
+  const flowConfig = flowType ? getFlowConfig(flowType) : null
+  const flowNavigation = flowConfig ? useFlowNavigation(flowConfig) : null
 
   // Compute forms for current region (memoized for performance)
   const allFormsForRegion = useMemo(() => buildFormsForRegion(settings.region), [settings.region])
@@ -60,42 +83,57 @@ function AppRouter() {
   }, [])
 
   const handleStartPractice = () => {
-    // Push a history entry so the hardware back goes back to onboarding from drill
-    try { window.history.pushState({ appNav: true, mode: 'drill', step: null, ts: Date.now() }, '') } catch {}
-    setCurrentMode('drill')
+    if (useNewFlowSystem && flowNavigation) {
+      // Use new flow-based navigation
+      flowNavigation.goToDrill()
+      setCurrentMode('drill')
+    } else {
+      // Fallback to old system
+      try { window.history.pushState({ appNav: true, mode: 'drill', step: null, ts: Date.now() }, '') } catch {}
+      setCurrentMode('drill')
+    }
   }
 
   const handleHome = () => {
-    // Calculate the proper step to return to from drill mode
-    const calculatePreviousStepFromDrill = () => {
-      // Based on the current settings, determine where we came from
-      if (settings.selectedFamily) {
-        return 8  // Came from Family Selection
-      } else if (settings.verbType && settings.specificTense) {
-        return 7  // Came from Verb Type Selection (after tense selection)
-      } else if (settings.specificTense) {
-        return 6  // Came from Tense Selection
-      } else if (settings.specificMood) {
-        return 5  // Came from Mood Selection
-      } else if (settings.practiceMode && settings.level) {
-        return 4  // Came from Practice Mode Selection (Por nivel)
-      } else {
-        return 2  // Default: Main Menu (Por tema or initial)
-      }
-    }
-
     // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
     
-    const previousStep = calculatePreviousStepFromDrill()
-    console.log(`🏠 Drill → Onboarding step ${previousStep}`)
+    if (useNewFlowSystem && flowNavigation) {
+      // Use new flow-based navigation - it will calculate the correct previous step
+      console.log(`🏠 Using new flow navigation to go back from drill`)
+      flowNavigation.goBack()
+      setCurrentMode('onboarding')
+    } else {
+      // Fallback to old complex calculation logic
+      const calculatePreviousStepFromDrill = () => {
+        // Based on the current settings, determine where we came from
+        if (settings.selectedFamily) {
+          return 8  // Came from Family Selection
+        } else if (settings.verbType && settings.specificTense) {
+          return 7  // Came from Verb Type Selection (after tense selection)
+        } else if (settings.specificTense) {
+          return 6  // Came from Tense Selection
+        } else if (settings.specificMood) {
+          return 5  // Came from Mood Selection
+        } else if (settings.practiceMode && settings.level) {
+          return 4  // Came from Practice Mode Selection (Por nivel)
+        } else {
+          return 2  // Default: Main Menu (Por tema or initial)
+        }
+      }
+      
+      const previousStep = calculatePreviousStepFromDrill()
+      console.log(`🏠 Drill → Onboarding step ${previousStep} (old system)`)
+      
+      try { 
+        window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, ts: Date.now() }, '') 
+      } catch {}
+      
+      setCurrentMode('onboarding')
+      onboardingFlow.setOnboardingStep(previousStep)
+    }
     
-    try { 
-      window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, ts: Date.now() }, '') 
-    } catch {}
-    
-    setCurrentMode('onboarding')
-    onboardingFlow.setOnboardingStep(previousStep)
+    // Always clear drill state
     drillMode.setCurrentItem(null)
     drillMode.setHistory({})
   }
@@ -310,8 +348,71 @@ function AppRouter() {
     drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
+  // New flow-based functions
+  const handleFlowSelection = (selectedFlowType) => {
+    console.log(`🚀 User selected flow: ${selectedFlowType}`)
+    setFlowType(selectedFlowType)
+    settings.set({ flowType: selectedFlowType })
+    
+    // Navigate to first step of the selected flow
+    if (useNewFlowSystem) {
+      // The flow navigation will be initialized on next render with the new flow type
+      setTimeout(() => {
+        const config = getFlowConfig(selectedFlowType)
+        const firstStep = config.steps[0]
+        // Navigate to the appropriate first step after main menu
+        const secondStep = config.steps[2] // Skip dialect and main menu
+        window.history.pushState({ 
+          appNav: true, 
+          flowType: selectedFlowType, 
+          step: secondStep, 
+          ts: Date.now() 
+        }, '', config.urlPaths[secondStep])
+      }, 50)
+    }
+  }
+
+  const handleBackToMainMenu = () => {
+    console.log(`🏠 Returning to main menu, clearing flow type`)
+    setFlowType(null)
+    settings.set({ flowType: null })
+    
+    // Clear flow-specific settings
+    if (flowNavigation) {
+      flowNavigation.clearFlowSettings()
+    }
+  }
+
   if (currentMode === 'onboarding') {
-    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    // Determine which system to use
+    if (useNewFlowSystem && flowType && flowNavigation) {
+      console.log(`🎯 Using new flow system: ${flowType}`)
+      // TODO: Return flow-specific components here
+      // For now, fallback to old system with additional props
+      return (
+        <OnboardingFlow 
+          onStartPractice={handleStartPractice} 
+          setCurrentMode={setCurrentMode} 
+          formsForRegion={allFormsForRegion}
+          // New flow-based props
+          flowType={flowType}
+          flowNavigation={flowNavigation}
+          onFlowSelection={handleFlowSelection}
+          onBackToMainMenu={handleBackToMainMenu}
+        />
+      )
+    } else {
+      // Use old system (for main menu and fallback)
+      return (
+        <OnboardingFlow 
+          onStartPractice={handleStartPractice} 
+          setCurrentMode={setCurrentMode} 
+          formsForRegion={allFormsForRegion}
+          // Flow selection handlers for main menu
+          onFlowSelection={handleFlowSelection}
+        />
+      )
+    }
   }
 
   if (currentMode === 'drill') {
@@ -331,6 +432,9 @@ function AppRouter() {
         onStartSpecificPractice={handleStartSpecificPractice}
         getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+        // New flow-based props
+        flowType={flowType}
+        flowNavigation={flowNavigation}
       />
     )
   }
