@@ -55,7 +55,7 @@ export default function ProgressDashboard() {
         setUserStats(stats)
         setWeeklyGoals(goals)
         setWeeklyProgress(progress)
-        setRecommendations(recs)
+        setRecommendations(Array.isArray(recs) ? recs : [])
         
         setLoading(false)
       } catch (err) {

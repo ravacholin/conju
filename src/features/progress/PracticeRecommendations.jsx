@@ -36,8 +36,8 @@ export default function PracticeRecommendations({
         focusMode,
         includeNewContent: true
       })
-      
-      setRecommendations(recs)
+      // Defensive: ensure array shape
+      setRecommendations(Array.isArray(recs) ? recs : [])
     } catch (err) {
       console.error('Error cargando recomendaciones:', err)
       setError('Error al cargar recomendaciones de práctica')
@@ -221,15 +221,15 @@ export default function PracticeRecommendations({
           </button>
         </div>
 
-        {selectedSession && (
+        {(selectedSession && Array.isArray(selectedSession.activities)) && (
           <div className="session-preview">
             <h5>Plan de Sesión ({selectedSession.duration} min)</h5>
             <div className="session-stats">
               <span>📝 ~{selectedSession.estimatedItems} elementos</span>
-              <span>🎯 {selectedSession.focusAreas.join(', ')}</span>
+              <span>🎯 {(selectedSession.focusAreas || []).join(', ')}</span>
             </div>
             <div className="session-activities">
-              {selectedSession.activities.map((activity, index) => (
+              {(selectedSession.activities || []).map((activity, index) => (
                 <div key={index} className="session-activity">
                   <span className="activity-icon">{getRecommendationIcon(activity.type)}</span>
                   <span className="activity-title">{activity.title}</span>
