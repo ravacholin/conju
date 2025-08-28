@@ -64,23 +64,6 @@ const useSettings = create(
       // Verbos raros para C2
       c2RareBoostLemmas: [],
       
-      // Flow-based navigation system
-      flowType: null, // 'por_nivel' | 'por_tema' | null
-      
-      // Flow-specific settings namespaces
-      // Por Nivel flow settings
-      porNivel_level: null,
-      porNivel_practiceMode: null,
-      porNivel_specificMood: null, 
-      porNivel_verbType: null,
-      porNivel_selectedFamily: null,
-      
-      // Por Tema flow settings
-      porTema_specificMood: null,
-      porTema_specificTense: null,
-      porTema_verbType: null,
-      porTema_selectedFamily: null,
-      
       // Métodos para actualizar configuración
       set: (newSettings) => set({ ...get(), ...newSettings }),
       setLevel: (level) => set({ level }),
@@ -106,89 +89,6 @@ const useSettings = create(
       toggleFuturoSubjRead: () => set((state) => ({ enableFuturoSubjRead: !state.enableFuturoSubjRead })),
       setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
       setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
-      
-      // Flow-specific setting helpers
-      getFlowSetting: (flowType, key) => {
-        const state = get()
-        const namespacedKey = `${flowType}_${key}`
-        return state[namespacedKey] !== undefined ? state[namespacedKey] : state[key]
-      },
-      
-      setFlowSetting: (flowType, key, value) => {
-        const namespacedKey = `${flowType}_${key}`
-        const updates = { [namespacedKey]: value }
-        
-        // Also update the global version for backward compatibility
-        if (get().flowType === flowType) {
-          updates[key] = value
-        }
-        
-        set(updates)
-      },
-      
-      setFlowSettings: (flowType, settings) => {
-        const updates = {}
-        
-        for (const [key, value] of Object.entries(settings)) {
-          const namespacedKey = `${flowType}_${key}`
-          updates[namespacedKey] = value
-          
-          // Also update global version if this is the current flow
-          if (get().flowType === flowType) {
-            updates[key] = value
-          }
-        }
-        
-        set(updates)
-      },
-      
-      clearFlowSettings: (flowType) => {
-        const state = get()
-        const updates = {}
-        
-        // Clear all namespaced settings for this flow
-        const flowKeys = ['level', 'practiceMode', 'specificMood', 'specificTense', 'verbType', 'selectedFamily']
-        
-        for (const key of flowKeys) {
-          const namespacedKey = `${flowType}_${key}`
-          if (state[namespacedKey] !== undefined) {
-            updates[namespacedKey] = null
-          }
-          
-          // Also clear global version if this is the current flow
-          if (state.flowType === flowType) {
-            updates[key] = null
-          }
-        }
-        
-        set(updates)
-      },
-      
-      // Switch to a specific flow and sync settings
-      switchToFlow: (flowType) => {
-        const state = get()
-        const updates = { flowType }
-        
-        if (flowType) {
-          // Load flow-specific settings into global settings
-          const flowKeys = ['level', 'practiceMode', 'specificMood', 'specificTense', 'verbType', 'selectedFamily']
-          
-          for (const key of flowKeys) {
-            const namespacedKey = `${flowType}_${key}`
-            if (state[namespacedKey] !== undefined && state[namespacedKey] !== null) {
-              updates[key] = state[namespacedKey]
-            }
-          }
-        } else {
-          // Clearing flow type - could clear some settings
-          updates.specificMood = null
-          updates.specificTense = null
-          updates.verbType = 'all'
-          updates.selectedFamily = null
-        }
-        
-        set(updates)
-      },
       
       // Métodos para debugging
       getCacheStats: () => {
@@ -221,23 +121,7 @@ const useSettings = create(
         enableFuturoSubjProd: state.enableFuturoSubjProd,
         enableFuturoSubjRead: state.enableFuturoSubjRead,
         cliticsPercent: state.cliticsPercent,
-        resistanceBestMsByLevel: state.resistanceBestMsByLevel,
-        
-        // Flow-based navigation settings
-        flowType: state.flowType,
-        
-        // Por Nivel flow settings
-        porNivel_level: state.porNivel_level,
-        porNivel_practiceMode: state.porNivel_practiceMode,
-        porNivel_specificMood: state.porNivel_specificMood,
-        porNivel_verbType: state.porNivel_verbType,
-        porNivel_selectedFamily: state.porNivel_selectedFamily,
-        
-        // Por Tema flow settings
-        porTema_specificMood: state.porTema_specificMood,
-        porTema_specificTense: state.porTema_specificTense,
-        porTema_verbType: state.porTema_verbType,
-        porTema_selectedFamily: state.porTema_selectedFamily
+        resistanceBestMsByLevel: state.resistanceBestMsByLevel
       })
     }
   )
