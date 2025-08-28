@@ -59,6 +59,8 @@ function AppRouter() {
   }, [])
 
   const handleStartPractice = () => {
+    // Push a history entry so the hardware back goes back to onboarding from drill
+    try { window.history.pushState({ appNav: true, mode: 'drill', ts: Date.now() }, '') } catch {}
     setCurrentMode('drill')
   }
 
@@ -80,6 +82,19 @@ function AppRouter() {
       drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
+
+  // Map browser/hardware back to in-app back/home behavior
+  useEffect(() => {
+    const onPopState = () => {
+      if (currentMode === 'drill') {
+        handleHome()
+      } else {
+        try { onboardingFlow.goBack() } catch {}
+      }
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [currentMode])
 
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {

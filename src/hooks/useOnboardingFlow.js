@@ -24,6 +24,15 @@ export function useOnboardingFlow() {
   const [onboardingStep, setOnboardingStep] = useState(1)
   const settings = useSettings()
 
+  // Push a browser history entry to align hardware back with app back
+  const pushHistory = (nextStep) => {
+    try {
+      window.history.pushState({ appNav: true, step: nextStep ?? onboardingStep, ts: Date.now() }, '')
+    } catch {
+      /* ignore */
+    }
+  }
+
   const closeTopPanelsAndFeatures = () => {
     // Function to close all top panels and features - will be defined in parent
     // This is a placeholder for now
@@ -235,6 +244,7 @@ export function useOnboardingFlow() {
         break
     }
     setOnboardingStep(2)
+    pushHistory(2)
   }
 
   const selectLevel = (level) => {
@@ -337,6 +347,7 @@ export function useOnboardingFlow() {
     }
     settings.set(updates)
     setOnboardingStep(4) // Go to practice mode selection
+    pushHistory(4)
   }
 
   const selectPracticeMode = (mode) => {
@@ -366,6 +377,7 @@ export function useOnboardingFlow() {
         allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
+      pushHistory(5)
     } else {
       // For other practice modes, reset theme-based practice settings
       settings.set({ 
@@ -377,12 +389,14 @@ export function useOnboardingFlow() {
       
       if (mode === 'mixed') {
         setOnboardingStep(5) // Go to verb type selection for mixed practice
+        pushHistory(5)
       } else if (mode === 'specific') {
         // For specific practice without level, set to C2 to show all forms
         if (!settings.level) {
           settings.set({ level: 'C2' })
         }
         setOnboardingStep(5) // Go to mood selection for specific practice
+        pushHistory(5)
       }
     }
   }
@@ -394,9 +408,11 @@ export function useOnboardingFlow() {
     
     if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
+      pushHistory(6)
     } else {
       // For theme-based practice, stay in step 5 but with specific mood set
       // The component will show tense selection when specificMood is set
+      pushHistory(5)
     }
   }
 
@@ -406,9 +422,11 @@ export function useOnboardingFlow() {
     
     if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
+      pushHistory(7)
     } else {
       // For theme-based practice (cameFromTema=true), go to step 6
       setOnboardingStep(6) // Go to verb type selection for general practice
+      pushHistory(6)
     }
   }
 
@@ -429,6 +447,7 @@ export function useOnboardingFlow() {
         // Multiple families available - show family selection
         settings.set({ verbType })
         setOnboardingStep(8) // Go to family selection
+        pushHistory(8)
       }
     } else {
       // For regulares and todos, start practice directly
@@ -517,6 +536,7 @@ export function useOnboardingFlow() {
 
   const goToLevelDetails = () => {
     setOnboardingStep(3)
+    pushHistory(3)
   }
 
   const handleHome = (setCurrentMode) => {

@@ -27,6 +27,11 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
     getConjugationExample
   } = useOnboardingFlow()
 
+  // Make app Back button mirror browser back (hardware back gesture)
+  const handleBack = () => {
+    try { window.history.back() } catch { /* ignore */ }
+  }
+
   return (
     <div className="App">
       <div className="onboarding">
@@ -47,7 +52,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
               onSelectLevel={selectLevel}
               onSelectPracticeMode={selectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
-              onBack={goBack}
+              onBack={handleBack}
               showLevelDetails={false}
             />
           )}
@@ -58,7 +63,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
               onSelectLevel={selectLevel}
               onSelectPracticeMode={selectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
-              onBack={goBack}
+              onBack={handleBack}
               showLevelDetails={true}
             />
           )}
@@ -67,7 +72,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
           {onboardingStep === 4 && (
             <PracticeModeSelection 
               onSelectPracticeMode={selectPracticeMode}
-              onBack={goBack}
+              onBack={handleBack}
               settings={settings}
             />
           )}
@@ -78,14 +83,14 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
               {settings.level && settings.practiceMode === 'mixed' ? (
                 <VerbTypeSelection 
                   onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
-                  onBack={goBack}
+                  onBack={handleBack}
                 />
               ) : (
                 <MoodTenseSelection 
                   settings={settings}
                   onSelectMood={selectMood}
                   onSelectTense={selectTense}
-                  onBack={goBack}
+                  onBack={handleBack}
                   getAvailableMoodsForLevel={getAvailableMoodsForLevel}
                   getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
                   getModeSamples={getModeSamples}
@@ -102,7 +107,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
                 <FamilySelection 
                   settings={settings}
                   onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
-                  onBack={goBack}
+                  onBack={handleBack}
                 />
               ) : settings.level ? (
                 <MoodTenseSelection 
@@ -128,7 +133,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
           {onboardingStep === 7 && settings.level && (
             <VerbTypeSelection 
               onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
-              onBack={goBack}
+              onBack={handleBack}
             />
           )}
 
@@ -137,7 +142,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode }) {
             <FamilySelection 
               settings={settings}
               onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
-              onBack={goBack}
+              onBack={handleBack}
             />
           )}
         </div>
