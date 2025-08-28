@@ -366,27 +366,37 @@ export function useOnboardingFlow() {
         allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
-    } else if (mode === 'mixed') {
-      settings.set({ practiceMode: mode })
-      setOnboardingStep(5) // Go to verb type selection for mixed practice
-    } else if (mode === 'specific') {
-      settings.set({ practiceMode: mode })
-      // For specific practice without level, set to C2 to show all forms
-      if (!settings.level) {
-        settings.set({ level: 'C2' })
+    } else {
+      // For other practice modes, reset theme-based practice settings
+      settings.set({ 
+        practiceMode: mode,
+        cameFromTema: false,
+        specificMood: null,
+        specificTense: null
+      })
+      
+      if (mode === 'mixed') {
+        setOnboardingStep(5) // Go to verb type selection for mixed practice
+      } else if (mode === 'specific') {
+        // For specific practice without level, set to C2 to show all forms
+        if (!settings.level) {
+          settings.set({ level: 'C2' })
+        }
+        setOnboardingStep(5) // Go to mood selection for specific practice
       }
-      setOnboardingStep(5) // Go to mood selection for specific practice
     }
   }
 
   const selectMood = (mood) => {
     closeTopPanelsAndFeatures()
+    // For theme-based practice (cameFromTema=true), keep the flag set
     settings.set({ specificMood: mood })
     
     if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
     } else {
-      setOnboardingStep(5) // Go to tense selection for general practice
+      // For theme-based practice, stay in step 5 but with specific mood set
+      // The component will show tense selection when specificMood is set
     }
   }
 
@@ -397,6 +407,7 @@ export function useOnboardingFlow() {
     if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
     } else {
+      // For theme-based practice (cameFromTema=true), go to step 6
       setOnboardingStep(6) // Go to verb type selection for general practice
     }
   }
@@ -435,21 +446,96 @@ export function useOnboardingFlow() {
   }
 
   const goBack = () => {
-    if (onboardingStep > 1) {
-      // Special case: if we're in step 5 and came from "Por tema", go directly to main menu
-      if (onboardingStep === 5 && settings.cameFromTema) {
-        setOnboardingStep(2) // Go directly to main menu: "¿Qué querés practicar?"
+    // Store the current step for debugging
+    const currentStep = onboardingStep;
+    
+    if (currentStep > 1) {
+      // Special handling for theme-based practice (cameFromTema = true)
+      if (settings.cameFromTema) {
+        // When in step 5 with a specific mood selected, go back to mood selection (step 5 without specific mood)
+        if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
+          console.log('goBack: Clearing specificMood in theme-based practice');
+          settings.set({ 
+            specificMood: null
+          })
+          // Stay in step 5 but without specific mood
+          return
+        }
+        
+        // When in step 5 without a specific mood, go directly to main menu (step 2)
+        if (currentStep === 5 && !settings.specificMood) {
+          console.log('goBack: Going to main menu from theme-based practice');
+          settings.set({ 
+            cameFromTema: false,
+            specificMood: null,
+            specificTense: null
+          })
+          setOnboardingStep(2) // Go directly to main menu: "¿Qué querés practicar?"
+          return
+        }
+        
+        // When in step 6 with a specific tense selected, go back to tense selection (step 5 with specific mood)
+        if (currentStep === 6 && settings.specificMood && settings.specificTense) {
+          console.log('goBack: Going back to tense selection in theme-based practice');
+          settings.set({ 
+            specificTense: null
+          })
+          setOnboardingStep(5)
+          return
+        }
+      }
+      
+      // Special handling for step 2 (main menu: "¿Qué querés practicar?")
+      // When going back from this step, we should go to step 1 (dialect selection)
+      if (currentStep === 2) {
+        console.log('goBack: Going to dialect selection');
+        setOnboardingStep(1)
         return
       }
       
-      // Special case: if we're in step 6 and came from "Por tema", go back to step 5
-      if (onboardingStep === 6 && settings.cameFromTema) {
+      // Special handling for step 3 (specific level selection)
+      // When going back from this step, we should go to step 2 (level selection mode)
+      if (currentStep === 3) {
+        console.log('goBack: Going to level selection mode');
+        setOnboardingStep(2)
+        return
+      }
+      
+      // Special handling for step 4 (practice mode selection)
+      // When going back from this step, we should go to step 2 (level selection mode)
+      if (currentStep === 4) {
+        console.log('goBack: Going to level selection mode from practice mode selection');
+        setOnboardingStep(2)
+        return
+      }
+      
+      // Special handling for step 5 (mood/tense selection)
+      // When in step 5 with a specific mood selected, go back to mood selection (step 5 without specific mood)
+      // This applies to both theme-based practice and level-specific practice
+      if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
+        console.log('goBack: Clearing specificMood in level-specific practice');
+        settings.set({ 
+          specificMood: null
+        })
+        // Stay in step 5 but without specific mood
+        return
+      }
+      
+      // Special handling for step 6 (tense/verb type selection)
+      // When in step 6 with a specific tense selected, go back to mood selection (step 5 with specific mood)
+      // This applies to both theme-based practice and level-specific practice
+      if (currentStep === 6 && settings.specificMood && settings.specificTense) {
+        console.log('goBack: Going back to mood selection from tense/verb type selection');
+        settings.set({ 
+          specificTense: null
+        })
         setOnboardingStep(5)
         return
       }
       
       // Default behavior: go back one step
-      setOnboardingStep(onboardingStep - 1)
+      console.log('goBack: Default behavior, going back one step');
+      setOnboardingStep(currentStep - 1)
     }
   }
 
@@ -463,6 +549,12 @@ export function useOnboardingFlow() {
     if (setCurrentMode) {
       setCurrentMode('onboarding')
     }
+    // Reset theme-based practice settings
+    settings.set({
+      cameFromTema: false,
+      specificMood: null,
+      specificTense: null
+    })
     setOnboardingStep(2) // Go to main menu: "¿Qué querés practicar?" (Por Nivel / Por Tema)
   }
 
