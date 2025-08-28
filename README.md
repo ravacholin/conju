@@ -111,7 +111,46 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 ## Licencia
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
+## Sistema de Navegación por Flujos (Nuevo)
+
+### Arquitectura Flow-Based Navigation
+El sistema implementa navegación lineal separada para dos flujos distintos de usuario:
+- **Por Nivel**: `Dialect → Level → Mode → Mood/Tense → VerbType → Family → Drill`
+- **Por Tema**: `Dialect → Mood/Tense → VerbType → Family → Drill`
+
+### Características Clave
+- **🔙 Navegación de vuelta arreglada**: Tanto botón hardware como software funcionan consistentemente
+- **📱 URLs enrutadas**: `/por-nivel` y `/por-tema` para deep linking  
+- **⚙️ Settings aislados**: Cada flujo mantiene su propia configuración (`porNivel_*`, `porTema_*`)
+- **🔄 Historial del navegador**: Integración completa con browser history API
+- **🧭 Navegación predictible**: Cada flujo tiene pasos lineales bien definidos
+
+### Archivos del Sistema
+- `src/lib/flows/flowConfigs.js` - Configuraciones de flujo y reglas de navegación
+- `src/lib/flows/useFlowNavigation.js` - Hook genérico para cualquier flujo
+- Enhanced settings in `src/state/settings.js` con namespacing por flujo
+- Componentes actualizados: `AppRouter.jsx`, `OnboardingFlow.jsx`, `LevelSelection.jsx`
+
+### Uso Técnico
+```javascript
+// Selección de flujo desde el menú principal
+const handleFlowSelection = (flowType) => {
+  settings.switchToFlow(flowType) // 'por_nivel' | 'por_tema'
+}
+
+// Hook de navegación genérico
+const flowNavigation = useFlowNavigation(flowConfig, initialStep)
+```
+
 ## Registro de Actualizaciones
+- 2025-08-28 (Navegación):
+  - **ARQUITECTURA COMPLETA**: Sistema de navegación flow-based implementado
+  - **fix(navegación crítica)**: Resuelto problema "El botón back funciona pésimo" reportado por usuario
+  - **feat(flujos separados)**: Por Nivel y Por Tema ahora son flujos completamente independientes
+  - **feat(URLs enrutadas)**: Deep linking con `/por-nivel` y `/por-tema`
+  - **feat(settings aislados)**: Namespacing por flujo previene interferencias entre modos de práctica
+  - **feat(historial navegador)**: Integración completa con browser history para hardware/software back
+  - **arquitectura**: Hook genérico `useFlowNavigation()` maneja cualquier configuración de flujo
 - 2025-08-27 (Final):
   - **CRÍTICO**: Sistema de filtrado nivel/dialecto completamente reforzado
   - **fix(nivel A1)**: Guardia de integridad impide formas avanzadas (pluscuamperfecto, subjuntivo perfecto) en nivel A1
