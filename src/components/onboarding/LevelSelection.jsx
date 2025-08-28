@@ -1,7 +1,17 @@
 import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false }) {
+function LevelSelection({ 
+  onSelectLevel, 
+  onSelectPracticeMode, 
+  onGoToLevelDetails, 
+  onBack, 
+  showLevelDetails = false,
+  // New flow-based props
+  onFlowSelection = null,
+  flowType = null,
+  flowNavigation = null
+}) {
   if (showLevelDetails) {
     // Step 3: Specific level selection
     return (
@@ -79,12 +89,30 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
   return (
     <>
       <div className="options-grid menu-section">
-        <div className="option-card featured" onClick={onGoToLevelDetails}>
+        <div 
+          className="option-card featured" 
+          onClick={() => {
+            if (onFlowSelection) {
+              onFlowSelection('por_nivel')
+            } else {
+              onGoToLevelDetails()
+            }
+          }}
+        >
           <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
           <p className="example">A1, A2, B1, B2, C1, C2</p>
         </div>
         
-        <div className="option-card featured" onClick={() => onSelectPracticeMode('theme')}>
+        <div 
+          className="option-card featured" 
+          onClick={() => {
+            if (onFlowSelection) {
+              onFlowSelection('por_tema')
+            } else {
+              onSelectPracticeMode('theme')
+            }
+          }}
+        >
           <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
           <p className="example">Presente, subjuntivo, imperativo, etc.</p>
         </div>

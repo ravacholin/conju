@@ -8,7 +8,16 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
+function OnboardingFlow({ 
+  onStartPractice, 
+  setCurrentMode, 
+  formsForRegion,
+  // New flow-based props
+  flowType = null,
+  flowNavigation = null,
+  onFlowSelection = null,
+  onBackToMainMenu = null 
+}) {
   const {
     onboardingStep,
     selectDialect,
@@ -28,12 +37,26 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
     getConjugationExample
   } = useOnboardingFlow()
 
-  // Unified back behavior: use browser history for both UI and hardware back
+  // Unified back behavior: prefer flow navigation if available
   const handleBack = () => {
-    try { 
-      window.history.back() 
-    } catch { 
-      /* ignore */ 
+    if (flowNavigation && flowNavigation.canGoBack) {
+      console.log(`🔙 Using flow navigation for back`)
+      flowNavigation.goBack()
+    } else {
+      try { 
+        console.log(`🔙 Using browser history for back`)
+        window.history.back() 
+      } catch { 
+        /* ignore */ 
+      }
+    }
+  }
+  
+  // Handle flow selection from main menu
+  const handleFlowSelectionFromMenu = (selectedFlowType) => {
+    console.log(`📋 Flow selected from menu: ${selectedFlowType}`)
+    if (onFlowSelection) {
+      onFlowSelection(selectedFlowType)
     }
   }
 
@@ -59,6 +82,10 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={false}
+              // New flow-based props
+              onFlowSelection={handleFlowSelectionFromMenu}
+              flowType={flowType}
+              flowNavigation={flowNavigation}
             />
           )}
 

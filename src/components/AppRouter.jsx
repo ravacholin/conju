@@ -7,10 +7,49 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
 import { getEligiblePool, buildFormsForRegion } from '../lib/core/eligibility.js'
 import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
+import { porNivelFlowConfig, porTemaFlowConfig } from '../lib/flows/flowConfigs.js'
+import { useFlowNavigation } from '../lib/flows/useFlowNavigation.js'
+
+// Helper function to detect flow type from URL
+const getFlowTypeFromUrl = (pathname) => {
+  if (pathname.startsWith('/por-nivel')) return 'por_nivel'
+  if (pathname.startsWith('/por-tema')) return 'por_tema'
+  return null
+}
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
   const settings = useSettings()
+  
+  // Flow-based navigation state
+  const [flowType, setFlowType] = useState(() => {
+    const urlFlowType = getFlowTypeFromUrl(window.location.pathname)
+    if (urlFlowType) return urlFlowType
+    if (settings.flowType) return settings.flowType
+    return null
+  })
+  
+  // Get flow configuration based on current flow type
+  const flowConfig = flowType === 'por_nivel' ? porNivelFlowConfig : 
+                    flowType === 'por_tema' ? porTemaFlowConfig : null
+  
+  // Always initialize flow navigation (hook handles null flowConfig)
+  const flowNavigation = useFlowNavigation(flowConfig, null)
+  
+  // Flow selection handlers
+  const handleFlowSelection = (selectedFlowType) => {
+    console.log(`🎯 Flow selected: ${selectedFlowType}`)
+    setFlowType(selectedFlowType)
+    settings.switchToFlow(selectedFlowType)
+  }
+  
+  const handleBackToMainMenu = () => {
+    console.log(`🏠 Back to main menu`)
+    setFlowType(null)
+    settings.switchToFlow(null)
+    setCurrentMode('onboarding')
+    onboardingFlow.setOnboardingStep(2)
+  }
   
   // Import hooks
   const drillMode = useDrillMode()
@@ -66,7 +105,19 @@ function AppRouter() {
   }
 
   const handleHome = () => {
-    // Calculate the proper step to return to from drill mode
+    // Scroll to top when returning to menu
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // Use flow navigation if available
+    if (flowNavigation && flowNavigation.canGoBack) {
+      console.log(`🏠 Drill → Using flow navigation to go back`)
+      flowNavigation.goBack()
+      drillMode.setCurrentItem(null)
+      drillMode.setHistory({})
+      return
+    }
+    
+    // Fallback: Calculate the proper step to return to from drill mode
     const calculatePreviousStepFromDrill = () => {
       // Based on the current settings, determine where we came from
       if (settings.selectedFamily) {
@@ -83,12 +134,9 @@ function AppRouter() {
         return 2  // Default: Main Menu (Por tema or initial)
       }
     }
-
-    // Scroll to top when returning to menu
-    window.scrollTo({ top: 0, behavior: 'smooth' })
     
     const previousStep = calculatePreviousStepFromDrill()
-    console.log(`🏠 Drill → Onboarding step ${previousStep}`)
+    console.log(`🏠 Drill → Onboarding step ${previousStep} (legacy navigation)`)
     
     try { 
       window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, ts: Date.now() }, '') 
@@ -311,7 +359,18 @@ function AppRouter() {
   }
 
   if (currentMode === 'onboarding') {
-    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    return (
+      <OnboardingFlow 
+        onStartPractice={handleStartPractice} 
+        setCurrentMode={setCurrentMode} 
+        formsForRegion={allFormsForRegion}
+        // Flow-based navigation props
+        flowType={flowType}
+        flowNavigation={flowNavigation}
+        onFlowSelection={handleFlowSelection}
+        onBackToMainMenu={handleBackToMainMenu}
+      />
+    )
   }
 
   if (currentMode === 'drill') {
