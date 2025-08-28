@@ -82,21 +82,32 @@ export function useOnboardingFlow() {
     const imperativeExamples = getImperativeExamples();
 
     const examples = {
-      // Indicativo (solo tiempos simples)
+      // Indicativo - tiempos simples
       'indicative_pres': 'hablo, hablas, habla',
       'indicative_pretIndef': 'hablé, hablaste, habló',
       'indicative_impf': 'hablaba, hablabas, hablaba',
       'indicative_fut': 'hablaré, hablarás, hablará',
       
-      // Subjuntivo (solo tiempos simples)
+      // Indicativo - tiempos compuestos (solo para tiempos exclusivamente compuestos)
+      'indicative_pretPerf': 'he hablado, has hablado, ha hablado',
+      'indicative_plusc': 'había hablado, habías hablado, había hablado',
+      'indicative_futPerf': 'habré hablado, habrás hablado, habrá hablado',
+      
+      // Subjuntivo - tiempos simples
       'subjunctive_subjPres': 'hable, hables, hable',
       'subjunctive_subjImpf': 'hablara, hablaras, hablara',
       
+      // Subjuntivo - tiempos compuestos (solo para tiempos exclusivamente compuestos)
+      'subjunctive_subjPerf': 'haya hablado, hayas hablado, haya hablado',
+      'subjunctive_subjPlusc': 'hubiera hablado, hubieras hablado, hubiera hablado',
+      
       // Imperativo (dialect-specific)
       ...imperativeExamples,
+      'imperative_impMixed': 'habla / no hables',
       
-      // Condicional (solo tiempos simples)
+      // Condicional - tiempos simples y compuestos
       'conditional_cond': 'hablaría, hablarías, hablaría',
+      'conditional_condPerf': 'habría hablado, habrías hablado, habría hablado',
       
       // Formas no conjugadas
       'nonfinite_ger': 'hablando',
@@ -133,13 +144,13 @@ export function useOnboardingFlow() {
   
   // Helper function to get samples from a list of tenses
   const getSamplesFromTenses = (mood, tenses) => {
-    // Define the order of learning for each mood (simple tenses first, no compound tenses)
+    // Define the order of learning for each mood (simple tenses first, then compound tenses)
     const learningOrder = {
-      'indicative': ['pres', 'pretIndef', 'impf', 'fut'],
-      'subjunctive': ['subjPres', 'subjImpf'],
-      'imperative': ['impAff', 'impNeg'], // Exclude impMixed to avoid repetition
-      'conditional': ['cond'],
-      'nonfinite': ['ger', 'part'] // Exclude nonfiniteMixed to avoid repetition
+      'indicative': ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf'],
+      'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
+      'imperative': ['impAff', 'impNeg', 'impMixed'],
+      'conditional': ['cond', 'condPerf'],
+      'nonfinite': ['ger', 'part', 'nonfiniteMixed']
     }
     
     const order = learningOrder[mood] || []
