@@ -66,6 +66,7 @@ export function chooseNext({forms, history, currentItem}){
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
     currentBlock, selectedFamily, region, enableFuturoSubjProd, allowedLemmas,
+    cameFromTema,
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
     nextSecondPerson, cliticsPercent
   } = allSettings
@@ -138,8 +139,8 @@ export function chooseNext({forms, history, currentItem}){
       }
       
       // Level filtering (O(1) with precomputed set)
-      // SKIP level filtering for specific topic practice - when practicing by theme, levels don't matter
-      const isSpecificTopicPractice = practiceMode === 'specific' && specificMood && specificTense
+      // SKIP level filtering SOLO cuando se practica por tema (cameFromTema=true)
+      const isSpecificTopicPractice = practiceMode === 'specific' && cameFromTema === true
       if (!isSpecificTopicPractice) {
         // Determine allowed combos: from current block if set, else level
         const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
