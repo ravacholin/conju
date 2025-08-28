@@ -5,7 +5,7 @@ import DrillMode from './drill/DrillMode.jsx'
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
-import { verbs } from '../data/verbs.js'
+import { getEligiblePool, buildFormsForRegion } from '../lib/core/eligibility.js'
 import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 
 function AppRouter() {
@@ -17,33 +17,7 @@ function AppRouter() {
   const onboardingFlow = useOnboardingFlow()
 
   // Compute forms for current region (memoized for performance)
-  const allFormsForRegion = useMemo(() => {
-    if (!settings.region) return []
-
-    const regionForms = []
-    const eligibleLemmas = new Set()
-
-    for (const verb of verbs) {
-      const paradigms = verb.paradigms || []
-      const hasRegion = paradigms.some(p => (p.regionTags || []).includes(settings.region))
-      if (!hasRegion) continue
-      eligibleLemmas.add(verb.lemma)
-      for (const p of paradigms) {
-        if (!p.regionTags || !p.regionTags.includes(settings.region)) continue
-        for (const f of p.forms || []) {
-          regionForms.push({ ...f, lemma: verb.lemma })
-        }
-      }
-    }
-
-    // Agregar formas no finitas sintetizadas (gerundio/participio) por verbo elegible
-    for (const lemma of eligibleLemmas) {
-      const nf = buildNonfiniteFormsForLemma(lemma)
-      regionForms.push(...nf)
-    }
-
-    return regionForms
-  }, [settings.region])
+  const allFormsForRegion = useMemo(() => buildFormsForRegion(settings.region), [settings.region])
 
   // Initialize app state
   useEffect(() => {
