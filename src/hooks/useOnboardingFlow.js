@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSettings } from '../state/settings.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../lib/utils/verbLabels.js'
+import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
 import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
 import { LEVELS } from '../lib/data/levels.js'
 import gates from '../data/curriculum.json'
@@ -40,33 +41,21 @@ export function useOnboardingFlow() {
 
   // Function to get available moods for a specific level
   const getAvailableMoodsForLevel = (level) => {
-    // Special case for ALL level - show all moods
-    if (level === 'ALL') {
+    try {
+      return gateAllowedMoods({ ...settings, level })
+    } catch {
+      // Fallback to showing all
       return ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
     }
-    
-    const levelGates = gates.filter(g => g.level === level)
-    const moods = [...new Set(levelGates.map(g => g.mood))]
-    return moods
   }
 
   // Function to get available tenses for a specific level and mood
   const getAvailableTensesForLevelAndMood = (level, mood) => {
-    // Special case for ALL level - show all tenses for the mood
-    if (level === 'ALL') {
-      const allTenses = {
-        'indicative': ['pres', 'pretPerf', 'pretIndef', 'impf', 'plusc', 'fut', 'futPerf'],
-        'subjunctive': ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
-        'imperative': ['impAff', 'impNeg', 'impMixed'],
-        'conditional': ['cond', 'condPerf'],
-        'nonfinite': ['ger', 'part', 'nonfiniteMixed']
-      }
-      return allTenses[mood] || ['pres']
+    try {
+      return gateAllowedTensesForMood({ ...settings, level }, mood)
+    } catch {
+      return getTensesForMood(mood)
     }
-    
-    const levelGates = gates.filter(g => g.level === level && g.mood === mood)
-    const tenses = levelGates.map(g => g.tense)
-    return tenses
   }
 
   // Function to get conjugation examples
