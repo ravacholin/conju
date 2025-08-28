@@ -32,7 +32,28 @@ const IRREGULAR_GERUNDS = {
   'elegir': 'eligiendo',
   'repetir': 'repitiendo',
   'servir': 'sirviendo',
-  'reír': 'riendo'
+  'reír': 'riendo',
+  // Ampliación e→i (-ir)
+  'despedir': 'despidiendo',
+  'impedir': 'impidiendo',
+  'divertir': 'divirtiendo',
+  'convertir': 'convirtiendo',
+  'advertir': 'advirtiendo',
+  'referir': 'refiriendo',
+  'sugerir': 'sugiriendo',
+  'consentir': 'consintiendo',
+  'herir': 'hiriendo',
+  'digerir': 'digiriendo',
+  'inferir': 'infiriendo',
+  'hervir': 'hirviendo',
+  // Ampliación hiatos y -traer/-raer/-poseer
+  'atraer': 'atrayendo',
+  'distraer': 'distrayendo',
+  'sustraer': 'sustrayendo',
+  'retraer': 'retrayendo',
+  'raer': 'rayendo',
+  'poseer': 'poseyendo',
+  'proveer': 'proveyendo'
 }
 
 // Participios irregulares (valor) para cubrir los más comunes
