@@ -450,6 +450,27 @@ export function useOnboardingFlow() {
     const currentStep = onboardingStep;
     
     if (currentStep > 1) {
+      // Theme-based practice specific handling
+      if (settings.cameFromTema) {
+        // Step 5: if a mood was selected (no tense yet), go back to step 4 (practice mode)
+        if (currentStep === 5 && settings.specificMood && !settings.specificTense) {
+          settings.set({ specificMood: null })
+          setOnboardingStep(4)
+          return
+        }
+        // Step 5: if no mood selected, go back to main menu (step 2) and clear theme flags
+        if (currentStep === 5 && !settings.specificMood) {
+          settings.set({ cameFromTema: false, specificMood: null, specificTense: null })
+          setOnboardingStep(2)
+          return
+        }
+        // Step 6: if a tense was selected under a chosen mood, go back to step 5 and clear tense
+        if (currentStep === 6 && settings.specificMood && settings.specificTense) {
+          settings.set({ specificTense: null })
+          setOnboardingStep(5)
+          return
+        }
+      }
       // Special handling for step 2 (main menu: "¿Qué querés practicar?")
       // When going back from this step, we should go to step 1 (dialect selection)
       if (currentStep === 2) {
