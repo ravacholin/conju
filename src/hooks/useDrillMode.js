@@ -3,6 +3,7 @@ import gates from '../data/curriculum.json'
 import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
 import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
+import { gateFormsByCurriculumAndDialect, gateDueItemsByCurriculum } from '../lib/core/curriculumGate.js'
 import { getCurrentUserId } from '../lib/progress/userManager.js'
 import { getNextRecommendedItem } from '../lib/progress/AdaptivePracticeEngine.js'
 import { shouldAdjustDifficulty, getRecommendedAdjustments } from '../lib/progress/DifficultyManager.js'
@@ -96,6 +97,8 @@ export function useDrillMode() {
 
       // Tier 1: SRS due cells (now working within eligible forms)
       let dueCells = userId ? await getDueItems(userId, new Date()) : []
+      // Gate due cells by curriculum (unless practicing by theme)
+      dueCells = gateDueItemsByCurriculum(dueCells, settings)
       // Filter due cells by the same specific practice constraints (if any)
       if (isSpecific) {
         dueCells = dueCells.filter(dc => {
@@ -187,9 +190,11 @@ export function useDrillMode() {
       console.warn('Advanced selection failed; falling back to standard generator', e)
     }
 
-    // Tier 3: Standard generator (now working within eligible forms)
+      // Tier 3: Standard generator (now working within eligible forms)
     if (!nextForm) {
-      nextForm = chooseNext({ forms: eligibleForms, history, currentItem: itemToExclude })
+      // Gate forms systemically before selection
+      const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
+      nextForm = chooseNext({ forms: gated, history, currentItem: itemToExclude })
       selectionMethod = 'standard_generator'
       console.log('🎯 Standard generator applied to eligible forms:', eligibleForms.length)
       
@@ -255,7 +260,8 @@ export function useDrillMode() {
       })
       
       // Use eligibleForms instead of allFormsForRegion for consistency
-      const compliant = eligibleForms.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
+      const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
+      const compliant = gated.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
       if (compliant.length > 0) {
         nextForm = compliant[Math.floor(Math.random() * compliant.length)]
         selectionMethod += '+emergency_guard'

@@ -6,6 +6,7 @@ import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } from './conjugationRules.js'
 import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
+import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
 
 
@@ -126,8 +127,11 @@ export function chooseNext({forms, history, currentItem}){
   let eligible = formFilterCache.get(filterKey)
   
   if (!eligible) {
-    // Si no está en cache, calcular
-    eligible = forms.filter(f=>{
+    // Paso 1: Gate sistemático por curriculum y dialecto
+    let pre = gateFormsByCurriculumAndDialect(forms, allSettings)
+    
+    // Paso 2: Filtros adicionales (valor definido, toggles, pronoun subset)
+    eligible = pre.filter(f=>{
       
       // DIAGNOSTIC: Track C1 and B1 filtering step by step  
       const isC1Debug = level === 'C1' && practiceMode === 'mixed'
@@ -165,42 +169,7 @@ export function chooseNext({forms, history, currentItem}){
       }
     }
 
-    // Person filtering (dialect) - based on region setting
-    
-    // For nonfinite forms (gerundios, participios), skip person filtering - they're invariable
-    if (f.mood === 'nonfinite') {
-    } else {
-      // Apply dialect filtering based on region setting
-      // Even with 'all' pronouns, we respect regional restrictions to preserve dialectal consistency
-      if (region === 'rioplatense') {
-        // Rioplatense: yo, vos, usted/él/ella, nosotros, ustedes/ellas/ellos
-        if (f.person === '2s_tu') {
-          return false
-        }
-        if (f.person === '2p_vosotros') {
-          return false
-        }
-      } else if (region === 'peninsular') {
-        // Peninsular: yo, tú, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
-        if (f.person === '2s_vos') {
-          return false
-        }
-      } else if (region === 'la_general') {
-        // Latin American general: yo, tú, usted/él/ella, nosotros, ustedes/ellas/ellos
-        if (f.person === '2s_vos') {
-          return false
-        }
-        if (f.person === '2p_vosotros') {
-          return false
-        }
-      } else {
-        // No specific region set: allow all variants
-        // yo, tú, vos, usted/él/ella, nosotros, vosotros, ustedes/ellas/ellos
-        // No filtering, show all persons
-      }
-    }
-    
-    // Pronoun practice filtering - be less restrictive for specific practice
+    // Pronoun practice filtering - Subconjunto opcional, nunca puede reintroducir personas bloqueadas por dialecto
     if (practiceMode === 'specific' && specificMood && specificTense) {
       // For specific practice, show ALL persons of the selected form
       // Don't filter by practicePronoun at all - show variety
