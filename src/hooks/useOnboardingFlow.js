@@ -466,15 +466,60 @@ export function useOnboardingFlow() {
   }
 
   const goBack = () => {
-    // Unified back behavior: always use browser history
-    // State cleanup will be handled by the popstate listener in AppRouter
+    // Calculate the proper previous step based on current step
+    const getCurrentStep = () => onboardingStep
+    const getPreviousStep = (currentStep) => {
+      // Define proper step flow backwards based on current settings
+      switch (currentStep) {
+        case 8: return 7  // Family Selection → Verb Type Selection
+        case 7: 
+          // Verb Type Selection can come from different paths
+          if (settings.specificTense) {
+            return 6  // Came from Tense Selection (Por tema flow)
+          } else if (settings.specificMood) {
+            return 5  // Came from Mood Selection (Por tema flow)
+          } else if (settings.level) {
+            return 4  // Came from Practice Mode Selection (Por nivel flow)
+          } else {
+            return 2  // Fallback to main menu
+          }
+        case 6: return 5  // Tense Selection → Mood Selection
+        case 5: 
+          // Mood/Tense Selection OR Verb Type Selection (mixed practice)
+          if (settings.level && settings.practiceMode) {
+            return 4  // Came from Practice Mode Selection (Por nivel flow)
+          } else {
+            return 2  // Came from Main Menu (Por tema flow)
+          }
+        case 4: return 3  // Practice Mode Selection → Level Details
+        case 3: return 2  // Level Details → Main Menu  
+        case 2: return 1  // Main Menu → Dialect Selection
+        case 1: return 1  // Dialect Selection → stay (can't go back further)
+        default: return 2  // Fallback to main menu
+      }
+    }
+
+    // First try browser history (for hardware back compatibility)
     try {
-      window.history.back()
+      // Check if there's actually history to go back to
+      const hasHistory = window.history.length > 1
+      if (hasHistory) {
+        window.history.back()
+        return  // Let popstate handler deal with it
+      }
     } catch {
-      // Fallback: go to main menu if history is empty
-      const step = 2
-      setOnboardingStep(step)
-      pushHistory(step)
+      // Browser history failed
+    }
+    
+    // Fallback: manually navigate to previous step
+    const currentStep = getCurrentStep()
+    const previousStep = getPreviousStep(currentStep)
+    
+    console.log(`🔙 Manual back navigation: ${currentStep} → ${previousStep}`)
+    
+    if (previousStep !== currentStep) {
+      setOnboardingStep(previousStep)
+      pushHistory(previousStep)
     }
   }
 

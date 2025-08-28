@@ -66,10 +66,36 @@ function AppRouter() {
   }
 
   const handleHome = () => {
+    // Calculate the proper step to return to from drill mode
+    const calculatePreviousStepFromDrill = () => {
+      // Based on the current settings, determine where we came from
+      if (settings.selectedFamily) {
+        return 8  // Came from Family Selection
+      } else if (settings.verbType && settings.specificTense) {
+        return 7  // Came from Verb Type Selection (after tense selection)
+      } else if (settings.specificTense) {
+        return 6  // Came from Tense Selection
+      } else if (settings.specificMood) {
+        return 5  // Came from Mood Selection
+      } else if (settings.practiceMode && settings.level) {
+        return 4  // Came from Practice Mode Selection (Por nivel)
+      } else {
+        return 2  // Default: Main Menu (Por tema or initial)
+      }
+    }
+
     // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
-    try { window.history.pushState({ appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }, '') } catch {}
+    
+    const previousStep = calculatePreviousStepFromDrill()
+    console.log(`🏠 Drill → Onboarding step ${previousStep}`)
+    
+    try { 
+      window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, ts: Date.now() }, '') 
+    } catch {}
+    
     setCurrentMode('onboarding')
+    onboardingFlow.setOnboardingStep(previousStep)
     drillMode.setCurrentItem(null)
     drillMode.setHistory({})
   }
@@ -91,43 +117,69 @@ function AppRouter() {
     try {
       const st = window.history.state
       if (!st || !st.appNav) {
-        window.history.replaceState({ appNav: true, mode: 'onboarding', step: onboardingFlow.onboardingStep || 1, ts: Date.now() }, '')
+        window.history.replaceState({ appNav: true, mode: currentMode, step: onboardingFlow.onboardingStep || 1, ts: Date.now() }, '')
       }
     } catch {}
 
     const onPopState = (e) => {
+      console.log(`🔙 PopState triggered:`, e.state)
+      
       const st = e.state || window.history.state || {}
       if (st && st.appNav) {
+        console.log(`📋 Valid app navigation state:`, st)
+        
         if (st.mode === 'drill') {
           setCurrentMode('drill')
+          // Ensure drill has a current item when navigating back to it
+          if (!drillMode.currentItem) {
+            console.log(`🔧 Regenerating drill item after back navigation`)
+            setTimeout(() => {
+              drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+            }, 100)
+          }
         } else {
           setCurrentMode('onboarding')
           // Drive onboarding step directly from history state
-          if (typeof st.step === 'number') {
+          if (typeof st.step === 'number' && st.step >= 1 && st.step <= 8) {
+            console.log(`🎯 Navigating to step ${st.step}`)
             try { 
               onboardingFlow.setOnboardingStep(st.step)
               // Enhanced state cleanup based on navigation target
               cleanupStateForStep(st.step)
             } catch (err) {
               console.error('Error setting onboarding step:', err)
+              // Fallback to main menu
+              onboardingFlow.setOnboardingStep(2)
+              cleanupStateForStep(2)
             }
           } else {
+            console.log(`⚠️  Invalid step in state, defaulting to step 1`)
             try { onboardingFlow.setOnboardingStep(1) } catch {}
           }
         }
       } else {
-        // Not our state; re-insert a guard state to keep navigation inside app
+        console.log(`⚠️  No valid app state found, creating guard entry`)
+        // Not our state or no state; calculate proper step and re-insert guard state
         try {
-          const step = onboardingFlow.onboardingStep || 1
-          window.history.pushState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
-          setCurrentMode('onboarding')
-          onboardingFlow.setOnboardingStep(step)
-        } catch {}
+          const currentStep = onboardingFlow.onboardingStep || 2
+          const mode = currentMode || 'onboarding'
+          
+          console.log(`🛡️  Creating guard state: mode=${mode}, step=${currentStep}`)
+          window.history.pushState({ appNav: true, mode, step: currentStep, ts: Date.now() }, '')
+          
+          setCurrentMode(mode)
+          if (mode === 'onboarding') {
+            onboardingFlow.setOnboardingStep(currentStep)
+          }
+        } catch (err) {
+          console.error('Error creating guard state:', err)
+        }
       }
     }
+    
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-  }, [onboardingFlow, settings])
+  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion])
 
   // Enhanced state cleanup function
   const cleanupStateForStep = (targetStep) => {
