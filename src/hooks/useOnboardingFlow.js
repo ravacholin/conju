@@ -25,11 +25,17 @@ export function useOnboardingFlow(flowType) {
   const [onboardingStep, setOnboardingStep] = useState(1)
   const settings = useSettings()
   
+  console.log('--- HOOK useOnboardingFlow ---', { 
+    flowType,
+    onboardingStep
+  });
 
   // Push a browser history entry to align hardware back with app back
   const pushHistory = (nextStep) => {
     try {
-      window.history.pushState({ appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, flowType: flowType, ts: Date.now() }, '')
+      const stateToPush = { appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, flowType: flowType, ts: Date.now() };
+      console.log('pushHistory:', stateToPush);
+      window.history.pushState(stateToPush, '')
     } catch {
       /* ignore */
     }
@@ -186,6 +192,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectDialect = (dialect) => {
+    console.log('ACTION: selectDialect', dialect);
     closeTopPanelsAndFeatures()
     
     // Clear any previous mood/tense selections when starting fresh
@@ -250,6 +257,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectLevel = (level) => {
+    console.log('ACTION: selectLevel', level);
     closeTopPanelsAndFeatures()
     // Apply level-specific policies
     const updates = { level }
@@ -353,6 +361,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectPracticeMode = (mode) => {
+    console.log('ACTION: selectPracticeMode', mode);
     closeTopPanelsAndFeatures()
     
     if (mode === 'theme') {
@@ -404,6 +413,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectMood = (mood) => {
+    console.log('ACTION: selectMood', mood);
     closeTopPanelsAndFeatures()
     // For theme-based practice (cameFromTema=true), keep the flag set
     settings.set({ specificMood: mood })
@@ -423,6 +433,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectTense = (tense) => {
+    console.log('ACTION: selectTense', tense);
     closeTopPanelsAndFeatures()
     settings.set({ specificTense: tense })
     
@@ -441,6 +452,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const selectVerbType = (verbType, onStartPractice) => {
+    console.log('ACTION: selectVerbType', verbType);
     closeTopPanelsAndFeatures()
     
     if (verbType === 'irregular') {
@@ -479,6 +491,7 @@ export function useOnboardingFlow(flowType) {
   }
   
   const selectFamily = (familyId, onStartPractice) => {
+    console.log('ACTION: selectFamily', familyId);
     closeTopPanelsAndFeatures()
     const updates = { selectedFamily: familyId }
     settings.set(updates)
@@ -486,6 +499,7 @@ export function useOnboardingFlow(flowType) {
   }
 
   const goBack = () => {
+    console.log('ACTION: goBack');
     // Calculate the proper previous step based on current step
     const getCurrentStep = () => onboardingStep
     const getPreviousStep = (currentStep) => {
@@ -544,11 +558,13 @@ export function useOnboardingFlow(flowType) {
   }
 
   const goToLevelDetails = () => {
+    console.log('ACTION: goToLevelDetails');
     setOnboardingStep(3)
     pushHistory(3)
   }
 
   const handleHome = (setCurrentMode) => {
+    console.log('ACTION: handleHome');
     // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
     if (setCurrentMode) {
