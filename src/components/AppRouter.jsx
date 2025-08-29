@@ -134,4 +134,103 @@ function AppRouter() {
     console.groupEnd();
   }
 
-  // ... (rest of the component is the same)
+  // Handler functions for drill mode settings changes
+  const handleDialectChange = (dialect) => {
+    onboardingFlow.selectDialect(dialect)
+    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handleLevelChange = (level) => {
+    onboardingFlow.selectLevel(level)
+    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handlePracticeModeChange = (mode) => {
+    settings.set({ 
+      practiceMode: mode,
+      specificMood: null,
+      specificTense: null
+    })
+    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handlePronounPracticeChange = (pronoun) => {
+    settings.set({ practicePronoun: pronoun })
+    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handleVerbTypeChange = (verbType, selectedFamily) => {
+    settings.set({ 
+      verbType,
+      selectedFamily: verbType !== 'irregular' ? null : selectedFamily
+    })
+    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handleStartSpecificPractice = () => {
+    // Initialize block for A1/A2: one tense per tanda
+    const lvl = settings.level
+    if (lvl === 'A1' || lvl === 'A2') {
+      settings.set({
+        currentBlock: {
+          combos: [{ mood: settings.specificMood, tense: settings.specificTense }],
+          itemsRemaining: 8
+        }
+      })
+    } else {
+      settings.set({ currentBlock: null })
+    }
+    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  const handleRegenerateItem = () => {
+    drillMode.setCurrentItem(null)
+    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+  }
+
+  if (currentMode === 'onboarding') {
+    if (flowType === 'por_nivel') {
+      return <OnboardingFlowPorNivel onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    } else if (flowType === 'por_tema') {
+      return <OnboardingFlowPorTema 
+        onStartPractice={handleStartPractice} 
+        setCurrentMode={setCurrentMode} 
+        formsForRegion={allFormsForRegion} 
+        onboardingFlow={onboardingFlow}
+        settings={settings}
+      />
+    } else {
+      // Main menu - show flow selection
+      return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} onSelectFlowType={handleFlowTypeSelection} />
+    }
+  }
+
+  if (currentMode === 'drill') {
+    return (
+      <DrillMode
+        currentItem={drillMode.currentItem}
+        settings={settings}
+        onDrillResult={drillMode.handleDrillResult}
+        onContinue={() => drillMode.handleContinue(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
+        onHome={handleHome}
+        onRegenerateItem={handleRegenerateItem}
+        onDialectChange={handleDialectChange}
+        onLevelChange={handleLevelChange}
+        onPracticeModeChange={handlePracticeModeChange}
+        onPronounPracticeChange={handlePronounPracticeChange}
+        onVerbTypeChange={handleVerbTypeChange}
+        onStartSpecificPractice={handleStartSpecificPractice}
+        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+      />
+    )
+  }
+
+  return (
+    <div className="App">
+      <div className="loading">Cargando aplicación...</div>
+    </div>
+  )
+}
+
+export default AppRouter

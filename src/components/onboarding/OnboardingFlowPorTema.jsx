@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react'
-import { useOnboardingFlow } from '../../hooks/useOnboardingFlow.js'
 import MoodTenseSelection from './MoodTenseSelection.jsx'
 import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlowPorTema({ onStartPractice, setCurrentMode, formsForRegion }) {
+function OnboardingFlowPorTema({ 
+  onStartPractice, 
+  setCurrentMode, 
+  formsForRegion,
+  // Receive hook functions as props from AppRouter
+  onboardingFlow,
+  settings
+}) {
   const {
     onboardingStep,
     setOnboardingStep,
@@ -14,21 +20,29 @@ function OnboardingFlowPorTema({ onStartPractice, setCurrentMode, formsForRegion
     selectVerbType,
     selectFamily,
     handleHome,
-    settings,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood,
     getModeSamples,
     getConjugationExample,
-  } = useOnboardingFlow()
+  } = onboardingFlow
 
   // This flow starts after dialect selection.
-  // Ensure we are at least at step 2 and that practiceMode is 'theme'.
+  // Initialize Por Tema with correct step and settings
   useEffect(() => {
-    if (onboardingStep < 2) {
-      setOnboardingStep(2)
-    }
+    console.log('🎯 OnboardingFlowPorTema useEffect - initializing', { 
+      currentStep: onboardingStep, 
+      practiceMode: settings.practiceMode 
+    });
+    
     if (settings.practiceMode !== 'theme') {
       settings.set({ practiceMode: 'theme', level: 'ALL' })
+    }
+    
+    // When Por Tema flow is at step 5, force it to step 2 (MoodTenseSelection)
+    // This handles both initial entry and back navigation to step 5
+    if (onboardingStep === 5 && settings.practiceMode === 'theme') {
+      console.log('🎯 Por Tema flow at step 5 - setting onboardingStep to 2 for MoodTenseSelection');
+      setOnboardingStep(2)
     }
   }, [onboardingStep, setOnboardingStep, settings])
 

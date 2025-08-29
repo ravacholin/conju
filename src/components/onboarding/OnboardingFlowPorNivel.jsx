@@ -16,7 +16,7 @@ function OnboardingFlowPorNivel({ onStartPractice, setCurrentMode }) {
     selectFamily,
     handleHome,
     settings,
-  } = useOnboardingFlow()
+  } = useOnboardingFlow('por_nivel')
 
   // This flow starts after the main menu, so we reset the step to a local context.
   // We will use step 3 from the main hook as the entry point.
