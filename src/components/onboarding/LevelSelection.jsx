@@ -13,7 +13,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel A1 - Principiante"
           >
             <h3><img src="/a1.png" alt="A1" className="option-icon" /> Principiante</h3>
-            <p>Te presentás, describís personas y rutinas, pedís y das datos básicos.</p>
+            <p>Te presentás, describís personas y rutinas, pedís y das datos básicos en situaciones cotidianas.</p>
             <p className="example">Indicativo: Presente</p>
           </ClickableCard>
           
