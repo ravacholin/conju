@@ -206,6 +206,7 @@ export function chooseNext({forms, history, currentItem}){
     
     
     // Check MCER level restrictions first
+    // COMPLETE compound tenses definition: all 6 compound tenses in Spanish
     const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
     if (!isCompoundTense && f.mood !== 'nonfinite' && !isVerbTypeAllowedForLevel(verb.type, level)) {
       if (isC1Debug) console.log('🚨 C1 FILTER - Verb type not allowed for level:', verb.type, level, f.lemma)
@@ -743,13 +744,25 @@ function getPersonWeightsForLevel(settings) {
 // Increase probability of targeted irregular families per level by duplicating those forms
 function applyLevelFormWeighting(forms, settings) {
   const level = settings.level || 'B1'
+  const practiceMode = settings.practiceMode
+  const cameFromTema = settings.cameFromTema
   const boosted = []
   const pushN = (f, n) => { for (let i=0;i<n;i++) boosted.push(f) }
+
+  // Determine if this is level-based practice (should reduce compound frequency)
+  const isLevelBasedPractice = practiceMode !== 'specific' || !cameFromTema
+  
+  // Compound tense reduction factor for level-based practice
+  const COMPOUND_REDUCTION_FACTOR = 0.4 // Reduce to 40% of normal frequency
 
   for (const f of forms) {
     let weight = 1
     const lemma = f.lemma
     const val = (f.value || '').toLowerCase()
+    
+    // Check if this is a compound tense (all 6 compound tenses)
+    const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
+    
     if (level === 'A2') {
       // -car/-gar/-zar pretérito 1s: busqué, llegué, almorcé
       if (f.mood === 'indicative' && f.tense === 'pretIndef' && f.person === '1s') {
@@ -768,9 +781,15 @@ function applyLevelFormWeighting(forms, settings) {
         weight = Math.max(weight, 2)
       }
     } else if (level === 'B1') {
-      // Perfectos (PPC, pluscuamperfecto, futuro compuesto)
-      if (f.mood === 'indicative' && (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf')) {
-        weight = 2
+      // MODIFIED: Compound tenses - reduce frequency for level-based practice, normal for specific topics
+      if (isCompoundTense) {
+        if (isLevelBasedPractice) {
+          // REDUCE frequency for level-based practice to avoid monotony
+          weight = Math.max(1, Math.round(2 * COMPOUND_REDUCTION_FACTOR)) // 2 * 0.4 = 0.8, rounded to 1
+        } else {
+          // Normal weight for specific topic practice
+          weight = 2
+        }
       }
       // Subjuntivo presente
       if (f.mood === 'subjunctive' && f.tense === 'subjPres') {
@@ -781,15 +800,23 @@ function applyLevelFormWeighting(forms, settings) {
         weight = Math.max(weight, 2)
       }
     } else if (level === 'B2') {
-      // Subjuntivo imperfecto y pluscuamperfecto
-      if (f.mood === 'subjunctive' && (f.tense === 'subjImpf' || f.tense === 'subjPlusc')) {
+      // MODIFIED: Compound tenses - apply reduction for level-based practice
+      if (isCompoundTense) {
+        if (isLevelBasedPractice) {
+          weight = Math.max(1, Math.round(2 * COMPOUND_REDUCTION_FACTOR))
+        } else {
+          weight = 2
+        }
+      }
+      // Subjuntivo imperfecto y pluscuamperfecto (non-compound subjunctive)
+      if (f.mood === 'subjunctive' && f.tense === 'subjImpf') {
         weight = 2
       }
-      // Condicional compuesto
-      if (f.mood === 'conditional' && f.tense === 'condPerf') {
-        weight = Math.max(weight, 2)
-      }
     } else if (level === 'C1' || level === 'C2') {
+      // MODIFIED: Apply compound reduction for C1/C2 as well
+      if (isCompoundTense && isLevelBasedPractice) {
+        weight = Math.max(1, Math.round(2 * COMPOUND_REDUCTION_FACTOR))
+      }
       // Clíticos en imperativo afirmativo
       if (f.mood === 'imperative' && f.tense === 'impAff' && /(me|te|se|lo|la|le|nos|los|las|les)$/.test(val.replace(/\s+/g,''))) {
         weight = 2

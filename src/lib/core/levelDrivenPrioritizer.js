@@ -100,7 +100,7 @@ const CURRICULUM_ANALYSIS = {
     'past_narrative': ['indicative|pretIndef', 'indicative|impf'],
     'future_planning': ['indicative|fut'],
     'command_forms': ['imperative|impAff', 'imperative|impNeg'],
-    'perfect_system': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf'],
+    'perfect_system': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf', 'conditional|condPerf', 'subjunctive|subjPerf', 'subjunctive|subjPlusc'],
     'subjunctive_present': ['subjunctive|subjPres', 'subjunctive|subjPerf'],
     'subjunctive_past': ['subjunctive|subjImpf', 'subjunctive|subjPlusc'],
     'conditional_system': ['conditional|cond', 'conditional|condPerf']
@@ -1526,7 +1526,7 @@ function getTenseFamily(mood, tense) {
     'present': ['indicative|pres'],
     'past': ['indicative|pretIndef', 'indicative|impf'],
     'future': ['indicative|fut', 'conditional|cond'],
-    'perfect': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf'],
+    'perfect': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf', 'conditional|condPerf', 'subjunctive|subjPerf', 'subjunctive|subjPlusc'],
     'subjunctive_pres': ['subjunctive|subjPres', 'subjunctive|subjPerf'],
     'subjunctive_past': ['subjunctive|subjImpf', 'subjunctive|subjPlusc'],
     'commands': ['imperative|impAff', 'imperative|impNeg'],

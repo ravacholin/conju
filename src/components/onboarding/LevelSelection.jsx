@@ -86,7 +86,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
         >
           <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
           <p>Practicá según tu nivel de español</p>
-          <p className="example">Inicial: A1, A2. Intermedio: B1, B2. Avanzado: C1, C2</p>
+          <p className="example">A1, A2, B1, B2, C1, C2</p>
         </ClickableCard>
         
         <ClickableCard 

@@ -239,12 +239,12 @@ const TENSE_FAMILIES = {
   'present_basics': ['indicative|pres'],
   'past_narrative': ['indicative|pretIndef', 'indicative|impf'],
   'future_planning': ['indicative|fut', 'conditional|cond'],
-  'perfect_system': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf'],
-  'subjunctive_present': ['subjunctive|subjPres', 'subjunctive|subjPerf'],
-  'subjunctive_past': ['subjunctive|subjImpf', 'subjunctive|subjPlusc'],
+  'perfect_system': ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf', 'conditional|condPerf', 'subjunctive|subjPerf', 'subjunctive|subjPlusc'],
+  'subjunctive_present': ['subjunctive|subjPres'],
+  'subjunctive_past': ['subjunctive|subjImpf'],
   'commands': ['imperative|impAff', 'imperative|impNeg'],
   'nonfinite': ['nonfinite|ger', 'nonfinite|part'],
-  'conditional_system': ['conditional|cond', 'conditional|condPerf']
+  'conditional_system': ['conditional|cond']
 }
 
 // Reverse mapping: tense -> family
@@ -620,7 +620,26 @@ export class AdvancedVarietyEngine {
     const recentFamilies = recentTenses.map(t => TENSE_TO_FAMILY.get(t)).filter(f => f)
     
     const familyCount = recentFamilies.filter(f => f === family).length
-    return Math.max(0.1, 1 - (familyCount * 0.2))
+    let score = Math.max(0.1, 1 - (familyCount * 0.2))
+    
+    // COMPOUND COOLDOWN: Additional penalty for perfect_system (compound tenses)
+    if (family === 'perfect_system') {
+      // Check if any compound tenses were used recently
+      const compoundTenses = ['indicative|pretPerf', 'indicative|plusc', 'indicative|futPerf', 'conditional|condPerf', 'subjunctive|subjPerf', 'subjunctive|subjPlusc']
+      const recentCompoundCount = recentTenses.filter(t => compoundTenses.includes(t)).length
+      
+      if (recentCompoundCount > 0) {
+        // Apply stronger penalty for compound tenses to avoid monotony
+        const compoundPenalty = Math.min(0.8, recentCompoundCount * 0.25) // Up to 80% penalty
+        score = Math.max(0.05, score - compoundPenalty) // Minimum 5% chance
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔄 COMPOUND COOLDOWN - Recent compounds: ${recentCompoundCount}, penalty: ${(compoundPenalty * 100).toFixed(1)}%, final score: ${(score * 100).toFixed(1)}%`)
+        }
+      }
+    }
+    
+    return score
   }
 
   getSemanticDiversityScore(category) {
