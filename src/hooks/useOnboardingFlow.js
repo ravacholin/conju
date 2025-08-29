@@ -178,8 +178,10 @@ export function useOnboardingFlow() {
     }
     
     const order = learningOrder[mood] || []
+    // For nonfinite examples, avoid duplicating gerund by excluding the mixed variant
+    const filtered = mood === 'nonfinite' ? tenses.filter(t => t !== 'nonfiniteMixed') : tenses
     // Filter available tenses by learning order, then sort by that order
-    const sortedTenses = tenses.filter(t => order.includes(t)).sort((a, b) => {
+    const sortedTenses = filtered.filter(t => order.includes(t)).sort((a, b) => {
       const aIndex = order.indexOf(a)
       const bIndex = order.indexOf(b)
       if (aIndex === -1) return 1
@@ -206,7 +208,7 @@ export function useOnboardingFlow() {
     const result = samples.join(' · ')
     
     // Add " · etc." if there are additional tenses available (but we're only showing simple ones)
-    const hasAdditionalTenses = tenses.some(t => !order.includes(t))
+    const hasAdditionalTenses = filtered.some(t => !order.includes(t))
     return hasAdditionalTenses && result ? `${result} · etc.` : result
   }
 
