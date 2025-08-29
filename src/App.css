@@ -75,6 +75,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* Remove default mobile tap highlight (prevents blue flash on iOS/Android) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Extra safety for tappable elements */
+.option-card, .back-btn, .app-logo, .icon-btn, .btn, .btn-secondary, .qs-select {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Enhanced focus styles for accessibility */
