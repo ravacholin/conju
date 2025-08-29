@@ -23,7 +23,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel A2 - Elemental"
           >
             <h3><img src="/a2.png" alt="A2" className="option-icon" /> Elemental</h3>
-            <p>Contás experiencias y planes, seguís instrucciones y resolvés gestiones simples.</p>
+            <p>Contás experiencias y planes, seguís instrucciones, resolvés gestiones simples del día a día.</p>
             <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
           </ClickableCard>
           
@@ -33,7 +33,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel B1 - Intermedio"
           >
             <h3><img src="/B1.png" alt="B1" className="option-icon" /> Intermedio</h3>
-            <p>Narrás con orden, comparás pasados, explicás causas y fundamentás opiniones.</p>
+            <p>Narrás con orden, comparás pasados y situaciones, explicás causas y fundamentás opiniones con claridad.</p>
             <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
           </ClickableCard>
           
@@ -43,7 +43,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel B2 - Intermedio alto"
           >
             <h3><img src="/b2.png" alt="B2" className="option-icon" /> Intermedio alto</h3>
-            <p>Argumentás con matices, manejás hipótesis y concesiones, pedís y das aclaraciones complejas.</p>
+            <p>Argumentás con matices, manejás hipótesis y concesiones, pedís y das aclaraciones complejas con precisión.</p>
             <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
           </ClickableCard>
           
@@ -53,7 +53,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel C1 - Avanzado"
           >
             <h3><img src="/c1.png" alt="C1" className="option-icon" /> Avanzado</h3>
-            <p>Producís discursos precisos y cohesionados, adaptás registro y reformulás con naturalidad.</p>
+            <p>Producís discursos precisos y cohesionados, adaptás el registro, reformulás ideas con naturalidad y fluidez.</p>
             <p className="example">Todas las formas verbales</p>
           </ClickableCard>
           
@@ -63,7 +63,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Seleccionar nivel C2 - Superior"
           >
             <h3><img src="/c2.png" alt="C2" className="option-icon" /> Superior</h3>
-            <p>Usás recursos idiomáticos y tonos variados con dominio casi nativo.</p>
+            <p>Usás recursos idiomáticos y tonos variados, dominás matices culturales y resolvés situaciones con soltura casi nativa.</p>
             <p className="example">Todas las formas verbales</p>
           </ClickableCard>
         </div>
