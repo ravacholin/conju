@@ -17,7 +17,7 @@ function AppRouter() {
   
   // Import hooks
   const drillMode = useDrillMode()
-  const onboardingFlow = useOnboardingFlow()
+  const onboardingFlow = useOnboardingFlow(flowType)
 
   // Compute forms for current region (memoized for performance)
   const allFormsForRegion = useMemo(() => buildFormsForRegion(settings.region), [settings.region])
@@ -55,49 +55,32 @@ function AppRouter() {
       const st = window.history.state
       const step = onboardingFlow.onboardingStep || 1
       if (!st || !st.appNav) {
-        window.history.replaceState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
+        window.history.replaceState({ appNav: true, mode: 'onboarding', step, flowType: null, ts: Date.now() }, '')
       }
       // Push guard entry to keep one step inside the app
-      window.history.pushState({ appNav: true, mode: 'onboarding', step, ts: Date.now() }, '')
+      window.history.pushState({ appNav: true, mode: 'onboarding', step, flowType: null, ts: Date.now() }, '')
     } catch {}
   }, [])
 
   const handleStartPractice = () => {
     // Push a history entry so the hardware back goes back to onboarding from drill
-    try { window.history.pushState({ appNav: true, mode: 'drill', step: null, ts: Date.now() }, '') } catch {}
+    try { window.history.pushState({ appNav: true, mode: 'drill', step: null, flowType: flowType, ts: Date.now() }, '') } catch {}
     setCurrentMode('drill')
   }
 
   const handleHome = () => {
-    // Calculate the proper step to return to from drill mode
-    const calculatePreviousStepFromDrill = () => {
-      // Based on the current settings, determine where we came from
-      if (settings.selectedFamily) {
-        return 8  // Came from Family Selection
-      } else if (settings.verbType && settings.specificTense) {
-        return 7  // Came from Verb Type Selection (after tense selection)
-      } else if (settings.specificTense) {
-        return 6  // Came from Tense Selection
-      } else if (settings.specificMood) {
-        return 5  // Came from Mood Selection
-      } else if (settings.practiceMode && settings.level) {
-        return 4  // Came from Practice Mode Selection (Por nivel)
-      } else {
-        return 2  // Default: Main Menu (Por tema or initial)
-      }
-    }
+    // ... (This function's logic can be simplified or reviewed later if needed)
+    const previousStep = 2 // Always return to the main menu
+    const previousFlowType = null
 
-    // Scroll to top when returning to menu
     window.scrollTo({ top: 0, behavior: 'smooth' })
     
-    const previousStep = calculatePreviousStepFromDrill()
-    console.log(`🏠 Drill → Onboarding step ${previousStep}`)
-    
     try { 
-      window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, ts: Date.now() }, '') 
+      window.history.pushState({ appNav: true, mode: 'onboarding', step: previousStep, flowType: previousFlowType, ts: Date.now() }, '') 
     } catch {}
     
     setCurrentMode('onboarding')
+    setFlowType(previousFlowType)
     onboardingFlow.setOnboardingStep(previousStep)
     drillMode.setCurrentItem(null)
     drillMode.setHistory({})
@@ -108,7 +91,6 @@ function AppRouter() {
     if (currentMode === 'drill' && settings.region && !drillMode.currentItem && 
         settings.practiceMode && settings.verbType && 
         (settings.practiceMode === 'mixed' || (settings.specificMood && settings.specificTense))) {
-      // Scroll to top when entering drill mode
       window.scrollTo(0, 0)
       drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
     }
@@ -116,14 +98,6 @@ function AppRouter() {
 
   // Sync browser/hardware back with in-app state using History API state
   useEffect(() => {
-    // Mark current entry if not already marked
-    try {
-      const st = window.history.state
-      if (!st || !st.appNav) {
-        window.history.replaceState({ appNav: true, mode: currentMode, step: onboardingFlow.onboardingStep || 1, ts: Date.now() }, '')
-      }
-    } catch {}
-
     const onPopState = (e) => {
       console.log(`🔙 PopState triggered:`, e.state)
       
@@ -133,7 +107,6 @@ function AppRouter() {
         
         if (st.mode === 'drill') {
           setCurrentMode('drill')
-          // Ensure drill has a current item when navigating back to it
           if (!drillMode.currentItem) {
             console.log(`🔧 Regenerating drill item after back navigation`)
             setTimeout(() => {
@@ -142,33 +115,35 @@ function AppRouter() {
           }
         } else {
           setCurrentMode('onboarding')
-          // Drive onboarding step directly from history state
+          setFlowType(st.flowType || null)
+          
           if (typeof st.step === 'number' && st.step >= 1 && st.step <= 8) {
             console.log(`🎯 Navigating to step ${st.step}`)
             try { 
               onboardingFlow.setOnboardingStep(st.step)
-              // Enhanced state cleanup based on navigation target
               cleanupStateForStep(st.step)
             } catch (err) {
               console.error('Error setting onboarding step:', err)
-              // Fallback to main menu
               onboardingFlow.setOnboardingStep(2)
+              setFlowType(null)
               cleanupStateForStep(2)
             }
           } else {
             console.log(`⚠️  Invalid step in state, defaulting to step 1`)
-            try { onboardingFlow.setOnboardingStep(1) } catch {}
+            try { 
+              onboardingFlow.setOnboardingStep(1)
+              setFlowType(null)
+            } catch {}
           }
         }
       } else {
         console.log(`⚠️  No valid app state found, creating guard entry`)
-        // Not our state or no state; calculate proper step and re-insert guard state
         try {
           const currentStep = onboardingFlow.onboardingStep || 2
           const mode = currentMode || 'onboarding'
           
           console.log(`🛡️  Creating guard state: mode=${mode}, step=${currentStep}`)
-          window.history.pushState({ appNav: true, mode, step: currentStep, ts: Date.now() }, '')
+          window.history.pushState({ appNav: true, mode, step: currentStep, flowType, ts: Date.now() }, '')
           
           setCurrentMode(mode)
           if (mode === 'onboarding') {
@@ -182,13 +157,12 @@ function AppRouter() {
     
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion])
+  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion, flowType])
 
   // Enhanced state cleanup function
   const cleanupStateForStep = (targetStep) => {
     const updates = {}
     
-    // Step 1: Clear everything when going back to dialect selection
     if (targetStep === 1) {
       updates.cameFromTema = false
       updates.specificMood = null
@@ -198,66 +172,34 @@ function AppRouter() {
       updates.level = null
       updates.practiceMode = null
     }
-    
-    // Step 2: Different behavior for theme vs level flows
     else if (targetStep === 2) {
-      if (settings.practiceMode === 'theme') {
-        // For theme mode, step 2 is mood selection - only clear tense and later selections
+        updates.cameFromTema = false
+        updates.specificMood = null
         updates.specificTense = null
         updates.verbType = null
         updates.selectedFamily = null
-      } else {
-        // For other modes, step 2 is main menu - clear practice-specific settings
-        updates.cameFromTema = false
+        updates.level = null
+        updates.practiceMode = null
+    }
+    else if (targetStep === 3) {
+      if (flowType === 'por_nivel') {
+        updates.practiceMode = null
         updates.specificMood = null
         updates.specificTense = null
         updates.verbType = null
         updates.selectedFamily = null
       }
     }
-    
-    // Step 3: Clear practice mode when going back to level details
-    else if (targetStep === 3) {
-      updates.practiceMode = null
-      updates.specificMood = null
-      updates.specificTense = null
-      updates.verbType = null
-      updates.selectedFamily = null
-    }
-    
-    // Step 4: Clear mood/tense selections when going back to practice mode
     else if (targetStep === 4) {
       updates.specificMood = null
       updates.specificTense = null
       updates.verbType = null
       updates.selectedFamily = null
     }
-    
-    // Step 5: Clear tense selection when going back to mood selection
     else if (targetStep === 5) {
-      // For theme-based practice, we might need to clear mood
-      if (settings.cameFromTema && settings.specificMood && !settings.specificTense) {
-        updates.specificMood = null
-      } else {
-        updates.specificTense = null
-        updates.selectedFamily = null
-      }
-    }
-    
-    // Step 6: Clear family selection when going back to verb type
-    else if (targetStep === 6) {
-      // If we have both mood and tense, we're going back to tense selection
-      if (settings.specificMood && settings.specificTense) {
-        updates.specificTense = null
-      }
-      // If we have only mood, we're going back to mood selection
-      else if (settings.specificMood && !settings.specificTense) {
-        updates.specificMood = null
-      }
+      updates.specificTense = null
       updates.selectedFamily = null
     }
-    
-    // Step 7: Clear family when going back to verb type selection
     else if (targetStep === 7) {
       updates.selectedFamily = null
     }
@@ -267,63 +209,23 @@ function AppRouter() {
     }
   }
 
-  // Handler functions for drill mode settings changes
-  const handleDialectChange = (dialect) => {
-    onboardingFlow.selectDialect(dialect)
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handleLevelChange = (level) => {
-    onboardingFlow.selectLevel(level)
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handlePracticeModeChange = (mode) => {
-    settings.set({ 
-      practiceMode: mode,
-      specificMood: null,
-      specificTense: null
-    })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handlePronounPracticeChange = (pronoun) => {
-    settings.set({ practicePronoun: pronoun })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handleVerbTypeChange = (verbType, selectedFamily) => {
-    settings.set({ 
-      verbType,
-      selectedFamily: verbType !== 'irregular' ? null : selectedFamily
-    })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handleStartSpecificPractice = () => {
-    // Initialize block for A1/A2: one tense per tanda
-    const lvl = settings.level
-    if (lvl === 'A1' || lvl === 'A2') {
-      settings.set({
-        currentBlock: {
-          combos: [{ mood: settings.specificMood, tense: settings.specificTense }],
-          itemsRemaining: 8
-        }
-      })
-    } else {
-      settings.set({ currentBlock: null })
-    }
-    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
-  const handleRegenerateItem = () => {
-    drillMode.setCurrentItem(null)
-    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-  }
-
   const handleFlowTypeSelection = (selectedFlowType) => {
     console.log(`🎯 Flow type selected: ${selectedFlowType}`)
+    let nextStep = 2;
+
+    if (selectedFlowType === 'por_nivel') {
+      nextStep = 3;
+      onboardingFlow.goToLevelDetails();
+    } else if (selectedFlowType === 'por_tema') {
+      nextStep = 5;
+      onboardingFlow.selectPracticeMode('theme');
+    }
+
     setFlowType(selectedFlowType)
+    onboardingFlow.setOnboardingStep(nextStep)
+    try {
+      window.history.pushState({ appNav: true, mode: 'onboarding', step: nextStep, flowType: selectedFlowType, ts: Date.now() }, '')
+    } catch {}
   }
 
   if (currentMode === 'onboarding') {
@@ -332,7 +234,6 @@ function AppRouter() {
     } else if (flowType === 'por_tema') {
       return <OnboardingFlowPorTema onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
     } else {
-      // Main menu - show flow selection
       return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} onSelectFlowType={handleFlowTypeSelection} />
     }
   }
