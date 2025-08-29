@@ -8,6 +8,8 @@ import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import { useSettings } from '../../state/settings.js'
+import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
+import { buildFormsForRegion } from '../../lib/core/eligibility.js'
 import './progress.css'
 import './practice-recommendations.css'
 
@@ -144,14 +146,42 @@ export default function ProgressDashboard() {
             try {
               const mood = recommendation?.targetCombination?.mood
               const tense = recommendation?.targetCombination?.tense
-              if (mood && tense) {
-                // Actualizar configuración a práctica específica
-                settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-                // Notificar al contenedor para arrancar práctica específica y cerrar panel
-                window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+              
+              if (!mood || !tense) {
+                console.error('❌ DASHBOARD - Invalid recommendation: missing mood or tense')
+                return
               }
+              
+              // PRE-VALIDATION: Check if combination is available before proceeding
+              const allForms = buildFormsForRegion(settings.region)
+              const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
+              
+              if (!isValid) {
+                console.error(`❌ DASHBOARD - Invalid combination: ${mood}/${tense} not available`)
+                // Show user-friendly message instead of proceeding
+                window.dispatchEvent(new CustomEvent('progress:error', { 
+                  detail: { 
+                    message: `La práctica de ${mood}/${tense} no está disponible para tu nivel actual (${settings.level || 'B1'})`,
+                    suggestion: 'Intenta con otra recomendación o cambia tu nivel de práctica'
+                  } 
+                }))
+                return
+              }
+              
+              console.log(`✅ DASHBOARD - Valid combination: ${mood}/${tense}`)
+              
+              // Actualizar configuración a práctica específica
+              settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
+              // Notificar al contenedor para arrancar práctica específica y cerrar panel
+              window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
             } catch (e) {
-              console.warn('No se pudo aplicar la recomendación:', e)
+              console.error('Error processing recommendation:', e)
+              window.dispatchEvent(new CustomEvent('progress:error', { 
+                detail: { 
+                  message: 'Error al procesar la recomendación de práctica',
+                  suggestion: 'Inténtalo de nuevo o selecciona otra opción'
+                } 
+              }))
             }
           }}
         />

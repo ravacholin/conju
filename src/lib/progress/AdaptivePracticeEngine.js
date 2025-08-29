@@ -584,42 +584,6 @@ export class AdaptivePracticeEngine {
     }
     return 10 // Valor por defecto
   }
-}
-
-// Exportar instancia por defecto
-export default new AdaptivePracticeEngine()
-
-/**
- * Funciones de utilidad para uso directo
- */
-
-/**
- * Obtiene recomendaciones rápidas para la interfaz
- * @param {Object} options - Opciones de configuración
- * @returns {Promise<Array>} Recomendaciones básicas
- */
-export async function getQuickRecommendations(options = {}) {
-  const engine = new AdaptivePracticeEngine()
-  return engine.getPracticeRecommendations({ maxRecommendations: 3, ...options })
-}
-
-/**
- * Evalúa si el usuario necesita más práctica en un área específica
- * @param {string} mood - Modo gramatical
- * @param {string} tense - Tiempo verbal
- * @returns {Promise<boolean>} True si necesita más práctica
- */
-export async function needsMorePractice(mood, tense) {
-  try {
-    const userId = getCurrentUserId()
-    const masteryRecords = await getMasteryByUser(userId)
-    
-    const record = masteryRecords.find(r => r.mood === mood && r.tense === tense)
-    return !record || record.score < 70
-  } catch (error) {
-    console.error('Error evaluando necesidad de práctica:', error)
-    return true
-  }
 
   /**
    * CRITICAL INTEGRATION: Validates recommendations to ensure they have available forms
@@ -705,6 +669,42 @@ export async function needsMorePractice(mood, tense) {
     }
     
     return fallbacks
+  }
+}
+
+// Exportar instancia por defecto
+export default new AdaptivePracticeEngine()
+
+/**
+ * Funciones de utilidad para uso directo
+ */
+
+/**
+ * Obtiene recomendaciones rápidas para la interfaz
+ * @param {Object} options - Opciones de configuración
+ * @returns {Promise<Array>} Recomendaciones básicas
+ */
+export async function getQuickRecommendations(options = {}) {
+  const engine = new AdaptivePracticeEngine()
+  return engine.getPracticeRecommendations({ maxRecommendations: 3, ...options })
+}
+
+/**
+ * Evalúa si el usuario necesita más práctica en un área específica
+ * @param {string} mood - Modo gramatical
+ * @param {string} tense - Tiempo verbal
+ * @returns {Promise<boolean>} True si necesita más práctica
+ */
+export async function needsMorePractice(mood, tense) {
+  try {
+    const userId = getCurrentUserId()
+    const masteryRecords = await getMasteryByUser(userId)
+    
+    const record = masteryRecords.find(r => r.mood === mood && r.tense === tense)
+    return !record || record.score < 70
+  } catch (error) {
+    console.error('Error evaluando necesidad de práctica:', error)
+    return true
   }
 }
 

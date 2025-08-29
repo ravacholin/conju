@@ -793,6 +793,132 @@ export function useDrillMode() {
     debugCurrentLevelPrioritization,
     
     // NEW: Complete progress intelligence suite
-    getCurrentFlowState
+    getCurrentFlowState,
+    
+    // PROGRESS SYSTEM INTEGRATION: Enhanced error handling
+    tryIntelligentFallback,
+    fallbackToMixedPractice
+  }
+
+  /**
+   * ENHANCED FALLBACK: Try multiple strategies when specific practice fails
+   */
+  async function tryIntelligentFallback(settings, eligibleForms, context) {
+    const { specificMood, specificTense, matchesSpecific, allowsPerson, allowsLevel } = context
+    
+    console.log('🔄 TRYING INTELLIGENT FALLBACK - Multiple strategies')
+    
+    // Strategy 1: Try direct filtering with basic forms
+    const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
+    const compliant = gated.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
+    
+    if (compliant.length > 0) {
+      console.log('✅ Fallback Strategy 1: Direct filtering worked')
+      return compliant[Math.floor(Math.random() * compliant.length)]
+    }
+    
+    // Strategy 2: Relax person constraints if region is causing issues
+    if (specificMood && specificTense) {
+      const relaxedPerson = gated.filter(f => 
+        f.mood === specificMood && 
+        f.tense === specificTense && 
+        allowsLevel(f)
+      )
+      
+      if (relaxedPerson.length > 0) {
+        console.log('✅ Fallback Strategy 2: Relaxed person constraints worked')
+        return relaxedPerson[Math.floor(Math.random() * relaxedPerson.length)]
+      }
+    }
+    
+    // Strategy 3: Try similar tenses within the same mood
+    if (specificMood) {
+      const similarTenses = getSimilarTenses(specificTense)
+      for (const altTense of similarTenses) {
+        const altForms = gated.filter(f => 
+          f.mood === specificMood && 
+          f.tense === altTense && 
+          allowsPerson(f.person) && 
+          allowsLevel(f)
+        )
+        
+        if (altForms.length > 0) {
+          console.log(`✅ Fallback Strategy 3: Similar tense ${altTense} worked`)
+          return altForms[Math.floor(Math.random() * altForms.length)]
+        }
+      }
+    }
+    
+    console.log('❌ All fallback strategies failed')
+    return null
+  }
+
+  /**
+   * Last resort: Switch to mixed practice when specific practice completely fails
+   */
+  function fallbackToMixedPractice(allForms, settings) {
+    console.log('🚨 FINAL FALLBACK - Switching to mixed practice')
+    
+    // Force mixed practice settings
+    const fallbackSettings = {
+      ...settings,
+      practiceMode: 'mixed',
+      specificMood: null,
+      specificTense: null
+    }
+    
+    // Try to get any valid form for the user's level
+    const gated = gateFormsByCurriculumAndDialect(allForms, fallbackSettings)
+    const levelValid = gated.filter(f => {
+      const userLevel = settings.level || 'B1'
+      const allowed = getAllowedCombosForLevel(userLevel)
+      return allowed.has(`${f.mood}|${f.tense}`)
+    })
+    
+    if (levelValid.length > 0) {
+      const form = levelValid[Math.floor(Math.random() * levelValid.length)]
+      console.log(`✅ Mixed fallback succeeded: ${form.mood}/${form.tense}`)
+      
+      // Return the item in the expected format
+      return {
+        id: Date.now(),
+        lemma: form.lemma,
+        mood: form.mood,
+        tense: form.tense,
+        person: form.person,
+        form: {
+          value: form.value || form.form,
+          lemma: form.lemma,
+          mood: form.mood,
+          tense: form.tense,
+          person: form.person,
+          alt: form.alt || [],
+          accepts: form.accepts || {}
+        },
+        settings: fallbackSettings,
+        selectionMethod: 'mixed_practice_fallback'
+      }
+    }
+    
+    console.error('❌ COMPLETE FAILURE - Even mixed practice fallback failed')
+    throw new Error('No forms available for practice - please check your level and region settings')
+  }
+
+  /**
+   * Helper: Get similar tenses for fallback attempts
+   */
+  function getSimilarTenses(tense) {
+    const tenseGroups = {
+      'pretIndef': ['impf'],
+      'impf': ['pretIndef'],
+      'subjPres': ['subjImpf'],
+      'subjImpf': ['subjPres'],
+      'pretPerf': ['plusc'],
+      'plusc': ['pretPerf'],
+      'fut': ['cond'],
+      'cond': ['fut']
+    }
+    
+    return tenseGroups[tense] || []
   }
 }
