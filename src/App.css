@@ -261,7 +261,6 @@ body {
   border-radius: 20px;
   filter: brightness(0.95) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: gentle-pulse 4s ease-in-out infinite;
 }
 
 .app-logo img:hover {
@@ -269,16 +268,7 @@ body {
   filter: brightness(1.05) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.5));
 }
 
-@keyframes gentle-pulse {
-  0%, 100% { 
-    transform: scale(1) rotate(0deg);
-    filter: brightness(0.95) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
-  }
-  50% { 
-    transform: scale(1.01) rotate(0.5deg);
-    filter: brightness(1.02) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
-  }
-}
+/* removed gentle-pulse animation to avoid distracting logo shimmer */
 
 .onboarding h1 {
   font-size: 3.236rem;
