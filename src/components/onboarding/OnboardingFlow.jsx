@@ -1,5 +1,4 @@
 import React from 'react'
-import { useOnboardingFlow } from '../../hooks/useOnboardingFlow.js'
 import DialectSelection from './DialectSelection.jsx'
 import LevelSelection from './LevelSelection.jsx'
 import PracticeModeSelection from './PracticeModeSelection.jsx'
@@ -8,25 +7,28 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
-  const {
-    onboardingStep,
-    selectDialect,
-    selectLevel,
-    selectPracticeMode,
-    selectMood,
-    selectTense,
-    selectVerbType,
-    selectFamily,
-    goBack,
-    goToLevelDetails,
-    handleHome,
-    settings,
-    getAvailableMoodsForLevel,
-    getAvailableTensesForLevelAndMood,
-    getModeSamples,
-    getConjugationExample
-  } = useOnboardingFlow()
+function OnboardingFlow({ 
+  onStartPractice, 
+  setCurrentMode, 
+  formsForRegion,
+  // Hook functions from AppRouter
+  onboardingStep,
+  selectDialect,
+  selectLevel,
+  selectPracticeMode,
+  selectMood,
+  selectTense,
+  selectVerbType,
+  selectFamily,
+  goBack,
+  goToLevelDetails,
+  handleHome,
+  settings,
+  getAvailableMoodsForLevel,
+  getAvailableTensesForLevelAndMood,
+  getModeSamples,
+  getConjugationExample
+}) {
 
   // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {

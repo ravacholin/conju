@@ -110,7 +110,8 @@ function AppRouter() {
     const updates = {}
     
     // Clear settings based on target step
-    if (targetStep < 2) {
+    // DO NOT clear region for step 1 - it should keep selected region
+    if (targetStep < 1) {
       updates.region = null
     }
     if (targetStep < 3) {
@@ -192,7 +193,30 @@ function AppRouter() {
   }
 
   if (currentMode === 'onboarding') {
-    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    return (
+      <OnboardingFlow 
+        onStartPractice={handleStartPractice} 
+        setCurrentMode={setCurrentMode} 
+        formsForRegion={allFormsForRegion}
+        // Pass all hook functions as props
+        onboardingStep={onboardingFlow.onboardingStep}
+        selectDialect={onboardingFlow.selectDialect}
+        selectLevel={onboardingFlow.selectLevel}
+        selectPracticeMode={onboardingFlow.selectPracticeMode}
+        selectMood={onboardingFlow.selectMood}
+        selectTense={onboardingFlow.selectTense}
+        selectVerbType={onboardingFlow.selectVerbType}
+        selectFamily={onboardingFlow.selectFamily}
+        goBack={onboardingFlow.goBack}
+        goToLevelDetails={onboardingFlow.goToLevelDetails}
+        handleHome={onboardingFlow.handleHome}
+        settings={onboardingFlow.settings}
+        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+        getModeSamples={onboardingFlow.getModeSamples}
+        getConjugationExample={onboardingFlow.getConjugationExample}
+      />
+    )
   }
 
   if (currentMode === 'drill') {

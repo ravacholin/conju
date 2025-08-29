@@ -22,12 +22,32 @@ function getAllowedLemmasForLevel(level) {
 }
 
 export function useOnboardingFlow() {
-  const [onboardingStep, setOnboardingStep] = useState(1)
+  const [onboardingStep, setOnboardingStepInternal] = useState(1)
   const settings = useSettings()
+  
+  // Interceptor para debuggear quién está cambiando el step
+  const setOnboardingStep = (newStep) => {
+    console.log(`🚨 setOnboardingStep called: ${onboardingStep} → ${newStep}`);
+    console.trace('Stack trace for setOnboardingStep:');
+    setOnboardingStepInternal(newStep);
+  };
   
   console.log('--- HOOK useOnboardingFlow ---', { 
     onboardingStep
   });
+
+  // Initialize browser history state for step 1 on first load
+  useEffect(() => {
+    if (onboardingStep === 1) {
+      try {
+        const initialState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
+        console.log('🌟 Setting initial history state for step 1:', initialState);
+        window.history.replaceState(initialState, '');
+      } catch {
+        /* ignore */
+      }
+    }
+  }, []);  // Run only once on mount
 
   // Push a browser history entry to align hardware back with app back
   const pushHistory = (nextStep) => {
