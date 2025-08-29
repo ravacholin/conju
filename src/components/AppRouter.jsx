@@ -120,7 +120,7 @@ function AppRouter() {
     if (targetStep < 4) {
       updates.practiceMode = null
     }
-    if (targetStep < 5) {
+    if (targetStep <= 5) {
       updates.specificMood = null
       updates.specificTense = null
     }
