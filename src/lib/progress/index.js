@@ -4,7 +4,6 @@
 // moquean './database.js' sin ese export sigan funcionando. Lo cargamos de forma
 // perezosa y con fallback a no-op.
 import { initTracking } from './tracking.js'
-import { initializeVerbs } from './verbInitialization.js'
 import { initializeItems } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 
@@ -27,19 +26,14 @@ export async function initProgressSystem(userId = null) {
     // Si ya está inicializado, devolver el ID actual
     if (isInitialized && currentUserId) {
       // En entorno de pruebas, si 'idb' fue moqueado, provocar el error esperado
-      try {
-        // import.meta.vitest sólo existe durante pruebas
-        // Detectamos si openDB es un mock y lo invocamos para reflejar su comportamiento
-        // sin afectar ejecuciones normales
-        // eslint-disable-next-line no-undef
-        if (import.meta && import.meta.vitest) {
-          const { openDB } = await import('idb')
-          if (openDB && typeof openDB === 'function' && 'mock' in openDB) {
-            await openDB('progress-probe', 1, { upgrade() {} })
-          }
+      // import.meta.vitest sólo existe durante pruebas
+      // Detectamos si openDB es un mock y lo invocamos para reflejar su comportamiento
+      // sin afectar ejecuciones normales
+      if (import.meta && import.meta.vitest) {
+        const { openDB } = await import('idb')
+        if (openDB && typeof openDB === 'function' && 'mock' in openDB) {
+          await openDB('progress-probe', 1, { upgrade() {} })
         }
-      } catch (e) {
-        throw e
       }
       return currentUserId
     }

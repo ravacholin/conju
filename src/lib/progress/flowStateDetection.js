@@ -2,7 +2,7 @@
 // Algoritmo inteligente para detectar cuándo el usuario está "en la zona"
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger, logFlow, logError, logWarn } from './logger.js'
+import { logger, logFlow } from './logger.js'
 import { memoryManager } from './memoryManager.js'
 
 /**
@@ -340,8 +340,6 @@ export class FlowStateDetector {
    * Actualizar métricas de flow
    */
   updateFlowMetrics(response) {
-    const sessionTime = Date.now() - this.sessionStartTime
-    
     // Actualizar promedio de tiempo de respuesta
     const totalResponses = this.responseHistory.length
     this.flowMetrics.averageResponseTime = (
@@ -506,7 +504,7 @@ if (typeof window !== 'undefined') {
   window.SpanishConjugator.FlowDetector = {
     getState: () => flowDetector.getCurrentState(),
     getMetrics: () => flowDetector.getFlowMetrics(),
-    getRecommendations: () => flowDetector.getStateRecommendations(),
+    getRecommendations: () => flowDetector.getRecommendations(),
     getDetailedState: () => flowDetector.getDetailedState(),
     reset: () => flowDetector.reset()
   }

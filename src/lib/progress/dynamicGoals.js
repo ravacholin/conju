@@ -2,7 +2,7 @@
 // Genera y adapta objetivos granulares basados en el progreso del usuario
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger, logGoals, logError, logWarn } from './logger.js'
+import { logger } from './logger.js'
 import { memoryManager, registerInterval } from './memoryManager.js'
 
 /**
@@ -195,9 +195,9 @@ export class DynamicGoalsSystem {
     const {
       userPerformance = {},
       recentActivity = {},
-      currentWeakness = null,
-      currentStrength = null,
-      sessionData = {}
+      _currentWeakness = null,
+      _currentStrength = null,
+      _sessionData = {}
     } = context
 
     // Seleccionar tipo de objetivo basado en contexto
@@ -262,7 +262,7 @@ export class DynamicGoalsSystem {
   /**
    * Crea un objetivo específico desde una plantilla
    */
-  createGoalFromTemplate(template, context) {
+  createGoalFromTemplate(template, _context) {
     const variations = template.variations || [{}]
     const variation = variations[Math.floor(Math.random() * variations.length)]
     
@@ -325,8 +325,6 @@ export class DynamicGoalsSystem {
    * Inicializa el progreso según el tipo de objetivo
    */
   initializeProgress(goalType) {
-    const goalConfig = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.GOALS.GOAL_TYPES
-    
     switch (goalType) {
       case 'accuracy':
         return { attempts: 0, correct: 0, currentAccuracy: 0 }
@@ -366,20 +364,20 @@ export class DynamicGoalsSystem {
    */
   processResponse(response) {
     const {
-      isCorrect,
-      responseTime,
-      verb,
-      mood,
-      tense,
-      person,
-      sessionStartTime = null,
-      currentStreak = 0
+      _isCorrect,
+      _responseTime,
+      _verb,
+      _mood,
+      _tense,
+      _person,
+      _sessionStartTime = null,
+      _currentStreak = 0
     } = response
 
     const updates = []
 
     // Actualizar todos los objetivos activos
-    this.activeGoals.forEach((goal, goalId) => {
+    this.activeGoals.forEach((goal, _goalId) => {
       const update = this.updateGoal(goal, response)
       if (update) {
         updates.push(update)
@@ -699,38 +697,38 @@ export class DynamicGoalsSystem {
    */
   isGoalCompleted(goal) {
     switch (goal.type) {
-      case 'accuracy':
+      case 'accuracy': {
         return goal.progress.attempts >= goal.requirements.minAttempts &&
                goal.progress.currentAccuracy >= goal.requirements.targetAccuracy
-
-      case 'speed':
+      }
+      case 'speed': {
         const speedRate = goal.progress.fastResponses / goal.progress.totalResponses
         return goal.progress.totalResponses >= goal.requirements.minAttempts &&
                speedRate >= (goal.requirements.minAccuracy || 0.8)
-
-      case 'streak':
+      }
+      case 'streak': {
         return goal.progress.currentStreak >= goal.requirements.targetStreak
-
-      case 'exploration':
+      }
+      case 'exploration': {
         const withinTimeLimit = !goal.timeLimit || (Date.now() - goal.createdAt) <= goal.timeLimit
         return goal.progress.totalVerbs >= goal.requirements.uniqueVerbs && withinTimeLimit
-
-      case 'mastery':
+      }
+      case 'mastery': {
         if (goal.progress.attempts < goal.requirements.minAttempts) return false
         const accuracy = goal.progress.correct / goal.progress.attempts
         const mean = goal.progress.recentAccuracy.reduce((sum, val) => sum + val, 0) / goal.progress.recentAccuracy.length
         const variance = goal.progress.recentAccuracy.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / goal.progress.recentAccuracy.length
         return accuracy >= goal.requirements.minAccuracy && (1 - variance) >= goal.requirements.consistency
-
-      case 'recovery':
+      }
+      case 'recovery': {
         const improvement = goal.progress.currentAccuracy - goal.progress.startingAccuracy
         const targetImprovement = goal.requirements.targetAccuracy - goal.requirements.recoveryFromAccuracy
         return improvement >= targetImprovement && goal.progress.attempts >= goal.requirements.minAttempts
-
-      case 'session':
+      }
+      case 'session': {
         return goal.progress.sessionDuration >= goal.requirements.sessionDuration &&
                goal.progress.sessionAccuracy >= goal.requirements.minAccuracy
-
+      }
       default:
         return false
     }

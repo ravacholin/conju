@@ -194,10 +194,10 @@ export async function checkGoalsCompletion(userId) {
 /**
  * Obtiene el historial de objetivos semanales
  * @param {string} userId - ID del usuario
- * @param {number} weeks - Número de semanas atrás
+ * @param {number} _weeks - Número de semanas atrás
  * @returns {Promise<Array>} Historial de objetivos
  */
-export async function getGoalsHistory(userId, weeks = 4) {
+export async function getGoalsHistory(userId, _weeks = 4) {
   try {
     // En una implementación completa, esto obtendría el historial
     // de objetivos semanales del usuario
@@ -213,10 +213,10 @@ export async function getGoalsHistory(userId, weeks = 4) {
 /**
  * Envía notificaciones de progreso
  * @param {string} userId - ID del usuario
- * @param {Object} progress - Progreso actual
+ * @param {Object} _progress - Progreso actual
  * @returns {Promise<void>}
  */
-export async function sendProgressNotifications(userId, progress) {
+export async function sendProgressNotifications(userId, _progress) {
   try {
     // En una implementación completa, esto enviaría notificaciones
     // al usuario sobre su progreso

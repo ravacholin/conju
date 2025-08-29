@@ -95,6 +95,14 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Documentación:
   - Alinear referencias a `useProgressTracking` y actualizar guías rápidas.
 
+## Desarrollo En Pausa (On-Hold Development)
+
+*A fecha de 2025-08-28, el foco de desarrollo ha cambiado hacia la implementación de funcionalidades de alto impacto para el usuario, como el Sistema de Objetivos Dinámicos. Las siguientes tareas de mantenimiento y refactorización quedan en pausa y podrán ser re-evaluadas en el futuro.*
+
+*   **Limpieza de Código (Linting):** Pausada la limpieza completa de variables e imports no utilizados en `src/lib/progress`. Se completó un progreso parcial.
+*   **Estabilización de Pruebas de Rendimiento:** Pospuesta la actualización de los umbrales de tiempo en `src/lib/progress/compatibility.test.js`.
+*   **Refactorización de Lógica de Mastery:** Pospuesta la consolidación de los cálculos de `mastery` para que `mastery.js` sea la única fuente de verdad.
+
 ## Uso rápido (desarrollo)
 - **Indicador de estado**: visible en Drill (esquina superior derecha) vía `FlowIndicator`.
 - **Evento UI**: orquestador emite `progress-emo-update` con `{ flowState, momentumType, metrics }`.

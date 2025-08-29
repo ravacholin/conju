@@ -1,7 +1,7 @@
 // Sistema de diagnóstico para el sistema de progreso
 
-import { getMasteryByUser, saveMastery, saveAttempt } from './database.js'
-import { calculateMasteryForItem, classifyMasteryLevel } from './mastery.js'
+import { getMasteryByUser } from './database.js'
+
 import { generateId } from './helpers.js'
 
 /**
@@ -66,10 +66,10 @@ export async function performInitialDiagnosis(userId) {
 
 /**
  * Programa una recalibración mensual
- * @param {string} userId - ID del usuario
+ * @param {string} _userId - ID del usuario
  * @returns {Promise<void>}
  */
-export async function scheduleMonthlyRecalibration(userId) {
+export async function scheduleMonthlyRecalibration(_userId) {
   console.log('📅 Programando recalibración mensual...')
   
   // En una implementación completa, esto programaría
@@ -82,10 +82,10 @@ export async function scheduleMonthlyRecalibration(userId) {
 
 /**
  * Realiza una recalibración
- * @param {string} userId - ID del usuario
+ * @param {string} _userId - ID del usuario
  * @returns {Promise<Object>} Resultados de la recalibración
  */
-export async function performRecalibration(userId) {
+export async function performRecalibration(_userId) {
   try {
     console.log('🔍 Realizando recalibración...')
     
@@ -241,16 +241,16 @@ export async function generateDiagnosisRecommendations(diagnosis) {
 
 /**
  * Guarda los resultados del diagnóstico
- * @param {string} userId - ID del usuario
+ * @param {string} _userId - ID del usuario
  * @param {Object} diagnosis - Resultados del diagnóstico
  * @returns {Promise<void>}
  */
-export async function saveDiagnosisResults(userId, diagnosis) {
+export async function saveDiagnosisResults(_userId, diagnosis) {
   try {
     // En una implementación completa, esto guardaría los resultados
     // del diagnóstico en la base de datos
     
-    console.log(`✅ Resultados de diagnóstico guardados para usuario ${userId}:`, diagnosis)
+    console.log(`✅ Resultados de diagnóstico guardados para usuario ${_userId}:`, diagnosis)
   } catch (error) {
     console.error('Error al guardar resultados de diagnóstico:', error)
     throw error

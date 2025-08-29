@@ -1,16 +1,12 @@
 // Sistema de sincronización avanzada con la nube
 // Funcionalidades avanzadas para Fase 5+
 
-import { getAllFromDB } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { exportProgressData } from './dataExport.js'
-import { restoreProgressData } from './dataRestore.js'
 
 // Estado avanzado de sincronización
-let syncQueue = []
 let retryCount = 0
 let syncScheduler = null
-let conflictResolution = 'local' // 'local', 'remote', 'merge'
 
 /**
  * Sistema de sincronización inteligente con múltiples estrategias
@@ -191,7 +187,7 @@ async function getLocalChangesSinceLastSync(userId) {
 /**
  * Simula obtener estado remoto
  */
-async function fetchRemoteState(userId) {
+async function fetchRemoteState(_userId) {
   // Simulación de API call
   await new Promise(resolve => setTimeout(resolve, 500))
   
@@ -271,7 +267,7 @@ async function mergeConflict(conflict) {
 /**
  * Aplica cambios de sincronización
  */
-async function applySyncChanges(changes, userId) {
+async function applySyncChanges(changes, _userId) {
   console.log('📝 Aplicando cambios de sincronización...')
   
   // En implementación real, esto aplicaría cambios a la DB local
@@ -317,13 +313,13 @@ function scheduleNextSync() {
 /**
  * Funciones auxiliares
  */
-function getLastSyncTimestamp(userId) {
-  const key = `last_sync_${userId}`
+function getLastSyncTimestamp(_userId) {
+  const key = `last_sync_${_userId}`
   const stored = localStorage.getItem(key)
   return stored ? new Date(stored) : new Date(0)
 }
 
-function getChangesSince(userId, timestamp) {
+function getChangesSince(_userId, _timestamp) {
   // En implementación real, consultaría changelog
   return Promise.resolve([])
 }
@@ -336,13 +332,13 @@ function chunkArray(array, size) {
   return chunks
 }
 
-async function processBatch(batch, userId) {
+async function processBatch(batch, _userId) {
   // Procesar lote de cambios
   await new Promise(resolve => setTimeout(resolve, 100))
   return { processed: batch.length }
 }
 
-async function uploadToCloud(data, timeout, options = {}) {
+async function uploadToCloud(data, _timeout, _options = {}) {
   // Simulación de upload
   await new Promise(resolve => setTimeout(resolve, 1000))
   
@@ -353,7 +349,7 @@ async function uploadToCloud(data, timeout, options = {}) {
   }
 }
 
-async function downloadFromCloud(userId, timeout) {
+async function downloadFromCloud(_userId, _timeout) {
   // Simulación de download
   await new Promise(resolve => setTimeout(resolve, 800))
   
@@ -363,7 +359,7 @@ async function downloadFromCloud(userId, timeout) {
   }
 }
 
-async function mergeWithLocal(remoteData, userId) {
+async function mergeWithLocal(remoteData, _userId) {
   // Simulación de merge
   await new Promise(resolve => setTimeout(resolve, 500))
   
