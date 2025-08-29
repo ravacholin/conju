@@ -20,7 +20,7 @@ function OnboardingFlow({
   selectTense,
   selectVerbType,
   selectFamily,
-  goBack,
+  // goBack, // Commented out - currently unused
   goToLevelDetails,
   handleHome,
   settings,

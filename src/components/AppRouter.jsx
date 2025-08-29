@@ -4,9 +4,10 @@ import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
-import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
-import { getEligiblePool, buildFormsForRegion } from '../lib/core/eligibility.js'
-import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
+// Debug utilities - commented out to avoid unused imports
+// import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
+import { buildFormsForRegion } from '../lib/core/eligibility.js'
+// import { getEligiblePool, buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
@@ -36,7 +37,9 @@ function AppRouter() {
     try {
       const historyState = { appNav: true, mode: 'drill', ts: Date.now() };
       window.history.pushState(historyState, '')
-    } catch {}
+    } catch (error) {
+      // Ignore history API errors
+    }
   }
 
   const handleHome = () => {
@@ -91,7 +94,9 @@ function AppRouter() {
             console.log(`⚠️  Invalid step in state, defaulting to step 1`)
             try { 
               onboardingFlow.setOnboardingStep(1)
-            } catch {}
+            } catch (error) {
+              console.error('Failed to set onboarding step:', error)
+            }
           }
         }
       } else {

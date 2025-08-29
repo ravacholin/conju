@@ -178,8 +178,12 @@ export function useOnboardingFlow() {
     }
     
     const order = learningOrder[mood] || []
-    // For nonfinite examples, avoid duplicating gerund by excluding the mixed variant
-    const filtered = mood === 'nonfinite' ? tenses.filter(t => t !== 'nonfiniteMixed') : tenses
+    // For nonfinite and imperative examples, exclude mixed variants to avoid extra/duplicate samples
+    const filtered = mood === 'nonfinite'
+      ? tenses.filter(t => t !== 'nonfiniteMixed')
+      : mood === 'imperative'
+        ? tenses.filter(t => t !== 'impMixed')
+        : tenses
     // Filter available tenses by learning order, then sort by that order
     const sortedTenses = filtered.filter(t => order.includes(t)).sort((a, b) => {
       const aIndex = order.indexOf(a)

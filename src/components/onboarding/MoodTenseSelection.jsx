@@ -4,7 +4,7 @@ import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/v
 
 function MoodTenseSelection({ 
   settings, 
-  formsForRegion,
+  // formsForRegion, // Commented out - currently unused
   onSelectMood, 
   onSelectTense,
   onBack,

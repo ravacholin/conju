@@ -25,7 +25,7 @@ export function getUserSettings(_userId) {
       ...defaultSettings(),
       ...parsed
     }
-  } catch {
+  } catch (e) {
     console.warn('Fallo leyendo user settings; usando valores por defecto', e)
     return defaultSettings()
   }

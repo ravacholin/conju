@@ -88,7 +88,7 @@ function DrillMode({
 
   // Listen for navigation requests from ProgressDashboard
   useEffect(() => {
-    const handler = (e) => {
+    const handler = () => {
       try {
         // Close panel and start specific practice with current settings
         setShowProgress(false)
@@ -99,7 +99,9 @@ function DrillMode({
           // Fallback: regenerate item after settings change
           onRegenerateItem()
         }
-      } catch {}
+      } catch (error) {
+        console.error('Error handling progress navigation:', error)
+      }
     }
     window.addEventListener('progress:navigate', handler)
     return () => window.removeEventListener('progress:navigate', handler)
