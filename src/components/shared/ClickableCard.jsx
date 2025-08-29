@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 /**
  * Componente accesible para elementos interactivos
@@ -17,18 +17,41 @@ import React from 'react'
  * @param {string} title - Título descriptivo para aria-label y title
  * @param {string} role - Rol ARIA (por defecto "button")
  */
-function ClickableCard({ className, onClick, children, title, role = "button", ...props }) {
+function ClickableCard({ className = '', onClick, children, title, role = "button", ...props }) {
+  const [anim, setAnim] = useState(false)
+  const timerRef = useRef(null)
+
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  const triggerClickAnim = () => {
+    // restart animation if already active
+    setAnim(false)
+    // next tick to reapply class
+    requestAnimationFrame(() => {
+      setAnim(true)
+      clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setAnim(false), 500)
+    })
+  }
+
+  const handleActivate = (e) => {
+    triggerClickAnim()
+    onClick && onClick(e)
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      onClick(e)
+      handleActivate(e)
     }
   }
 
+  const classes = `${className} ${anim ? 'click-anim' : ''}`.trim()
+
   return (
     <div
-      className={className}
-      onClick={onClick}
+      className={classes}
+      onClick={handleActivate}
       onKeyDown={handleKeyDown}
       role={role}
       tabIndex={0}
