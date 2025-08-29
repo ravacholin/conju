@@ -201,7 +201,9 @@ export function CompetencyRadar({ data }) {
                 window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood: target.mood, tense: target.tense } }))
               }
             }
-          } catch {}
+          } catch (error) {
+            console.error('Error handling radar chart click:', error)
+          }
         }}
       />
       

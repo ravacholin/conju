@@ -37,7 +37,7 @@ function AppRouter() {
     try {
       const historyState = { appNav: true, mode: 'drill', ts: Date.now() };
       window.history.pushState(historyState, '')
-    } catch (error) {
+    } catch {
       // Ignore history API errors
     }
   }

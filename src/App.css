@@ -1260,6 +1260,12 @@ body {
   animation: slideIn 0.5s ease-in-out;
 }
 
+/* Mobile blue sweep for option cards */
+@keyframes blueSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
 
 .option-card,
 .drill-container,
@@ -1373,6 +1379,21 @@ body {
   .option-card {
     padding: 1.5rem !important;
     margin-bottom: 1rem !important;
+  }
+
+  /* Consistent celeste animation on all menus (mobile) */
+  .option-card::before {
+    /* Blue-ish shimmer sweep */
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 123, 255, 0.08) 40%,
+      rgba(0, 123, 255, 0.12) 50%,
+      rgba(0, 123, 255, 0.08) 60%,
+      transparent
+    ) !important;
+    animation: blueSweep 2.2s ease-in-out infinite;
+    transition: none !important;
   }
   
   .option-card.compact {
