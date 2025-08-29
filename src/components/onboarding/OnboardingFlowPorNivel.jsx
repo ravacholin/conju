@@ -8,7 +8,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSelectFlowType = null }) {
+function OnboardingFlowPorNivel({ onStartPractice, setCurrentMode, formsForRegion }) {
   const {
     onboardingStep,
     selectDialect,
@@ -28,7 +28,7 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
     getConjugationExample
   } = useOnboardingFlow()
 
-  // Unified back behavior: use browser history for both UI and hardware back
+  // Simple back navigation for Por Nivel flow
   const handleBack = () => {
     try { 
       window.history.back() 
@@ -51,20 +51,8 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
             <DialectSelection onSelectDialect={selectDialect} />
           )}
 
-          {/* Step 2: Level Selection Mode */}
+          {/* Step 2: Go directly to level details for Por Nivel */}
           {onboardingStep === 2 && (
-            <LevelSelection 
-              onSelectLevel={selectLevel}
-              onSelectPracticeMode={selectPracticeMode}
-              onGoToLevelDetails={goToLevelDetails}
-              onBack={handleBack}
-              showLevelDetails={false}
-              onSelectFlowType={onSelectFlowType}
-            />
-          )}
-
-          {/* Step 3: Specific Level Selection */}
-          {onboardingStep === 3 && (
             <LevelSelection 
               onSelectLevel={selectLevel}
               onSelectPracticeMode={selectPracticeMode}
@@ -74,8 +62,8 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
             />
           )}
 
-          {/* Step 4: Practice Mode Selection */}
-          {onboardingStep === 4 && (
+          {/* Step 3: Practice Mode Selection */}
+          {onboardingStep === 3 && (
             <PracticeModeSelection 
               onSelectPracticeMode={selectPracticeMode}
               onBack={handleBack}
@@ -83,8 +71,8 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
             />
           )}
 
-          {/* Step 5: Mood/Tense Selection OR Verb Type Selection for Mixed Practice */}
-          {onboardingStep === 5 && (
+          {/* Step 4: Mood/Tense Selection OR Verb Type Selection for Mixed Practice */}
+          {onboardingStep === 4 && (
             <>
               {settings.level && settings.practiceMode === 'mixed' ? (
                 <VerbTypeSelection 
@@ -107,8 +95,8 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
             </>
           )}
 
-          {/* Step 6: Multiple cases - Family Selection or Tense Selection */}
-          {onboardingStep === 6 && (
+          {/* Step 5: Multiple cases - Family Selection or Tense Selection */}
+          {onboardingStep === 5 && (
             <>
               {settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
                 <FamilySelection 
@@ -137,16 +125,16 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
             </>
           )}
 
-          {/* Step 7: Verb Type Selection for Level-Specific Practice */}
-          {onboardingStep === 7 && settings.level && (
+          {/* Step 6: Verb Type Selection for Level-Specific Practice */}
+          {onboardingStep === 6 && settings.level && (
             <VerbTypeSelection 
               onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
               onBack={handleBack}
             />
           )}
 
-          {/* Step 8: Family Selection for Irregular Verbs */}
-          {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
+          {/* Step 7: Family Selection for Irregular Verbs */}
+          {onboardingStep === 7 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
             <FamilySelection 
               settings={settings}
               onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
@@ -159,4 +147,4 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
   )
 }
 
-export default OnboardingFlow
+export default OnboardingFlowPorNivel

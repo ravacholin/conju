@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
+import OnboardingFlowPorNivel from './onboarding/OnboardingFlowPorNivel.jsx'
+import OnboardingFlowPorTema from './onboarding/OnboardingFlowPorTema.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
@@ -10,6 +12,7 @@ import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
+  const [flowType, setFlowType] = useState(null) // 'por_nivel' | 'por_tema' | null
   const settings = useSettings()
   
   // Import hooks
@@ -196,13 +199,21 @@ function AppRouter() {
       updates.practiceMode = null
     }
     
-    // Step 2: Clear practice-specific settings when going back to main menu
+    // Step 2: Different behavior for theme vs level flows
     else if (targetStep === 2) {
-      updates.cameFromTema = false
-      updates.specificMood = null
-      updates.specificTense = null
-      updates.verbType = null
-      updates.selectedFamily = null
+      if (settings.practiceMode === 'theme') {
+        // For theme mode, step 2 is mood selection - only clear tense and later selections
+        updates.specificTense = null
+        updates.verbType = null
+        updates.selectedFamily = null
+      } else {
+        // For other modes, step 2 is main menu - clear practice-specific settings
+        updates.cameFromTema = false
+        updates.specificMood = null
+        updates.specificTense = null
+        updates.verbType = null
+        updates.selectedFamily = null
+      }
     }
     
     // Step 3: Clear practice mode when going back to level details
@@ -310,8 +321,20 @@ function AppRouter() {
     drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
+  const handleFlowTypeSelection = (selectedFlowType) => {
+    console.log(`🎯 Flow type selected: ${selectedFlowType}`)
+    setFlowType(selectedFlowType)
+  }
+
   if (currentMode === 'onboarding') {
-    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    if (flowType === 'por_nivel') {
+      return <OnboardingFlowPorNivel onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    } else if (flowType === 'por_tema') {
+      return <OnboardingFlowPorTema onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
+    } else {
+      // Main menu - show flow selection
+      return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} onSelectFlowType={handleFlowTypeSelection} />
+    }
   }
 
   if (currentMode === 'drill') {

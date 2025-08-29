@@ -188,9 +188,18 @@ export function useOnboardingFlow() {
   const selectDialect = (dialect) => {
     closeTopPanelsAndFeatures()
     
+    // Clear any previous mood/tense selections when starting fresh
+    const baseUpdates = {
+      specificMood: null,
+      specificTense: null,
+      verbType: null,
+      selectedFamily: null
+    }
+    
     switch (dialect) {
       case 'rioplatense':
         settings.set({
+          ...baseUpdates,
           useVoseo: true,
           useTuteo: false,
           useVosotros: false,
@@ -202,6 +211,7 @@ export function useOnboardingFlow() {
         break
       case 'la_general':
         settings.set({
+          ...baseUpdates,
           useTuteo: true,
           useVoseo: false,
           useVosotros: false,
@@ -213,6 +223,7 @@ export function useOnboardingFlow() {
         break
       case 'peninsular':
         settings.set({
+          ...baseUpdates,
           useTuteo: true,
           useVoseo: false,
           useVosotros: true,
@@ -224,6 +235,7 @@ export function useOnboardingFlow() {
         break
       case 'both':
         settings.set({
+          ...baseUpdates,
           useTuteo: true,
           useVoseo: true,
           useVosotros: true,
@@ -396,12 +408,16 @@ export function useOnboardingFlow() {
     // For theme-based practice (cameFromTema=true), keep the flag set
     settings.set({ specificMood: mood })
     
-    if (settings.level) {
+    if (settings.practiceMode === 'theme') {
+      // For theme-based practice, stay on current step but with specific mood set
+      // The MoodTenseSelection component will show tense selection when specificMood is set
+      // Don't advance step - let the component handle the UI change
+      pushHistory(onboardingStep)
+    } else if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
       pushHistory(6)
     } else {
-      // For theme-based practice, stay in step 5 but with specific mood set
-      // The component will show tense selection when specificMood is set
+      // For other specific practice, stay in step 5 but with specific mood set
       pushHistory(5)
     }
   }
@@ -410,11 +426,15 @@ export function useOnboardingFlow() {
     closeTopPanelsAndFeatures()
     settings.set({ specificTense: tense })
     
-    if (settings.level) {
+    if (settings.practiceMode === 'theme') {
+      // For theme-based practice, go to step 3 (VerbTypeSelection)
+      setOnboardingStep(3)
+      pushHistory(3)
+    } else if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
       pushHistory(7)
     } else {
-      // For theme-based practice (cameFromTema=true), go to step 6
+      // For other specific practice, go to step 6
       setOnboardingStep(6) // Go to verb type selection for general practice
       pushHistory(6)
     }
