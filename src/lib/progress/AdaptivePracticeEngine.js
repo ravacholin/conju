@@ -4,6 +4,9 @@ import { getMasteryByUser, getDueSchedules } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
+import { validateMoodTenseAvailability } from '../core/generator.js'
+import { useSettings } from '../../state/settings.js'
+import { buildFormsForRegion } from '../core/eligibility.js'
 
 /**
  * Motor principal para generar recomendaciones de práctica adaptativa
@@ -59,8 +62,11 @@ export class AdaptivePracticeEngine {
           )
       }
 
+      // CRITICAL FIX: Filter out recommendations with invalid mood/tense combinations
+      const validatedRecommendations = await this.validateRecommendations(recommendations)
+      
       // Ordenar por prioridad y limitar resultados
-      return recommendations
+      return validatedRecommendations
         .sort((a, b) => b.priority - a.priority)
         .slice(0, maxRecommendations)
     } catch (error) {
@@ -613,6 +619,92 @@ export async function needsMorePractice(mood, tense) {
   } catch (error) {
     console.error('Error evaluando necesidad de práctica:', error)
     return true
+  }
+
+  /**
+   * CRITICAL INTEGRATION: Validates recommendations to ensure they have available forms
+   * This prevents "No forms available" and "Undefined - Undefined" errors
+   * @param {Array} recommendations - Array of recommendation objects
+   * @returns {Promise<Array>} Filtered array of valid recommendations
+   */
+  async validateRecommendations(recommendations) {
+    try {
+      // Get current user settings and forms
+      const settings = useSettings.getState()
+      const allForms = buildFormsForRegion(settings.region)
+      
+      console.log(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
+      
+      const validRecommendations = []
+      
+      for (const rec of recommendations) {
+        const { mood, tense } = rec.targetCombination || {}
+        
+        if (!mood || !tense) {
+          console.log(`❌ VALIDATION - Skipping recommendation without mood/tense:`, rec.title)
+          continue
+        }
+        
+        // Use the validation function from generator.js
+        const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
+        
+        if (isValid) {
+          validRecommendations.push(rec)
+          console.log(`✅ VALIDATION - Valid: ${mood}/${tense}`)
+        } else {
+          console.log(`❌ VALIDATION - Invalid: ${mood}/${tense} - no forms available`)
+        }
+      }
+      
+      // If we filtered out all recommendations, provide safe fallbacks
+      if (validRecommendations.length === 0 && recommendations.length > 0) {
+        console.log('⚠️  VALIDATION - All recommendations were invalid, adding fallbacks')
+        const fallbacks = await this.generateFallbackRecommendations(settings, allForms)
+        validRecommendations.push(...fallbacks)
+      }
+      
+      console.log(`🔍 VALIDATION - Filtered to ${validRecommendations.length} valid recommendations`)
+      return validRecommendations
+    } catch (error) {
+      console.error('Error validating recommendations:', error)
+      // Return original recommendations on error to avoid breaking the system
+      return recommendations
+    }
+  }
+
+  /**
+   * Generates safe fallback recommendations when all original recommendations are invalid
+   */
+  async generateFallbackRecommendations(settings, allForms) {
+    const level = settings.level || 'B1'
+    const fallbacks = []
+    
+    // Try common safe combinations for the user's level
+    const safeCombinations = [
+      { mood: 'indicative', tense: 'pres' },
+      { mood: 'indicative', tense: 'pretIndef' },
+      { mood: 'indicative', tense: 'impf' },
+      { mood: 'indicative', tense: 'fut' }
+    ]
+    
+    for (const combo of safeCombinations) {
+      if (validateMoodTenseAvailability(combo.mood, combo.tense, settings, allForms)) {
+        fallbacks.push({
+          type: 'fallback_safe_practice',
+          priority: 50,
+          title: `Práctica de ${combo.mood}/${combo.tense}`,
+          description: 'Práctica general recomendada para tu nivel',
+          targetCombination: combo,
+          estimatedDuration: '5-10 min',
+          difficulty: 'moderate',
+          reason: 'safe_fallback'
+        })
+        
+        if (fallbacks.length >= 3) break
+      }
+    }
+    
+    return fallbacks
   }
 }
 

@@ -982,4 +982,65 @@ function acc(f, history){
   return (h.correct + 1) / (h.seen + 2)
 }
 function key(f){ return `${f.mood}:${f.tense}:${f.person}:${f.value}` }
-function levelOrder(L){ return ['A1','A2','B1','B2','C1','C2'].indexOf(L) } 
+function levelOrder(L){ return ['A1','A2','B1','B2','C1','C2'].indexOf(L) }
+
+/**
+ * PROGRESS SYSTEM INTEGRATION: Validates if a mood/tense combination has available forms
+ * This is crucial for the progress menu to avoid "No forms available" errors
+ * @param {string} mood - Target mood (indicative, subjunctive, etc.)
+ * @param {string} tense - Target tense (pres, pretIndef, etc.)
+ * @param {Object} settings - User settings object with level, region, etc.
+ * @param {Array} allForms - Array of all available forms for the region
+ * @returns {boolean} true if combination has available forms, false otherwise
+ */
+export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
+  try {
+    // Get user settings with defaults
+    const level = settings.level || 'B1'
+    const region = settings.region || 'rioplatense'
+    const useVoseo = settings.useVoseo !== false
+    const useTuteo = settings.useTuteo !== false
+    const useVosotros = settings.useVosotros !== false
+    
+    console.log(`🔍 VALIDATION - Checking ${mood}|${tense} for level ${level}, region ${region}`)
+    
+    // Step 1: Check if combination is allowed for the user's level
+    const allowedCombos = getAllowedCombosForLevel(level)
+    const comboKey = `${mood}|${tense}`
+    if (!allowedCombos.has(comboKey)) {
+      console.log(`❌ VALIDATION - ${comboKey} not allowed for level ${level}`)
+      return false
+    }
+    
+    // Step 2: Filter forms that match the criteria
+    const matchingForms = allForms.filter(f => {
+      // Must match mood and tense
+      if (f.mood !== mood || f.tense !== tense) return false
+      
+      // Must have a valid value
+      if (!f.value && !f.form) return false
+      
+      // Apply dialect filtering
+      if (region === 'rioplatense') {
+        if (!useVoseo && f.person === '2s_vos') return false
+        if (!useTuteo && f.person === '2s_tu') return false
+        if (f.person === '2p_vosotros') return false
+      } else if (region === 'peninsular') {
+        if (f.person === '2s_vos') return false
+        if (!useVosotros && f.person === '2p_vosotros') return false
+      } else if (region === 'la_general') {
+        if (f.person === '2s_vos' || f.person === '2p_vosotros') return false
+      }
+      
+      return true
+    })
+    
+    const isAvailable = matchingForms.length > 0
+    console.log(`${isAvailable ? '✅' : '❌'} VALIDATION - ${comboKey}: ${matchingForms.length} forms available`)
+    
+    return isAvailable
+  } catch (error) {
+    console.error('Error validating mood/tense availability:', error)
+    return false
+  }
+} 

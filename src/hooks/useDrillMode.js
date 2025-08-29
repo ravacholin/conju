@@ -259,16 +259,18 @@ export function useDrillMode() {
         levelValid: allowsLevel(nextForm)
       })
       
-      // Use eligibleForms instead of allFormsForRegion for consistency
-      const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
-      const compliant = gated.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
-      if (compliant.length > 0) {
-        nextForm = compliant[Math.floor(Math.random() * compliant.length)]
-        selectionMethod += '+emergency_guard'
-        console.log('✅ Emergency guard fixed the selection:', `${nextForm.mood}/${nextForm.tense}`)
+      // ENHANCED FALLBACK: Try multiple fallback strategies
+      nextForm = await this.tryIntelligentFallback(settings, eligibleForms, {
+        specificMood, specificTense, isSpecific, matchesSpecific, allowsPerson, allowsLevel
+      })
+      
+      if (nextForm) {
+        selectionMethod += '+intelligent_fallback'
+        console.log('✅ Intelligent fallback succeeded:', `${nextForm.mood}/${nextForm.tense}`)
       } else {
-        console.error('❌ CRITICAL FAILURE: No compliant forms available!')
-        throw new Error(`Critical failure: No forms available for ${specificMood || 'mixed'} practice`)
+        // If all fallbacks fail, switch to mixed practice as last resort
+        console.warn('⚠️ FALLBACK TO MIXED PRACTICE - Specific practice not available')
+        return this.fallbackToMixedPractice(allFormsForRegion, settings)
       }
     }
 
