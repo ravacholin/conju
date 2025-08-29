@@ -80,12 +80,12 @@ function AppRouter() {
           if (typeof st.step === 'number' && st.step >= 1 && st.step <= 8) {
             console.log(`🎯 Navigating to step ${st.step}`)
             try { 
-              onboardingFlow.setOnboardingStep(st.step)
               cleanupStateForStep(st.step)
+              onboardingFlow.setOnboardingStep(st.step)
             } catch (err) {
               console.error('Error setting onboarding step:', err)
-              onboardingFlow.setOnboardingStep(1)
               cleanupStateForStep(1)
+              onboardingFlow.setOnboardingStep(1)
             }
           } else {
             console.log(`⚠️  Invalid step in state, defaulting to step 1`)
