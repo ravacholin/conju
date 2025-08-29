@@ -50,7 +50,8 @@
   --border-2: #505050;
   --hover: #3c3c3c;
   --accent: #007bff;
-  --accent-blue: #007bff;
+  --accent-blue: #007bff; /* legacy usage in progress UI */
+  --focus-ring: rgba(255, 255, 255, 0.35);
   --accent-green: #28a745;
   --accent-orange: #fd7e14;
   --accent-red: #dc3545;
@@ -78,7 +79,7 @@
 
 /* Enhanced focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -88,9 +89,9 @@
 .btn-secondary:focus-visible,
 .accent-key:focus-visible,
 .qs-select:focus-visible {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
 }
 
 /* removed scroll lock for mobile refresh */
@@ -411,7 +412,7 @@ body {
   box-shadow: 
     0 20px 64px rgba(0, 0, 0, 0.6),
     0 1px 0 rgba(245, 245, 245, 0.08) inset,
-    0 0 0 1px rgba(142, 180, 227, 0.1);
+    0 0 0 1px rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -421,10 +422,10 @@ body {
 }
 
 .option-card:focus-visible {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   background: var(--hover);
-  border-color: var(--accent-blue);
+  border-color: var(--focus-ring);
 }
 
 /* Mejorar la visibilidad del foco en modo de alto contraste */
@@ -449,7 +450,7 @@ body {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  border: 2px solid var(--accent-blue);
+  border: 2px solid var(--focus-ring);
   border-radius: 18px;
   pointer-events: none;
 }
@@ -1382,6 +1383,12 @@ body {
   .option-card {
     padding: 1.5rem !important;
     margin-bottom: 1rem !important;
+    /* Improve contrast vs background on mobile */
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 
+      0 8px 24px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
   }
 
   /* Click-only sweep (mobile): applied when .click-anim class toggles */
