@@ -418,10 +418,9 @@ export function useOnboardingFlow() {
     settings.set({ specificMood: mood })
     
     if (settings.practiceMode === 'theme') {
-      // For theme-based practice, stay on current step but with specific mood set
-      // The MoodTenseSelection component will show tense selection when specificMood is set
-      // Don't advance step - let the component handle the UI change
-      pushHistory(onboardingStep)
+      // For theme-based practice, go to step 6 for tense selection
+      setOnboardingStep(6)
+      pushHistory(6)
     } else if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
       pushHistory(6)
@@ -437,9 +436,9 @@ export function useOnboardingFlow() {
     settings.set({ specificTense: tense })
     
     if (settings.practiceMode === 'theme') {
-      // For theme-based practice, go to step 3 (VerbTypeSelection)
-      setOnboardingStep(3)
-      pushHistory(3)
+      // For theme-based practice, go to step 7 (VerbTypeSelection)
+      setOnboardingStep(7)
+      pushHistory(7)
     } else if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
       pushHistory(7)
@@ -575,7 +574,15 @@ export function useOnboardingFlow() {
       specificMood: null,
       specificTense: null
     })
-    setOnboardingStep(2) // Go to main menu: "¿Qué querés practicar?" (Por Nivel / Por Tema)
+    
+    // CLEAR BROWSER HISTORY to prevent back navigation issues
+    try {
+      // Replace current state with clean onboarding state
+      const cleanState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
+      window.history.replaceState(cleanState, '')
+    } catch {}
+    
+    setOnboardingStep(1) // Go to step 1: Dialect selection for clean start
   }
 
   return {

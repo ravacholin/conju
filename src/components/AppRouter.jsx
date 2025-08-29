@@ -30,16 +30,27 @@ function AppRouter() {
   }, [])
 
   const handleStartPractice = () => {
-    // ... (same)
+    console.log('🚀 handleStartPractice called');
+    setCurrentMode('drill')
+    // Push history state for drill mode
+    try {
+      const historyState = { appNav: true, mode: 'drill', ts: Date.now() };
+      window.history.pushState(historyState, '')
+    } catch {}
   }
 
   const handleHome = () => {
-    // ... (same)
+    console.log('🏠 handleHome called');
+    setCurrentMode('onboarding')
+    onboardingFlow.handleHome(setCurrentMode)
   }
 
   // Generate next item when entering drill mode
   useEffect(() => {
-    // ... (same)
+    if (currentMode === 'drill' && !drillMode.currentItem) {
+      console.log('🎯 Generating first drill item');
+      drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
 
   // Sync browser/hardware back with in-app state using History API state
@@ -52,7 +63,8 @@ function AppRouter() {
       if (st && st.appNav) {
         console.log('📋 Valid app navigation state found:', st)
         
-        if (st.mode === 'drill') {
+        if (st.mode === 'drill' && currentMode === 'drill') {
+          // Only allow drill mode navigation when already in drill mode
           setCurrentMode('drill')
           if (!drillMode.currentItem) {
             console.log('🔧 Regenerating drill item after back navigation')
@@ -60,7 +72,8 @@ function AppRouter() {
               drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
             }, 100)
           }
-        } else {
+        } else if (st.mode === 'onboarding' || (st.mode === 'drill' && currentMode === 'onboarding')) {
+          // Handle onboarding navigation OR ignore drill states when in onboarding
           console.log('PRE-UPDATE state:', { currentMode, step: onboardingFlow.onboardingStep });
           setCurrentMode('onboarding')
           

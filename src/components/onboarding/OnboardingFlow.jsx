@@ -82,10 +82,10 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
             />
           )}
 
-          {/* Step 5: Mood/Tense Selection OR Verb Type Selection for Mixed Practice */}
+          {/* Step 5: MoodTenseSelection (for theme practice) OR VerbTypeSelection (for mixed practice) */}
           {onboardingStep === 5 && (
             <>
-              {settings.level && settings.practiceMode === 'mixed' ? (
+              {settings.practiceMode === 'mixed' ? (
                 <VerbTypeSelection 
                   onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
                   onBack={handleBack}
@@ -106,16 +106,16 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
             </>
           )}
 
-          {/* Step 6: Multiple cases - Family Selection or Tense Selection */}
+          {/* Step 6: MoodTenseSelection for mixed practice OR Tense selection after mood in theme practice */}
           {onboardingStep === 6 && (
             <>
-              {settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
+              {settings.practiceMode === 'mixed' && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
                 <FamilySelection 
                   settings={settings}
                   onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
                   onBack={handleBack}
                 />
-              ) : settings.level ? (
+              ) : (
                 <MoodTenseSelection 
                   formsForRegion={formsForRegion}
                   settings={settings}
@@ -127,17 +127,12 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
                   getModeSamples={getModeSamples}
                   getConjugationExample={getConjugationExample}
                 />
-              ) : (
-                <VerbTypeSelection 
-                  onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
-                  onBack={handleBack}
-                />
               )}
             </>
           )}
 
-          {/* Step 7: Verb Type Selection for Level-Specific Practice */}
-          {onboardingStep === 7 && settings.level && (
+          {/* Step 7: VerbTypeSelection for any practice mode */}
+          {onboardingStep === 7 && (
             <VerbTypeSelection 
               onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
               onBack={handleBack}
