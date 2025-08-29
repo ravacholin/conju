@@ -1,7 +1,7 @@
 import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onSelectFlowType = null }) {
+function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false }) {
   if (showLevelDetails) {
     // Step 3: Specific level selection
     return (
@@ -75,25 +75,29 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
     )
   }
 
-  // Step 2: Level selection mode
+  // Step 2: Unified level selection - direct to level selection
   return (
     <>
-      <div className="options-grid menu-section">
-        <div 
-          className="option-card featured" 
-          onClick={() => onSelectFlowType && onSelectFlowType('por_nivel')}
+      <div className="options-grid">
+        <ClickableCard 
+          className="option-card" 
+          onClick={onGoToLevelDetails} 
+          title="Practicar por nivel específico (A1-C2)"
         >
           <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
-          <p className="example">A1, A2, B1, B2, C1, C2</p>
-        </div>
+          <p>Practicá según tu nivel de español (A1, A2, B1, B2, C1, C2)</p>
+          <p className="example">Formas verbales según el Marco Común Europeo</p>
+        </ClickableCard>
         
-        <div 
-          className="option-card featured" 
-          onClick={() => onSelectFlowType && onSelectFlowType('por_tema')}
+        <ClickableCard 
+          className="option-card" 
+          onClick={() => onSelectPracticeMode('theme')} 
+          title="Practicar temas específicos (presente, subjuntivo, etc.)"
         >
           <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
+          <p>Elegí un tiempo o modo verbal específico para practicar</p>
           <p className="example">Presente, subjuntivo, imperativo, etc.</p>
-        </div>
+        </ClickableCard>
       </div>
       
       <button onClick={onBack} className="back-btn">

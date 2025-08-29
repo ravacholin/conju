@@ -21,19 +21,18 @@ function getAllowedLemmasForLevel(level) {
   return allowedLemmas
 }
 
-export function useOnboardingFlow(flowType) {
+export function useOnboardingFlow() {
   const [onboardingStep, setOnboardingStep] = useState(1)
   const settings = useSettings()
   
   console.log('--- HOOK useOnboardingFlow ---', { 
-    flowType,
     onboardingStep
   });
 
   // Push a browser history entry to align hardware back with app back
   const pushHistory = (nextStep) => {
     try {
-      const stateToPush = { appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, flowType: flowType, ts: Date.now() };
+      const stateToPush = { appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, ts: Date.now() };
       console.log('pushHistory:', stateToPush);
       window.history.pushState(stateToPush, '')
     } catch {

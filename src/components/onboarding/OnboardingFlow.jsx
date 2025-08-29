@@ -8,7 +8,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSelectFlowType = null }) {
+function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion }) {
   const {
     onboardingStep,
     selectDialect,
@@ -59,7 +59,6 @@ function OnboardingFlow({ onStartPractice, setCurrentMode, formsForRegion, onSel
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={false}
-              onSelectFlowType={onSelectFlowType}
             />
           )}
 

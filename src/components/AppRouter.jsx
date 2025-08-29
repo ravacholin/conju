@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
-import OnboardingFlowPorNivel from './onboarding/OnboardingFlowPorNivel.jsx'
-import OnboardingFlowPorTema from './onboarding/OnboardingFlowPorTema.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
@@ -12,16 +10,14 @@ import { buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
-  const [flowType, setFlowType] = useState(null) // 'por_nivel' | 'por_tema' | null
   const settings = useSettings()
   
   // Import hooks
   const drillMode = useDrillMode()
-  const onboardingFlow = useOnboardingFlow(flowType)
+  const onboardingFlow = useOnboardingFlow()
 
   console.log('--- RENDER AppRouter ---', { 
     currentMode,
-    flowType,
     onboardingStep: onboardingFlow.onboardingStep
   });
 
@@ -65,26 +61,23 @@ function AppRouter() {
             }, 100)
           }
         } else {
-          console.log('PRE-UPDATE state:', { currentMode, flowType, step: onboardingFlow.onboardingStep });
+          console.log('PRE-UPDATE state:', { currentMode, step: onboardingFlow.onboardingStep });
           setCurrentMode('onboarding')
-          setFlowType(st.flowType || null)
           
           if (typeof st.step === 'number' && st.step >= 1 && st.step <= 8) {
-            console.log(`🎯 Navigating to step ${st.step} with flowType: ${st.flowType || null}`)
+            console.log(`🎯 Navigating to step ${st.step}`)
             try { 
               onboardingFlow.setOnboardingStep(st.step)
-              cleanupStateForStep(st.step, st.flowType || null)
+              cleanupStateForStep(st.step)
             } catch (err) {
               console.error('Error setting onboarding step:', err)
-              onboardingFlow.setOnboardingStep(2)
-              setFlowType(null)
-              cleanupStateForStep(2, null)
+              onboardingFlow.setOnboardingStep(1)
+              cleanupStateForStep(1)
             }
           } else {
             console.log(`⚠️  Invalid step in state, defaulting to step 1`)
             try { 
               onboardingFlow.setOnboardingStep(1)
-              setFlowType(null)
             } catch {}
           }
         }
@@ -96,14 +89,33 @@ function AppRouter() {
     
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
-  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion, flowType])
+  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion])
 
   // Enhanced state cleanup function
-  const cleanupStateForStep = (targetStep, targetFlowType) => {
-    console.log(`🧹 cleanupStateForStep called for step: ${targetStep}, flow: ${targetFlowType}`);
+  const cleanupStateForStep = (targetStep) => {
+    console.log(`🧹 cleanupStateForStep called for step: ${targetStep}`);
     const updates = {}
     
-    // ... (same logic, but now can use targetFlowType if needed)
+    // Clear settings based on target step
+    if (targetStep < 2) {
+      updates.region = null
+    }
+    if (targetStep < 3) {
+      updates.level = null
+    }
+    if (targetStep < 4) {
+      updates.practiceMode = null
+    }
+    if (targetStep < 5) {
+      updates.specificMood = null
+      updates.specificTense = null
+    }
+    if (targetStep < 6) {
+      updates.verbType = null
+    }
+    if (targetStep < 7) {
+      updates.selectedFamily = null
+    }
 
     if (Object.keys(updates).length > 0) {
       console.log('Applying state cleanup:', updates);
@@ -111,28 +123,6 @@ function AppRouter() {
     }
   }
 
-  const handleFlowTypeSelection = (selectedFlowType) => {
-    console.group('👉 handleFlowTypeSelection');
-    console.log(`🎯 Flow type selected: ${selectedFlowType}`)
-    let nextStep = 2;
-
-    if (selectedFlowType === 'por_nivel') {
-      nextStep = 3;
-      onboardingFlow.goToLevelDetails();
-    } else if (selectedFlowType === 'por_tema') {
-      nextStep = 5;
-      onboardingFlow.selectPracticeMode('theme');
-    }
-
-    setFlowType(selectedFlowType)
-    onboardingFlow.setOnboardingStep(nextStep)
-    try {
-      const historyState = { appNav: true, mode: 'onboarding', step: nextStep, flowType: selectedFlowType, ts: Date.now() };
-      console.log('Pushing new history state:', historyState);
-      window.history.pushState(historyState, '')
-    } catch {}
-    console.groupEnd();
-  }
 
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {
@@ -189,20 +179,7 @@ function AppRouter() {
   }
 
   if (currentMode === 'onboarding') {
-    if (flowType === 'por_nivel') {
-      return <OnboardingFlowPorNivel onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
-    } else if (flowType === 'por_tema') {
-      return <OnboardingFlowPorTema 
-        onStartPractice={handleStartPractice} 
-        setCurrentMode={setCurrentMode} 
-        formsForRegion={allFormsForRegion} 
-        onboardingFlow={onboardingFlow}
-        settings={settings}
-      />
-    } else {
-      // Main menu - show flow selection
-      return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} onSelectFlowType={handleFlowTypeSelection} />
-    }
+    return <OnboardingFlow onStartPractice={handleStartPractice} setCurrentMode={setCurrentMode} formsForRegion={allFormsForRegion} />
   }
 
   if (currentMode === 'drill') {
