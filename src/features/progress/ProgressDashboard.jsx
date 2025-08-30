@@ -8,6 +8,7 @@ import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import SRSPanel from './SRSPanel.jsx'
+import ErrorInsights from './ErrorInsights.jsx'
 import { useSettings } from '../../state/settings.js'
 import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
 import { buildFormsForRegion } from '../../lib/core/eligibility.js'
@@ -130,6 +131,11 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
+        <h2>❌ Errores más comunes</h2>
+        <ErrorInsights />
+      </section>
+
+      <section className="dashboard-section">
         <h2>🎯 Radar de Competencias</h2>
         <CompetencyRadar data={radarData} />
       </section>
@@ -212,7 +218,7 @@ export default function ProgressDashboard() {
         <h2>💡 Recomendaciones Generales</h2>
         <div className="recommendations">
           {recommendations.length > 0 ? (
-            recommendations.map((rec, index) => (
+            recommendations.slice(0,3).map((rec, index) => (
               <div key={index} className="recommendation-card">
                 <h3>{rec.title}</h3>
                 <p>{rec.description}</p>
