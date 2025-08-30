@@ -16,6 +16,19 @@ import { confidenceEngine, processResponseForConfidence } from '../lib/progress/
 import { temporalIntelligence, processSessionForTempo } from '../lib/progress/temporalIntelligence.js'
 import { dynamicGoalsSystem, processResponseForGoals } from '../lib/progress/dynamicGoals.js'
 
+// Helper functions used by multiple functions in this module
+const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
+const getAllowedCombosForLevel = (level) => {
+  if (!level) return new Set()
+  if (level === 'ALL') return new Set(gates.map(g => `${g.mood}|${g.tense}`))
+  const maxIdx = levelOrder(level)
+  return new Set(
+    gates
+      .filter(g => levelOrder(g.level) <= maxIdx)
+      .map(g => `${g.mood}|${g.tense}`)
+  )
+}
+
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})
@@ -212,18 +225,7 @@ export function useDrillMode() {
     const region = settings.region
     const pronounMode = settings.practicePronoun
 
-    // Helper: cumulative combos allowed up to the user's level
-    const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
-    const getAllowedCombosForLevel = (level) => {
-      if (!level) return new Set()
-      if (level === 'ALL') return new Set(gates.map(g => `${g.mood}|${g.tense}`))
-      const maxIdx = levelOrder(level)
-      return new Set(
-        gates
-          .filter(g => levelOrder(g.level) <= maxIdx)
-          .map(g => `${g.mood}|${g.tense}`)
-      )
-    }
+    // Helper: cumulative combos allowed up to the user's level (now defined at module level)
     
     const allowsPerson = (person) => {
       // Always enforce dialectal constraints regardless of pronounMode
@@ -365,6 +367,9 @@ export function useDrillMode() {
 
       // Handle double mode (complex logic for pairing two forms)
       if (settings.doubleActive) {
+        console.log('🎲 DOUBLE MODE: Starting double form generation', { 
+          excludedItem: itemToExclude ? `${itemToExclude.lemma} (${itemToExclude.mood}/${itemToExclude.tense}-${itemToExclude.person} + secondForm: ${itemToExclude.secondForm?.mood}/${itemToExclude.secondForm?.tense}-${itemToExclude.secondForm?.person})` : 'none'
+        })
         try {
           const lvl = settings.level || 'B1'
           
@@ -398,11 +403,27 @@ export function useDrillMode() {
           
           // 4. Select a random verb from valid ones
           if (validVerbs.length > 0) {
+            console.log('🎲 DOUBLE MODE: Found valid verbs:', validVerbs.length, 'examples:', validVerbs.slice(0, 5).map(v => `${v.lemma}(${v.uniqueCombos})`))
+            
             // Sort by number of unique combinations (prefer verbs with more variety)
             validVerbs.sort((a, b) => b.uniqueCombos - a.uniqueCombos)
             
+            // Filter out the excluded verb if present
+            let availableVerbs = validVerbs
+            if (itemToExclude && itemToExclude.lemma) {
+              availableVerbs = validVerbs.filter(v => v.lemma !== itemToExclude.lemma)
+              console.log('🎲 DOUBLE MODE: After excluding', itemToExclude.lemma, ':', availableVerbs.length, 'verbs remain')
+              
+              // If we excluded all verbs, use the original list but log warning
+              if (availableVerbs.length === 0) {
+                console.warn('🎲 DOUBLE MODE: No verbs left after exclusion, using original list')
+                availableVerbs = validVerbs
+              }
+            }
+            
             // Take one of the first verbs (with more variety)
-            const selectedVerb = validVerbs[Math.floor(Math.random() * Math.min(3, validVerbs.length))]
+            const selectedVerb = availableVerbs[Math.floor(Math.random() * Math.min(3, availableVerbs.length))]
+            console.log('🎲 DOUBLE MODE: Selected verb:', selectedVerb.lemma, 'with', selectedVerb.uniqueCombos, 'combinations')
             const verbForms = selectedVerb.forms
             
             // 5. Create map of unique mood+tense combinations for this verb
@@ -417,25 +438,52 @@ export function useDrillMode() {
             
             // 6. Select two different combinations
             const comboKeys = Array.from(uniqueCombos.keys())
+            console.log('🎲 DOUBLE MODE: Available combinations for', selectedVerb.lemma, ':', comboKeys)
+            
             if (comboKeys.length >= 2) {
+              // Filter out combinations that match the excluded item (if any)
+              let availableCombos = comboKeys
+              if (itemToExclude && itemToExclude.lemma === selectedVerb.lemma) {
+                const excludedFirstCombo = `${itemToExclude.mood}|${itemToExclude.tense}`
+                const excludedSecondCombo = itemToExclude.secondForm ? `${itemToExclude.secondForm.mood}|${itemToExclude.secondForm.tense}` : null
+                
+                availableCombos = comboKeys.filter(combo => 
+                  combo !== excludedFirstCombo && combo !== excludedSecondCombo
+                )
+                console.log('🎲 DOUBLE MODE: After excluding combinations', excludedFirstCombo, excludedSecondCombo, ':', availableCombos.length, 'remain')
+                
+                // If we don't have enough combinations after exclusion, use all
+                if (availableCombos.length < 2) {
+                  console.warn('🎲 DOUBLE MODE: Not enough combinations after exclusion, using all')
+                  availableCombos = comboKeys
+                }
+              }
+              
               // Shuffle combinations
-              for (let i = comboKeys.length - 1; i > 0; i--) {
+              for (let i = availableCombos.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1))
-                ;[comboKeys[i], comboKeys[j]] = [comboKeys[j], comboKeys[i]]
+                ;[availableCombos[i], availableCombos[j]] = [availableCombos[j], availableCombos[i]]
               }
               
               // Take first two different combinations
-              const firstCombo = comboKeys[0]
-              const secondCombo = comboKeys[1]
+              const firstCombo = availableCombos[0]
+              const secondCombo = availableCombos[1]
+              console.log('🎲 DOUBLE MODE: Selected combinations:', firstCombo, '+', secondCombo)
               
               // 7. Get forms from each combination (same verb)
               const firstForms = uniqueCombos.get(firstCombo)
               const secondForms = uniqueCombos.get(secondCombo)
               
               if (firstForms && secondForms) {
+                console.log('🎲 DOUBLE MODE: Forms available - First:', firstForms.length, 'Second:', secondForms.length)
+                
                 // Select random forms from each combination
                 const firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
                 const secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                
+                console.log('🎲 DOUBLE MODE: Selected forms:')
+                console.log('  First:', `${firstForm.lemma} ${firstForm.mood}/${firstForm.tense}-${firstForm.person} = "${firstForm.value || firstForm.form}"`)
+                console.log('  Second:', `${secondForm.lemma} ${secondForm.mood}/${secondForm.tense}-${secondForm.person} = "${secondForm.value || secondForm.form}"`)
                 
                 // FINAL VERIFICATION: ensure they're from the SAME VERB and DIFFERENT combinations
                 if (firstForm.lemma === secondForm.lemma && 
@@ -472,6 +520,14 @@ export function useDrillMode() {
                       accepts: c2.accepts || {}
                     }
                   }
+                  
+                  console.log('✅ DOUBLE MODE: Successfully created double form item:')
+                  console.log('  Main:', `${newItem.lemma} ${newItem.mood}/${newItem.tense}-${newItem.person} = "${newItem.form?.value || newItem.value}"`)
+                  console.log('  Second:', `${newItem.secondForm.lemma} ${newItem.secondForm.mood}/${newItem.secondForm.tense}-${newItem.secondForm.person} = "${newItem.secondForm.value}"`)
+                  
+                  // Exit double mode generation successfully
+                  setCurrentItem(newItem)
+                  return
                 } else {
                   // EMERGENCY FALLBACK: try another valid verb
                   const fallbackVerb = validVerbs.find(v => v.lemma !== selectedVerb.lemma)
