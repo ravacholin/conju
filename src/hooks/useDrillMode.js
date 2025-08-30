@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import gates from '../data/curriculum.json'
+import { verbs } from '../data/verbs.js'
 import { useSettings } from '../state/settings.js'
 import { chooseNext } from '../lib/core/generator.js'
 import { getDueItems, updateSchedule } from '../lib/progress/srs.js'
@@ -317,12 +318,18 @@ export function useDrillMode() {
         } catch { return null }
       }
       // Force a new object to ensure React detects the change
+      // CRITICAL: Include complete verb information for new irregularity system
+      const parentVerb = verbs.find(v => v.lemma === nextForm.lemma) || {}
       const newItem = {
         id: Date.now(), // Unique identifier to force re-render
         lemma: nextForm.lemma,
         mood: nextForm.mood,
         tense: nextForm.tense,
         person: nextForm.person,
+        // NEW IRREGULARITY SYSTEM: Include complete verb information
+        type: parentVerb.type || nextForm.type,
+        irregularTenses: parentVerb.irregularTenses || [],
+        irregularityMatrix: parentVerb.irregularityMatrix || {},
         form: (() => {
           const c = canonicalFromPool(nextForm.lemma, nextForm.mood, nextForm.tense, nextForm.person)
           const base = c || nextForm

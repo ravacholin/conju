@@ -41,13 +41,20 @@ export default function Drill({
   const getCanonicalTarget = () => {
     if (!currentItem) return null;
     
-    // For currentItem structure, return the item itself as it contains the canonical form
+    // NEW IRREGULARITY SYSTEM: Return complete verb information including irregularity data
     return {
       value: currentItem.value || currentItem.form?.value || '',
       lemma: currentItem.lemma || '',
       mood: currentItem.mood || '',
       tense: currentItem.tense || '',
-      person: currentItem.person || ''
+      person: currentItem.person || '',
+      // Include complete verb information for new irregularity system
+      type: currentItem.type,
+      irregularTenses: currentItem.irregularTenses || [],
+      irregularityMatrix: currentItem.irregularityMatrix || {},
+      // Include additional form information
+      alt: currentItem.form?.alt || [],
+      accepts: currentItem.form?.accepts || {}
     };
   };
 
@@ -238,7 +245,13 @@ export default function Drill({
         lemma: currentItem.secondForm.lemma,
         mood: currentItem.secondForm.mood,
         tense: currentItem.secondForm.tense,
-        person: currentItem.secondForm.person
+        person: currentItem.secondForm.person,
+        // Include complete verb information for new irregularity system  
+        type: currentItem.type,
+        irregularTenses: currentItem.irregularTenses || [],
+        irregularityMatrix: currentItem.irregularityMatrix || {},
+        alt: currentItem.secondForm.alt || [],
+        accepts: currentItem.secondForm.accepts || {}
       } : getCanonicalTarget();
       const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { correct: false };
       const correct = firstRes.correct && secondRes.correct;
