@@ -2,12 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { grade } from '../../lib/core/grader.js';
 // Removed unused imports to satisfy lint
 import { useProgressTracking } from './useProgressTracking.js';
-import MasteryIndicator from './MasteryIndicator.jsx';
-import FeedbackNotification from './FeedbackNotification.jsx';
-import './progress-feedback.css';
 import Diff from './Diff.jsx';
+import SessionInsights from './SessionInsights.jsx';
+import './session-insights.css';
 import { useSettings } from '../../state/settings.js';
-import SessionHUD from './SessionHUD.jsx';
 
 export default function Drill({ 
   currentItem, 
@@ -21,7 +19,6 @@ export default function Drill({
   // Removed unused hint state
   const [showDiff, setShowDiff] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [resistTick, setResistTick] = useState(0);
   const [clockClickFeedback, setClockClickFeedback] = useState(false);
   const [showExplosion, setShowExplosion] = useState(false);
   const [urgentTick, setUrgentTick] = useState(false);
@@ -82,7 +79,6 @@ export default function Drill({
     const id = setInterval(() => {
       const left = Math.max(0, useSettings.getState().resistanceMsLeft - 100);
       settings.set({ resistanceMsLeft: left });
-      setResistTick(t=>t+1);
       
       // Vibración ligera en modo urgente (últimos 5 segundos)
       if (left <= 5000 && left > 0) {
@@ -118,7 +114,6 @@ export default function Drill({
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense;
 
   // Reverse mode field visibility
-  const showInfinitiveField = isReverse;
   const showPersonField = isReverse && currentItem?.mood !== 'nonfinite';
   const showMoodField = isReverse && !inSpecific;
   const showTenseField = isReverse && !inSpecific;
@@ -234,6 +229,8 @@ export default function Drill({
     
     try {
       await handleResult(extendedResult);
+      // Trigger progress update event for SessionInsights
+      window.dispatchEvent(new CustomEvent('progress:update'));
     } catch (error) {
       console.error('Error tracking progress for attempt:', error);
     }
@@ -272,6 +269,7 @@ export default function Drill({
       
       try {
         await handleResult(resultObj);
+        window.dispatchEvent(new CustomEvent('progress:update'));
       } catch (error) {
         console.error('Error tracking progress for double mode attempt:', error);
       }
@@ -320,6 +318,7 @@ export default function Drill({
     
     try {
       await handleResult(resultObj);
+      window.dispatchEvent(new CustomEvent('progress:update'));
     } catch (error) {
       console.error('Error tracking progress for reverse mode attempt:', error);
     }
@@ -521,6 +520,7 @@ export default function Drill({
 
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
+      <SessionInsights />
       {/* Verb lemma (infinitive) - TOP */}
       <div className="verb-lemma">
         {isReverse ? currentItem?.value || currentItem?.form?.value : currentItem?.lemma}
@@ -533,10 +533,6 @@ export default function Drill({
         </div>
       )}
 
-      {/* Session HUD: accuracy, time, streaks, top errors */}
-      {!isReverse && !isDouble && (
-        <SessionHUD />
-      )}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}
       {!isReverse && !isDouble && currentItem?.mood !== 'nonfinite' && (

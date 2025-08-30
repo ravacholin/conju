@@ -165,10 +165,10 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>🤖 Práctica Adaptativa</h2>
+        <h2>🎯 Práctica Recomendada</h2>
         <PracticeRecommendations 
-          maxRecommendations={5}
-          showDetailedView={true}
+          maxRecommendations={3}
+          showDetailedView={false}
           onSelectRecommendation={(recommendation) => {
             try {
               const mood = recommendation?.targetCombination?.mood
@@ -185,47 +185,32 @@ export default function ProgressDashboard() {
               
               if (!isValid) {
                 console.error(`❌ DASHBOARD - Invalid combination: ${mood}/${tense} not available`)
-                // Show user-friendly message instead of proceeding
-                window.dispatchEvent(new CustomEvent('progress:error', { 
-                  detail: { 
-                    message: `La práctica de ${mood}/${tense} no está disponible para tu nivel actual (${settings.level || 'B1'})`,
-                    suggestion: 'Intenta con otra recomendación o cambia tu nivel de práctica'
-                  } 
-                }))
                 return
               }
               
-              console.log(`✅ DASHBOARD - Valid combination: ${mood}/${tense}`)
-              
-              // Actualizar configuración a práctica específica
+              // Update configuration for specific practice
               settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-              // Notificar al contenedor para arrancar práctica específica y cerrar panel
+              // Navigate to practice
               window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
             } catch (e) {
               console.error('Error processing recommendation:', e)
-              window.dispatchEvent(new CustomEvent('progress:error', { 
-                detail: { 
-                  message: 'Error al procesar la recomendación de práctica',
-                  suggestion: 'Inténtalo de nuevo o selecciona otra opción'
-                } 
-              }))
             }
           }}
         />
       </section>
 
       <section className="dashboard-section">
-        <h2>💡 Recomendaciones Generales</h2>
+        <h2>💡 Recomendaciones</h2>
         <div className="recommendations">
           {recommendations.length > 0 ? (
             recommendations.slice(0,3).map((rec, index) => (
-              <div key={index} className="recommendation-card">
+              <div key={index} className={`recommendation-card priority-${rec.priority}`}>
                 <h3>{rec.title}</h3>
                 <p>{rec.description}</p>
               </div>
             ))
           ) : (
-            <p>No hay recomendaciones personalizadas en este momento.</p>
+            <p>Sigue practicando para recibir recomendaciones personalizadas.</p>
           )}
         </div>
       </section>
