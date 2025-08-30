@@ -529,7 +529,7 @@ export default function Drill({
               }
             }}
             placeholder="Escribe la conjugación..."
-            disabled={result !== null}
+            readOnly={result !== null}
             autoFocus
           />
         </div>
