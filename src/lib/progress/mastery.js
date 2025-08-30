@@ -4,6 +4,7 @@ import { getAttemptsByItem } from './database.js'
 import { PROGRESS_CONFIG, VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 import { calculateRecencyWeight } from './helpers.js'
 import { applyPenalties } from './penalties.js'
+import { getIrregularTenses, getVerbIrregularityStats } from '../utils/irregularityUtils.js'
 
 /**
  * Obtiene la dificultad base de un verbo
@@ -15,9 +16,23 @@ export function getVerbDifficulty(verb) {
   const safeVerb = verb && typeof verb === 'object' ? verb : {}
   let difficulty = VERB_DIFFICULTY.REGULAR
   
-  // Asignar dificultad base según tipo
-  if (safeVerb.type === 'irregular') {
-    // Para verbos irregulares, usar dificultad alta
+  // Enhanced difficulty calculation using per-tense irregularity data
+  if (safeVerb.irregularTenses && safeVerb.irregularityMatrix) {
+    const stats = getVerbIrregularityStats(safeVerb)
+    
+    // Calculate difficulty based on irregularity percentage
+    if (stats.irregularityPercentage > 50) {
+      difficulty = VERB_DIFFICULTY.HIGHLY_IRREGULAR
+    } else if (stats.irregularityPercentage > 25) {
+      difficulty = VERB_DIFFICULTY.HIGHLY_IRREGULAR * 0.8 // Intermediate irregularity
+    } else if (stats.irregularityPercentage > 0) {
+      difficulty = VERB_DIFFICULTY.DIPHTHONG // Some irregularity
+    } else {
+      difficulty = VERB_DIFFICULTY.REGULAR
+    }
+  } 
+  // Fallback to legacy classification
+  else if (safeVerb.type === 'irregular') {
     difficulty = VERB_DIFFICULTY.HIGHLY_IRREGULAR
   } else if (safeVerb.type === 'diphtong') {
     difficulty = VERB_DIFFICULTY.DIPHTHONG
@@ -32,6 +47,32 @@ export function getVerbDifficulty(verb) {
   
   // Asegurar que esté en el rango válido
   return Math.max(0.8, Math.min(1.3, difficulty))
+}
+
+/**
+ * Obtiene la dificultad específica de un verbo para un tiempo verbal
+ * @param {Object} verb - Objeto verbo con datos de irregularidad por tiempo
+ * @param {string} tense - Tiempo verbal específico
+ * @returns {number} Valor de dificultad ajustado para el tiempo
+ */
+export function getVerbTenseDifficulty(verb, tense) {
+  const baseDifficulty = getVerbDifficulty(verb)
+  
+  // If verb has per-tense data, adjust based on specific tense irregularity
+  if (verb?.irregularityMatrix && typeof verb.irregularityMatrix[tense] === 'boolean') {
+    const isIrregularInTense = verb.irregularityMatrix[tense]
+    
+    if (isIrregularInTense) {
+      // Irregular in this tense: increase difficulty
+      return Math.min(1.3, baseDifficulty + 0.2)
+    } else {
+      // Regular in this tense: slightly decrease difficulty
+      return Math.max(0.8, baseDifficulty - 0.1)
+    }
+  }
+  
+  // Fallback to base difficulty
+  return baseDifficulty
 }
 
 /**

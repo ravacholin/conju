@@ -1,6 +1,8 @@
 // Clasificación de errores para el sistema de progreso
 
 import { ERROR_TAGS } from './dataModels.js'
+import { verbs } from '../../data/verbs.js'
+import { isIrregularInTense } from '../utils/irregularityUtils.js'
 
 /**
  * Clasifica errores en la conjugación de verbos
@@ -91,9 +93,13 @@ function hasWrongPerson(user, correct, item) {
   // En una implementación completa, se verificaría contra las terminaciones
   // esperadas para cada persona
   
-  // Para verbos irregulares, si la raíz es diferente, es un error de persona
-  if (item.verbType === 'irregular') {
-    // Comparar las primeras partes de las palabras
+  // Check if the verb is irregular in this specific tense for more accurate detection
+  const verb = verbs.find(v => v.lemma === item.lemma)
+  const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
+  
+  // For verbs irregular in this tense, stem differences indicate person errors
+  if (item.verbType === 'irregular' || isIrregularForTense) {
+    // Compare the stem parts of the words
     const userStem = user.slice(0, Math.max(0, user.length - 3))
     const correctStem = correct.slice(0, Math.max(0, correct.length - 3))
     
@@ -128,9 +134,13 @@ function hasIrregularStemIssue(item, user, correct) {
   // Esta es una implementación simplificada
   // En una implementación completa, se verificaría contra las familias irregulares
   
-  // Para verbos irregulares, si la raíz es diferente, es un error de raíz
-  if (item.verbType === 'irregular') {
-    // Comparar las primeras partes de las palabras
+  // Check if the verb is irregular in this specific tense for stem error detection
+  const verb = verbs.find(v => v.lemma === item.lemma)
+  const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
+  
+  // For verbs irregular in this tense, stem differences indicate stem errors
+  if (item.verbType === 'irregular' || isIrregularForTense) {
+    // Compare the stem parts of the words
     const userStem = user.slice(0, Math.max(0, user.length - 3))
     const correctStem = correct.slice(0, Math.max(0, correct.length - 3))
     

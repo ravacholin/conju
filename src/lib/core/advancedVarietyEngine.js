@@ -3,6 +3,7 @@
 
 // Advanced Variety Engine - needs verb lookup for type-based balancing
 import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
+import { isIrregularInTense, getEffectiveVerbType } from '../utils/irregularityUtils.js'
 
 /**
  * Session Memory for Anti-Repetition
@@ -48,10 +49,10 @@ class SessionMemory {
     if (semanticCategory) {
       this.recentCategories.set(semanticCategory, (this.recentCategories.get(semanticCategory) || 0) + 1)
     }
-    // Track verb type in a sliding window for balancing
+    // Track verb type in a sliding window for balancing (tense-specific)
     try {
       const verb = LEMMA_TO_VERB.get(form.lemma)
-      const t = verb?.type === 'irregular' ? 'irregular' : 'regular'
+      const t = verb && isIrregularInTense(verb, form.tense) ? 'irregular' : 'regular'
       this.lastTypes.push(t)
       if (this.lastTypes.length > this.typeWindowSize) this.lastTypes.shift()
     } catch { /* ignore */ }
@@ -323,9 +324,15 @@ export class AdvancedVarietyEngine {
       // ENHANCED: Person variety bonus
       const personVarietyBonus = this.getPersonVarietyBonus(form.person)
 
-      // Irregular ratio rebalancer for mixed (both types present) pools
-      const hasIrregular = forms.some(f => (LEMMA_TO_VERB.get(f.lemma)?.type) === 'irregular')
-      const hasRegular = forms.some(f => (LEMMA_TO_VERB.get(f.lemma)?.type) === 'regular')
+      // Irregular ratio rebalancer for mixed (both types present) pools - now tense-specific
+      const hasIrregular = forms.some(f => {
+        const verb = LEMMA_TO_VERB.get(f.lemma)
+        return verb && isIrregularInTense(verb, f.tense)
+      })
+      const hasRegular = forms.some(f => {
+        const verb = LEMMA_TO_VERB.get(f.lemma)
+        return verb && !isIrregularInTense(verb, f.tense)
+      })
       let rebalancer = 0
       if (hasIrregular && hasRegular) {
         const irrCount = this.sessionMemory.lastTypes.filter(t => t === 'irregular').length
@@ -333,7 +340,8 @@ export class AdvancedVarietyEngine {
         const irrFrac = irrCount / total
         const target = 0.65
         const tol = 0.08
-        const isIrreg = (LEMMA_TO_VERB.get(form.lemma)?.type) === 'irregular'
+        const verb = LEMMA_TO_VERB.get(form.lemma)
+        const isIrreg = verb && isIrregularInTense(verb, form.tense)
         if (irrFrac < (target - tol)) {
           if (isIrreg) rebalancer += 0.35
         } else if (irrFrac > (target + tol)) {

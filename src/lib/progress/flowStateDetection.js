@@ -4,6 +4,8 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { logger, logFlow } from './logger.js'
 import { memoryManager } from './memoryManager.js'
+import { verbs } from '../../data/verbs.js'
+import { isIrregularInTense } from '../utils/irregularityUtils.js'
 
 /**
  * Estados posibles de flow del usuario
@@ -141,8 +143,12 @@ export class FlowStateDetector {
     if (item.tense && (item.tense.includes('Perf') || item.tense.includes('Plusc'))) complexity += 0.2
     if (item.tense === 'subjImpf' || item.tense === 'subjPlusc') complexity += 0.3
     
-    // Verb irregularity (if available)
-    if (response.verbType === 'irregular') complexity += 0.2
+    // Verb irregularity - check per-tense for more accurate complexity assessment
+    const verb = verbs.find(v => v.lemma === item.lemma)
+    const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
+    if (response.verbType === 'irregular' || isIrregularForTense) {
+      complexity += 0.2
+    }
     
     return Math.min(1.0, complexity)
   }

@@ -8,6 +8,12 @@ import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } 
 import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
+import { 
+  isIrregularInTense, 
+  hasAnyIrregularTense, 
+  getEffectiveVerbType,
+  shouldTargetIrregularForSettings 
+} from '../utils/irregularityUtils.js'
 
 
 // Imports optimizados
@@ -58,6 +64,25 @@ function isVerbTypeAllowedForLevel(verbType, level) {
   const restrictions = levelVerbRestrictions[level]
   if (!restrictions) return true // Default to allowing all if level not found
   return restrictions[verbType] || false
+}
+
+// New helper function for per-tense verb filtering
+function isVerbAllowedForTenseAndLevel(verb, tense, verbType, level) {
+  // Check level restrictions first
+  const effectiveVerbType = getEffectiveVerbType(verb)
+  if (!isVerbTypeAllowedForLevel(effectiveVerbType, level)) {
+    return false
+  }
+  
+  // If practicing specific verb type, check tense-specific irregularity
+  if (verbType === 'irregular') {
+    return isIrregularInTense(verb, tense)
+  } else if (verbType === 'regular') {
+    return !isIrregularInTense(verb, tense)
+  }
+  
+  // For 'all' or undefined verbType, allow all
+  return true
 }
 
 export function chooseNext({forms, history, currentItem}){
@@ -375,7 +400,7 @@ export function chooseNext({forms, history, currentItem}){
           // For irregular verb type, only show irregular forms
           if(verbType === 'irregular') {
             const verb = LEMMA_TO_VERB.get(f.lemma)
-            if(verb && verb.type === 'irregular') {
+            if(verb && isIrregularInTense(verb, f.tense)) {
               // Check if this specific form is irregular
               const k = `${f.lemma}|${f.tense}|${f.value}`
               let isRegularForm = regularNonfiniteMemo.get(k)
@@ -657,12 +682,13 @@ function applyWeightedSelection(forms) {
   const irregularForms = []
   
   forms.forEach(form => {
-  const verb = LEMMA_TO_VERB.get(form.lemma)
+    const verb = LEMMA_TO_VERB.get(form.lemma)
     if (verb) {
-      if (verb.type === 'regular') {
-        regularForms.push(form)
-      } else if (verb.type === 'irregular') {
+      // Check if verb is irregular for this specific tense
+      if (isIrregularInTense(verb, form.tense)) {
         irregularForms.push(form)
+      } else {
+        regularForms.push(form)
       }
     }
   })
@@ -706,11 +732,11 @@ function applyWeightedSelection(forms) {
   console.log('Verb distribution after weighting:', {
     regular: selectedForms.filter(f => {
       const verb = findVerbByLemma(f.lemma)
-      return verb && verb.type === 'regular'
+      return verb && !isIrregularInTense(verb, f.tense)
     }).length,
     irregular: selectedForms.filter(f => {
       const verb = findVerbByLemma(f.lemma)
-      return verb && verb.type === 'irregular'
+      return verb && isIrregularInTense(verb, f.tense)
     }).length,
     total: selectedForms.length
   })
