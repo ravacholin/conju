@@ -15,9 +15,28 @@ import { momentumTracker, processResponseForMomentum } from '../lib/progress/mom
 import { confidenceEngine, processResponseForConfidence } from '../lib/progress/confidenceEngine.js'
 import { temporalIntelligence, processSessionForTempo } from '../lib/progress/temporalIntelligence.js'
 import { dynamicGoalsSystem, processResponseForGoals } from '../lib/progress/dynamicGoals.js'
+import { shouldFilterVerbByLevel, getVerbSelectionWeight, isHighPriorityVerb } from '../lib/core/levelVerbFiltering.js'
+import { categorizeVerb } from '../lib/data/irregularFamilies.js'
 
 // Helper functions used by multiple functions in this module
 const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
+
+// Weighted random selection for verb prioritization
+const weightedRandomSelection = (items, weights) => {
+  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
+  let randomValue = Math.random() * totalWeight
+  
+  for (let i = 0; i < items.length; i++) {
+    randomValue -= weights[i]
+    if (randomValue <= 0) {
+      return items[i]
+    }
+  }
+  
+  // Fallback to first item
+  return items[0]
+}
+
 const getAllowedCombosForLevel = (level) => {
   if (!level) return new Set()
   if (level === 'ALL') return new Set(gates.map(g => `${g.mood}|${g.tense}`))
@@ -373,11 +392,34 @@ export function useDrillMode() {
         try {
           const lvl = settings.level || 'B1'
           
-          // 1. Get all available forms for the level
+          // 1. Get all available forms for the level with comprehensive filtering
           const levelForms = allFormsForRegion.filter(f => {
             const allowedMoods = getAvailableMoodsForLevel(lvl)
             const allowedTenses = getAvailableTensesForLevelAndMood(lvl, f.mood)
-            return allowedMoods.includes(f.mood) && allowedTenses.includes(f.tense)
+            const moodTenseOK = allowedMoods.includes(f.mood) && allowedTenses.includes(f.tense)
+            
+            if (!moodTenseOK) return false
+            
+            // NUEVO: Apply verb level filtering (same as generator.js)
+            const verbFamilies = categorizeVerb(f.lemma)
+            if (shouldFilterVerbByLevel(f.lemma, verbFamilies, lvl, f.tense)) {
+              console.log('🚫 DOUBLE MODE - Filtering verb for level', lvl, ':', f.lemma)
+              return false
+            }
+            
+            // NUEVO: Apply verb type filtering if specified
+            if (settings.verbType && settings.verbType !== 'all') {
+              // For now, we'll keep it simple - this can be expanded
+              if (settings.verbType === 'regular') {
+                // Only allow regular verbs (this would need more complex logic)
+                return verbFamilies.length === 0
+              } else if (settings.verbType === 'irregular') {
+                // Only allow irregular verbs
+                return verbFamilies.length > 0
+              }
+            }
+            
+            return true
           })
           
           // 2. Group forms by verb (lemma)
@@ -421,8 +463,13 @@ export function useDrillMode() {
               }
             }
             
-            // Take one of the first verbs (with more variety)
-            const selectedVerb = availableVerbs[Math.floor(Math.random() * Math.min(3, availableVerbs.length))]
+            // Fallback: If very few verbs available, allow different persons from same verb
+            if (availableVerbs.length < 3) {
+              console.log('🎲 DOUBLE MODE: Limited verbs available (', availableVerbs.length, '), person variation will provide additional variety')
+            }
+            
+            // Select verb using weighted random selection based on priorities
+            const selectedVerb = weightedRandomSelection(availableVerbs, lvl)
             console.log('🎲 DOUBLE MODE: Selected verb:', selectedVerb.lemma, 'with', selectedVerb.uniqueCombos, 'combinations')
             const verbForms = selectedVerb.forms
             
