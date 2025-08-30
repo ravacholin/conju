@@ -76,24 +76,48 @@ function DrillMode({
 
   // Listen for navigation requests from ProgressDashboard
   useEffect(() => {
-    const handler = () => {
+    const handler = (event) => {
       try {
-        // Close panel and start specific practice with current settings
+        const { detail } = event
+        console.log('Progress navigation event received:', detail)
+        
+        // Close progress panel
         setShowProgress(false)
-        // Kick off specific practice flow
-        if (typeof onStartSpecificPractice === 'function') {
-          onStartSpecificPractice()
+        
+        // If we have mood/tense data, set specific practice mode
+        if (detail && detail.mood && detail.tense) {
+          // Set specific practice mode
+          if (typeof onPracticeModeChange === 'function') {
+            onPracticeModeChange('specific', detail.mood, detail.tense)
+          }
+          
+          // Start specific practice
+          if (typeof onStartSpecificPractice === 'function') {
+            onStartSpecificPractice()
+          } else {
+            // Fallback: regenerate item after settings change
+            setTimeout(() => onRegenerateItem(), 100)
+          }
+        } else if (detail && detail.micro) {
+          // Handle micro-drill navigation
+          console.log('Micro-drill navigation:', detail.micro)
+          onRegenerateItem()
+        } else if (detail && detail.focus === 'review') {
+          // Handle SRS review navigation
+          console.log('SRS review navigation')
+          onRegenerateItem()
         } else {
-          // Fallback: regenerate item after settings change
+          // Fallback: just regenerate
           onRegenerateItem()
         }
       } catch (error) {
         console.error('Error handling progress navigation:', error)
       }
     }
+    
     window.addEventListener('progress:navigate', handler)
     return () => window.removeEventListener('progress:navigate', handler)
-  }, [onStartSpecificPractice, onRegenerateItem])
+  }, [onStartSpecificPractice, onRegenerateItem, onPracticeModeChange])
 
   return (
     <div className="App">

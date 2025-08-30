@@ -154,11 +154,12 @@ function AppRouter() {
     drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
-  const handlePracticeModeChange = (mode) => {
+  const handlePracticeModeChange = (mode, mood = null, tense = null) => {
+    console.log(`Practice mode change: ${mode}, mood: ${mood}, tense: ${tense}`)
     settings.set({ 
       practiceMode: mode,
-      specificMood: null,
-      specificTense: null
+      specificMood: mood,
+      specificTense: tense
     })
     drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }

@@ -142,9 +142,20 @@ export function HeatMap({ data }) {
                   onMouseLeave={() => setHoveredCell(null)}
                   onClick={() => {
                     try {
-                      settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-                      window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
-                    } catch {}
+                      console.log(`Heat map clicked: ${mood}/${tense}`)
+                      // Set specific practice settings
+                      settings.set({ 
+                        practiceMode: 'specific', 
+                        specificMood: mood, 
+                        specificTense: tense 
+                      })
+                      // Dispatch navigation event
+                      window.dispatchEvent(new CustomEvent('progress:navigate', { 
+                        detail: { mood, tense } 
+                      }))
+                    } catch (error) {
+                      console.error('Error clicking heat map cell:', error)
+                    }
                   }}
                   title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense} — Haz clic para practicar esta celda`}
                   role="button"
