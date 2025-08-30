@@ -7,6 +7,7 @@ import FeedbackNotification from './FeedbackNotification.jsx';
 import './progress-feedback.css';
 import Diff from './Diff.jsx';
 import { useSettings } from '../../state/settings.js';
+import SessionHUD from './SessionHUD.jsx';
 
 export default function Drill({ 
   currentItem, 
@@ -530,6 +531,11 @@ export default function Drill({
         <div className="conjugation-context">
           {getContextText()}
         </div>
+      )}
+
+      {/* Session HUD: accuracy, time, streaks, top errors */}
+      {!isReverse && !isDouble && (
+        <SessionHUD />
       )}
 
       {/* Person/pronoun display - BOTTOM (hide for nonfinite forms) */}

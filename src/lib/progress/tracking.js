@@ -1,6 +1,7 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
 import { saveAttempt, saveMastery, getMasteryByCell, getByIndex } from './database.js'
+import { classifyError } from './errorClassification.js'
 import { getOrCreateItem } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 // import { calculateNextInterval, updateSchedule } from './srs.js'
