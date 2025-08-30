@@ -1,8 +1,7 @@
 // Advanced Variety Engine for Enhanced Mixed Practice
 // Implements sophisticated anti-repetition and variety algorithms
 
-// Advanced Variety Engine - now imports verb lookup for irregular boosts in specific cases
-import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
+// Advanced Variety Engine - does not currently use verbs import directly
 
 /**
  * Session Memory for Anti-Repetition
@@ -275,7 +274,7 @@ export class AdvancedVarietyEngine {
     
     // For non-mixed practice, use simpler selection
     if (practiceMode !== 'mixed') {
-      return this.selectBasicForm(eligibleForms, history, { level, practiceMode })
+      return this.selectBasicForm(eligibleForms, history)
     }
     
     // For mixed practice, apply full variety algorithms
@@ -285,7 +284,7 @@ export class AdvancedVarietyEngine {
   /**
    * Basic form selection (for specific practice modes) - ENHANCED for better variety
    */
-  selectBasicForm(forms, history, ctx = {}) {
+  selectBasicForm(forms, history) {
     // ENHANCED: Apply stronger variety algorithms even for basic selection
     console.log('🔄 BASIC SELECTION - Enhancing variety algorithms')
     
@@ -300,9 +299,6 @@ export class AdvancedVarietyEngine {
     
     console.log(`🔄 VARIETY DEBUG - ${verbGroups.size} different verbs available:`, Array.from(verbGroups.keys()).slice(0, 10))
     
-    // Detect thematic Presente de Indicativo pool
-    const isThematicPresent = forms.length > 0 && forms.every(f => f.mood === 'indicative' && f.tense === 'pres')
-
     const scoredForms = forms.map(form => {
       const accuracyScore = this.getAccuracyScore(form, history)
       const repetitionPenalty = this.sessionMemory.getRepetitionPenalty(form)
@@ -313,19 +309,8 @@ export class AdvancedVarietyEngine {
       
       // ENHANCED: Person variety bonus
       const personVarietyBonus = this.getPersonVarietyBonus(form.person)
-
-      // NEW: Irregular boost specifically for thematic Presente de Indicativo with "Todos los verbos"
-      // Goal: ensure 1s irregulars (soy, estoy, hago, pongo, salgo, digo, tengo, vengo, etc.) surface in the mix
-      let irregularBonus = 0
-      if (isThematicPresent) {
-        const verb = LEMMA_TO_VERB.get(form.lemma)
-        if (verb && verb.type === 'irregular') {
-          // Prioritize 1s (yo) irregulars more strongly, other persons moderately
-          irregularBonus = form.person === '1s' ? 0.6 : 0.3
-        }
-      }
       
-      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus + irregularBonus
+      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus
       
       return {
         form,
@@ -581,13 +566,10 @@ export class AdvancedVarietyEngine {
   /**
    * Helper scoring functions
    */
-  // Return a difficulty-like score: lower past accuracy => higher score
-  // Smoothed accuracy = (correct+1)/(seen+2); difficulty = 1 - accuracy
   getAccuracyScore(form, history) {
     const key = `${form.mood}:${form.tense}:${form.person}:${form.value}`
     const h = history[key] || { seen: 0, correct: 0 }
-    const smoothedAccuracy = (h.correct + 1) / (h.seen + 2)
-    return 1 - smoothedAccuracy
+    return (h.correct + 1) / (h.seen + 2) // Inverse accuracy (lower = higher priority)
   }
 
   getLevelFitnessScore(form, level) {
