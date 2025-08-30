@@ -6,6 +6,7 @@ import MasteryIndicator from './MasteryIndicator.jsx';
 import FeedbackNotification from './FeedbackNotification.jsx';
 import './progress-feedback.css';
 import Diff from './Diff.jsx';
+import { useSettings } from '../../state/settings.js';
 
 export default function Drill({ 
   currentItem, 
@@ -20,6 +21,8 @@ export default function Drill({
   const [showAnimation, setShowAnimation] = useState(false);
 
   const inputRef = useRef(null);
+  const settings = useSettings();
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const { handleResult } = useProgressTracking(currentItem, onResult);
 
@@ -47,6 +50,30 @@ export default function Drill({
     const timer = setTimeout(() => setShowAnimation(false), 500);
     return () => clearTimeout(timer);
   }, [currentItem]);
+
+  // Resistance mode timer
+  useEffect(() => {
+    if (!settings.resistanceActive) {
+      setRemainingTime(0);
+      return;
+    }
+
+    const updateTimer = () => {
+      const elapsed = Date.now() - settings.resistanceStartTs;
+      const remaining = Math.max(0, settings.resistanceMsLeft - elapsed);
+      setRemainingTime(remaining);
+      
+      if (remaining <= 0) {
+        // Time's up! Force incorrect result
+        console.log('⏰ Tiempo agotado en modo supervivencia');
+        handleResult(false); // Mark as incorrect
+      }
+    };
+
+    updateTimer(); // Initial update
+    const interval = setInterval(updateTimer, 100);
+    return () => clearInterval(interval);
+  }, [settings.resistanceActive, settings.resistanceStartTs, settings.resistanceMsLeft, handleResult]);
 
 
   const handleSubmit = async () => {
@@ -132,8 +159,31 @@ export default function Drill({
     return `${moodLabel} - ${tenseLabel}`;
   };
 
+  // Format remaining time for display
+  const formatTime = (ms) => {
+    const seconds = Math.ceil(ms / 1000);
+    return `${seconds}s`;
+  };
+
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
+      {settings.resistanceActive && remainingTime > 0 && (
+        <div className="resistance-timer" style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          background: remainingTime < 5000 ? '#ff4444' : '#ff8800',
+          color: 'white',
+          padding: '8px 12px',
+          borderRadius: '8px',
+          fontSize: '14px',
+          fontWeight: 'bold',
+          zIndex: 1000,
+          animation: remainingTime < 5000 ? 'pulse 0.5s infinite' : 'none'
+        }}>
+          🧟 {formatTime(remainingTime)}
+        </div>
+      )}
       <div className="verb-lemma">
         {currentItem?.lemma}
       </div>
