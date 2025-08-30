@@ -3,8 +3,6 @@ import { grade } from '../../lib/core/grader.js';
 // Removed unused imports to satisfy lint
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
-import SessionInsights from './SessionInsights.jsx';
-import './session-insights.css';
 import { useSettings } from '../../state/settings.js';
 
 export default function Drill({ 
@@ -229,8 +227,6 @@ export default function Drill({
     
     try {
       await handleResult(extendedResult);
-      // Trigger progress update event for SessionInsights
-      window.dispatchEvent(new CustomEvent('progress:update'));
     } catch (error) {
       console.error('Error tracking progress for attempt:', error);
     }
@@ -269,7 +265,6 @@ export default function Drill({
       
       try {
         await handleResult(resultObj);
-        window.dispatchEvent(new CustomEvent('progress:update'));
       } catch (error) {
         console.error('Error tracking progress for double mode attempt:', error);
       }
@@ -318,7 +313,6 @@ export default function Drill({
     
     try {
       await handleResult(resultObj);
-      window.dispatchEvent(new CustomEvent('progress:update'));
     } catch (error) {
       console.error('Error tracking progress for reverse mode attempt:', error);
     }
@@ -520,7 +514,6 @@ export default function Drill({
 
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
-      <SessionInsights />
       {/* Verb lemma (infinitive) - TOP */}
       <div className="verb-lemma">
         {isReverse ? currentItem?.value || currentItem?.form?.value : currentItem?.lemma}
