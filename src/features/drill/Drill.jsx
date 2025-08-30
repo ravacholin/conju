@@ -230,12 +230,18 @@ export default function Drill({
     }
 
     setResult(extendedResult);
-    handleResult(extendedResult);
+    
+    try {
+      await handleResult(extendedResult);
+    } catch (error) {
+      console.error('Error tracking progress for attempt:', error);
+    }
+    
     setIsSubmitting(false);
   };
 
   // Double mode submit function
-  const doubleSubmit = () => {
+  const doubleSubmit = async () => {
     if (!input.trim() || !secondInput.trim() || isSubmitting) return;
     setIsSubmitting(true);
     try {
@@ -262,14 +268,19 @@ export default function Drill({
         targets: [getCanonicalTarget()?.value || '', secondTarget?.value || '']
       };
       setResult(resultObj);
-      handleResult(resultObj);
+      
+      try {
+        await handleResult(resultObj);
+      } catch (error) {
+        console.error('Error tracking progress for double mode attempt:', error);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   // Reverse mode submit function
-  const reverseSubmit = () => {
+  const reverseSubmit = async () => {
     // Validate required fields
     if (!infinitiveGuess.trim()) return;
     if (showPersonField && !personGuess) return;
@@ -305,7 +316,12 @@ export default function Drill({
       targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`]
     };
     setResult(resultObj);
-    handleResult(resultObj);
+    
+    try {
+      await handleResult(resultObj);
+    } catch (error) {
+      console.error('Error tracking progress for reverse mode attempt:', error);
+    }
   };
 
   // Handle keyboard events for reverse mode
