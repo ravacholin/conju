@@ -8,9 +8,9 @@ import {
   trackStreakIncremented as internalTrackStreakIncremented,
   trackTenseDrillStarted as internalTrackTenseDrillStarted,
   trackTenseDrillEnded as internalTrackTenseDrillEnded,
-  getUserStats as internalGetUserStats,
-  classifyError as internalClassifyError
+  getUserStats as internalGetUserStats
 } from '../../lib/progress/tracking.js'
+import { classifyError as internalClassifyError } from '../../lib/progress/errorClassification.js'
 
 /**
  * Registra el inicio de un intento
