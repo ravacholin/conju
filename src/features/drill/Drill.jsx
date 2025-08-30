@@ -22,7 +22,6 @@ export default function Drill({
 
   const inputRef = useRef(null);
   const settings = useSettings();
-  const [remainingTime, setRemainingTime] = useState(0);
 
   const { handleResult } = useProgressTracking(currentItem, onResult);
 
@@ -51,30 +50,6 @@ export default function Drill({
     return () => clearTimeout(timer);
   }, [currentItem]);
 
-  // Resistance mode timer
-  useEffect(() => {
-    if (!settings.resistanceActive) {
-      setRemainingTime(0);
-      return;
-    }
-
-    const updateTimer = () => {
-      const elapsed = Date.now() - settings.resistanceStartTs;
-      const remaining = Math.max(0, settings.resistanceMsLeft - elapsed);
-      setRemainingTime(remaining);
-      
-      if (remaining <= 0) {
-        // Time's up! Force incorrect result
-        console.log('⏰ Tiempo agotado en modo supervivencia');
-        handleResult(false); // Mark as incorrect
-      }
-    };
-
-    updateTimer(); // Initial update
-    const interval = setInterval(updateTimer, 100);
-    return () => clearInterval(interval);
-  }, [settings.resistanceActive, settings.resistanceStartTs, settings.resistanceMsLeft, handleResult]);
-
 
   const handleSubmit = async () => {
     if (!input.trim() || isSubmitting) return;
@@ -82,33 +57,58 @@ export default function Drill({
     setIsSubmitting(true);
     setShowDiff(false);
 
-    const canonicalForm = getCanonicalTarget();
     let gradeResult;
-    let correctAnswer;
+    let extendedResult;
 
     if (settings.reverseActive) {
-      // In reverse mode, check if user entered the correct infinitive
-      correctAnswer = currentItem?.lemma;
-      gradeResult = grade(input.trim(), correctAnswer, currentItem.settings || {});
-    } else if (settings.doubleActive) {
-      // In double mode, for now just check the main form (can be enhanced later)
-      correctAnswer = canonicalForm?.value || currentItem?.form?.value;
-      gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
+      // Reverse mode: check against lemma
+      const correctAnswer = currentItem?.lemma || '';
+      const isCorrect = input.trim().toLowerCase() === correctAnswer.toLowerCase();
+      gradeResult = {
+        correct: isCorrect,
+        targets: [correctAnswer],
+        note: isCorrect ? '¡Correcto!' : `Incorrecto. El infinitivo es: ${correctAnswer}`
+      };
+      extendedResult = {
+        ...gradeResult,
+        userAnswer: input.trim(),
+        correctAnswer: correctAnswer
+      };
+    } else if (settings.doubleActive && currentItem?.secondForm) {
+      // Double mode: expect both forms separated by space
+      const form1 = currentItem?.value || currentItem?.form?.value || '';
+      const form2 = currentItem?.secondForm?.value || '';
+      const correctAnswer = `${form1} ${form2}`;
+      
+      const userParts = input.trim().split(/\s+/);
+      const isCorrect = userParts.length === 2 && 
+                       userParts[0].toLowerCase() === form1.toLowerCase() &&
+                       userParts[1].toLowerCase() === form2.toLowerCase();
+      
+      gradeResult = {
+        correct: isCorrect,
+        targets: [correctAnswer],
+        note: isCorrect ? '¡Correcto!' : `Incorrecto. Las formas son: ${correctAnswer}`
+      };
+      extendedResult = {
+        ...gradeResult,
+        userAnswer: input.trim(),
+        correctAnswer: correctAnswer
+      };
     } else {
-      // Normal mode
-      correctAnswer = canonicalForm?.value || currentItem?.form?.value;
+      // Normal mode: use standard grading
+      const canonicalForm = getCanonicalTarget();
       gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
+      extendedResult = {
+        ...gradeResult,
+        userAnswer: input.trim(),
+        correctAnswer: canonicalForm?.value || currentItem?.form?.value,
+      };
     }
 
     if (!gradeResult.correct) {
       setShowDiff(true);
     }
-
-    const extendedResult = {
-      ...gradeResult,
-      userAnswer: input.trim(),
-      correctAnswer: correctAnswer,
-    };
 
     setResult(extendedResult);
     handleResult(extendedResult);
@@ -174,36 +174,76 @@ export default function Drill({
     return `${moodLabel} - ${tenseLabel}`;
   };
 
-  // Format remaining time for display
-  const formatTime = (ms) => {
-    const seconds = Math.ceil(ms / 1000);
-    return `${seconds}s`;
+  // Helper functions for game modes
+  const getMoodLabel = (mood) => {
+    const MOOD_LABELS = {
+      'indicative': 'Indicativo',
+      'subjunctive': 'Subjuntivo', 
+      'imperative': 'Imperativo',
+      'conditional': 'Condicional',
+      'nonfinite': 'Formas no conjugadas'
+    };
+    return MOOD_LABELS[mood] || mood;
   };
 
-  // Get display content based on active mode
+  const getTenseLabel = (tense) => {
+    const TENSE_LABELS = {
+      'pres': 'Presente',
+      'pretPerf': 'Pretérito perfecto',
+      'pretIndef': 'Pretérito indefinido', 
+      'impf': 'Imperfecto',
+      'plusc': 'Pluscuamperfecto',
+      'fut': 'Futuro',
+      'futPerf': 'Futuro perfecto',
+      'subjPres': 'Presente',
+      'subjImpf': 'Imperfecto',
+      'subjPerf': 'Perfecto',
+      'subjPlusc': 'Pluscuamperfecto',
+      'impAff': 'Afirmativo',
+      'impNeg': 'Negativo', 
+      'cond': 'Condicional',
+      'condPerf': 'Condicional perfecto',
+      'ger': 'Gerundio',
+      'part': 'Participio'
+    };
+    return TENSE_LABELS[tense] || tense;
+  };
+
+  const getPersonLabel = (person) => {
+    const PERSON_LABELS = {
+      '1s': 'yo',
+      '2s_tu': 'tú',
+      '2s_vos': 'vos',
+      '3s': 'él/ella',
+      '1p': 'nosotros',
+      '2p_vosotros': 'vosotros', 
+      '3p': 'ellos'
+    };
+    return PERSON_LABELS[person] || person;
+  };
+
+  // Get content based on active game mode
   const getDisplayContent = () => {
-    if (!currentItem) return { lemma: '', context: '', person: '', placeholder: '' }
-    
     if (settings.reverseActive) {
       // Reverse mode: show conjugation, ask for infinitive
       return {
-        lemma: currentItem.value, // Show the conjugated form
+        lemma: currentItem?.form?.value || currentItem?.value || '',
         context: `${getContextText()} - ¿Cuál es el infinitivo?`,
         person: getPersonText(),
         placeholder: 'Escribe el infinitivo...'
       }
-    } else if (settings.doubleActive) {
-      // Double mode: show two forms (simplified for now)
+    } else if (settings.doubleActive && currentItem?.secondForm) {
+      // Double mode: show both forms
       return {
         lemma: currentItem.lemma,
-        context: `${getContextText()} (Modo Doble)`,
-        person: `${getPersonText()} + otra forma`,
-        placeholder: 'Escribe ambas conjugaciones...'
+        context: `${getContextText()} + ${getMoodLabel(currentItem.secondForm.mood)} - ${getTenseLabel(currentItem.secondForm.tense)}`,
+        person: `${getPersonText()} + ${getPersonLabel(currentItem.secondForm.person)}`,
+        placeholder: 'Escribe ambas conjugaciones separadas por espacio...'
       }
     } else {
       // Normal mode
       return {
-        lemma: currentItem.lemma,
+        lemma: currentItem?.lemma,
         context: getContextText(),
         person: getPersonText(),
         placeholder: 'Escribe la conjugación...'
@@ -215,59 +255,6 @@ export default function Drill({
 
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
-      {/* Game mode indicators */}
-      {settings.resistanceActive && remainingTime > 0 && (
-        <div className="resistance-timer" style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          background: remainingTime < 5000 ? '#ff4444' : '#ff8800',
-          color: 'white',
-          padding: '6px 10px',
-          borderRadius: '6px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          zIndex: 1000,
-          animation: remainingTime < 5000 ? 'pulse 0.5s infinite' : 'none'
-        }}>
-          🧟 {formatTime(remainingTime)}
-        </div>
-      )}
-      
-      {settings.reverseActive && (
-        <div className="game-mode-indicator" style={{
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          background: '#4CAF50',
-          color: 'white',
-          padding: '6px 10px',
-          borderRadius: '6px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          zIndex: 1000
-        }}>
-          🔄 Modo Reverso
-        </div>
-      )}
-      
-      {settings.doubleActive && (
-        <div className="game-mode-indicator" style={{
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          background: '#2196F3',
-          color: 'white',
-          padding: '6px 10px',
-          borderRadius: '6px',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          zIndex: 1000
-        }}>
-          👥 Modo Doble
-        </div>
-      )}
-
       <div className="verb-lemma">
         {displayContent.lemma}
       </div>
@@ -283,7 +270,6 @@ export default function Drill({
           type="text"
           className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
           value={input}
-          placeholder={displayContent.placeholder}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -312,7 +298,7 @@ export default function Drill({
               }
             }
           }}
-          placeholder="Escribe la conjugación..."
+          placeholder={displayContent.placeholder}
           readOnly={result !== null}
           autoFocus
         />
