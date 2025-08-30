@@ -244,7 +244,7 @@ export function useDrillMode() {
     const region = settings.region
     const pronounMode = settings.practicePronoun
 
-    // Helper: cumulative combos allowed up to the user's level (now defined at module level)
+    // Helper: cumulative combos allowed up to the user's level (now defined at module level) 
     
     const allowsPerson = (person) => {
       // Always enforce dialectal constraints regardless of pronounMode
@@ -364,7 +364,7 @@ export function useDrillMode() {
             accepts: base.accepts || {}
           }
         })(),
-        settings: { 
+        settings: {
           ...settings,
           // CRITICAL FIX: Auto-activate dialect-specific settings based on form person
           useVoseo: settings.useVoseo || nextForm.person?.includes('vos') || nextForm.person === '2s_vos',
@@ -386,7 +386,7 @@ export function useDrillMode() {
 
       // Handle double mode (complex logic for pairing two forms)
       if (settings.doubleActive) {
-        console.log('🎲 DOUBLE MODE: Starting double form generation', { 
+        console.log('🎲 DOUBLE MODE: Starting double form generation', {
           excludedItem: itemToExclude ? `${itemToExclude.lemma} (${itemToExclude.mood}/${itemToExclude.tense}-${itemToExclude.person} + secondForm: ${itemToExclude.secondForm?.mood}/${itemToExclude.secondForm?.tense}-${itemToExclude.secondForm?.person})` : 'none'
         })
         try {
@@ -399,6 +399,11 @@ export function useDrillMode() {
             const moodTenseOK = allowedMoods.includes(f.mood) && allowedTenses.includes(f.tense)
             
             if (!moodTenseOK) return false
+
+            // CRITICAL FIX: Enforce dialect/pronoun settings within double mode
+            if (!allowsPerson(f.person)) {
+              return false
+            }
             
             // NUEVO: Apply verb level filtering (same as generator.js)
             const verbFamilies = categorizeVerb(f.lemma)
@@ -469,7 +474,8 @@ export function useDrillMode() {
             }
             
             // Select verb using weighted random selection based on priorities
-            const selectedVerb = weightedRandomSelection(availableVerbs, lvl)
+            const verbWeights = availableVerbs.map(v => getVerbSelectionWeight(v.lemma, lvl))
+            const selectedVerb = weightedRandomSelection(availableVerbs, verbWeights)
             console.log('🎲 DOUBLE MODE: Selected verb:', selectedVerb.lemma, 'with', selectedVerb.uniqueCombos, 'combinations')
             const verbForms = selectedVerb.forms
             
@@ -525,12 +531,25 @@ export function useDrillMode() {
                 console.log('🎲 DOUBLE MODE: Forms available - First:', firstForms.length, 'Second:', secondForms.length)
                 
                 // Select random forms from each combination
-                const firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
-                const secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                let firstForm = firstForms[Math.floor(Math.random() * firstForms.length)]
+                let secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                let attempts = 0
+
+                // CRITICAL FIX: Ensure forms are not identical in value, which can happen with
+                // verbs like 'dar' (dé/dé). Retry up to 5 times.
+                while (
+                  firstForm && secondForm &&
+                  (firstForm.value || firstForm.form) === (secondForm.value || secondForm.form) &&
+                  attempts < 5
+                ) {
+                  console.log('🎲 DOUBLE MODE: Forms were identical, re-selecting second form.')
+                  secondForm = secondForms[Math.floor(Math.random() * secondForms.length)]
+                  attempts++
+                }
                 
                 console.log('🎲 DOUBLE MODE: Selected forms:')
-                console.log('  First:', `${firstForm.lemma} ${firstForm.mood}/${firstForm.tense}-${firstForm.person} = "${firstForm.value || firstForm.form}"`)
-                console.log('  Second:', `${secondForm.lemma} ${secondForm.mood}/${secondForm.tense}-${secondForm.person} = "${secondForm.value || secondForm.form}"`)
+                console.log('  First:', `${firstForm.lemma} ${firstForm.mood}/${firstForm.tense}-${firstForm.person} = "${firstForm.value || firstForm.form}" `)
+                console.log('  Second:', `${secondForm.lemma} ${secondForm.mood}/${secondForm.tense}-${secondForm.person} = "${secondForm.value || secondForm.form}" `)
                 
                 // FINAL VERIFICATION: ensure they're from the SAME VERB and DIFFERENT combinations
                 if (firstForm.lemma === secondForm.lemma && 
@@ -569,8 +588,8 @@ export function useDrillMode() {
                   }
                   
                   console.log('✅ DOUBLE MODE: Successfully created double form item:')
-                  console.log('  Main:', `${newItem.lemma} ${newItem.mood}/${newItem.tense}-${newItem.person} = "${newItem.form?.value || newItem.value}"`)
-                  console.log('  Second:', `${newItem.secondForm.lemma} ${newItem.secondForm.mood}/${newItem.secondForm.tense}-${newItem.secondForm.person} = "${newItem.secondForm.value}"`)
+                  console.log('  Main:', `${newItem.lemma} ${newItem.mood}/${newItem.tense}-${newItem.person} = "${newItem.form?.value || newItem.value}" `)
+                  console.log('  Second:', `${newItem.secondForm.lemma} ${newItem.secondForm.mood}/${newItem.secondForm.tense}-${newItem.secondForm.person} = "${newItem.secondForm.value}" `)
                   
                   // Exit double mode generation successfully
                   setCurrentItem(newItem)
@@ -740,10 +759,10 @@ export function useDrillMode() {
     try {
       const userId = getCurrentUserId()
       if (userId && currentItem && currentItem.mood && currentItem.tense && currentItem.person) {
-        await updateSchedule(userId, { 
-          mood: currentItem.mood, 
-          tense: currentItem.tense, 
-          person: currentItem.person 
+        await updateSchedule(userId, {
+          mood: currentItem.mood,
+          tense: currentItem.tense,
+          person: currentItem.person
         }, !!result.correct, result.hintsUsed || 0)
       }
     } catch (e) {
@@ -867,23 +886,23 @@ export function useDrillMode() {
         nextMilestone: goalsState.progressSummary.nextMilestone
       }
       
-      return { 
-        flowState: state, 
-        momentum, 
-        metrics, 
-        confidenceState, 
-        temporalState, 
-        goalsState 
+      return {
+        flowState: state,
+        momentum,
+        metrics,
+        confidenceState,
+        temporalState,
+        goalsState
       }
     } catch (e) {
       console.warn('Failed to get comprehensive state:', e)
-      return { 
-        flowState: 'neutral', 
-        momentum: 'steady_progress', 
-        metrics: {}, 
-        confidenceState: null, 
-        temporalState: null, 
-        goalsState: null 
+      return {
+        flowState: 'neutral',
+        momentum: 'steady_progress',
+        metrics: {},
+        confidenceState: null,
+        temporalState: null,
+        goalsState: null
       }
     }
   }
