@@ -1,7 +1,8 @@
 // Advanced Variety Engine for Enhanced Mixed Practice
 // Implements sophisticated anti-repetition and variety algorithms
 
-// Advanced Variety Engine - does not currently use verbs import directly
+// Advanced Variety Engine - needs verb lookup for type-based balancing
+import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
 
 /**
  * Session Memory for Anti-Repetition
@@ -22,6 +23,10 @@ class SessionMemory {
     this.tenseMemorySize = 6  // Remember last 6 tenses
     this.personMemorySize = 5 // Remember last 5 persons
     this.categoryMemorySize = 4 // Remember last 4 categories
+
+    // Sliding window for irregular/regular balancing
+    this.lastTypes = [] // values: 'regular' | 'irregular'
+    this.typeWindowSize = 40
   }
 
   // Record a selection
@@ -43,6 +48,13 @@ class SessionMemory {
     if (semanticCategory) {
       this.recentCategories.set(semanticCategory, (this.recentCategories.get(semanticCategory) || 0) + 1)
     }
+    // Track verb type in a sliding window for balancing
+    try {
+      const verb = LEMMA_TO_VERB.get(form.lemma)
+      const t = verb?.type === 'irregular' ? 'irregular' : 'regular'
+      this.lastTypes.push(t)
+      if (this.lastTypes.length > this.typeWindowSize) this.lastTypes.shift()
+    } catch { /* ignore */ }
     
     // Clean old entries
     this.cleanup()
@@ -141,6 +153,7 @@ class SessionMemory {
     this.sessionStartTime = Date.now()
     this.selectionCount = 0
     this.lastDifficultyLevel = 1
+    this.lastTypes = []
   }
 }
 
@@ -309,12 +322,35 @@ export class AdvancedVarietyEngine {
       
       // ENHANCED: Person variety bonus
       const personVarietyBonus = this.getPersonVarietyBonus(form.person)
-      
-      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus
+
+      // Irregular ratio rebalancer for mixed (both types present) pools
+      const hasIrregular = forms.some(f => (LEMMA_TO_VERB.get(f.lemma)?.type) === 'irregular')
+      const hasRegular = forms.some(f => (LEMMA_TO_VERB.get(f.lemma)?.type) === 'regular')
+      let rebalancer = 0
+      if (hasIrregular && hasRegular) {
+        const irrCount = this.sessionMemory.lastTypes.filter(t => t === 'irregular').length
+        const total = this.sessionMemory.lastTypes.length || 1
+        const irrFrac = irrCount / total
+        const target = 0.65
+        const tol = 0.08
+        const isIrreg = (LEMMA_TO_VERB.get(form.lemma)?.type) === 'irregular'
+        if (irrFrac < (target - tol)) {
+          if (isIrreg) rebalancer += 0.35
+        } else if (irrFrac > (target + tol)) {
+          if (isIrreg) rebalancer -= 0.35
+          else rebalancer += 0.15
+        }
+        if (import.meta?.env?.DEV && this.sessionMemory.selectionCount % 25 === 0) {
+          console.log(`[mix rebalance] irr=${irrCount}/${total} -> ${(irrFrac*100).toFixed(0)}%`)
+        }
+      }
+
+      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus + rebalancer
       
       return {
         form,
-        score: accuracyScore * 0.4 + varietyScore * 0.6 // More emphasis on variety
+        // Cap difficulty (accuracy) influence to avoid domination; let persons float
+        score: Math.min(0.25, accuracyScore * 0.25) + varietyScore * 0.75
       }
     })
     
