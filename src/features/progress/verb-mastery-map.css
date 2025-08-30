@@ -1,0 +1,364 @@
+.verb-mastery-map {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.verb-mastery-map.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 8px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.mastery-header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding: 0 20px;
+}
+
+.mastery-header h3 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+
+.mastery-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.mood-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 20px;
+}
+
+.mood-section {
+  border-radius: 16px;
+  padding: 20px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.mood-section.mastery-excellent {
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  border-color: #27ae60;
+}
+
+.mood-section.mastery-good {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f7fc 100%);
+  border-color: #3498db;
+}
+
+.mood-section.mastery-fair {
+  background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
+  border-color: #f39c12;
+}
+
+.mood-section.mastery-poor {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fff5d6 100%);
+  border-color: #e74c3c;
+}
+
+.mood-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.mood-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mood-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.mood-info h4 {
+  font-size: 1.4rem;
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.mood-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+.mood-stats {
+  display: flex;
+  gap: 24px;
+  text-align: right;
+}
+
+.mood-score, .mood-attempts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.score-value, .attempts-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1;
+}
+
+.score-label, .attempts-label {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.tense-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.tense-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tense-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.tense-card.mastery-excellent {
+  border-color: #27ae60;
+  background: linear-gradient(135deg, #d5f4e6 0%, #fafffe 100%);
+}
+
+.tense-card.mastery-good {
+  border-color: #3498db;
+  background: linear-gradient(135deg, #d6eaf8 0%, #fbfcff 100%);
+}
+
+.tense-card.mastery-fair {
+  border-color: #f39c12;
+  background: linear-gradient(135deg, #fdeaa7 0%, #fffef9 100%);
+}
+
+.tense-card.mastery-poor {
+  border-color: #e74c3c;
+  background: linear-gradient(135deg, #fadbd8 0%, #fffbfa 100%);
+}
+
+.tense-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.tense-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.tense-group {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tense-score {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.score-main {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1;
+}
+
+.tense-score .score-label {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.tense-attempts {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.mastery-tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 250px;
+  backdrop-filter: blur(10px);
+}
+
+.tooltip-header {
+  font-weight: 600;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 6px;
+}
+
+.tooltip-content > div {
+  margin: 4px 0;
+}
+
+.tooltip-action {
+  margin-top: 8px;
+  color: #74b9ff;
+  font-size: 0.85rem;
+}
+
+.mastery-legend {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.mastery-legend h4 {
+  margin: 0 0 16px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.legend-items {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-color.mastery-excellent {
+  background: #27ae60;
+}
+
+.legend-color.mastery-good {
+  background: #3498db;
+}
+
+.legend-color.mastery-fair {
+  background: #f39c12;
+}
+
+.legend-color.mastery-poor {
+  background: #e74c3c;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .mood-sections {
+    padding: 0 12px;
+  }
+  
+  .mood-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .mood-stats {
+    gap: 16px;
+  }
+  
+  .tense-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .legend-items {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .mood-section {
+    background: #2c3e50;
+  }
+  
+  .mood-info h4, .score-value, .attempts-value, .tense-name, .score-main {
+    color: #ecf0f1;
+  }
+  
+  .mood-description, .score-label, .attempts-label, .tense-attempts, .tense-group {
+    color: #bdc3c7;
+  }
+  
+  .tense-card {
+    background: #34495e;
+  }
+  
+  .mastery-legend {
+    background: #2c3e50;
+  }
+  
+  .mastery-legend h4 {
+    color: #ecf0f1;
+  }
+  
+  .legend-item {
+    color: #bdc3c7;
+  }
+}

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { ProgressTracker } from './ProgressTracker.jsx'
-import { HeatMap } from './HeatMap.jsx'
+import VerbMasteryMap from './VerbMasteryMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import SRSPanel from './SRSPanel.jsx'
@@ -107,22 +107,7 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>🗺️ Mapa de Calor por Modo y Tiempo</h2>
-        <div style={{ marginBottom: 8 }}>
-          <label style={{ marginRight: 8 }}>Persona:</label>
-          <select value={personFilter} onChange={e => setPersonFilter(e.target.value)}>
-            <option value="">Todas</option>
-            {/* Mostrar ambas 2ªs; la capa de práctica ya aplica dialecto */}
-            <option value="1s">yo (1s)</option>
-            <option value="2s_tu">tú (2s)</option>
-            <option value="2s_vos">vos (2s)</option>
-            <option value="3s">él/ella (3s)</option>
-            <option value="1p">nosotros (1p)</option>
-            <option value="2p_vosotros">vosotros (2p)</option>
-            <option value="3p">ellos (3p)</option>
-          </select>
-        </div>
-        <HeatMap data={heatMapData} />
+        <VerbMasteryMap data={heatMapData} />
       </section>
 
       <section className="dashboard-section">
