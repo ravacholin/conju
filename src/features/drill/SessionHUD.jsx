@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { useSettings } from '../../state/settings.js'
 
 export default function SessionHUD() {
   const [stats, setStats] = useState({ accuracy: 0, avgLatency: 0, currentSessionStreak: 0 })
   const [topErrors, setTopErrors] = useState([])
+  const settings = useSettings()
 
   useEffect(() => {
     (async () => {
@@ -47,9 +49,45 @@ export default function SessionHUD() {
       {topErrors.length > 0 && (
         <div className="hud-card" title="Errores más comunes (últimos 50)">
           <strong>Errores</strong>: {topErrors.map(([tag, n]) => `${tag}(${n})`).join(' · ')}
+          <div style={{ marginTop: 6, display: 'flex', gap: 8 }}>
+            {topErrors.map(([tag]) => (
+              <button
+                key={tag}
+                className="btn btn-small"
+                onClick={async () => {
+                  try {
+                    const uid = getCurrentUserId()
+                    const attempts = await getAttemptsByUser(uid)
+                    const recent = attempts.slice(-300).filter(a => (a.errorTags || []).includes(tag))
+                    if (recent.length === 0) return
+                    // Agrupar por combo y priorizar los más frecuentes
+                    const freq = new Map()
+                    recent.forEach(a => {
+                      const key = `${a.mood}|${a.tense}`
+                      freq.set(key, (freq.get(key) || 0) + 1)
+                    })
+                    const topCombos = Array.from(freq.entries())
+                      .sort((a,b)=>b[1]-a[1])
+                      .slice(0,3)
+                      .map(([k]) => { const [mood,tense]=k.split('|'); return { mood, tense } })
+                    if (topCombos.length === 0) return
+                    // Configurar bloque de micro-drill
+                    settings.set({
+                      practiceMode: 'mixed',
+                      currentBlock: { combos: topCombos, itemsRemaining: 5 }
+                    })
+                    window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
+                  } catch (e) {
+                    // ignore
+                  }
+                }}
+              >
+                Practicar 5 ({tag})
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
   )
 }
-
