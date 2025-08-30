@@ -7,6 +7,7 @@ import { ProgressTracker } from './ProgressTracker.jsx'
 import { HeatMap } from './HeatMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
+import SRSPanel from './SRSPanel.jsx'
 import { useSettings } from '../../state/settings.js'
 import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
 import { buildFormsForRegion } from '../../lib/core/eligibility.js'
@@ -26,6 +27,7 @@ export default function ProgressDashboard() {
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [personFilter, setPersonFilter] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
@@ -44,7 +46,7 @@ export default function ProgressDashboard() {
           progress,
           recs
         ] = await Promise.all([
-          getHeatMapData(userId),
+          getHeatMapData(userId, personFilter || null),
           getCompetencyRadarData(userId),
           getUserStats(userId),
           getWeeklyGoals(userId),
@@ -68,7 +70,7 @@ export default function ProgressDashboard() {
     }
 
     loadData()
-  }, [])
+  }, [personFilter])
 
   if (loading) {
     return (
@@ -105,7 +107,26 @@ export default function ProgressDashboard() {
 
       <section className="dashboard-section">
         <h2>🗺️ Mapa de Calor por Modo y Tiempo</h2>
+        <div style={{ marginBottom: 8 }}>
+          <label style={{ marginRight: 8 }}>Persona:</label>
+          <select value={personFilter} onChange={e => setPersonFilter(e.target.value)}>
+            <option value="">Todas</option>
+            {/* Mostrar ambas 2ªs; la capa de práctica ya aplica dialecto */}
+            <option value="1s">yo (1s)</option>
+            <option value="2s_tu">tú (2s)</option>
+            <option value="2s_vos">vos (2s)</option>
+            <option value="3s">él/ella (3s)</option>
+            <option value="1p">nosotros (1p)</option>
+            <option value="2p_vosotros">vosotros (2p)</option>
+            <option value="3p">ellos (3p)</option>
+          </select>
+        </div>
         <HeatMap data={heatMapData} />
+      </section>
+
+      <section className="dashboard-section">
+        <h2>⏱️ Repaso (SRS)</h2>
+        <SRSPanel />
       </section>
 
       <section className="dashboard-section">

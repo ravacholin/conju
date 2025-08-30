@@ -9,7 +9,7 @@ import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendat
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Datos para el mapa de calor
  */
-export async function getHeatMapData(userId) {
+export async function getHeatMapData(userId, person = null) {
   try {
     // Obtener todos los mastery scores del usuario
     const masteryRecords = await getMasteryByUser(userId)
@@ -18,6 +18,7 @@ export async function getHeatMapData(userId) {
     const groupedData = {}
     
     for (const record of masteryRecords) {
+      if (person && record.person && record.person !== person) continue
       const key = `${record.mood}|${record.tense}`
       if (!groupedData[key]) {
         groupedData[key] = {
@@ -159,3 +160,25 @@ export { getWeeklyGoals, checkWeeklyProgress } from './goals.js'
  */
 // Use intelligent recommendations from real-time analytics
 export const getRecommendations = getIntelligentRecommendations
+
+/**
+ * Obtiene estadísticas resumidas de SRS (debidos ahora y hoy)
+ * @param {string} userId - ID del usuario
+ * @param {Date} now - Fecha de referencia
+ * @returns {Promise<{dueNow:number,dueToday:number}>}
+ */
+export async function getSRSStats(userId, now = new Date()) {
+  try {
+    const { getDueSchedules } = await import('./database.js')
+    const allDue = await getDueSchedules(userId, now)
+    // dueToday: items con nextDue hasta fin del día
+    const endOfDay = new Date(now)
+    endOfDay.setHours(23,59,59,999)
+    const dueToday = allDue.length
+    // For simplicity, consider dueNow same as dueToday (no time granularity in UI yet)
+    return { dueNow: allDue.length, dueToday }
+  } catch (e) {
+    console.warn('SRS stats unavailable:', e)
+    return { dueNow: 0, dueToday: 0 }
+  }
+}
