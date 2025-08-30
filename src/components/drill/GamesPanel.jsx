@@ -2,21 +2,13 @@ import React from 'react'
 
 function GamesPanel({ settings, onClose, onRegenerateItem }) {
   const handleResistanceToggle = () => {
-    console.log('🎮 Resistance toggle clicked', { 
-      currentActive: settings.resistanceActive,
-      settingsType: typeof settings,
-      hasSetMethod: typeof settings.set
-    })
-    
     if (settings.resistanceActive) {
       // Deactivate
-      console.log('🔴 Deactivating resistance mode')
       settings.set({ resistanceActive: false, resistanceMsLeft: 0, resistanceStartTs: null })
     } else {
       const level = settings.level || 'A1'
       // Supervivencia: A1 20s, A2 18s, B1 18s, B2 17s, C1 16s, C2 15s
       const baseMs = level==='C2'?15000: level==='C1'?16000: level==='B2'?17000: level==='B1'?18000: level==='A2'?18000:20000
-      console.log('🟢 Activating resistance mode', { level, baseMs })
       settings.set({ resistanceActive: true, resistanceMsLeft: baseMs, resistanceStartTs: Date.now() })
     }
     onClose()

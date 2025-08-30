@@ -83,7 +83,22 @@ export default function Drill({
     setShowDiff(false);
 
     const canonicalForm = getCanonicalTarget();
-    const gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
+    let gradeResult;
+    let correctAnswer;
+
+    if (settings.reverseActive) {
+      // In reverse mode, check if user entered the correct infinitive
+      correctAnswer = currentItem?.lemma;
+      gradeResult = grade(input.trim(), correctAnswer, currentItem.settings || {});
+    } else if (settings.doubleActive) {
+      // In double mode, for now just check the main form (can be enhanced later)
+      correctAnswer = canonicalForm?.value || currentItem?.form?.value;
+      gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
+    } else {
+      // Normal mode
+      correctAnswer = canonicalForm?.value || currentItem?.form?.value;
+      gradeResult = grade(input.trim(), canonicalForm, currentItem.settings || {});
+    }
 
     if (!gradeResult.correct) {
       setShowDiff(true);
@@ -92,7 +107,7 @@ export default function Drill({
     const extendedResult = {
       ...gradeResult,
       userAnswer: input.trim(),
-      correctAnswer: canonicalForm?.value || currentItem?.form?.value,
+      correctAnswer: correctAnswer,
     };
 
     setResult(extendedResult);
@@ -165,8 +180,42 @@ export default function Drill({
     return `${seconds}s`;
   };
 
+  // Get display content based on active mode
+  const getDisplayContent = () => {
+    if (!currentItem) return { lemma: '', context: '', person: '', placeholder: '' }
+    
+    if (settings.reverseActive) {
+      // Reverse mode: show conjugation, ask for infinitive
+      return {
+        lemma: currentItem.value, // Show the conjugated form
+        context: `${getContextText()} - ¿Cuál es el infinitivo?`,
+        person: getPersonText(),
+        placeholder: 'Escribe el infinitivo...'
+      }
+    } else if (settings.doubleActive) {
+      // Double mode: show two forms (simplified for now)
+      return {
+        lemma: currentItem.lemma,
+        context: `${getContextText()} (Modo Doble)`,
+        person: `${getPersonText()} + otra forma`,
+        placeholder: 'Escribe ambas conjugaciones...'
+      }
+    } else {
+      // Normal mode
+      return {
+        lemma: currentItem.lemma,
+        context: getContextText(),
+        person: getPersonText(),
+        placeholder: 'Escribe la conjugación...'
+      }
+    }
+  }
+
+  const displayContent = getDisplayContent()
+
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
+      {/* Game mode indicators */}
       {settings.resistanceActive && remainingTime > 0 && (
         <div className="resistance-timer" style={{
           position: 'absolute',
@@ -174,9 +223,9 @@ export default function Drill({
           right: '10px',
           background: remainingTime < 5000 ? '#ff4444' : '#ff8800',
           color: 'white',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          fontSize: '14px',
+          padding: '6px 10px',
+          borderRadius: '6px',
+          fontSize: '12px',
           fontWeight: 'bold',
           zIndex: 1000,
           animation: remainingTime < 5000 ? 'pulse 0.5s infinite' : 'none'
@@ -184,14 +233,49 @@ export default function Drill({
           🧟 {formatTime(remainingTime)}
         </div>
       )}
+      
+      {settings.reverseActive && (
+        <div className="game-mode-indicator" style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          background: '#4CAF50',
+          color: 'white',
+          padding: '6px 10px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          zIndex: 1000
+        }}>
+          🔄 Modo Reverso
+        </div>
+      )}
+      
+      {settings.doubleActive && (
+        <div className="game-mode-indicator" style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          background: '#2196F3',
+          color: 'white',
+          padding: '6px 10px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          fontWeight: 'bold',
+          zIndex: 1000
+        }}>
+          👥 Modo Doble
+        </div>
+      )}
+
       <div className="verb-lemma">
-        {currentItem?.lemma}
+        {displayContent.lemma}
       </div>
       <div className="conjugation-context">
-        {getContextText()}
+        {displayContent.context}
       </div>
       <div className="person-display">
-        {getPersonText()}
+        {displayContent.person}
       </div>
       <div className="input-container">
         <input
@@ -199,6 +283,7 @@ export default function Drill({
           type="text"
           className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
           value={input}
+          placeholder={displayContent.placeholder}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
