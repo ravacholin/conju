@@ -4,6 +4,7 @@
 // Advanced Variety Engine - needs verb lookup for type-based balancing
 import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
 import { isIrregularInTense, getEffectiveVerbType } from '../utils/irregularityUtils.js'
+import { getVerbSelectionWeight, getVerbPriority, isHighPriorityVerb } from './levelVerbFiltering.js'
 
 /**
  * Session Memory for Anti-Repetition
@@ -286,6 +287,19 @@ export class AdvancedVarietyEngine {
   selectVariedForm(eligibleForms, level, practiceMode, history = {}) {
     if (eligibleForms.length === 0) return null
     
+    // Log high-priority vs advanced verb distribution for topic practice
+    if (practiceMode === 'specific' && process.env.NODE_ENV === 'development') {
+      const highPriorityCount = eligibleForms.filter(f => isHighPriorityVerb(f.lemma)).length
+      const totalCount = eligibleForms.length
+      const highPriorityPercent = ((highPriorityCount / totalCount) * 100).toFixed(1)
+      
+      console.group(`🎯 TOPIC PRACTICE PRIORITIZATION - Level ${level}`)
+      console.log(`📊 Eligible forms: ${totalCount}`)
+      console.log(`⭐ High priority (A1/A2/B1): ${highPriorityCount} (${highPriorityPercent}%)`)
+      console.log(`🔺 Advanced (B2+/C1+): ${totalCount - highPriorityCount} (${(100 - parseFloat(highPriorityPercent)).toFixed(1)}%)`)
+      console.groupEnd()
+    }
+    
     // For non-mixed practice, use simpler selection
     if (practiceMode !== 'mixed') {
       return this.selectBasicForm(eligibleForms, history)
@@ -353,7 +367,11 @@ export class AdvancedVarietyEngine {
         }
       }
 
-      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus + rebalancer
+      // ENHANCED: Add verb priority scoring for topic practice
+      const verbPriorityScore = this.getVerbPriorityScore(form.lemma, 'B1') // Use B1 as reference level
+      const verbPriorityBonus = (verbPriorityScore - 0.5) * 0.4 // Convert to bonus/penalty
+      
+      const varietyScore = (1 - repetitionPenalty) + verbVarietyBonus + personVarietyBonus + rebalancer + verbPriorityBonus
       
       return {
         form,
@@ -646,13 +664,37 @@ export class AdvancedVarietyEngine {
   }
 
   getVerbPriorityScore(lemma, level) {
-    const priorities = LEVEL_VERB_PRIORITIES[level] || LEVEL_VERB_PRIORITIES['B1']
+    // Use the new priority system from levelVerbFiltering
+    const priority = getVerbPriority(lemma)
+    const weight = getVerbSelectionWeight(lemma, level)
     
-    if (priorities.essential.includes(lemma)) return 1.0
-    if (priorities.important.includes(lemma)) return 0.7
-    if (priorities.supplementary.includes(lemma)) return 0.4
+    // Convert priority to score (1 = highest priority = highest score)
+    let priorityScore = 0.2 // Default for unknown verbs
     
-    return 0.2 // Unknown verbs get low priority
+    switch (priority) {
+      case 1: // A1/A2 básicos
+        priorityScore = 1.0
+        break
+      case 2: // B1 irregulares comunes  
+        priorityScore = 0.8
+        break
+      case 3: // B2+ irregulares avanzados
+        priorityScore = 0.4
+        break
+      case 4: // C1+ verbos muy raros
+        priorityScore = 0.1
+        break
+    }
+    
+    // Apply weight multiplier for topic practice boost
+    const weightMultiplier = Math.min(2.0, weight / 50) // Normalize weight to 0-2 range
+    const finalScore = priorityScore * weightMultiplier
+    
+    if (process.env.NODE_ENV === 'development' && Math.random() < 0.05) {
+      console.log(`🎯 VERB PRIORITY - ${lemma}: priority=${priority}, weight=${weight}, score=${finalScore.toFixed(2)}`)
+    }
+    
+    return Math.min(1.0, finalScore) // Cap at 1.0
   }
 
   getTenseFamilyBalanceScore(tenseKey) {

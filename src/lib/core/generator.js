@@ -349,23 +349,22 @@ export function chooseNext({forms, history, currentItem}){
         }
         
         // Level-based filtering for specific verb types
-        // BUT skip this filtering for specific topic practice
-        if (!isSpecificTopicPractice && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        // ALWAYS apply level filtering, including for specific topic practice
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🚫 LEVEL FILTER - Excluding verb for level', level, ':', f.lemma, '(requires higher level)')
+          }
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
-        // BUT skip this filtering for specific topic practice - user chose to practice specific forms
-        if (!isSpecificTopicPractice) {
-          const verbFamilies = categorizeVerb(f.lemma, verb)
-          if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-            return false
-          }
-        } else {
-          // For specific topic practice, allow all irregular verbs regardless of level
+        // ALWAYS apply this filtering, including for specific topic practice
+        const verbFamilies = categorizeVerb(f.lemma, verb)
+        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           if (process.env.NODE_ENV === 'development') {
-            console.log('🎯 TOPIC PRACTICE - Bypassing level-based verb filtering for irregular:', f.lemma)
+            console.log('🚫 LEVEL FILTER - Excluding verb for level', level, ':', f.lemma, '(requires higher level)')
           }
+          return false
         }
       }
     }
