@@ -374,9 +374,62 @@ export default function Drill({
     
     const moodLabel = MOOD_LABELS[currentItem.mood] || currentItem.mood;
     const tenseLabel = TENSE_LABELS[currentItem.tense] || currentItem.tense;
+
+    const sample = getHablarSample(currentItem.mood, currentItem.tense, settings);
     
-    return `${moodLabel} - ${tenseLabel}`;
+    return sample ? `${moodLabel} - ${tenseLabel}: ${sample}` : `${moodLabel} - ${tenseLabel}`;
   };
+
+  // Provide a compact example using the verb "hablar" adapted to the current mood/tense
+  function getHablarSample(mood, tense, settings) {
+    const region = settings?.region || 'la_general'
+    const voseo = settings?.useVoseo && region === 'rioplatense'
+    
+    if (mood === 'indicative') {
+      switch (tense) {
+        case 'pres': return 'hablo' // yo
+        case 'pretIndef': return 'hablé' // yo
+        case 'impf': return 'hablaba' // yo
+        case 'fut': return 'hablaré' // yo
+        case 'pretPerf': return 'he hablado' // yo
+        case 'plusc': return 'había hablado' // yo
+        case 'futPerf': return 'habré hablado' // yo
+        default: return ''
+      }
+    }
+    if (mood === 'subjunctive') {
+      switch (tense) {
+        case 'subjPres': return 'hable' // yo
+        case 'subjImpf': return 'hablara' // choose -ra variant
+        case 'subjPerf': return 'haya hablado' // yo
+        case 'subjPlusc': return 'hubiera hablado' // yo
+        default: return ''
+      }
+    }
+    if (mood === 'imperative') {
+      // No "yo" in imperative; show 2s example per region
+      if (tense === 'impAff') {
+        return voseo ? 'hablá' : 'habla'
+      }
+      if (tense === 'impNeg') {
+        // Vos and tú share negative base for -ar
+        return 'no hables'
+      }
+      return ''
+    }
+    if (mood === 'conditional') {
+      switch (tense) {
+        case 'cond': return 'hablaría' // yo
+        case 'condPerf': return 'habría hablado' // yo
+        default: return ''
+      }
+    }
+    if (mood === 'nonfinite') {
+      if (tense === 'ger') return 'hablando'
+      if (tense === 'part') return 'hablado'
+    }
+    return ''
+  }
 
   // Helper functions for game modes
   const getMoodLabel = (mood) => {
