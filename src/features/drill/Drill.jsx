@@ -11,7 +11,8 @@ import { useSettings } from '../../state/settings.js';
 export default function Drill({ 
   currentItem, 
   onResult, 
-  onContinue
+  onContinue,
+  showAccentKeys = true
 }) {
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
@@ -323,6 +324,27 @@ export default function Drill({
     onContinue();
   };
 
+  // Accent keys functionality
+  const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
+  
+  const insertChar = (char) => {
+    if (isReverse) {
+      // In reverse mode, insert into the infinitive input
+      setInfinitiveGuess(prev => prev + char);
+    } else if (isDouble) {
+      // In double mode, check which input is focused or default to first
+      const activeElement = document.activeElement;
+      if (activeElement === secondRef.current) {
+        setSecondInput(prev => prev + char);
+      } else {
+        setInput(prev => prev + char);
+      }
+    } else {
+      // Normal mode
+      setInput(prev => prev + char);
+    }
+  };
+
   const getPersonText = () => {
     if (!currentItem) return '';
     
@@ -532,6 +554,21 @@ export default function Drill({
             readOnly={result !== null}
             autoFocus
           />
+          
+          {/* Accent keypad for normal mode */}
+          {showAccentKeys && (
+            <div className="accent-keypad" style={{ marginTop: '1rem' }}>
+              {specialChars.map(ch => (
+                <button
+                  key={ch}
+                  type="button"
+                  className="accent-key"
+                  onClick={() => insertChar(ch)}
+                  tabIndex={-1}
+                >{ch}</button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -603,6 +640,21 @@ export default function Drill({
               </div>
             )}
           </div>
+          
+          {/* Accent keypad for reverse mode */}
+          {showAccentKeys && (
+            <div className="accent-keypad" style={{ marginTop: '1rem' }}>
+              {specialChars.map(ch => (
+                <button
+                  key={ch}
+                  type="button"
+                  className="accent-key"
+                  onClick={() => insertChar(ch)}
+                  tabIndex={-1}
+                >{ch}</button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -653,6 +705,21 @@ export default function Drill({
               />
             </div>
           </div>
+          
+          {/* Accent keypad for double mode */}
+          {showAccentKeys && (
+            <div className="accent-keypad" style={{ marginTop: '1rem' }}>
+              {specialChars.map(ch => (
+                <button
+                  key={ch}
+                  type="button"
+                  className="accent-key"
+                  onClick={() => insertChar(ch)}
+                  tabIndex={-1}
+                >{ch}</button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

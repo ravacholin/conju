@@ -2,13 +2,11 @@ import React from 'react'
 
 function DrillHeader({ 
   onToggleQuickSwitch, 
-  onToggleChallenges, 
   onToggleAccentKeys, 
   onToggleGames, 
   onToggleProgress,
   onHome,
   showQuickSwitch,
-  showChallenges,
   showGames,
   showProgress
 }) {
@@ -29,19 +27,6 @@ function DrillHeader({
           <img src="/config.png" alt="Config" className="menu-icon" />
         </button>
         
-        <button
-          onClick={() => {
-            if (showChallenges) {
-              onToggleChallenges(false)
-            } else {
-              onToggleChallenges(true)
-            }
-          }}
-          className="icon-btn"
-          title="Cronometría"
-        >
-          <img src="/crono.png" alt="Cronometría" className="menu-icon" />
-        </button>
         
         <button
           onClick={() => onToggleAccentKeys()}

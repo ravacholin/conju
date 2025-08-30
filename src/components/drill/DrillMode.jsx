@@ -23,7 +23,6 @@ function DrillMode({
   getAvailableTensesForLevelAndMood
 }) {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
-  const [showChallenges, setShowChallenges] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -31,7 +30,6 @@ function DrillMode({
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
-    setShowChallenges(false)
     setShowGames(false)
     setShowSettings(false)
     setShowProgress(false)
@@ -44,16 +42,6 @@ function DrillMode({
       setShowQuickSwitch(true)
     } else {
       setShowQuickSwitch(false)
-    }
-  }
-
-  const handleToggleChallenges = (show = null) => {
-    const newShow = show !== null ? show : !showChallenges
-    if (newShow) {
-      closeAllPanels()
-      setShowChallenges(true)
-    } else {
-      setShowChallenges(false)
     }
   }
 
@@ -111,13 +99,11 @@ function DrillMode({
     <div className="App">
       <DrillHeader
         onToggleQuickSwitch={handleToggleQuickSwitch}
-        onToggleChallenges={handleToggleChallenges}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
         onToggleProgress={handleToggleProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
-        showChallenges={showChallenges}
         showGames={showGames}
         showProgress={showProgress}
       />
@@ -181,7 +167,6 @@ function DrillMode({
             currentItem={currentItem}
             onResult={onDrillResult}
             onContinue={onContinue}
-            showChallenges={showChallenges}
             showAccentKeys={showAccentKeys}
           />
         ) : (
