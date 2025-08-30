@@ -260,7 +260,7 @@ export function useDrillMode() {
       })
       
       // ENHANCED FALLBACK: Try multiple fallback strategies
-      nextForm = await this.tryIntelligentFallback(settings, eligibleForms, {
+      nextForm = await tryIntelligentFallback(settings, eligibleForms, {
         specificMood, specificTense, isSpecific, matchesSpecific, allowsPerson, allowsLevel
       })
       
@@ -270,7 +270,7 @@ export function useDrillMode() {
       } else {
         // If all fallbacks fail, switch to mixed practice as last resort
         console.warn('⚠️ FALLBACK TO MIXED PRACTICE - Specific practice not available')
-        return this.fallbackToMixedPractice(allFormsForRegion, settings)
+        return fallbackToMixedPractice(allFormsForRegion, settings)
       }
     }
 
