@@ -1,6 +1,6 @@
 // Análisis de progreso para el sistema de progreso
 
-import { getMasteryByUser } from './database.js'
+import { getMasteryByUser, getAttemptsByUser } from './database.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 
@@ -11,12 +11,24 @@ import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendat
  */
 export async function getHeatMapData(userId, person = null) {
   try {
-    // Obtener todos los mastery scores del usuario
-    const masteryRecords = await getMasteryByUser(userId)
+    // Obtener mastery y distribución de intentos para ponderar promedios
+    const [masteryRecords, attempts] = await Promise.all([
+      getMasteryByUser(userId),
+      getAttemptsByUser(userId)
+    ])
     
     // Agrupar por modo y tiempo
     const groupedData = {}
     
+    // Precompute attempt counts per mood|tense|person
+    const attemptCounts = new Map()
+    attempts.forEach(a => {
+      if (!a || !a.mood || !a.tense) return
+      if (person && a.person && a.person !== person) return
+      const key = `${a.mood}|${a.tense}|${a.person || ''}`
+      attemptCounts.set(key, (attemptCounts.get(key) || 0) + 1)
+    })
+
     for (const record of masteryRecords) {
       if (person && record.person && record.person !== person) continue
       const key = `${record.mood}|${record.tense}`
@@ -24,23 +36,32 @@ export async function getHeatMapData(userId, person = null) {
         groupedData[key] = {
           mood: record.mood,
           tense: record.tense,
-          scores: [],
-          count: 0
+          weightedSum: 0,
+          weight: 0,
+          count: 0 // total attempts contributing
         }
       }
-      
-      groupedData[key].scores.push(record.score)
-      groupedData[key].count++
+      // Determine weight for this person cell: attempts in window (fallback to 1)
+      const wKey = `${record.mood}|${record.tense}|${record.person || ''}`
+      const w = attemptCounts.get(wKey) || 1
+      groupedData[key].weightedSum += record.score * w
+      groupedData[key].weight += w
+      groupedData[key].count += attemptCounts.get(wKey) || 0
     }
     
     // Calcular promedios
-    const heatMapData = Object.values(groupedData).map(group => ({
-      mood: group.mood,
-      tense: group.tense,
-      score: group.scores.reduce((a, b) => a + b, 0) / group.scores.length,
-      count: group.count,
-      colorClass: getMasteryColorClass(group.scores.reduce((a, b) => a + b, 0) / group.scores.length)
-    }))
+    const heatMapData = Object.values(groupedData).map(group => {
+      const score = group.weight > 0
+        ? (group.weightedSum / group.weight)
+        : 0
+      return {
+        mood: group.mood,
+        tense: group.tense,
+        score,
+        count: group.count, // total attempts across persons (0 if no attempt yet)
+        colorClass: getMasteryColorClass(score)
+      }
+    })
     
     return heatMapData
   } catch (error) {
