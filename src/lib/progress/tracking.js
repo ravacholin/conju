@@ -136,6 +136,20 @@ export async function trackAttemptSubmitted(attemptId, result) {
     
     console.log(`✅ Intento registrado: ${attemptId}`, attempt)
 
+    // Notificar que se actualizaron los datos de progreso
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('progress:dataUpdated', {
+        detail: { 
+          attemptId, 
+          mood, 
+          tense, 
+          person, 
+          correct: attempt.correct,
+          userId: currentSession.userId
+        }
+      }))
+    }
+
     // Actualizar SRS para la celda practicada
     try {
       await updateSchedule(currentSession.userId, { mood, tense, person }, attempt.correct, attempt.hintsUsed)

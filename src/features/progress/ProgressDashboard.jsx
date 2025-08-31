@@ -29,48 +29,72 @@ export default function ProgressDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [personFilter, setPersonFilter] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
+
+  const loadData = async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true)
+      } else {
+        setLoading(true)
+      }
+      
+      // Obtener el ID del usuario actual
+      const userId = getCurrentUserId()
+      
+      // Cargar todos los datos en paralelo
+      const [
+        heatMap,
+        radar,
+        stats,
+        goals,
+        progress,
+        recs
+      ] = await Promise.all([
+        getHeatMapData(userId, personFilter || null),
+        getCompetencyRadarData(userId),
+        getUserStats(userId),
+        getWeeklyGoals(userId),
+        checkWeeklyProgress(userId),
+        getRecommendations(userId)
+      ])
+      
+      setHeatMapData(heatMap)
+      setRadarData(radar)
+      setUserStats(stats)
+      setWeeklyGoals(goals)
+      setWeeklyProgress(progress)
+      setRecommendations(Array.isArray(recs) ? recs : [])
+      
+      setLoading(false)
+      setRefreshing(false)
+    } catch (err) {
+      console.error('Error al cargar datos del dashboard:', err)
+      setError(err.message)
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true)
-        
-        // Obtener el ID del usuario actual
-        const userId = getCurrentUserId()
-        
-        // Cargar todos los datos en paralelo
-        const [
-          heatMap,
-          radar,
-          stats,
-          goals,
-          progress,
-          recs
-        ] = await Promise.all([
-          getHeatMapData(userId, personFilter || null),
-          getCompetencyRadarData(userId),
-          getUserStats(userId),
-          getWeeklyGoals(userId),
-          checkWeeklyProgress(userId),
-          getRecommendations(userId)
-        ])
-        
-        setHeatMapData(heatMap)
-        setRadarData(radar)
-        setUserStats(stats)
-        setWeeklyGoals(goals)
-        setWeeklyProgress(progress)
-        setRecommendations(Array.isArray(recs) ? recs : [])
-        
-        setLoading(false)
-      } catch (err) {
-        console.error('Error al cargar datos del dashboard:', err)
-        setError(err.message)
-        setLoading(false)
-      }
+    loadData()
+  }, [personFilter])
+
+  // Escuchar eventos de actualización de progreso para refrescar automáticamente
+  useEffect(() => {
+    const handleProgressUpdate = (event) => {
+      console.log('🔄 Datos de progreso actualizados, refrescando dashboard...', event.detail)
+      // Recargar datos después de un breve delay para asegurar que se guardaron
+      setTimeout(() => {
+        loadData(true)
+      }, 500)
     }
 
-    loadData()
+    window.addEventListener('progress:dataUpdated', handleProgressUpdate)
+    
+    return () => {
+      window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+    }
   }, [personFilter])
 
   if (loading) {
@@ -99,6 +123,11 @@ export default function ProgressDashboard() {
       <header className="dashboard-header">
         <h1>📊 Progreso y Analíticas</h1>
         <p>Seguimiento detallado de tu dominio del español</p>
+        {refreshing && (
+          <div className="refresh-indicator">
+            🔄 Actualizando métricas...
+          </div>
+        )}
       </header>
 
       <section className="dashboard-section">

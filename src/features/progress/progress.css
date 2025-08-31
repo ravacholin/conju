@@ -51,6 +51,26 @@
   margin: 0 auto;
 }
 
+.refresh-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  background: rgba(125, 233, 184, 0.1);
+  border: 1px solid rgba(125, 233, 184, 0.2);
+  border-radius: 12px;
+  color: rgba(125, 233, 184, 0.9);
+  font-size: 0.875rem;
+  font-weight: 450;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .dashboard-section {
   margin-bottom: 2.618rem;
   padding: 2.5rem 2rem;
