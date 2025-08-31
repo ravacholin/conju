@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
-import { ProgressTracker } from './ProgressTracker.jsx'
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import { CompetencyRadar } from './CompetencyRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
@@ -129,11 +128,6 @@ export default function ProgressDashboard() {
           </div>
         )}
       </header>
-
-      <section className="dashboard-section">
-        <h2>📈 Estadísticas Generales</h2>
-        <ProgressTracker stats={userStats} />
-      </section>
 
       <section className="dashboard-section">
         <VerbMasteryMap data={heatMapData} />
