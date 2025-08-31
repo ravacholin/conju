@@ -8,6 +8,7 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 // import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
 // import { getEligiblePool, buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
+import { initProgressSystem } from '../lib/progress/index.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
@@ -27,7 +28,12 @@ function AppRouter() {
 
   // Initialize app state
   useEffect(() => {
-    // ... (same)
+    // Initialize progress system on app load
+    initProgressSystem().then((userId) => {
+      console.log('✅ Sistema de progreso inicializado con usuario:', userId)
+    }).catch((error) => {
+      console.error('❌ Error inicializando sistema de progreso:', error)
+    })
   }, [])
 
   const handleStartPractice = () => {
