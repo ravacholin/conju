@@ -3,6 +3,7 @@
 import { useMemo, useState, memo, Fragment } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
+import { getEligiblePool } from '../../lib/core/eligibility.js'
 
 /**
  * Componente para mostrar el mapa de calor
@@ -46,23 +47,67 @@ export function HeatMap({ data }) {
     'ger': 'Gerundio'
   }
 
-  // Agrupar datos por modo y tiempo
+  // Obtener formas elegibles según configuración del usuario
+  const eligibleForms = useMemo(() => {
+    if (!settings.region) return []
+    return getEligiblePool(settings)
+  }, [settings.region, settings.level, settings.useVoseo, settings.useTuteo, settings.useVosotros])
+
+  // Obtener combinaciones válidas de mood/tense según las formas elegibles
+  const validCombinations = useMemo(() => {
+    const combos = new Set()
+    eligibleForms.forEach(form => {
+      combos.add(`${form.mood}|${form.tense}`)
+    })
+    return combos
+  }, [eligibleForms])
+
+  // Filtrar datos solo para mostrar combinaciones válidas
+  const filteredData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return []
+    return data.filter(cell => 
+      validCombinations.has(`${cell.mood}|${cell.tense}`)
+    )
+  }, [data, validCombinations])
+
+  // Agrupar datos filtrados por modo y tiempo
   const groupedData = useMemo(() => {
     const g = {}
-    if (data && Array.isArray(data)) {
-      data.forEach(cell => {
-        if (!g[cell.mood]) g[cell.mood] = {}
-        g[cell.mood][cell.tense] = cell
-      })
-    }
+    filteredData.forEach(cell => {
+      if (!g[cell.mood]) g[cell.mood] = {}
+      g[cell.mood][cell.tense] = cell
+    })
     return g
-  }, [data])
+  }, [filteredData])
 
-  // Obtener todos los modos y tiempos únicos
-  const allMoods = useMemo(() => Object.keys(groupedData), [groupedData])
-  const allTenses = useMemo(() => [...new Set(data?.map(cell => cell.tense) || [])], [data])
+  // Obtener modos y tiempos únicos de las formas elegibles, ordenados lógicamente
+  const allMoods = useMemo(() => {
+    const moods = new Set()
+    eligibleForms.forEach(form => moods.add(form.mood))
+    
+    // Orden lógico de modos
+    const moodOrder = ['indicative', 'subjunctive', 'conditional', 'imperative', 'nonfinite']
+    return moodOrder.filter(mood => moods.has(mood))
+  }, [eligibleForms])
+  
+  const allTenses = useMemo(() => {
+    const tenses = new Set()
+    eligibleForms.forEach(form => tenses.add(form.tense))
+    
+    // Orden lógico de tiempos
+    const tenseOrder = [
+      'pres', 'pretIndef', 'impf', 'fut', 
+      'pretPerf', 'plusc', 'futPerf',
+      'subjPres', 'subjImpf', 'subjFut',
+      'subjPerf', 'subjPlusc',
+      'cond', 'condPerf',
+      'impAff', 'impNeg',
+      'inf', 'part', 'ger'
+    ]
+    return tenseOrder.filter(tense => tenses.has(tense))
+  }, [eligibleForms])
 
-  if (!data || data.length === 0) {
+  if (!filteredData || filteredData.length === 0) {
     return (
       <div className="heat-map empty">
         <p>No hay datos de progreso disponibles aún.</p>
