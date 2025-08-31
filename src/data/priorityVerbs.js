@@ -25624,6 +25624,54 @@ export const priorityVerbs = [
             "value": "despertar",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "despierto",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "despiertas",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "despierta",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "despertamos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "despertáis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "despiertan",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25666,6 +25714,54 @@ export const priorityVerbs = [
             "value": "preferir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "prefiro",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "prefires",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "prefire",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "preferimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "preferís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "prefiren",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25708,6 +25804,54 @@ export const priorityVerbs = [
             "value": "mentir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "minto",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "mintes",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "minte",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "mentimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "mentís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "minten",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25750,6 +25894,54 @@ export const priorityVerbs = [
             "value": "competir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "compito",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "compites",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "compite",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "competimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "competís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "compiten",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25792,6 +25984,54 @@ export const priorityVerbs = [
             "value": "medir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "mido",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "mides",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "mide",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "medimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "medís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "miden",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25834,6 +26074,54 @@ export const priorityVerbs = [
             "value": "vestir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "visto",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "vistes",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "viste",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "vestimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "vestís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "visten",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25876,6 +26164,54 @@ export const priorityVerbs = [
             "value": "vencer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "venzo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "vences",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "vence",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "vencemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "vencéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "vencen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25918,6 +26254,54 @@ export const priorityVerbs = [
             "value": "ejercer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "ejerzo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "ejerces",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "ejerce",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "ejercemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "ejercéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "ejercen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -25960,6 +26344,54 @@ export const priorityVerbs = [
             "value": "torcer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "torzo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "torces",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "torce",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "torcemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "torcéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "torcen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26002,6 +26434,54 @@ export const priorityVerbs = [
             "value": "cocer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "cozo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "coces",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "coce",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "cocemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "cocéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "cocen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26044,6 +26524,54 @@ export const priorityVerbs = [
             "value": "convencer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "convenzo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "convences",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "convence",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "convencemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "convencéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "convencen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26086,6 +26614,54 @@ export const priorityVerbs = [
             "value": "retorcer",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "retorzo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "retorces",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "retorce",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "retorcemos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "retorcéis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "retorcen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26128,6 +26704,54 @@ export const priorityVerbs = [
             "value": "fiar",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "fiío",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "fiías",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "fiía",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "fiiamos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "fiiáis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "fiían",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26170,6 +26794,54 @@ export const priorityVerbs = [
             "value": "fluctuar",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "fluctuúo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "fluctuúas",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "fluctuúa",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "fluctuuamos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "fluctuuáis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "fluctuúan",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26212,6 +26884,54 @@ export const priorityVerbs = [
             "value": "amuar",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "amuo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "amuas",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "amua",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "amuamos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "amuáis",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "amuan",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26254,6 +26974,54 @@ export const priorityVerbs = [
             "value": "adormir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "adormo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "adormes",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "adorme",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "adormimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "adormís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "adormen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26296,6 +27064,54 @@ export const priorityVerbs = [
             "value": "adormecerse",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "adormecerseo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "adormecersees",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "adormecersee",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "adormecerseimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "adormecerseís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "adormecerseen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }
@@ -26338,6 +27154,54 @@ export const priorityVerbs = [
             "value": "redormir",
             "tags": [],
             "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1s",
+                    "value": "redormo",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2s_tu",
+                    "value": "redormes",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3s",
+                    "value": "redorme",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "1p",
+                    "value": "redormimos",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "2p_vosotros",
+                    "value": "redormís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
+                    "person": "3p",
+                    "value": "redormen",
+                    "tags": [],
+                    "region": "es"
           }
         ]
       }

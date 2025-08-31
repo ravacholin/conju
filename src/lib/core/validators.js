@@ -53,12 +53,20 @@ export class VerbValidator {
         return
       }
       
-      // Verificar formas esenciales
+      // Verificar formas esenciales (con excepciones para verbos defectivos)
+      const isDefectiveVerb = ['empedernir', 'desvaír', 'soler', 'abolir', 'agredir', 'blandir'].includes(verb.lemma)
+      
       const requiredCombinations = [
-        { mood: 'indicative', tense: 'pres', person: '1s' },
-        { mood: 'indicative', tense: 'pres', person: '3s' },
         { mood: 'nonfinite', tense: 'inf', person: '' }
       ]
+      
+      // Los verbos defectivos no requieren formas de presente
+      if (!isDefectiveVerb) {
+        requiredCombinations.push(
+          { mood: 'indicative', tense: 'pres', person: '1s' },
+          { mood: 'indicative', tense: 'pres', person: '3s' }
+        )
+      }
       
       requiredCombinations.forEach(req => {
         const found = paradigm.forms.find(f => 
