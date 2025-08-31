@@ -13,51 +13,52 @@ export function VerbMasteryMap({ data }) {
     indicative: {
       label: 'Indicativo',
       icon: '📋',
-      description: 'Hechos y realidad',
+      description: 'Modo de la realidad y la objetividad',
       tenses: [
         { key: 'pres', label: 'Presente', group: 'simple' },
-        { key: 'pretIndef', label: 'Pretérito', group: 'simple' },
-        { key: 'impf', label: 'Imperfecto', group: 'simple' },
-        { key: 'fut', label: 'Futuro', group: 'simple' },
-        { key: 'pretPerf', label: 'Pret. Perfecto', group: 'compound' },
-        { key: 'plusc', label: 'Pluscuamperfecto', group: 'compound' },
-        { key: 'futPerf', label: 'Fut. Perfecto', group: 'compound' }
+        { key: 'pretIndef', label: 'Pretérito indefinido', group: 'simple' },
+        { key: 'impf', label: 'Pretérito imperfecto', group: 'simple' },
+        { key: 'fut', label: 'Futuro simple', group: 'simple' },
+        { key: 'pretPerf', label: 'Pretérito perfecto compuesto', group: 'compound' },
+        { key: 'plusc', label: 'Pretérito pluscuamperfecto', group: 'compound' },
+        { key: 'futPerf', label: 'Futuro perfecto', group: 'compound' }
       ]
     },
     subjunctive: {
       label: 'Subjuntivo',
       icon: '🤔',
-      description: 'Duda, emoción, deseo',
+      description: 'Modo de la subjetividad y la irrealidad',
       tenses: [
         { key: 'subjPres', label: 'Presente', group: 'simple' },
-        { key: 'subjImpf', label: 'Imperfecto', group: 'simple' },
-        { key: 'subjPerf', label: 'Perfecto', group: 'compound' },
-        { key: 'subjPlusc', label: 'Pluscuamperfecto', group: 'compound' }
+        { key: 'subjImpf', label: 'Pretérito imperfecto', group: 'simple' },
+        { key: 'subjPerf', label: 'Pretérito perfecto', group: 'compound' },
+        { key: 'subjPlusc', label: 'Pretérito pluscuamperfecto', group: 'compound' }
       ]
     },
     conditional: {
       label: 'Condicional',
       icon: '❓',
-      description: 'Hipótesis y cortesía',
+      description: 'Modo de la probabilidad y la cortesía',
       tenses: [
-        { key: 'cond', label: 'Simple', group: 'simple' },
-        { key: 'condPerf', label: 'Perfecto', group: 'compound' }
+        { key: 'cond', label: 'Condicional simple', group: 'simple' },
+        { key: 'condPerf', label: 'Condicional compuesto', group: 'compound' }
       ]
     },
     imperative: {
       label: 'Imperativo',
       icon: '❗',
-      description: 'Órdenes y ruegos',
+      description: 'Modo del mandato y la exhortación',
       tenses: [
-        { key: 'impAff', label: 'Afirmativo', group: 'simple' },
-        { key: 'impNeg', label: 'Negativo', group: 'simple' }
+        { key: 'impAff', label: 'Imperativo afirmativo', group: 'simple' },
+        { key: 'impNeg', label: 'Imperativo negativo', group: 'simple' }
       ]
     },
     nonfinite: {
-      label: 'No Finitas',
+      label: 'Formas no personales',
       icon: '∞',
-      description: 'Formas impersonales',
+      description: 'Formas verbales sin flexión personal',
       tenses: [
+        { key: 'inf', label: 'Infinitivo', group: 'simple' },
         { key: 'ger', label: 'Gerundio', group: 'simple' },
         { key: 'part', label: 'Participio', group: 'simple' }
       ]

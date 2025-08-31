@@ -15,33 +15,33 @@ export function HeatMap({ data }) {
   const [timeRange, setTimeRange] = useState('last_30_days')
   const [hoveredCell, setHoveredCell] = useState(null)
 
-  // Mapeo de modos a nombres en español
+  // Mapeo de modos a nombres gramaticales correctos
   const moodLabels = {
     'indicative': 'Indicativo',
     'subjunctive': 'Subjuntivo',
     'imperative': 'Imperativo',
     'conditional': 'Condicional',
-    'nonfinite': 'No Finito'
+    'nonfinite': 'Formas no personales'
   }
 
-  // Mapeo de tiempos a nombres en español
+  // Mapeo de tiempos a nombres gramaticales correctos
   const tenseLabels = {
     'pres': 'Presente',
-    'pretIndef': 'Pretérito',
-    'impf': 'Imperfecto',
-    'fut': 'Futuro',
-    'pretPerf': 'Pret. Perfecto',
-    'plusc': 'Pluscuamperfecto',
-    'futPerf': 'Fut. Perfecto',
+    'pretIndef': 'Pretérito indefinido',
+    'impf': 'Pretérito imperfecto',
+    'fut': 'Futuro simple',
+    'pretPerf': 'Pretérito perfecto compuesto',
+    'plusc': 'Pretérito pluscuamperfecto',
+    'futPerf': 'Futuro perfecto',
     'subjPres': 'Presente',
-    'subjImpf': 'Imperfecto',
+    'subjImpf': 'Pretérito imperfecto',
     'subjFut': 'Futuro',
-    'subjPerf': 'Pret. Perfecto',
-    'subjPlusc': 'Pluscuamperfecto',
-    'impAff': 'Afirmativo',
-    'impNeg': 'Negativo',
-    'cond': 'Condicional',
-    'condPerf': 'Cond. Perfecto',
+    'subjPerf': 'Pretérito perfecto',
+    'subjPlusc': 'Pretérito pluscuamperfecto',
+    'impAff': 'Imperativo afirmativo',
+    'impNeg': 'Imperativo negativo',
+    'cond': 'Condicional simple',
+    'condPerf': 'Condicional compuesto',
     'inf': 'Infinitivo',
     'part': 'Participio',
     'ger': 'Gerundio'
