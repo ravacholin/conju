@@ -21,10 +21,10 @@ export async function autoInitializeProgressSystem() {
 // Ejecutar inicialización automática cuando se carga el módulo
 if (typeof window !== 'undefined') {
   // Solo ejecutar en el navegador
-  // DISABLED: autoInitializeProgressSystem().catch(error => {
-  //   console.error('Error en inicialización automática:', error)
-  // })
-  console.log('⏸️ Inicialización automática del sistema de progreso deshabilitada temporalmente')
+  autoInitializeProgressSystem().catch(error => {
+    console.error('Error en inicialización automática:', error)
+  })
+  console.log('🚀 Inicialización automática del sistema de progreso habilitada')
 }
 
 export default autoInitializeProgressSystem
