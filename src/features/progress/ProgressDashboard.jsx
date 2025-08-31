@@ -139,7 +139,10 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>❌ Errores más comunes</h2>
+        <h2>
+          <img src="/diana.png" alt="Errores" className="section-icon" />
+          Análisis de Errores
+        </h2>
         <ErrorInsights />
       </section>
 

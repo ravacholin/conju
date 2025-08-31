@@ -7,6 +7,45 @@ export default function ErrorInsights() {
   const [topErrors, setTopErrors] = useState([])
   const settings = useSettings()
 
+  // Mapeo de tipos de error a iconos y descripciones
+  const errorTypeMapping = {
+    'conjugation': {
+      icon: '/diana.png', // Usando diana como placeholder para errores de conjugación
+      label: 'Conjugación',
+      description: 'Forma verbal incorrecta'
+    },
+    'accent': {
+      icon: '/enie.png', // Usando enie para errores de acentos
+      label: 'Acentuación',
+      description: 'Acentos faltantes o incorrectos'
+    },
+    'spelling': {
+      icon: '/books.png', // Usando books para errores de ortografía
+      label: 'Ortografía',
+      description: 'Errores de escritura'
+    },
+    'stem': {
+      icon: '/diana.png',
+      label: 'Raíz Verbal',
+      description: 'Cambios en la raíz del verbo'
+    },
+    'ending': {
+      icon: '/diana.png',
+      label: 'Terminación',
+      description: 'Terminaciones verbales incorrectas'
+    },
+    'irregular': {
+      icon: '/diana.png',
+      label: 'Irregular',
+      description: 'Formas irregulares'
+    },
+    'default': {
+      icon: '/diana.png',
+      label: 'Otro',
+      description: 'Otros tipos de error'
+    }
+  }
+
   useEffect(() => {
     (async () => {
       try {
@@ -42,20 +81,56 @@ export default function ErrorInsights() {
     } catch {}
   }
 
+  const getErrorInfo = (tag) => {
+    return errorTypeMapping[tag] || errorTypeMapping.default
+  }
+
   if (topErrors.length === 0) {
-    return <div className="error-insights">Sin errores destacados recientes.</div>
+    return (
+      <div className="error-insights empty">
+        <div className="empty-state">
+          <img src="/books.png" alt="Sin errores" className="empty-icon" />
+          <p className="empty-title">¡Excelente trabajo!</p>
+          <p className="empty-description">No hay errores recurrentes detectados</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="error-insights">
-      <ul>
-        {topErrors.map(([tag, n]) => (
-          <li key={tag} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span><strong>{tag}</strong> · {n} veces</span>
-            <button className="btn btn-small" onClick={() => startMicroDrill(tag)}>Practicar 5</button>
-          </li>
-        ))}
-      </ul>
+      <div className="error-grid">
+        {topErrors.map(([tag, count]) => {
+          const errorInfo = getErrorInfo(tag)
+          return (
+            <div key={tag} className="error-card">
+              <div className="error-header">
+                <img src={errorInfo.icon} alt={errorInfo.label} className="error-icon" />
+                <div className="error-info">
+                  <h4 className="error-label">{errorInfo.label}</h4>
+                  <p className="error-description">{errorInfo.description}</p>
+                </div>
+              </div>
+              
+              <div className="error-stats">
+                <div className="error-count">
+                  <span className="count-value">{count}</span>
+                  <span className="count-label">veces</span>
+                </div>
+              </div>
+              
+              <button 
+                className="error-practice-btn"
+                onClick={() => startMicroDrill(tag)}
+                title={`Practicar ${errorInfo.label.toLowerCase()}`}
+              >
+                <img src="/play.png" alt="Practicar" className="btn-icon" />
+                <span>Practicar</span>
+              </button>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
