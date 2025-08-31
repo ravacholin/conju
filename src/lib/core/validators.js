@@ -176,6 +176,7 @@ export function validateAllData() {
   console.log('🔍 INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
   
   const verbValidator = new VerbValidator()
+  const semanticValidator = new SemanticValidator()
   const familyValidator = new FamilyValidator()
   
   let totalErrors = 0
@@ -183,20 +184,25 @@ export function validateAllData() {
   const problemVerbs = []
   
   // Validar todos los verbos
-  console.log(`📚 Validando ${verbs.length} verbos...
+  console.log(`📚 Validando ${verbs.length} verbos...`)
+  console.log(`🧠 Incluye validación semántica y de verbos defectivos
 `)
   
   verbs.forEach((verb, index) => {
-    const { errors, warnings } = verbValidator.validateVerb(verb)
+    const structuralResults = verbValidator.validateVerb(verb)
+    const semanticResults = semanticValidator.validateVerb(verb)
     
-    if (errors.length > 0 || warnings.length > 0) {
+    const allErrors = [...structuralResults.errors, ...semanticResults.errors]
+    const allWarnings = [...structuralResults.warnings, ...semanticResults.warnings]
+    
+    if (allErrors.length > 0 || allWarnings.length > 0) {
       problemVerbs.push({
         verb: verb.lemma || `index_${index}`,
-        errors,
-        warnings
+        errors: allErrors,
+        warnings: allWarnings
       })
-      totalErrors += errors.length
-      totalWarnings += warnings.length
+      totalErrors += allErrors.length
+      totalWarnings += allWarnings.length
     }
   })
   
@@ -278,6 +284,138 @@ export function validateAllData() {
     problemVerbs,
     familyProblems,
     isValid: totalErrors === 0
+  }
+}
+
+// Validador semántico avanzado para detectar errores lingüísticos
+export class SemanticValidator {
+  constructor() {
+    // Definir reglas de verbos defectivos con sus restricciones específicas
+    this.defectiveVerbs = {
+      // Verbos que NO admiten imperativo
+      'soler': {
+        type: 'defective_imperative',
+        description: 'No admite imperativo (uso auxiliar de hábito)',
+        forbiddenTenses: ['imperative']
+      },
+      'abolir': {
+        type: 'defective_imperative', 
+        description: 'No admite imperativo (verbo defectivo clásico)',
+        forbiddenTenses: ['imperative']
+      },
+      'blandir': {
+        type: 'defective_imperative',
+        description: 'No admite imperativo (verbo defectivo)',
+        forbiddenTenses: ['imperative']
+      },
+      'agredir': {
+        type: 'defective_imperative',
+        description: 'No admite imperativo (verbo defectivo)',
+        forbiddenTenses: ['imperative']
+      },
+      'empedernir': {
+        type: 'defective_imperative',
+        description: 'No admite imperativo (verbo defectivo)',
+        forbiddenTenses: ['imperative'] 
+      },
+      'desvaír': {
+        type: 'defective_imperative',
+        description: 'No admite imperativo (verbo defectivo)',
+        forbiddenTenses: ['imperative']
+      },
+      // Verbos que solo se conjugan en tercera persona
+      'concernir': {
+        type: 'third_person_only',
+        description: 'Solo se conjuga en tercera persona',
+        allowedPersons: ['3s', '3p']
+      },
+      'atañer': {
+        type: 'third_person_only', 
+        description: 'Solo se conjuga en tercera persona',
+        allowedPersons: ['3s', '3p']
+      },
+      // Verbos meteorológicos (solo 3ª persona singular)
+      'llover': {
+        type: 'weather_verb',
+        description: 'Verbo meteorológico, solo 3ª persona singular',
+        allowedPersons: ['3s']
+      },
+      'nevar': {
+        type: 'weather_verb',
+        description: 'Verbo meteorológico, solo 3ª persona singular', 
+        allowedPersons: ['3s']
+      },
+      'granizar': {
+        type: 'weather_verb',
+        description: 'Verbo meteorológico, solo 3ª persona singular',
+        allowedPersons: ['3s']
+      }
+    }
+  }
+
+  validateDefectiveVerb(verb) {
+    const errors = []
+    const warnings = []
+
+    const defectiveRule = this.defectiveVerbs[verb.lemma]
+    if (!defectiveRule) return { errors, warnings }
+
+    verb.paradigms?.forEach((paradigm, pIndex) => {
+      paradigm.forms?.forEach((form, fIndex) => {
+        // Verificar tiempos prohibidos
+        if (defectiveRule.forbiddenTenses?.includes(form.mood)) {
+          errors.push(
+            `DEFECTIVO: ${verb.lemma} no debe tener formas de ${form.mood} ` +
+            `(encontrado: ${form.value} en paradigma ${pIndex}, forma ${fIndex}). ` +
+            `${defectiveRule.description}`
+          )
+        }
+
+        // Verificar personas permitidas
+        if (defectiveRule.allowedPersons && !defectiveRule.allowedPersons.includes(form.person)) {
+          errors.push(
+            `DEFECTIVO: ${verb.lemma} solo se conjuga en ${defectiveRule.allowedPersons.join(', ')} ` +
+            `(encontrado: ${form.person} con valor "${form.value}"). ` +
+            `${defectiveRule.description}`
+          )
+        }
+      })
+    })
+
+    return { errors, warnings }
+  }
+
+  validateSemanticConsistency(verb) {
+    const warnings = []
+    
+    // Detectar posibles problemas semánticos adicionales
+    verb.paradigms?.forEach(paradigm => {
+      paradigm.forms?.forEach(form => {
+        // Verificar formas potencialmente sospechosas en verbos regulares
+        if (verb.type === 'regular' && form.mood === 'imperative') {
+          if (form.value.includes('*') || form.value.includes('?') || form.value === '') {
+            warnings.push(`Forma imperativa sospechosa en verbo regular ${verb.lemma}: "${form.value}"`)
+          }
+        }
+
+        // Detectar valores vacíos o marcadores de error
+        if (!form.value || form.value.trim() === '' || form.value.includes('ERROR')) {
+          warnings.push(`Forma con valor vacío o inválido en ${verb.lemma}: "${form.value}"`)
+        }
+      })
+    })
+
+    return warnings
+  }
+
+  validateVerb(verb) {
+    const defectiveResults = this.validateDefectiveVerb(verb)
+    const semanticWarnings = this.validateSemanticConsistency(verb)
+
+    return {
+      errors: defectiveResults.errors,
+      warnings: [...defectiveResults.warnings, ...semanticWarnings]
+    }
   }
 }
 
