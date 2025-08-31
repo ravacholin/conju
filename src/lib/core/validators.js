@@ -1,6 +1,10 @@
 // Sistema de validación automática para Spanish Conjugator
 import { verbs } from '../../data/verbs.js'
+import { getAllVerbsWithPriority } from '../../data/priorityVerbs.js'
 import { IRREGULAR_FAMILIES } from '../data/irregularFamilies.js'
+
+// Obtener todos los verbos (principales + prioritarios)
+const allVerbs = getAllVerbsWithPriority(verbs)
 
 // Validadores individuales
 export class VerbValidator {
@@ -184,11 +188,11 @@ export function validateAllData() {
   const problemVerbs = []
   
   // Validar todos los verbos
-  console.log(`📚 Validando ${verbs.length} verbos...`)
+  console.log(`📚 Validando ${allVerbs.length} verbos...`)
   console.log(`🧠 Incluye validación semántica y de verbos defectivos
 `)
   
-  verbs.forEach((verb, index) => {
+  allVerbs.forEach((verb, index) => {
     const structuralResults = verbValidator.validateVerb(verb)
     const semanticResults = semanticValidator.validateVerb(verb)
     
@@ -214,7 +218,7 @@ export function validateAllData() {
   const familyProblems = []
   Object.values(IRREGULAR_FAMILIES).forEach(family => {
     const structureErrors = familyValidator.validateFamilyStructure(family)
-    const exampleWarnings = familyValidator.validateFamilyExamples(family, verbs)
+    const exampleWarnings = familyValidator.validateFamilyExamples(family, allVerbs)
     
     if (structureErrors.length > 0 || exampleWarnings.length > 0) {
       familyProblems.push({
@@ -231,7 +235,7 @@ export function validateAllData() {
   console.log(`
 📊 RESULTADOS DE VALIDACIÓN:
 `)
-  console.log(`✅ Verbos validados: ${verbs.length}`)
+  console.log(`✅ Verbos validados: ${allVerbs.length}`)
   console.log(`✅ Familias validadas: ${Object.keys(IRREGULAR_FAMILIES).length}`)
   console.log(`❌ Total errores: ${totalErrors}`)
   console.log(`⚠️  Total advertencias: ${totalWarnings}`)
@@ -258,6 +262,12 @@ export function validateAllData() {
 `)
     problemVerbs.filter(p => p.warnings.length > 0).forEach(problem => {
       console.log(`  ${problem.verb}:
+`)
+      problem.warnings.forEach(warning => console.log(`    - ${warning}`))
+    })
+    
+    familyProblems.filter(p => p.warnings.length > 0).forEach(problem => {
+      console.log(`  Familia ${problem.family}:
 `)
       problem.warnings.forEach(warning => console.log(`    - ${warning}`))
     })
@@ -425,7 +435,7 @@ export function quickValidation() {
   
   // Verificar que verbos básicos estén presentes
   const essentialVerbs = ['ser', 'estar', 'tener', 'hacer', 'ir']
-  const verbSet = new Set(verbs.map(v => v.lemma))
+  const verbSet = new Set(allVerbs.map(v => v.lemma))
   
   essentialVerbs.forEach(verb => {
     if (!verbSet.has(verb)) {
@@ -434,7 +444,7 @@ export function quickValidation() {
   })
   
   // Verificar que no haya verbos duplicados
-  const lemmas = verbs.map(v => v.lemma)
+  const lemmas = allVerbs.map(v => v.lemma)
   const duplicates = lemmas.filter((lemma, index) => lemmas.indexOf(lemma) !== index)
   
   if (duplicates.length > 0) {

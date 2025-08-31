@@ -25606,6 +25606,848 @@ export const priorityVerbs = [
         ]
       }
     ]
+  },
+  
+  // Verbos agregados automáticamente para completar familias irregulares
+  {
+    "id": "despertar_added",
+    "lemma": "despertar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "despertar",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "preferir_added",
+    "lemma": "preferir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "preferir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "mentir_added",
+    "lemma": "mentir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "mentir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "competir_added",
+    "lemma": "competir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "competir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "medir_added",
+    "lemma": "medir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "medir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "vestir_added",
+    "lemma": "vestir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "vestir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "vencer_added",
+    "lemma": "vencer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "vencer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "ejercer_added",
+    "lemma": "ejercer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "ejercer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "torcer_added",
+    "lemma": "torcer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "torcer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "cocer_added",
+    "lemma": "cocer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "cocer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "convencer_added",
+    "lemma": "convencer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "convencer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "retorcer_added",
+    "lemma": "retorcer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "retorcer",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "fiar_added", 
+    "lemma": "fiar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "fiar",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "fluctuar_added",
+    "lemma": "fluctuar", 
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "fluctuar",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "amuar_added",
+    "lemma": "amuar",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "amuar",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "adormir_added",
+    "lemma": "adormir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "adormir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "adormecerse_added",
+    "lemma": "adormecerse",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "adormecerse",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "redormir_added",
+    "lemma": "redormir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "redormir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
+  },
+  {
+    "id": "empedernir_added",
+    "lemma": "empedernir",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "empedernir",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": false,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": false,
+      "impNeg": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
+  },
+  {
+    "id": "desvair_added",
+    "lemma": "desvaír",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": ["rioplatense", "la_general", "peninsular"],
+        "forms": [
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "desvaír",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [],
+    "irregularityMatrix": {
+      "pres": false,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": false,
+      "impNeg": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   }
 ]
 
