@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Persistencia de Progreso</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #e5e5e5;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section { 
+            background: #2d2d2d; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid #4CAF50;
+        }
+        .test-section.warning { border-left-color: #FF9800; }
+        .test-section.error { border-left-color: #f44336; }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        pre { 
+            background: #1e1e1e; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .status { 
+            padding: 10px; 
+            border-radius: 6px; 
+            margin: 10px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .error { background: rgba(244, 67, 54, 0.2); color: #f44336; }
+        .info { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        h2 { color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Persistencia Completa del Sistema de Progreso</h1>
+    
+    <div class="test-section">
+        <h2>📋 Plan de Pruebas</h2>
+        <ol>
+            <li><strong>Verificar userId persistente:</strong> localStorage debe mantener el mismo ID</li>
+            <li><strong>Simular práctica:</strong> Crear intentos y datos de mastery</li>
+            <li><strong>Verificar IndexedDB:</strong> Los datos deben guardarse por userId</li>
+            <li><strong>Simular reinicio:</strong> Limpiar memoria, mantener storage</li>
+            <li><strong>Recuperar datos:</strong> Verificar que se cargan los datos anteriores</li>
+            <li><strong>Acumular más datos:</strong> Nuevos intentos se suman a los existentes</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔑 Estado del Sistema</h2>
+        <div id="system-status">Inicializando...</div>
+        <button onclick="checkSystemStatus()">🔄 Verificar Estado</button>
+        <button onclick="clearAllData()">🗑️ Limpiar Todo</button>
+    </div>
+
+    <div class="test-section">
+        <h2>👤 Gestión de Usuario</h2>
+        <div id="user-status">Verificando usuario...</div>
+        <button onclick="showUserInfo()">👤 Info Usuario</button>
+        <button onclick="simulateRestart()">🔄 Simular Reinicio App</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📚 Simulación de Práctica</h2>
+        <div id="practice-status">Listo para practicar...</div>
+        <button onclick="simulatePractice()">🎯 Simular 3 Intentos</button>
+        <button onclick="showProgressData()">📊 Ver Datos Acumulados</button>
+    </div>
+
+    <div class="test-section">
+        <h2>💾 Verificación de Persistencia</h2>
+        <div id="persistence-status">Sin verificar...</div>
+        <button onclick="testPersistence()">🧪 Test Completo de Persistencia</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Logs y Resultados</h2>
+        <pre id="logs">Logs aparecerán aquí...\n</pre>
+        <button onclick="clearLogs()">🧹 Limpiar Logs</button>
+    </div>
+
+    <script type="module">
+        // Importar módulos necesarios
+        import { initProgressSystem, getCurrentUserId, resetProgressSystem } from './src/lib/progress/index.js'
+        import { trackAttemptStarted, trackAttemptSubmitted, initTracking } from './src/lib/progress/tracking.js'
+        import { getAttemptsByUser, getMasteryByUser, getAllFromDB } from './src/lib/progress/database.js'
+
+        let systemInitialized = false;
+        let currentTestUserId = null;
+
+        // Función para logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('logs');
+            const color = type === 'error' ? '#f44336' : type === 'success' ? '#4CAF50' : '#2196F3';
+            logElement.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Funciones globales para los botones
+        window.clearLogs = () => {
+            document.getElementById('logs').innerHTML = 'Logs limpiados...\n';
+        }
+
+        window.checkSystemStatus = async () => {
+            try {
+                log('🔍 Verificando estado del sistema...', 'info');
+                
+                // Verificar localStorage
+                const storedUserId = localStorage.getItem('progress-system-user-id');
+                log(`📱 userId en localStorage: ${storedUserId || 'NO ENCONTRADO'}`, storedUserId ? 'success' : 'error');
+                
+                // Verificar sistema de progreso
+                if (!systemInitialized) {
+                    currentTestUserId = await initProgressSystem();
+                    systemInitialized = true;
+                    log(`✅ Sistema inicializado con userId: ${currentTestUserId}`, 'success');
+                } else {
+                    log(`✅ Sistema ya inicializado con userId: ${currentTestUserId}`, 'info');
+                }
+
+                // Verificar IndexedDB
+                const stores = ['users', 'attempts', 'mastery', 'schedules'];
+                for (const store of stores) {
+                    try {
+                        const data = await getAllFromDB(store);
+                        log(`📊 ${store}: ${data.length} registros`, 'info');
+                    } catch (e) {
+                        log(`❌ Error accediendo ${store}: ${e.message}`, 'error');
+                    }
+                }
+
+                document.getElementById('system-status').innerHTML = `
+                    <div class="success">✅ Sistema operativo</div>
+                    <div class="info">🆔 Usuario actual: ${currentTestUserId}</div>
+                    <div class="info">💾 localStorage: ${storedUserId ? 'OK' : 'FALTANTE'}</div>
+                `;
+
+            } catch (error) {
+                log(`❌ Error verificando sistema: ${error.message}`, 'error');
+                document.getElementById('system-status').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        window.showUserInfo = async () => {
+            try {
+                const userId = getCurrentUserId();
+                log(`👤 getCurrentUserId() retorna: ${userId}`, userId ? 'success' : 'error');
+                
+                const storedUserId = localStorage.getItem('progress-system-user-id');
+                log(`📱 localStorage userId: ${storedUserId}`, storedUserId ? 'success' : 'error');
+                
+                const match = userId === storedUserId;
+                log(`🔄 ¿Coinciden?: ${match ? 'SÍ' : 'NO'}`, match ? 'success' : 'error');
+
+                document.getElementById('user-status').innerHTML = `
+                    <div class="${userId ? 'success' : 'error'}">🆔 Usuario actual: ${userId || 'NO ENCONTRADO'}</div>
+                    <div class="${storedUserId ? 'success' : 'error'}">💾 Usuario persistente: ${storedUserId || 'NO GUARDADO'}</div>
+                    <div class="${match ? 'success' : 'error'}">🔄 Sincronización: ${match ? 'OK' : 'DESINCRONIZADO'}</div>
+                `;
+            } catch (error) {
+                log(`❌ Error obteniendo info de usuario: ${error.message}`, 'error');
+            }
+        }
+
+        window.simulateRestart = async () => {
+            try {
+                log('🔄 SIMULANDO REINICIO DE APLICACIÓN...', 'info');
+                log('📱 Manteniendo localStorage (como en reinicio real)', 'info');
+                log('🧠 Limpiando estado de memoria...', 'info');
+                
+                // Resetear variables de memoria sin tocar localStorage/IndexedDB
+                systemInitialized = false;
+                const previousUserId = currentTestUserId;
+                currentTestUserId = null;
+                
+                log('💤 Esperando 1 segundo para simular carga...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                log('🚀 Reinicializando sistema...', 'info');
+                currentTestUserId = await initProgressSystem();
+                systemInitialized = true;
+                
+                const recovered = currentTestUserId === previousUserId;
+                log(`🎯 Usuario anterior: ${previousUserId}`, 'info');
+                log(`🎯 Usuario recuperado: ${currentTestUserId}`, 'info');
+                log(`✅ ¿Recuperación exitosa?: ${recovered ? 'SÍ' : 'NO'}`, recovered ? 'success' : 'error');
+                
+                if (recovered) {
+                    log('🎉 ¡PERSISTENCIA EXITOSA! El usuario se recuperó correctamente.', 'success');
+                } else {
+                    log('💥 ¡FALLO DE PERSISTENCIA! Se creó un usuario diferente.', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error en simulación de reinicio: ${error.message}`, 'error');
+            }
+        }
+
+        window.simulatePractice = async () => {
+            try {
+                if (!systemInitialized) {
+                    await checkSystemStatus();
+                }
+
+                log('🎯 Iniciando simulación de práctica...', 'info');
+                
+                // Simular 3 intentos diferentes
+                const attempts = [
+                    { verb: 'ser', mood: 'indicative', tense: 'pres', person: 'yo', correct: true, answer: 'soy' },
+                    { verb: 'hacer', mood: 'indicative', tense: 'pretIndef', person: 'tú', correct: false, answer: 'haciste' },
+                    { verb: 'tener', mood: 'subjunctive', tense: 'subjPres', person: 'él', correct: true, answer: 'tenga' }
+                ];
+
+                for (let i = 0; i < attempts.length; i++) {
+                    const attempt = attempts[i];
+                    log(`📝 Procesando intento ${i + 1}: ${attempt.verb} (${attempt.mood}/${attempt.tense}/${attempt.person})`, 'info');
+                    
+                    const testItem = {
+                        id: `test-${attempt.verb}-${Date.now()}-${i}`,
+                        lemma: attempt.verb,
+                        mood: attempt.mood,
+                        tense: attempt.tense,
+                        person: attempt.person,
+                        value: attempt.answer
+                    };
+
+                    const attemptId = trackAttemptStarted(testItem);
+                    await trackAttemptSubmitted(attemptId, {
+                        correct: attempt.correct,
+                        latencyMs: 1500 + (Math.random() * 1000),
+                        hintsUsed: 0,
+                        errorTags: attempt.correct ? [] : ['conjugation'],
+                        userAnswer: attempt.answer,
+                        correctAnswer: attempt.answer,
+                        item: testItem
+                    });
+                    
+                    log(`✅ Intento ${i + 1} guardado: ${attempt.correct ? 'CORRECTO' : 'INCORRECTO'}`, attempt.correct ? 'success' : 'error');
+                }
+
+                log('🎯 ¡Práctica simulada completada!', 'success');
+                document.getElementById('practice-status').innerHTML = '<div class="success">✅ 3 intentos simulados guardados</div>';
+
+            } catch (error) {
+                log(`❌ Error en simulación de práctica: ${error.message}`, 'error');
+                document.getElementById('practice-status').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        window.showProgressData = async () => {
+            try {
+                if (!currentTestUserId) {
+                    log('❌ No hay usuario inicializado', 'error');
+                    return;
+                }
+
+                log('📊 Cargando datos de progreso...', 'info');
+                
+                const attempts = await getAttemptsByUser(currentTestUserId);
+                const mastery = await getMasteryByUser(currentTestUserId);
+                
+                log(`📈 Total de intentos: ${attempts.length}`, 'info');
+                log(`📊 Registros de mastery: ${mastery.length}`, 'info');
+
+                if (attempts.length > 0) {
+                    log('📝 Últimos intentos:', 'info');
+                    attempts.slice(-3).forEach((attempt, index) => {
+                        log(`  ${index + 1}. ${attempt.mood}/${attempt.tense}/${attempt.person} - ${attempt.correct ? '✅' : '❌'} (${new Date(attempt.createdAt).toLocaleTimeString()})`, 'info');
+                    });
+                }
+
+                if (mastery.length > 0) {
+                    log('🏆 Mastery por celda:', 'info');
+                    mastery.forEach(m => {
+                        log(`  ${m.mood}/${m.tense}/${m.person}: ${m.score.toFixed(1)}%`, 'info');
+                    });
+                }
+
+            } catch (error) {
+                log(`❌ Error mostrando datos: ${error.message}`, 'error');
+            }
+        }
+
+        window.testPersistence = async () => {
+            try {
+                log('🧪 INICIANDO TEST COMPLETO DE PERSISTENCIA...', 'info');
+                log('=' + '='.repeat(50), 'info');
+                
+                // Paso 1: Limpiar todo
+                log('🧹 PASO 1: Limpiando datos existentes...', 'info');
+                await resetProgressSystem();
+                
+                // Paso 2: Primera inicialización
+                log('🚀 PASO 2: Primera inicialización...', 'info');
+                const firstUserId = await initProgressSystem();
+                log(`👤 Primer usuario creado: ${firstUserId}`, 'success');
+                
+                // Paso 3: Simular práctica
+                log('🎯 PASO 3: Simulando práctica inicial...', 'info');
+                await simulatePractice();
+                await new Promise(resolve => setTimeout(resolve, 500)); // Dar tiempo para guardar
+                
+                // Paso 4: Verificar datos iniciales
+                const initialAttempts = await getAttemptsByUser(firstUserId);
+                const initialMastery = await getMasteryByUser(firstUserId);
+                log(`📊 Datos iniciales: ${initialAttempts.length} intentos, ${initialMastery.length} mastery`, 'info');
+                
+                // Paso 5: Simular reinicio completo
+                log('🔄 PASO 5: Simulando reinicio completo de aplicación...', 'info');
+                systemInitialized = false;
+                currentTestUserId = null;
+                
+                // Paso 6: Reinicializar y verificar recuperación
+                log('📱 PASO 6: Reinicializando sistema...', 'info');
+                const recoveredUserId = await initProgressSystem();
+                systemInitialized = true;
+                currentTestUserId = recoveredUserId;
+                
+                const userRecovered = recoveredUserId === firstUserId;
+                log(`🔍 Usuario original: ${firstUserId}`, 'info');
+                log(`🔍 Usuario recuperado: ${recoveredUserId}`, 'info');
+                log(`🎯 ¿Usuario recuperado?: ${userRecovered ? 'SÍ' : 'NO'}`, userRecovered ? 'success' : 'error');
+                
+                // Paso 7: Verificar datos recuperados
+                const recoveredAttempts = await getAttemptsByUser(recoveredUserId);
+                const recoveredMastery = await getMasteryByUser(recoveredUserId);
+                
+                const dataRecovered = recoveredAttempts.length === initialAttempts.length;
+                log(`📊 Intentos originales: ${initialAttempts.length}`, 'info');
+                log(`📊 Intentos recuperados: ${recoveredAttempts.length}`, 'info');
+                log(`🎯 ¿Datos recuperados?: ${dataRecovered ? 'SÍ' : 'NO'}`, dataRecovered ? 'success' : 'error');
+                
+                // Paso 8: Añadir más datos y verificar acumulación
+                log('➕ PASO 8: Añadiendo más práctica para probar acumulación...', 'info');
+                await simulatePractice();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const finalAttempts = await getAttemptsByUser(recoveredUserId);
+                const dataAccumulated = finalAttempts.length > recoveredAttempts.length;
+                log(`📊 Intentos tras nueva práctica: ${finalAttempts.length}`, 'info');
+                log(`🎯 ¿Datos se acumulan?: ${dataAccumulated ? 'SÍ' : 'NO'}`, dataAccumulated ? 'success' : 'error');
+                
+                // Resultado final
+                log('=' + '='.repeat(50), 'info');
+                const allTestsPassed = userRecovered && dataRecovered && dataAccumulated;
+                
+                if (allTestsPassed) {
+                    log('🎉 ¡TODOS LOS TESTS PASARON! PERSISTENCIA COMPLETAMENTE FUNCIONAL', 'success');
+                    document.getElementById('persistence-status').innerHTML = '<div class="success">✅ PERSISTENCIA VERIFICADA - TODO FUNCIONA CORRECTAMENTE</div>';
+                } else {
+                    log('💥 ALGUNOS TESTS FALLARON - HAY PROBLEMAS DE PERSISTENCIA', 'error');
+                    document.getElementById('persistence-status').innerHTML = '<div class="error">❌ PROBLEMAS DE PERSISTENCIA DETECTADOS</div>';
+                }
+                
+                log(`📋 RESUMEN:`, 'info');
+                log(`  - ✅ Usuario persiste: ${userRecovered ? 'SÍ' : 'NO'}`, userRecovered ? 'success' : 'error');
+                log(`  - ✅ Datos se recuperan: ${dataRecovered ? 'SÍ' : 'NO'}`, dataRecovered ? 'success' : 'error');
+                log(`  - ✅ Datos se acumulan: ${dataAccumulated ? 'SÍ' : 'NO'}`, dataAccumulated ? 'success' : 'error');
+                
+            } catch (error) {
+                log(`💥 ERROR CRÍTICO EN TEST DE PERSISTENCIA: ${error.message}`, 'error');
+                document.getElementById('persistence-status').innerHTML = `<div class="error">💥 Error crítico: ${error.message}</div>`;
+            }
+        }
+
+        window.clearAllData = async () => {
+            if (confirm('¿Seguro que quieres limpiar TODOS los datos? Esto no se puede deshacer.')) {
+                try {
+                    log('🗑️ Limpiando todos los datos...', 'info');
+                    await resetProgressSystem();
+                    systemInitialized = false;
+                    currentTestUserId = null;
+                    log('✅ Todos los datos limpiados', 'success');
+                    document.getElementById('system-status').innerHTML = '<div class="info">🧹 Datos limpiados - Sistema reiniciado</div>';
+                    document.getElementById('user-status').innerHTML = '<div class="info">👤 Sin usuario - Listo para pruebas frescas</div>';
+                    document.getElementById('practice-status').innerHTML = '<div class="info">🎯 Sin práctica - Listo para simular</div>';
+                    document.getElementById('persistence-status').innerHTML = '<div class="info">📝 Sin verificar - Ejecuta test de persistencia</div>';
+                } catch (error) {
+                    log(`❌ Error limpiando datos: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Inicializar automáticamente
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('🚀 Página de test cargada, inicializando verificaciones...', 'info');
+            await checkSystemStatus();
+            await showUserInfo();
+        });
+
+    </script>
+</body>
+</html>
