@@ -12,6 +12,42 @@ let isInitialized = false
 let currentUserId = null
 let initializingPromise = null
 
+// Clave para persistir el userId en localStorage
+const USER_ID_STORAGE_KEY = 'progress-system-user-id'
+
+/**
+ * Obtiene el userId persistente o crea uno nuevo si no existe
+ * @returns {string} El userId persistente
+ */
+function getOrCreatePersistentUserId() {
+  try {
+    // Intentar recuperar userId existente
+    const existingUserId = typeof window !== 'undefined' 
+      ? window.localStorage.getItem(USER_ID_STORAGE_KEY)
+      : null
+    
+    if (existingUserId) {
+      console.log('✅ Usuario existente recuperado:', existingUserId)
+      return existingUserId
+    }
+    
+    // Generar nuevo userId
+    const newUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    
+    // Guardarlo para futuras sesiones
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(USER_ID_STORAGE_KEY, newUserId)
+    }
+    
+    console.log('🆕 Nuevo usuario creado:', newUserId)
+    return newUserId
+  } catch (error) {
+    console.error('Error manejando userId persistente:', error)
+    // Fallback a ID temporal si hay problemas con localStorage
+    return `user-temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }
+}
+
 /**
  * Inicializa completamente el sistema de progreso
  * @param {string} userId - ID del usuario (si no se proporciona, se genera uno)
@@ -58,9 +94,9 @@ export async function initProgressSystem(userId = null) {
       await maybeInitDB()
       console.log('✅ Base de datos inicializada')
       
-      // Si no se proporcionó ID de usuario, generar uno
+      // Si no se proporcionó ID de usuario, intentar recuperar uno existente o generar uno nuevo
       if (!userId) {
-        userId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        userId = getOrCreatePersistentUserId()
       }
       
       // Inicializar tracking
@@ -105,7 +141,26 @@ export function isProgressSystemInitialized() {
  * @returns {string|null} ID del usuario actual
  */
 export function getCurrentUserId() {
-  return currentUserId
+  // Si ya tenemos un currentUserId en memoria, usarlo
+  if (currentUserId) {
+    return currentUserId
+  }
+  
+  // Si no, intentar recuperar el userId persistente
+  try {
+    const persistentUserId = typeof window !== 'undefined'
+      ? window.localStorage.getItem(USER_ID_STORAGE_KEY)
+      : null
+    
+    if (persistentUserId) {
+      currentUserId = persistentUserId
+      return currentUserId
+    }
+  } catch (error) {
+    console.warn('Error recuperando userId persistente:', error)
+  }
+  
+  return null
 }
 
 /**
@@ -132,6 +187,11 @@ export async function resetProgressSystem() {
     
     // Reiniciar estado
     isInitialized = false
+    
+    // Limpiar userId persistente
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(USER_ID_STORAGE_KEY)
+    }
     currentUserId = null
     
     console.log('✅ Sistema de progreso reiniciado')
