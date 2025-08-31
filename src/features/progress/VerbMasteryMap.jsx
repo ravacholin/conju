@@ -8,6 +8,7 @@ export function VerbMasteryMap({ data }) {
   const [hoveredCell, setHoveredCell] = useState(null)
 
   // Configuración de modos con sus tiempos organizados lingüísticamente
+  // Mostramos TODAS las combinaciones principales, no solo las del nivel específico
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
@@ -57,14 +58,13 @@ export function VerbMasteryMap({ data }) {
       icon: '∞',
       description: 'Formas impersonales',
       tenses: [
-        { key: 'inf', label: 'Infinitivo', group: 'simple' },
         { key: 'ger', label: 'Gerundio', group: 'simple' },
         { key: 'part', label: 'Participio', group: 'simple' }
       ]
     }
   }
 
-  // Agrupar datos por modo y tiempo
+  // Agrupar datos por modo y tiempo - MOSTRAR TODAS LAS COMBINACIONES
   const masteryByMode = useMemo(() => {
     const result = {}
     
@@ -84,7 +84,7 @@ export function VerbMasteryMap({ data }) {
         })
       }
       
-      // Calculate mood average
+      // Calculate mood average - SOLO de los que tienen datos
       const tenseScores = result[mood].tenses
         .filter(t => t.hasData)
         .map(t => t.score)
@@ -95,6 +95,9 @@ export function VerbMasteryMap({ data }) {
         
       result[mood].totalAttempts = result[mood].tenses
         .reduce((sum, t) => sum + t.count, 0)
+      
+      // SIEMPRE mostrar el modo, aunque no tenga datos
+      result[mood].hasAnyData = result[mood].totalAttempts > 0
     })
     
     return result
@@ -109,7 +112,7 @@ export function VerbMasteryMap({ data }) {
   }
 
   const getMasteryLabel = (score, hasData = true) => {
-    if (!hasData) return 'Sin datos'
+    if (!hasData) return 'No practicado'
     if (score >= 85) return 'Excelente'
     if (score >= 70) return 'Bien'
     if (score >= 50) return 'Regular'
@@ -145,44 +148,35 @@ export function VerbMasteryMap({ data }) {
   }
 
   return (
-    <div className="verb-mastery-map">
-      <div className="mastery-header">
-        <h3>🗺️ Mapa de Dominio por Modo Gramatical</h3>
-        <p>Haz clic en cualquier tiempo para practicarlo específicamente</p>
-      </div>
-
-      <div className="mood-sections">
+    <>
+      <h2>🗺️ Mapa de Dominio por Modo y Tiempo</h2>
+      
+      <div className="verb-mastery-map">
         {Object.entries(masteryByMode).map(([moodKey, mood]) => {
-          const hasAnyData = mood.tenses.some(t => t.hasData)
-          
-          if (!hasAnyData) return null // Skip moods with no data
-          
           return (
-            <div key={moodKey} className={`mood-section ${getMasteryColor(mood.avgScore, hasAnyData)}`}>
+            <div key={moodKey} className="mood-section">
               <div className="mood-header">
                 <div className="mood-title">
                   <span className="mood-icon">{mood.icon}</span>
                   <div className="mood-info">
-                    <h4>{mood.label}</h4>
+                    <h3>{mood.label}</h3>
                     <p className="mood-description">{mood.description}</p>
                   </div>
                 </div>
                 <div className="mood-stats">
-                  <div className="mood-score">
-                    <span className="score-value">{mood.avgScore}%</span>
-                    <span className="score-label">promedio</span>
+                  <div className="mood-stat">
+                    <div className="stat-value">{mood.avgScore}%</div>
+                    <div className="stat-label">Promedio</div>
                   </div>
-                  <div className="mood-attempts">
-                    <span className="attempts-value">{mood.totalAttempts}</span>
-                    <span className="attempts-label">intentos</span>
+                  <div className="mood-stat">
+                    <div className="stat-value">{mood.totalAttempts}</div>
+                    <div className="stat-label">Intentos</div>
                   </div>
                 </div>
               </div>
 
               <div className="tense-grid">
                 {mood.tenses.map(tense => {
-                  if (!tense.hasData) return null
-                  
                   return (
                     <div
                       key={tense.key}
@@ -196,17 +190,9 @@ export function VerbMasteryMap({ data }) {
                       onMouseLeave={() => setHoveredCell(null)}
                       title={`${mood.label} - ${tense.label} — Clic para practicar`}
                     >
-                      <div className="tense-header">
-                        <span className="tense-name">{tense.label}</span>
-                        <span className="tense-group">{tense.group}</span>
-                      </div>
-                      <div className="tense-score">
-                        <span className="score-main">{formatPercentage(tense.score)}</span>
-                        <span className="score-label">{getMasteryLabel(tense.score, tense.hasData)}</span>
-                      </div>
-                      <div className="tense-attempts">
-                        {tense.count} intentos
-                      </div>
+                      <div className="tense-name">{tense.label}</div>
+                      <div className="tense-score">{formatPercentage(tense.score)}</div>
+                      <div className="tense-status">{getMasteryLabel(tense.score, tense.hasData)}</div>
                     </div>
                   )
                 })}
@@ -214,46 +200,45 @@ export function VerbMasteryMap({ data }) {
             </div>
           )
         })}
-      </div>
 
-      {/* Tooltip */}
-      {hoveredCell && (
-        <div className="mastery-tooltip">
-          <div className="tooltip-header">
-            <strong>{masteryByMode[hoveredCell.mood]?.label}</strong> - {hoveredCell.data.label}
+        {/* Tooltip */}
+        {hoveredCell && (
+          <div className="mastery-tooltip">
+            <div className="tooltip-header">
+              <strong>{masteryByMode[hoveredCell.mood]?.label}</strong> - {hoveredCell.data.label}
+            </div>
+            <div className="tooltip-content">
+              <div>Dominio: {formatPercentage(hoveredCell.data.score)}</div>
+              <div>Intentos: {hoveredCell.data.count}</div>
+              <div>Nivel: {getMasteryLabel(hoveredCell.data.score, hoveredCell.data.hasData)}</div>
+              <div className="tooltip-action">🎯 Clic para practicar</div>
+            </div>
           </div>
-          <div className="tooltip-content">
-            <div>Dominio: {formatPercentage(hoveredCell.data.score)}</div>
-            <div>Intentos: {hoveredCell.data.count}</div>
-            <div>Nivel: {getMasteryLabel(hoveredCell.data.score, hoveredCell.data.hasData)}</div>
-            <div className="tooltip-action">🎯 Clic para practicar</div>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Legend */}
       <div className="mastery-legend">
-        <h4>Niveles de Dominio</h4>
         <div className="legend-items">
           <div className="legend-item">
             <div className="legend-color mastery-excellent"></div>
-            <span>85-100% Excelente</span>
+            <span>Excelente (85-100%)</span>
           </div>
           <div className="legend-item">
             <div className="legend-color mastery-good"></div>
-            <span>70-84% Bien</span>
+            <span>Bien (70-84%)</span>
           </div>
           <div className="legend-item">
             <div className="legend-color mastery-fair"></div>
-            <span>50-69% Regular</span>
+            <span>Regular (50-69%)</span>
           </div>
           <div className="legend-item">
             <div className="legend-color mastery-poor"></div>
-            <span>0-49% Necesita práctica</span>
+            <span>Necesita práctica (0-49%)</span>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

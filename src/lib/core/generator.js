@@ -465,12 +465,25 @@ export function chooseNext({forms, history, currentItem}){
   
   // Exclude the exact same item from the list of candidates, if possible
   if (currentItem && eligible.length > 1) {
-    const { lemma, mood, tense, person } = currentItem;
-    const filteredEligible = eligible.filter(f =>
-      f.lemma !== lemma || f.mood !== mood || f.tense !== tense || f.person !== person
-    );
-    if (filteredEligible.length > 0) {
-      eligible = filteredEligible;
+    const { lemma, mood, tense, person } = currentItem
+
+    // CRITICAL FIX: For specific topic practice, prioritize verb variety by excluding the last-used lemma entirely.
+    if (practiceMode === 'specific') {
+      const filteredByLemma = eligible.filter(f => f.lemma !== lemma)
+      if (filteredByLemma.length > 0) {
+        console.log(`[Specific Practice] Excluded lemma ${lemma}, ${filteredByLemma.length} forms remain.`)
+        eligible = filteredByLemma
+      } else {
+        // If excluding the lemma removes all options, fall back to original list to avoid errors
+        console.warn(`[Specific Practice] Could not exclude lemma ${lemma} as it would leave no forms.`)
+      }
+    } else {
+      const filteredEligible = eligible.filter(f =>
+        f.lemma !== lemma || f.mood !== mood || f.tense !== tense || f.person !== person
+      )
+      if (filteredEligible.length > 0) {
+        eligible = filteredEligible
+      }
     }
   }
 
