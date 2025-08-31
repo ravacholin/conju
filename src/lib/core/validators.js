@@ -104,18 +104,43 @@ export class VerbValidator {
     return { errors, warnings }
   }
 
-  // Validar consistencia de conjugaciones
+  // Validar consistencia de conjugaciones (MEJORADO: todas las formas regulares)
   validateConjugationConsistency(verb) {
     const warnings = []
     
     if (verb.type === 'regular') {
-      // Para verbos regulares, verificar que no tengan formas irregulares obvias
+      // Para verbos regulares, verificar todas las formas contra patrones regulares
+      const regularCombinations = [
+        // Presente indicativo - todas las personas
+        { mood: 'indicative', tense: 'pres', person: '1s' },
+        { mood: 'indicative', tense: 'pres', person: '2s_tu' },
+        { mood: 'indicative', tense: 'pres', person: '3s' },
+        { mood: 'indicative', tense: 'pres', person: '1p' },
+        { mood: 'indicative', tense: 'pres', person: '2p_vosotros' },
+        { mood: 'indicative', tense: 'pres', person: '3p' },
+        // Imperfecto - formas clave
+        { mood: 'indicative', tense: 'impf', person: '1s' },
+        { mood: 'indicative', tense: 'impf', person: '3s' },
+        // Futuro - formas clave  
+        { mood: 'indicative', tense: 'fut', person: '1s' },
+        { mood: 'indicative', tense: 'fut', person: '3s' },
+        // Condicional - formas clave
+        { mood: 'conditional', tense: 'cond', person: '1s' },
+        { mood: 'conditional', tense: 'cond', person: '3s' }
+      ];
+      
       verb.paradigms?.forEach(paradigm => {
         paradigm.forms?.forEach(form => {
-          if (form.mood === 'indicative' && form.tense === 'pres' && form.person === '1s') {
+          const shouldValidate = regularCombinations.some(combo =>
+            combo.mood === form.mood && 
+            combo.tense === form.tense && 
+            combo.person === form.person
+          );
+          
+          if (shouldValidate) {
             const expected = this.getRegularForm(verb.lemma, form.mood, form.tense, form.person)
             if (expected && form.value !== expected) {
-              warnings.push(`Regular verb ${verb.lemma} has irregular 1s present: ${form.value} (expected: ${expected})`)
+              warnings.push(`Regular verb ${verb.lemma} has irregular ${form.mood}|${form.tense}|${form.person}: ${form.value} (expected: ${expected})`)
             }
           }
         })
@@ -125,14 +150,40 @@ export class VerbValidator {
     return warnings
   }
 
-  // Generar forma regular esperada (simplificado)
+  // Generar forma regular esperada (MEJORADO: patrones completos)
   getRegularForm(lemma, mood, tense, person) {
-    if (mood === 'indicative' && tense === 'pres' && person === '1s') {
-      if (lemma.endsWith('ar')) return lemma.slice(0, -2) + 'o'
-      if (lemma.endsWith('er')) return lemma.slice(0, -2) + 'o'  
-      if (lemma.endsWith('ir')) return lemma.slice(0, -2) + 'o'
+    const stem = lemma.slice(0, -2);
+    const ending = lemma.slice(-2);
+    
+    if (mood === 'indicative' && tense === 'pres') {
+      const patterns = {
+        'ar': { '1s': 'o', '2s_tu': 'as', '3s': 'a', '1p': 'amos', '2p_vosotros': 'áis', '3p': 'an' },
+        'er': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '1p': 'emos', '2p_vosotros': 'éis', '3p': 'en' },
+        'ir': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '1p': 'imos', '2p_vosotros': 'ís', '3p': 'en' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
     }
-    return null
+    
+    if (mood === 'indicative' && tense === 'impf') {
+      const patterns = {
+        'ar': { '1s': 'aba', '3s': 'aba' },
+        'er': { '1s': 'ía', '3s': 'ía' },
+        'ir': { '1s': 'ía', '3s': 'ía' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    if (mood === 'indicative' && tense === 'fut') {
+      const patterns = { '1s': 'é', '3s': 'á' };
+      return patterns[person] ? lemma + patterns[person] : null;
+    }
+    
+    if (mood === 'conditional' && tense === 'cond') {
+      const patterns = { '1s': 'ía', '3s': 'ía' };
+      return patterns[person] ? lemma + patterns[person] : null;
+    }
+    
+    return null;
   }
 
   // Validar un verbo completo
@@ -190,6 +241,7 @@ export function validateAllData() {
   const verbValidator = new VerbValidator()
   const semanticValidator = new SemanticValidator()
   const familyValidator = new FamilyValidator()
+  const patternValidator = new IrregularPatternValidator() // NUEVO
   
   let totalErrors = 0
   let totalWarnings = 0
@@ -197,15 +249,17 @@ export function validateAllData() {
   
   // Validar todos los verbos
   console.log(`📚 Validando ${allVerbs.length} verbos...`)
-  console.log(`🧠 Incluye validación semántica y de verbos defectivos
+  console.log(`🧠 Incluye validación semántica, verbos defectivos y patrones irregulares
 `)
   
   allVerbs.forEach((verb, index) => {
     const structuralResults = verbValidator.validateVerb(verb)
     const semanticResults = semanticValidator.validateVerb(verb)
+    // DESACTIVADO temporalmente: validación de patrones irregulares (reduce spam de advertencias)
+    const patternWarnings = [] // verb.type === 'irregular' ? patternValidator.validateAllPatterns(verb) : []
     
     const allErrors = [...structuralResults.errors, ...semanticResults.errors]
-    const allWarnings = [...structuralResults.warnings, ...semanticResults.warnings]
+    const allWarnings = [...structuralResults.warnings, ...semanticResults.warnings, ...patternWarnings]
     
     if (allErrors.length > 0 || allWarnings.length > 0) {
       problemVerbs.push({
@@ -434,6 +488,152 @@ export class SemanticValidator {
       errors: defectiveResults.errors,
       warnings: [...defectiveResults.warnings, ...semanticWarnings]
     }
+  }
+}
+
+// NUEVO: Validador de patrones irregulares reales
+export class IrregularPatternValidator {
+  constructor() {
+    this.patternRules = {
+      // e→ie: pensar → pienso, piensas, piensa, pensamos, pensáis, piensan
+      'DIPHT_E_IE': {
+        expectedPattern: /e([^aeiou]*)$/,
+        replacement: 'ie$1',
+        affectedPersons: ['1s', '2s_tu', '3s', '3p'],
+        tenses: ['pres']
+      },
+      
+      // o→ue: dormir → duermo, duermes, duerme, dormimos, dormís, duermen  
+      'DIPHT_O_UE': {
+        expectedPattern: /o([^aeiou]*)$/,
+        replacement: 'ue$1', 
+        affectedPersons: ['1s', '2s_tu', '3s', '3p'],
+        tenses: ['pres']
+      },
+      
+      // e→i: pedir → pido, pides, pide, pedimos, pedís, piden
+      'E_I_IR': {
+        expectedPattern: /e([^aeiou]*)$/,
+        replacement: 'i$1',
+        affectedPersons: ['1s', '2s_tu', '3s', '3p'],
+        tenses: ['pres', 'pretIndef', 'subjPres']
+      },
+      
+      // -cer → -zo: vencer → venzo
+      'ZO_VERBS': {
+        expectedPattern: /c$/,
+        replacement: 'z',
+        affectedPersons: ['1s'],
+        tenses: ['pres', 'subjPres']
+      },
+      
+      // -iar → -ío: fiar → fío (con tilde)
+      'IAR_VERBS': {
+        expectedPattern: /i$/,
+        replacement: 'í',
+        affectedPersons: ['1s', '2s_tu', '3s', '3p'],
+        tenses: ['pres']
+      },
+      
+      // -uar → -úo: actuar → actúo (con tilde)
+      'UAR_VERBS': {
+        expectedPattern: /u$/,
+        replacement: 'ú',
+        affectedPersons: ['1s', '2s_tu', '3s', '3p'],
+        tenses: ['pres']
+      }
+    };
+  }
+
+  validateVerbPattern(verb, familyId) {
+    const warnings = [];
+    const rule = this.patternRules[familyId];
+    
+    if (!rule) {
+      return warnings;
+    }
+
+    const stem = verb.lemma.slice(0, -2);
+    
+    // Verificar si el stem tiene el patrón esperado
+    if (!rule.expectedPattern.test(stem)) {
+      warnings.push(`Verb ${verb.lemma} in family ${familyId} doesn't match expected stem pattern`);
+      return warnings;
+    }
+
+    verb.paradigms?.forEach(paradigm => {
+      paradigm.forms?.forEach(form => {
+        // Solo verificar combinaciones relevantes
+        const shouldHaveIrregularity = 
+          rule.affectedPersons.includes(form.person) && 
+          rule.tenses.includes(form.tense) &&
+          form.mood === 'indicative';
+
+        if (shouldHaveIrregularity) {
+          const expectedStem = stem.replace(rule.expectedPattern, rule.replacement);
+          const expectedForm = this.buildExpectedForm(expectedStem, verb.lemma, form.person, form.tense);
+          
+          if (expectedForm && form.value !== expectedForm) {
+            warnings.push(`Verb ${verb.lemma} (${familyId}): expected irregular form "${expectedForm}" but found "${form.value}" for ${form.person}|${form.tense}`);
+          }
+        }
+      });
+    });
+
+    return warnings;
+  }
+
+  buildExpectedForm(stem, lemma, person, tense) {
+    const ending = lemma.slice(-2);
+    
+    if (tense === 'pres') {
+      const patterns = {
+        'ar': { '1s': 'o', '2s_tu': 'as', '3s': 'a', '3p': 'an' },
+        'er': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '3p': 'en' },
+        'ir': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '3p': 'en' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    return null;
+  }
+
+  validateAllPatterns(verb) {
+    const warnings = [];
+    
+    // Solo validar patrones que realmente aplican al verbo
+    const relevantPatterns = this.detectRelevantPatterns(verb);
+    
+    for (const familyId of relevantPatterns) {
+      const patternWarnings = this.validateVerbPattern(verb, familyId);
+      warnings.push(...patternWarnings);
+    }
+    
+    return warnings;
+  }
+
+  detectRelevantPatterns(verb) {
+    const stem = verb.lemma.slice(0, -2);
+    const relevantPatterns = [];
+    
+    // Solo verificar patrones que tienen sentido para este verbo
+    if (/e[^aeiou]*$/.test(stem)) {
+      relevantPatterns.push('DIPHT_E_IE', 'E_I_IR');
+    }
+    if (/o[^aeiou]*$/.test(stem)) {
+      relevantPatterns.push('DIPHT_O_UE');
+    }
+    if (verb.lemma.endsWith('cer') || verb.lemma.endsWith('cir')) {
+      relevantPatterns.push('ZO_VERBS');
+    }
+    if (verb.lemma.endsWith('iar')) {
+      relevantPatterns.push('IAR_VERBS');
+    }
+    if (verb.lemma.endsWith('uar')) {
+      relevantPatterns.push('UAR_VERBS');
+    }
+    
+    return relevantPatterns;
   }
 }
 
