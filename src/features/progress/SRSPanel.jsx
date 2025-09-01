@@ -183,123 +183,167 @@ export default function SRSPanel() {
     <div className="srs-panel">
       <div className="srs-header">
         <div className="srs-title">
-          <h3>🔄 Sistema de Repaso Espaciado (SRS)</h3>
-          <p>Repasa en el momento óptimo para maximizar tu retención</p>
+          <h3>⚡ Repaso Inteligente</h3>
+          <p className="srs-explanation">
+            El sistema te muestra exactamente qué repasar y cuándo, 
+            basado en tu curva de olvido personal para maximizar la retención.
+          </p>
+          <div className="srs-how-it-works">
+            <span className="how-icon">🧠</span>
+            <span className="how-text">Cuanto mejor domines algo, menos frecuentemente lo verás</span>
+          </div>
         </div>
         <button 
           className="toggle-details-btn"
           onClick={() => setShowDetails(!showDetails)}
         >
-          {showDetails ? '📋 Vista simple' : '📊 Ver detalles'}
+          {showDetails ? '📋 Resumen' : '📊 Detalles'}
         </button>
       </div>
 
       <div className="srs-overview">
-        <div className="srs-stat-card urgent">
-          <div className="stat-icon">🚨</div>
-          <div className="stat-content">
-            <div className="stat-number">{reviewStats.overdue}</div>
-            <div className="stat-label">Vencidos</div>
+        {reviewStats.overdue > 0 && (
+          <div className="srs-stat-card urgent">
+            <div className="stat-indicator urgent-indicator"></div>
+            <div className="stat-content">
+              <div className="stat-number">{reviewStats.overdue}</div>
+              <div className="stat-label">Se te están olvidando</div>
+              <div className="stat-sublabel">¡Repásalos antes de perderlos!</div>
+            </div>
           </div>
-        </div>
+        )}
         
         <div className="srs-stat-card ready">
-          <div className="stat-icon">⏰</div>
+          <div className="stat-indicator ready-indicator"></div>
           <div className="stat-content">
             <div className="stat-number">{stats.dueNow}</div>
-            <div className="stat-label">Listos ahora</div>
+            <div className="stat-label">{stats.dueNow === 1 ? 'Listo para repasar' : 'Listos para repasar'}</div>
+            <div className="stat-sublabel">Momento perfecto para reforzar</div>
           </div>
         </div>
         
-        <div className="srs-stat-card scheduled">
-          <div className="stat-icon">📅</div>
-          <div className="stat-content">
-            <div className="stat-number">{stats.dueToday}</div>
-            <div className="stat-label">Para hoy</div>
+        {stats.dueToday > stats.dueNow && (
+          <div className="srs-stat-card scheduled">
+            <div className="stat-indicator scheduled-indicator"></div>
+            <div className="stat-content">
+              <div className="stat-number">{stats.dueToday - stats.dueNow}</div>
+              <div className="stat-label">Más tarde hoy</div>
+              <div className="stat-sublabel">Programados para después</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="srs-actions">
-        <button 
-          className="btn btn-primary srs-start-btn"
-          onClick={() => startReviewSession('urgent')}
-          disabled={stats.dueNow === 0}
-        >
-          <span className="btn-icon">🎯</span>
-          {reviewStats.overdue > 0 ? 'Recuperar vencidos' : 'Empezar repaso'}
-          {stats.dueNow > 0 && <span className="btn-badge">{stats.dueNow}</span>}
-        </button>
-        
-        {stats.dueToday > stats.dueNow && (
+        {stats.dueNow > 0 ? (
           <button 
-            className="btn btn-secondary"
-            onClick={() => startReviewSession('today')}
+            className="btn btn-primary srs-main-btn"
+            onClick={() => startReviewSession('urgent')}
           >
-            <span className="btn-icon">📚</span>
-            Sesión completa del día
-            <span className="btn-badge">{stats.dueToday}</span>
+            <div className="btn-content">
+              <span className="btn-icon">⚡</span>
+              <div className="btn-text">
+                <div className="btn-title">
+                  {reviewStats.overdue > 0 ? 'Recuperar lo olvidado' : 'Empezar repaso inteligente'}
+                </div>
+                <div className="btn-subtitle">
+                  {stats.dueNow} {stats.dueNow === 1 ? 'elemento' : 'elementos'} • ~{Math.ceil(stats.dueNow * 1.5)} min
+                </div>
+              </div>
+              <span className="btn-arrow">→</span>
+            </div>
           </button>
+        ) : (
+          <div className="srs-no-items">
+            <div className="no-items-icon">✨</div>
+            <div className="no-items-title">Todo bajo control</div>
+            <div className="no-items-subtitle">Vuelve más tarde o practica algo nuevo</div>
+          </div>
         )}
         
-        <button 
-          className="btn btn-outline"
-          onClick={() => startReviewSession('light')}
-        >
-          <span className="btn-icon">☕</span>
-          Repaso ligero (5 min)
-        </button>
+        <div className="srs-quick-options">
+          {stats.dueToday > stats.dueNow && (
+            <button 
+              className="btn btn-outline btn-compact"
+              onClick={() => startReviewSession('today')}
+            >
+              Sesión completa ({stats.dueToday})
+            </button>
+          )}
+          
+          <button 
+            className="btn btn-outline btn-compact"
+            onClick={() => startReviewSession('light')}
+          >
+            Repaso rápido (5 min)
+          </button>
+        </div>
       </div>
 
       {showDetails && dueItems.length > 0 && (
         <div className="srs-details">
           <div className="srs-details-header">
-            <h4>📋 Elementos pendientes de repaso</h4>
+            <h4>📊 Cola de repaso detallada</h4>
             <div className="srs-legend">
-              <span className="legend-item urgent-overdue">Vencido</span>
-              <span className="legend-item urgent-high">Muy urgente</span>
-              <span className="legend-item urgent-medium">Urgente</span>
-              <span className="legend-item urgent-low">Programado</span>
+              <div className="legend-explanation">
+                Los colores indican qué tan urgente es repasar cada elemento:
+              </div>
+              <div className="legend-items">
+                <span className="legend-item urgent-overdue">Se está olvidando</span>
+                <span className="legend-item urgent-high">Muy urgente</span>
+                <span className="legend-item urgent-medium">Urgente</span>
+                <span className="legend-item urgent-low">Programado</span>
+              </div>
             </div>
           </div>
           
           <div className="srs-items-list">
-            {dueItems.slice(0, 10).map((item, index) => {
+            {dueItems.slice(0, 8).map((item, index) => {
               const timeLeft = new Date(item.nextDue) - new Date()
               const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60))
+              const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24))
+              
+              const getTimeDisplay = () => {
+                if (timeLeft < 0) {
+                  const hoursOverdue = Math.abs(hoursLeft)
+                  if (hoursOverdue < 24) return `${hoursOverdue}h atrasado`
+                  return `${Math.abs(daysLeft)}d atrasado`
+                }
+                if (hoursLeft < 1) return 'Ahora'
+                if (hoursLeft < 24) return `en ${hoursLeft}h`
+                return `en ${daysLeft}d`
+              }
               
               return (
                 <div key={index} className={`srs-item ${getUrgencyColor(item.urgency)}`}>
-                  <div className="srs-item-content">
+                  <div className="srs-item-main">
                     <div className="srs-item-name">{item.formattedName}</div>
-                    <div className="srs-item-meta">
-                      <span className="srs-person">
-                        {item.person === '1s' ? '1ª sing' : 
-                         item.person === '2s_tu' ? '2ª sing (tú)' :
-                         item.person === '3s' ? '3ª sing' : item.person}
-                      </span>
-                      <span className={`mastery-badge ${getMasteryColor(item.masteryScore)}`}>
-                        {Math.round(item.masteryScore)}%
-                      </span>
+                    <div className="srs-item-person">
+                      {item.person === '1s' ? 'Primera persona singular' : 
+                       item.person === '2s_tu' ? 'Segunda persona singular (tú)' :
+                       item.person === '3s' ? 'Tercera persona singular' : item.person}
                     </div>
                   </div>
-                  <div className="srs-item-timing">
-                    <div className={`urgency-badge ${getUrgencyColor(item.urgency)}`}>
-                      {getUrgencyLabel(item.urgency)}
+                  <div className="srs-item-stats">
+                    <div className="mastery-display">
+                      <div className="mastery-label">Dominio</div>
+                      <div className={`mastery-value ${getMasteryColor(item.masteryScore)}`}>
+                        {Math.round(item.masteryScore)}%
+                      </div>
                     </div>
-                    <div className="time-info">
-                      {timeLeft < 0 ? 
-                        `${Math.abs(hoursLeft)}h vencido` : 
-                        hoursLeft < 1 ? 'Ahora' : `en ${hoursLeft}h`}
+                    <div className="timing-display">
+                      <div className="timing-label">Momento</div>
+                      <div className="timing-value">{getTimeDisplay()}</div>
                     </div>
                   </div>
                 </div>
               )
             })}
             
-            {dueItems.length > 10 && (
+            {dueItems.length > 8 && (
               <div className="srs-more-items">
-                <span>... y {dueItems.length - 10} elementos más</span>
+                <span className="more-icon">⋯</span>
+                <span>Y {dueItems.length - 8} elementos más en la cola</span>
               </div>
             )}
           </div>
@@ -308,10 +352,16 @@ export default function SRSPanel() {
 
       {stats.dueNow === 0 && stats.dueToday === 0 && (
         <div className="srs-empty">
-          <div className="empty-icon">🎉</div>
-          <h4>¡Todo al día!</h4>
-          <p>No hay elementos pendientes de repaso por el momento.</p>
-          <p>Sigue practicando para crear más contenido que repasar.</p>
+          <div className="empty-icon">🧠</div>
+          <div className="empty-content">
+            <h4>Sistema en reposo</h4>
+            <p className="empty-main">Tu memoria está consolidada por ahora</p>
+            <p className="empty-sub">Continúa practicando para que el sistema aprenda tu ritmo de olvido</p>
+            <div className="empty-tip">
+              <span className="tip-icon">💡</span>
+              <span>Tip: Cuanto más practiques, más inteligente se vuelve el sistema</span>
+            </div>
+          </div>
         </div>
       )}
     </div>
