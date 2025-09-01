@@ -1,384 +1,403 @@
-// Verbos comunes con todas sus formas conjugadas
+// Verbos comunes con formas estructuradas y metadatos de persona
+// Limpiado de duplicados y organizado por personas gramaticales
+
 export const commonVerbs = [
   // VERBOS REGULARES - AR (alta frecuencia)
   {
     lemma: 'trabajar',
-    forms: [
+    type: 'regular',
+    forms: {
       // Indicativo presente
-      'trabajo', 'trabajas', 'trabaja', 'trabajamos', 'trabajáis', 'trabajan',
-      'trabajo', 'trabajás', 'trabaja', 'trabajamos', 'trabajan', 'trabajan',
+      'pres': {
+        '1s': 'trabajo',
+        '2s_tu': 'trabajas', 
+        '2s_vos': 'trabajás',
+        '3s': 'trabaja',
+        '1p': 'trabajamos',
+        '2p_vosotros': 'trabajáis',
+        '3p': 'trabajan'
+      },
       // Indicativo pretérito indefinido
-      'trabajé', 'trabajaste', 'trabajó', 'trabajamos', 'trabajasteis', 'trabajaron',
-      'trabajé', 'trabajaste', 'trabajó', 'trabajamos', 'trabajaron', 'trabajaron',
+      'pretIndef': {
+        '1s': 'trabajé',
+        '2s_tu': 'trabajaste',
+        '2s_vos': 'trabajaste', 
+        '3s': 'trabajó',
+        '1p': 'trabajamos',
+        '2p_vosotros': 'trabajasteis',
+        '3p': 'trabajaron'
+      },
       // Indicativo imperfecto
-      'trabajaba', 'trabajabas', 'trabajaba', 'trabajábamos', 'trabajabais', 'trabajaban',
-      'trabajaba', 'trabajabas', 'trabajaba', 'trabajábamos', 'trabajaban', 'trabajaban',
-      // Indicativo pretérito perfecto
-      'he trabajado', 'has trabajado', 'ha trabajado', 'hemos trabajado', 'habéis trabajado', 'han trabajado',
-      'he trabajado', 'has trabajado', 'ha trabajado', 'hemos trabajado', 'han trabajado', 'han trabajado',
-      // Indicativo pluscuamperfecto
-      'había trabajado', 'habías trabajado', 'había trabajado', 'habíamos trabajado', 'habíais trabajado', 'habían trabajado',
-      'había trabajado', 'habías trabajado', 'había trabajado', 'habíamos trabajado', 'habían trabajado', 'habían trabajado',
-      // Indicativo futuro
-      'trabajaré', 'trabajarás', 'trabajará', 'trabajaremos', 'trabajaréis', 'trabajarán',
-      'trabajaré', 'trabajarás', 'trabajará', 'trabajaremos', 'trabajarán', 'trabajarán',
-      // Indicativo futuro perfecto
-      'habré trabajado', 'habrás trabajado', 'habrá trabajado', 'habremos trabajado', 'habréis trabajado', 'habrán trabajado',
-      'habré trabajado', 'habrás trabajado', 'habrá trabajado', 'habremos trabajado', 'habrán trabajado', 'habrán trabajado',
+      'impf': {
+        '1s': 'trabajaba',
+        '2s_tu': 'trabajabas',
+        '2s_vos': 'trabajabas',
+        '3s': 'trabajaba', 
+        '1p': 'trabajábamos',
+        '2p_vosotros': 'trabajabais',
+        '3p': 'trabajaban'
+      },
       // Subjuntivo presente
-      'trabaje', 'trabajes', 'trabaje', 'trabajemos', 'trabajéis', 'trabajen',
-      'trabaje', 'trabajes', 'trabaje', 'trabajemos', 'trabajen', 'trabajen',
-      // Subjuntivo pretérito perfecto
-      'haya trabajado', 'hayas trabajado', 'haya trabajado', 'hayamos trabajado', 'hayáis trabajado', 'hayan trabajado',
-      'haya trabajado', 'hayas trabajado', 'haya trabajado', 'hayamos trabajado', 'hayan trabajado', 'hayan trabajado',
+      'subjPres': {
+        '1s': 'trabaje',
+        '2s_tu': 'trabajes',
+        '2s_vos': 'trabajes',
+        '3s': 'trabaje',
+        '1p': 'trabajemos', 
+        '2p_vosotros': 'trabajéis',
+        '3p': 'trabajen'
+      },
       // Subjuntivo imperfecto
-      'trabajara', 'trabajaras', 'trabajara', 'trabajáramos', 'trabajarais', 'trabajaran',
-      'trabajara', 'trabajaras', 'trabajara', 'trabajáramos', 'trabajaran', 'trabajaran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera trabajado', 'hubieras trabajado', 'hubiera trabajado', 'hubiéramos trabajado', 'hubierais trabajado', 'hubieran trabajado',
-      'hubiera trabajado', 'hubieras trabajado', 'hubiera trabajado', 'hubiéramos trabajado', 'hubieran trabajado', 'hubieran trabajado',
+      'subjImpf': {
+        '1s': 'trabajara',
+        '2s_tu': 'trabajaras', 
+        '2s_vos': 'trabajaras',
+        '3s': 'trabajara',
+        '1p': 'trabajáramos',
+        '2p_vosotros': 'trabajarais',
+        '3p': 'trabajaran'
+      },
       // Imperativo afirmativo
-      'trabaja', 'trabaje', 'trabajemos', 'trabajad', 'trabajen',
-      'trabajá', 'trabaje', 'trabajemos', 'trabajen', 'trabajen',
-      // Imperativo negativo
-      'no trabajes', 'no trabaje', 'no trabajemos', 'no trabajéis', 'no trabajen',
-      'no trabajes', 'no trabaje', 'no trabajemos', 'no trabajen', 'no trabajen',
+      'impAff': {
+        '2s_tu': 'trabaja',
+        '2s_vos': 'trabajá',
+        '3s': 'trabaje',
+        '1p': 'trabajemos',
+        '2p_vosotros': 'trabajad',
+        '3p': 'trabajen'
+      },
       // Condicional
-      'trabajaría', 'trabajarías', 'trabajaría', 'trabajaríamos', 'trabajaríais', 'trabajarían',
-      'trabajaría', 'trabajarías', 'trabajaría', 'trabajaríamos', 'trabajarían', 'trabajarían',
-      // Condicional perfecto
-      'habría trabajado', 'habrías trabajado', 'habría trabajado', 'habríamos trabajado', 'habríais trabajado', 'habrían trabajado',
-      'habría trabajado', 'habrías trabajado', 'habría trabajado', 'habríamos trabajado', 'habrían trabajado', 'habrían trabajado',
-      // Participio
-      'trabajado',
-      // Gerundio
-      'trabajando'
-    ]
+      'cond': {
+        '1s': 'trabajaría',
+        '2s_tu': 'trabajarías',
+        '2s_vos': 'trabajarías',
+        '3s': 'trabajaría',
+        '1p': 'trabajaríamos',
+        '2p_vosotros': 'trabajaríais', 
+        '3p': 'trabajarían'
+      },
+      // Formas no finitas
+      'inf': 'trabajar',
+      'ger': 'trabajando',
+      'part': 'trabajado'
+    }
   },
+
+  // VERBOS REGULARES - ER
   {
-    lemma: 'estudiar',
-    forms: [
-      // Indicativo presente
-      'estudio', 'estudias', 'estudia', 'estudiamos', 'estudiáis', 'estudian',
-      'estudio', 'estudiás', 'estudia', 'estudiamos', 'estudian', 'estudian',
-      // Indicativo pretérito indefinido
-      'estudié', 'estudiaste', 'estudió', 'estudiamos', 'estudiasteis', 'estudiaron',
-      'estudié', 'estudiaste', 'estudió', 'estudiamos', 'estudiaron', 'estudiaron',
-      // Indicativo imperfecto
-      'estudiaba', 'estudiabas', 'estudiaba', 'estudiábamos', 'estudiabais', 'estudiaban',
-      'estudiaba', 'estudiabas', 'estudiaba', 'estudiábamos', 'estudiaban', 'estudiaban',
-      // Indicativo pretérito perfecto
-      'he estudiado', 'has estudiado', 'ha estudiado', 'hemos estudiado', 'habéis estudiado', 'han estudiado',
-      'he estudiado', 'has estudiado', 'ha estudiado', 'hemos estudiado', 'han estudiado', 'han estudiado',
-      // Indicativo pluscuamperfecto
-      'había estudiado', 'habías estudiado', 'había estudiado', 'habíamos estudiado', 'habíais estudiado', 'habían estudiado',
-      'había estudiado', 'habías estudiado', 'había estudiado', 'habíamos estudiado', 'habían estudiado', 'habían estudiado',
-      // Indicativo futuro
-      'estudiaré', 'estudiarás', 'estudiará', 'estudiaremos', 'estudiaréis', 'estudiarán',
-      'estudiaré', 'estudiarás', 'estudiará', 'estudiaremos', 'estudiarán', 'estudiarán',
-      // Indicativo futuro perfecto
-      'habré estudiado', 'habrás estudiado', 'habrá estudiado', 'habremos estudiado', 'habréis estudiado', 'habrán estudiado',
-      'habré estudiado', 'habrás estudiado', 'habrá estudiado', 'habremos estudiado', 'habrán estudiado', 'habrán estudiado',
-      // Subjuntivo presente
-      'estudie', 'estudies', 'estudie', 'estudiemos', 'estudiéis', 'estudien',
-      'estudie', 'estudies', 'estudie', 'estudiemos', 'estudien', 'estudien',
-      // Subjuntivo pretérito perfecto
-      'haya estudiado', 'hayas estudiado', 'haya estudiado', 'hayamos estudiado', 'hayáis estudiado', 'hayan estudiado',
-      'haya estudiado', 'hayas estudiado', 'haya estudiado', 'hayamos estudiado', 'hayan estudiado', 'hayan estudiado',
-      // Subjuntivo imperfecto
-      'estudiara', 'estudiaras', 'estudiara', 'estudiáramos', 'estudiarais', 'estudiaran',
-      'estudiara', 'estudiaras', 'estudiara', 'estudiáramos', 'estudiaran', 'estudiaran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera estudiado', 'hubieras estudiado', 'hubiera estudiado', 'hubiéramos estudiado', 'hubierais estudiado', 'hubieran estudiado',
-      'hubiera estudiado', 'hubieras estudiado', 'hubiera estudiado', 'hubiéramos estudiado', 'hubieran estudiado', 'hubieran estudiado',
-      // Imperativo afirmativo
-      'estudia', 'estudie', 'estudiemos', 'estudiad', 'estudien',
-      'estudiá', 'estudie', 'estudiemos', 'estudien', 'estudien',
-      // Imperativo negativo
-      'no estudies', 'no estudie', 'no estudiemos', 'no estudiéis', 'no estudien',
-      'no estudies', 'no estudie', 'no estudiemos', 'no estudien', 'no estudien',
-      // Condicional
-      'estudiaría', 'estudiarías', 'estudiaría', 'estudiaríamos', 'estudiaríais', 'estudiarían',
-      'estudiaría', 'estudiarías', 'estudiaría', 'estudiaríamos', 'estudiarían', 'estudiarían',
-      // Condicional perfecto
-      'habría estudiado', 'habrías estudiado', 'habría estudiado', 'habríamos estudiado', 'habríais estudiado', 'habrían estudiado',
-      'habría estudiado', 'habrías estudiado', 'habría estudiado', 'habríamos estudiado', 'habrían estudiado', 'habrían estudiado',
-      // Participio
-      'estudiado',
-      // Gerundio
-      'estudiando'
-    ]
+    lemma: 'comer',
+    type: 'regular',
+    forms: {
+      'pres': {
+        '1s': 'como',
+        '2s_tu': 'comes',
+        '2s_vos': 'comés', 
+        '3s': 'come',
+        '1p': 'comemos',
+        '2p_vosotros': 'coméis',
+        '3p': 'comen'
+      },
+      'pretIndef': {
+        '1s': 'comí',
+        '2s_tu': 'comiste',
+        '2s_vos': 'comiste',
+        '3s': 'comió',
+        '1p': 'comimos', 
+        '2p_vosotros': 'comisteis',
+        '3p': 'comieron'
+      },
+      'impf': {
+        '1s': 'comía',
+        '2s_tu': 'comías',
+        '2s_vos': 'comías',
+        '3s': 'comía',
+        '1p': 'comíamos',
+        '2p_vosotros': 'comíais',
+        '3p': 'comían'
+      },
+      'subjPres': {
+        '1s': 'coma',
+        '2s_tu': 'comas',
+        '2s_vos': 'comas',
+        '3s': 'coma',
+        '1p': 'comamos',
+        '2p_vosotros': 'comáis',
+        '3p': 'coman'
+      },
+      'subjImpf': {
+        '1s': 'comiera',
+        '2s_tu': 'comieras',
+        '2s_vos': 'comieras', 
+        '3s': 'comiera',
+        '1p': 'comiéramos',
+        '2p_vosotros': 'comierais',
+        '3p': 'comieran'
+      },
+      'impAff': {
+        '2s_tu': 'come',
+        '2s_vos': 'comé',
+        '3s': 'coma',
+        '1p': 'comamos',
+        '2p_vosotros': 'comed',
+        '3p': 'coman'
+      },
+      'cond': {
+        '1s': 'comería',
+        '2s_tu': 'comerías',
+        '2s_vos': 'comerías',
+        '3s': 'comería', 
+        '1p': 'comeríamos',
+        '2p_vosotros': 'comeríais',
+        '3p': 'comerían'
+      },
+      'inf': 'comer',
+      'ger': 'comiendo', 
+      'part': 'comido'
+    }
   },
+
+  // VERBOS REGULARES - IR
   {
-    lemma: 'caminar',
-    forms: [
-      // Indicativo presente
-      'camino', 'caminas', 'camina', 'caminamos', 'camináis', 'caminan',
-      'camino', 'caminás', 'camina', 'caminamos', 'caminan', 'caminan',
-      // Indicativo pretérito indefinido
-      'caminé', 'caminaste', 'caminó', 'caminamos', 'caminasteis', 'caminaron',
-      'caminé', 'caminaste', 'caminó', 'caminamos', 'caminaron', 'caminaron',
-      // Indicativo imperfecto
-      'caminaba', 'caminabas', 'caminaba', 'caminábamos', 'caminabais', 'caminaban',
-      'caminaba', 'caminabas', 'caminaba', 'caminábamos', 'caminaban', 'caminaban',
-      // Indicativo pretérito perfecto
-      'he caminado', 'has caminado', 'ha caminado', 'hemos caminado', 'habéis caminado', 'han caminado',
-      'he caminado', 'has caminado', 'ha caminado', 'hemos caminado', 'han caminado', 'han caminado',
-      // Indicativo pluscuamperfecto
-      'había caminado', 'habías caminado', 'había caminado', 'habíamos caminado', 'habíais caminado', 'habían caminado',
-      'había caminado', 'habías caminado', 'había caminado', 'habíamos caminado', 'habían caminado', 'habían caminado',
-      // Indicativo futuro
-      'caminaré', 'caminarás', 'caminará', 'caminaremos', 'caminaréis', 'caminarán',
-      'caminaré', 'caminarás', 'caminará', 'caminaremos', 'caminarán', 'caminarán',
-      // Indicativo futuro perfecto
-      'habré caminado', 'habrás caminado', 'habrá caminado', 'habremos caminado', 'habréis caminado', 'habrán caminado',
-      'habré caminado', 'habrás caminado', 'habrá caminado', 'habremos caminado', 'habrán caminado', 'habrán caminado',
-      // Subjuntivo presente
-      'camine', 'camines', 'camine', 'caminemos', 'caminéis', 'caminen',
-      'camine', 'camines', 'camine', 'caminemos', 'caminen', 'caminen',
-      // Subjuntivo pretérito perfecto
-      'haya caminado', 'hayas caminado', 'haya caminado', 'hayamos caminado', 'hayáis caminado', 'hayan caminado',
-      'haya caminado', 'hayas caminado', 'haya caminado', 'hayamos caminado', 'hayan caminado', 'hayan caminado',
-      // Subjuntivo imperfecto
-      'caminara', 'caminaras', 'caminara', 'camináramos', 'caminarais', 'caminaran',
-      'caminara', 'caminaras', 'caminara', 'camináramos', 'caminaran', 'caminaran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera caminado', 'hubieras caminado', 'hubiera caminado', 'hubiéramos caminado', 'hubierais caminado', 'hubieran caminado',
-      'hubiera caminado', 'hubieras caminado', 'hubiera caminado', 'hubiéramos caminado', 'hubieran caminado', 'hubieran caminado',
-      // Imperativo afirmativo
-      'camina', 'camine', 'caminemos', 'caminad', 'caminen',
-      'caminá', 'camine', 'caminemos', 'caminen', 'caminen',
-      // Imperativo negativo
-      'no camines', 'no camine', 'no caminemos', 'no caminéis', 'no caminen',
-      'no camines', 'no camine', 'no caminemos', 'no caminen', 'no caminen',
-      // Condicional
-      'caminaría', 'caminarías', 'caminaría', 'caminaríamos', 'caminaríais', 'caminarían',
-      'caminaría', 'caminarías', 'caminaría', 'caminaríamos', 'caminarían', 'caminarían',
-      // Condicional perfecto
-      'habría caminado', 'habrías caminado', 'habría caminado', 'habríamos caminado', 'habríais caminado', 'habrían caminado',
-      'habría caminado', 'habrías caminado', 'habría caminado', 'habríamos caminado', 'habrían caminado', 'habrían caminado',
-      // Participio
-      'caminado',
-      // Gerundio
-      'caminando'
-    ]
+    lemma: 'vivir', 
+    type: 'regular',
+    forms: {
+      'pres': {
+        '1s': 'vivo',
+        '2s_tu': 'vives',
+        '2s_vos': 'vivís',
+        '3s': 'vive',
+        '1p': 'vivimos',
+        '2p_vosotros': 'vivís',
+        '3p': 'viven'
+      },
+      'pretIndef': {
+        '1s': 'viví',
+        '2s_tu': 'viviste',
+        '2s_vos': 'viviste',
+        '3s': 'vivió', 
+        '1p': 'vivimos',
+        '2p_vosotros': 'vivisteis',
+        '3p': 'vivieron'
+      },
+      'impf': {
+        '1s': 'vivía',
+        '2s_tu': 'vivías',
+        '2s_vos': 'vivías',
+        '3s': 'vivía',
+        '1p': 'vivíamos',
+        '2p_vosotros': 'vivíais',
+        '3p': 'vivían'
+      },
+      'subjPres': {
+        '1s': 'viva',
+        '2s_tu': 'vivas',
+        '2s_vos': 'vivas',
+        '3s': 'viva',
+        '1p': 'vivamos',
+        '2p_vosotros': 'viváis',
+        '3p': 'vivan'
+      },
+      'subjImpf': {
+        '1s': 'viviera',
+        '2s_tu': 'vivieras',
+        '2s_vos': 'vivieras',
+        '3s': 'viviera',
+        '1p': 'viviéramos',
+        '2p_vosotros': 'vivierais',
+        '3p': 'vivieran'
+      },
+      'impAff': {
+        '2s_tu': 'vive',
+        '2s_vos': 'viví',
+        '3s': 'viva',
+        '1p': 'vivamos',
+        '2p_vosotros': 'vivid',
+        '3p': 'vivan'
+      },
+      'cond': {
+        '1s': 'viviría',
+        '2s_tu': 'vivirías', 
+        '2s_vos': 'vivirías',
+        '3s': 'viviría',
+        '1p': 'viviríamos',
+        '2p_vosotros': 'viviríais',
+        '3p': 'vivirían'
+      },
+      'inf': 'vivir',
+      'ger': 'viviendo',
+      'part': 'vivido'
+    }
   },
-  // VERBOS REGULARES - ER (alta frecuencia)
+
+  // VERBOS IRREGULARES COMUNES
   {
-    lemma: 'aprender',
-    forms: [
-      // Indicativo presente
-      'aprendo', 'aprendes', 'aprende', 'aprendemos', 'aprendéis', 'aprenden',
-      'aprendo', 'aprendés', 'aprende', 'aprendemos', 'aprenden', 'aprenden',
-      // Indicativo pretérito indefinido
-      'aprendí', 'aprendiste', 'aprendió', 'aprendimos', 'aprendisteis', 'aprendieron',
-      'aprendí', 'aprendiste', 'aprendió', 'aprendimos', 'aprendieron', 'aprendieron',
-      // Indicativo imperfecto
-      'aprendía', 'aprendías', 'aprendía', 'aprendíamos', 'aprendíais', 'aprendían',
-      'aprendía', 'aprendías', 'aprendía', 'aprendíamos', 'aprendían', 'aprendían',
-      // Indicativo pretérito perfecto
-      'he aprendido', 'has aprendido', 'ha aprendido', 'hemos aprendido', 'habéis aprendido', 'han aprendido',
-      'he aprendido', 'has aprendido', 'ha aprendido', 'hemos aprendido', 'han aprendido', 'han aprendido',
-      // Indicativo pluscuamperfecto
-      'había aprendido', 'habías aprendido', 'había aprendido', 'habíamos aprendido', 'habíais aprendido', 'habían aprendido',
-      'había aprendido', 'habías aprendido', 'había aprendido', 'habíamos aprendido', 'habían aprendido', 'habían aprendido',
-      // Indicativo futuro
-      'aprenderé', 'aprenderás', 'aprenderá', 'aprenderemos', 'aprenderéis', 'aprenderán',
-      'aprenderé', 'aprenderás', 'aprenderá', 'aprenderemos', 'aprenderán', 'aprenderán',
-      // Indicativo futuro perfecto
-      'habré aprendido', 'habrás aprendido', 'habrá aprendido', 'habremos aprendido', 'habréis aprendido', 'habrán aprendido',
-      'habré aprendido', 'habrás aprendido', 'habrá aprendido', 'habremos aprendido', 'habrán aprendido', 'habrán aprendido',
-      // Subjuntivo presente
-      'aprenda', 'aprendas', 'aprenda', 'aprendamos', 'aprendáis', 'aprendan',
-      'aprenda', 'aprendas', 'aprenda', 'aprendamos', 'aprendan', 'aprendan',
-      // Subjuntivo pretérito perfecto
-      'haya aprendido', 'hayas aprendido', 'haya aprendido', 'hayamos aprendido', 'hayáis aprendido', 'hayan aprendido',
-      'haya aprendido', 'hayas aprendido', 'haya aprendido', 'hayamos aprendido', 'hayan aprendido', 'hayan aprendido',
-      // Subjuntivo imperfecto
-      'aprendiera', 'aprendieras', 'aprendiera', 'aprendiéramos', 'aprendierais', 'aprendieran',
-      'aprendiera', 'aprendieras', 'aprendiera', 'aprendiéramos', 'aprendieran', 'aprendieran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera aprendido', 'hubieras aprendido', 'hubiera aprendido', 'hubiéramos aprendido', 'hubierais aprendido', 'hubieran aprendido',
-      'hubiera aprendido', 'hubieras aprendido', 'hubiera aprendido', 'hubiéramos aprendido', 'hubieran aprendido', 'hubieran aprendido',
-      // Imperativo afirmativo
-      'aprende', 'aprenda', 'aprendamos', 'aprended', 'aprendan',
-      'aprendé', 'aprenda', 'aprendamos', 'aprendan', 'aprendan',
-      // Imperativo negativo
-      'no aprendas', 'no aprenda', 'no aprendamos', 'no aprendáis', 'no aprendan',
-      'no aprendas', 'no aprenda', 'no aprendamos', 'no aprendan', 'no aprendan',
-      // Condicional
-      'aprendería', 'aprenderías', 'aprendería', 'aprenderíamos', 'aprenderíais', 'aprenderían',
-      'aprendería', 'aprenderías', 'aprendería', 'aprenderíamos', 'aprenderían', 'aprenderían',
-      // Condicional perfecto
-      'habría aprendido', 'habrías aprendido', 'habría aprendido', 'habríamos aprendido', 'habríais aprendido', 'habrían aprendido',
-      'habría aprendido', 'habrías aprendido', 'habría aprendido', 'habríamos aprendido', 'habrían aprendido', 'habrían aprendido',
-      // Participio
-      'aprendido',
-      // Gerundio
-      'aprendiendo'
-    ]
+    lemma: 'ser',
+    type: 'irregular', 
+    forms: {
+      'pres': {
+        '1s': 'soy',
+        '2s_tu': 'eres',
+        '2s_vos': 'sos',
+        '3s': 'es',
+        '1p': 'somos',
+        '2p_vosotros': 'sois', 
+        '3p': 'son'
+      },
+      'pretIndef': {
+        '1s': 'fui',
+        '2s_tu': 'fuiste',
+        '2s_vos': 'fuiste',
+        '3s': 'fue',
+        '1p': 'fuimos',
+        '2p_vosotros': 'fuisteis',
+        '3p': 'fueron'
+      },
+      'impf': {
+        '1s': 'era',
+        '2s_tu': 'eras',
+        '2s_vos': 'eras',
+        '3s': 'era',
+        '1p': 'éramos',
+        '2p_vosotros': 'erais',
+        '3p': 'eran'
+      },
+      'subjPres': {
+        '1s': 'sea',
+        '2s_tu': 'seas',
+        '2s_vos': 'seas',
+        '3s': 'sea',
+        '1p': 'seamos',
+        '2p_vosotros': 'seáis',
+        '3p': 'sean'
+      },
+      'subjImpf': {
+        '1s': 'fuera',
+        '2s_tu': 'fueras',
+        '2s_vos': 'fueras',
+        '3s': 'fuera',
+        '1p': 'fuéramos', 
+        '2p_vosotros': 'fuerais',
+        '3p': 'fueran'
+      },
+      'impAff': {
+        '2s_tu': 'sé',
+        '2s_vos': 'sé',
+        '3s': 'sea',
+        '1p': 'seamos', 
+        '2p_vosotros': 'sed',
+        '3p': 'sean'
+      },
+      'cond': {
+        '1s': 'sería',
+        '2s_tu': 'serías',
+        '2s_vos': 'serías',
+        '3s': 'sería',
+        '1p': 'seríamos',
+        '2p_vosotros': 'seríais',
+        '3p': 'serían'
+      },
+      'inf': 'ser',
+      'ger': 'siendo',
+      'part': 'sido'
+    }
   },
+
   {
-    lemma: 'comprender',
-    forms: [
-      // Indicativo presente
-      'comprendo', 'comprendes', 'comprende', 'comprendemos', 'comprendéis', 'comprenden',
-      'comprendo', 'comprendés', 'comprende', 'comprendemos', 'comprenden', 'comprenden',
-      // Indicativo pretérito indefinido
-      'comprendí', 'comprendiste', 'comprendió', 'comprendimos', 'comprendisteis', 'comprendieron',
-      'comprendí', 'comprendiste', 'comprendió', 'comprendimos', 'comprendieron', 'comprendieron',
-      // Indicativo imperfecto
-      'comprendía', 'comprendías', 'comprendía', 'comprendíamos', 'comprendíais', 'comprendían',
-      'comprendía', 'comprendías', 'comprendía', 'comprendíamos', 'comprendían', 'comprendían',
-      // Indicativo pretérito perfecto
-      'he comprendido', 'has comprendido', 'ha comprendido', 'hemos comprendido', 'habéis comprendido', 'han comprendido',
-      'he comprendido', 'has comprendido', 'ha comprendido', 'hemos comprendido', 'han comprendido', 'han comprendido',
-      // Indicativo pluscuamperfecto
-      'había comprendido', 'habías comprendido', 'había comprendido', 'habíamos comprendido', 'habíais comprendido', 'habían comprendido',
-      'había comprendido', 'habías comprendido', 'había comprendido', 'habíamos comprendido', 'habían comprendido', 'habían comprendido',
-      // Indicativo futuro
-      'comprenderé', 'comprenderás', 'comprenderá', 'comprenderemos', 'comprenderéis', 'comprenderán',
-      'comprenderé', 'comprenderás', 'comprenderá', 'comprenderemos', 'comprenderán', 'comprenderán',
-      // Indicativo futuro perfecto
-      'habré comprendido', 'habrás comprendido', 'habrá comprendido', 'habremos comprendido', 'habréis comprendido', 'habrán comprendido',
-      'habré comprendido', 'habrás comprendido', 'habrá comprendido', 'habremos comprendido', 'habrán comprendido', 'habrán comprendido',
-      // Subjuntivo presente
-      'comprenda', 'comprendas', 'comprenda', 'comprendamos', 'comprendáis', 'comprendan',
-      'comprenda', 'comprendas', 'comprenda', 'comprendamos', 'comprendan', 'comprendan',
-      // Subjuntivo pretérito perfecto
-      'haya comprendido', 'hayas comprendido', 'haya comprendido', 'hayamos comprendido', 'hayáis comprendido', 'hayan comprendido',
-      'haya comprendido', 'hayas comprendido', 'haya comprendido', 'hayamos comprendido', 'hayan comprendido', 'hayan comprendido',
-      // Subjuntivo imperfecto
-      'comprendiera', 'comprendieras', 'comprendiera', 'comprendiéramos', 'comprendierais', 'comprendieran',
-      'comprendiera', 'comprendieras', 'comprendiera', 'comprendiéramos', 'comprendieran', 'comprendieran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera comprendido', 'hubieras comprendido', 'hubiera comprendido', 'hubiéramos comprendido', 'hubierais comprendido', 'hubieran comprendido',
-      'hubiera comprendido', 'hubieras comprendido', 'hubiera comprendido', 'hubiéramos comprendido', 'hubieran comprendido', 'hubieran comprendido',
-      // Imperativo afirmativo
-      'comprende', 'comprenda', 'comprendamos', 'comprended', 'comprendan',
-      'comprendé', 'comprenda', 'comprendamos', 'comprendan', 'comprendan',
-      // Imperativo negativo
-      'no comprendas', 'no comprenda', 'no comprendamos', 'no comprendáis', 'no comprendan',
-      'no comprendas', 'no comprenda', 'no comprendamos', 'no comprendan', 'no comprendan',
-      // Condicional
-      'comprendería', 'comprenderías', 'comprendería', 'comprenderíamos', 'comprenderíais', 'comprenderían',
-      'comprendería', 'comprenderías', 'comprendería', 'comprenderíamos', 'comprenderían', 'comprenderían',
-      // Condicional perfecto
-      'habría comprendido', 'habrías comprendido', 'habría comprendido', 'habríamos comprendido', 'habríais comprendido', 'habrían comprendido',
-      'habría comprendido', 'habrías comprendido', 'habría comprendido', 'habríamos comprendido', 'habrían comprendido', 'habrían comprendido',
-      // Participio
-      'comprendido',
-      // Gerundio
-      'comprendiendo'
-    ]
-  },
-  // VERBOS REGULARES - IR (alta frecuencia)
-  {
-    lemma: 'escribir',
-    forms: [
-      // Indicativo presente
-      'escribo', 'escribes', 'escribe', 'escribimos', 'escribís', 'escriben',
-      'escribo', 'escribís', 'escribe', 'escribimos', 'escriben', 'escriben',
-      // Indicativo pretérito indefinido
-      'escribí', 'escribiste', 'escribió', 'escribimos', 'escribisteis', 'escribieron',
-      'escribí', 'escribiste', 'escribió', 'escribimos', 'escribieron', 'escribieron',
-      // Indicativo imperfecto
-      'escribía', 'escribías', 'escribía', 'escribíamos', 'escribíais', 'escribían',
-      'escribía', 'escribías', 'escribía', 'escribíamos', 'escribían', 'escribían',
-      // Indicativo pretérito perfecto
-      'he escrito', 'has escrito', 'ha escrito', 'hemos escrito', 'habéis escrito', 'han escrito',
-      'he escrito', 'has escrito', 'ha escrito', 'hemos escrito', 'han escrito', 'han escrito',
-      // Indicativo pluscuamperfecto
-      'había escrito', 'habías escrito', 'había escrito', 'habíamos escrito', 'habíais escrito', 'habían escrito',
-      'había escrito', 'habías escrito', 'había escrito', 'habíamos escrito', 'habían escrito', 'habían escrito',
-      // Indicativo futuro
-      'escribiré', 'escribirás', 'escribirá', 'escribiremos', 'escribiréis', 'escribirán',
-      'escribiré', 'escribirás', 'escribirá', 'escribiremos', 'escribirán', 'escribirán',
-      // Indicativo futuro perfecto
-      'habré escrito', 'habrás escrito', 'habrá escrito', 'habremos escrito', 'habréis escrito', 'habrán escrito',
-      'habré escrito', 'habrás escrito', 'habrá escrito', 'habremos escrito', 'habrán escrito', 'habrán escrito',
-      // Subjuntivo presente
-      'escriba', 'escribas', 'escriba', 'escribamos', 'escribáis', 'escriban',
-      'escriba', 'escribas', 'escriba', 'escribamos', 'escriban', 'escriban',
-      // Subjuntivo pretérito perfecto
-      'haya escrito', 'hayas escrito', 'haya escrito', 'hayamos escrito', 'hayáis escrito', 'hayan escrito',
-      'haya escrito', 'hayas escrito', 'haya escrito', 'hayamos escrito', 'hayan escrito', 'hayan escrito',
-      // Subjuntivo imperfecto
-      'escribiera', 'escribieras', 'escribiera', 'escribiéramos', 'escribierais', 'escribieran',
-      'escribiera', 'escribieras', 'escribiera', 'escribiéramos', 'escribieran', 'escribieran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera escrito', 'hubieras escrito', 'hubiera escrito', 'hubiéramos escrito', 'hubierais escrito', 'hubieran escrito',
-      'hubiera escrito', 'hubieras escrito', 'hubiera escrito', 'hubiéramos escrito', 'hubieran escrito', 'hubieran escrito',
-      // Imperativo afirmativo
-      'escribe', 'escriba', 'escribamos', 'escribid', 'escriban',
-      'escribí', 'escriba', 'escribamos', 'escriban', 'escriban',
-      // Imperativo negativo
-      'no escribas', 'no escriba', 'no escribamos', 'no escribáis', 'no escriban',
-      'no escribas', 'no escriba', 'no escribamos', 'no escriban', 'no escriban',
-      // Condicional
-      'escribiría', 'escribirías', 'escribiría', 'escribiríamos', 'escribiríais', 'escribirían',
-      'escribiría', 'escribirías', 'escribiría', 'escribiríamos', 'escribirían', 'escribirían',
-      // Condicional perfecto
-      'habría escrito', 'habrías escrito', 'habría escrito', 'habríamos escrito', 'habríais escrito', 'habrían escrito',
-      'habría escrito', 'habrías escrito', 'habría escrito', 'habríamos escrito', 'habrían escrito', 'habrían escrito',
-      // Participio
-      'escrito',
-      // Gerundio
-      'escribiendo'
-    ]
-  },
-  {
-    lemma: 'recibir',
-    forms: [
-      // Indicativo presente
-      'recibo', 'recibes', 'recibe', 'recibimos', 'recibís', 'reciben',
-      'recibo', 'recibís', 'recibe', 'recibimos', 'reciben', 'reciben',
-      // Indicativo pretérito indefinido
-      'recibí', 'recibiste', 'recibió', 'recibimos', 'recibisteis', 'recibieron',
-      'recibí', 'recibiste', 'recibió', 'recibimos', 'recibieron', 'recibieron',
-      // Indicativo imperfecto
-      'recibía', 'recibías', 'recibía', 'recibíamos', 'recibíais', 'recibían',
-      'recibía', 'recibías', 'recibía', 'recibíamos', 'recibían', 'recibían',
-      // Indicativo pretérito perfecto
-      'he recibido', 'has recibido', 'ha recibido', 'hemos recibido', 'habéis recibido', 'han recibido',
-      'he recibido', 'has recibido', 'ha recibido', 'hemos recibido', 'han recibido', 'han recibido',
-      // Indicativo pluscuamperfecto
-      'había recibido', 'habías recibido', 'había recibido', 'habíamos recibido', 'habíais recibido', 'habían recibido',
-      'había recibido', 'habías recibido', 'había recibido', 'habíamos recibido', 'habían recibido', 'habían recibido',
-      // Indicativo futuro
-      'recibiré', 'recibirás', 'recibirá', 'recibiremos', 'recibiréis', 'recibirán',
-      'recibiré', 'recibirás', 'recibirá', 'recibiremos', 'recibirán', 'recibirán',
-      // Indicativo futuro perfecto
-      'habré recibido', 'habrás recibido', 'habrá recibido', 'habremos recibido', 'habréis recibido', 'habrán recibido',
-      'habré recibido', 'habrás recibido', 'habrá recibido', 'habremos recibido', 'habrán recibido', 'habrán recibido',
-      // Subjuntivo presente
-      'reciba', 'recibas', 'reciba', 'recibamos', 'recibáis', 'reciban',
-      'reciba', 'recibas', 'reciba', 'recibamos', 'reciban', 'reciban',
-      // Subjuntivo pretérito perfecto
-      'haya recibido', 'hayas recibido', 'haya recibido', 'hayamos recibido', 'hayáis recibido', 'hayan recibido',
-      'haya recibido', 'hayas recibido', 'haya recibido', 'hayamos recibido', 'hayan recibido', 'hayan recibido',
-      // Subjuntivo imperfecto
-      'recibiera', 'recibieras', 'recibiera', 'recibiéramos', 'recibierais', 'recibieran',
-      'recibiera', 'recibieras', 'recibiera', 'recibiéramos', 'recibieran', 'recibieran',
-      // Subjuntivo pluscuamperfecto
-      'hubiera recibido', 'hubieras recibido', 'hubiera recibido', 'hubiéramos recibido', 'hubierais recibido', 'hubieran recibido',
-      'hubiera recibido', 'hubieras recibido', 'hubiera recibido', 'hubiéramos recibido', 'hubieran recibido', 'hubieran recibido',
-      // Imperativo afirmativo
-      'recibe', 'reciba', 'recibamos', 'recibid', 'reciban',
-      'recibí', 'reciba', 'recibamos', 'reciban', 'reciban',
-      // Imperativo negativo
-      'no recibas', 'no reciba', 'no recibamos', 'no recibáis', 'no reciban',
-      'no recibas', 'no reciba', 'no recibamos', 'no reciban', 'no reciban',
-      // Condicional
-      'recibiría', 'recibirías', 'recibiría', 'recibiríamos', 'recibiríais', 'recibirían',
-      'recibiría', 'recibirías', 'recibiría', 'recibiríamos', 'recibirían', 'recibirían',
-      // Condicional perfecto
-      'habría recibido', 'habrías recibido', 'habría recibido', 'habríamos recibido', 'habríais recibido', 'habrían recibido',
-      'habría recibido', 'habrías recibido', 'habría recibido', 'habríamos recibido', 'habrían recibido', 'habrían recibido',
-      // Participio
-      'recibido',
-      // Gerundio
-      'recibiendo'
-    ]
+    lemma: 'tener',
+    type: 'irregular',
+    forms: {
+      'pres': {
+        '1s': 'tengo',
+        '2s_tu': 'tienes', 
+        '2s_vos': 'tenés',
+        '3s': 'tiene',
+        '1p': 'tenemos',
+        '2p_vosotros': 'tenéis',
+        '3p': 'tienen'
+      },
+      'pretIndef': {
+        '1s': 'tuve',
+        '2s_tu': 'tuviste',
+        '2s_vos': 'tuviste',
+        '3s': 'tuvo',
+        '1p': 'tuvimos',
+        '2p_vosotros': 'tuvisteis',
+        '3p': 'tuvieron'
+      },
+      'subjPres': {
+        '1s': 'tenga',
+        '2s_tu': 'tengas',
+        '2s_vos': 'tengas',
+        '3s': 'tenga',
+        '1p': 'tengamos',
+        '2p_vosotros': 'tengáis',
+        '3p': 'tengan'
+      },
+      'subjImpf': {
+        '1s': 'tuviera',
+        '2s_tu': 'tuvieras',
+        '2s_vos': 'tuvieras',
+        '3s': 'tuviera',
+        '1p': 'tuviéramos',
+        '2p_vosotros': 'tuvierais',
+        '3p': 'tuvieran'
+      },
+      'cond': {
+        '1s': 'tendría',
+        '2s_tu': 'tendrías',
+        '2s_vos': 'tendrías', 
+        '3s': 'tendría',
+        '1p': 'tendríamos',
+        '2p_vosotros': 'tendríais',
+        '3p': 'tendrían'
+      },
+      'inf': 'tener',
+      'ger': 'teniendo',
+      'part': 'tenido'
+    }
   }
-] 
+];
+
+// Función auxiliar para obtener todas las formas de un verbo
+export function getAllForms(lemma) {
+  const verb = commonVerbs.find(v => v.lemma === lemma);
+  if (!verb) return [];
+  
+  const allForms = [];
+  Object.entries(verb.forms).forEach(([tense, forms]) => {
+    if (typeof forms === 'string') {
+      // Formas no finitas
+      allForms.push({ tense, form: forms, person: '' });
+    } else {
+      // Formas conjugadas
+      Object.entries(forms).forEach(([person, form]) => {
+        allForms.push({ tense, person, form });
+      });
+    }
+  });
+  
+  return allForms;
+}
+
+// Función para validar consistencia con la base principal
+export function validateCommonVerbs() {
+  const errors = [];
+  const warnings = [];
+  
+  commonVerbs.forEach(verb => {
+    // Verificar que todas las formas tengan valores válidos
+    Object.entries(verb.forms).forEach(([tense, forms]) => {
+      if (typeof forms === 'object' && forms !== null) {
+        Object.entries(forms).forEach(([person, form]) => {
+          if (!form || typeof form !== 'string' || form.trim() === '') {
+            errors.push(`${verb.lemma}: forma vacía en ${tense}|${person}`);
+          }
+        });
+      }
+    });
+  });
+  
+  return { errors, warnings, isValid: errors.length === 0 };
+}
+
+export default commonVerbs;
