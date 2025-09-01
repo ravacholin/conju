@@ -9,6 +9,65 @@ import { useSettings } from '../../state/settings.js'
 import { buildFormsForRegion } from '../core/eligibility.js'
 
 /**
+ * Mapeo de modos a nombres gramaticales amigables
+ */
+const MOOD_LABELS = {
+  'indicative': 'Indicativo',
+  'subjunctive': 'Subjuntivo',
+  'imperative': 'Imperativo',
+  'conditional': 'Condicional',
+  'nonfinite': 'Formas no personales'
+}
+
+/**
+ * Mapeo de tiempos a nombres gramaticales amigables
+ */
+const TENSE_LABELS = {
+  'pres': 'Presente',
+  'pretIndef': 'Pretérito indefinido',
+  'impf': 'Pretérito imperfecto',
+  'fut': 'Futuro simple',
+  'pretPerf': 'Pretérito perfecto compuesto',
+  'plusc': 'Pretérito pluscuamperfecto',
+  'futPerf': 'Futuro perfecto',
+  'subjPres': 'Presente de subjuntivo',
+  'subjImpf': 'Pretérito imperfecto de subjuntivo',
+  'subjFut': 'Futuro de subjuntivo',
+  'subjPerf': 'Pretérito perfecto de subjuntivo',
+  'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
+  'impAff': 'Imperativo afirmativo',
+  'impNeg': 'Imperativo negativo',
+  'cond': 'Condicional simple',
+  'condPerf': 'Condicional compuesto',
+  'inf': 'Infinitivo',
+  'part': 'Participio',
+  'ger': 'Gerundio'
+}
+
+/**
+ * Convierte mood/tense a nombres amigables para el usuario
+ * @param {string} mood - Modo gramatical
+ * @param {string} tense - Tiempo verbal
+ * @returns {string} Nombre amigable
+ */
+function formatMoodTense(mood, tense) {
+  const moodLabel = MOOD_LABELS[mood] || mood
+  const tenseLabel = TENSE_LABELS[tense] || tense
+  
+  // Para subjuntivo, el tiempo ya incluye "de subjuntivo"
+  if (mood === 'subjunctive' && tenseLabel.includes('subjuntivo')) {
+    return tenseLabel
+  }
+  
+  // Para otros casos, combinar modo y tiempo
+  if (mood === 'indicative') {
+    return tenseLabel // "Presente", "Pretérito imperfecto", etc.
+  }
+  
+  return `${tenseLabel} (${moodLabel})` // "Presente (Condicional)", etc.
+}
+
+/**
  * Motor principal para generar recomendaciones de práctica adaptativa
  */
 export class AdaptivePracticeEngine {
@@ -87,7 +146,7 @@ export class AdaptivePracticeEngine {
     return weakAreas.map((area, index) => ({
       type: 'weak_area_practice',
       priority: 90 - (index * 10), // Prioridad alta decreciente
-      title: `Refuerza ${area.mood}/${area.tense}`,
+      title: `Refuerza ${formatMoodTense(area.mood, area.tense)}`,
       description: `Dominio actual: ${Math.round(area.score)}%. Práctica intensiva recomendada.`,
       targetCombination: {
         mood: area.mood,
@@ -115,7 +174,7 @@ export class AdaptivePracticeEngine {
         return {
           type: 'spaced_review',
           priority: 80 - (index * 5) + urgency,
-          title: `Repaso: ${item.mood}/${item.tense}`,
+          title: `Repaso: ${formatMoodTense(item.mood, item.tense)}`,
           description: `Programado para repaso. Dominio: ${Math.round(mastery.score)}%`,
           targetCombination: {
             mood: item.mood,
@@ -174,9 +233,9 @@ export class AdaptivePracticeEngine {
       return {
         type: 'new_content',
         priority: combo.priority * 0.6 + (60 - (index * 10)), // Blend prioritizer priority with ordering
-        title: isCore ? `🆕 Aprende ${combo.mood}/${combo.tense}` : 
-               isExploration ? `🔮 Explora ${combo.mood}/${combo.tense}` :
-               `📚 Mejora ${combo.mood}/${combo.tense}`,
+        title: isCore ? `🆕 Aprende ${formatMoodTense(combo.mood, combo.tense)}` : 
+               isExploration ? `🔮 Explora ${formatMoodTense(combo.mood, combo.tense)}` :
+               `📚 Mejora ${formatMoodTense(combo.mood, combo.tense)}`,
         description: isCore ? `Nueva habilidad clave para nivel ${userLevel}` :
                     isExploration ? `Contenido avanzado - prepárate para el siguiente nivel` :
                     `Refuerza esta combinación importante`,
@@ -274,7 +333,7 @@ export class AdaptivePracticeEngine {
       .map((tense) => ({
         type: 'core_focus',
         priority: tense.priority + 20, // Boost core tense priority
-        title: `🎯 Domina ${tense.mood}/${tense.tense}`,
+        title: `🎯 Domina ${formatMoodTense(tense.mood, tense.tense)}`,
         description: `Habilidad fundamental para tu nivel actual`,
         targetCombination: {
           mood: tense.mood,
@@ -656,7 +715,7 @@ export class AdaptivePracticeEngine {
         fallbacks.push({
           type: 'fallback_safe_practice',
           priority: 50,
-          title: `Práctica de ${combo.mood}/${combo.tense}`,
+          title: `Práctica de ${formatMoodTense(combo.mood, combo.tense)}`,
           description: 'Práctica general recomendada para tu nivel',
           targetCombination: combo,
           estimatedDuration: '5-10 min',

@@ -8,7 +8,7 @@ export function VerbMasteryMap({ data }) {
   const [hoveredCell, setHoveredCell] = useState(null)
 
   // Configuración de modos con sus tiempos organizados lingüísticamente
-  // Mostramos TODAS las combinaciones principales, no solo las del nivel específico
+  // SOLO MOSTRAR las formas que realmente han sido practicadas
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
@@ -65,40 +65,52 @@ export function VerbMasteryMap({ data }) {
     }
   }
 
-  // Agrupar datos por modo y tiempo - MOSTRAR TODAS LAS COMBINACIONES
+  // Agrupar datos SOLO por formas que realmente han sido practicadas (count > 0)
   const masteryByMode = useMemo(() => {
     const result = {}
     
-    Object.keys(moodConfig).forEach(mood => {
-      result[mood] = {
-        ...moodConfig[mood],
-        tenses: moodConfig[mood].tenses.map(tense => {
-          const cellData = data?.find(cell => 
-            cell.mood === mood && cell.tense === tense.key
-          )
-          return {
-            ...tense,
-            score: cellData?.score || 0,
-            count: cellData?.count || 0,
-            hasData: !!cellData
-          }
-        })
+    // Solo incluir datos que tienen intentos reales
+    const practicedData = data?.filter(cell => cell.count > 0) || []
+    
+    practicedData.forEach(cell => {
+      if (!result[cell.mood]) {
+        const moodInfo = moodConfig[cell.mood] || {
+          label: cell.mood,
+          icon: '📝',
+          description: 'Modo verbal'
+        }
+        result[cell.mood] = {
+          ...moodInfo,
+          tenses: [],
+          avgScore: 0,
+          totalAttempts: 0,
+          hasAnyData: true
+        }
       }
       
-      // Calculate mood average - SOLO de los que tienen datos
-      const tenseScores = result[mood].tenses
-        .filter(t => t.hasData)
-        .map(t => t.score)
+      // Encontrar la configuración del tiempo o usar default
+      const tenseConfig = moodConfig[cell.mood]?.tenses.find(t => t.key === cell.tense) || {
+        key: cell.tense,
+        label: cell.tense,
+        group: 'simple'
+      }
       
+      result[cell.mood].tenses.push({
+        ...tenseConfig,
+        score: cell.score,
+        count: cell.count,
+        hasData: true
+      })
+      
+      result[cell.mood].totalAttempts += cell.count
+    })
+    
+    // Calcular promedios para cada modo
+    Object.keys(result).forEach(mood => {
+      const tenseScores = result[mood].tenses.map(t => t.score)
       result[mood].avgScore = tenseScores.length > 0 
         ? Math.round(tenseScores.reduce((sum, score) => sum + score, 0) / tenseScores.length)
         : 0
-        
-      result[mood].totalAttempts = result[mood].tenses
-        .reduce((sum, t) => sum + t.count, 0)
-      
-      // SIEMPRE mostrar el modo, aunque no tenga datos
-      result[mood].hasAnyData = result[mood].totalAttempts > 0
     })
     
     return result
@@ -153,8 +165,14 @@ export function VerbMasteryMap({ data }) {
       <h2>🗺️ Mapa de Dominio por Modo y Tiempo</h2>
       
       <div className="verb-mastery-map">
-        {Object.entries(masteryByMode).map(([moodKey, mood]) => {
-          return (
+        {Object.keys(masteryByMode).length === 0 ? (
+          <div className="empty-state">
+            <p>No hay formas practicadas todavía.</p>
+            <p>¡Comienza a practicar para ver tu progreso aquí!</p>
+          </div>
+        ) : (
+          Object.entries(masteryByMode).map(([moodKey, mood]) => {
+            return (
             <div key={moodKey} className="mood-section">
               <div className="mood-header">
                 <div className="mood-title">
@@ -200,7 +218,8 @@ export function VerbMasteryMap({ data }) {
               </div>
             </div>
           )
-        })}
+        })
+        )}
 
         {/* Tooltip */}
         {hoveredCell && (

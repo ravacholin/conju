@@ -5,6 +5,65 @@ import { AdaptivePracticeEngine } from '../../lib/progress/AdaptivePracticeEngin
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
+ * Mapeo de modos a nombres gramaticales amigables
+ */
+const MOOD_LABELS = {
+  'indicative': 'Indicativo',
+  'subjunctive': 'Subjuntivo',
+  'imperative': 'Imperativo',
+  'conditional': 'Condicional',
+  'nonfinite': 'Formas no personales'
+}
+
+/**
+ * Mapeo de tiempos a nombres gramaticales amigables
+ */
+const TENSE_LABELS = {
+  'pres': 'Presente',
+  'pretIndef': 'Pretérito indefinido',
+  'impf': 'Pretérito imperfecto',
+  'fut': 'Futuro simple',
+  'pretPerf': 'Pretérito perfecto compuesto',
+  'plusc': 'Pretérito pluscuamperfecto',
+  'futPerf': 'Futuro perfecto',
+  'subjPres': 'Presente de subjuntivo',
+  'subjImpf': 'Pretérito imperfecto de subjuntivo',
+  'subjFut': 'Futuro de subjuntivo',
+  'subjPerf': 'Pretérito perfecto de subjuntivo',
+  'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
+  'impAff': 'Imperativo afirmativo',
+  'impNeg': 'Imperativo negativo',
+  'cond': 'Condicional simple',
+  'condPerf': 'Condicional compuesto',
+  'inf': 'Infinitivo',
+  'part': 'Participio',
+  'ger': 'Gerundio'
+}
+
+/**
+ * Convierte mood/tense a nombres amigables para el usuario
+ * @param {string} mood - Modo gramatical
+ * @param {string} tense - Tiempo verbal
+ * @returns {string} Nombre amigable
+ */
+function formatMoodTense(mood, tense) {
+  const moodLabel = MOOD_LABELS[mood] || mood
+  const tenseLabel = TENSE_LABELS[tense] || tense
+  
+  // Para subjuntivo, el tiempo ya incluye "de subjuntivo"
+  if (mood === 'subjunctive' && tenseLabel.includes('subjuntivo')) {
+    return tenseLabel
+  }
+  
+  // Para otros casos, combinar modo y tiempo
+  if (mood === 'indicative') {
+    return tenseLabel // "Presente", "Pretérito imperfecto", etc.
+  }
+  
+  return `${tenseLabel} (${moodLabel})` // "Presente (Condicional)", etc.
+}
+
+/**
  * Componente que muestra recomendaciones de práctica personalizadas
  */
 export default function PracticeRecommendations({ 
@@ -177,7 +236,7 @@ export default function PracticeRecommendations({
                   </span>
                   {rec.targetCombination && (
                     <span className="target-badge">
-                      {rec.targetCombination.mood}/{rec.targetCombination.tense}
+                      {formatMoodTense(rec.targetCombination.mood, rec.targetCombination.tense)}
                     </span>
                   )}
                 </div>
