@@ -8,41 +8,62 @@ export default function ErrorInsights() {
   const settings = useSettings()
 
   // Mapeo de tipos de error a iconos y descripciones
+  // Usando las etiquetas del clasificador (ERROR_TAGS)
   const errorTypeMapping = {
-    'conjugation': {
-      icon: '/diana.png', // Usando diana como placeholder para errores de conjugación
-      label: 'Conjugación',
-      description: 'Forma verbal incorrecta'
+    'persona_equivocada': {
+      icon: '/diana.png',
+      label: 'Persona Incorrecta',
+      description: 'Conjugación para persona diferente (yo/tú/él/etc.)'
     },
-    'accent': {
-      icon: '/enie.png', // Usando enie para errores de acentos
+    'terminación_verbal': {
+      icon: '/books.png', 
+      label: 'Terminación Verbal',
+      description: 'Terminación incorrecta (-ar, -er, -ir)'
+    },
+    'raíz_irregular': {
+      icon: '/diana.png',
+      label: 'Raíz Irregular',
+      description: 'Error en la raíz de verbos irregulares'
+    },
+    'acentuación': {
+      icon: '/enie.png',
       label: 'Acentuación',
-      description: 'Acentos faltantes o incorrectos'
+      description: 'Acentos faltantes o mal colocados'
     },
-    'spelling': {
-      icon: '/books.png', // Usando books para errores de ortografía
-      label: 'Ortografía',
-      description: 'Errores de escritura'
+    'pronombres_clíticos': {
+      icon: '/books.png',
+      label: 'Pronombres Clíticos',
+      description: 'Errores con pronombres (me, te, se, etc.)'
     },
-    'stem': {
+    'ortografía_g/gu': {
+      icon: '/books.png',
+      label: 'Ortografía G/GU',
+      description: 'Confusión entre g y gu (sigo/sigues)'
+    },
+    'ortografía_c/qu': {
+      icon: '/books.png',
+      label: 'Ortografía C/QU',
+      description: 'Confusión entre c y qu (toco/toque)'
+    },
+    'ortografía_z/c': {
+      icon: '/books.png',
+      label: 'Ortografía Z/C',
+      description: 'Confusión entre z y c (hago/hice)'
+    },
+    'concordancia_número': {
       icon: '/diana.png',
-      label: 'Raíz Verbal',
-      description: 'Cambios en la raíz del verbo'
+      label: 'Concordancia',
+      description: 'Error en singular/plural'
     },
-    'ending': {
+    'modo_equivocado': {
       icon: '/diana.png',
-      label: 'Terminación',
-      description: 'Terminaciones verbales incorrectas'
-    },
-    'irregular': {
-      icon: '/diana.png',
-      label: 'Irregular',
-      description: 'Formas irregulares'
+      label: 'Modo Incorrecto',
+      description: 'Uso de modo verbal incorrecto (indicativo/subjuntivo)'
     },
     'default': {
       icon: '/diana.png',
-      label: 'Otro',
-      description: 'Otros tipos de error'
+      label: 'Otro Error',
+      description: 'Error no clasificado específicamente'
     }
   }
 

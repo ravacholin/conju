@@ -47,28 +47,13 @@ export function HeatMap({ data }) {
     'ger': 'Gerundio'
   }
 
-  // Obtener formas elegibles según configuración del usuario
-  const eligibleForms = useMemo(() => {
-    if (!settings.region) return []
-    return getEligiblePool(settings)
-  }, [settings.region, settings.level, settings.useVoseo, settings.useTuteo, settings.useVosotros])
-
-  // Obtener combinaciones válidas de mood/tense según las formas elegibles
-  const validCombinations = useMemo(() => {
-    const combos = new Set()
-    eligibleForms.forEach(form => {
-      combos.add(`${form.mood}|${form.tense}`)
-    })
-    return combos
-  }, [eligibleForms])
-
-  // Filtrar datos solo para mostrar combinaciones válidas
+  // Solo mostrar formas que han sido REALMENTE practicadas
+  // (los datos ya vienen filtrados desde analytics.js)
   const filteredData = useMemo(() => {
     if (!data || !Array.isArray(data)) return []
-    return data.filter(cell => 
-      validCombinations.has(`${cell.mood}|${cell.tense}`)
-    )
-  }, [data, validCombinations])
+    // Solo devolver datos que realmente tienen intentos
+    return data.filter(cell => cell.count > 0)
+  }, [data])
 
   // Agrupar datos filtrados por modo y tiempo
   const groupedData = useMemo(() => {
@@ -80,19 +65,19 @@ export function HeatMap({ data }) {
     return g
   }, [filteredData])
 
-  // Obtener modos y tiempos únicos de las formas elegibles, ordenados lógicamente
+  // Obtener modos y tiempos únicos solo de las formas PRACTICADAS, ordenados lógicamente
   const allMoods = useMemo(() => {
     const moods = new Set()
-    eligibleForms.forEach(form => moods.add(form.mood))
+    filteredData.forEach(cell => moods.add(cell.mood))
     
     // Orden lógico de modos
     const moodOrder = ['indicative', 'subjunctive', 'conditional', 'imperative', 'nonfinite']
     return moodOrder.filter(mood => moods.has(mood))
-  }, [eligibleForms])
+  }, [filteredData])
   
   const allTenses = useMemo(() => {
     const tenses = new Set()
-    eligibleForms.forEach(form => tenses.add(form.tense))
+    filteredData.forEach(cell => tenses.add(cell.tense))
     
     // Orden lógico de tiempos
     const tenseOrder = [
@@ -105,7 +90,7 @@ export function HeatMap({ data }) {
       'inf', 'part', 'ger'
     ]
     return tenseOrder.filter(tense => tenses.has(tense))
-  }, [eligibleForms])
+  }, [filteredData])
 
   if (!filteredData || filteredData.length === 0) {
     return (
