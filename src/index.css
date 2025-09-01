@@ -1,5 +1,4 @@
-/* Import Inter variable font from Google Fonts with extended features */
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..700&display=swap');
+/* Font is now preloaded in HTML for better performance - no blocking import needed */
 
 /* Minimal CSS reset for the Spanish conjugation app */
 * {

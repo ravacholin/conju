@@ -2,27 +2,35 @@
 import { verbs } from '../../data/verbs.js'
 import { sanitizeVerbsInPlace } from './dataSanitizer.js'
 
-// Cache inteligente con expiración y límite de memoria
+// Cache inteligente optimizado con expiración y límite de memoria
 class IntelligentCache {
   constructor(maxSize = 1000, ttl = 5 * 60 * 1000) { // 5 minutos TTL
     this.cache = new Map()
     this.accessTimes = new Map()
     this.maxSize = maxSize
     this.ttl = ttl
+    this.hits = 0
+    this.misses = 0
   }
 
   get(key) {
     const entry = this.cache.get(key)
-    if (!entry) return null
-    
-    // Verificar expiración
-    if (Date.now() - entry.timestamp > this.ttl) {
-      this.delete(key)
+    if (!entry) {
+      this.misses++
       return null
     }
     
-    // Actualizar tiempo de acceso para LRU
-    this.accessTimes.set(key, Date.now())
+    // Verificar expiración
+    const now = Date.now()
+    if (now - entry.timestamp > this.ttl) {
+      this.delete(key)
+      this.misses++
+      return null
+    }
+    
+    // Cache hit - actualizar tiempo de acceso para LRU
+    this.hits++
+    this.accessTimes.set(key, now)
     return entry.value
   }
 
@@ -65,10 +73,14 @@ class IntelligentCache {
   }
 
   getStats() {
+    const hitRate = this.hits + this.misses > 0 ? (this.hits / (this.hits + this.misses) * 100).toFixed(1) : '0'
     return {
       size: this.cache.size,
       maxSize: this.maxSize,
-      usage: (this.cache.size / this.maxSize * 100).toFixed(1) + '%'
+      usage: (this.cache.size / this.maxSize * 100).toFixed(1) + '%',
+      hits: this.hits,
+      misses: this.misses,
+      hitRate: hitRate + '%'
     }
   }
 }

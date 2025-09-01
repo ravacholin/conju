@@ -38,36 +38,47 @@ export default defineConfig(({ mode }) => ({
     })
   ],
   build: {
-    // Optimize bundle size
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core vendor libraries
-          vendor: ['react', 'react-dom'],
-          // Progress system (heavy analytical components)
-          progress: [
-            './src/lib/progress/database.js',
-            './src/lib/progress/analytics.js',
-            './src/lib/progress/realTimeAnalytics.js',
-            './src/lib/progress/AdaptivePracticeEngine.js',
-            './src/lib/progress/DifficultyManager.js'
-          ],
-          // Data chunks (verb data)
-          data: ['./src/data/verbs.js'],
-          // Utilities and helpers
-          utils: [
-            './src/lib/progress/utils.js',
-            './src/lib/progress/helpers.js',
-            './src/lib/core/optimizedCache.js'
-          ]
+        manualChunks: (id) => {
+          // Vendor libraries
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react'
+          }
+          if (id.includes('node_modules/zustand')) {
+            return 'vendor-state' 
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor-libs'
+          }
+          
+          // Heavy verb data - load separately
+          if (id.includes('src/data/verbs.js')) {
+            return 'data-verbs'
+          }
+          
+          // Progress system - heavy modules
+          if (id.includes('src/lib/progress/')) {
+            return 'progress-system'
+          }
+          
+          // Core logic
+          if (id.includes('src/lib/core/')) {
+            return 'core-engine'
+          }
         }
       }
     },
-    // Increase warning limit for large bundles (progress system is complex)
-    chunkSizeWarningLimit: 800,
-    // Enable minification for production
+    target: 'es2020',
+    chunkSizeWarningLimit: 600,
     minify: mode === 'production' ? 'terser' : false,
-    // Generate source maps for debugging
+    terserOptions: mode === 'production' ? {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        passes: 2
+      }
+    } : undefined,
     sourcemap: mode === 'development'
   },
   server: {

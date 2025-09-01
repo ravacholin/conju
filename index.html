@@ -8,6 +8,10 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Performance: Preload critical font with font-display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <title>VerbOS - Conjugador de Verbos en Español</title>
   </head>
   <body>

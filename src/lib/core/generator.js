@@ -517,13 +517,24 @@ export function chooseNext({forms, history, currentItem}){
     // Failsafe: relax filters progressively to always return something
     // Apply same specific topic practice logic in fallback
     const isSpecificTopicPractice = practiceMode === 'specific' && specificMood && specificTense
-    let fallback = isSpecificTopicPractice 
-      ? forms // For specific practice, don't filter by level at all
-      : forms.filter(f => getAllowedCombosForLevel(level).has(`${f.mood}|${f.tense}`))
-    console.log('🔧 FALLBACK DEBUG - After level filter:', fallback.length, isSpecificTopicPractice ? '(bypassed for specific practice)' : '')
-    if (specificMood) fallback = fallback.filter(f => f.mood === specificMood)
-    console.log('🔧 FALLBACK DEBUG - After mood filter:', fallback.length)
-    if (specificTense) fallback = fallback.filter(f => f.tense === specificTense)
+    // Optimized: Single pass filtering instead of multiple iterations
+    const allowedCombos = isSpecificTopicPractice ? null : getAllowedCombosForLevel(level)
+    let fallback = forms.filter(f => {
+      // Level filter (if not specific practice)
+      if (!isSpecificTopicPractice && !allowedCombos.has(`${f.mood}|${f.tense}`)) {
+        return false
+      }
+      // Mood filter
+      if (specificMood && f.mood !== specificMood) {
+        return false
+      }
+      // Tense filter  
+      if (specificTense && f.tense !== specificTense) {
+        return false
+      }
+      return true
+    })
+    console.log('🔧 FALLBACK DEBUG - After optimized filtering:', fallback.length, isSpecificTopicPractice ? '(bypassed for specific practice)' : '')
     console.log('🔧 FALLBACK DEBUG - After tense filter:', fallback.length)
     // Respect dialect minimally for conjugated forms
     fallback = fallback.filter(f => {
