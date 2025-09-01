@@ -5,10 +5,27 @@
 
 // Verbos que SOLO pueden aparecer en niveles A1-A2 (muy básicos)
 export const A1_A2_ONLY_VERBS = [
+  // Verbos súper básicos A1
   'ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber', 'querer',
   'poder', 'venir', 'poner', 'salir', 'hablar', 'comer', 'vivir', 'trabajar',
   'estudiar', 'llamar', 'llevar', 'encontrar', 'pensar', 'llegar', 'pasar',
-  'quedar', 'deber', 'seguir', 'encontrar', 'llamar', 'preguntar'
+  'quedar', 'deber', 'seguir', 'preguntar',
+  
+  // Verbos básicos que FALTABAN y deberían ser A1
+  'escuchar', 'caminar', 'leer', 'escribir', 'beber', 'dormir', 'abrir', 'cerrar',
+  'mirar', 'comprar', 'vender', 'aprender', 'enseñar', 'ayudar', 'usar', 'subir',
+  'bajar', 'entrar', 'salir', 'esperar', 'ganar', 'perder', 'jugar', 'cantar',
+  'bailar', 'cocinar', 'limpiar', 'lavar', 'correr', 'nadar', 'manejar', 'viajar',
+  'descansar', 'levantar', 'sentar', 'acostar', 'despertar', 'ducharse', 'vestirse',
+  
+  // Verbos de emociones y estados básicos A1  
+  'gustar', 'amar', 'odiar', 'necesitar', 'desear', 'preferir', 'sentir',
+  
+  // Verbos de comunicación básica A1
+  'entender', 'repetir', 'explicar', 'contestar', 'responder', 'preguntar',
+  
+  // Verbos de ubicación y movimiento A1
+  'buscar', 'tocar', 'tomar', 'dejar', 'traer', 'tirar', 'empujar'
 ]
 
 // Verbos irregulares que pueden aparecer desde B1 (intermedios)
