@@ -199,6 +199,65 @@ export async function getRealCompetencyRadarData(userId) {
 }
 
 /**
+ * Mapeo de modos a nombres gramaticales amigables
+ */
+const MOOD_LABELS = {
+  'indicative': 'Indicativo',
+  'subjunctive': 'Subjuntivo',
+  'imperative': 'Imperativo',
+  'conditional': 'Condicional',
+  'nonfinite': 'Formas no personales'
+}
+
+/**
+ * Mapeo de tiempos a nombres gramaticales amigables
+ */
+const TENSE_LABELS = {
+  'pres': 'Presente',
+  'pretIndef': 'Pretérito indefinido',
+  'impf': 'Pretérito imperfecto',
+  'fut': 'Futuro simple',
+  'pretPerf': 'Pretérito perfecto compuesto',
+  'plusc': 'Pretérito pluscuamperfecto',
+  'futPerf': 'Futuro perfecto',
+  'subjPres': 'Presente de subjuntivo',
+  'subjImpf': 'Pretérito imperfecto de subjuntivo',
+  'subjFut': 'Futuro de subjuntivo',
+  'subjPerf': 'Pretérito perfecto de subjuntivo',
+  'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
+  'impAff': 'Imperativo afirmativo',
+  'impNeg': 'Imperativo negativo',
+  'cond': 'Condicional simple',
+  'condPerf': 'Condicional compuesto',
+  'inf': 'Infinitivo',
+  'part': 'Participio',
+  'ger': 'Gerundio'
+}
+
+/**
+ * Convierte mood/tense a nombres amigables para el usuario
+ * @param {string} mood - Modo gramatical
+ * @param {string} tense - Tiempo verbal
+ * @returns {string} Nombre amigable
+ */
+function formatMoodTense(mood, tense) {
+  const moodLabel = MOOD_LABELS[mood] || mood
+  const tenseLabel = TENSE_LABELS[tense] || tense
+  
+  // Para subjuntivo, el tiempo ya incluye "de subjuntivo"
+  if (mood === 'subjunctive' && tenseLabel.includes('subjuntivo')) {
+    return tenseLabel
+  }
+  
+  // Para otros casos, combinar modo y tiempo
+  if (mood === 'indicative') {
+    return tenseLabel // "Presente", "Pretérito imperfecto", etc.
+  }
+  
+  return `${tenseLabel} (${moodLabel})` // "Presente (Condicional)", etc.
+}
+
+/**
  * Obtiene recomendaciones inteligentes basadas en análisis de datos reales
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Lista de recomendaciones personalizadas
@@ -226,10 +285,11 @@ export async function getIntelligentRecommendations(userId) {
       .slice(0, 3)
     
     if (strugglingCells.length > 0) {
+      const formattedCells = strugglingCells.map(c => formatMoodTense(c.mood, c.tense))
       recommendations.push({
         id: 'focus-struggling',
         title: 'Refuerza tus áreas débiles',
-        description: `Enfócate en: ${strugglingCells.map(c => `${c.mood}/${c.tense}`).join(', ')}`,
+        description: `Enfócate en: ${formattedCells.join(', ')}`,
         priority: 'high'
       })
     }
@@ -274,10 +334,11 @@ export async function getIntelligentRecommendations(userId) {
         .slice(0, 2)
       
       if (oldestMastered.length > 0) {
+        const formattedCells = oldestMastered.map(c => formatMoodTense(c.mood, c.tense))
         recommendations.push({
           id: 'maintain-mastery',
           title: 'Mantén tu dominio',
-          description: `Repasa: ${oldestMastered.map(c => `${c.mood}/${c.tense}`).join(', ')} para mantener el nivel`,
+          description: `Repasa: ${formattedCells.join(', ')} para mantener el nivel`,
           priority: 'low'
         })
       }
