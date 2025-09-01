@@ -5,24 +5,37 @@
 
 // Verbos que SOLO pueden aparecer en niveles A1-A2 (muy básicos)
 export const A1_A2_ONLY_VERBS = [
-  // Verbos súper básicos A1
+  // Verbos súper básicos A1 (regulares e irregulares esenciales)
   'ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber', 'querer',
   'poder', 'venir', 'poner', 'salir', 'hablar', 'comer', 'vivir', 'trabajar',
-  'estudiar', 'llamar', 'llevar', 'encontrar', 'pensar', 'llegar', 'pasar',
+  'estudiar', 'llamar', 'llevar', 'encontrar', 'llegar', 'pasar',
   'quedar', 'deber', 'seguir', 'preguntar',
   
-  // Verbos básicos que FALTABAN y deberían ser A1
-  'escuchar', 'caminar', 'leer', 'escribir', 'beber', 'dormir', 'abrir', 'cerrar',
-  'mirar', 'comprar', 'vender', 'aprender', 'enseñar', 'ayudar', 'usar', 'subir',
-  'bajar', 'entrar', 'salir', 'esperar', 'ganar', 'perder', 'jugar', 'cantar',
+  // IRREGULARES BÁSICOS A1 que estaban mal clasificados como B1
+  'pensar',    // e→ie - "¿Qué piensas?" es súper básico
+  'cerrar',    // e→ie - cerrar la puerta/ventana, esencial
+  'empezar',   // e→ie - empezar clase/trabajo, muy común
+  'comenzar',  // e→ie - sinónimo de empezar
+  'despertar', // e→ie - rutina diaria básica
+  'volver',    // o→ue - volver a casa, muy básico
+  'contar',    // o→ue - contar números, fundamental A1
+  'mostrar',   // o→ue - mostrar/enseñar, básico
+  'dormir',    // o→ue→u - rutina diaria esencial
+  'jugar',     // u→ue - actividad básica, único u→ue común
+  'conocer',   // -zco - conocer personas, súper básico
+  
+  // Verbos básicos regulares que FALTABAN 
+  'escuchar', 'caminar', 'leer', 'escribir', 'beber', 'abrir', 'mirar', 
+  'comprar', 'vender', 'aprender', 'enseñar', 'ayudar', 'usar', 'subir',
+  'bajar', 'entrar', 'esperar', 'ganar', 'perder', 'cantar',
   'bailar', 'cocinar', 'limpiar', 'lavar', 'correr', 'nadar', 'manejar', 'viajar',
-  'descansar', 'levantar', 'sentar', 'acostar', 'despertar', 'ducharse', 'vestirse',
+  'descansar', 'levantar', 'sentar', 'acostar', 'ducharse', 'vestirse',
   
   // Verbos de emociones y estados básicos A1  
   'gustar', 'amar', 'odiar', 'necesitar', 'desear', 'preferir', 'sentir',
   
   // Verbos de comunicación básica A1
-  'entender', 'repetir', 'explicar', 'contestar', 'responder', 'preguntar',
+  'entender', 'repetir', 'explicar', 'contestar', 'responder',
   
   // Verbos de ubicación y movimiento A1
   'buscar', 'tocar', 'tomar', 'dejar', 'traer', 'tirar', 'empujar'
@@ -30,16 +43,20 @@ export const A1_A2_ONLY_VERBS = [
 
 // Verbos irregulares que pueden aparecer desde B1 (intermedios)
 export const B1_ALLOWED_IRREGULAR_VERBS = [
-  // Diptongación común
-  'pensar', 'cerrar', 'empezar', 'comenzar', 'despertar', 
-  'volver', 'poder', 'contar', 'mostrar', 'dormir', 'morir',
-  'jugar', // Solo jugar, no otros u→ue
-  // e→i comunes
+  // Diptongación o→ue menos común
+  'morir', 'recordar', 'soñar', 'almorzar', 'costar', 'probar', 'encontrar',
+  'volar', 'sonar', 'llorar', 'rogar',
+  
+  // e→i comunes (más complejos que A1)
   'pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir',
-  // Algunos irregulares comunes
-  'conocer', 'parecer', 'crecer', 'nacer',
+  'competir', 'impedir', 'medir', 'vestir',
+  
+  // -zco más complejos que "conocer"
+  'parecer', 'crecer', 'nacer', 'establecer', 'ofrecer', 'agradecer',
+  'merecer', 'pertenecer', 'reconocer', 'desconocer',
+  
   // Cambios ortográficos básicos
-  'coger', 'proteger', 'elegir', 'dirigir', 'corregir'
+  'coger', 'proteger', 'elegir', 'dirigir', 'corregir', 'recoger'
 ]
 
 // Verbos irregulares raros que SOLO aparecen en B2+ (avanzados)
