@@ -98,17 +98,16 @@ export function chooseNext({forms, history, currentItem}){
     nextSecondPerson, cliticsPercent
   } = allSettings
   
-  // CRITICAL DEBUG: Log settings at start of chooseNext
-  if (practiceMode === 'specific' && (specificMood || specificTense)) {
-    console.log('🚨 CHOOSENEXT CRITICAL DEBUG - Settings:', {
-      practiceMode,
-      specificMood,
-      specificTense,
-      verbType,
-      level,
-      cameFromTema
-    })
-  }
+  // CRITICAL DEBUG: Log ALL settings at start of chooseNext  
+  console.log('🚨 CHOOSENEXT CRITICAL DEBUG - ALL Settings:', {
+    practiceMode,
+    verbType,
+    specificMood, 
+    specificTense,
+    level,
+    region,
+    cameFromTema
+  })
   
   if (process.env.NODE_ENV === 'development') {
     console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
@@ -286,9 +285,18 @@ export function chooseNext({forms, history, currentItem}){
     // QUICK FIX: Para práctica mixta (sin verbType específico), permitir todos los verbos
     const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
     
+    // DEBUG CRÍTICO: Verificar configuración de verbType para TODOS los verbos
+    if (verbType === 'regular') {
+      console.log(`🔍 VERBTYPE DEBUG - ${f.lemma}: verbType=${verbType}, isMixedPractice=${isMixedPractice}, verb.type=${verb.type}`)
+    }
+    
     if (verbType === 'regular' && !isMixedPractice) {
+      // DEBUG CRÍTICO: Verificar por qué verbos irregulares pasan este filtro
       if (verb.type !== 'regular') {
+        console.log(`🚨 FILTRO VERBTYPE DEBUG - Filtrando verbo irregular: ${f.lemma}, verb.type: ${verb.type}, verbType setting: ${verbType}`)
         return false
+      } else {
+        console.log(`✅ FILTRO VERBTYPE DEBUG - Permitiendo verbo regular: ${f.lemma}, verb.type: ${verb.type}, verbType setting: ${verbType}`)
       }
     } else if (verbType === 'irregular' && !isMixedPractice) {
       // For compound tenses, check if the verb has an irregular participle first

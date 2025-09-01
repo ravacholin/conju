@@ -82,7 +82,18 @@ export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 
 try { sanitizeVerbsInPlace(verbs) } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('Data sanitizer failed:', e) }
 
 // Pre-computar mapas frecuentemente utilizados
-export const VERB_LOOKUP_MAP = new Map(verbs.map(v => [v.lemma, v]))
+// FIX CRÍTICO: Manejar sufijos _priority para lookup correcto
+export const VERB_LOOKUP_MAP = new Map()
+verbs.forEach(verb => {
+  // Mapear lemma completo (ej: "caer_priority")
+  VERB_LOOKUP_MAP.set(verb.lemma, verb)
+  
+  // Si tiene sufijo _priority, también mapear el lemma base (ej: "caer")
+  if (verb.lemma.endsWith('_priority')) {
+    const baseLemma = verb.lemma.replace('_priority', '')
+    VERB_LOOKUP_MAP.set(baseLemma, verb)
+  }
+})
 export const FORM_LOOKUP_MAP = new Map()
 
 // Inicializar form lookup map

@@ -148,9 +148,28 @@ export function useDrillMode() {
       const pickFromDue = dueCells.find(Boolean)
       if (pickFromDue) {
         // CRITICAL: Use eligibleForms instead of allFormsForRegion
-        const candidateForms = eligibleForms.filter(f =>
+        let candidateForms = eligibleForms.filter(f =>
           f.mood === pickFromDue.mood && f.tense === pickFromDue.tense && f.person === pickFromDue.person
         )
+        
+        // CRITICAL FIX: Apply verbType filtering to SRS recommendations
+        const { verbType } = settings
+        if (verbType === 'regular') {
+          candidateForms = candidateForms.filter(f => {
+            const verb = verbs.find(v => v.lemma === f.lemma)
+            if (!verb) return false
+            return verb.type === 'regular'
+          })
+          console.log('🚨 SRS VERBTYPE FILTER - Filtered to regular verbs:', candidateForms.length)
+        } else if (verbType === 'irregular') {
+          candidateForms = candidateForms.filter(f => {
+            const verb = verbs.find(v => v.lemma === f.lemma)
+            if (!verb) return false
+            return verb.type === 'irregular'
+          })
+          console.log('🚨 SRS VERBTYPE FILTER - Filtered to irregular verbs:', candidateForms.length)
+        }
+        
         if (candidateForms.length > 0) {
           nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
           selectionMethod = 'srs_due'
@@ -196,6 +215,24 @@ export function useDrillMode() {
               if (specificVerbForms.length > 0) {
                 candidateForms = specificVerbForms
               }
+            }
+            
+            // CRITICAL FIX: Apply verbType filtering to adaptive recommendations
+            const { verbType } = settings
+            if (verbType === 'regular') {
+              candidateForms = candidateForms.filter(f => {
+                const verb = verbs.find(v => v.lemma === f.lemma)
+                if (!verb) return false
+                return verb.type === 'regular'
+              })
+              console.log('🚨 VERBTYPE FILTER - Filtered to regular verbs:', candidateForms.length)
+            } else if (verbType === 'irregular') {
+              candidateForms = candidateForms.filter(f => {
+                const verb = verbs.find(v => v.lemma === f.lemma)
+                if (!verb) return false
+                return verb.type === 'irregular'
+              })
+              console.log('🚨 VERBTYPE FILTER - Filtered to irregular verbs:', candidateForms.length)
             }
             
             if (candidateForms.length > 0) {
