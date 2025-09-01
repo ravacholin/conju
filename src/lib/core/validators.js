@@ -114,19 +114,66 @@ export class VerbValidator {
         // Presente indicativo - todas las personas
         { mood: 'indicative', tense: 'pres', person: '1s' },
         { mood: 'indicative', tense: 'pres', person: '2s_tu' },
+        { mood: 'indicative', tense: 'pres', person: '2s_vos' },
         { mood: 'indicative', tense: 'pres', person: '3s' },
         { mood: 'indicative', tense: 'pres', person: '1p' },
         { mood: 'indicative', tense: 'pres', person: '2p_vosotros' },
         { mood: 'indicative', tense: 'pres', person: '3p' },
-        // Imperfecto - formas clave
+        // Imperfecto indicativo - todas las personas
         { mood: 'indicative', tense: 'impf', person: '1s' },
+        { mood: 'indicative', tense: 'impf', person: '2s_tu' },
+        { mood: 'indicative', tense: 'impf', person: '2s_vos' },
         { mood: 'indicative', tense: 'impf', person: '3s' },
-        // Futuro - formas clave  
+        { mood: 'indicative', tense: 'impf', person: '1p' },
+        { mood: 'indicative', tense: 'impf', person: '2p_vosotros' },
+        { mood: 'indicative', tense: 'impf', person: '3p' },
+        // Pretérito indefinido - todas las personas
+        { mood: 'indicative', tense: 'pretIndef', person: '1s' },
+        { mood: 'indicative', tense: 'pretIndef', person: '2s_tu' },
+        { mood: 'indicative', tense: 'pretIndef', person: '2s_vos' },
+        { mood: 'indicative', tense: 'pretIndef', person: '3s' },
+        { mood: 'indicative', tense: 'pretIndef', person: '1p' },
+        { mood: 'indicative', tense: 'pretIndef', person: '2p_vosotros' },
+        { mood: 'indicative', tense: 'pretIndef', person: '3p' },
+        // Futuro indicativo - todas las personas
         { mood: 'indicative', tense: 'fut', person: '1s' },
+        { mood: 'indicative', tense: 'fut', person: '2s_tu' },
+        { mood: 'indicative', tense: 'fut', person: '2s_vos' },
         { mood: 'indicative', tense: 'fut', person: '3s' },
-        // Condicional - formas clave
+        { mood: 'indicative', tense: 'fut', person: '1p' },
+        { mood: 'indicative', tense: 'fut', person: '2p_vosotros' },
+        { mood: 'indicative', tense: 'fut', person: '3p' },
+        // Condicional - todas las personas
         { mood: 'conditional', tense: 'cond', person: '1s' },
-        { mood: 'conditional', tense: 'cond', person: '3s' }
+        { mood: 'conditional', tense: 'cond', person: '2s_tu' },
+        { mood: 'conditional', tense: 'cond', person: '2s_vos' },
+        { mood: 'conditional', tense: 'cond', person: '3s' },
+        { mood: 'conditional', tense: 'cond', person: '1p' },
+        { mood: 'conditional', tense: 'cond', person: '2p_vosotros' },
+        { mood: 'conditional', tense: 'cond', person: '3p' },
+        // Presente subjuntivo - todas las personas
+        { mood: 'subjunctive', tense: 'subjPres', person: '1s' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '2s_tu' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '2s_vos' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '3s' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '1p' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '2p_vosotros' },
+        { mood: 'subjunctive', tense: 'subjPres', person: '3p' },
+        // IMPERFECTO SUBJUNTIVO - TODAS LAS PERSONAS (CLAVE!)
+        { mood: 'subjunctive', tense: 'subjImpf', person: '1s' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '2s_tu' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '2s_vos' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '3s' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '1p' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '2p_vosotros' },
+        { mood: 'subjunctive', tense: 'subjImpf', person: '3p' },
+        // Imperativo afirmativo - personas válidas
+        { mood: 'imperative', tense: 'impAff', person: '2s_tu' },
+        { mood: 'imperative', tense: 'impAff', person: '2s_vos' },
+        { mood: 'imperative', tense: 'impAff', person: '3s' },
+        { mood: 'imperative', tense: 'impAff', person: '1p' },
+        { mood: 'imperative', tense: 'impAff', person: '2p_vosotros' },
+        { mood: 'imperative', tense: 'impAff', person: '3p' }
       ];
       
       verb.paradigms?.forEach(paradigm => {
@@ -150,37 +197,94 @@ export class VerbValidator {
     return warnings
   }
 
-  // Generar forma regular esperada (MEJORADO: patrones completos)
+  // Generar forma regular esperada (COMPLETO: todos los tiempos y personas)
   getRegularForm(lemma, mood, tense, person) {
     const stem = lemma.slice(0, -2);
     const ending = lemma.slice(-2);
     
+    // PRESENTE INDICATIVO
     if (mood === 'indicative' && tense === 'pres') {
       const patterns = {
-        'ar': { '1s': 'o', '2s_tu': 'as', '3s': 'a', '1p': 'amos', '2p_vosotros': 'áis', '3p': 'an' },
-        'er': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '1p': 'emos', '2p_vosotros': 'éis', '3p': 'en' },
-        'ir': { '1s': 'o', '2s_tu': 'es', '3s': 'e', '1p': 'imos', '2p_vosotros': 'ís', '3p': 'en' }
+        'ar': { '1s': 'o', '2s_tu': 'as', '2s_vos': 'ás', '3s': 'a', '1p': 'amos', '2p_vosotros': 'áis', '3p': 'an' },
+        'er': { '1s': 'o', '2s_tu': 'es', '2s_vos': 'és', '3s': 'e', '1p': 'emos', '2p_vosotros': 'éis', '3p': 'en' },
+        'ir': { '1s': 'o', '2s_tu': 'es', '2s_vos': 'ís', '3s': 'e', '1p': 'imos', '2p_vosotros': 'ís', '3p': 'en' }
       };
       return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
     }
     
+    // IMPERFECTO INDICATIVO
     if (mood === 'indicative' && tense === 'impf') {
       const patterns = {
-        'ar': { '1s': 'aba', '3s': 'aba' },
-        'er': { '1s': 'ía', '3s': 'ía' },
-        'ir': { '1s': 'ía', '3s': 'ía' }
+        'ar': { '1s': 'aba', '2s_tu': 'abas', '2s_vos': 'abas', '3s': 'aba', '1p': 'ábamos', '2p_vosotros': 'abais', '3p': 'aban' },
+        'er': { '1s': 'ía', '2s_tu': 'ías', '2s_vos': 'ías', '3s': 'ía', '1p': 'íamos', '2p_vosotros': 'íais', '3p': 'ían' },
+        'ir': { '1s': 'ía', '2s_tu': 'ías', '2s_vos': 'ías', '3s': 'ía', '1p': 'íamos', '2p_vosotros': 'íais', '3p': 'ían' }
       };
       return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
     }
     
+    // PRETÉRITO INDEFINIDO
+    if (mood === 'indicative' && tense === 'pretIndef') {
+      const patterns = {
+        'ar': { '1s': 'é', '2s_tu': 'aste', '2s_vos': 'aste', '3s': 'ó', '1p': 'amos', '2p_vosotros': 'asteis', '3p': 'aron' },
+        'er': { '1s': 'í', '2s_tu': 'iste', '2s_vos': 'iste', '3s': 'ió', '1p': 'imos', '2p_vosotros': 'isteis', '3p': 'ieron' },
+        'ir': { '1s': 'í', '2s_tu': 'iste', '2s_vos': 'iste', '3s': 'ió', '1p': 'imos', '2p_vosotros': 'isteis', '3p': 'ieron' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    // FUTURO INDICATIVO
     if (mood === 'indicative' && tense === 'fut') {
-      const patterns = { '1s': 'é', '3s': 'á' };
+      const patterns = { '1s': 'é', '2s_tu': 'ás', '2s_vos': 'ás', '3s': 'á', '1p': 'emos', '2p_vosotros': 'éis', '3p': 'án' };
       return patterns[person] ? lemma + patterns[person] : null;
     }
     
+    // CONDICIONAL
     if (mood === 'conditional' && tense === 'cond') {
-      const patterns = { '1s': 'ía', '3s': 'ía' };
+      const patterns = { '1s': 'ía', '2s_tu': 'ías', '2s_vos': 'ías', '3s': 'ía', '1p': 'íamos', '2p_vosotros': 'íais', '3p': 'ían' };
       return patterns[person] ? lemma + patterns[person] : null;
+    }
+    
+    // PRESENTE SUBJUNTIVO
+    if (mood === 'subjunctive' && tense === 'subjPres') {
+      const patterns = {
+        'ar': { '1s': 'e', '2s_tu': 'es', '2s_vos': 'es', '3s': 'e', '1p': 'emos', '2p_vosotros': 'éis', '3p': 'en' },
+        'er': { '1s': 'a', '2s_tu': 'as', '2s_vos': 'as', '3s': 'a', '1p': 'amos', '2p_vosotros': 'áis', '3p': 'an' },
+        'ir': { '1s': 'a', '2s_tu': 'as', '2s_vos': 'as', '3s': 'a', '1p': 'amos', '2p_vosotros': 'áis', '3p': 'an' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    // IMPERFECTO SUBJUNTIVO (subjImpf) - ¡CLAVE!
+    if (mood === 'subjunctive' && tense === 'subjImpf') {
+      const patterns = {
+        'ar': { '1s': 'ara', '2s_tu': 'aras', '2s_vos': 'aras', '3s': 'ara', '1p': 'áramos', '2p_vosotros': 'arais', '3p': 'aran' },
+        'er': { '1s': 'iera', '2s_tu': 'ieras', '2s_vos': 'ieras', '3s': 'iera', '1p': 'iéramos', '2p_vosotros': 'ierais', '3p': 'ieran' },
+        'ir': { '1s': 'iera', '2s_tu': 'ieras', '2s_vos': 'ieras', '3s': 'iera', '1p': 'iéramos', '2p_vosotros': 'ierais', '3p': 'ieran' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    // IMPERATIVO AFIRMATIVO
+    if (mood === 'imperative' && tense === 'impAff') {
+      const patterns = {
+        'ar': { '2s_tu': 'a', '2s_vos': 'á', '3s': 'e', '1p': 'emos', '2p_vosotros': 'ad', '3p': 'en' },
+        'er': { '2s_tu': 'e', '2s_vos': 'é', '3s': 'a', '1p': 'amos', '2p_vosotros': 'ed', '3p': 'an' },
+        'ir': { '2s_tu': 'e', '2s_vos': 'í', '3s': 'a', '1p': 'amos', '2p_vosotros': 'id', '3p': 'an' }
+      };
+      return patterns[ending]?.[person] ? stem + patterns[ending][person] : null;
+    }
+    
+    // FORMAS NO FINITAS
+    if (mood === 'nonfinite') {
+      if (tense === 'inf') return lemma;
+      if (tense === 'ger') {
+        const patterns = { 'ar': 'ando', 'er': 'iendo', 'ir': 'iendo' };
+        return patterns[ending] ? stem + patterns[ending] : null;
+      }
+      if (tense === 'part') {
+        const patterns = { 'ar': 'ado', 'er': 'ido', 'ir': 'ido' };
+        return patterns[ending] ? stem + patterns[ending] : null;
+      }
     }
     
     return null;
