@@ -23,7 +23,8 @@ import {
   // verbCategorizationCache,  // UNUSED
   formFilterCache,
   // combinationCache,        // UNUSED
-  warmupCaches 
+  warmupCaches,
+  clearAllCaches
 } from './optimizedCache.js'
 
 // Fast lookups (ahora usando cache optimizado)
@@ -96,6 +97,18 @@ export function chooseNext({forms, history, currentItem}){
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
     nextSecondPerson, cliticsPercent
   } = allSettings
+  
+  // CRITICAL DEBUG: Log settings at start of chooseNext
+  if (practiceMode === 'specific' && (specificMood || specificTense)) {
+    console.log('🚨 CHOOSENEXT CRITICAL DEBUG - Settings:', {
+      practiceMode,
+      specificMood,
+      specificTense,
+      verbType,
+      level,
+      cameFromTema
+    })
+  }
   
   if (process.env.NODE_ENV === 'development') {
     console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
@@ -620,6 +633,63 @@ export function chooseNext({forms, history, currentItem}){
       }
     }
     
+    // CRITICAL DEBUG: Log chosen exercise from advanced engine
+    if (practiceMode === 'specific' && (specificMood || specificTense)) {
+      console.log('🚨 CRITICAL - Returning exercise from ADVANCED ENGINE:', {
+        lemma: finalForm.lemma,
+        mood: finalForm.mood,
+        tense: finalForm.tense,
+        person: finalForm.person,
+        value: finalForm.value,
+        expectedMood: specificMood,
+        expectedTense: specificTense,
+        MATCHES_MOOD: finalForm.mood === specificMood,
+        MATCHES_TENSE: finalForm.tense === specificTense
+      })
+    }
+    
+    // STRICT VALIDATION: Prevent incorrect exercises from being returned
+    if (practiceMode === 'specific') {
+      if (specificMood && finalForm.mood !== specificMood) {
+        console.error('🚨 CRITICAL ERROR: Mood mismatch detected in ADVANCED ENGINE!', {
+          expected: specificMood,
+          actual: finalForm.mood,
+          form: finalForm
+        })
+        // Clear caches to prevent corrupted data from persisting
+        console.warn('🧹 Clearing caches due to filtering error')
+        clearAllCaches()
+        
+        // Try to find a correct form from eligible forms as last resort
+        const correctForms = eligible.filter(f => f.mood === specificMood && (!specificTense || f.tense === specificTense))
+        if (correctForms.length > 0) {
+          console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
+          return correctForms[Math.floor(Math.random() * correctForms.length)]
+        }
+        // If no correct form found, throw error to prevent wrong exercise
+        throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
+      }
+      if (specificTense && finalForm.tense !== specificTense) {
+        console.error('🚨 CRITICAL ERROR: Tense mismatch detected in ADVANCED ENGINE!', {
+          expected: specificTense,
+          actual: finalForm.tense,
+          form: finalForm
+        })
+        // Clear caches to prevent corrupted data from persisting
+        console.warn('🧹 Clearing caches due to filtering error')
+        clearAllCaches()
+        
+        // Try to find a correct form from eligible forms as last resort
+        const correctForms = eligible.filter(f => (!specificMood || f.mood === specificMood) && f.tense === specificTense)
+        if (correctForms.length > 0) {
+          console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
+          return correctForms[Math.floor(Math.random() * correctForms.length)]
+        }
+        // If no correct form found, throw error to prevent wrong exercise
+        throw new Error(`No valid exercises found for ${specificMood ? `${specificMood} / ` : ''}${specificTense}`)
+      }
+    }
+    
     return finalForm
   }
   
@@ -683,6 +753,63 @@ export function chooseNext({forms, history, currentItem}){
     useSettings.getState().set({ nextSecondPerson: randomPerson === '2s_tu' ? '2s_vos' : '2s_tu' })
   }
   
+  
+  // CRITICAL DEBUG: Log chosen exercise from fallback
+  if (practiceMode === 'specific' && (specificMood || specificTense)) {
+    console.log('🚨 CRITICAL - Returning exercise from FALLBACK:', {
+      lemma: fallbackSelectedForm.lemma,
+      mood: fallbackSelectedForm.mood,
+      tense: fallbackSelectedForm.tense,
+      person: fallbackSelectedForm.person,
+      value: fallbackSelectedForm.value,
+      expectedMood: specificMood,
+      expectedTense: specificTense,
+      MATCHES_MOOD: fallbackSelectedForm.mood === specificMood,
+      MATCHES_TENSE: fallbackSelectedForm.tense === specificTense
+    })
+  }
+  
+  // STRICT VALIDATION: Prevent incorrect exercises from being returned
+  if (practiceMode === 'specific') {
+    if (specificMood && fallbackSelectedForm.mood !== specificMood) {
+      console.error('🚨 CRITICAL ERROR: Mood mismatch detected!', {
+        expected: specificMood,
+        actual: fallbackSelectedForm.mood,
+        form: fallbackSelectedForm
+      })
+      // Clear caches to prevent corrupted data from persisting
+      console.warn('🧹 Clearing caches due to filtering error')
+      clearAllCaches()
+      
+      // Try to find a correct form from eligible forms as last resort
+      const correctForms = eligible.filter(f => f.mood === specificMood && (!specificTense || f.tense === specificTense))
+      if (correctForms.length > 0) {
+        console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
+        return correctForms[Math.floor(Math.random() * correctForms.length)]
+      }
+      // If no correct form found, throw error to prevent wrong exercise
+      throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
+    }
+    if (specificTense && fallbackSelectedForm.tense !== specificTense) {
+      console.error('🚨 CRITICAL ERROR: Tense mismatch detected!', {
+        expected: specificTense,
+        actual: fallbackSelectedForm.tense,
+        form: fallbackSelectedForm
+      })
+      // Clear caches to prevent corrupted data from persisting
+      console.warn('🧹 Clearing caches due to filtering error')
+      clearAllCaches()
+      
+      // Try to find a correct form from eligible forms as last resort
+      const correctForms = eligible.filter(f => (!specificMood || f.mood === specificMood) && f.tense === specificTense)
+      if (correctForms.length > 0) {
+        console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
+        return correctForms[Math.floor(Math.random() * correctForms.length)]
+      }
+      // If no correct form found, throw error to prevent wrong exercise
+      throw new Error(`No valid exercises found for ${specificMood ? `${specificMood} / ` : ''}${specificTense}`)
+    }
+  }
   
   return fallbackSelectedForm
 }

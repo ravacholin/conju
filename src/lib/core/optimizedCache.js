@@ -136,6 +136,17 @@ export function warmupCaches() {
   }
 }
 
+// Función para limpiar todos los caches (útil para debugging)
+export function clearAllCaches() {
+  verbCategorizationCache.clear()
+  formFilterCache.clear()
+  combinationCache.clear()
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🧹 Todos los caches han sido limpiados')
+  }
+}
+
 // Función para obtener estadísticas de performance
 export function getCacheStats() {
   return {
@@ -147,12 +158,8 @@ export function getCacheStats() {
   }
 }
 
-// Limpiar caches cuando sea necesario
-export function clearAllCaches() {
-  verbCategorizationCache.clear()
-  formFilterCache.clear()
-  combinationCache.clear()
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🧹 Todos los caches limpiados')
-  }
+// Make cache management functions available globally for debugging
+if (typeof window !== 'undefined') {
+  window.clearAllCaches = clearAllCaches
+  window.getCacheStats = getCacheStats
 }
