@@ -335,32 +335,29 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
             showDetailedView={false}
             onSelectRecommendation={(recommendation) => {
               try {
+                if (recommendation?.type === 'personalized_session' && recommendation.session) {
+                  // Build a currentBlock from session activities
+                  const combos = []
+                  ;(recommendation.session.activities || []).forEach(act => {
+                    (act.combos || []).forEach(c => { if (c?.mood && c?.tense) combos.push({ mood: c.mood, tense: c.tense }) })
+                  })
+                  if (combos.length > 0) {
+                    settings.set({ practiceMode: 'mixed', currentBlock: { combos, itemsRemaining: recommendation.session.estimatedItems || combos.length * 3 } })
+                  } else {
+                    settings.set({ practiceMode: 'mixed', currentBlock: null })
+                  }
+                  if (onNavigateToDrill) onNavigateToDrill()
+                  return
+                }
+
                 const mood = recommendation?.targetCombination?.mood
                 const tense = recommendation?.targetCombination?.tense
-                
-                if (!mood || !tense) {
-                  console.error('❌ DASHBOARD - Invalid recommendation: missing mood or tense')
-                  return
-                }
-                
-                // PRE-VALIDATION: Check if combination is available before proceeding
+                if (!mood || !tense) return
                 const allForms = buildFormsForRegion(settings.region)
                 const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
-                
-                if (!isValid) {
-                  console.error(`❌ DASHBOARD - Invalid combination: ${mood}/${tense} not available`)
-                  return
-                }
-                
-                // Update configuration for specific practice
+                if (!isValid) return
                 settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-                // Navigate to drill mode
-                if (onNavigateToDrill) {
-                  onNavigateToDrill()
-                } else {
-                  // Fallback: dispatch event for when accessed from drill
-                  window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
-                }
+                if (onNavigateToDrill) onNavigateToDrill()
               } catch (e) {
                 console.error('Error processing recommendation:', e)
               }

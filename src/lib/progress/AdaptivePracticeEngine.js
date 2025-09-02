@@ -290,6 +290,75 @@ export class AdaptivePracticeEngine {
   }
 
   /**
+   * Construye una sesión personalizada en base a progreso real
+   * @param {number} duration - minutos (10, 15, 20)
+   * @returns {Promise<{duration:number, estimatedItems:number, focusAreas:string[], activities:Array}>}
+   */
+  async getPersonalizedSession(duration = 15) {
+    try {
+      const minutes = Math.max(5, Math.min(30, Number(duration) || 15))
+      // Estimación sencilla: ~3 ítems por minuto
+      const estimatedItems = Math.max(6, Math.round(minutes * 3))
+
+      // Datos de usuario
+      const [masteryRecords, dueItems, userStats] = await Promise.all([
+        getMasteryByUser(this.userId),
+        getDueSchedules(this.userId, new Date()),
+        getRealUserStats(this.userId)
+      ])
+
+      // Actividades base: repaso SRS, áreas débiles y (opcional) contenido nuevo
+      const review = await this.getReviewRecommendations(dueItems, masteryRecords)
+      const weak = await this.getWeakAreaRecommendations(masteryRecords, userStats)
+      const newc = await this.getNewContentRecommendations(masteryRecords, 'B1')
+
+      // Selección proporcional a la duración
+      const take = (arr, n) => arr.slice(0, Math.max(0, n))
+      const reviewActs = take(review, minutes >= 15 ? 3 : 2)
+      const weakActs = take(weak, minutes >= 15 ? 2 : 1)
+      const newActs = minutes >= 15 ? take(newc, 1) : []
+
+      // Construir combos para cada actividad (mood/tense)
+      const toCombo = (a) => a?.targetCombination ? ({ mood: a.targetCombination.mood, tense: a.targetCombination.tense }) : null
+      const reviewCombos = reviewActs.map(toCombo).filter(Boolean)
+      const weakCombos = weakActs.map(toCombo).filter(Boolean)
+      const newCombos = newActs.map(toCombo).filter(Boolean)
+
+      const focusAreas = [
+        ...(weakActs[0]?.title ? [weakActs[0].title] : []),
+        ...(reviewActs[0]?.title ? [reviewActs[0].title] : []),
+        ...(newActs[0]?.title ? [newActs[0].title] : [])
+      ]
+
+      // Reparto de tiempo aproximado
+      const alloc = (p) => Math.max(3, Math.round((p * minutes)))
+      const actReview = { type: 'spaced_review', title: 'Repaso SRS', allocatedTime: alloc(0.45), combos: reviewCombos }
+      const actWeak = { type: 'weak_area_practice', title: 'Áreas débiles', allocatedTime: alloc(0.35), combos: weakCombos }
+      const actNew = newCombos.length > 0 ? { type: 'new_content', title: 'Contenido nuevo', allocatedTime: Math.max(2, minutes - actReview.allocatedTime - actWeak.allocatedTime), combos: newCombos } : null
+
+      const activities = [actReview, actWeak, ...(actNew ? [actNew] : [])]
+
+      return {
+        duration: minutes,
+        estimatedItems,
+        focusAreas,
+        activities
+      }
+    } catch (error) {
+      console.error('Error building personalized session:', error)
+      // Fallback mínimo usable
+      return {
+        duration: Number(duration) || 15,
+        estimatedItems: 15,
+        focusAreas: ['Repaso SRS'],
+        activities: [
+          { type: 'spaced_review', title: 'Repaso SRS', allocatedTime: Number(duration) || 15, combos: [] }
+        ]
+      }
+    }
+  }
+
+  /**
    * Calculate recommendation distribution based on level characteristics
    */
   calculateRecommendationDistribution(levelWeights, includeNewContent) {
