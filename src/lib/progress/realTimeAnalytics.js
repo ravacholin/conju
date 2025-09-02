@@ -307,8 +307,8 @@ export async function getIntelligentRecommendations(userId) {
     if (masteryRecords.length === 0) {
       recommendations.push({
         id: 'get-started',
-        title: '¡Comienza tu práctica!',
-        description: 'Realiza algunas conjugaciones para comenzar a generar datos de progreso',
+        title: '¡Comenzá tu práctica!',
+        description: 'Realizá algunas conjugaciones para empezar a generar datos de progreso',
         priority: 'high'
       })
       return recommendations
@@ -324,8 +324,8 @@ export async function getIntelligentRecommendations(userId) {
       const formattedCells = strugglingCells.map(c => formatMoodTense(c.mood, c.tense))
       recommendations.push({
         id: 'focus-struggling',
-        title: 'Refuerza tus áreas débiles',
-        description: `Enfócate en: ${formattedCells.join(', ')}`,
+        title: 'Reforzá tus áreas débiles',
+        description: `Enfocate en: ${formattedCells.join(', ')}`,
         priority: 'high'
       })
     }
@@ -334,8 +334,8 @@ export async function getIntelligentRecommendations(userId) {
     if (userStats.accuracy < 70) {
       recommendations.push({
         id: 'improve-accuracy',
-        title: 'Mejora tu precisión',
-        description: `Tu precisión actual es ${userStats.accuracy}%. Practica más lentamente para mejorar`,
+        title: 'Mejorá tu precisión',
+        description: `Tu precisión actual es ${userStats.accuracy}%. Practicá más lento para mejorar`,
         priority: 'medium'
       })
     }
@@ -344,8 +344,8 @@ export async function getIntelligentRecommendations(userId) {
     if (userStats.avgLatency > 8000) { // 8 segundos
       recommendations.push({
         id: 'improve-speed',
-        title: 'Aumenta tu velocidad',
-        description: 'Practica respuestas más rápidas. Tiempo promedio actual: ' + 
+        title: 'Aumentá tu velocidad',
+        description: 'Practicá respuestas más rápidas. Tiempo promedio actual: ' + 
                     Math.round(userStats.avgLatency / 1000) + 's',
         priority: 'low'
       })
@@ -356,8 +356,8 @@ export async function getIntelligentRecommendations(userId) {
     if (uniqueMoods < 3) {
       recommendations.push({
         id: 'expand-variety',
-        title: 'Amplía tu práctica',
-        description: 'Prueba diferentes modos gramaticales para una práctica más completa',
+        title: 'Ampliá tu práctica',
+        description: 'Probá diferentes modos gramaticales para una práctica más completa',
         priority: 'medium'
       })
     }
@@ -373,8 +373,8 @@ export async function getIntelligentRecommendations(userId) {
         const formattedCells = oldestMastered.map(c => formatMoodTense(c.mood, c.tense))
         recommendations.push({
           id: 'maintain-mastery',
-          title: 'Mantén tu dominio',
-          description: `Repasa: ${formattedCells.join(', ')} para mantener el nivel`,
+          title: 'Mantené tu dominio',
+          description: `Repasá: ${formattedCells.join(', ')} para mantener el nivel`,
           priority: 'low'
         })
       }
@@ -385,7 +385,7 @@ export async function getIntelligentRecommendations(userId) {
       recommendations.push({
         id: 'keep-going',
         title: '¡Excelente progreso!',
-        description: 'Continúa con tu práctica regular para mantener tu alto nivel',
+        description: 'Continuá con tu práctica regular para mantener tu alto nivel',
         priority: 'low'
       })
     }
@@ -397,7 +397,7 @@ export async function getIntelligentRecommendations(userId) {
       {
         id: 'general-practice',
         title: 'Práctica regular',
-        description: 'Dedica 15 minutos diarios a la práctica para mejorar constantemente',
+        description: 'Dedicá 15 minutos diarios a la práctica para mejorar constantemente',
         priority: 'medium'
       }
     ]
