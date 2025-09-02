@@ -233,9 +233,9 @@ export class AdaptivePracticeEngine {
       return {
         type: 'new_content',
         priority: combo.priority * 0.6 + (60 - (index * 10)), // Blend prioritizer priority with ordering
-        title: isCore ? `🆕 Aprende ${formatMoodTense(combo.mood, combo.tense)}` : 
-               isExploration ? `🔮 Explora ${formatMoodTense(combo.mood, combo.tense)}` :
-               `📚 Mejora ${formatMoodTense(combo.mood, combo.tense)}`,
+        title: isCore ? `Aprende ${formatMoodTense(combo.mood, combo.tense)}` : 
+               isExploration ? `Explora ${formatMoodTense(combo.mood, combo.tense)}` :
+               `Mejora ${formatMoodTense(combo.mood, combo.tense)}`,
         description: isCore ? `Nueva habilidad clave para nivel ${userLevel}` :
                     isExploration ? `Contenido avanzado - prepárate para el siguiente nivel` :
                     `Refuerza esta combinación importante`,
@@ -333,7 +333,7 @@ export class AdaptivePracticeEngine {
       .map((tense) => ({
         type: 'core_focus',
         priority: tense.priority + 20, // Boost core tense priority
-        title: `🎯 Domina ${formatMoodTense(tense.mood, tense.tense)}`,
+        title: `Domina ${formatMoodTense(tense.mood, tense.tense)}`,
         description: `Habilidad fundamental para tu nivel actual`,
         targetCombination: {
           mood: tense.mood,
