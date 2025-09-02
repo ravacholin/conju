@@ -773,6 +773,10 @@ body {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
   color: var(--bg);
   border: none;
