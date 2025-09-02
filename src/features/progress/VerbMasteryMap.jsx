@@ -12,7 +12,7 @@ export function VerbMasteryMap({ data }) {
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
-      icon: '/icons/chart.png',
+      icon: '/hechos-indicativo.png',
       description: 'Modo de la realidad y la objetividad',
       tenses: [
         { key: 'pres', label: 'Presente', group: 'simple' },
@@ -26,7 +26,7 @@ export function VerbMasteryMap({ data }) {
     },
     subjunctive: {
       label: 'Subjuntivo',
-      icon: '/icons/chart.png',
+      icon: '/posib-subj.png',
       description: 'Modo de la subjetividad y la irrealidad',
       tenses: [
         { key: 'subjPres', label: 'Presente', group: 'simple' },
@@ -37,7 +37,7 @@ export function VerbMasteryMap({ data }) {
     },
     conditional: {
       label: 'Condicional',
-      icon: '/icons/chart.png',
+      icon: '/posib-condic.png',
       description: 'Modo de la probabilidad y la cortesía',
       tenses: [
         { key: 'cond', label: 'Condicional simple', group: 'simple' },
@@ -46,7 +46,7 @@ export function VerbMasteryMap({ data }) {
     },
     imperative: {
       label: 'Imperativo',
-      icon: '/icons/chart.png',
+      icon: '/megaf-imperat.png',
       description: 'Modo del mandato y la exhortación',
       tenses: [
         { key: 'impAff', label: 'Imperativo afirmativo', group: 'simple' },
@@ -55,7 +55,7 @@ export function VerbMasteryMap({ data }) {
     },
     nonfinite: {
       label: 'Formas no personales',
-      icon: '/icons/chart.png',
+      icon: '/no-finitas-infinite.png',
       description: 'Formas verbales sin flexión personal',
       tenses: [
         { key: 'inf', label: 'Infinitivo', group: 'simple' },

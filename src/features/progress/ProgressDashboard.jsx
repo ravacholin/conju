@@ -158,7 +158,7 @@ export default function ProgressDashboard() {
 
       <section className="dashboard-section">
         <h2>
-          <img src="/icons/chart.png" alt="Radar" className="section-icon" />
+          <img src="/radar.png" alt="Radar" className="section-icon" />
           Radar de Competencias
         </h2>
         <CompetencyRadar data={radarData} />
