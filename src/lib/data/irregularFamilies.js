@@ -99,7 +99,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'ZO_VERBS',
     name: 'Verbos -cer → -zo',
     description: 'vencer, ejercer, torcer, cocer',
-    examples: ['vencer', 'ejercer', 'torcer', 'cocer', 'convencer', 'retorcer'],
+    examples: ['vencer', 'ejercer', 'torcer', 'cocer', 'convencer', 'retorcer', 'agradecer'],
     pattern: 'consonante + cer → -zo en 1ª persona: venzo, ejerzo, tuerzo, cuezo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['vencer', 'ejercer', 'torcer']
@@ -523,6 +523,7 @@ export function categorizeVerb(lemma, verbData) {
     'ejercer': ['ZO_VERBS'],
     'torcer': ['ZO_VERBS'],
     'cocer': ['ZO_VERBS'],
+    'agradecer': ['ZO_VERBS'],
     
     // Cambios de acentuación
     'prohibir': ['ACCENT_CHANGES'],
