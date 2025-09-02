@@ -216,7 +216,7 @@ export default function PracticeRecommendations({
             <img src="/icons/sparks.png" alt="Listo" className="inline-icon" />
             ¡Excelente! No hay recomendaciones específicas.
           </p>
-          <p>Continúa con tu práctica regular.</p>
+          <p>Continuá con tu práctica regular.</p>
         </div>
       ) : (
         <div className="recommendations-list">
