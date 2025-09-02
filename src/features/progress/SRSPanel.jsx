@@ -183,13 +183,16 @@ export default function SRSPanel() {
     <div className="srs-panel">
       <div className="srs-header">
         <div className="srs-title">
-          <h3>⚡ Repaso Inteligente</h3>
+          <h3>
+            <img src="/icons/bolt.png" alt="Repaso" className="section-icon" />
+            Repaso Inteligente
+          </h3>
           <p className="srs-explanation">
             El sistema te muestra exactamente qué repasar y cuándo, 
             basado en tu curva de olvido personal para maximizar la retención.
           </p>
           <div className="srs-how-it-works">
-            <span className="how-icon">🧠</span>
+            <span className="how-icon"><img src="/icons/brain.png" alt="Cómo funciona" className="inline-icon" /></span>
             <span className="how-text">Cuanto mejor domines algo, menos frecuentemente lo verás</span>
           </div>
         </div>
@@ -197,7 +200,7 @@ export default function SRSPanel() {
           className="toggle-details-btn"
           onClick={() => setShowDetails(!showDetails)}
         >
-          {showDetails ? '📋 Resumen' : '📊 Detalles'}
+          {showDetails ? 'Resumen' : 'Detalles'}
         </button>
       </div>
 
@@ -255,7 +258,7 @@ export default function SRSPanel() {
           </button>
         ) : (
           <div className="srs-no-items">
-            <div className="no-items-icon">✨</div>
+            <div className="no-items-icon"><img src="/icons/sparks.png" alt="Todo bajo control" className="inline-icon" /></div>
             <div className="no-items-title">Todo bajo control</div>
             <div className="no-items-subtitle">Vuelve más tarde o practica algo nuevo</div>
           </div>
@@ -283,7 +286,10 @@ export default function SRSPanel() {
       {showDetails && dueItems.length > 0 && (
         <div className="srs-details">
           <div className="srs-details-header">
-            <h4>📊 Cola de repaso detallada</h4>
+            <h4>
+              <img src="/icons/chart.png" alt="Cola" className="inline-icon" />
+              Cola de repaso detallada
+            </h4>
             <div className="srs-legend">
               <div className="legend-explanation">
                 Los colores indican qué tan urgente es repasar cada elemento:
@@ -352,13 +358,13 @@ export default function SRSPanel() {
 
       {stats.dueNow === 0 && stats.dueToday === 0 && (
         <div className="srs-empty">
-          <div className="empty-icon">🧠</div>
+          <div className="empty-icon"><img src="/icons/brain.png" alt="Sin pendientes" className="inline-icon" /></div>
           <div className="empty-content">
             <h4>Sistema en reposo</h4>
             <p className="empty-main">Tu memoria está consolidada por ahora</p>
             <p className="empty-sub">Continúa practicando para que el sistema aprenda tu ritmo de olvido</p>
             <div className="empty-tip">
-              <span className="tip-icon">💡</span>
+              <span className="tip-icon"><img src="/icons/lightbulb.png" alt="Tip" className="inline-icon" /></span>
               <span>Tip: Cuanto más practiques, más inteligente se vuelve el sistema</span>
             </div>
           </div>

@@ -108,7 +108,10 @@ export default function ProgressDashboard() {
   if (error) {
     return (
       <div className="progress-dashboard error">
-        <h2>❌ Error</h2>
+        <h2>
+          <img src="/icons/error.png" alt="Error" className="section-icon" />
+          Error
+        </h2>
         <p>{error}</p>
         <button onClick={() => window.location.reload()}>
           Recargar
@@ -120,11 +123,15 @@ export default function ProgressDashboard() {
   return (
     <div className="progress-dashboard">
       <header className="dashboard-header">
-        <h1>📊 Progreso y Analíticas</h1>
+        <h1>
+          <img src="/icons/chart.png" alt="Analíticas" className="section-icon" />
+          Progreso y Analíticas
+        </h1>
         <p>Seguimiento detallado de tu dominio del español</p>
         {refreshing && (
           <div className="refresh-indicator">
-            🔄 Actualizando métricas...
+            <img src="/icons/refresh.png" alt="Actualizando" className="inline-icon" />
+            <span>Actualizando métricas...</span>
           </div>
         )}
       </header>
@@ -134,7 +141,10 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>⏱️ Repaso (SRS)</h2>
+        <h2>
+          <img src="/icons/timer.png" alt="SRS" className="section-icon" />
+          Repaso (SRS)
+        </h2>
         <SRSPanel />
       </section>
 
@@ -147,12 +157,18 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>🎯 Radar de Competencias</h2>
+        <h2>
+          <img src="/icons/chart.png" alt="Radar" className="section-icon" />
+          Radar de Competencias
+        </h2>
         <CompetencyRadar data={radarData} />
       </section>
 
       <section className="dashboard-section">
-        <h2>🏆 Objetivos Semanales</h2>
+        <h2>
+          <img src="/icons/trophy.png" alt="Objetivos" className="section-icon" />
+          Objetivos Semanales
+        </h2>
         <div className="weekly-goals">
           <div className="goal-card">
             <h3>Celdas a mejorar</h3>
@@ -176,7 +192,10 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>🎯 Práctica Recomendada</h2>
+        <h2>
+          <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
+          Práctica Recomendada
+        </h2>
         <PracticeRecommendations 
           maxRecommendations={3}
           showDetailedView={false}

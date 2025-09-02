@@ -122,14 +122,14 @@ export default function PracticeRecommendations({
     }
   }
 
-  const getRecommendationIcon = (type) => {
+  const getRecommendationIconPath = (type) => {
     const icons = {
-      weak_area_practice: '🎯',
-      spaced_review: '🔄',
-      new_content: '📚',
-      balanced_practice: '⚖️'
+      weak_area_practice: '/icons/chart.png',
+      spaced_review: '/icons/refresh.png',
+      new_content: '/openbook.png',
+      balanced_practice: '/icons/chart.png'
     }
-    return icons[type] || '📝'
+    return icons[type] || '/icons/chart.png'
   }
 
   const getPriorityColor = (priority) => {
@@ -154,7 +154,10 @@ export default function PracticeRecommendations({
     return (
       <div className="practice-recommendations loading">
         <div className="recommendations-header">
-          <h3>🤖 Recomendaciones de Práctica</h3>
+          <h3>
+            <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
+            Recomendaciones de Práctica
+          </h3>
         </div>
         <div className="loading-content">
           <div className="spinner"></div>
@@ -168,10 +171,16 @@ export default function PracticeRecommendations({
     return (
       <div className="practice-recommendations error">
         <div className="recommendations-header">
-          <h3>🤖 Recomendaciones de Práctica</h3>
+          <h3>
+            <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
+            Recomendaciones de Práctica
+          </h3>
         </div>
         <div className="error-content">
-          <p>❌ {error}</p>
+          <p>
+            <img src="/icons/error.png" alt="Error" className="inline-icon" />
+            {error}
+          </p>
           <button onClick={loadRecommendations} className="retry-btn">
             Intentar de nuevo
           </button>
@@ -183,24 +192,30 @@ export default function PracticeRecommendations({
   return (
     <div className="practice-recommendations">
       <div className="recommendations-header">
-        <h3>🤖 Recomendaciones de Práctica</h3>
+        <h3>
+          <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
+          Recomendaciones de Práctica
+        </h3>
         <div className="focus-mode-selector">
           <select 
             value={focusMode} 
             onChange={(e) => setFocusMode(e.target.value)}
             className="mode-select"
           >
-            <option value="balanced">⚖️ Balanceado</option>
-            <option value="weak_areas">🎯 Áreas débiles</option>
-            <option value="review">🔄 Repaso</option>
-            <option value="new">📚 Contenido nuevo</option>
+            <option value="balanced">Balanceado</option>
+            <option value="weak_areas">Áreas débiles</option>
+            <option value="review">Repaso</option>
+            <option value="new">Contenido nuevo</option>
           </select>
         </div>
       </div>
 
       {recommendations.length === 0 ? (
         <div className="no-recommendations">
-          <p>🎉 ¡Excelente! No hay recomendaciones específicas.</p>
+          <p>
+            <img src="/icons/sparks.png" alt="Listo" className="inline-icon" />
+            ¡Excelente! No hay recomendaciones específicas.
+          </p>
           <p>Continúa con tu práctica regular.</p>
         </div>
       ) : (
@@ -217,7 +232,7 @@ export default function PracticeRecommendations({
               >
                 <div className="recommendation-header">
                   <span className="recommendation-icon">
-                    {getRecommendationIcon(rec.type)}
+                    <img src={getRecommendationIconPath(rec.type)} alt={rec.type} className="inline-icon" />
                   </span>
                   <h4 className="recommendation-title">{rec.title}</h4>
                   <span className={`priority-badge ${priorityClass}`}>
@@ -232,7 +247,8 @@ export default function PracticeRecommendations({
                     {difficultyBadge.text}
                   </span>
                   <span className="duration-badge">
-                    ⏱️ {rec.estimatedDuration}
+                    <img src="/icons/timer.png" alt="Duración" className="inline-icon" />
+                    {rec.estimatedDuration}
                   </span>
                   {rec.targetCombination && (
                     <span className="target-badge">
@@ -258,7 +274,10 @@ export default function PracticeRecommendations({
       )}
 
       <div className="session-planner">
-        <h4>📅 Sesión Personalizada</h4>
+        <h4>
+          <img src="/icons/calendar.png" alt="Sesión" className="inline-icon" />
+          Sesión Personalizada
+        </h4>
         <div className="session-controls">
           <button 
             onClick={() => loadPersonalizedSession(10)}
@@ -284,15 +303,18 @@ export default function PracticeRecommendations({
           <div className="session-preview">
             <h5>Plan de Sesión ({selectedSession.duration} min)</h5>
             <div className="session-stats">
-              <span>📝 ~{selectedSession.estimatedItems} elementos</span>
-              <span>🎯 {(selectedSession.focusAreas || []).join(', ')}</span>
+              <span>~{selectedSession.estimatedItems} elementos</span>
+              <span>{(selectedSession.focusAreas || []).join(', ')}</span>
             </div>
             <div className="session-activities">
               {(selectedSession.activities || []).map((activity, index) => (
                 <div key={index} className="session-activity">
                   <span className="activity-icon">{getRecommendationIcon(activity.type)}</span>
                   <span className="activity-title">{activity.title}</span>
-                  <span className="activity-time">⏱️ {activity.allocatedTime}min</span>
+                  <span className="activity-time">
+                    <img src="/icons/timer.png" alt="Tiempo" className="inline-icon" />
+                    {activity.allocatedTime}min
+                  </span>
                 </div>
               ))}
             </div>
@@ -303,7 +325,7 @@ export default function PracticeRecommendations({
                 session: selectedSession 
               })}
             >
-              🚀 Iniciar Sesión
+              Iniciar Sesión
             </button>
           </div>
         )}
@@ -311,7 +333,8 @@ export default function PracticeRecommendations({
 
       <div className="recommendations-footer">
         <button onClick={loadRecommendations} className="refresh-btn">
-          🔄 Actualizar Recomendaciones
+          <img src="/icons/refresh.png" alt="Actualizar" className="inline-icon" />
+          Actualizar Recomendaciones
         </button>
         <p className="update-note">
           Las recomendaciones se actualizan basándose en tu progreso reciente.
