@@ -78,6 +78,22 @@ function AppRouter() {
     }
   }
 
+  // From Progress page: go to onboarding menu step 2 (no dialects)
+  const handleProgressMenu = () => {
+    try {
+      setCurrentMode('onboarding')
+      // Clean up state for step 2 but keep region (dialect) as selected
+      cleanupStateForStep(2)
+      onboardingFlow.setOnboardingStep(2)
+      const historyState = { appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }
+      window.history.pushState(historyState, '')
+    } catch (e) {
+      console.warn('Failed to navigate to onboarding step 2 from progress:', e)
+      setCurrentMode('onboarding')
+      onboardingFlow.setOnboardingStep(2)
+    }
+  }
+
   // Generate next item when entering drill mode OR when settings change while in drill mode
   useEffect(() => {
     // Check if we're in drill mode
@@ -311,7 +327,10 @@ function AppRouter() {
   if (currentMode === 'progress') {
     return (
       <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
-        <ProgressDashboard onNavigateHome={handleHome} onNavigateToDrill={() => setCurrentMode('drill')} />
+        <ProgressDashboard 
+          onNavigateHome={handleProgressMenu} 
+          onNavigateToDrill={() => setCurrentMode('drill')} 
+        />
       </React.Suspense>
     )
   }
