@@ -301,7 +301,7 @@ function AppRouter() {
         selectFamily={onboardingFlow.selectFamily}
         goBack={onboardingFlow.goBack}
         goToLevelDetails={onboardingFlow.goToLevelDetails}
-        handleHome={handleHome}
+        handleHome={onboardingFlow.handleHome}
         settings={onboardingFlow.settings}
         getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}

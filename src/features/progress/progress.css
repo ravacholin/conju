@@ -56,7 +56,6 @@
 .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: #fff; transform: translateY(-2px); }
 
 .nav-icon { width: 36px; height: 36px; opacity: 0.95; filter: grayscale(100%); }
-.nav-icon.logo-icon { width: 48px; height: 48px; }
 
 .dashboard-header h1 {
   color: var(--text);
