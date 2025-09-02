@@ -12,7 +12,7 @@ export function VerbMasteryMap({ data }) {
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
-      icon: '📋',
+      icon: '/icons/chart.png',
       description: 'Modo de la realidad y la objetividad',
       tenses: [
         { key: 'pres', label: 'Presente', group: 'simple' },
@@ -26,7 +26,7 @@ export function VerbMasteryMap({ data }) {
     },
     subjunctive: {
       label: 'Subjuntivo',
-      icon: '🤔',
+      icon: '/icons/chart.png',
       description: 'Modo de la subjetividad y la irrealidad',
       tenses: [
         { key: 'subjPres', label: 'Presente', group: 'simple' },
@@ -37,7 +37,7 @@ export function VerbMasteryMap({ data }) {
     },
     conditional: {
       label: 'Condicional',
-      icon: '❓',
+      icon: '/icons/chart.png',
       description: 'Modo de la probabilidad y la cortesía',
       tenses: [
         { key: 'cond', label: 'Condicional simple', group: 'simple' },
@@ -46,7 +46,7 @@ export function VerbMasteryMap({ data }) {
     },
     imperative: {
       label: 'Imperativo',
-      icon: '❗',
+      icon: '/icons/chart.png',
       description: 'Modo del mandato y la exhortación',
       tenses: [
         { key: 'impAff', label: 'Imperativo afirmativo', group: 'simple' },
@@ -55,7 +55,7 @@ export function VerbMasteryMap({ data }) {
     },
     nonfinite: {
       label: 'Formas no personales',
-      icon: '∞',
+      icon: '/icons/chart.png',
       description: 'Formas verbales sin flexión personal',
       tenses: [
         { key: 'inf', label: 'Infinitivo', group: 'simple' },
@@ -152,7 +152,10 @@ export function VerbMasteryMap({ data }) {
     return (
       <div className="verb-mastery-map empty">
         <div className="empty-state">
-          <h3>🎯 Mapa de Dominio Verbal</h3>
+          <h3>
+            <img src="/icons/map.png" alt="Mapa" className="section-icon" />
+            Mapa de Dominio Verbal
+          </h3>
           <p>Practica algunas conjugaciones para ver tu progreso aquí.</p>
           <p>Este mapa te mostrará qué modos y tiempos dominas mejor.</p>
         </div>
@@ -162,7 +165,10 @@ export function VerbMasteryMap({ data }) {
 
   return (
     <>
-      <h2>🗺️ Mapa de Dominio por Modo y Tiempo</h2>
+      <h2>
+        <img src="/icons/map.png" alt="Mapa" className="section-icon" />
+        Mapa de Dominio por Modo y Tiempo
+      </h2>
       
       <div className="verb-mastery-map">
         {Object.keys(masteryByMode).length === 0 ? (
@@ -176,7 +182,7 @@ export function VerbMasteryMap({ data }) {
             <div key={moodKey} className="mood-section">
               <div className="mood-header">
                 <div className="mood-title">
-                  <span className="mood-icon">{mood.icon}</span>
+                  <span className="mood-icon">{typeof mood.icon === 'string' && mood.icon.startsWith('/') ? (<img src={mood.icon} alt="" className="inline-icon" />) : mood.icon}</span>
                   <div className="mood-info">
                     <h3>{mood.label}</h3>
                     <p className="mood-description">{mood.description}</p>
@@ -231,7 +237,9 @@ export function VerbMasteryMap({ data }) {
               <div>Dominio: {formatPercentage(hoveredCell.data.score)}</div>
               <div>Intentos: {hoveredCell.data.count}</div>
               <div>Nivel: {getMasteryLabel(hoveredCell.data.score, hoveredCell.data.hasData)}</div>
-              <div className="tooltip-action">🎯 Clic para practicar</div>
+              <div className="tooltip-action">
+                Clic para practicar
+              </div>
             </div>
           </div>
         )}

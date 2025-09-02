@@ -100,6 +100,7 @@
   align-items: center;
   gap: 1rem;
 }
+.mood-title .mood-icon img { width: 18px; height: 18px; filter: grayscale(100%); }
 
 .mood-icon {
   font-size: 1.618rem;

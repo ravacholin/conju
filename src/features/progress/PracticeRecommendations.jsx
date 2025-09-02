@@ -275,7 +275,7 @@ export default function PracticeRecommendations({
 
       <div className="session-planner">
         <h4>
-          <img src="/icons/calendar.png" alt="Sesión" className="inline-icon" />
+          <img src="/icons/calendar.png" alt="Sesión" className="inline-icon lg" />
           Sesión Personalizada
         </h4>
         <div className="session-controls">

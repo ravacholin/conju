@@ -43,7 +43,9 @@
 
 /* Icon helpers for progress UI */
 .section-icon { width: 22px; height: 22px; object-fit: contain; margin-right: 8px; vertical-align: middle; filter: grayscale(100%); }
+.section-icon.lg { width: 32px; height: 32px; }
 .inline-icon { width: 16px; height: 16px; object-fit: contain; margin-right: 6px; vertical-align: text-bottom; filter: grayscale(100%); }
+.inline-icon.lg { width: 20px; height: 20px; }
 
 .dashboard-header p {
   color: var(--muted);
