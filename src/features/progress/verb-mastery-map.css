@@ -190,7 +190,7 @@
     rgba(245, 245, 245, 0.02) 50%,
     transparent
   );
-  transition: left 0.5s ease;
+  transition: left 0.6s ease;
   pointer-events: none;
 }
 
@@ -201,10 +201,10 @@
 .tense-card:hover {
   background: rgba(21, 21, 21, 0.8);
   border-color: rgba(245, 245, 245, 0.12);
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 1px 0 rgba(245, 245, 245, 0.06) inset;
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.08) inset;
 }
 
 /* Mastery level styling - using CSS variables */
