@@ -18,42 +18,42 @@ export default function ErrorInsights() {
     'terminación_verbal': {
       icon: '/books.png', 
       label: 'Terminación Verbal',
-      description: 'Terminación incorrecta (-ar, -er, -ir)'
+      description: 'Terminación errónea'
     },
     'raíz_irregular': {
       icon: '/diana.png',
       label: 'Raíz Irregular',
-      description: 'Error en la raíz de verbos irregulares'
+      description: 'Error en la raíz'
     },
     'acentuación': {
       icon: '/enie.png',
       label: 'Acentuación',
-      description: 'Acentos faltantes o mal colocados'
+      description: 'Acentuación incorrecta'
     },
     'pronombres_clíticos': {
       icon: '/books.png',
       label: 'Pronombres Clíticos',
-      description: 'Errores con pronombres (me, te, se, etc.)'
+      description: 'Clíticos usados incorrectamente'
     },
     'ortografía_g/gu': {
       icon: '/books.png',
       label: 'Ortografía G/GU',
-      description: 'Confusión entre g y gu (sigo/sigues)'
+      description: 'Ortografía g/gu incorrecta'
     },
     'ortografía_c/qu': {
       icon: '/books.png',
       label: 'Ortografía C/QU',
-      description: 'Confusión entre c y qu (toco/toque)'
+      description: 'Ortografía c/qu incorrecta'
     },
     'ortografía_z/c': {
       icon: '/books.png',
       label: 'Ortografía Z/C',
-      description: 'Confusión entre z y c (hago/hice)'
+      description: 'Ortografía z/c incorrecta'
     },
     'concordancia_número': {
       icon: '/diana.png',
       label: 'Concordancia',
-      description: 'Error en singular/plural'
+      description: 'Concordancia de número incorrecta'
     },
     'modo_equivocado': {
       icon: '/diana.png',
