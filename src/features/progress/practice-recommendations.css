@@ -248,6 +248,7 @@
   flex-shrink: 0;
   opacity: 0.9;
 }
+.recommendation-icon img.inline-icon { width: 22px; height: 22px; }
 
 .recommendation-title {
   flex-grow: 1;
