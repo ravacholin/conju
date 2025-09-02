@@ -32,6 +32,34 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [refreshing, setRefreshing] = useState(false)
   const [systemReady, setSystemReady] = useState(false)
 
+  // Handle generic (lower) recommendations click
+  const handleGeneralRecommendation = (rec) => {
+    try {
+      switch (rec?.id) {
+        case 'focus-struggling':
+          // Mixed practice to let generator focus broadly; block handled by generator/history
+          settings.set({ practiceMode: 'mixed', currentBlock: null })
+          break
+        case 'maintain-mastery':
+          // Route to review session (today)
+          settings.set({ practiceMode: 'review', reviewSessionType: 'today' })
+          break
+        case 'improve-accuracy':
+        case 'improve-speed':
+        case 'expand-variety':
+        case 'keep-going':
+        case 'general-practice':
+        case 'get-started':
+        default:
+          // Default to drill with current settings
+          break
+      }
+      if (typeof onNavigateToDrill === 'function') onNavigateToDrill()
+    } catch (e) {
+      console.error('Error handling general recommendation:', e)
+    }
+  }
+
   const loadData = async (isRefresh = false) => {
     try {
       if (isRefresh) {
@@ -349,7 +377,14 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         <div className="recommendations">
           {recommendations.length > 0 ? (
             recommendations.slice(0,3).map((rec, index) => (
-              <div key={index} className={`recommendation-card priority-${rec.priority}`}>
+              <div 
+                key={index} 
+                className={`recommendation-card priority-${rec.priority}`}
+                onClick={() => handleGeneralRecommendation(rec)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleGeneralRecommendation(rec) }}
+              >
                 <h3>{rec.title}</h3>
                 <p>{rec.description}</p>
               </div>
@@ -361,4 +396,15 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       </section>
     </div>
   )
+}
+
+// Attach handler on component prototype (closure-friendly alternative)
+// This function will be hoisted by JS; it accesses settings via window if needed (fallback)
+function handleGeneralRecommendation(rec) {
+  try {
+    const evt = new CustomEvent('progress:generalRecommendation', { detail: rec })
+    window.dispatchEvent(evt)
+  } catch (e) {
+    console.warn('Failed to dispatch general recommendation event:', e)
+  }
 }
