@@ -46,6 +46,13 @@ function AppRouter() {
     } catch {
       // Ignore history API errors
     }
+
+    // Warm-up: prefetch orchestrator chunk to avoid first-attempt latency
+    try {
+      setTimeout(() => {
+        import('../lib/progress/progressOrchestrator.js').catch(() => {})
+      }, 0)
+    } catch {}
   }
 
   const handleHome = () => {
