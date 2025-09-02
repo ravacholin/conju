@@ -241,7 +241,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
             )}
             {onNavigateToDrill && (
               <button onClick={onNavigateToDrill} className="nav-btn" title="Práctica">
-                <img src="/verbosmain_transparent.png" alt="Práctica" className="nav-icon" />
+                <img src="/verbosmain_transparent.png" alt="Práctica" className="nav-icon logo-icon" />
               </button>
             )}
           </div>
