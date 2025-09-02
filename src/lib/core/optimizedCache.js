@@ -97,10 +97,18 @@ try { sanitizeVerbsInPlace(verbs) } catch (e) { if (process.env.NODE_ENV === 'de
 // FIX CRÍTICO: Manejar sufijos _priority para lookup correcto
 export const VERB_LOOKUP_MAP = new Map()
 verbs.forEach(verb => {
-  // Mapear lemma completo (ej: "caer_priority")
+  // Mapear lemma completo 
   VERB_LOOKUP_MAP.set(verb.lemma, verb)
   
-  // Si tiene sufijo _priority, también mapear el lemma base (ej: "caer")
+  // CRÍTICO: Si el ID tiene sufijo _priority pero el lemma no, mapear ambos
+  if (verb.id && verb.id.endsWith('_priority') && !verb.lemma.endsWith('_priority')) {
+    // Map both the ID and the base form to the verb
+    VERB_LOOKUP_MAP.set(verb.id, verb)
+    const baseLemma = verb.id.replace('_priority', '')
+    VERB_LOOKUP_MAP.set(baseLemma, verb)
+  }
+  
+  // Si el lemma tiene sufijo _priority, también mapear el lemma base
   if (verb.lemma.endsWith('_priority')) {
     const baseLemma = verb.lemma.replace('_priority', '')
     VERB_LOOKUP_MAP.set(baseLemma, verb)

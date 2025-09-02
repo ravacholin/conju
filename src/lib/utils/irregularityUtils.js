@@ -1,5 +1,28 @@
 // Utility functions for working with per-tense irregularity data
 
+// Mapping from form tense names to irregularityMatrix keys
+const TENSE_NAME_MAPPING = {
+  'presente': 'pres',
+  'preterito_perfecto_simple': 'pretIndef',  
+  'preterito_imperfecto': 'impf',
+  'futuro_simple': 'fut',
+  'preterito_perfecto_compuesto': 'pretPerf',
+  'preterito_pluscuamperfecto': 'plusc',
+  'futuro_compuesto': 'futPerf',
+  'presente_subjuntivo': 'subjPres',
+  'imperfecto_subjuntivo': 'subjImpf',
+  'preterito_perfecto_subjuntivo': 'subjPretPerf',
+  'pluscuamperfecto_subjuntivo': 'subjPlusc',
+  'futuro_perfecto_subjuntivo': 'subjFutPerf',
+  'condicional_simple': 'cond',
+  'condicional_compuesto': 'condPerf',
+  'imperativo_afirmativo': 'impAff',
+  'imperativo_negativo': 'impNeg',
+  'infinitivo': 'inf',
+  'gerundio': 'ger',
+  'participio': 'pp'
+}
+
 /**
  * Check if a verb is irregular in a specific tense
  * @param {Object} verb - Verb object with irregularityMatrix
@@ -7,11 +30,14 @@
  * @returns {boolean} - true if verb is irregular in that tense
  */
 export function isIrregularInTense(verb, tense) {
-  if (!verb.irregularityMatrix) {
+  if (!verb || !verb.irregularityMatrix) {
     // Fallback to old global type system
-    return verb.type === 'irregular'
+    return verb?.type === 'irregular'
   }
-  return verb.irregularityMatrix[tense] === true
+  
+  // Map form tense name to irregularityMatrix key
+  const matrixKey = TENSE_NAME_MAPPING[tense] || tense
+  return verb.irregularityMatrix[matrixKey] === true
 }
 
 /**
