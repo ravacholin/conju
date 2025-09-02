@@ -13,7 +13,7 @@ export default function ErrorInsights() {
     'persona_equivocada': {
       icon: '/diana.png',
       label: 'Persona Incorrecta',
-      description: 'Conjugación para persona diferente (yo/tú/él/etc.)'
+      description: 'Conjugación para persona diferente'
     },
     'terminación_verbal': {
       icon: '/books.png', 
@@ -58,7 +58,7 @@ export default function ErrorInsights() {
     'modo_equivocado': {
       icon: '/diana.png',
       label: 'Modo Incorrecto',
-      description: 'Uso de modo verbal incorrecto (indicativo/subjuntivo)'
+      description: 'Uso de modo verbal incorrecto'
     },
     'default': {
       icon: '/diana.png',
@@ -155,4 +155,3 @@ export default function ErrorInsights() {
     </div>
   )
 }
-
