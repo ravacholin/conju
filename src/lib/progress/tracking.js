@@ -7,14 +7,7 @@ import { PROGRESS_CONFIG } from './config.js'
 // import { calculateNextInterval, updateSchedule } from './srs.js'
 // import { calculateMasteryForItem } from './mastery.js'
 import { ERROR_TAGS } from './dataModels.js'
-// Lazy-load the orchestrator to avoid pulling heavy analytics at boot
-let processAttemptOrchestrated = null
-async function ensureOrchestrator() {
-  if (processAttemptOrchestrated) return processAttemptOrchestrated
-  const mod = await import('./progressOrchestrator.js')
-  processAttemptOrchestrated = mod.processAttempt
-  return processAttemptOrchestrated
-}
+import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
 import { updateSchedule } from './srs.js'
 
 // Estado del tracking
@@ -117,8 +110,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     // Ejecutar orquestador emocional y adjuntar al intento antes de guardar
     let orchestrated = null
     try {
-      const orchestrate = await ensureOrchestrator()
-      orchestrated = orchestrate({
+      orchestrated = processAttemptOrchestrated({
         correct: baseAttempt.correct,
         latencyMs: baseAttempt.latencyMs,
         hintsUsed: baseAttempt.hintsUsed,

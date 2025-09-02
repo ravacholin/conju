@@ -4,8 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 // Inicializar automáticamente el sistema de progreso
-// NOTE: Progress system is initialized inside AppRouter on mount.
-// Avoid importing auto-init here to reduce boot-time work and bundle size.
+import './lib/progress/autoInit.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

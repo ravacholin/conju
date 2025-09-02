@@ -4,7 +4,7 @@
 // moquean './database.js' sin ese export sigan funcionando. Lo cargamos de forma
 // perezosa y con fallback a no-op.
 import { initTracking } from './tracking.js'
-// Defer heavy item initialization to idle time with dynamic import
+import { initializeItems } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 
 // Estado del sistema
@@ -103,26 +103,11 @@ export async function initProgressSystem(userId = null) {
       await initTracking(userId)
       console.log('✅ Tracking inicializado')
       
-      // Inicializar ítems canónicos (verdaderamente no bloqueante y diferido)
+      // Inicializar ítems canónicos para analíticas (no bloqueante)
       try {
-        const scheduleIdle = (cb) => {
-          if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-            return window.requestIdleCallback(cb, { timeout: 2000 })
-          }
-          return setTimeout(cb, 0)
-        }
-        scheduleIdle(async () => {
-          try {
-            const mod = await import('./itemManagement.js')
-            if (typeof mod.initializeItems === 'function') {
-              await mod.initializeItems()
-            }
-          } catch (e) {
-            console.warn('Inicialización diferida de ítems fallida (no bloqueante):', e)
-          }
-        })
+        await initializeItems()
       } catch (e) {
-        console.warn('No se pudo programar inicialización diferida de ítems:', e)
+        console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', e)
       }
       
       // Marcar como inicializado
