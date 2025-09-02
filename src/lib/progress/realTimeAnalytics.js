@@ -225,11 +225,11 @@ export async function getRealCompetencyRadarData(userId) {
   } catch (error) {
     console.error('Error al obtener datos del radar de competencias:', error)
     return {
-      accuracy: 0,
-      speed: 0,
-      consistency: 0,
-      lexicalBreadth: 0,
-      transfer: 0
+      moodMastery: 0,
+      tenseControl: 0,
+      irregularPrecision: 0,
+      personAccuracy: 0,
+      responseSpeed: 0
     }
   }
 }
