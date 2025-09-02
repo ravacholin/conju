@@ -790,6 +790,12 @@ export function chooseNext({forms, history, currentItem}){
   
   // STRICT VALIDATION: Prevent incorrect exercises from being returned
   if (practiceMode === 'specific') {
+    const mixedMap = new Map([
+      ['impMixed', ['impAff', 'impNeg']],
+      ['nonfiniteMixed', ['ger', 'part']]
+    ])
+    const isMixedTense = specificTense && mixedMap.has(specificTense)
+    const mixedAllowed = isMixedTense ? mixedMap.get(specificTense) : null
     if (specificMood && fallbackSelectedForm.mood !== specificMood) {
       console.error('🚨 CRITICAL ERROR: Mood mismatch detected!', {
         expected: specificMood,
@@ -809,7 +815,10 @@ export function chooseNext({forms, history, currentItem}){
       // If no correct form found, throw error to prevent wrong exercise
       throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
     }
-    if (specificTense && fallbackSelectedForm.tense !== specificTense) {
+    if (specificTense && (
+      (!isMixedTense && fallbackSelectedForm.tense !== specificTense) ||
+      (isMixedTense && !mixedAllowed.includes(fallbackSelectedForm.tense))
+    )) {
       console.error('🚨 CRITICAL ERROR: Tense mismatch detected!', {
         expected: specificTense,
         actual: fallbackSelectedForm.tense,
@@ -820,7 +829,12 @@ export function chooseNext({forms, history, currentItem}){
       clearAllCaches()
       
       // Try to find a correct form from eligible forms as last resort
-      const correctForms = eligible.filter(f => (!specificMood || f.mood === specificMood) && f.tense === specificTense)
+      const correctForms = eligible.filter(f => (
+        (!specificMood || f.mood === specificMood) && (
+          (!isMixedTense && f.tense === specificTense) ||
+          (isMixedTense && mixedAllowed.includes(f.tense))
+        )
+      ))
       if (correctForms.length > 0) {
         console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
         return correctForms[Math.floor(Math.random() * correctForms.length)]
