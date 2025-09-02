@@ -260,6 +260,20 @@
 .empty-icon { margin-bottom: 1rem; }
 .empty-icon img { display: block; margin: 0 auto; }
 
+/* Override global .empty-icon sizing inside SRS empty to truly center */
+.srs-empty .empty-icon {
+  width: auto !important;
+  height: auto !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure the no-items icon is also perfectly centered */
+.srs-no-items .no-items-icon img { display: block; margin: 0 auto; }
+
 .no-items-title {
   font-size: 1.2rem;
   font-weight: 500;
