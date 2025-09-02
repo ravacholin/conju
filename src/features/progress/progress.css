@@ -43,11 +43,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  border-radius: 12px;
   color: #e0e0e0;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -55,7 +55,7 @@
 
 .nav-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: #fff; transform: translateY(-2px); }
 
-.nav-icon { width: 28px; height: 28px; opacity: 0.9; filter: grayscale(100%); }
+.nav-icon { width: 36px; height: 36px; opacity: 0.95; filter: grayscale(100%); }
 
 .dashboard-header h1 {
   color: var(--text);
