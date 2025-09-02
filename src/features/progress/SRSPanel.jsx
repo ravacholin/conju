@@ -257,7 +257,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
               <span className="btn-icon"><img src="/icons/bolt.png" alt="Repaso" className="inline-icon lg" /></span>
               <div className="btn-text">
                 <div className="btn-title">
-                  {reviewStats.overdue > 0 ? 'Recuperar lo olvidado' : 'Empezar repaso inteligente'}
+                  {reviewStats.overdue > 0 ? 'Recuperá lo olvidado' : 'Empezá el repaso inteligente'}
                 </div>
                 <div className="btn-subtitle">
                   {stats.dueNow} {stats.dueNow === 1 ? 'elemento' : 'elementos'} • ~{Math.ceil(stats.dueNow * 1.5)} min
@@ -270,7 +270,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
           <div className="srs-no-items">
             <div className="no-items-icon"><img src="/icons/sparks.png" alt="Todo bajo control" className="inline-icon lg" /></div>
             <div className="no-items-title">Todo bajo control</div>
-            <div className="no-items-subtitle">Vuelve más tarde o practica algo nuevo</div>
+            <div className="no-items-subtitle">Volvé más tarde o practicá algo nuevo</div>
           </div>
         )}
         

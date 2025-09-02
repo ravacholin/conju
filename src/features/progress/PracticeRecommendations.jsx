@@ -182,7 +182,7 @@ export default function PracticeRecommendations({
             {error}
           </p>
           <button onClick={loadRecommendations} className="retry-btn">
-            Intentar de nuevo
+            Intentá de nuevo
           </button>
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function PracticeRecommendations({
       <div className="session-planner">
         <h4>
           <img src="/icons/calendar.png" alt="Sesión" className="inline-icon lg" />
-          Sesión Personalizada
+          Sesión personalizada
         </h4>
         <div className="session-controls">
           <button 
@@ -325,7 +325,7 @@ export default function PracticeRecommendations({
                 session: selectedSession 
               })}
             >
-              Iniciar Sesión
+              Iniciá sesión
             </button>
           </div>
         )}
@@ -334,7 +334,7 @@ export default function PracticeRecommendations({
       <div className="recommendations-footer">
         <button onClick={loadRecommendations} className="refresh-btn">
           <img src="/icons/refresh.png" alt="Actualizar" className="inline-icon" />
-          Actualizar Recomendaciones
+          Actualizá recomendaciones
         </button>
         <p className="update-note">
           Las recomendaciones se actualizan basándose en tu progreso reciente.

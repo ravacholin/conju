@@ -165,8 +165,8 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
             <img src="/icons/map.png" alt="Mapa" className="section-icon" />
             Mapa de Dominio Verbal
           </h3>
-          <p>Practica algunas conjugaciones para ver tu progreso aquí.</p>
-          <p>Este mapa te mostrará qué modos y tiempos dominas mejor.</p>
+          <p>Practicá algunas conjugaciones para ver tu progreso acá.</p>
+          <p>Este mapa te va a mostrar qué modos y tiempos dominás mejor.</p>
         </div>
       </div>
     )

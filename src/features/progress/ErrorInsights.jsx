@@ -155,8 +155,8 @@ export default function ErrorInsights({ onNavigateToDrill }) {
                 onClick={() => startMicroDrill(tag)}
                 title={`Practicar ${errorInfo.label.toLowerCase()}`}
               >
-                <img src="/play.png" alt="Practicar" className="btn-icon" />
-                <span>Practicar</span>
+                <img src="/play.png" alt="Practicá" className="btn-icon" />
+                <span>Practicá</span>
               </button>
             </div>
           )
