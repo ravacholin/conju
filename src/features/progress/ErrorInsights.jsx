@@ -3,7 +3,7 @@ import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
 
-export default function ErrorInsights() {
+export default function ErrorInsights({ onNavigateToDrill }) {
   const [topErrors, setTopErrors] = useState([])
   const settings = useSettings()
 
@@ -86,7 +86,11 @@ export default function ErrorInsights() {
       const uid = getCurrentUserId()
       const attempts = await getAttemptsByUser(uid)
       const recent = attempts.slice(-300).filter(a => (a.errorTags || []).includes(tag))
-      if (recent.length === 0) return
+      if (recent.length === 0) {
+        // Fallback: if no recent attempts for this error, still navigate to drill
+        if (typeof onNavigateToDrill === 'function') onNavigateToDrill()
+        return
+      }
       const freq = new Map()
       recent.forEach(a => {
         const key = `${a.mood}|${a.tense}`
@@ -98,7 +102,13 @@ export default function ErrorInsights() {
         .map(([k]) => { const [mood,tense]=k.split('|'); return { mood, tense } })
       if (topCombos.length === 0) return
       settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 5 } })
-      window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
+      // If we're in the Progress page, explicitly navigate to Drill
+      if (typeof onNavigateToDrill === 'function') {
+        onNavigateToDrill()
+      } else {
+        // Backward-compat: dispatch for when handled from DrillMode overlay
+        window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
+      }
     } catch {}
   }
 

@@ -15,13 +15,13 @@ export function CompetencyRadar({ data }) {
   const canvasRef = useRef(null)
   const settings = useSettings()
 
-  // Definir ejes del radar
+  // Definir ejes del radar específicos para conjugaciones
   const axes = [
-    { key: 'accuracy', label: 'Precisión', max: 100 },
-    { key: 'speed', label: 'Velocidad', max: 100 },
-    { key: 'consistency', label: 'Constancia', max: 100 },
-    { key: 'lexicalBreadth', label: 'Amplitud Léxica', max: 100 },
-    { key: 'transfer', label: 'Transferencia', max: 100 }
+    { key: 'moodMastery', label: 'Dominio de Modos', max: 100 },
+    { key: 'tenseControl', label: 'Manejo de Tiempos', max: 100 },
+    { key: 'irregularPrecision', label: 'Precisión en Irregulares', max: 100 },
+    { key: 'personAccuracy', label: 'Dominio de Personas', max: 100 },
+    { key: 'responseSpeed', label: 'Velocidad de Respuesta', max: 100 }
   ]
 
   useEffect(() => {
@@ -238,19 +238,19 @@ function getOverallAssessment(data) {
   if (!data) return 'Datos insuficientes para evaluación.'
 
   const avgScore = (
-    (data.accuracy || 0) +
-    (data.speed || 0) +
-    (data.consistency || 0) +
-    (data.lexicalBreadth || 0) +
-    (data.transfer || 0)
+    (data.moodMastery || 0) +
+    (data.tenseControl || 0) +
+    (data.irregularPrecision || 0) +
+    (data.personAccuracy || 0) +
+    (data.responseSpeed || 0)
   ) / 5
 
   if (avgScore >= 80) {
-    return '¡Excelente nivel de competencia! Dominas todas las áreas evaluadas.'
+    return '¡Excelente dominio de conjugaciones! Manejas con soltura modos, tiempos y formas irregulares.'
   } else if (avgScore >= 60) {
-    return 'Buen nivel de competencia con áreas para mejorar.'
+    return 'Buen progreso en conjugaciones. Identifica áreas específicas para mejorar (modos, tiempos, irregulares).'
   } else {
-    return 'Nivel de competencia básico. Se recomienda práctica adicional.'
+    return 'Nivel básico en conjugaciones. Enfócate en dominar primero los modos y tiempos fundamentales.'
   }
 }
 

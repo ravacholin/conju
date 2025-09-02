@@ -255,7 +255,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
             <img src="/diana.png" alt="Errores" className="section-icon" />
             Análisis de Errores
           </h2>
-          <ErrorInsights />
+          <ErrorInsights onNavigateToDrill={onNavigateToDrill} />
         </section>
       </SafeComponent>
 
