@@ -17,6 +17,7 @@ import { temporalIntelligence, processSessionForTempo } from '../lib/progress/te
 import { dynamicGoalsSystem, processResponseForGoals } from '../lib/progress/dynamicGoals.js'
 import { shouldFilterVerbByLevel, getVerbSelectionWeight, isHighPriorityVerb } from '../lib/core/levelVerbFiltering.js'
 import { categorizeVerb } from '../lib/data/irregularFamilies.js'
+import { varietyEngine } from '../lib/core/advancedVarietyEngine.js'
 
 // Helper functions used by multiple functions in this module
 const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
@@ -171,9 +172,11 @@ export function useDrillMode() {
         }
         
         if (candidateForms.length > 0) {
-          nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-          selectionMethod = 'srs_due'
-          console.log('📅 SRS Due item selected:', `${nextForm.mood}/${nextForm.tense}`)
+          // FIXED: Use Advanced Variety Engine instead of random selection
+          nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history)
+          if (!nextForm) nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+          selectionMethod = 'srs_due_with_variety'
+          console.log('📅 SRS Due item selected with variety engine:', `${nextForm.mood}/${nextForm.tense}`)
           
           if (isSpecific) {
             console.log('🚨 SRS VALIDATION - Selected form matches specific practice:', {
@@ -236,8 +239,10 @@ export function useDrillMode() {
             }
             
             if (candidateForms.length > 0) {
-              nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
-              selectionMethod = 'adaptive_recommendation'
+              // FIXED: Use Advanced Variety Engine instead of random selection
+              nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history)
+              if (!nextForm) nextForm = candidateForms[Math.floor(Math.random() * candidateForms.length)]
+              selectionMethod = 'adaptive_recommendation_with_variety'
               
               if (isSpecific) {
                 console.log('🚨 ADAPTIVE VALIDATION - Selected form matches specific practice:', {
@@ -265,8 +270,8 @@ export function useDrillMode() {
       // Gate forms systemically before selection
       const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
       nextForm = chooseNext({ forms: gated, history, currentItem: itemToExclude })
-      selectionMethod = 'standard_generator'
-      console.log('🎯 Standard generator applied to eligible forms:', eligibleForms.length)
+      selectionMethod = 'standard_generator_with_variety'
+      console.log('🎯 Standard generator (with AdvancedVarietyEngine) applied to eligible forms:', eligibleForms.length)
       
       if (isSpecific && nextForm) {
         console.log('🚨 STANDARD VALIDATION - Selected form matches specific practice:', {
