@@ -292,6 +292,13 @@ export function chooseNext({forms, history, currentItem}){
     
     if (verbType === 'regular' && !isMixedPractice) {
       // DEBUG CRÍTICO: Verificar por qué verbos irregulares pasan este filtro
+      if (f.lemma === 'exponer') {
+        console.log(`🔥 EXPONER DEBUG - verb object:`, verb)
+        console.log(`🔥 EXPONER DEBUG - verb.type: ${verb?.type}`)
+        console.log(`🔥 EXPONER DEBUG - verb.lemma: ${verb?.lemma}`)
+        console.log(`🔥 EXPONER DEBUG - isIrregularInTense: ${isIrregularInTense(verb, f.tense)}`)
+      }
+      
       if (verb.type !== 'regular') {
         console.log(`🚨 FILTRO VERBTYPE DEBUG - Filtrando verbo irregular: ${f.lemma}, verb.type: ${verb.type}, verbType setting: ${verbType}`)
         return false

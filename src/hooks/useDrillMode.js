@@ -967,6 +967,25 @@ export function useDrillMode() {
   }
 
   /**
+   * Apply verbType filter to forms
+   */
+  function applyVerbTypeFilter(forms, verbType) {
+    if (!verbType || verbType === 'all') return forms
+    
+    return forms.filter(f => {
+      const verb = verbs.find(v => v.lemma === f.lemma)
+      if (!verb) return false
+      
+      if (verbType === 'regular') {
+        return verb.type === 'regular'
+      } else if (verbType === 'irregular') {
+        return verb.type === 'irregular'
+      }
+      return true
+    })
+  }
+
+  /**
    * ENHANCED FALLBACK: Try multiple strategies when specific practice fails
    */
   async function tryIntelligentFallback(settings, eligibleForms, context) {
@@ -974,8 +993,12 @@ export function useDrillMode() {
     
     console.log('🔄 TRYING INTELLIGENT FALLBACK - Multiple strategies')
     
+    // CRÍTICO: Aplicar filtro verbType ANTES de procesar
+    const verbTypeFiltered = applyVerbTypeFilter(eligibleForms, settings.verbType)
+    console.log(`🚨 FALLBACK VERBTYPE FILTER - ${settings.verbType}: ${verbTypeFiltered.length} forms`)
+    
     // Strategy 1: Try direct filtering with basic forms
-    const gated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
+    const gated = gateFormsByCurriculumAndDialect(verbTypeFiltered, settings)
     const compliant = gated.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
     
     if (compliant.length > 0) {
