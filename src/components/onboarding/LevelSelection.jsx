@@ -106,7 +106,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             title="Ver progreso y analíticas"
           >
             <h3><img src="/icons/chart.png" alt="Progreso" className="option-icon" /> Seguir tu progreso</h3>
-            <p>Analiza tu dominio y métricas de aprendizaje</p>
+            <p>Analizá tu dominio y métricas de aprendizaje</p>
             <p className="example">Dashboard completo con analíticas y recomendaciones</p>
           </ClickableCard>
         )}
