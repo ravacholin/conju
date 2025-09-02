@@ -62,8 +62,18 @@ function AppRouter() {
 
   const handleHome = () => {
     console.log('🏠 handleHome called');
-    setCurrentMode('onboarding')
-    onboardingFlow.handleHome(setCurrentMode)
+    try {
+      setCurrentMode('onboarding')
+      // Navigate to onboarding step 2 (menú por tema/nivel/seguir)
+      cleanupStateForStep(2)
+      onboardingFlow.setOnboardingStep(2)
+      const historyState = { appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }
+      window.history.pushState(historyState, '')
+    } catch (e) {
+      // Fallback
+      setCurrentMode('onboarding')
+      onboardingFlow.setOnboardingStep(2)
+    }
   }
 
   const handleGoToProgress = () => {
