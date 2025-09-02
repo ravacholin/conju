@@ -16,6 +16,7 @@ class SessionMemory {
     this.recentTenses = new Map() // tense -> count
     this.recentPersons = new Map() // person -> count
     this.recentCategories = new Map() // semantic category -> count
+    this.recentCombinations = new Map() // verb|person -> timestamp - CRITICAL for exact combo prevention
     this.sessionStartTime = Date.now()
     this.selectionCount = 0
     this.lastDifficultyLevel = 1
@@ -25,6 +26,7 @@ class SessionMemory {
     this.tenseMemorySize = 6  // Remember last 6 tenses
     this.personMemorySize = 5 // Remember last 5 persons
     this.categoryMemorySize = 4 // Remember last 4 categories
+    this.comboMemorySize = 10 // Remember last 10 exact combinations
 
     // Sliding window for irregular/regular balancing
     this.lastTypes = [] // values: 'regular' | 'irregular'
@@ -46,6 +48,13 @@ class SessionMemory {
     // Record person with count
     this.recentPersons.set(form.person, (this.recentPersons.get(form.person) || 0) + 1)
     
+    // CRITICAL: Record exact combination (verb|person) to prevent identical repetition
+    const exactCombo = `${form.lemma}|${form.person}`
+    this.recentCombinations.set(exactCombo, now)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ RECORDED COMBO - ${exactCombo} at ${now}`)
+    }
+    
     // Record semantic category
     if (semanticCategory) {
       this.recentCategories.set(semanticCategory, (this.recentCategories.get(semanticCategory) || 0) + 1)
@@ -65,12 +74,20 @@ class SessionMemory {
   // Clean old entries from memory
   cleanup() {
     const now = Date.now()
-    const verbTimeout = 30000 // 30 seconds for verb repetition avoidance
+    const verbTimeout = 120000 // 2 minutes for verb repetition avoidance (increased)
+    const comboTimeout = 180000 // 3 minutes for exact combination avoidance (even longer)
     
     // Clean old verbs
     for (const [verb, timestamp] of this.recentVerbs.entries()) {
       if (now - timestamp > verbTimeout) {
         this.recentVerbs.delete(verb)
+      }
+    }
+    
+    // CRITICAL: Clean old exact combinations
+    for (const [combo, timestamp] of this.recentCombinations.entries()) {
+      if (now - timestamp > comboTimeout) {
+        this.recentCombinations.delete(combo)
       }
     }
     
@@ -87,6 +104,7 @@ class SessionMemory {
     // Clean persons and categories similarly
     this.cleanupMap(this.recentPersons, this.personMemorySize)
     this.cleanupMap(this.recentCategories, this.categoryMemorySize)
+    this.cleanupMap(this.recentCombinations, this.comboMemorySize)
   }
 
   cleanupMap(map, maxSize) {
@@ -104,10 +122,16 @@ class SessionMemory {
   getRepetitionPenalty(form, semanticCategory) {
     let penalty = 0
     
-    // Verb repetition penalty
+    // Verb repetition penalty - INCREASED decay time
     if (this.recentVerbs.has(form.lemma)) {
       const age = Date.now() - this.recentVerbs.get(form.lemma)
-      penalty += Math.max(0, 0.8 - (age / 30000)) // Decay over 30 seconds
+      const verbPenalty = Math.max(0, 0.9 - (age / 120000)) // Decay over 2 minutes instead of 30 seconds
+      penalty += verbPenalty
+      
+      // DEBUG: Log penalty calculation
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🚫 REPETITION PENALTY - ${form.lemma}: age=${Math.floor(age/1000)}s, penalty=${verbPenalty.toFixed(3)}`)
+      }
     }
     
     // Tense repetition penalty
@@ -121,6 +145,15 @@ class SessionMemory {
     const personCount = this.recentPersons.get(form.person) || 0
     if (personCount > 0) {
       penalty += Math.min(0.4, personCount * 0.15) // Up to 0.4 penalty
+    }
+    
+    // CRITICAL: Exact combination penalty (verb+person) to prevent "estudiar tú" twice
+    const exactCombo = `${form.lemma}|${form.person}`
+    if (this.recentCombinations && this.recentCombinations.has(exactCombo)) {
+      penalty += 0.95 // Very high penalty for exact same combination
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🚫 EXACT COMBO PENALTY - ${exactCombo}: +0.95 penalty`)
+      }
     }
     
     // Category repetition penalty
