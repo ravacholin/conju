@@ -244,7 +244,7 @@ export default function SRSPanel() {
             onClick={() => startReviewSession('urgent')}
           >
             <div className="btn-content">
-              <span className="btn-icon">⚡</span>
+              <span className="btn-icon"><img src="/icons/bolt.png" alt="Repaso" className="inline-icon lg" /></span>
               <div className="btn-text">
                 <div className="btn-title">
                   {reviewStats.overdue > 0 ? 'Recuperar lo olvidado' : 'Empezar repaso inteligente'}
