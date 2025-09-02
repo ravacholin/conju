@@ -187,6 +187,12 @@
   margin: 0;
   line-height: 1.4;
   opacity: 0.8;
+  /* Homogeneizar alto de descripciones: 2 líneas con elipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: calc(1.4em * 2);
 }
 
 .error-stats {
