@@ -235,15 +235,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         <div className="header-top">
           <div className="header-buttons">
             {onNavigateHome && (
-              <button onClick={onNavigateHome} className="nav-btn" title="Volver al menú">
+              <button onClick={onNavigateHome} className="nav-btn" title="Menú">
                 <img src="/home.png" alt="Menú" className="nav-icon" />
-                <span>Menú</span>
               </button>
             )}
             {onNavigateToDrill && (
-              <button onClick={onNavigateToDrill} className="nav-btn" title="Ir a práctica">
-                <img src="/dice.png" alt="Práctica" className="nav-icon" />
-                <span>Práctica</span>
+              <button onClick={onNavigateToDrill} className="nav-btn" title="Práctica">
+                <img src="/icons/brain.png" alt="Práctica" className="nav-icon" />
               </button>
             )}
           </div>
