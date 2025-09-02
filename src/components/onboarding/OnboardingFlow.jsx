@@ -27,7 +27,8 @@ function OnboardingFlow({
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
   getModeSamples,
-  getConjugationExample
+  getConjugationExample,
+  onGoToProgress
 }) {
 
   // Unified back behavior: use browser history for both UI and hardware back
@@ -61,6 +62,7 @@ function OnboardingFlow({
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={false}
+              onGoToProgress={onGoToProgress}
             />
           )}
 

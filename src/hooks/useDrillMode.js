@@ -949,6 +949,12 @@ export function useDrillMode() {
     }
   }
 
+  // Clear current item to force regeneration with new settings
+  const clearCurrentItem = () => {
+    console.log('🧹 Clearing current item to force regeneration');
+    setCurrentItem(null);
+  }
+
   return {
     currentItem,
     history,
@@ -958,6 +964,7 @@ export function useDrillMode() {
     handleDrillResult,
     handleContinue,
     clearHistoryAndRegenerate,
+    clearCurrentItem,
     
     // NEW: Level-driven features
     getCoachingInsights,

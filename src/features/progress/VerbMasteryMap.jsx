@@ -3,7 +3,7 @@ import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import './verb-mastery-map.css'
 
-export function VerbMasteryMap({ data }) {
+export function VerbMasteryMap({ data, onNavigateToDrill }) {
   const settings = useSettings()
   const [hoveredCell, setHoveredCell] = useState(null)
 
@@ -135,14 +135,23 @@ export function VerbMasteryMap({ data }) {
   const handleTenseClick = (mood, tense) => {
     try {
       console.log(`Mastery map clicked: ${mood}/${tense}`)
+      
+      // Update configuration for specific practice
       settings.set({ 
         practiceMode: 'specific', 
         specificMood: mood, 
         specificTense: tense 
       })
-      window.dispatchEvent(new CustomEvent('progress:navigate', { 
-        detail: { mood, tense } 
-      }))
+      
+      // Navigate to drill mode
+      if (onNavigateToDrill) {
+        onNavigateToDrill()
+      } else {
+        // Fallback: dispatch event for when accessed from drill
+        window.dispatchEvent(new CustomEvent('progress:navigate', { 
+          detail: { mood, tense } 
+        }))
+      }
     } catch (error) {
       console.error('Error clicking mastery cell:', error)
     }

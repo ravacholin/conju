@@ -59,7 +59,7 @@ function formatMoodTense(mood, tense) {
   return `${tenseLabel} (${moodLabel})`
 }
 
-export default function SRSPanel() {
+export default function SRSPanel({ onNavigateToDrill }) {
   const [stats, setStats] = useState({ dueNow: 0, dueToday: 0 })
   const [loading, setLoading] = useState(true)
   const [dueItems, setDueItems] = useState([])
@@ -151,15 +151,25 @@ export default function SRSPanel() {
   }
 
   const startReviewSession = (sessionType = 'all') => {
-    // Configurar modo de práctica específico para repaso
-    settings.set({ 
-      practiceMode: 'review',
-      reviewSessionType: sessionType
-    })
-    
-    window.dispatchEvent(new CustomEvent('progress:navigate', { 
-      detail: { focus: 'review', sessionType } 
-    }))
+    try {
+      // Configurar modo de práctica específico para repaso
+      settings.set({ 
+        practiceMode: 'review',
+        reviewSessionType: sessionType
+      })
+      
+      // Navigate to drill mode
+      if (onNavigateToDrill) {
+        onNavigateToDrill()
+      } else {
+        // Fallback: dispatch event for when accessed from drill
+        window.dispatchEvent(new CustomEvent('progress:navigate', { 
+          detail: { focus: 'review', sessionType } 
+        }))
+      }
+    } catch (error) {
+      console.error('Error starting review session:', error)
+    }
   }
 
   const getMasteryColor = (score) => {

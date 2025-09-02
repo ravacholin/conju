@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
+import { lazy } from 'react'
+
+const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashboard.jsx'))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 // Debug utilities - commented out to avoid unused imports
@@ -17,6 +20,15 @@ function AppRouter() {
   // Import hooks
   const drillMode = useDrillMode()
   const onboardingFlow = useOnboardingFlow()
+
+  // Track previous settings to detect changes from progress navigation
+  const prevSettingsRef = useRef({
+    practiceMode: settings.practiceMode,
+    specificMood: settings.specificMood,
+    specificTense: settings.specificTense,
+    verbType: settings.verbType,
+    selectedFamily: settings.selectedFamily
+  })
 
   console.log('--- RENDER AppRouter ---', { 
     currentMode,
@@ -54,11 +66,50 @@ function AppRouter() {
     onboardingFlow.handleHome(setCurrentMode)
   }
 
-  // Generate next item when entering drill mode
+  const handleGoToProgress = () => {
+    console.log('📊 handleGoToProgress called');
+    setCurrentMode('progress')
+    // Push history state for progress mode
+    try {
+      const historyState = { appNav: true, mode: 'progress', ts: Date.now() };
+      window.history.pushState(historyState, '')
+    } catch {
+      // Ignore history API errors
+    }
+  }
+
+  // Generate next item when entering drill mode OR when settings change while in drill mode
   useEffect(() => {
-    if (currentMode === 'drill' && !drillMode.currentItem) {
-      console.log('🎯 Generating first drill item');
-      drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    // Check if we're in drill mode
+    if (currentMode === 'drill') {
+      // Detect if specific practice settings changed
+      const settingsChanged = 
+        prevSettingsRef.current.practiceMode !== settings.practiceMode ||
+        prevSettingsRef.current.specificMood !== settings.specificMood ||
+        prevSettingsRef.current.specificTense !== settings.specificTense ||
+        prevSettingsRef.current.verbType !== settings.verbType ||
+        prevSettingsRef.current.selectedFamily !== settings.selectedFamily;
+
+      // If settings changed and we have a current item, clear it first
+      if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
+        console.log('🔄 Practice settings changed while in drill mode, clearing current item');
+        drillMode.clearCurrentItem();
+      }
+
+      // Generate new item if we don't have one (either new entry or after clearing)
+      if (!drillMode.currentItem) {
+        console.log('🎯 Generating drill item');
+        drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+      }
+
+      // Update previous settings reference
+      prevSettingsRef.current = {
+        practiceMode: settings.practiceMode,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense,
+        verbType: settings.verbType,
+        selectedFamily: settings.selectedFamily
+      };
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
 
@@ -81,6 +132,9 @@ function AppRouter() {
               drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
             }, 100)
           }
+        } else if (st.mode === 'progress') {
+          // Handle progress navigation
+          setCurrentMode('progress')
         } else if (st.mode === 'onboarding' || (st.mode === 'drill' && currentMode === 'onboarding')) {
           // Handle onboarding navigation OR ignore drill states when in onboarding
           console.log('PRE-UPDATE state:', { currentMode, step: onboardingFlow.onboardingStep });
@@ -227,6 +281,7 @@ function AppRouter() {
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
         getModeSamples={onboardingFlow.getModeSamples}
         getConjugationExample={onboardingFlow.getConjugationExample}
+        onGoToProgress={handleGoToProgress}
       />
     )
   }
@@ -248,7 +303,16 @@ function AppRouter() {
         onStartSpecificPractice={handleStartSpecificPractice}
         getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+        onNavigateToProgress={handleGoToProgress}
       />
+    )
+  }
+
+  if (currentMode === 'progress') {
+    return (
+      <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
+        <ProgressDashboard onNavigateHome={handleHome} onNavigateToDrill={() => setCurrentMode('drill')} />
+      </React.Suspense>
     )
   }
 

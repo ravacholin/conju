@@ -1,7 +1,7 @@
 import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false }) {
+function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress }) {
   if (showLevelDetails) {
     // Step 3: Specific level selection
     return (
@@ -98,6 +98,18 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           <p>Elegí un tiemo o modo verbal</p>
           <p className="example">Presente, subjuntivo, imperativo, etc.</p>
         </ClickableCard>
+        
+        {onGoToProgress && (
+          <ClickableCard 
+            className="option-card" 
+            onClick={() => onGoToProgress()}
+            title="Ver progreso y analíticas"
+          >
+            <h3><img src="/icons/chart.png" alt="Progreso" className="option-icon" /> Seguir tu progreso</h3>
+            <p>Analiza tu dominio y métricas de aprendizaje</p>
+            <p className="example">Dashboard completo con analíticas y recomendaciones</p>
+          </ClickableCard>
+        )}
       </div>
       
       <button onClick={onBack} className="back-btn">

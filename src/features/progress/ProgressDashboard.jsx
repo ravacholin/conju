@@ -18,7 +18,7 @@ import './practice-recommendations.css'
 /**
  * Componente principal del dashboard de progreso
  */
-export default function ProgressDashboard() {
+export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
   const settings = useSettings()
   const [heatMapData, setHeatMapData] = useState([])
   const [radarData, setRadarData] = useState({})
@@ -204,6 +204,22 @@ export default function ProgressDashboard() {
   return (
     <div className="progress-dashboard">
       <header className="dashboard-header">
+        <div className="header-top">
+          <div className="header-buttons">
+            {onNavigateHome && (
+              <button onClick={onNavigateHome} className="nav-btn" title="Volver al menú">
+                <img src="/home.png" alt="Menú" className="nav-icon" />
+                <span>Menú</span>
+              </button>
+            )}
+            {onNavigateToDrill && (
+              <button onClick={onNavigateToDrill} className="nav-btn" title="Ir a práctica">
+                <img src="/dice.png" alt="Práctica" className="nav-icon" />
+                <span>Práctica</span>
+              </button>
+            )}
+          </div>
+        </div>
         <h1>
           <img src="/icons/chart.png" alt="Analíticas" className="section-icon" />
           Progreso y Analíticas
@@ -219,7 +235,7 @@ export default function ProgressDashboard() {
 
       <SafeComponent name="Mapa de Dominio">
         <section className="dashboard-section">
-          <VerbMasteryMap data={heatMapData} />
+          <VerbMasteryMap data={heatMapData} onNavigateToDrill={onNavigateToDrill} />
         </section>
       </SafeComponent>
 
@@ -229,7 +245,7 @@ export default function ProgressDashboard() {
             <img src="/icons/timer.png" alt="SRS" className="section-icon" />
             Repaso (SRS)
           </h2>
-          <SRSPanel />
+          <SRSPanel onNavigateToDrill={onNavigateToDrill} />
         </section>
       </SafeComponent>
 
@@ -310,8 +326,13 @@ export default function ProgressDashboard() {
                 
                 // Update configuration for specific practice
                 settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-                // Navigate to practice
-                window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+                // Navigate to drill mode
+                if (onNavigateToDrill) {
+                  onNavigateToDrill()
+                } else {
+                  // Fallback: dispatch event for when accessed from drill
+                  window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+                }
               } catch (e) {
                 console.error('Error processing recommendation:', e)
               }

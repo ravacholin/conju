@@ -4,7 +4,6 @@ const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
 const SettingsPanel = lazy(() => import('./SettingsPanel.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
-const ProgressDashboard = lazy(() => import('../../features/progress/ProgressDashboard.jsx'))
 
 function DrillMode({
   currentItem,
@@ -20,19 +19,18 @@ function DrillMode({
   onVerbTypeChange,
   onStartSpecificPractice,
   getAvailableMoodsForLevel,
-  getAvailableTensesForLevelAndMood
+  getAvailableTensesForLevelAndMood,
+  onNavigateToProgress
 }) {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
-  const [showProgress, setShowProgress] = useState(false)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
     setShowGames(false)
     setShowSettings(false)
-    setShowProgress(false)
   }
 
   const handleToggleQuickSwitch = (show = null) => {
@@ -59,15 +57,6 @@ function DrillMode({
     setShowAccentKeys(prev => !prev)
   }
 
-  const handleToggleProgress = (show = null) => {
-    const newShow = show !== null ? show : !showProgress
-    if (newShow) {
-      closeAllPanels()
-      setShowProgress(true)
-    } else {
-      setShowProgress(false)
-    }
-  }
 
   const handleQuickSwitchApply = () => {
     onRegenerateItem()
@@ -80,9 +69,6 @@ function DrillMode({
       try {
         const { detail } = event
         console.log('Progress navigation event received:', detail)
-        
-        // Close progress panel
-        setShowProgress(false)
         
         // If we have mood/tense data, set specific practice mode
         if (detail && detail.mood && detail.tense) {
@@ -125,11 +111,10 @@ function DrillMode({
         onToggleQuickSwitch={handleToggleQuickSwitch}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
-        onToggleProgress={handleToggleProgress}
+        onNavigateToProgress={onNavigateToProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
-        showProgress={showProgress}
       />
 
       {showSettings && (
@@ -169,21 +154,6 @@ function DrillMode({
         </Suspense>
       )}
 
-      {showProgress && (
-        <div className="panel-overlay">
-          <div className="panel-content progress-panel">
-            <button 
-              className="close-btn"
-              onClick={() => setShowProgress(false)}
-            >
-              ×
-            </button>
-            <Suspense fallback={<div className="loading">Cargando panel de progreso...</div>}>
-              <ProgressDashboard />
-            </Suspense>
-          </div>
-        </div>
-      )}
 
       <main className="main-content">
         {currentItem ? (

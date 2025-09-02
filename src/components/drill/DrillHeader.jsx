@@ -4,11 +4,10 @@ function DrillHeader({
   onToggleQuickSwitch, 
   onToggleAccentKeys, 
   onToggleGames, 
-  onToggleProgress,
+  onNavigateToProgress,
   onHome,
   showQuickSwitch,
-  showGames,
-  showProgress
+  showGames
 }) {
   return (
     <header className="header">
@@ -51,17 +50,11 @@ function DrillHeader({
         </button>
         
         <button
-          onClick={() => {
-            if (showProgress) {
-              onToggleProgress(false)
-            } else {
-              onToggleProgress(true)
-            }
-          }}
+          onClick={() => onNavigateToProgress()}
           className="icon-btn"
-          title="Progreso"
+          title="Progreso y Analíticas"
         >
-          <img src="/diana.png" alt="Progreso" className="menu-icon" />
+          <img src="/icons/chart.png" alt="Progreso" className="menu-icon" />
         </button>
         
         <button 
