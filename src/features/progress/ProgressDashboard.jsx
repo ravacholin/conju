@@ -230,7 +230,10 @@ export default function ProgressDashboard() {
       </section>
 
       <section className="dashboard-section">
-        <h2>💡 Recomendaciones</h2>
+        <h2>
+          <img src="/icons/lightbulb.png" alt="Recomendaciones" className="section-icon" />
+          Recomendaciones
+        </h2>
         <div className="recommendations">
           {recommendations.length > 0 ? (
             recommendations.slice(0,3).map((rec, index) => (
