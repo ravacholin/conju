@@ -1,11 +1,11 @@
-import React, { useMemo, useState, memo } from 'react'
+import React, { useMemo, memo } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import './verb-mastery-map.css'
 
 export function VerbMasteryMap({ data, onNavigateToDrill }) {
   const settings = useSettings()
-  const [hoveredCell, setHoveredCell] = useState(null)
+  // Tooltip disabled per user request; remove hover state
 
   // Configuración de modos con sus tiempos organizados lingüísticamente
   // SOLO MOSTRAR las formas que realmente han sido practicadas
@@ -216,12 +216,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
                       key={tense.key}
                       className={`tense-card ${getMasteryColor(tense.score, tense.hasData)}`}
                       onClick={() => handleTenseClick(moodKey, tense.key)}
-                      onMouseEnter={() => setHoveredCell({ 
-                        mood: moodKey, 
-                        tense: tense.key, 
-                        data: tense 
-                      })}
-                      onMouseLeave={() => setHoveredCell(null)}
                       title={`${mood.label} - ${tense.label} — Clic para practicar`}
                     >
                       <div className="tense-name">{tense.label}</div>
@@ -236,22 +230,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         })
         )}
 
-        {/* Tooltip */}
-        {hoveredCell && (
-          <div className="mastery-tooltip">
-            <div className="tooltip-header">
-              <strong>{masteryByMode[hoveredCell.mood]?.label}</strong> - {hoveredCell.data.label}
-            </div>
-            <div className="tooltip-content">
-              <div>Dominio: {formatPercentage(hoveredCell.data.score)}</div>
-              <div>Intentos: {hoveredCell.data.count}</div>
-              <div>Nivel: {getMasteryLabel(hoveredCell.data.score, hoveredCell.data.hasData)}</div>
-              <div className="tooltip-action">
-                Clic para practicar
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Tooltip intentionally disabled */}
       </div>
 
       {/* Legend */}
