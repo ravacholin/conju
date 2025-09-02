@@ -11,6 +11,7 @@ import ErrorInsights from './ErrorInsights.jsx'
 import { useSettings } from '../../state/settings.js'
 import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
 import { buildFormsForRegion } from '../../lib/core/eligibility.js'
+import SafeComponent from '../../components/SafeComponent.jsx'
 import './progress.css'
 import './practice-recommendations.css'
 
@@ -29,6 +30,7 @@ export default function ProgressDashboard() {
   const [error, setError] = useState(null)
   const [personFilter, setPersonFilter] = useState('')
   const [refreshing, setRefreshing] = useState(false)
+  const [systemReady, setSystemReady] = useState(false)
 
   const loadData = async (isRefresh = false) => {
     try {
@@ -36,12 +38,48 @@ export default function ProgressDashboard() {
         setRefreshing(true)
       } else {
         setLoading(true)
+        setError(null) // Clear previous errors
       }
       
       // Obtener el ID del usuario actual
       const userId = getCurrentUserId()
+      if (!userId) {
+        throw new Error('Usuario no inicializado. Espera un momento y reintenta.')
+      }
       
-      // Cargar todos los datos en paralelo
+      // Cargar todos los datos en paralelo con timeout y fallbacks
+      const dataPromises = [
+        getHeatMapData(userId, personFilter || null).catch(e => {
+          console.warn('Failed to load heat map data:', e)
+          return [] // fallback
+        }),
+        getCompetencyRadarData(userId).catch(e => {
+          console.warn('Failed to load radar data:', e) 
+          return {} // fallback
+        }),
+        getUserStats(userId).catch(e => {
+          console.warn('Failed to load user stats:', e)
+          return {} // fallback
+        }),
+        getWeeklyGoals(userId).catch(e => {
+          console.warn('Failed to load weekly goals:', e)
+          return {} // fallback
+        }),
+        checkWeeklyProgress(userId).catch(e => {
+          console.warn('Failed to load weekly progress:', e)
+          return {} // fallback
+        }),
+        getRecommendations(userId).catch(e => {
+          console.warn('Failed to load recommendations:', e)
+          return [] // fallback
+        })
+      ]
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout al cargar datos')), 10000)
+      )
+      
       const [
         heatMap,
         radar,
@@ -49,35 +87,67 @@ export default function ProgressDashboard() {
         goals,
         progress,
         recs
-      ] = await Promise.all([
-        getHeatMapData(userId, personFilter || null),
-        getCompetencyRadarData(userId),
-        getUserStats(userId),
-        getWeeklyGoals(userId),
-        checkWeeklyProgress(userId),
-        getRecommendations(userId)
+      ] = await Promise.race([
+        Promise.all(dataPromises),
+        timeoutPromise
       ])
       
-      setHeatMapData(heatMap)
-      setRadarData(radar)
-      setUserStats(stats)
-      setWeeklyGoals(goals)
-      setWeeklyProgress(progress)
+      // Defensive assignment with fallbacks
+      setHeatMapData(Array.isArray(heatMap) ? heatMap : [])
+      setRadarData(radar && typeof radar === 'object' ? radar : {})
+      setUserStats(stats && typeof stats === 'object' ? stats : {})
+      setWeeklyGoals(goals && typeof goals === 'object' ? goals : {})
+      setWeeklyProgress(progress && typeof progress === 'object' ? progress : {})
       setRecommendations(Array.isArray(recs) ? recs : [])
       
+      setError(null)
       setLoading(false)
       setRefreshing(false)
     } catch (err) {
       console.error('Error al cargar datos del dashboard:', err)
-      setError(err.message)
+      setError(err.message || 'Error desconocido al cargar datos')
       setLoading(false)
       setRefreshing(false)
     }
   }
 
+  // Check if progress system is ready
   useEffect(() => {
-    loadData()
-  }, [personFilter])
+    const checkSystemReady = async () => {
+      try {
+        // Wait for user ID to be available
+        let attempts = 0
+        const maxAttempts = 50 // 5 seconds max
+        
+        while (attempts < maxAttempts) {
+          const userId = getCurrentUserId()
+          if (userId) {
+            setSystemReady(true)
+            loadData()
+            return
+          }
+          await new Promise(resolve => setTimeout(resolve, 100))
+          attempts++
+        }
+        
+        // If we get here, system didn't initialize properly
+        setError('Sistema de progreso no inicializado. Refresca la página.')
+        setLoading(false)
+      } catch (err) {
+        console.error('Error checking system readiness:', err)
+        setError('Error al verificar sistema de progreso')
+        setLoading(false)
+      }
+    }
+    
+    checkSystemReady()
+  }, [])
+
+  useEffect(() => {
+    if (systemReady) {
+      loadData()
+    }
+  }, [personFilter, systemReady])
 
   // Escuchar eventos de actualización de progreso para refrescar automáticamente
   useEffect(() => {
@@ -100,7 +170,18 @@ export default function ProgressDashboard() {
     return (
       <div className="progress-dashboard loading">
         <div className="spinner"></div>
-        <p>Cargando datos de progreso...</p>
+        <p>
+          {!systemReady 
+            ? 'Inicializando sistema de progreso...' 
+            : 'Cargando datos de progreso...'
+          }
+        </p>
+        <p style={{ fontSize: '0.875rem', opacity: 0.7 }}>
+          {!systemReady 
+            ? 'Preparando base de datos e indexando verbos...' 
+            : 'Analizando tu progreso y generando recomendaciones...'
+          }
+        </p>
       </div>
     )
   }
@@ -136,33 +217,41 @@ export default function ProgressDashboard() {
         )}
       </header>
 
-      <section className="dashboard-section">
-        <VerbMasteryMap data={heatMapData} />
-      </section>
+      <SafeComponent name="Mapa de Dominio">
+        <section className="dashboard-section">
+          <VerbMasteryMap data={heatMapData} />
+        </section>
+      </SafeComponent>
 
-      <section className="dashboard-section">
-        <h2>
-          <img src="/icons/timer.png" alt="SRS" className="section-icon" />
-          Repaso (SRS)
-        </h2>
-        <SRSPanel />
-      </section>
+      <SafeComponent name="Sistema SRS">
+        <section className="dashboard-section">
+          <h2>
+            <img src="/icons/timer.png" alt="SRS" className="section-icon" />
+            Repaso (SRS)
+          </h2>
+          <SRSPanel />
+        </section>
+      </SafeComponent>
 
-      <section className="dashboard-section">
-        <h2>
-          <img src="/diana.png" alt="Errores" className="section-icon" />
-          Análisis de Errores
-        </h2>
-        <ErrorInsights />
-      </section>
+      <SafeComponent name="Análisis de Errores">
+        <section className="dashboard-section">
+          <h2>
+            <img src="/diana.png" alt="Errores" className="section-icon" />
+            Análisis de Errores
+          </h2>
+          <ErrorInsights />
+        </section>
+      </SafeComponent>
 
-      <section className="dashboard-section">
-        <h2>
-          <img src="/radar.png" alt="Radar" className="section-icon" />
-          Radar de Competencias
-        </h2>
-        <CompetencyRadar data={radarData} />
-      </section>
+      <SafeComponent name="Radar de Competencias">
+        <section className="dashboard-section">
+          <h2>
+            <img src="/radar.png" alt="Radar" className="section-icon" />
+            Radar de Competencias
+          </h2>
+          <CompetencyRadar data={radarData} />
+        </section>
+      </SafeComponent>
 
       <section className="dashboard-section">
         <h2>
@@ -191,43 +280,45 @@ export default function ProgressDashboard() {
         </div>
       </section>
 
-      <section className="dashboard-section">
-        <h2>
-          <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
-          Práctica Recomendada
-        </h2>
-        <PracticeRecommendations 
-          maxRecommendations={3}
-          showDetailedView={false}
-          onSelectRecommendation={(recommendation) => {
-            try {
-              const mood = recommendation?.targetCombination?.mood
-              const tense = recommendation?.targetCombination?.tense
-              
-              if (!mood || !tense) {
-                console.error('❌ DASHBOARD - Invalid recommendation: missing mood or tense')
-                return
+      <SafeComponent name="Recomendaciones de Práctica">
+        <section className="dashboard-section">
+          <h2>
+            <img src="/icons/robot.png" alt="Recomendaciones" className="section-icon" />
+            Práctica Recomendada
+          </h2>
+          <PracticeRecommendations 
+            maxRecommendations={3}
+            showDetailedView={false}
+            onSelectRecommendation={(recommendation) => {
+              try {
+                const mood = recommendation?.targetCombination?.mood
+                const tense = recommendation?.targetCombination?.tense
+                
+                if (!mood || !tense) {
+                  console.error('❌ DASHBOARD - Invalid recommendation: missing mood or tense')
+                  return
+                }
+                
+                // PRE-VALIDATION: Check if combination is available before proceeding
+                const allForms = buildFormsForRegion(settings.region)
+                const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
+                
+                if (!isValid) {
+                  console.error(`❌ DASHBOARD - Invalid combination: ${mood}/${tense} not available`)
+                  return
+                }
+                
+                // Update configuration for specific practice
+                settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
+                // Navigate to practice
+                window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
+              } catch (e) {
+                console.error('Error processing recommendation:', e)
               }
-              
-              // PRE-VALIDATION: Check if combination is available before proceeding
-              const allForms = buildFormsForRegion(settings.region)
-              const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
-              
-              if (!isValid) {
-                console.error(`❌ DASHBOARD - Invalid combination: ${mood}/${tense} not available`)
-                return
-              }
-              
-              // Update configuration for specific practice
-              settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
-              // Navigate to practice
-              window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood, tense } }))
-            } catch (e) {
-              console.error('Error processing recommendation:', e)
-            }
-          }}
-        />
-      </section>
+            }}
+          />
+        </section>
+      </SafeComponent>
 
       <section className="dashboard-section">
         <h2>
