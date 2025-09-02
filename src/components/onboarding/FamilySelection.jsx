@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { getFamiliesForMood, getFamiliesForTense } from '../../lib/data/irregularFamilies.js'
 import { 
@@ -11,6 +11,13 @@ import {
 function FamilySelection({ settings, onSelectFamily, onBack }) {
   
   if (settings.verbType === 'irregular' && settings.level && settings.practiceMode === 'mixed') {
+    // Auto-skip for compound tenses where there are no specific families to pick
+    const t = settings.specificTense
+    const compoundTenses = new Set(['pretPerf','plusc','futPerf','condPerf','subjPerf','subjPlusc'])
+    if (t && compoundTenses.has(t)) {
+      useEffect(() => { onSelectFamily(null) }, [])
+      return null
+    }
     // Show family selection for irregular verbs from mixed practice
     return (
       <>
@@ -78,6 +85,14 @@ function FamilySelection({ settings, onSelectFamily, onBack }) {
     const mood = settings.specificMood
     const tense = settings.specificTense
     
+    // Determine families/groups for this selection
+    const compoundTenses = new Set(['pretPerf','plusc','futPerf','condPerf','subjPerf','subjPlusc'])
+    if (tense && compoundTenses.has(tense)) {
+      // Auto-skip when selecting an irregular compound tense: no families to choose
+      useEffect(() => { onSelectFamily(null) }, [])
+      return null
+    }
+
     return (
       <>
         <div className="options-grid">
@@ -97,6 +112,11 @@ function FamilySelection({ settings, onSelectFamily, onBack }) {
             // Use simplified grouping for supported tenses (present, preterite)
             if (tense && shouldUseSimplifiedGrouping(tense)) {
               const simplifiedGroups = getSimplifiedGroupsForTense(tense)
+              if (!simplifiedGroups || simplifiedGroups.length === 0) {
+                // No groups to show: skip directly
+                useEffect(() => { onSelectFamily(null) }, [])
+                return null
+              }
               return simplifiedGroups.map(group => (
                 <ClickableCard 
                   key={group.id} 
@@ -112,6 +132,10 @@ function FamilySelection({ settings, onSelectFamily, onBack }) {
             } else if (mood && shouldUseSimplifiedGroupingForMood(mood) && !tense) {
               // For mood selection without specific tense, show all relevant groups
               const simplifiedGroups = getSimplifiedGroupsForMood(mood)
+              if (!simplifiedGroups || simplifiedGroups.length === 0) {
+                useEffect(() => { onSelectFamily(null) }, [])
+                return null
+              }
               return simplifiedGroups.map(group => (
                 <ClickableCard 
                   key={group.id} 
@@ -137,7 +161,12 @@ function FamilySelection({ settings, onSelectFamily, onBack }) {
                     'PRET_U': { id: 'PRET_U', name: 'Pretérito -u-', description: 'poder, poner, saber' },
                     'PRET_J': { id: 'PRET_J', name: 'Pretérito -j-', description: 'decir, traer' }
                   })
-              
+              // If no families to show beyond the default "Todos los Irregulares", skip this step
+              if (!availableFamilies || availableFamilies.length === 0) {
+                useEffect(() => { onSelectFamily(null) }, [])
+                return null
+              }
+
               return availableFamilies.slice(0, 8).map(family => (
                 <ClickableCard 
                   key={family.id} 
