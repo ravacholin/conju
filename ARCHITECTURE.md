@@ -1,219 +1,117 @@
-# Spanish Conjugator - Documentación Técnica
+# Arquitectura de la Aplicación: Spanish Conjugator PWA
 
-## 🏗️ Arquitectura del Sistema
+Este documento describe la arquitectura técnica de la aplicación "Spanish Conjugator", una Progressive Web App (PWA) construida con React. El objetivo es proporcionar una guía detallada para que los desarrolladores y agentes de IA puedan comprender rápidamente la estructura, el flujo de datos y la lógica de negocio del proyecto.
 
-### Visión General
-Spanish Conjugator es una aplicación React que enseña conjugaciones verbales en español mediante práctica interactiva. El sistema está diseñado para ser escalable, mantenible y lingüísticamente preciso.
+## 1. Visión General de la Arquitectura
 
-### Estructura de Directorios
+La aplicación está diseñada como una Single-Page Application (SPA) utilizando las siguientes tecnologías clave:
 
-```
-src/
-├── data/                     # Datos de verbos y configuración
-│   ├── verbs.js             # Base de datos principal de verbos
-│   ├── priorityVerbs.js     # Verbos prioritarios agregados
-│   ├── additionalVerbs.js   # Verbos adicionales
-│   └── curriculum.json      # Curriculum por niveles CEFR
-├── lib/                     # Lógica de negocio
-│   ├── core/               # Funcionalidades centrales
-│   │   ├── generator.js    # Generador de ejercicios
-│   │   ├── grader.js       # Evaluación de respuestas
-│   │   ├── levelVerbFiltering.js # Filtrado por nivel
-│   │   ├── optimizedCache.js # Sistema de cache inteligente
-│   │   └── validators.js   # Validaciones automáticas
-│   ├── data/               # Estructuras de datos
-│   │   ├── irregularFamilies.js # Familias de verbos irregulares
-│   │   ├── simplifiedFamilyGroups.js # Agrupaciones simplificadas
-│   │   ├── criticalVerbCategories.js # Categorías críticas
-│   │   └── levels.js       # Definiciones de niveles
-│   └── utils/              # Utilidades
-│       ├── verbLabels.js   # Etiquetas y traducciones
-│       ├── addCommonVerbs.js # Agregado de verbos comunes
-│       └── verifyVerbAvailability.js # Verificación de disponibilidad
-├── features/               # Componentes de funcionalidades
-│   └── drill/
-│       └── Drill.jsx      # Componente de ejercicios
-├── state/                 # Manejo de estado
-│   └── settings.js       # Configuraciones de usuario
-└── App.jsx               # Componente principal
-```
+-   **Framework Frontend:** React con Vite para un desarrollo y empaquetado rápido.
+-   **Gestión de Estado:** Zustand para un manejo de estado global, simple y potente.
+-   **Persistencia de Datos:** IndexedDB (a través de `idb-keyval`) para almacenar el progreso del usuario y la configuración, con un fallback a `localStorage`.
+-   **Enrutamiento:** Un componente de enrutador personalizado basado en el estado de la aplicación.
+-   **Estilo:** CSS plano.
 
-## 🧠 Componentes Clave
+La arquitectura se centra en tres modos de operación principales, gestionados por un enrutador central:
 
-### 1. Generator (Generador de Ejercicios)
-**Ubicación:** `src/lib/core/generator.js`
+1.  **Onboarding (`onboarding`):** Un flujo guiado para que los usuarios configuren sus preferencias de práctica (dialecto, nivel, etc.).
+2.  **Drill (`drill`):** La interfaz principal de práctica donde los usuarios realizan los ejercicios de conjugación.
+3.  **Progress (`progress`):** Un panel de control para visualizar el progreso y las analíticas del usuario.
 
-**Responsabilidad:** Selecciona el siguiente verbo/forma para practicar basado en:
-- Nivel del usuario (A1-C2)
-- Configuraciones de dialecto (tuteo/voseo/vosotros)
-- Modo de práctica (mixto/específico)
-- Tipo de verbos (regulares/irregulares/todos)
-- Familia de irregularidades seleccionada
-- Historial de respuestas (sistema SRS)
+## 2. Flujo de la Aplicación y Enrutamiento
 
-**Optimizaciones:**
-- Cache inteligente con TTL
-- Lookups pre-computados (O(1))
-- Filtrado eficiente con Sets
+El componente `src/components/AppRouter.jsx` actúa como el sistema nervioso central de la aplicación. No utiliza una librería de enrutamiento tradicional basada en URL, sino un **enrutador basado en estado**.
 
-**Algoritmo:**
-1. Filtrar formas elegibles según configuración
-2. Aplicar pesos basados en historial SRS
-3. Seleccionar aleatoriamente con distribución ponderada
-4. Cachear resultado para próximas consultas
+-   **Estado Principal:** Un estado de React `currentMode` determina qué vista principal (`OnboardingFlow`, `DrillMode`, o `ProgressDashboard`) se renderiza.
+-   **Navegación:** Las funciones como `handleStartPractice`, `handleHome`, y `handleGoToProgress` cambian el valor de `currentMode` para navegar entre las secciones.
+-   **Historial del Navegador:** El `AppRouter` interactúa con la `History API` del navegador (`window.history.pushState` y el evento `popstate`) para permitir que los botones de "atrás" y "adelante" del navegador funcionen de manera intuitiva, sincronizando el estado de la aplicación con la URL del navegador de forma manual.
 
-### 2. Irregular Families (Familias Irregulares)
-**Ubicación:** `src/lib/data/irregularFamilies.js`
+## 3. Gestión de Estado
 
-**Total:** 31 familias de verbos irregulares
+La gestión de estado se divide en dos categorías principales:
 
-**Categorías principales:**
-- **Cambios de raíz:** e→ie, o→ue, u→ue, e→i
-- **Alternancias consonánticas:** Verbos en -zco, -jo, -go
-- **Cambios ortográficos:** -car→-qu, -gar→-gu, -zar→-c
-- **Pretéritos fuertes:** -uv-, -u-, -i-, -j-
-- **Formas no conjugadas:** Gerundios/participios irregulares
-- **Categorías especializadas:** Defectivos, doble participio, acentuación
+### 3.1. Estado Global de Configuración (Zustand)
 
-**Nuevas categorías (v2024):**
-- `DEFECTIVE_VERBS`: Verbos defectivos (soler, abolir)
-- `DOUBLE_PARTICIPLES`: Doble participio (freír/frito)
-- `ACCENT_CHANGES`: Cambios de acentuación (prohibir→prohíbo)
-- `MONOSYLLABIC_IRREG`: Monosílabos irregulares (ir, ser, dar)
+El estado global que persiste entre sesiones es gestionado por Zustand en `src/state/settings.js`.
 
-### 3. Cache System (Sistema de Cache)
-**Ubicación:** `src/lib/core/optimizedCache.js`
+-   **Creación del Store:** Se utiliza `create(persist(...))` para crear un store que automáticamente guarda una parte del estado en el almacenamiento del cliente.
+-   **Persistencia:** El middleware `persist` de Zustand se configura para guardar en `spanish-conjugator-settings`. Solo se persiste la configuración del usuario a largo plazo (nivel, dialecto, modo de práctica), excluyendo el estado temporal de la sesión.
+-   **Acceso y Modificación:** El hook `useSettings()` se utiliza en toda la aplicación para acceder a las configuraciones. El store expone un método `set({ ... })` para realizar actualizaciones atómicas del estado.
 
-**Características:**
-- **TTL inteligente:** 3-15 minutos según tipo de dato
-- **LRU eviction:** Elimina entradas menos usadas
-- **Límite de memoria:** 1000-1500 entradas máx
-- **Warm-up:** Pre-carga datos frecuentes al iniciar
+El estado global incluye:
+-   `level`: Nivel de dificultad del usuario (A1, A2, etc.).
+-   `region`: Dialecto seleccionado (`peninsular`, `rioplatense`, etc.).
+-   `practiceMode`: Modo de práctica (`mixed`, `specific`).
+-   `specificMood`, `specificTense`: Para el modo de práctica específico.
+-   `verbType`: Filtro por tipo de verbo (`all`, `regular`, `irregular`).
+-   Y otras configuraciones para modos de juego avanzados (`resistanceActive`, `doubleActive`, etc.).
 
-**Tipos de cache:**
-- `verbCategorizationCache`: Categorización de verbos (10 min TTL)
-- `formFilterCache`: Filtrado de formas (3 min TTL)
-- `combinationCache`: Combinaciones frecuentes (15 min TTL)
+### 3.2. Persistencia de Progreso (IndexedDB)
 
-### 4. Validation System (Sistema de Validación)
-**Ubicación:** `src/lib/core/validators.js`
+El progreso detallado del usuario (historial de respuestas, estadísticas, etc.) se guarda en IndexedDB para mayor capacidad y rendimiento.
 
-**Validaciones automáticas:**
-- **Estructura de verbos:** IDs, lemmas, tipos, paradigmas
-- **Formas verbales:** Completitud, consistencia, valores requeridos
-- **Familias irregulares:** Ejemplos, tiempos afectados
-- **Duplicados:** Detección automática de verbos duplicados
-- **Integridad referencial:** Verbos mencionados en familias
+-   **Wrapper:** Las funciones `saveProgress` y `loadProgress` en `src/lib/store.js` actúan como una capa de abstracción sobre `idb-keyval`.
+-   **Fallback:** Si IndexedDB no está disponible o falla, el sistema cambia automáticamente a `localStorage` para garantizar la robustez.
 
-## 📊 Base de Datos de Verbos
+## 4. Modelo de Datos de Verbos
 
-### Estructura de un Verbo
-```javascript
-{
-  "id": "unique_id",
-  "lemma": "infinitivo",
-  "type": "regular" | "irregular",
-  "paradigms": [
-    {
-      "regionTags": ["rioplatense", "la_general", "peninsular"],
-      "forms": [
-        {
-          "mood": "indicative" | "subjunctive" | "imperative" | "conditional" | "nonfinite",
-          "tense": "pres" | "pretIndef" | "fut" | ...,
-          "person": "1s" | "2s_tu" | "2s_vos" | "3s" | "1p" | "2p_vosotros" | "3p" | "",
-          "value": "forma_conjugada",
-          "accepts": { "vos": "forma_voseante" } // opcional
-        }
-      ]
-    }
-  ]
-}
-```
+La fuente principal de datos de conjugación es `src/data/verbs.js`.
 
-### Estadísticas Actuales
-- **Total verbos:** ~94 (post-deduplicación)
-- **Verbos de alta frecuencia:** 77/242 cubiertos (32%)
-- **Familias irregulares:** 31 familias
-- **Todas las familias:** ≥6 verbos de ejemplo
-- **Errores detectados:** 186 (en proceso de corrección)
+-   **Estructura:** Es un array de objetos, donde cada objeto representa un verbo.
+-   **Objeto Verbo:**
+    -   `id` / `lemma`: El infinitivo del verbo (ej. "hablar").
+    -   `type`: `'regular'` o `'irregular'`.
+    -   `paradigms`: Un array que contiene las conjugaciones para diferentes regiones.
+        -   `regionTags`: Un array de regiones donde se aplica el paradigma.
+        -   `forms`: Un array muy grande de objetos de forma.
+            -   `mood`: Modo (ej. "indicative").
+            -   `tense`: Tiempo (ej. "pres").
+            -   `person`: Persona y número (ej. "1s", "2s_tu", "2s_vos").
+            -   `value`: La conjugación correcta (ej. "hablo").
+            -   `alt`: Un array de formas alternativas aceptadas (ej. `hablara` / `hablase`).
+            -   `accepts`: Un objeto para mapear formas alternativas entre dialectos (ej. `tú` y `vos`).
 
-## 🔧 Herramientas de Desarrollo
+## 5. Lógica de Negocio: El Motor de Práctica (`Drill Engine`)
 
-### Scripts de Análisis
-- `analyze-families.js`: Estado de familias irregulares
-- `analyze-missing-verbs.js`: Verbos faltantes de alta frecuencia
-- `validate-data.js`: Validación completa de datos
+El corazón de la aplicación reside en el hook `src/hooks/useDrillMode.js`. Su función principal, `generateNextItem`, es responsable de seleccionar el próximo desafío para el usuario.
 
-### Comandos Útiles
-```bash
-# Validar todos los datos
-node src/validate-data.js
+Este proceso sigue un **sistema de selección jerárquico y adaptativo**:
 
-# Analizar cobertura de verbos
-node src/analyze-missing-verbs.js
+1.  **Filtro Inicial:** Se parte de un conjunto de formas verbales elegibles (`eligibleForms`) que ya han sido filtradas según la configuración del usuario (dialecto, modo específico, etc.).
 
-# Estado de familias
-node src/analyze-families.js
+2.  **Nivel 1: Sistema de Repetición Espaciada (SRS):**
+    -   Se consultan los elementos "vencidos" (due) que el usuario necesita repasar, utilizando `getDueItems` de `src/lib/progress/srs.js`.
+    -   Si se encuentra un elemento SRS, se selecciona una forma verbal que coincida con ese criterio.
 
-# Ver estadísticas de cache (en consola del navegador)
-getCacheStats()
-```
+3.  **Nivel 2: Motor de Práctica Adaptativa:**
+    -   Si no hay elementos SRS, se invoca a `getNextRecommendedItem` de `src/lib/progress/AdaptivePracticeEngine.js`.
+    -   Este motor utiliza un análisis más profundo del rendimiento del usuario para recomendar una combinación específica de `mood` y `tense` donde el usuario muestra debilidad o necesita refuerzo.
 
-## 🚀 Performance
+4.  **Nivel 3: Generador Estándar (Fallback):**
+    -   Si ninguno de los sistemas anteriores devuelve un elemento, se utiliza la función `chooseNext` de `src/lib/core/generator.js`.
+    -   Esta función aplica una lógica de selección más general, teniendo en cuenta el historial reciente para evitar repeticiones.
 
-### Optimizaciones Implementadas
-1. **Cache inteligente** con evicción LRU
-2. **Lookups O(1)** con Map() pre-computados  
-3. **Filtrado eficiente** con Sets para combinaciones permitidas
-4. **Lazy loading** de datos según necesidad
-5. **Warm-up automático** de caches críticos
+La función `handleDrillResult` se encarga de procesar la respuesta del usuario, actualizar el historial y, crucialmente, alimentar los resultados a todo el sistema de progreso y analíticas.
 
-### Métricas Esperadas
-- **Tiempo de respuesta:** <50ms para generación de ejercicios
-- **Cache hit rate:** >80% después del warm-up
-- **Memory usage:** <20MB para caches
-- **Startup time:** <500ms para warm-up inicial
+## 6. Sistema de Progreso y Analíticas (`src/lib/progress/`)
 
-## 🧪 Testing y Validación
+Este es el subsistema más complejo de la aplicación. Es una colección de módulos diseñados para modelar el conocimiento y el estado emocional del usuario en tiempo real.
 
-### Validación Automática
-El sistema incluye validación automática que detecta:
-- Verbos duplicados
-- Formas verbales faltantes
-- Inconsistencias en conjugaciones
-- Referencias rotas entre familias y verbos
-- Estructura de datos inválida
+-   **`srs.js`:** Implementa un algoritmo de Spaced Repetition System para programar futuras revisiones.
+-   **`AdaptivePracticeEngine.js`:** El motor principal de recomendaciones. Analiza el historial de rendimiento para encontrar las áreas de mejora más efectivas.
+-   **`DifficultyManager.js`:** Evalúa el rendimiento de la sesión para sugerir ajustes en la dificultad.
+-   **`flowStateDetection.js`:** Modela el estado de "flow" (concentración) del usuario basándose en la velocidad y precisión de las respuestas.
+-   **`momentumTracker.js`:** Analiza patrones emocionales y de rendimiento para detectar rachas y caídas.
+-   **`confidenceEngine.js`:** Mide la confianza del usuario en diferentes áreas para construirla de manera efectiva.
+-   **`dynamicGoals.js`:** Establece y rastrea micro-objetivos para mantener al usuario motivado.
+-   **`personalizedCoaching.js`:** Ofrece consejos y recomendaciones personalizadas basadas en el nivel y rendimiento.
+-   **`userManager.js` y `database.js`:** Gestionan la identidad del usuario y la estructura de la base de datos en IndexedDB.
 
-### Niveles de Validación
-1. **Validación rápida:** Errores críticos únicamente
-2. **Validación completa:** Errores + advertencias
-3. **Exit codes:** 0 = éxito, 1 = errores encontrados
+## 7. Estructura de Componentes de UI
 
-### Integración CI/CD
-```bash
-# En pipeline de CI
-npm test
-node src/validate-data.js
-```
+Los componentes de React están organizados por funcionalidad en `src/components/`.
 
-## 🔮 Roadmap Técnico
-
-### Próximas Mejoras
-1. **Base de datos:** Completar verbos faltantes (165 pendientes)
-2. **Performance:** Implementar service workers para cache offline
-3. **Validación:** Auto-corrección de errores menores
-4. **Analytics:** Métricas de uso y rendimiento
-5. **Testing:** Tests unitarios automatizados
-6. **Documentation:** Guías de contribución para nuevos verbos
-
-### Arquitectura Futura
-- **Microservicios:** Separar generador y validador
-- **Database:** Migrar a base de datos real (SQLite/PostgreSQL)
-- **API:** REST API para datos de verbos
-- **Internacionalización:** Soporte para múltiples idiomas de interfaz
-
----
-
-**Última actualización:** Agosto 2024  
-**Versión:** 2.0  
-**Mantenedor:** Spanish Conjugator Team
+-   **`components/onboarding/`:** Contiene los componentes para cada paso del flujo de configuración inicial (`DialectSelection`, `LevelSelection`, etc.).
+-   **`components/drill/`:** Contiene los componentes para la interfaz de práctica (`DrillMode`, `DrillHeader`, `SettingsPanel`).
+-   **`features/progress/`:** Contiene los componentes para el panel de progreso, como `ProgressDashboard.jsx`.
+-   **`hooks/`:** Contiene los hooks de lógica de negocio más importantes, como `useDrillMode.js` y `useOnboardingFlow.js`, que encapsulan la mayor parte de la lógica de la interfaz de usuario para sus respectivas secciones.
