@@ -103,6 +103,31 @@
     0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
+.deconstruction-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.deconstruction-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.verb-lemma {
+  font-size: 0.95rem;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+}
+
+.group-label {
+  color: var(--accent-blue);
+  opacity: 0.9;
+  margin-left: 0.25rem;
+}
+
 .verb-deconstruction {
   display: flex;
   align-items: center;
@@ -194,6 +219,10 @@
     font-size: 1.2rem;
     flex-wrap: wrap;
     gap: 0.75rem;
+  }
+  
+  .deconstruction-list {
+    grid-template-columns: 1fr;
   }
   
   .ending-carousel {

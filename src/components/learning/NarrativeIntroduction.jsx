@@ -10,7 +10,11 @@ const storyData = {
       { text: 'Siempre __aprende__ algo nuevo.', verb: 'aprende' },
       { text: 'Él __vive__ en el centro de la ciudad.', verb: 'vive' },
     ],
-    deconstruction: { verb: 'comer', stem: 'com', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
+    deconstructions: [
+      { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['o', 'as', 'a', 'amos', 'áis', 'an'] },
+      { group: '-er', verb: 'aprender', stem: 'aprend', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
+      { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'] },
+    ],
   },
   pretIndef: {
     title: 'Una tarde ocupada',
@@ -19,7 +23,11 @@ const storyData = {
       { text: 'Luego, __comió__ un helado de fresa.', verb: 'comió' },
       { text: 'Finalmente, __escribió__ una carta a su abuela.', verb: 'escribió' },
     ],
-    deconstruction: { verb: 'hablar', stem: 'habl', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+    deconstructions: [
+      { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+      { group: '-er', verb: 'comer', stem: 'com', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+      { group: '-ir', verb: 'escribir', stem: 'escrib', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+    ],
   },
   impf: {
     title: 'Recuerdos de la infancia',
@@ -28,7 +36,11 @@ const storyData = {
       { text: 'Mi madre siempre me __leía__ un cuento.', verb: 'leía' },
       { text: 'Nosotros __vivíamos__ en una casa pequeña.', verb: 'vivíamos' },
     ],
-    deconstruction: { verb: 'cantar', stem: 'cant', endings: ['aba', 'abas', 'aba', 'ábamos', 'abais', 'aban'] },
+    deconstructions: [
+      { group: '-ar', verb: 'cantar', stem: 'cant', endings: ['aba', 'abas', 'aba', 'ábamos', 'abais', 'aban'] },
+      { group: '-er', verb: 'leer', stem: 'le', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+    ],
   },
   fut: {
     title: 'Planes para el futuro',
@@ -37,7 +49,11 @@ const storyData = {
       { text: 'Pronto __aprenderemos__ a programar.', verb: 'aprenderemos' },
       { text: 'La gente __vivirá__ en Marte.', verb: 'vivirá' },
     ],
-    deconstruction: { verb: 'vivir', stem: 'vivir', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+    deconstructions: [
+      { group: '-ar', verb: 'visitar', stem: 'visitar', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+      { group: '-er', verb: 'aprender', stem: 'aprender', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+      { group: '-ir', verb: 'vivir', stem: 'vivir', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+    ],
   },
   cond: {
     title: 'Un mundo ideal',
@@ -46,7 +62,11 @@ const storyData = {
       { text: 'Nosotros __compraríamos__ una casa en la playa.', verb: 'compraríamos' },
       { text: '¿Tú qué __harías__ con un millón de dólares?', verb: 'harías' },
     ],
-    deconstruction: { verb: 'hablar', stem: 'hablar', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+    deconstructions: [
+      { group: '-ar', verb: 'viajar', stem: 'viajar', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-er', verb: 'comer', stem: 'comer', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-ir', verb: 'vivir', stem: 'vivir', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+    ],
   },
   subjPres: {
     title: 'Deseos y Recomendaciones',
@@ -55,7 +75,11 @@ const storyData = {
       { text: 'El doctor recomienda que __bebas__ más agua.', verb: 'bebas' },
       { text: 'Quiero que __seamos__ buenos amigos.', verb: 'seamos' },
     ],
-    deconstruction: { verb: 'hablar', stem: 'habl', endings: ['e', 'es', 'e', 'emos', 'éis', 'en'] },
+    deconstructions: [
+      { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['e', 'es', 'e', 'emos', 'éis', 'en'] },
+      { group: '-er', verb: 'beber', stem: 'beb', endings: ['a', 'as', 'a', 'amos', 'áis', 'an'] },
+      { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['a', 'as', 'a', 'amos', 'áis', 'an'] },
+    ],
   },
   // Add more tenses here
 };
@@ -124,15 +148,22 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
               </div>
 
               <div className="deconstruction-placeholder">
-                <div className="verb-deconstruction">
-                  <span className="verb-stem">{story.deconstruction.stem}-</span>
-                  <span className="verb-endings">
-                    <span className="ending-carousel">
-                      {story.deconstruction.endings.map(ending => (
-                        <span key={ending} className="ending-item">{ending}</span>
-                      ))}
-                    </span>
-                  </span>
+                <div className="deconstruction-list">
+                  {story.deconstructions?.map(({ group, verb, stem, endings }) => (
+                    <div key={group} className="deconstruction-item">
+                      <div className="verb-lemma">{verb} <span className="group-label">{group}</span></div>
+                      <div className="verb-deconstruction">
+                        <span className="verb-stem">{stem}-</span>
+                        <span className="verb-endings">
+                          <span className="ending-carousel">
+                            {endings.map(ending => (
+                              <span key={ending} className="ending-item">{ending}</span>
+                            ))}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </>
