@@ -126,27 +126,33 @@ function LearnTenseFlow() {
   }
 
   return (
-    <div className="App learn-flow">
-      <div className="center-column">
+    <div className="App">
+      <div className="onboarding learn-flow">
+        {/* Header with logo */}
+        <ClickableCard className="app-logo" onClick={() => window.history.back()} title="Volver al menú">
+          <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+        </ClickableCard>
+        
         <h1>Aprender un Nuevo Tiempo</h1>
-        <p className="subtitle">Paso 1: Elige qué tiempo verbal quieres dominar.</p>
+        <p className="subtitle">Elige qué tiempo verbal quieres dominar</p>
 
         {Object.entries(availableTenses).map(([mood, tenses]) => (
-          <div key={mood} className="tense-group">
+          <div key={mood} className="tense-section">
             <h2>{MOOD_LABELS[mood] || mood}</h2>
             <div className="options-grid">
               {tenses.map(tense => (
                 <ClickableCard 
                   key={tense}
-                  className={`option-card tense-card ${selectedTense?.tense === tense ? 'selected' : ''}`}
+                  className={`option-card ${selectedTense?.tense === tense && selectedTense?.mood === mood ? 'selected' : ''}`}
                   onClick={() => handleTenseSelection(mood, tense)}
+                  title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
                 >
-                  <div className="tense-card-content">
-                    <div className="mastery-placeholder">
-                      {/* Placeholder for the circular progress bar */}
-                    </div>
-                    <span className="tense-label">{TENSE_LABELS[tense] || tense}</span>
-                  </div>
+                  <h3>
+                    <img src="/clock.png" alt="Tiempo" className="option-icon" />
+                    {TENSE_LABELS[tense] || tense}
+                  </h3>
+                  <p>Domina este tiempo verbal paso a paso</p>
+                  <p className="example">Ejercicios interactivos y contextualizados</p>
                 </ClickableCard>
               ))}
             </div>
@@ -154,32 +160,89 @@ function LearnTenseFlow() {
         ))}
 
         {selectedTense && (
-          <div className="config-panel">
-            <div className="config-section">
-              <h3 className="subtitle">Paso 2: Elige la duración</h3>
-              <div className="options-row">
-                <button onClick={() => setDuration(5)} className={`btn-filter ${duration === 5 ? 'active' : ''}`}>5 min</button>
-                <button onClick={() => setDuration(10)} className={`btn-filter ${duration === 10 ? 'active' : ''}`}>10 min</button>
-                <button onClick={() => setDuration(15)} className={`btn-filter ${duration === 15 ? 'active' : ''}`}>15 min</button>
+          <div className="settings-panel">
+            <h3>Configuración de Aprendizaje</h3>
+            
+            <div className="setting-group">
+              <label>Duración de la sesión</label>
+              <div className="radio-group">
+                <label>
+                  <input 
+                    type="radio" 
+                    name="duration" 
+                    checked={duration === 5} 
+                    onChange={() => setDuration(5)} 
+                  />
+                  5 minutos
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="duration" 
+                    checked={duration === 10} 
+                    onChange={() => setDuration(10)} 
+                  />
+                  10 minutos
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="duration" 
+                    checked={duration === 15} 
+                    onChange={() => setDuration(15)} 
+                  />
+                  15 minutos
+                </label>
               </div>
             </div>
-            <div className="config-section">
-              <h3 className="subtitle">Paso 3: Elige el tipo de verbo</h3>
-              <div className="options-row">
-                <button onClick={() => setVerbType('all')} className={`btn-filter ${verbType === 'all' ? 'active' : ''}`}>Todos</button>
-                <button onClick={() => setVerbType('regular')} className={`btn-filter ${verbType === 'regular' ? 'active' : ''}`}>Regulares</button>
-                <button onClick={() => setVerbType('irregular')} className={`btn-filter ${verbType === 'irregular' ? 'active' : ''}`}>Irregulares</button>
+            
+            <div className="setting-group">
+              <label>Tipo de verbos</label>
+              <div className="radio-group">
+                <label>
+                  <input 
+                    type="radio" 
+                    name="verbType" 
+                    checked={verbType === 'all'} 
+                    onChange={() => setVerbType('all')} 
+                  />
+                  Todos los verbos
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="verbType" 
+                    checked={verbType === 'regular'} 
+                    onChange={() => setVerbType('regular')} 
+                  />
+                  Solo regulares
+                </label>
+                <label>
+                  <input 
+                    type="radio" 
+                    name="verbType" 
+                    checked={verbType === 'irregular'} 
+                    onChange={() => setVerbType('irregular')} 
+                  />
+                  Solo irregulares
+                </label>
               </div>
             </div>
+            
             <button 
-              className="btn-primary start-learning-btn"
+              className="btn start-learning-btn"
               onClick={handleStartLearning}
               disabled={!duration || !verbType}
             >
+              <img src="/play.png" alt="Comenzar" className="play-icon" />
               Comenzar a Aprender
             </button>
           </div>
         )}
+
+        <button className="back-btn" onClick={() => window.history.back()}>
+          <img src="/back.png" alt="Volver" className="back-icon" />
+        </button>
       </div>
     </div>
   );

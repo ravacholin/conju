@@ -90,42 +90,55 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   const tenseName = TENSE_LABELS[eligibleForms[0].tense] || eligibleForms[0].tense;
 
   return (
-    <div className="App learn-flow">
-      <div className="center-column">
-        <div className="drill-header-learning">
-          <button onClick={onBack} className="back-btn-drill">
-            <img src="/back.png" alt="Volver" className="back-icon" />
-          </button>
-          <h2>Practicando: {tenseName}</h2>
-        </div>
-
-        {currentItem ? (
-          <div className={`drill-card-learning ${result}`}>
-            <div className="prompt">
-              {currentItem.lemma} - {currentItem.person}
-            </div>
-            <input 
-              type="text" 
-              className="answer-input"
-              placeholder="Escribe la conjugación..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={result !== 'idle'}
-            />
-            {result !== 'idle' && (
-              <div className="feedback-message">
-                {result === 'correct' ? '¡Correcto!' : `La respuesta correcta es: ${currentItem.value}`}
-              </div>
-            )}
-            {result === 'idle' ? (
-              <button className="btn-primary" onClick={handleCheckAnswer}>Revisar</button>
-            ) : (
-              <button className="btn-primary" onClick={handleContinue}>Continuar</button>
-            )}
+    <div className="App">
+      <div className="main-content">
+        <div className="drill-container learning-drill">
+          <div className="drill-header">
+            <button onClick={onBack} className="back-to-menu-btn">
+              <img src="/back.png" alt="Volver" className="back-icon" />
+              Volver
+            </button>
+            <h2>Practicando: {tenseName}</h2>
           </div>
-        ) : (
-          <p>No hay ejercicios disponibles para este tiempo verbal.</p>
-        )}
+
+          {currentItem ? (
+            <>
+              <div className="verb-lemma">{currentItem.lemma}</div>
+              <div className="person-display">{currentItem.person}</div>
+              
+              <div className="input-container">
+                <input 
+                  type="text" 
+                  className={`conjugation-input ${result}`}
+                  placeholder="Escribe la conjugación..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={result !== 'idle'}
+                />
+              </div>
+              
+              {result !== 'idle' && (
+                <div className={`result ${result}`}>
+                  {result === 'correct' ? '¡Correcto!' : `La respuesta correcta es: ${currentItem.value}`}
+                </div>
+              )}
+              
+              <div className="action-buttons">
+                {result === 'idle' ? (
+                  <button className="btn" onClick={handleCheckAnswer}>
+                    Revisar Respuesta
+                  </button>
+                ) : (
+                  <button className="btn" onClick={handleContinue}>
+                    Continuar
+                  </button>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="loading">No hay ejercicios disponibles para este tiempo verbal.</div>
+          )}
+        </div>
       </div>
     </div>
   );

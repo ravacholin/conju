@@ -1,126 +1,228 @@
-.narrative-header {
+/* Narrative Introduction - Consistent with main app design */
+
+.narrative-intro {
+  max-width: 800px;
+  margin: 0 auto;
   width: 100%;
   text-align: center;
-  margin-bottom: 2rem;
+}
+
+.narrative-header {
   position: relative;
+  margin-bottom: 3rem;
 }
 
-.back-btn-narrative {
+.narrative-header .back-btn {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
+  top: -1rem;
+  left: 0;
+  margin: 0;
 }
 
-.back-btn-narrative .back-icon {
-  width: 32px;
-  height: 32px;
+.narrative-header h1 {
+  font-size: 3.236rem;
+  font-weight: 200;
+  margin-bottom: 1rem;
+  color: var(--text);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  font-optical-sizing: auto;
+}
+
+.narrative-header .subtitle {
+  font-size: 1.125rem;
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.618;
+  font-weight: 350;
+  letter-spacing: -0.005em;
 }
 
 .narrative-content {
-  width: 100%;
-  padding: 1rem;
-  border: 1px dashed #4a4a4a;
-  border-radius: 8px;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-.story-placeholder, .deconstruction-placeholder {
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #a0a0a0;
-  background-color: #1a1a1a;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  overflow: hidden; /* For carousel animation */
+/* Story section */
+.story-placeholder {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
 .story-placeholder h3 {
-  color: #4ade80;
-  margin-top: 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .story-sentence {
+  font-size: 1.125rem;
+  line-height: 1.618;
+  margin-bottom: 1.5rem;
+  color: var(--text);
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-  font-size: 1.2rem;
+  transform: translateY(10px);
+  transition: all 0.5s ease;
+  letter-spacing: -0.005em;
 }
 
 .story-sentence.visible {
   opacity: 1;
+  transform: translateY(0);
 }
 
-.highlight {
-  color: #4ade80;
-  font-weight: bold;
+.story-sentence .highlight {
+  color: var(--accent-blue);
+  font-weight: 500;
+  background: rgba(142, 180, 227, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Verb deconstruction section */
+.deconstruction-placeholder {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
 .verb-deconstruction {
-  font-size: 2rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .verb-stem {
-  color: #e0e0e0;
+  color: var(--accent-green);
+  background: rgba(40, 167, 69, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .verb-endings {
-  display: inline-block;
-  position: relative;
-  width: 80px; /* Adjust width as needed */
-  height: 2.5rem; /* Matches font-size + line-height */
-  vertical-align: bottom;
+  display: flex;
+  align-items: center;
 }
 
 .ending-carousel {
-  position: absolute;
-  left: 0;
-  top: 0;
-  animation: carousel-spin 10s linear infinite;
+  display: flex;
+  gap: 0.25rem;
 }
 
 .ending-item {
-  display: block;
-  color: #4ade80;
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(253, 126, 20, 0.2);
+  font-size: 0.9em;
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-@keyframes carousel-spin {
-  0% { transform: translateY(0); }
-  16% { transform: translateY(0); } /* Pause on first item */
-  20% { transform: translateY(-2.5rem); } /* Spin to second */
-  36% { transform: translateY(-2.5rem); } /* Pause */
-  40% { transform: translateY(-5rem); }   /* Spin to third */
-  56% { transform: translateY(-5rem); }   /* Pause */
-  60% { transform: translateY(-7.5rem); } /* etc. */
-  76% { transform: translateY(-7.5rem); }
-  80% { transform: translateY(-10rem); }
-  96% { transform: translateY(-10rem); }
-  100% { transform: translateY(-12.5rem); }
+.ending-item:nth-child(1) { animation-delay: 0.1s; }
+.ending-item:nth-child(2) { animation-delay: 0.2s; }
+.ending-item:nth-child(3) { animation-delay: 0.3s; }
+.ending-item:nth-child(4) { animation-delay: 0.4s; }
+.ending-item:nth-child(5) { animation-delay: 0.5s; }
+.ending-item:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* Continue button */
+.narrative-intro .btn {
+  margin: 2rem auto 0;
+  max-width: 300px;
+  gap: 0.5rem;
+}
 
-.btn-primary {
-    background-color: #4ade80; /* Neon green */
-    color: #121212;
-    border: none;
-    padding: 0.8rem 1.5rem;
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .narrative-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .narrative-header .subtitle {
+    font-size: 1rem;
+  }
+  
+  .story-placeholder,
+  .deconstruction-placeholder {
+    padding: 1.5rem;
+  }
+  
+  .story-placeholder h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .story-sentence {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .verb-deconstruction {
     font-size: 1.2rem;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .ending-carousel {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .narrative-content {
+    margin-bottom: 2rem;
+  }
 }
 
-.btn-primary:hover {
-    background-color: #6ee7b7;
-}
-
-.btn-primary:active {
-    transform: scale(0.98);
+@media (max-width: 480px) {
+  .narrative-header h1 {
+    font-size: 2rem;
+  }
+  
+  .story-placeholder,
+  .deconstruction-placeholder {
+    padding: 1.25rem;
+  }
+  
+  .verb-deconstruction {
+    font-size: 1rem;
+  }
+  
+  .verb-stem,
+  .ending-item {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+  }
 }

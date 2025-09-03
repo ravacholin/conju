@@ -99,10 +99,10 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
   const moodName = MOOD_LABELS[tense.mood] || tense.mood;
 
   return (
-    <div className="App learn-flow">
-      <div className="center-column">
+    <div className="App">
+      <div className="onboarding learn-flow narrative-intro">
         <div className="narrative-header">
-          <button onClick={onBack} className="back-btn-narrative">
+          <button onClick={onBack} className="back-btn">
             <img src="/back.png" alt="Volver" className="back-icon" />
           </button>
           <h1>{tenseName}</h1>
@@ -143,7 +143,10 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
           )}
         </div>
 
-        <button className="btn-primary" onClick={onContinue}>¡Entendido, a practicar!</button>
+        <button className="btn" onClick={onContinue}>
+          <img src="/play.png" alt="Comenzar" className="play-icon" />
+          ¡Entendido, a practicar!
+        </button>
       </div>
     </div>
   );
