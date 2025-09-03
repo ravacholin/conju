@@ -25,7 +25,11 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
       verb.paradigms.forEach(paradigm => {
         paradigm.forms.forEach(form => {
           if (form.mood === selectedTense.mood && form.tense === selectedTense.tense) {
-            forms.push({ ...form, lemma: verb.lemma });
+            // Merge alternative valid answers from both `alt` and `accepts` keys
+            const altFromAccepts = form.accepts ? Object.values(form.accepts) : [];
+            const altFromAlt = Array.isArray(form.alt) ? form.alt : [];
+            const mergedAlt = Array.from(new Set([...altFromAlt, ...altFromAccepts]));
+            forms.push({ ...form, lemma: verb.lemma, alt: mergedAlt });
           }
         });
       });
@@ -233,7 +237,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
             <button 
               className="btn start-learning-btn"
               onClick={handleStartLearning}
-              disabled={!duration || !verbType}
+              disabled={!selectedTense || !duration || !verbType}
             >
               <img src="/play.png" alt="Comenzar" className="play-icon" />
               Comenzar a Aprender

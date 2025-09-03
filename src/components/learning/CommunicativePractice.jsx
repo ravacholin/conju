@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
@@ -43,9 +43,13 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
 
   const exercise = tense ? chatData[tense.tense] : null;
 
-  useState(() => {
+  useEffect(() => {
     if (exercise) {
       setMessages([{ author: 'bot', text: exercise.initialMessage }]);
+      setScriptIndex(0);
+      setChatEnded(false);
+    } else {
+      setMessages([]);
     }
   }, [exercise]);
 
