@@ -4,6 +4,7 @@ import { grade } from '../../lib/core/grader.js';
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
 import { useSettings } from '../../state/settings.js';
+import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 
 export default function Drill({ 
   currentItem, 
@@ -375,38 +376,7 @@ export default function Drill({
   const getContextText = () => {
     if (!currentItem) return '';
     
-    // Import labels locally to avoid issues
-    const MOOD_LABELS = {
-      'indicative': 'Indicativo',
-      'subjunctive': 'Subjuntivo', 
-      'imperative': 'Imperativo',
-      'conditional': 'Condicional',
-      'nonfinite': 'Formas no conjugadas'
-    };
-    
-    const TENSE_LABELS = {
-      'pres': 'Presente',
-      'pretPerf': 'Pretérito perfecto',
-      'pretIndef': 'Pretérito indefinido', 
-      'impf': 'Imperfecto',
-      'plusc': 'Pluscuamperfecto',
-      'fut': 'Futuro',
-      'futPerf': 'Futuro perfecto',
-      'subjPres': 'Presente',
-      'subjImpf': 'Imperfecto',
-      'subjPerf': 'Perfecto',
-      'subjPlusc': 'Pluscuamperfecto',
-      'impAff': 'Afirmativo',
-      'impNeg': 'Negativo', 
-      'cond': 'Condicional',
-      'condPerf': 'Condicional perfecto',
-      'ger': 'Gerundio',
-      'part': 'Participio'
-    };
-    
-    const moodLabel = MOOD_LABELS[currentItem.mood] || currentItem.mood;
-    const tenseLabel = TENSE_LABELS[currentItem.tense] || currentItem.tense;
-
+    const { moodLabel, tenseLabel } = getSafeMoodTenseLabels(currentItem.mood, currentItem.tense);
     const sample = getHablarSample(currentItem.mood, currentItem.tense, settings);
     
     return sample ? `${moodLabel} - ${tenseLabel}: ${sample}` : `${moodLabel} - ${tenseLabel}`;
@@ -465,37 +435,11 @@ export default function Drill({
 
   // Helper functions for game modes
   const getMoodLabel = (mood) => {
-    const MOOD_LABELS = {
-      'indicative': 'Indicativo',
-      'subjunctive': 'Subjuntivo', 
-      'imperative': 'Imperativo',
-      'conditional': 'Condicional',
-      'nonfinite': 'Formas no conjugadas'
-    };
-    return MOOD_LABELS[mood] || mood;
+    return getSafeMoodTenseLabels(mood, 'dummy').moodLabel;
   };
 
   const getTenseLabel = (tense) => {
-    const TENSE_LABELS = {
-      'pres': 'Presente',
-      'pretPerf': 'Pretérito perfecto',
-      'pretIndef': 'Pretérito indefinido', 
-      'impf': 'Imperfecto',
-      'plusc': 'Pluscuamperfecto',
-      'fut': 'Futuro',
-      'futPerf': 'Futuro perfecto',
-      'subjPres': 'Presente',
-      'subjImpf': 'Imperfecto',
-      'subjPerf': 'Perfecto',
-      'subjPlusc': 'Pluscuamperfecto',
-      'impAff': 'Afirmativo',
-      'impNeg': 'Negativo', 
-      'cond': 'Condicional',
-      'condPerf': 'Condicional perfecto',
-      'ger': 'Gerundio',
-      'part': 'Participio'
-    };
-    return TENSE_LABELS[tense] || tense;
+    return getSafeMoodTenseLabels('dummy', tense).tenseLabel;
   };
 
   const getPersonLabel = (person) => {

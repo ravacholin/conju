@@ -1,15 +1,22 @@
 // Labels and mappings for Spanish verb forms
 
 export const MOOD_LABELS = {
+  // Formatos ingleses (sistema existente)
   'indicative': 'Indicativo',
   'subjunctive': 'Subjuntivo',
   'imperative': 'Imperativo',
   'conditional': 'Condicional',
-  'nonfinite': 'Formas no conjugadas'
+  'nonfinite': 'Formas no conjugadas',
+  
+  // Formatos españoles (levels.js)
+  'indicativo': 'Indicativo',
+  'subjuntivo': 'Subjuntivo',
+  'imperativo': 'Imperativo',
+  'condicional': 'Condicional'
 }
 
 export const TENSE_LABELS = {
-  // Indicativo
+  // Indicativo - formatos cortos
   'pres': 'Presente',
   'pretPerf': 'Pretérito perfecto',
   'pretIndef': 'Pretérito indefinido',
@@ -18,21 +25,41 @@ export const TENSE_LABELS = {
   'fut': 'Futuro',
   'futPerf': 'Futuro perfecto',
 
+  // Indicativo - formatos largos (levels.js)
+  'presente': 'Presente',
+  'preterito_perfecto_simple': 'Pretérito perfecto simple',
+  'preterito_imperfecto': 'Pretérito imperfecto',
+  'preterito_perfecto_compuesto': 'Pretérito perfecto compuesto',
+  'preterito_pluscuamperfecto': 'Pretérito pluscuamperfecto',
+  'futuro_simple': 'Futuro simple',
+  'futuro_compuesto': 'Futuro compuesto',
   
-  // Subjuntivo
+  // Subjuntivo - formatos cortos
   'subjPres': 'Presente',
   'subjImpf': 'Imperfecto',
   'subjPerf': 'Perfecto',
   'subjPlusc': 'Pluscuamperfecto',
   
-  // Imperativo
+  // Subjuntivo - formatos largos (levels.js)
+  'presente_subjuntivo': 'Presente de subjuntivo',
+  'imperfecto_subjuntivo': 'Imperfecto de subjuntivo',
+  'preterito_perfecto_subjuntivo': 'Pretérito perfecto de subjuntivo',
+  'pluscuamperfecto_subjuntivo': 'Pluscuamperfecto de subjuntivo',
+  'futuro_subjuntivo': 'Futuro de subjuntivo',
+  'futuro_perfecto_subjuntivo': 'Futuro perfecto de subjuntivo',
+  
+  // Imperativo - todos los formatos
   'impAff': 'Afirmativo',
   'impNeg': 'Negativo',
   'impMixed': 'Todas',
+  'imperativo_afirmativo': 'Imperativo afirmativo',
+  'imperativo_negativo': 'Imperativo negativo',
   
-  // Condicional
+  // Condicional - todos los formatos
   'cond': 'Condicional',
   'condPerf': 'Condicional perfecto',
+  'condicional_simple': 'Condicional simple',
+  'condicional_compuesto': 'Condicional compuesto',
   
   // Formas no conjugadas
   'ger': 'Gerundio',

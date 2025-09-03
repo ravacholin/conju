@@ -25,6 +25,9 @@ node src/validate-data.js
 
 # Audit dataset consistency (validate person/mood/tense alignment)
 node scripts/audit-consistency.js
+
+# Validate mood/tense mapping integrity (prevents "Undefined - undefined" bugs)
+npm run validate-integrity
 ```
 
 ## Architecture Overview

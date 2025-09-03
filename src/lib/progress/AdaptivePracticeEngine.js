@@ -37,6 +37,8 @@ const TENSE_LABELS = {
   'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
   'impAff': 'Imperativo afirmativo',
   'impNeg': 'Imperativo negativo',
+  'imperativo_afirmativo': 'Imperativo afirmativo',
+  'imperativo_negativo': 'Imperativo negativo',
   'cond': 'Condicional simple',
   'condPerf': 'Condicional compuesto',
   'inf': 'Infinitivo',
