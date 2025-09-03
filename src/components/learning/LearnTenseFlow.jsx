@@ -9,7 +9,7 @@ import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
 import './LearnTenseFlow.css';
 
-function LearnTenseFlow() {
+function LearnTenseFlow({ onHome, onGoToProgress }) {
   const [currentStep, setCurrentStep] = useState('selection'); // 'selection' | 'introduction' | 'practice' | 'meaningful_practice' | 'communicative_practice'
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null); // 5, 10, 15
@@ -69,6 +69,7 @@ function LearnTenseFlow() {
     setDuration(null);
     setVerbType(null);
     setCurrentStep('selection');
+    if (onHome) onHome();
   };
 
   const handleMechanicalPhaseComplete = () => {
@@ -129,7 +130,7 @@ function LearnTenseFlow() {
     <div className="App">
       <div className="onboarding learn-flow">
         {/* Header with logo */}
-        <ClickableCard className="app-logo" onClick={() => window.history.back()} title="Volver al menú">
+        <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
           <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
         </ClickableCard>
         
@@ -240,7 +241,7 @@ function LearnTenseFlow() {
           </div>
         )}
 
-        <button className="back-btn" onClick={() => window.history.back()}>
+        <button className="back-btn" onClick={onHome}>
           <img src="/back.png" alt="Volver" className="back-icon" />
         </button>
       </div>
