@@ -1,0 +1,89 @@
+.drill-header-learning {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.drill-header-learning h2 {
+  color: #e0e0e0;
+}
+
+.back-btn-drill {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-btn-drill .back-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.drill-card-learning {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  border: 1px solid #333;
+}
+
+.drill-card-learning .prompt {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.answer-input {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #252525;
+  color: #e0e0e0;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box; /* Important for padding */
+}
+
+.answer-input::placeholder {
+  color: #666;
+}
+
+.drill-card-learning.correct .answer-input {
+  border-color: #4ade80;
+  box-shadow: 0 0 10px #4ade80;
+}
+
+.drill-card-learning.incorrect .answer-input {
+  border-color: #f87171;
+  box-shadow: 0 0 10px #f87171;
+  animation: shake 0.5s;
+}
+
+.feedback-message {
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+  font-weight: bold;
+}
+
+.drill-card-learning.incorrect .feedback-message {
+  color: #f87171;
+}
+
+.drill-card-learning.correct .feedback-message {
+  color: #4ade80;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

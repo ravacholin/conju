@@ -1,7 +1,7 @@
 import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress }) {
+function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress, onStartLearningNewTense }) {
   if (showLevelDetails) {
     // Step 3: Specific level selection
     return (
@@ -99,13 +99,32 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           <p className="example">Presente, subjuntivo, imperativo, etc.</p>
         </ClickableCard>
         
+        <ClickableCard
+          className="option-card"
+          onClick={onStartLearningNewTense}
+          title="Aprender un tiempo verbal nuevo con un método guiado"
+        >
+          <h3>
+            <img src="/sparks.png" alt="Aprender" className="option-icon" /> Aprender un tiempo
+          </h3>
+          <p>Un camino guiado para dominar un tiempo verbal desde cero</p>
+          <p className="example">Introducción, práctica y contexto</p>
+        </ClickableCard>
+
         {onGoToProgress && (
-          <ClickableCard 
-            className="option-card" 
+          <ClickableCard
+            className="option-card"
             onClick={() => onGoToProgress()}
             title="Ver progreso y analíticas"
           >
-            <h3><img src="/icons/chart.png" alt="Progreso" className="option-icon" /> Seguir tu progreso</h3>
+            <h3>
+              <img
+                src="/icons/chart.png"
+                alt="Progreso"
+                className="option-icon"
+              />{' '}
+              Seguir tu progreso
+            </h3>
             <p>Métricas y análisis para mejorar</p>
             <p className="example">Dashboard con analíticas y recomendaciones</p>
           </ClickableCard>

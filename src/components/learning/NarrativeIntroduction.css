@@ -1,0 +1,126 @@
+.narrative-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.back-btn-narrative {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-btn-narrative .back-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.narrative-content {
+  width: 100%;
+  padding: 1rem;
+  border: 1px dashed #4a4a4a;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.story-placeholder, .deconstruction-placeholder {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #a0a0a0;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  overflow: hidden; /* For carousel animation */
+}
+
+.story-placeholder h3 {
+  color: #4ade80;
+  margin-top: 0;
+}
+
+.story-sentence {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  font-size: 1.2rem;
+}
+
+.story-sentence.visible {
+  opacity: 1;
+}
+
+.highlight {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.verb-deconstruction {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.verb-stem {
+  color: #e0e0e0;
+}
+
+.verb-endings {
+  display: inline-block;
+  position: relative;
+  width: 80px; /* Adjust width as needed */
+  height: 2.5rem; /* Matches font-size + line-height */
+  vertical-align: bottom;
+}
+
+.ending-carousel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: carousel-spin 10s linear infinite;
+}
+
+.ending-item {
+  display: block;
+  color: #4ade80;
+}
+
+@keyframes carousel-spin {
+  0% { transform: translateY(0); }
+  16% { transform: translateY(0); } /* Pause on first item */
+  20% { transform: translateY(-2.5rem); } /* Spin to second */
+  36% { transform: translateY(-2.5rem); } /* Pause */
+  40% { transform: translateY(-5rem); }   /* Spin to third */
+  56% { transform: translateY(-5rem); }   /* Pause */
+  60% { transform: translateY(-7.5rem); } /* etc. */
+  76% { transform: translateY(-7.5rem); }
+  80% { transform: translateY(-10rem); }
+  96% { transform: translateY(-10rem); }
+  100% { transform: translateY(-12.5rem); }
+}
+
+
+.btn-primary {
+    background-color: #4ade80; /* Neon green */
+    color: #121212;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+    background-color: #6ee7b7;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}

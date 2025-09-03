@@ -1,0 +1,85 @@
+.timeline-container, .prompts-container {
+  width: 100%;
+  padding: 1.5rem;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-container h3, .prompts-container h3 {
+  color: #4ade80;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.prompts-container ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+    color: #e0e0e0;
+}
+
+.prompts-container li {
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-event {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e0e0e0;
+}
+
+.timeline-event .icon {
+  font-size: 2rem;
+}
+
+.timeline-event .time {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.timeline-event .prompt {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+}
+
+.story-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #252525;
+  color: #e0e0e0;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #a0a0a0;
+    border: 1px solid #555;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #333;
+    color: #e0e0e0;
+}

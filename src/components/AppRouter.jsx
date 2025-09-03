@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
+import LearnTenseFlow from './learning/LearnTenseFlow.jsx';
 import { lazy } from 'react'
 
 const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashboard.jsx'))
@@ -87,6 +88,18 @@ function AppRouter() {
       // Ignore history API errors
     }
   }
+
+  const handleStartLearningNewTense = () => {
+    console.log('🧠 handleStartLearningNewTense called');
+    setCurrentMode('learning');
+    // You might want to push a history state here as well
+    try {
+      const historyState = { appNav: true, mode: 'learning', ts: Date.now() };
+      window.history.pushState(historyState, '');
+    } catch {
+      // Ignore
+    }
+  };
 
   // From Progress page: go to onboarding menu step 2 (no dialects)
   const handleProgressMenu = () => {

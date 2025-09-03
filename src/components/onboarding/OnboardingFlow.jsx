@@ -11,6 +11,7 @@ function OnboardingFlow({
   onStartPractice, 
   setCurrentMode, 
   formsForRegion,
+  onStartLearningNewTense,
   // Hook functions from AppRouter
   onboardingStep,
   selectDialect,
@@ -63,6 +64,7 @@ function OnboardingFlow({
               onBack={handleBack}
               showLevelDetails={false}
               onGoToProgress={onGoToProgress}
+              onStartLearningNewTense={onStartLearningNewTense}
             />
           )}
 
@@ -154,7 +156,7 @@ function OnboardingFlow({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default OnboardingFlow
+export default OnboardingFlow;

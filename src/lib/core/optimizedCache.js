@@ -91,7 +91,7 @@ export const formFilterCache = new IntelligentCache(1000, 3 * 60 * 1000) // 3 mi
 export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 min para combinaciones
 
 // Sanitize known data issues before building indexes
-try { sanitizeVerbsInPlace(verbs) } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('Data sanitizer failed:', e) }
+try { sanitizeVerbsInPlace(verbs) } catch (e) { if (import.meta.env.DEV) console.warn('Data sanitizer failed:', e) }
 
 // Pre-computar mapas frecuentemente utilizados
 // FIX CRÍTICO: Manejar sufijos _priority para lookup correcto
@@ -128,7 +128,7 @@ verbs.forEach(verb => {
 
 // Función para pre-calentar caches con datos frecuentes
 export function warmupCaches() {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('🔥 Calentando caches del generador...')
   }
   
@@ -157,7 +157,7 @@ export function warmupCaches() {
     combinations++
   })
   
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     const warmupTime = Date.now() - startTime
     console.log(`✅ Cache warmup completado en ${warmupTime}ms`)
     console.log(`   - ${categorized} verbos categorizados`)
@@ -173,7 +173,7 @@ export function clearAllCaches() {
   formFilterCache.clear()
   combinationCache.clear()
   
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log('🧹 Todos los caches han sido limpiados')
   }
 }
