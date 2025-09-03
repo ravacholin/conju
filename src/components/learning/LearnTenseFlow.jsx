@@ -9,7 +9,7 @@ import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
 import './LearnTenseFlow.css';
 
-function LearnTenseFlow({ onHome, onGoToProgress }) {
+function LearnTenseFlow({ onHome }) {
   const [currentStep, setCurrentStep] = useState('selection'); // 'selection' | 'introduction' | 'practice' | 'meaningful_practice' | 'communicative_practice'
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null); // 5, 10, 15

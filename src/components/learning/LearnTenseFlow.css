@@ -63,35 +63,80 @@
 
 /* Settings panel styling */
 .learn-flow .settings-panel {
-  margin: 2rem auto 3rem;
+  margin: 3rem auto;
   max-width: 600px;
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
 .learn-flow .settings-panel h3 {
+  font-size: 1.25rem;
+  font-weight: 400;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .learn-flow .setting-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.learn-flow .setting-group label {
+.learn-flow .setting-group > label {
   text-align: center;
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.005em;
 }
 
 .learn-flow .radio-group {
+  display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .learn-flow .radio-group label {
   text-align: left;
   display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0;
+  padding: 0.75rem 1.25rem;
+  background: rgba(245, 245, 245, 0.05);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.learn-flow .radio-group label:hover {
+  background: rgba(245, 245, 245, 0.08);
+  border-color: rgba(245, 245, 245, 0.15);
+}
+
+.learn-flow .radio-group input[type="radio"] {
+  margin: 0;
+  accent-color: var(--accent-blue);
+}
+
+.learn-flow .radio-group label:has(input[type="radio"]:checked) {
+  background: rgba(142, 180, 227, 0.08);
+  border-color: rgba(142, 180, 227, 0.3);
+  color: var(--accent-blue);
 }
 
 /* Start learning button */

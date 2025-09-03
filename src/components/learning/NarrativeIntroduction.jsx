@@ -149,7 +149,7 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {story.deconstructions?.map(({ group, verb, stem, endings }) => (
+                  {story.deconstructions?.map(({ group, stem, endings }) => (
                     <div key={group} className="deconstruction-item">
                       <div className="verb-lemma"><span className="lemma-stem">{stem}</span><span className="group-label">{group}</span></div>
                       <div className="verb-deconstruction">

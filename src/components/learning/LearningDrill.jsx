@@ -44,8 +44,8 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
 
     const correctAnswer = currentItem.value;
     const altAnswers = currentItem.alt || [];
-    const userAnser = inputValue.trim().toLowerCase();
-    const isCorrect = userAnser === correctAnswer.toLowerCase() || altAnswers.map(a => a.toLowerCase()).includes(userAnser);
+    const userAnswer = inputValue.trim().toLowerCase();
+    const isCorrect = userAnswer === correctAnswer.toLowerCase() || altAnswers.map(a => a.toLowerCase()).includes(userAnswer);
 
     if (isCorrect) {
       setResult('correct');
@@ -76,6 +76,17 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
       onPhaseComplete();
     } else {
       generateNextItem();
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (result === 'idle') {
+        handleCheckAnswer();
+      } else {
+        handleContinue();
+      }
     }
   };
 
@@ -113,7 +124,9 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
                   placeholder="Escribe la conjugación..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   disabled={result !== 'idle'}
+                  autoFocus
                 />
               </div>
               

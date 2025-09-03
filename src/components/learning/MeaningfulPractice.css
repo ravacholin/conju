@@ -1,29 +1,39 @@
 .timeline-container, .prompts-container {
   width: 100%;
-  padding: 1.5rem;
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
+  padding: 2.5rem;
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
 .timeline-container h3, .prompts-container h3 {
-  color: #4ade80;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--text);
   text-align: center;
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  letter-spacing: -0.01em;
 }
 
 .prompts-container ul {
     list-style-type: none;
     padding: 0;
     text-align: left;
-    color: #e0e0e0;
+    color: var(--text);
 }
 
 .prompts-container li {
-    margin-bottom: 0.8rem;
-    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    line-height: 1.618;
+    letter-spacing: -0.005em;
 }
 
 .timeline {
@@ -36,7 +46,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #e0e0e0;
+  color: var(--text);
 }
 
 .timeline-event .icon {
@@ -49,37 +59,113 @@
 }
 
 .timeline-event .prompt {
-  font-size: 0.8rem;
-  color: #a0a0a0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.25rem;
 }
 
 .story-textarea {
   width: 100%;
   min-height: 150px;
-  padding: 0.8rem;
-  font-size: 1.1rem;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #252525;
-  color: #e0e0e0;
-  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.125rem;
+  line-height: 1.618;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text);
+  margin-bottom: 2rem;
   box-sizing: border-box;
   resize: vertical;
   font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn-secondary {
-    background-color: transparent;
-    color: #a0a0a0;
-    border: 1px solid #555;
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+.story-textarea:focus {
+  outline: none;
+  border-color: rgba(142, 180, 227, 0.3);
+  box-shadow: 0 0 0 3px rgba(142, 180, 227, 0.1);
 }
 
-.btn-secondary:hover {
-    background-color: #333;
-    color: #e0e0e0;
+.story-textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* Use main app button styles */
+.drill-header-learning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.drill-header-learning h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.01em;
+  text-align: center;
+  flex: 1;
+}
+
+.back-btn-drill {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.back-btn-drill:hover {
+  color: var(--text);
+  background: rgba(245, 245, 245, 0.05);
+}
+
+.back-btn-drill .back-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.feedback-message {
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.feedback-message.correct {
+  background: var(--success);
+  border: 1px solid var(--success-border);
+  color: var(--accent-green);
+}
+
+.feedback-message.incorrect {
+  background: var(--error);
+  border: 1px solid var(--error-border);
+  color: var(--accent-red);
+}
+
+.btn-primary {
+  width: 100%;
+  max-width: 300px;
+  margin: 1rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }

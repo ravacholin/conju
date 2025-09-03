@@ -108,6 +108,17 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
     setInputValue('');
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!chatEnded) {
+        handleSendMessage();
+      } else {
+        onFinish();
+      }
+    }
+  };
+
   if (!exercise) {
     return (
         <div className="center-column">
@@ -141,7 +152,9 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
                     placeholder="Escribe tu respuesta..."
                     value={inputValue}
                     onChange={e => setInputValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     disabled={chatEnded}
+                    autoFocus
                 />
                 {chatEnded ? (
                     <button onClick={onFinish} className="btn-primary">Finalizar</button>
