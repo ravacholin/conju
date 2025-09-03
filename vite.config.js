@@ -84,7 +84,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     // Force IPv4 to avoid rare ::1 issues on some setups
     host: '127.0.0.1',
-    port: 5173,
-    strictPort: true
+    port: 5175,
+    strictPort: false
   }
 }))

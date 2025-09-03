@@ -321,6 +321,7 @@ function AppRouter() {
         getModeSamples={onboardingFlow.getModeSamples}
         getConjugationExample={onboardingFlow.getConjugationExample}
         onGoToProgress={handleGoToProgress}
+        onStartLearningNewTense={handleStartLearningNewTense}
       />
     )
   }
@@ -343,6 +344,15 @@ function AppRouter() {
         getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
         onNavigateToProgress={handleGoToProgress}
+      />
+    )
+  }
+
+  if (currentMode === 'learning') {
+    return (
+      <LearnTenseFlow 
+        onHome={handleHome}
+        onGoToProgress={handleGoToProgress}
       />
     )
   }
