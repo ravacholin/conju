@@ -5,6 +5,24 @@
   max-width: 650px;
 }
 
+/* Page-level mount animation */
+.page-transition {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+.page-transition.page-in { opacity: 1; transform: translateY(0); }
+
+/* Subtle content swap when switching person/verb */
+.verb-lemma.swap, .person-display.swap {
+  animation: swap-fade 220ms ease;
+}
+@keyframes swap-fade {
+  0% { opacity: 1; transform: translateY(0); }
+  40% { opacity: 0; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .learning-drill .drill-header {
   display: flex;
   align-items: center;

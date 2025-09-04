@@ -86,6 +86,8 @@ const storyData = {
 
 function NarrativeIntroduction({ tense, onBack, onContinue }) {
   const [visibleSentence, setVisibleSentence] = useState(0);
+  const [entered, setEntered] = useState(false);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     if (!tense) return;
@@ -105,12 +107,33 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
     return () => clearInterval(timer);
   }, [tense]);
 
+  useEffect(() => {
+    // trigger enter animation on mount
+    const t = setTimeout(() => setEntered(true), 10);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleAnimatedContinue = () => {
+    // play leave animation then continue
+    setLeaving(true);
+    setTimeout(() => {
+      onContinue && onContinue();
+    }, 350);
+  };
+
+  const handleAnimatedBack = () => {
+    setLeaving(true);
+    setTimeout(() => {
+      onBack && onBack();
+    }, 300);
+  };
+
   if (!tense) {
     return (
       <div className="App learn-flow">
         <div className="center-column">
           <p>No tense selected.</p>
-          <button onClick={onBack} className="back-btn">
+          <button onClick={handleAnimatedBack} className="back-btn">
             <img src="/back.png" alt="Volver" className="back-icon" />
           </button>
         </div>
@@ -133,7 +156,7 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
           <p className="subtitle">{moodName}</p>
         </div>
 
-        <div className="narrative-content">
+        <div className={`narrative-content page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''}`}>
           {story ? (
             <>
               <div className="story-placeholder">
@@ -174,7 +197,7 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
           )}
         </div>
 
-        <button className="btn" onClick={onContinue}>
+        <button className="btn" onClick={handleAnimatedContinue}>
           <img src="/play.png" alt="Comenzar" className="play-icon" />
           ¡Entendido, a practicar!
         </button>

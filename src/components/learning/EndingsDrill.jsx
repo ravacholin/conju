@@ -74,6 +74,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState(null); // null | { correct: boolean, ... }
   const inputRef = useRef(null);
+  const [entered, setEntered] = useState(false);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     const initialQueue = [...PRONOUNS_DISPLAY, ...PRONOUNS_DISPLAY];
@@ -82,6 +84,11 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setResult(null);
     setInputValue('');
     inputRef.current?.focus();
+  }, [verb]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setEntered(true), 10);
+    return () => clearTimeout(t);
   }, [verb]);
 
   const currentPronoun = drillQueue[currentIndex];
@@ -141,7 +148,11 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setInputValue('');
     const nextIndex = currentIndex + 1;
     if (nextIndex >= drillQueue.length) {
-      onComplete();
+      // Animate out when finishing this guided block
+      setLeaving(true);
+      setTimeout(() => {
+        onComplete();
+      }, 320);
     } else {
       setCurrentIndex(nextIndex);
       // Ensure focus is set for the next item
@@ -183,13 +194,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   }
 
   const tenseName = TENSE_LABELS[tense.tense] || tense.tense;
+  const groupKey = (verb.lemma || '').endsWith('ar') ? 'ar' : (verb.lemma || '').endsWith('er') ? 'er' : (verb.lemma || '').endsWith('ir') ? 'ir' : 'x';
 
   return (
     <div className="App" onKeyDown={handleGlobalKeyDown} tabIndex={-1}>
       <div className="main-content">
-        <div className="drill-container learning-drill">
+        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
           <div className="drill-header">
-             <button onClick={onBack} className="back-to-menu-btn">
+             <button onClick={() => { setLeaving(true); setTimeout(() => onBack && onBack(), 300); }} className="back-to-menu-btn">
                 <img src="/back.png" alt="Volver" className="back-icon" />
                 Volver
             </button>

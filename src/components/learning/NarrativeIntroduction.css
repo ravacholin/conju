@@ -42,6 +42,21 @@
   margin-bottom: 3rem;
 }
 
+/* Page-level transitions for smooth flow into guided drill */
+.page-transition {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+.page-transition.page-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.page-transition.page-out {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
 /* Story section */
 .story-placeholder {
   background: rgba(17, 17, 17, 0.6);

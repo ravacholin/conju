@@ -32,6 +32,8 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
+  const [entered, setEntered] = useState(false);
+  const [swapAnim, setSwapAnim] = useState(false);
 
   useEffect(() => {
     if (duration) {
@@ -58,6 +60,12 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   useEffect(() => {
     generateNextItem();
   }, [generateNextItem]);
+
+  useEffect(() => {
+    // enter animation on mount
+    const t = setTimeout(() => setEntered(true), 10);
+    return () => clearTimeout(t);
+  }, []);
 
   const calculatePoints = (isCorrect, responseTime, isIrregular = false) => {
     if (!isCorrect) return 0;
@@ -136,6 +144,9 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     if (correctStreak >= 5 && onPhaseComplete) {
         onPhaseComplete();
     } else {
+        // subtle swap animation when moving to next random item
+        setSwapAnim(true);
+        setTimeout(() => setSwapAnim(false), 250);
         generateNextItem();
     }
   };
@@ -186,7 +197,7 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1} ref={containerRef}>
       <div className="main-content">
-        <div className="drill-container learning-drill">
+        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
           <div className="drill-header">
             <button onClick={onBack} className="back-to-menu-btn">
               <img src="/back.png" alt="Volver" className="back-icon" />
@@ -203,8 +214,8 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
 
           {currentItem ? (
             <>
-              <div className="verb-lemma">{currentItem.lemma}</div>
-              <div className="person-display">{getPersonText(currentItem.person)}</div>
+              <div className={`verb-lemma ${swapAnim ? 'swap' : ''}`}>{currentItem.lemma}</div>
+              <div className={`person-display ${swapAnim ? 'swap' : ''}`}>{getPersonText(currentItem.person)}</div>
               
               <div className="input-container">
                 <input 
