@@ -24,14 +24,14 @@ const storyData = {
   },
   pretIndef: {
     deconstructions: [
-        { group: '-ar', verb: 'hablar' },
+        { group: '-ar', verb: 'caminar' },
         { group: '-er', verb: 'comer' },
         { group: '-ir', verb: 'escribir' },
     ],
   },
   impf: {
     deconstructions: [
-      { group: '-ar', verb: 'cantar' },
+      { group: '-ar', verb: 'jugar' },
       { group: '-er', verb: 'leer' },
       { group: '-ir', verb: 'vivir' },
     ],
