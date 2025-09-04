@@ -80,6 +80,44 @@ function MoodTenseSelection({
     console.log('MoodTenseSelection: Showing tense selection', {
       specificMood: settings.specificMood
     });
+    
+    // Function to get conjugation examples with 1st, 2nd, and 3rd person
+    const getPersonConjugationExample = (mood, tense) => {
+      const examples = {
+        // Indicativo
+        'indicative_pres': 'yo hablo, tú hablas, él/ella habla',
+        'indicative_pretIndef': 'yo hablé, tú hablaste, él/ella habló',
+        'indicative_impf': 'yo hablaba, tú hablabas, él/ella hablaba',
+        'indicative_fut': 'yo hablaré, tú hablarás, él/ella hablará',
+        'indicative_pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
+        'indicative_plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
+        'indicative_futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
+        
+        // Subjuntivo
+        'subjunctive_subjPres': 'yo hable, tú hables, él/ella hable',
+        'subjunctive_subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
+        'subjunctive_subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
+        'subjunctive_subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
+        
+        // Imperativo (dialect-specific)
+        'imperative_impAff': settings.useVoseo && !settings.useTuteo ? 'tú habla, vos hablá, usted hable' : 'tú habla, usted hable',
+        'imperative_impNeg': settings.useVoseo && !settings.useTuteo ? 'no hables, no habléis' : 'no hables, no habléis',
+        'imperative_impMixed': settings.useVoseo && !settings.useTuteo ? 'tú habla / no hables, vos hablá / no habléis' : 'tú habla / no hables',
+        
+        // Condicional
+        'conditional_cond': 'yo hablaría, tú hablarías, él/ella hablaría',
+        'conditional_condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
+        
+        // Formas no conjugadas
+        'nonfinite_ger': 'hablando',
+        'nonfinite_part': 'hablado',
+        'nonfinite_nonfiniteMixed': 'hablando / hablado'
+      }
+      
+      const key = `${mood}_${tense}`
+      return examples[key] || ''
+    }
+    
     return (
       <>
         <div className="options-grid">
@@ -91,7 +129,7 @@ function MoodTenseSelection({
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
               <h3>{getTenseLabel(tense)}</h3>
-              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+              <p className="conjugation-example">{getPersonConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
         </div>
@@ -115,7 +153,7 @@ function MoodTenseSelection({
             title="Seleccionar modo indicativo"
           >
             <h3>Indicativo</h3>
-            <p className="conjugation-example">{getModeSamples('indicative')}</p>
+            <p className="conjugation-example">yo hablo, tú hablas, él/ella habla</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -124,7 +162,7 @@ function MoodTenseSelection({
             title="Seleccionar modo subjuntivo"
           >
             <h3>Subjuntivo</h3>
-            <p className="conjugation-example">{getModeSamples('subjunctive')}</p>
+            <p className="conjugation-example">yo hable, tú hables, él/ella hable</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -133,7 +171,7 @@ function MoodTenseSelection({
             title="Seleccionar modo imperativo"
           >
             <h3>Imperativo</h3>
-            <p className="conjugation-example">{getModeSamples('imperative')}</p>
+            <p className="conjugation-example">tú habla, vos hablá, usted hable</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -142,7 +180,7 @@ function MoodTenseSelection({
             title="Seleccionar modo condicional"
           >
             <h3>Condicional</h3>
-            <p className="conjugation-example">{getModeSamples('conditional')}</p>
+            <p className="conjugation-example">yo hablaría, tú hablarías, él/ella hablaría</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -151,7 +189,7 @@ function MoodTenseSelection({
             title="Seleccionar formas no conjugadas"
           >
             <h3>Formas no conjugadas</h3>
-            <p className="conjugation-example">{getModeSamples('nonfinite')}</p>
+            <p className="conjugation-example">hablando, hablado</p>
           </ClickableCard>
         </div>
         
@@ -165,6 +203,44 @@ function MoodTenseSelection({
   // Theme mode: show tense selection if mood already selected
   if (settings.practiceMode === 'theme' && settings.specificMood) {
     console.log('MoodTenseSelection: Theme mode - showing tense selection for mood:', settings.specificMood);
+    
+    // Function to get conjugation examples with 1st, 2nd, and 3rd person
+    const getPersonConjugationExample = (mood, tense) => {
+      const examples = {
+        // Indicativo
+        'indicative_pres': 'yo hablo, tú hablas, él/ella habla',
+        'indicative_pretIndef': 'yo hablé, tú hablaste, él/ella habló',
+        'indicative_impf': 'yo hablaba, tú hablabas, él/ella hablaba',
+        'indicative_fut': 'yo hablaré, tú hablarás, él/ella hablará',
+        'indicative_pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
+        'indicative_plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
+        'indicative_futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
+        
+        // Subjuntivo
+        'subjunctive_subjPres': 'yo hable, tú hables, él/ella hable',
+        'subjunctive_subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
+        'subjunctive_subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
+        'subjunctive_subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
+        
+        // Imperativo (dialect-specific)
+        'imperative_impAff': settings.useVoseo && !settings.useTuteo ? 'tú habla, vos hablá, usted hable' : 'tú habla, usted hable',
+        'imperative_impNeg': settings.useVoseo && !settings.useTuteo ? 'no hables, no habléis' : 'no hables, no habléis',
+        'imperative_impMixed': settings.useVoseo && !settings.useTuteo ? 'tú habla / no hables, vos hablá / no habléis' : 'tú habla / no hables',
+        
+        // Condicional
+        'conditional_cond': 'yo hablaría, tú hablarías, él/ella hablaría',
+        'conditional_condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
+        
+        // Formas no conjugadas
+        'nonfinite_ger': 'hablando',
+        'nonfinite_part': 'hablado',
+        'nonfinite_nonfiniteMixed': 'hablando / hablado'
+      }
+      
+      const key = `${mood}_${tense}`
+      return examples[key] || ''
+    }
+    
     return (
       <>
         <div className="options-grid">
@@ -176,7 +252,7 @@ function MoodTenseSelection({
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
               <h3>{getTenseLabel(tense)}</h3>
-              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+              <p className="conjugation-example">{getPersonConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
         </div>
@@ -200,7 +276,7 @@ function MoodTenseSelection({
             title="Seleccionar modo indicativo"
           >
             <h3>Indicativo</h3>
-            <p className="conjugation-example">{getModeSamples('indicative')}</p>
+            <p className="conjugation-example">yo hablo, tú hablas, él/ella habla</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -209,7 +285,7 @@ function MoodTenseSelection({
             title="Seleccionar modo subjuntivo"
           >
             <h3>Subjuntivo</h3>
-            <p className="conjugation-example">{getModeSamples('subjunctive')}</p>
+            <p className="conjugation-example">yo hable, tú hables, él/ella hable</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -218,7 +294,7 @@ function MoodTenseSelection({
             title="Seleccionar modo imperativo"
           >
             <h3>Imperativo</h3>
-            <p className="conjugation-example">{getModeSamples('imperative')}</p>
+            <p className="conjugation-example">tú habla, vos hablá, usted hable</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -227,7 +303,7 @@ function MoodTenseSelection({
             title="Seleccionar modo condicional"
           >
             <h3>Condicional</h3>
-            <p className="conjugation-example">{getModeSamples('conditional')}</p>
+            <p className="conjugation-example">yo hablaría, tú hablarías, él/ella hablaría</p>
           </ClickableCard>
           
           <ClickableCard 
@@ -236,7 +312,7 @@ function MoodTenseSelection({
             title="Seleccionar formas no conjugadas"
           >
             <h3>Formas no conjugadas</h3>
-            <p className="conjugation-example">{getModeSamples('nonfinite')}</p>
+            <p className="conjugation-example">hablando, hablado</p>
           </ClickableCard>
         </div>
         
