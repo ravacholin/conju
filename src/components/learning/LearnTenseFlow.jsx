@@ -7,14 +7,64 @@ import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
 import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
+import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
 
+// NOTE: This is duplicated from NarrativeIntroduction to avoid breaking it.
+// A better solution would be to move this to a shared data file.
+const storyData = {
+  pres: {
+    deconstructions: [
+      { group: '-ar', verb: 'hablar' },
+      { group: '-er', verb: 'aprender' },
+      { group: '-ir', verb: 'vivir' },
+    ],
+  },
+  pretIndef: {
+    deconstructions: [
+        { group: '-ar', verb: 'hablar' },
+        { group: '-er', verb: 'comer' },
+        { group: '-ir', verb: 'escribir' },
+    ],
+  },
+  impf: {
+    deconstructions: [
+      { group: '-ar', verb: 'cantar' },
+      { group: '-er', verb: 'leer' },
+      { group: '-ir', verb: 'vivir' },
+    ],
+  },
+  fut: {
+    deconstructions: [
+      { group: '-ar', verb: 'visitar' },
+      { group: '-er', verb: 'aprender' },
+      { group: '-ir', verb: 'vivir' },
+    ],
+  },
+   cond: {
+    deconstructions: [
+      { group: '-ar', verb: 'viajar' },
+      { group: '-er', verb: 'comer' },
+      { group: '-ir', verb: 'vivir' },
+    ],
+  },
+  subjPres: {
+    deconstructions: [
+      { group: '-ar', verb: 'hablar' },
+      { group: '-er', verb: 'beber' },
+      { group: '-ir', verb: 'vivir' },
+    ],
+  },
+};
+
+
 function LearnTenseFlow({ onHome }) {
-  const [currentStep, setCurrentStep] = useState('selection'); // 'selection' | 'introduction' | 'practice' | 'meaningful_practice' | 'communicative_practice'
+  const [currentStep, setCurrentStep] = useState('selection'); // 'selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'communicative_practice'
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null); // 5, 10, 15
   const [verbType, setVerbType] = useState(null); // 'regular', 'irregular', 'all'
+  const [exampleVerbs, setExampleVerbs] = useState(null);
 
   const eligibleForms = useMemo(() => {
     if (!selectedTense || !verbType) return [];
@@ -26,7 +76,6 @@ function LearnTenseFlow({ onHome }) {
       verb.paradigms.forEach(paradigm => {
         paradigm.forms.forEach(form => {
           if (form.mood === selectedTense.mood && form.tense === selectedTense.tense) {
-            // Merge alternative valid answers from both `alt` and `accepts` keys
             const altFromAccepts = form.accepts ? Object.values(form.accepts) : [];
             const altFromAlt = Array.isArray(form.alt) ? form.alt : [];
             const mergedAlt = Array.from(new Set([...altFromAlt, ...altFromAccepts]));
@@ -64,6 +113,14 @@ function LearnTenseFlow({ onHome }) {
 
   const handleStartLearning = () => {
     if (selectedTense && duration && verbType) {
+      const tenseKey = selectedTense.tense;
+      const tenseStoryData = storyData[tenseKey];
+      if (tenseStoryData && tenseStoryData.deconstructions) {
+        const exampleVerbLemmas = tenseStoryData.deconstructions.map(d => d.verb);
+        const verbObjects = exampleVerbLemmas.map(lemma => verbs.find(v => v.lemma === lemma)).filter(Boolean);
+        setExampleVerbs(verbObjects);
+      }
+      
       console.log('Starting learning with:', { selectedTense, duration, verbType });
       setCurrentStep('introduction');
     }
@@ -73,6 +130,7 @@ function LearnTenseFlow({ onHome }) {
     setSelectedTense(null);
     setDuration(null);
     setVerbType(null);
+    setExampleVerbs(null);
     setCurrentStep('selection');
     if (onHome) onHome();
   };
@@ -93,6 +151,57 @@ function LearnTenseFlow({ onHome }) {
         <NarrativeIntroduction 
           tense={selectedTense}
           onBack={() => setCurrentStep('selection')} 
+          onContinue={() => setCurrentStep('guided_drill_ar')}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentStep === 'guided_drill_ar') {
+    return (
+      <ErrorBoundary>
+        <EndingsDrill 
+          verb={exampleVerbs[0]}
+          tense={selectedTense}
+          onBack={() => setCurrentStep('introduction')}
+          onComplete={() => setCurrentStep('guided_drill_er')}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentStep === 'guided_drill_er') {
+    return (
+      <ErrorBoundary>
+        <EndingsDrill 
+          verb={exampleVerbs[1]}
+          tense={selectedTense}
+          onBack={() => setCurrentStep('guided_drill_ar')}
+          onComplete={() => setCurrentStep('guided_drill_ir')}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentStep === 'guided_drill_ir') {
+    return (
+      <ErrorBoundary>
+        <EndingsDrill 
+          verb={exampleVerbs[2]}
+          tense={selectedTense}
+          onBack={() => setCurrentStep('guided_drill_er')}
+          onComplete={() => setCurrentStep('recap')}
+        />
+      </ErrorBoundary>
+    );
+  }
+  
+  if (currentStep === 'recap') {
+    return (
+      <ErrorBoundary>
+        <NarrativeIntroduction 
+          tense={selectedTense}
+          onBack={() => setCurrentStep('guided_drill_ir')} 
           onContinue={() => setCurrentStep('practice')}
         />
       </ErrorBoundary>
@@ -105,7 +214,7 @@ function LearnTenseFlow({ onHome }) {
         <LearningDrill 
           eligibleForms={eligibleForms}
           duration={duration}
-          onBack={() => setCurrentStep('introduction')} 
+          onBack={() => setCurrentStep('recap')} 
           onFinish={handleFinish}
           onPhaseComplete={handleMechanicalPhaseComplete}
         />

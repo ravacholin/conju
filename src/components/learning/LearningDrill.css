@@ -45,6 +45,11 @@
   height: 20px;
 }
 
+/* Add spacing between result feedback and action button */
+.learning-drill .result {
+    margin-bottom: 1.5rem;
+}
+
 /* Stats using chrono-panel design from main app */
 .learning-drill .gamification-hud {
   margin-bottom: 2rem;

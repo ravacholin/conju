@@ -1,0 +1,120 @@
+/* Styles to mimic the main Drill.jsx component */
+
+.drill-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    max-width: 500px;
+    margin: auto;
+    text-align: center;
+}
+
+.drill-header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* Align back button to the left */
+    margin-bottom: 2rem;
+}
+
+.verb-lemma {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.person-display {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--accent-green);
+    margin-bottom: 1.5rem;
+}
+
+.input-container {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.conjugation-input {
+    /* Inherits from App.css, no new styles needed unless for override */
+}
+
+.action-buttons {
+    margin-bottom: 1.5rem;
+}
+
+.result.correct .correct-answer-display .ending-highlight {
+    color: var(--accent-orange);
+    font-weight: bold;
+    animation: flash-success 0.8s ease;
+}
+
+@keyframes flash-success {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Endings reference table - styled to be less prominent */
+.endings-reference {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 350px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.endings-reference h4 {
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.endings-reference-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ending-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+.ending-row.highlighted {
+    opacity: 1;
+    background-color: var(--accent-blue-faded);
+    transform: scale(1.02);
+}
+
+.ending-person {
+    color: var(--muted);
+}
+
+.ending-value {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.ending-row.highlighted .ending-person,
+.ending-row.highlighted .ending-value {
+    color: var(--accent-blue);
+}
+
+.round-counter {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 1rem;
+}
