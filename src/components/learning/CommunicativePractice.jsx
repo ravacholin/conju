@@ -48,8 +48,12 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       setMessages([{ author: 'bot', text: exercise.initialMessage }]);
       setScriptIndex(0);
       setChatEnded(false);
+      setInputValue(''); // Reset input when exercise changes
     } else {
       setMessages([]);
+      setInputValue('');
+      setScriptIndex(0);
+      setChatEnded(false);
     }
   }, [exercise]);
 

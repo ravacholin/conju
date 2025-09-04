@@ -24,8 +24,8 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     }
   }, [duration]);
 
-  const generateNextItem = () => {
-    if (eligibleForms.length === 0) {
+  const generateNextItem = React.useCallback(() => {
+    if (!eligibleForms || eligibleForms.length === 0) {
       setCurrentItem(null);
       return;
     }
@@ -33,11 +33,11 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     setCurrentItem(eligibleForms[randomIndex]);
     setInputValue('');
     setResult('idle');
-  };
+  }, [eligibleForms]);
 
   useEffect(() => {
     generateNextItem();
-  }, [eligibleForms]);
+  }, [generateNextItem]);
 
   const handleCheckAnswer = async () => {
     if (!currentItem) return;
@@ -91,7 +91,25 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   };
 
   if (!eligibleForms || eligibleForms.length === 0) {
-    return <div className="center-column">Generando ejercicios...</div>;
+    return (
+      <div className="App">
+        <div className="main-content">
+          <div className="drill-container learning-drill">
+            <div className="drill-header">
+              <button onClick={onBack} className="back-to-menu-btn">
+                <img src="/back.png" alt="Volver" className="back-icon" />
+                Volver
+              </button>
+              <h2>Sin ejercicios disponibles</h2>
+            </div>
+            <div className="center-column">
+              <p>No hay ejercicios disponibles para este tiempo verbal.</p>
+              <p>Intenta seleccionar un tiempo diferente o verifica la configuración.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (sessionState === 'finished') {

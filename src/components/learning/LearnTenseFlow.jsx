@@ -7,6 +7,7 @@ import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
 import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
+import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
 
 function LearnTenseFlow({ onHome }) {
@@ -88,45 +89,53 @@ function LearnTenseFlow({ onHome }) {
 
   if (currentStep === 'introduction') {
     return (
-      <NarrativeIntroduction 
-        tense={selectedTense}
-        onBack={() => setCurrentStep('selection')} 
-        onContinue={() => setCurrentStep('practice')}
-      />
+      <ErrorBoundary>
+        <NarrativeIntroduction 
+          tense={selectedTense}
+          onBack={() => setCurrentStep('selection')} 
+          onContinue={() => setCurrentStep('practice')}
+        />
+      </ErrorBoundary>
     );
   }
 
   if (currentStep === 'practice') {
     return (
-      <LearningDrill 
-        eligibleForms={eligibleForms}
-        duration={duration}
-        onBack={() => setCurrentStep('introduction')} 
-        onFinish={handleFinish}
-        onPhaseComplete={handleMechanicalPhaseComplete}
-      />
+      <ErrorBoundary>
+        <LearningDrill 
+          eligibleForms={eligibleForms}
+          duration={duration}
+          onBack={() => setCurrentStep('introduction')} 
+          onFinish={handleFinish}
+          onPhaseComplete={handleMechanicalPhaseComplete}
+        />
+      </ErrorBoundary>
     );
   }
 
   if (currentStep === 'meaningful_practice') {
     return (
-      <MeaningfulPractice 
-        tense={selectedTense}
-        eligibleForms={eligibleForms}
-        onBack={() => setCurrentStep('practice')}
-        onPhaseComplete={handleMeaningfulPhaseComplete}
-      />
+      <ErrorBoundary>
+        <MeaningfulPractice 
+          tense={selectedTense}
+          eligibleForms={eligibleForms}
+          onBack={() => setCurrentStep('practice')}
+          onPhaseComplete={handleMeaningfulPhaseComplete}
+        />
+      </ErrorBoundary>
     );
   }
 
   if (currentStep === 'communicative_practice') {
     return (
-      <CommunicativePractice 
-        tense={selectedTense}
-        eligibleForms={eligibleForms}
-        onBack={() => setCurrentStep('meaningful_practice')}
-        onFinish={handleFinish}
-      />
+      <ErrorBoundary>
+        <CommunicativePractice 
+          tense={selectedTense}
+          eligibleForms={eligibleForms}
+          onBack={() => setCurrentStep('meaningful_practice')}
+          onFinish={handleFinish}
+        />
+      </ErrorBoundary>
     );
   }
 

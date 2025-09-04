@@ -30,11 +30,16 @@ const timelineData = {
 function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [story, setStory] = useState('');
   const [feedback, setFeedback] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const exercise = tense ? timelineData[tense.tense] : null;
 
   const handleCheckStory = async () => {
-    if (!exercise) return;
+    if (!exercise || !story.trim()) return;
+    
+    setIsProcessing(true);
+    setFeedback(null);
+    
     const userText = story.toLowerCase();
     
     let missing = [];
@@ -85,6 +90,8 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     } else {
       setFeedback({ type: 'incorrect', message: `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}` });
     }
+    
+    setIsProcessing(false);
   };
 
   if (!exercise) {
@@ -146,7 +153,13 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         {feedback?.type === 'correct' ? (
             <button onClick={onPhaseComplete} className="btn-primary">Siguiente Fase</button>
         ) : (
-            <button onClick={handleCheckStory} className="btn-primary">Revisar Historia</button>
+            <button 
+              onClick={handleCheckStory} 
+              className="btn-primary"
+              disabled={isProcessing || !story.trim()}
+            >
+              {isProcessing ? 'Revisando...' : 'Revisar Historia'}
+            </button>
         )}
       </div>
     </div>
