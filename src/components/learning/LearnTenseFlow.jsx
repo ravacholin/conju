@@ -161,6 +161,7 @@ function LearnTenseFlow({ onHome }) {
       <ErrorBoundary>
         <NarrativeIntroduction 
           tense={selectedTense}
+          exampleVerbs={exampleVerbs}
           onBack={() => setCurrentStep('selection')} 
           onContinue={() => setCurrentStep('guided_drill_ar')}
         />
@@ -215,6 +216,7 @@ function LearnTenseFlow({ onHome }) {
       <ErrorBoundary>
         <NarrativeIntroduction 
           tense={selectedTense}
+          exampleVerbs={exampleVerbs}
           onBack={() => setCurrentStep('guided_drill_ir')} 
           onContinue={() => setCurrentStep('practice')}
         />

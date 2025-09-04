@@ -85,7 +85,7 @@ const storyData = {
   // Add more tenses here
 };
 
-function NarrativeIntroduction({ tense, onBack, onContinue }) {
+function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue }) {
   const [visibleSentence, setVisibleSentence] = useState(0);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -154,17 +154,20 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
     return arr;
   };
 
-  const endingFor = (group, tenseKey, pronounKey, baseEndings) => {
-    const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
-    let idx = baseOrder.indexOf(pronounKey);
-    if (pronounKey === '2s_vos') idx = baseOrder.indexOf('2s_tu');
-    const base = baseEndings?.[idx] || '';
-    if (pronounKey === '2s_vos' && tenseKey === 'pres') {
-      if (group === '-ar') return 'ás';
-      if (group === '-er') return 'és';
-      if (group === '-ir') return 'ís';
+  const getFormMapForVerb = (verbObj) => {
+    if (!verbObj) return {};
+    const map = {};
+    const para = verbObj.paradigms?.find(p => p.forms?.some(f => f.mood === tense.mood && f.tense === tense.tense));
+    if (!para) return map;
+    para.forms.filter(f => f.mood === tense.mood && f.tense === tense.tense).forEach(f => { map[f.person] = f.value; });
+    return map;
+  };
+
+  const endingFromForm = (formValue, stem, fallback) => {
+    if (typeof formValue === 'string' && formValue.startsWith(stem)) {
+      return formValue.slice(stem.length);
     }
-    return base;
+    return fallback || '';
   };
 
   return (
@@ -194,9 +197,16 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {story.deconstructions?.map(({ group, stem, endings }) => {
+                  {story.deconstructions?.map(({ group, stem, endings, verb }) => {
                     const pronouns = pronounsForDialect();
-                    const dialectEndings = pronouns.map(p => endingFor(group, tense.tense, p, endings));
+                    const verbObj = exampleVerbs?.find(v => v.lemma === verb);
+                    const formMap = getFormMapForVerb(verbObj);
+                    const dialectEndings = pronouns.map(p => {
+                      const formVal = formMap[p];
+                      const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+                      const base = endings?.[baseOrder.indexOf(p)] || '';
+                      return endingFromForm(formVal, stem, base);
+                    });
                     return (
                       <div key={group} className="deconstruction-item">
                         <div className="verb-lemma"><span className="lemma-stem">{stem}</span><span className="group-label">{group}</span></div>

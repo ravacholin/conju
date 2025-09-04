@@ -180,20 +180,22 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     }
   };
 
+  const personToFormMap = useMemo(() => {
+    const map = {};
+    verbForms.forEach(f => { map[f.person] = f.value; });
+    return map;
+  }, [verbForms]);
+
   const endingFor = (group, tenseKey, pronounKey) => {
-      // default mapping by canonical order
-      const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
-      let idx = baseOrder.indexOf(pronounKey);
-      // Map vos to closest canonical position (2s_tu) and adjust in present
-      if (pronounKey === '2s_vos') idx = baseOrder.indexOf('2s_tu');
-      const base = deconstruction?.endings?.[idx] || '';
-      if (!group || !tenseKey) return base;
-      if (pronounKey === '2s_vos' && tenseKey === 'pres') {
-        if (group === '-ar') return 'ás';
-        if (group === '-er') return 'és';
-        if (group === '-ir') return 'ís';
-      }
-      return base;
+    const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+    const idx = baseOrder.indexOf(pronounKey === '2s_vos' ? '2s_tu' : pronounKey);
+    const fallback = deconstruction?.endings?.[idx] || '';
+    const formVal = personToFormMap[pronounKey];
+    const stem = deconstruction?.stem || (verb?.lemma?.replace(/(ar|er|ir)$/,'')) || '';
+    if (formVal && stem && formVal.startsWith(stem)) {
+      return formVal.slice(stem.length);
+    }
+    return fallback;
   };
 
   const getCorrectAnswerWithHighlight = () => {
