@@ -5,6 +5,18 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import './MeaningfulPractice.css';
 
 const timelineData = {
+  pres: {
+    type: 'daily_routine',
+    title: 'La rutina diaria de Carlos',
+    description: 'Describe un día típico de Carlos usando los verbos indicados en presente.',
+    prompts: [
+      { icon: '⏰', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
+      { icon: '🍳', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
+      { icon: '💼', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
+      { icon: '🏠', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
+      { icon: '🌙', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
+    ],
+  },
   pretIndef: {
     type: 'timeline',
     title: 'El día de ayer de María',
@@ -32,7 +44,12 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [feedback, setFeedback] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Debug logging
+  console.log('MeaningfulPractice received tense:', tense);
+  console.log('Available exercises:', Object.keys(timelineData));
+  
   const exercise = tense ? timelineData[tense.tense] : null;
+  console.log('Selected exercise:', exercise);
 
   const handleCheckStory = async () => {
     if (!exercise || !story.trim()) return;
@@ -58,6 +75,21 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         exercise.prompts.forEach(p => {
             const found = p.expected.some(verb => {
                 const regex = new RegExp(`\b${verb}\b`, 'i');
+                if (regex.test(userText)) {
+                    foundVerbs.push(verb);
+                    return true;
+                }
+                return false;
+            });
+            if (!found) {
+                missing.push(p.expected.join(' o '));
+            }
+        });
+    } else if (exercise.type === 'daily_routine') {
+        exercise.prompts.forEach(p => {
+            const found = p.expected.some(verb => {
+                // Use includes for simpler matching - check if verb appears as whole word
+                const regex = new RegExp(`\\b${verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
                 if (regex.test(userText)) {
                     foundVerbs.push(verb);
                     return true;
@@ -134,6 +166,21 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
                 <ul>
                     {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
                 </ul>
+            </div>
+        )}
+
+        {exercise.type === 'daily_routine' && (
+            <div className="daily-routine-container">
+                <h3>{exercise.title}</h3>
+                <p className="description">{exercise.description}</p>
+                <div className="routine-prompts">
+                    {exercise.prompts.map((prompt, i) => (
+                        <div key={i} className="routine-prompt">
+                            <span className="icon">{prompt.icon}</span>
+                            <span className="text">{prompt.text}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         )}
 

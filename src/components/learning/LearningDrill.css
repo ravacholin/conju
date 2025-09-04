@@ -1,4 +1,4 @@
-/* Learning Drill - Consistent with main app design */
+/* Learning Drill - Clean design matching main app */
 
 .learning-drill {
   text-align: center;
@@ -26,35 +26,31 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.learning-drill .back-to-menu-btn:hover {
+  color: var(--text);
+  background: rgba(245, 245, 245, 0.05);
 }
 
 .learning-drill .back-to-menu-btn .back-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
-/* Main drill content uses existing styles from App.css */
-.learning-drill .verb-lemma {
-  margin-bottom: 0.618rem;
+/* Stats using chrono-panel design from main app */
+.learning-drill .gamification-hud {
+  margin-bottom: 2rem;
 }
 
-.learning-drill .person-display {
-  margin-bottom: 1.5rem;
-}
-
-.learning-drill .input-container {
-  margin-bottom: 1.5rem;
-}
-
-.learning-drill .result {
-  margin-bottom: 1.5rem;
-}
-
-.learning-drill .action-buttons {
-  margin-bottom: 0;
-}
-
-/* Mobile optimizations */
+/* Mobile responsiveness */
 @media (max-width: 768px) {
   .learning-drill .drill-header {
     flex-direction: column;
@@ -70,11 +66,6 @@
   .learning-drill .back-to-menu-btn {
     font-size: 0.9rem;
     padding: 0.4rem 0.8rem;
-  }
-  
-  .learning-drill .back-to-menu-btn .back-icon {
-    width: 20px;
-    height: 20px;
   }
 }
 
