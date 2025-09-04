@@ -37,7 +37,7 @@ function MoodTenseSelection({
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
               <h3>{getTenseLabel(tense)}</h3>
-              <p className="conjugation-example">{getConjugationExample(settings.specificMood, tense)}</p>
+              <p className="conjugation-example">{getPersonConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
         </div>
@@ -63,7 +63,7 @@ function MoodTenseSelection({
               title={`Seleccionar ${getMoodLabel(mood)}`}
             >
               <h3>{getMoodLabel(mood)}</h3>
-              <p className="conjugation-example">{getModeSamples(mood)}</p>
+              <p className="conjugation-example">yo hablo, tú hablas, él/ella habla</p>
             </ClickableCard>
           ))}
         </div>

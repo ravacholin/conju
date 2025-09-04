@@ -99,10 +99,16 @@ function LearnTenseFlow({ onHome }) {
   }, [selectedTense, verbType, settings.useVoseo, settings.useVosotros]);
 
   const availableTenses = useMemo(() => {
+    // Only show tenses that have narrative stories implemented
+    const implementedTenses = Object.keys(storyData);
+    
     const tenseSet = new Set();
     curriculum.forEach(item => {
       if (item.tense.includes('Mixed')) return;
-      tenseSet.add(JSON.stringify({ mood: item.mood, tense: item.tense }));
+      // Only include tenses that are implemented
+      if (implementedTenses.includes(item.tense)) {
+        tenseSet.add(JSON.stringify({ mood: item.mood, tense: item.tense }));
+      }
     });
 
     const tenses = Array.from(tenseSet).map(item => JSON.parse(item));
@@ -272,28 +278,59 @@ function LearnTenseFlow({ onHome }) {
           <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
         </ClickableCard>
         
-        <h1>Aprender un Nuevo Tiempo</h1>
-        <p className="subtitle">Elige qué tiempo verbal quieres dominar</p>
-
         {Object.entries(availableTenses).map(([mood, tenses]) => (
           <div key={mood} className="tense-section">
             <h2>{MOOD_LABELS[mood] || mood}</h2>
             <div className="options-grid">
-              {tenses.map(tense => (
-                <ClickableCard 
-                  key={tense}
-                  className={`option-card ${selectedTense?.tense === tense && selectedTense?.mood === mood ? 'selected' : ''}`}
-                  onClick={() => handleTenseSelection(mood, tense)}
-                  title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
-                >
-                  <h3>
-                    <img src="/clock.png" alt="Tiempo" className="option-icon" />
-                    {TENSE_LABELS[tense] || tense}
-                  </h3>
-                  <p>Domina este tiempo verbal paso a paso</p>
-                  <p className="example">Ejercicios interactivos y contextualizados</p>
-                </ClickableCard>
-              ))}
+              {tenses.map(tense => {
+                // Function to get conjugation examples with 1st, 2nd, and 3rd person for "hablar"
+                const getPersonConjugationExample = (mood, tense) => {
+                  const examples = {
+                    // Indicativo
+                    'pres': 'yo hablo, tú hablas, él/ella habla',
+                    'pretIndef': 'yo hablé, tú hablaste, él/ella habló',
+                    'impf': 'yo hablaba, tú hablabas, él/ella hablaba',
+                    'fut': 'yo hablaré, tú hablarás, él/ella hablará',
+                    'pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
+                    'plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
+                    'futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
+                    
+                    // Subjuntivo
+                    'subjPres': 'yo hable, tú hables, él/ella hable',
+                    'subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
+                    'subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
+                    'subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
+                    
+                    // Imperativo
+                    'impAff': 'tú habla, vos hablá, usted hable',
+                    'impNeg': 'no hables, no habléis',
+                    
+                    // Condicional
+                    'cond': 'yo hablaría, tú hablarías, él/ella hablaría',
+                    'condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
+                    
+                    // Formas no conjugadas
+                    'ger': 'hablando',
+                    'part': 'hablado'
+                  }
+                  
+                  return examples[tense] || ''
+                }
+                
+                return (
+                  <ClickableCard 
+                    key={tense}
+                    className={`option-card ${selectedTense?.tense === tense && selectedTense?.mood === mood ? 'selected' : ''}`}
+                    onClick={() => handleTenseSelection(mood, tense)}
+                    title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
+                  >
+                    <h3>
+                      {TENSE_LABELS[tense] || tense}
+                    </h3>
+                    <p className="example">{getPersonConjugationExample(mood, tense)}</p>
+                  </ClickableCard>
+                )
+              })}
             </div>
           </div>
         ))}
