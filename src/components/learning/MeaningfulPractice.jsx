@@ -37,6 +37,49 @@ const timelineData = {
         { prompt: 'Tus padres van a viajar. (esperar que...)', expected: ['disfruten', 'viajen'] },
     ],
   },
+  impf: {
+    type: 'daily_routine',
+    title: 'Los recuerdos de la infancia',
+    description: 'Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.',
+    prompts: [
+      { icon: '🏠', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
+      { icon: '🎮', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
+      { icon: '📚', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
+      { icon: '👨‍👩‍👧‍👦', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
+      { icon: '🌞', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
+    ],
+  },
+  fut: {
+    type: 'prompts',
+    title: 'Planes para el futuro',
+    prompts: [
+        { prompt: 'El próximo año... (viajar, conocer)', expected: ['viajaré', 'conoceré', 'viajarás', 'conocerás'] },
+        { prompt: 'En mis próximas vacaciones... (descansar, visitar)', expected: ['descansaré', 'visitaré', 'descansarás', 'visitarás'] },
+        { prompt: 'Cuando termine mis estudios... (trabajar, ser)', expected: ['trabajaré', 'seré', 'trabajarás', 'serás'] },
+        { prompt: 'En el futuro... (tener, hacer)', expected: ['tendré', 'haré', 'tendrás', 'harás'] },
+    ],
+  },
+  pretPerf: {
+    type: 'timeline',
+    title: 'Lo que he hecho hoy',
+    events: [
+      { time: '8:00', icon: '🌅', prompt: 'levantarse temprano' },
+      { time: '10:00', icon: '☕️', prompt: 'desayunar bien' },
+      { time: '14:00', icon: '💻', prompt: 'trabajar en el proyecto' },
+      { time: '19:00', icon: '👥', prompt: 'quedar con amigos' },
+    ],
+    expectedVerbs: ['me he levantado', 'he desayunado', 'he trabajado', 'he quedado'],
+  },
+  cond: {
+    type: 'prompts',
+    title: 'Situaciones hipotéticas',
+    prompts: [
+        { prompt: 'Si tuviera mucho dinero... (comprar, viajar)', expected: ['compraría', 'viajaría'] },
+        { prompt: 'Si fuera invisible por un día... (hacer, ir)', expected: ['haría', 'iría'] },
+        { prompt: 'Si pudiera cambiar algo del mundo... (cambiar, mejorar)', expected: ['cambiaría', 'mejoraría'] },
+        { prompt: 'En tu lugar yo... (decir, hacer)', expected: ['diría', 'haría'] },
+    ],
+  },
 };
 
 function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
@@ -64,8 +107,14 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
 
     if (exercise.type === 'timeline') {
         exercise.expectedVerbs.forEach(verb => {
-            const regex = new RegExp(`\b${verb}\b`, 'i');
-            if (regex.test(userText)) {
+            // Normalize both texts to handle accents properly
+            const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            const normalizedUser = normalizeText(userText);
+            const normalizedVerb = normalizeText(verb);
+            
+            // Use word boundaries with normalized text
+            const regex = new RegExp(`\\b${normalizedVerb.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(normalizedUser)) {
                 foundVerbs.push(verb);
             } else {
                 missing.push(verb);

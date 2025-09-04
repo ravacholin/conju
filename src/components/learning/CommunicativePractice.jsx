@@ -10,7 +10,7 @@ const chatData = {
     initialMessage: '¡Hola! ¿Qué tal tu fin de semana? ¿Hiciste algo interesante?',
     script: [
       {
-        userKeywords: ['fui', 'visité', 'comí', 'vi', 'jugué'], // Verbs in preterite
+        userKeywords: ['fui', 'visité', 'comí', 'vi', 'jugué', 'tuve', 'vimos', 'caminé', 'leí', 'cociné', 'hice', 'salí', 'llegué'], // Verbs in preterite
         botResponse: '¡Suena genial! ¿Y con quién fuiste?',
       },
       {
@@ -30,6 +30,62 @@ const chatData = {
       {
         userKeywords: ['traiga', 'compre', 'lleve', 'de acuerdo', 'claro'],
         botResponse: '¡Genial! Y ojalá que tus amigos __vengan__ también. ¡Será divertido!',
+      },
+    ],
+  },
+  impf: {
+    title: 'Recordando la infancia',
+    initialMessage: '¡Qué nostalgia! ¿Cómo era tu vida cuando eras pequeño? Me encanta escuchar historias de la infancia.',
+    script: [
+      {
+        userKeywords: ['vivía', 'tenía', 'era', 'estaba', 'jugaba', 'iba', 'hacía', 'estudiaba'],
+        botResponse: '¡Qué interesante! ¿Y qué era lo que más te gustaba hacer en esa época?',
+      },
+      {
+        userKeywords: ['gustaba', 'encantaba', 'divertía', 'jugaba', 'veía', 'leía'],
+        botResponse: '¡Qué bonitos recuerdos! La infancia siempre deja memorias especiales.',
+      },
+    ],
+  },
+  fut: {
+    title: 'Hablando del futuro',
+    initialMessage: '¡Hola! Me gusta planificar el futuro. ¿Qué planes tienes para el próximo año?',
+    script: [
+      {
+        userKeywords: ['viajaré', 'estudiaré', 'trabajaré', 'haré', 'seré', 'tendré', 'iré'],
+        botResponse: '¡Suena genial! ¿Y cómo crees que lograrás esos objetivos?',
+      },
+      {
+        userKeywords: ['estudiaré', 'prepararé', 'practicaré', 'esforzaré', 'dedicaré'],
+        botResponse: 'Me parece un plan excelente. ¡Seguro que lo conseguirás!',
+      },
+    ],
+  },
+  pretPerf: {
+    title: 'Lo que has hecho hoy',
+    initialMessage: '¡Hola! ¿Qué tal ha ido tu día? ¿Has hecho algo especial hoy?',
+    script: [
+      {
+        userKeywords: ['he hecho', 'he trabajado', 'he estudiado', 'he quedado', 'he ido', 'he visto'],
+        botResponse: '¡Qué productivo! ¿Y has tenido tiempo para relajarte un poco?',
+      },
+      {
+        userKeywords: ['he descansado', 'he visto', 'he leído', 'he escuchado', 'he salido'],
+        botResponse: 'Perfecto, es importante encontrar el equilibrio entre trabajo y descanso.',
+      },
+    ],
+  },
+  cond: {
+    title: 'Situaciones hipotéticas',
+    initialMessage: 'Me encantan las preguntas hipotéticas. Si fueras millonario, ¿qué harías?',
+    script: [
+      {
+        userKeywords: ['compraría', 'viajaría', 'haría', 'ayudaría', 'donaría', 'invertiría'],
+        botResponse: '¡Qué interesante! ¿Y si pudieras vivir en cualquier época de la historia?',
+      },
+      {
+        userKeywords: ['viviría', 'sería', 'estaría', 'conocería', 'aprendería', 'experimentaría'],
+        botResponse: '¡Qué respuesta tan reflexiva! Me gusta cómo piensas.',
       },
     ],
   },
@@ -68,8 +124,13 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
 
     let keywordFound = null;
     const keywordMatched = currentScriptNode.userKeywords.some(kw => {
-        const regex = new RegExp(`\b${kw}\b`, 'i');
-        if (regex.test(userText)) {
+        // Normalize both texts to handle accents properly
+        const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const normalizedUser = normalizeText(userText);
+        const normalizedKeyword = normalizeText(kw);
+        
+        const regex = new RegExp(`\\b${normalizedKeyword.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
+        if (regex.test(normalizedUser)) {
             keywordFound = kw;
             return true;
         }
