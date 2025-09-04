@@ -161,6 +161,7 @@ function LearnTenseFlow({ onHome }) {
     return (
       <ErrorBoundary>
         <EndingsDrill 
+          key={`guided-ar-${exampleVerbs?.[0]?.lemma || 'ar'}`}
           verb={exampleVerbs[0]}
           tense={selectedTense}
           onBack={() => setCurrentStep('introduction')}
@@ -174,6 +175,7 @@ function LearnTenseFlow({ onHome }) {
     return (
       <ErrorBoundary>
         <EndingsDrill 
+          key={`guided-er-${exampleVerbs?.[1]?.lemma || 'er'}`}
           verb={exampleVerbs[1]}
           tense={selectedTense}
           onBack={() => setCurrentStep('guided_drill_ar')}
@@ -187,6 +189,7 @@ function LearnTenseFlow({ onHome }) {
     return (
       <ErrorBoundary>
         <EndingsDrill 
+          key={`guided-ir-${exampleVerbs?.[2]?.lemma || 'ir'}`}
           verb={exampleVerbs[2]}
           tense={selectedTense}
           onBack={() => setCurrentStep('guided_drill_er')}

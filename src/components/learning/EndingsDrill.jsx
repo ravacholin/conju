@@ -74,7 +74,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState(null); // null | { correct: boolean, ... }
   const inputRef = useRef(null);
-  const [entered, setEntered] = useState(false);
+  const [entered, setEntered] = useState(true);
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
@@ -87,7 +87,9 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   }, [verb]);
 
   useEffect(() => {
-    const t = setTimeout(() => setEntered(true), 10);
+    // Ensure it's visible immediately; still schedule a tick for CSS transition compatibility
+    setEntered(true);
+    const t = setTimeout(() => setEntered(true), 0);
     return () => clearTimeout(t);
   }, [verb]);
 
@@ -148,11 +150,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setInputValue('');
     const nextIndex = currentIndex + 1;
     if (nextIndex >= drillQueue.length) {
-      // Animate out when finishing this guided block
-      setLeaving(true);
-      setTimeout(() => {
-        onComplete();
-      }, 320);
+      // Proceed immediately to avoid hanging states
+      onComplete();
     } else {
       setCurrentIndex(nextIndex);
       // Ensure focus is set for the next item
@@ -201,7 +200,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
           <div className="drill-header">
-             <button onClick={() => { setLeaving(true); setTimeout(() => onBack && onBack(), 300); }} className="back-to-menu-btn">
+             <button onClick={() => { onBack && onBack(); }} className="back-to-menu-btn">
                 <img src="/back.png" alt="Volver" className="back-icon" />
                 Volver
             </button>
