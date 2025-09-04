@@ -10,6 +10,7 @@ import CommunicativePractice from './CommunicativePractice.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
+import { useSettings } from '../../state/settings.js';
 
 // NOTE: This is duplicated from NarrativeIntroduction to avoid breaking it.
 // A better solution would be to move this to a shared data file.
@@ -65,10 +66,19 @@ function LearnTenseFlow({ onHome }) {
   const [duration, setDuration] = useState(null); // 5, 10, 15
   const [verbType, setVerbType] = useState(null); // 'regular', 'irregular', 'all'
   const [exampleVerbs, setExampleVerbs] = useState(null);
+  const settings = useSettings();
+
+  const getPronounsForDialect = () => {
+    const arr = ['1s', settings?.useVoseo ? '2s_vos' : '2s_tu', '3s', '1p'];
+    if (settings?.useVosotros) arr.push('2p_vosotros');
+    arr.push('3p');
+    return new Set(arr);
+  };
 
   const eligibleForms = useMemo(() => {
     if (!selectedTense || !verbType) return [];
     const forms = [];
+    const allowedPersons = getPronounsForDialect();
     verbs.forEach(verb => {
       if (verbType !== 'all' && verb.type !== verbType) {
         return;
@@ -76,6 +86,7 @@ function LearnTenseFlow({ onHome }) {
       verb.paradigms.forEach(paradigm => {
         paradigm.forms.forEach(form => {
           if (form.mood === selectedTense.mood && form.tense === selectedTense.tense) {
+            if (!allowedPersons.has(form.person)) return;
             const altFromAccepts = form.accepts ? Object.values(form.accepts) : [];
             const altFromAlt = Array.isArray(form.alt) ? form.alt : [];
             const mergedAlt = Array.from(new Set([...altFromAlt, ...altFromAccepts]));
@@ -85,7 +96,7 @@ function LearnTenseFlow({ onHome }) {
       });
     });
     return forms;
-  }, [selectedTense, verbType]);
+  }, [selectedTense, verbType, settings.useVoseo, settings.useVosotros]);
 
   const availableTenses = useMemo(() => {
     const tenseSet = new Set();

@@ -1,17 +1,23 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useSettings } from '../../state/settings.js';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 
-const PRONOUNS_DISPLAY = [
-  { key: '1s', text: 'yo' },
-  { key: '2s_tu', text: 'tú' },
-  { key: '3s', text: 'él/ella/usted' },
-  { key: '1p', text: 'nosotros/nosotras' },
-  { key: '2p_vosotros', text: 'vosotros/vosotras' },
-  { key: '3p', text: 'ellos/ellas/ustedes' },
-];
+function getPronounsForDialect(settings){
+  const arr = [
+    { key: '1s', text: 'yo' },
+    settings?.useVoseo ? { key: '2s_vos', text: 'vos' } : { key: '2s_tu', text: 'tú' },
+    { key: '3s', text: 'él/ella/usted' },
+    { key: '1p', text: 'nosotros/nosotras' },
+  ];
+  if (settings?.useVosotros) {
+    arr.push({ key: '2p_vosotros', text: 'vosotros/vosotras' });
+  }
+  arr.push({ key: '3p', text: 'ellos/ellas/ustedes' });
+  return arr;
+}
 
 function shuffle(array) {
   let currentIndex = array.length,  randomIndex;
@@ -76,6 +82,9 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const inputRef = useRef(null);
   const [entered, setEntered] = useState(true);
   const [leaving, setLeaving] = useState(false);
+  const settings = useSettings();
+
+  const PRONOUNS_DISPLAY = useMemo(() => getPronounsForDialect(settings), [settings.useVoseo, settings.useVosotros]);
 
   useEffect(() => {
     const initialQueue = [...PRONOUNS_DISPLAY, ...PRONOUNS_DISPLAY];
@@ -84,7 +93,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setResult(null);
     setInputValue('');
     inputRef.current?.focus();
-  }, [verb]);
+  }, [verb, PRONOUNS_DISPLAY]);
 
   useEffect(() => {
     // Ensure it's visible immediately; still schedule a tick for CSS transition compatibility
@@ -101,8 +110,9 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
         p.forms.some(f => f.mood === tense.mood && f.tense === tense.tense)
     );
     if (!paradigm) return [];
-    return paradigm.forms.filter(f => f.mood === tense.mood && f.tense === tense.tense);
-  }, [verb, tense]);
+    const allowed = new Set(PRONOUNS_DISPLAY.map(p=>p.key));
+    return paradigm.forms.filter(f => f.mood === tense.mood && f.tense === tense.tense && allowed.has(f.person));
+  }, [verb, tense, PRONOUNS_DISPLAY]);
 
   const currentForm = useMemo(() => {
     if (verbForms.length === 0 || !currentPronoun) return null;
@@ -170,11 +180,26 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     }
   };
 
+  const endingFor = (group, tenseKey, pronounKey) => {
+      // default mapping by canonical order
+      const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+      let idx = baseOrder.indexOf(pronounKey);
+      // Map vos to closest canonical position (2s_tu) and adjust in present
+      if (pronounKey === '2s_vos') idx = baseOrder.indexOf('2s_tu');
+      const base = deconstruction?.endings?.[idx] || '';
+      if (!group || !tenseKey) return base;
+      if (pronounKey === '2s_vos' && tenseKey === 'pres') {
+        if (group === '-ar') return 'ás';
+        if (group === '-er') return 'és';
+        if (group === '-ir') return 'ís';
+      }
+      return base;
+  };
+
   const getCorrectAnswerWithHighlight = () => {
       if (!result || !result.correct) return null;
       const correctAnswer = result.value;
-      const ending = deconstruction.endings[PRONOUNS_DISPLAY.findIndex(p => p.key === currentPronoun.key)];
-      
+      const ending = endingFor(deconstruction?.group, tense?.tense, currentPronoun.key);
       if (correctAnswer && ending && correctAnswer.endsWith(ending)) {
           const stem = correctAnswer.slice(0, -ending.length);
           return <span className="correct-answer-display">{stem}<span className="ending-highlight">{ending}</span></span>;
@@ -244,12 +269,12 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           <div className="endings-reference">
             <h4>Terminaciones de Referencia</h4>
             <div className="endings-reference-table">
-                {PRONOUNS_DISPLAY.map((pronoun, index) => (
-                    <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''}`}>
-                        <span className="ending-person">{pronoun.text}</span>
-                        <span className="ending-value">{deconstruction.endings[index]}</span>
-                    </div>
-                ))}
+              {PRONOUNS_DISPLAY.map((pronoun) => (
+                <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''}`}>
+                  <span className="ending-person">{pronoun.text}</span>
+                  <span className="ending-value">{endingFor(deconstruction.group, tense.tense, pronoun.key)}</span>
+                </div>
+              ))}
             </div>
           </div>
 

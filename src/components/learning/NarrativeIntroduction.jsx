@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import './NarrativeIntroduction.css';
+import { useSettings } from '../../state/settings.js';
 
 const storyData = {
   pres: {
@@ -88,6 +89,7 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
   const [visibleSentence, setVisibleSentence] = useState(0);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const settings = useSettings();
 
   useEffect(() => {
     if (!tense) return;
@@ -145,6 +147,26 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
   const tenseName = TENSE_LABELS[tense.tense] || tense.tense;
   const moodName = MOOD_LABELS[tense.mood] || tense.mood;
 
+  const pronounsForDialect = () => {
+    const arr = ['1s', settings?.useVoseo ? '2s_vos' : '2s_tu', '3s', '1p'];
+    if (settings?.useVosotros) arr.push('2p_vosotros');
+    arr.push('3p');
+    return arr;
+  };
+
+  const endingFor = (group, tenseKey, pronounKey, baseEndings) => {
+    const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+    let idx = baseOrder.indexOf(pronounKey);
+    if (pronounKey === '2s_vos') idx = baseOrder.indexOf('2s_tu');
+    const base = baseEndings?.[idx] || '';
+    if (pronounKey === '2s_vos' && tenseKey === 'pres') {
+      if (group === '-ar') return 'ás';
+      if (group === '-er') return 'és';
+      if (group === '-ir') return 'ís';
+    }
+    return base;
+  };
+
   return (
     <div className="App">
       <div className="onboarding learn-flow narrative-intro">
@@ -172,21 +194,25 @@ function NarrativeIntroduction({ tense, onBack, onContinue }) {
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {story.deconstructions?.map(({ group, stem, endings }) => (
-                    <div key={group} className="deconstruction-item">
-                      <div className="verb-lemma"><span className="lemma-stem">{stem}</span><span className="group-label">{group}</span></div>
-                      <div className="verb-deconstruction">
-                        <span className="verb-stem">{stem}-</span>
-                        <span className="verb-endings">
-                          <span className="ending-carousel">
-                            {endings.map(ending => (
-                              <span key={ending} className="ending-item">{ending}</span>
-                            ))}
+                  {story.deconstructions?.map(({ group, stem, endings }) => {
+                    const pronouns = pronounsForDialect();
+                    const dialectEndings = pronouns.map(p => endingFor(group, tense.tense, p, endings));
+                    return (
+                      <div key={group} className="deconstruction-item">
+                        <div className="verb-lemma"><span className="lemma-stem">{stem}</span><span className="group-label">{group}</span></div>
+                        <div className="verb-deconstruction">
+                          <span className="verb-stem">{stem}-</span>
+                          <span className="verb-endings">
+                            <span className="ending-carousel">
+                              {dialectEndings.map((ending, idx) => (
+                                <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
+                              ))}
+                            </span>
                           </span>
-                        </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </>
