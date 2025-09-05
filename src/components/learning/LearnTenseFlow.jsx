@@ -205,6 +205,8 @@ function LearnTenseFlow({ onHome }) {
         <NarrativeIntroduction 
           tense={selectedTense}
           exampleVerbs={exampleVerbs}
+          verbType={verbType}
+          selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('duration-selection')} 
           onContinue={() => setCurrentStep('guided_drill_ar')}
         />
@@ -260,6 +262,8 @@ function LearnTenseFlow({ onHome }) {
         <NarrativeIntroduction 
           tense={selectedTense}
           exampleVerbs={exampleVerbs}
+          verbType={verbType}
+          selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('guided_drill_ir')} 
           onContinue={() => setCurrentStep('practice')}
         />
