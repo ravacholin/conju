@@ -189,7 +189,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const detectRealStem = (verb, tenseKey) => {
     if (!verb || !verbForms.length) return null;
     
-    // For future and conditional, we need to find the common stem among all forms
+    // For future and conditional, the stem is the infinitive for regular verbs,
+    // or an irregular stem that we need to detect
     if (tenseKey === 'fut' || tenseKey === 'cond') {
       const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
       const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
@@ -218,10 +219,10 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           }
         }
       }
-      return candidateStem || verb.lemma;
+      return candidateStem || verb.lemma; // fallback to full infinitive
     }
     
-    // For other tenses, use simpler logic or fallback to lemma stem
+    // For other tenses, use simpler logic - remove infinitive ending
     return verb.lemma.slice(0, -2); // remove -ar/-er/-ir
   };
 

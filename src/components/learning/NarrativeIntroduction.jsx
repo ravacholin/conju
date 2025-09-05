@@ -178,7 +178,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const forms = para.forms.filter(f => f.mood === mood && f.tense === tense);
     if (forms.length === 0) return null;
     
-    // For future and conditional, we need to find the common stem among all forms
+    // For future and conditional, the stem is the infinitive for regular verbs, 
+    // or an irregular stem that we need to detect
     if (tense === 'fut' || tense === 'cond') {
       const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
       const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
@@ -192,7 +193,6 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         // Try different stem lengths
         for (let i = 1; i < value.length; i++) {
           const potentialStem = value.slice(0, i);
-          const potentialEnding = value.slice(i);
           
           // Check if this stem works for all forms
           const worksForAll = forms.every(form => {
@@ -208,10 +208,10 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           }
         }
       }
-      return candidateStem || verbObj.lemma;
+      return candidateStem || verbObj.lemma; // fallback to full infinitive
     }
     
-    // For other tenses, use simpler logic or fallback to lemma
+    // For other tenses, use simpler logic - remove infinitive ending
     return verbObj.lemma.slice(0, -2); // remove -ar/-er/-ir
   };
 
@@ -262,7 +262,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     });
                     return (
                       <div key={group} className="deconstruction-item">
-                        <div className="verb-lemma"><span className="lemma-stem">{realStem}</span><span className="group-label">{group}</span></div>
+                        <div className="verb-lemma"><span className="lemma-stem">{verb}</span><span className="group-label">{group}</span></div>
                         <div className="verb-deconstruction">
                           <span className="verb-stem">{realStem}-</span>
                           <span className="verb-endings">
