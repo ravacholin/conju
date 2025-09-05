@@ -500,21 +500,64 @@ function generateIrregularDeconstructions(selectedVerbs, verbObjects, tense, sel
     
     const group = verb.endsWith('ar') ? 'ar' : verb.endsWith('er') ? 'er' : 'ir';
     
-    // Detectar la raíz irregular específica para este verbo y tiempo
-    const irregularStem = detectIrregularStem(verbObj, tense, selectedFamilies);
-    const regularStem = verb.slice(0, -2);
+    // Para verbos irregulares, extraer las formas conjugadas reales
+    const realForms = extractRealConjugatedForms(verbObj, tense);
     
     deconstructions.push({
       group: `-${group}`,
       verb: verb,
-      stem: irregularStem || regularStem,
-      endings: getEndingsForVerb(verbObj, tense),
-      isIrregular: !!irregularStem,
+      isIrregular: true,
+      realForms: realForms, // Formas conjugadas reales
       irregularPattern: getIrregularPattern(verb, selectedFamilies)
     });
   });
   
   return deconstructions;
+}
+
+// Extraer formas conjugadas reales de la base de datos
+function extractRealConjugatedForms(verbObj, tense) {
+  if (!verbObj || !verbObj.paradigms) return [];
+  
+  // Buscar paradigma correcto
+  const paradigm = verbObj.paradigms.find(p => 
+    p.forms?.some(f => f.mood === 'indicative' && f.tense === tense)
+  );
+  
+  if (!paradigm || !paradigm.forms) return [];
+  
+  // Extraer formas para el dialecto rioplatense (orden: 1s, 2s_vos, 3s, 1p, 3p)
+  const persons = ['1s', '2s_vos', '3s', '1p', '3p'];
+  const forms = [];
+  
+  persons.forEach(person => {
+    const form = paradigm.forms.find(f => 
+      f.mood === 'indicative' && f.tense === tense && f.person === person
+    );
+    
+    if (form && form.value) {
+      forms.push(form.value);
+    } else {
+      // Fallback a forma alternativa si existe
+      if (person === '2s_vos') {
+        const tuForm = paradigm.forms.find(f => 
+          f.mood === 'indicative' && f.tense === tense && f.person === '2s_tu'
+        );
+        if (tuForm && tuForm.accepts && tuForm.accepts.vos) {
+          forms.push(tuForm.accepts.vos);
+        } else if (tuForm && tuForm.value) {
+          // Si no hay forma vos específica, usar la forma tú como fallback
+          forms.push(tuForm.value.replace(/as$/, 'ás').replace(/es$/, 'és'));
+        } else {
+          forms.push(''); // Placeholder
+        }
+      } else {
+        forms.push(''); // Placeholder
+      }
+    }
+  });
+  
+  return forms;
 }
 
 // Detectar raíz irregular específica
@@ -936,11 +979,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {story.deconstructions?.map(({ group, stem, endings, verb }) => {
+                  {story.deconstructions?.map(({ group, stem, endings, verb, isIrregular, realForms }) => {
                     const pronouns = pronounsForDialect();
                     const verbObj = exampleVerbs?.find(v => v.lemma === verb);
-                    const formMap = getFormMapForVerb(verbObj);
-                    const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const lemmaStem = (v) => {
                       if (typeof v !== 'string') return '';
                       if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
@@ -948,6 +989,29 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                       }
                       return v;
                     };
+                    
+                    // Para verbos irregulares, mostrar las formas conjugadas reales
+                    if (isIrregular && realForms && realForms.length > 0) {
+                      return (
+                        <div key={group} className="deconstruction-item">
+                          <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
+                          <div className="verb-deconstruction irregular">
+                            <span className="irregular-forms">
+                              {realForms.map((form, idx) => (
+                                <span key={`${group}-${idx}-${form}`} className="conjugated-form">
+                                  {form}
+                                  {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
+                                </span>
+                              ))}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // Para verbos regulares, mantener el sistema de raíz + terminaciones
+                    const formMap = getFormMapForVerb(verbObj);
+                    const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const dialectEndings = pronouns.map(p => {
                       const formVal = formMap[p];
                       const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
