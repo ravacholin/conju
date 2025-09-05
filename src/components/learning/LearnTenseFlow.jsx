@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { getFamiliesForTense } from '../../lib/data/irregularFamilies.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
@@ -61,10 +62,11 @@ const storyData = {
 
 
 function LearnTenseFlow({ onHome }) {
-  const [currentStep, setCurrentStep] = useState('selection'); // 'selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'communicative_practice'
+  const [currentStep, setCurrentStep] = useState('tense-selection'); // 'tense-selection' | 'type-selection' | 'duration-selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'communicative_practice'
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null); // 5, 10, 15
-  const [verbType, setVerbType] = useState(null); // 'regular', 'irregular', 'all'
+  const [verbType, setVerbType] = useState(null); // 'regular', 'irregular-basic', 'irregular-yo', 'irregular-dipthong', 'all'
+  const [selectedFamilies, setSelectedFamilies] = useState([]);
   const [exampleVerbs, setExampleVerbs] = useState(null);
   const settings = useSettings();
 
@@ -79,10 +81,23 @@ function LearnTenseFlow({ onHome }) {
     if (!selectedTense || !verbType) return [];
     const forms = [];
     const allowedPersons = getPronounsForDialect();
+    
     verbs.forEach(verb => {
-      if (verbType !== 'all' && verb.type !== verbType) {
-        return;
+      // Filter by verb type and families
+      let includeVerb = false;
+      
+      if (verbType === 'regular') {
+        includeVerb = verb.type === 'regular';
+      } else if (verbType === 'all') {
+        includeVerb = true;
+      } else if (selectedFamilies.length > 0) {
+        // Check if verb belongs to any of the selected irregular families
+        const verbFamilies = verb.irregularFamilies || [];
+        includeVerb = selectedFamilies.some(familyId => verbFamilies.includes(familyId));
       }
+      
+      if (!includeVerb) return;
+      
       verb.paradigms.forEach(paradigm => {
         paradigm.forms.forEach(form => {
           if (form.mood === selectedTense.mood && form.tense === selectedTense.tense) {
@@ -96,7 +111,7 @@ function LearnTenseFlow({ onHome }) {
       });
     });
     return forms;
-  }, [selectedTense, verbType, settings.useVoseo, settings.useVosotros]);
+  }, [selectedTense, verbType, selectedFamilies, settings.useVoseo, settings.useVosotros]);
 
   const availableTenses = useMemo(() => {
     // Only show tenses that have narrative stories implemented
@@ -126,6 +141,27 @@ function LearnTenseFlow({ onHome }) {
 
   const handleTenseSelection = (mood, tense) => {
     setSelectedTense({ mood, tense });
+    setCurrentStep('type-selection');
+  };
+  
+  const handleTypeSelection = (type, families = []) => {
+    setVerbType(type);
+    setSelectedFamilies(families);
+    setCurrentStep('duration-selection');
+  };
+  
+  const handleBackToTenseSelection = () => {
+    setSelectedTense(null);
+    setVerbType(null);
+    setSelectedFamilies([]);
+    setCurrentStep('tense-selection');
+  };
+  
+  const handleBackToTypeSelection = () => {
+    setVerbType(null);
+    setSelectedFamilies([]);
+    setDuration(null);
+    setCurrentStep('type-selection');
   };
 
   const handleStartLearning = () => {
@@ -138,7 +174,7 @@ function LearnTenseFlow({ onHome }) {
         setExampleVerbs(verbObjects);
       }
       
-      console.log('Starting learning with:', { selectedTense, duration, verbType, tenseKey, tenseStoryData });
+      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, tenseKey, tenseStoryData });
       setCurrentStep('introduction');
     }
   };
@@ -147,8 +183,9 @@ function LearnTenseFlow({ onHome }) {
     setSelectedTense(null);
     setDuration(null);
     setVerbType(null);
+    setSelectedFamilies([]);
     setExampleVerbs(null);
-    setCurrentStep('selection');
+    setCurrentStep('tense-selection');
     if (onHome) onHome();
   };
 
@@ -168,7 +205,7 @@ function LearnTenseFlow({ onHome }) {
         <NarrativeIntroduction 
           tense={selectedTense}
           exampleVerbs={exampleVerbs}
-          onBack={() => setCurrentStep('selection')} 
+          onBack={() => setCurrentStep('duration-selection')} 
           onContinue={() => setCurrentStep('guided_drill_ar')}
         />
       </ErrorBoundary>
@@ -270,158 +307,228 @@ function LearnTenseFlow({ onHome }) {
     );
   }
 
-  return (
-    <div className="App">
-      <div className="onboarding learn-flow">
-        {/* Header with logo */}
-        <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
-          <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-        </ClickableCard>
-        
-        {Object.entries(availableTenses).map(([mood, tenses]) => (
-          <div key={mood} className="tense-section">
-            <h2>{MOOD_LABELS[mood] || mood}</h2>
-            <div className="options-grid">
-              {tenses.map(tense => {
-                // Function to get conjugation examples with 1st, 2nd, and 3rd person for "hablar"
-                const getPersonConjugationExample = (mood, tense) => {
-                  const examples = {
-                    // Indicativo
-                    'pres': 'yo hablo, tú hablas, él/ella habla',
-                    'pretIndef': 'yo hablé, tú hablaste, él/ella habló',
-                    'impf': 'yo hablaba, tú hablabas, él/ella hablaba',
-                    'fut': 'yo hablaré, tú hablarás, él/ella hablará',
-                    'pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
-                    'plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
-                    'futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
+  // Step 1: Tense Selection
+  if (currentStep === 'tense-selection') {
+    return (
+      <div className="App">
+        <div className="onboarding learn-flow">
+          {/* Header with logo */}
+          <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
+            <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+          </ClickableCard>
+          
+          {Object.entries(availableTenses).map(([mood, tenses]) => (
+            <div key={mood} className="tense-section">
+              <h2>{MOOD_LABELS[mood] || mood}</h2>
+              <div className="options-grid">
+                {tenses.map(tense => {
+                  // Function to get conjugation examples with 1st, 2nd, and 3rd person for "hablar"
+                  const getPersonConjugationExample = (mood, tense) => {
+                    const examples = {
+                      // Indicativo
+                      'pres': 'yo hablo, tú hablas, él/ella habla',
+                      'pretIndef': 'yo hablé, tú hablaste, él/ella habló',
+                      'impf': 'yo hablaba, tú hablabas, él/ella hablaba',
+                      'fut': 'yo hablaré, tú hablarás, él/ella hablará',
+                      'pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
+                      'plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
+                      'futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
+                      
+                      // Subjuntivo
+                      'subjPres': 'yo hable, tú hables, él/ella hable',
+                      'subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
+                      'subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
+                      'subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
+                      
+                      // Imperativo
+                      'impAff': 'tú habla, vos hablá, usted hable',
+                      'impNeg': 'no hables, no habléis',
+                      
+                      // Condicional
+                      'cond': 'yo hablaría, tú hablarías, él/ella hablaría',
+                      'condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
+                      
+                      // Formas no conjugadas
+                      'ger': 'hablando',
+                      'part': 'hablado'
+                    }
                     
-                    // Subjuntivo
-                    'subjPres': 'yo hable, tú hables, él/ella hable',
-                    'subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
-                    'subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
-                    'subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
-                    
-                    // Imperativo
-                    'impAff': 'tú habla, vos hablá, usted hable',
-                    'impNeg': 'no hables, no habléis',
-                    
-                    // Condicional
-                    'cond': 'yo hablaría, tú hablarías, él/ella hablaría',
-                    'condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
-                    
-                    // Formas no conjugadas
-                    'ger': 'hablando',
-                    'part': 'hablado'
+                    return examples[tense] || ''
                   }
                   
-                  return examples[tense] || ''
-                }
+                  return (
+                    <ClickableCard 
+                      key={tense}
+                      className="option-card"
+                      onClick={() => handleTenseSelection(mood, tense)}
+                      title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
+                    >
+                      <h3>
+                        {TENSE_LABELS[tense] || tense}
+                      </h3>
+                      <p className="example">{getPersonConjugationExample(mood, tense)}</p>
+                    </ClickableCard>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+
+          <button className="back-btn" onClick={onHome}>
+            <img src="/back.png" alt="Volver" className="back-icon" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  // Step 2: Type Selection (Regular/Irregular categories)
+  if (currentStep === 'type-selection') {
+    const availableFamilies = getFamiliesForTense(selectedTense.tense);
+    
+    // Group families into logical categories
+    const irregularCategories = {
+      'basic': {
+        name: 'Irregulares básicos',
+        description: 'Diptongación y cambios vocálicos',
+        families: availableFamilies.filter(f => 
+          ['DIPHT_E_IE', 'DIPHT_O_UE', 'DIPHT_U_UE', 'E_I_IR', 'O_U_GER_IR'].includes(f.id)
+        )
+      },
+      'yo': {
+        name: 'Irregulares en YO',
+        description: 'Alternancias en 1ª persona: tengo, conozco, vengo',
+        families: availableFamilies.filter(f => 
+          ['G_VERBS', 'JO_VERBS', 'GU_DROP', 'ZCO_VERBS', 'ZO_VERBS', 'UIR_Y'].includes(f.id)
+        )
+      },
+      'preterite': {
+        name: 'Pretéritos fuertes',
+        description: 'Cambios especiales en pretérito: tuve, pude, hice',
+        families: availableFamilies.filter(f => 
+          ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL', 'HIATUS_Y'].includes(f.id)
+        )
+      },
+      'orthographic': {
+        name: 'Cambios ortográficos',
+        description: 'Conservación del sonido: busqué, llegué, empecé',
+        families: availableFamilies.filter(f => 
+          ['ORTH_CAR', 'ORTH_GAR', 'ORTH_ZAR', 'ORTH_GUAR'].includes(f.id)
+        )
+      }
+    };
+    
+    return (
+      <div className="App">
+        <div className="onboarding learn-flow">
+          {/* Header with logo */}
+          <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
+            <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+          </ClickableCard>
+          
+          <div className="tense-section">
+            <h2>Elegir tipo de verbos para {TENSE_LABELS[selectedTense.tense]}</h2>
+            
+            <div className="options-grid">
+              {/* Regular verbs */}
+              <ClickableCard 
+                className="option-card"
+                onClick={() => handleTypeSelection('regular')}
+                title="Practicar verbos regulares"
+              >
+                <h3>Regulares</h3>
+                <p className="example">hablar, comer, vivir</p>
+              </ClickableCard>
+              
+              {/* Irregular categories */}
+              {Object.entries(irregularCategories).map(([key, category]) => {
+                if (category.families.length === 0) return null;
                 
                 return (
                   <ClickableCard 
-                    key={tense}
-                    className={`option-card ${selectedTense?.tense === tense && selectedTense?.mood === mood ? 'selected' : ''}`}
-                    onClick={() => handleTenseSelection(mood, tense)}
-                    title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
+                    key={key}
+                    className="option-card"
+                    onClick={() => handleTypeSelection('irregular', category.families.map(f => f.id))}
+                    title={`Practicar ${category.name.toLowerCase()}`}
                   >
-                    <h3>
-                      {TENSE_LABELS[tense] || tense}
-                    </h3>
-                    <p className="example">{getPersonConjugationExample(mood, tense)}</p>
+                    <h3>{category.name}</h3>
+                    <p className="example">{category.description}</p>
                   </ClickableCard>
-                )
+                );
               })}
             </div>
           </div>
-        ))}
 
-        {selectedTense && (
-          <div className="settings-panel">
-            <h3>Configuración de Aprendizaje</h3>
-            
-            <div className="setting-group">
-              <label>Duración de la sesión</label>
-              <div className="radio-group">
-                <label>
-                  <input 
-                    type="radio" 
-                    name="duration" 
-                    checked={duration === 5} 
-                    onChange={() => setDuration(5)} 
-                  />
-                  5 minutos
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="duration" 
-                    checked={duration === 10} 
-                    onChange={() => setDuration(10)} 
-                  />
-                  10 minutos
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="duration" 
-                    checked={duration === 15} 
-                    onChange={() => setDuration(15)} 
-                  />
-                  15 minutos
-                </label>
-              </div>
-            </div>
-            
-            <div className="setting-group">
-              <label>Tipo de verbos</label>
-              <div className="radio-group">
-                <label>
-                  <input 
-                    type="radio" 
-                    name="verbType" 
-                    checked={verbType === 'all'} 
-                    onChange={() => setVerbType('all')} 
-                  />
-                  Todos los verbos
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="verbType" 
-                    checked={verbType === 'regular'} 
-                    onChange={() => setVerbType('regular')} 
-                  />
-                  Solo regulares
-                </label>
-                <label>
-                  <input 
-                    type="radio" 
-                    name="verbType" 
-                    checked={verbType === 'irregular'} 
-                    onChange={() => setVerbType('irregular')} 
-                  />
-                  Solo irregulares
-                </label>
-              </div>
-            </div>
-            
-            <button 
-              className="btn start-learning-btn"
-              onClick={handleStartLearning}
-              disabled={!selectedTense || !duration || !verbType}
-            >
-              <img src="/play.png" alt="Comenzar" className="play-icon" />
-              Comenzar a Aprender
-            </button>
-          </div>
-        )}
-
-        <button className="back-btn" onClick={onHome}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
+          <button className="back-btn" onClick={handleBackToTenseSelection}>
+            <img src="/back.png" alt="Volver" className="back-icon" />
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+  
+  // Step 3: Duration Selection
+  if (currentStep === 'duration-selection') {
+    return (
+      <div className="App">
+        <div className="onboarding learn-flow">
+          {/* Header with logo */}
+          <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
+            <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+          </ClickableCard>
+          
+          <div className="tense-section">
+            <h2>Duración de la sesión</h2>
+            
+            <div className="options-grid">
+              <ClickableCard 
+                className="option-card"
+                onClick={() => setDuration(5)}
+                title="Sesión de 5 minutos"
+              >
+                <h3>5 minutos</h3>
+                <p className="example">Sesión corta</p>
+              </ClickableCard>
+              
+              <ClickableCard 
+                className="option-card"
+                onClick={() => setDuration(10)}
+                title="Sesión de 10 minutos"
+              >
+                <h3>10 minutos</h3>
+                <p className="example">Sesión media</p>
+              </ClickableCard>
+              
+              <ClickableCard 
+                className="option-card"
+                onClick={() => setDuration(15)}
+                title="Sesión de 15 minutos"
+              >
+                <h3>15 minutos</h3>
+                <p className="example">Sesión larga</p>
+              </ClickableCard>
+            </div>
+            
+            {duration && (
+              <button 
+                className="btn start-learning-btn"
+                onClick={handleStartLearning}
+              >
+                <img src="/play.png" alt="Comenzar" className="play-icon" />
+                Comenzar a Aprender
+              </button>
+            )}
+          </div>
+
+          <button className="back-btn" onClick={handleBackToTypeSelection}>
+            <img src="/back.png" alt="Volver" className="back-icon" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 export default LearnTenseFlow;
