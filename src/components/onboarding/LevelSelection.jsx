@@ -105,7 +105,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           title="Aprender un tiempo verbal nuevo con un método guiado"
         >
           <h3>
-            <img src="/sparks.png" alt="Aprender" className="option-icon" /> Aprender un tiempo
+            <img src="/icons/brain.png" alt="Aprender" className="option-icon" /> Aprender un tiempo
           </h3>
           <p>Un camino guiado para dominar un tiempo verbal desde cero</p>
           <p className="example">Introducción, práctica y contexto</p>
