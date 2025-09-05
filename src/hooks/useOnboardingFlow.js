@@ -390,10 +390,11 @@ export function useOnboardingFlow() {
     closeTopPanelsAndFeatures()
     
     if (mode === 'theme') {
-      // Theme-based practice setup with specific configuration
+      // Theme-based practice setup
       settings.set({ 
-        practiceMode: 'specific', 
-        level: 'ALL', 
+        practiceMode: 'theme',
+        // Do not bind to a specific level for theme mode
+        level: null,
         cameFromTema: true,
         specificMood: null, // Clear previous mood selection
         specificTense: null, // Clear previous tense selection
@@ -409,7 +410,6 @@ export function useOnboardingFlow() {
         perItemMs: 6000,
         medianTargetMs: 3000,
         // NO RESTRICT verbs for theme-based practice - let user choose verb types later
-        // When verbType='all' is selected, full database should be available
         allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
