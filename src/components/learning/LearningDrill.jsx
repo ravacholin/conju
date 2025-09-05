@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SessionSummary from './SessionSummary.jsx';
-import { updateSchedule } from '../../lib/progress/srs.js';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { grade } from '../../lib/core/grader.js';
+import { chooseNext } from '../../lib/core/generator.js';
+import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
+import { useSettings } from '../../state/settings.js';
 import './LearningDrill.css';
 
 const PRONOUNS_DISPLAY = {
@@ -15,7 +18,7 @@ const PRONOUNS_DISPLAY = {
   '3p': 'ellos/ellas/ustedes',
 };
 
-function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseComplete }) {
+function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, onFinish, onPhaseComplete }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState('idle'); // idle | correct | incorrect
@@ -34,6 +37,12 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   const containerRef = useRef(null);
   const [entered, setEntered] = useState(false);
   const [swapAnim, setSwapAnim] = useState(false);
+  const settings = useSettings();
+
+  const { handleResult } = useProgressTracking(currentItem, (result) => {
+    // Handle result from progress tracking
+    console.log('Progress tracking result:', result);
+  });
 
   useEffect(() => {
     if (duration) {
@@ -45,17 +54,60 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   }, [duration]);
 
   const generateNextItem = React.useCallback(() => {
-    if (!eligibleForms || eligibleForms.length === 0) {
-      setCurrentItem(null);
-      return;
+    // Configure settings for learning session  
+    const currentSettings = settings.getState ? settings.getState() : settings;
+    
+    // For irregular practice, we need to set verbType to 'irregular' AND
+    // cycle through families for variety
+    let selectedFamilyForGenerator = null;
+    if (selectedFamilies && selectedFamilies.length > 0) {
+      // Instead of random, cycle through families to ensure variety
+      const familyIndex = (totalAttempts || 0) % selectedFamilies.length;
+      selectedFamilyForGenerator = selectedFamilies[familyIndex];
     }
-    const randomIndex = Math.floor(Math.random() * eligibleForms.length);
-    setCurrentItem(eligibleForms[randomIndex]);
-    setInputValue('');
-    setResult('idle');
-    setStartTime(Date.now());
-    setTimeout(() => inputRef.current?.focus(), 0);
-  }, [eligibleForms]);
+    
+    const learningSettings = {
+      ...currentSettings,
+      practiceMode: 'specific', 
+      specificMood: tense?.mood,
+      specificTense: tense?.tense,
+      verbType: verbType === 'irregular' ? 'irregular' : verbType,
+      selectedFamily: selectedFamilyForGenerator,
+      cameFromTema: false
+    };
+    
+    console.log('🎯 Learning settings:', learningSettings);
+    console.log('🔍 Available families:', selectedFamilies); 
+    console.log('🎲 Selected family for generator:', selectedFamilyForGenerator);
+    console.log('🎯 Verb type:', verbType);
+    
+    // Update settings for this learning session
+    settings.set(learningSettings);
+    
+    try {
+      const nextItem = chooseNext({
+        forms: Array.from(FORM_LOOKUP_MAP.values()),
+        history: [],
+        currentItem
+      });
+      
+      console.log('📝 Generated item:', nextItem);
+      
+      if (nextItem) {
+        setCurrentItem(nextItem);
+        setInputValue('');
+        setResult('idle');
+        setStartTime(Date.now());
+        setTimeout(() => inputRef.current?.focus(), 0);
+      } else {
+        console.error('❌ No item generated - generator returned null');
+        setCurrentItem(null);
+      }
+    } catch (error) {
+      console.error('💥 Error generating next item:', error);
+      setCurrentItem(null);
+    }
+  }, [tense, verbType, selectedFamilies, currentItem, settings, totalAttempts]);
 
   useEffect(() => {
     generateNextItem();
@@ -78,33 +130,20 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     return Math.round(basePoints * multiplier);
   };
 
-  const analyzeError = (correct, userAnswer) => {
-    const correctLower = correct.toLowerCase();
-    const userLower = userAnswer.toLowerCase();
-    if (correctLower.normalize('NFD').replace(/[\u0300-\u036f]/g, '') === 
-        userLower.normalize('NFD').replace(/[\u0300-\u036f]/g, '')) {
-      return 'accent_error';
-    }
-    if (userAnswer === currentItem?.lemma) {
-      return 'wrong_tense';
-    }
-    const correctEnding = correctLower.slice(-2);
-    const userEnding = userLower.slice(-2);
-    if (correctEnding !== userEnding) {
-      return 'person_error';
-    }
-    return 'complete_error';
-  };
 
   const handleCheckAnswer = async () => {
     if (!currentItem || !startTime) return;
-    const correctAnswer = currentItem.value;
-    const altAnswers = currentItem.alt || [];
     const userAnswer = inputValue.trim();
-    const userAnswerLower = userAnswer.toLowerCase();
     const responseTime = Date.now() - startTime;
-    const isCorrect = userAnswerLower === correctAnswer.toLowerCase() || 
-                     (Array.isArray(altAnswers) && altAnswers.map(a => a.toLowerCase()).includes(userAnswerLower));
+
+    // Use the sophisticated grader from the main system
+    const gradeResult = grade({
+      value: currentItem.value,
+      alt: currentItem.alt || [],
+      accepts: currentItem.accepts || {}
+    }, userAnswer);
+
+    const isCorrect = gradeResult.correct;
 
     setTotalAttempts(prev => prev + 1);
     setResponseTimes(prev => [...prev, responseTime]);
@@ -124,20 +163,22 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     } else {
       setResult('incorrect');
       setCorrectStreak(0);
-      const errorType = analyzeError(correctAnswer, userAnswer);
+      // Use grader's error analysis
+      const errorType = gradeResult.errorTags?.[0] || 'complete_error';
       setErrorPatterns(prev => ({ ...prev, [errorType]: (prev[errorType] || 0) + 1 }));
     }
     
     setTimeout(() => containerRef.current?.focus(), 0);
 
-    try {
-      const userId = getCurrentUserId();
-      if (userId) {
-        await updateSchedule(userId, { ...currentItem }, isCorrect, 0);
-      }
-    } catch (error) {
-      console.error("Failed to update SRS schedule:", error);
-    }
+    // Use the progress tracking system
+    await handleResult({
+      correct: isCorrect,
+      userAnswer,
+      correctAnswer: currentItem.value,
+      hintsUsed: 0,
+      errorTags: gradeResult.errorTags || [],
+      latencyMs: responseTime
+    });
   };
 
   const handleContinue = () => {
@@ -178,7 +219,7 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
       return PRONOUNS_DISPLAY[personCode] || personCode;
   }
 
-  if (!eligibleForms || eligibleForms.length === 0) {
+  if (!currentItem) {
     return (
       <div className="App"><div className="main-content"><div className="drill-container learning-drill">
         <div className="drill-header"><button onClick={onBack} className="back-to-menu-btn"><img src="/back.png" alt="Volver" className="back-icon" />Volver</button><h2>Sin ejercicios</h2></div>
@@ -192,7 +233,7 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
     return <SessionSummary onFinish={onFinish} summary={summary} />;
   }
 
-  const tenseName = TENSE_LABELS[eligibleForms[0].tense] || eligibleForms[0].tense;
+  const tenseName = TENSE_LABELS[tense?.tense] || tense?.tense;
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1} ref={containerRef}>

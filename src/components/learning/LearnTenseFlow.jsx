@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
+import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
-import { getFamiliesForTense } from '../../lib/data/irregularFamilies.js';
+import { getFamiliesForTense, categorizeVerb } from '../../lib/data/irregularFamilies.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
@@ -13,53 +14,15 @@ import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 
-// NOTE: This is duplicated from NarrativeIntroduction to avoid breaking it.
-// A better solution would be to move this to a shared data file.
-const storyData = {
-  pres: {
-    deconstructions: [
-      { group: '-ar', verb: 'hablar' },
-      { group: '-er', verb: 'aprender' },
-      { group: '-ir', verb: 'vivir' },
-    ],
-  },
-  pretIndef: {
-    deconstructions: [
-        { group: '-ar', verb: 'caminar' },
-        { group: '-er', verb: 'comer' },
-        { group: '-ir', verb: 'escribir' },
-    ],
-  },
-  impf: {
-    deconstructions: [
-      { group: '-ar', verb: 'jugar' },
-      { group: '-er', verb: 'leer' },
-      { group: '-ir', verb: 'vivir' },
-    ],
-  },
-  fut: {
-    deconstructions: [
-      { group: '-ar', verb: 'hablar' },
-      { group: '-er', verb: 'hacer' },
-      { group: '-ir', verb: 'salir' },
-    ],
-  },
-   cond: {
-    deconstructions: [
-      { group: '-ar', verb: 'hablar' },
-      { group: '-er', verb: 'hacer' },
-      { group: '-ir', verb: 'decir' },
-    ],
-  },
-  subjPres: {
-    deconstructions: [
-      { group: '-ar', verb: 'hablar' },
-      { group: '-er', verb: 'beber' },
-      { group: '-ir', verb: 'vivir' },
-    ],
-  },
-};
 
+
+// Helper function to get verbs belonging to a specific family
+function getVerbsForFamily(familyId, tense) {
+  return verbs.filter(verb => {
+    const families = categorizeVerb(verb.lemma, verb);
+    return families.includes(familyId);
+  });
+}
 
 function LearnTenseFlow({ onHome }) {
   const [currentStep, setCurrentStep] = useState('tense-selection'); // 'tense-selection' | 'type-selection' | 'duration-selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'communicative_practice'
@@ -70,48 +33,7 @@ function LearnTenseFlow({ onHome }) {
   const [exampleVerbs, setExampleVerbs] = useState(null);
   const settings = useSettings();
 
-  const getPronounsForDialect = () => {
-    const arr = ['1s', settings?.useVoseo ? '2s_vos' : '2s_tu', '3s', '1p'];
-    if (settings?.useVosotros) arr.push('2p_vosotros');
-    arr.push('3p');
-    return new Set(arr);
-  };
 
-  const eligibleForms = useMemo(() => {
-    if (!selectedTense || !verbType) return [];
-    const forms = [];
-    const allowedPersons = getPronounsForDialect();
-    
-    verbs.forEach(verb => {
-      // Filter by verb type and families
-      let includeVerb = false;
-      
-      if (verbType === 'regular') {
-        includeVerb = verb.type === 'regular';
-      } else if (verbType === 'all') {
-        includeVerb = true;
-      } else if (selectedFamilies.length > 0) {
-        // Check if verb belongs to any of the selected irregular families
-        const verbFamilies = verb.irregularFamilies || [];
-        includeVerb = selectedFamilies.some(familyId => verbFamilies.includes(familyId));
-      }
-      
-      if (!includeVerb) return;
-      
-      verb.paradigms.forEach(paradigm => {
-        paradigm.forms.forEach(form => {
-          if (form.mood === selectedTense.mood && form.tense === selectedTense.tense) {
-            if (!allowedPersons.has(form.person)) return;
-            const altFromAccepts = form.accepts ? Object.values(form.accepts) : [];
-            const altFromAlt = Array.isArray(form.alt) ? form.alt : [];
-            const mergedAlt = Array.from(new Set([...altFromAlt, ...altFromAccepts]));
-            forms.push({ ...form, lemma: verb.lemma, alt: mergedAlt });
-          }
-        });
-      });
-    });
-    return forms;
-  }, [selectedTense, verbType, selectedFamilies, settings.useVoseo, settings.useVosotros]);
 
   const availableTenses = useMemo(() => {
     // Only show tenses that have narrative stories implemented
@@ -145,6 +67,7 @@ function LearnTenseFlow({ onHome }) {
   };
   
   const handleTypeSelection = (type, families = []) => {
+    console.log('🎯 Type selection:', { type, families });
     setVerbType(type);
     setSelectedFamilies(families);
     setCurrentStep('duration-selection');
@@ -168,13 +91,47 @@ function LearnTenseFlow({ onHome }) {
     if (selectedTense && duration && verbType) {
       const tenseKey = selectedTense.tense;
       const tenseStoryData = storyData[tenseKey];
-      if (tenseStoryData && tenseStoryData.deconstructions) {
+      
+      let verbObjects = [];
+      
+      if (verbType === 'irregular' && selectedFamilies.length > 0) {
+        // Generate example verbs from selected irregular families
+        const irregularExamples = [];
+        
+        selectedFamilies.forEach(familyId => {
+          // Get paradigmatic verbs for this family
+          const familyVerbs = getVerbsForFamily(familyId, selectedTense.tense);
+          if (familyVerbs.length > 0) {
+            irregularExamples.push(familyVerbs[0]); // Take first verb as example
+          }
+        });
+        
+        // Ensure we have at least 3 examples for the drill phases (-ar, -er, -ir)
+        while (irregularExamples.length < 3 && selectedFamilies.length > 0) {
+          const familyId = selectedFamilies[irregularExamples.length % selectedFamilies.length];
+          const familyVerbs = getVerbsForFamily(familyId, selectedTense.tense);
+          if (familyVerbs.length > irregularExamples.length) {
+            irregularExamples.push(familyVerbs[irregularExamples.length]);
+          } else {
+            // Fill with any irregular verb if needed
+            const anyIrregular = verbs.find(v => v.type === 'irregular' && 
+              v.lemma.endsWith(['ar', 'er', 'ir'][irregularExamples.length % 3]));
+            if (anyIrregular) irregularExamples.push(anyIrregular);
+          }
+        }
+        
+        verbObjects = irregularExamples;
+        console.log('🎯 Generated irregular examples:', irregularExamples.map(v => v?.lemma));
+        
+      } else if (tenseStoryData && tenseStoryData.deconstructions) {
+        // Use regular story examples
         const exampleVerbLemmas = tenseStoryData.deconstructions.map(d => d.verb);
-        const verbObjects = exampleVerbLemmas.map(lemma => verbs.find(v => v.lemma === lemma)).filter(Boolean);
-        setExampleVerbs(verbObjects);
+        verbObjects = exampleVerbLemmas.map(lemma => verbs.find(v => v.lemma === lemma)).filter(Boolean);
       }
       
-      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, tenseKey, tenseStoryData });
+      setExampleVerbs(verbObjects);
+      
+      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, tenseKey, verbObjects: verbObjects.map(v => v?.lemma) });
       setCurrentStep('introduction');
     }
   };
@@ -275,7 +232,9 @@ function LearnTenseFlow({ onHome }) {
     return (
       <ErrorBoundary>
         <LearningDrill 
-          eligibleForms={eligibleForms}
+          tense={selectedTense}
+          verbType={verbType}
+          selectedFamilies={selectedFamilies}
           duration={duration}
           onBack={() => setCurrentStep('recap')} 
           onFinish={handleFinish}
@@ -290,7 +249,8 @@ function LearnTenseFlow({ onHome }) {
       <ErrorBoundary>
         <MeaningfulPractice 
           tense={selectedTense}
-          eligibleForms={eligibleForms}
+          verbType={verbType}
+          selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('practice')}
           onPhaseComplete={handleMeaningfulPhaseComplete}
         />
@@ -303,7 +263,8 @@ function LearnTenseFlow({ onHome }) {
       <ErrorBoundary>
         <CommunicativePractice 
           tense={selectedTense}
-          eligibleForms={eligibleForms}
+          verbType={verbType}
+          selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('meaningful_practice')}
           onFinish={handleFinish}
         />

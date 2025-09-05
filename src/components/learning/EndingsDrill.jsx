@@ -2,8 +2,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSettings } from '../../state/settings.js';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { categorizeVerb } from '../../lib/data/irregularFamilies.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
+import './IrregularEndingsDrill.css'; // Irregular verb specific styles
 
 function getPronounsForDialect(settings){
   const arr = [
@@ -27,6 +29,100 @@ function shuffle(array) {
     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
   return array;
+}
+
+// Helper functions for irregular verb analysis
+function getRegularStem(lemma) {
+  return lemma.slice(0, -2); // Remove -ar, -er, -ir
+}
+
+function getRegularEndings(verbEnding, tense) {
+  const endings = {
+    'ar': {
+      'pres': ['o', 'as', 'a', 'amos', 'áis', 'an'],
+      'pretIndef': ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'],
+      'impf': ['aba', 'abas', 'aba', 'ábamos', 'abais', 'aban'],
+      'fut': ['é', 'ás', 'á', 'emos', 'éis', 'án'],
+      'cond': ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      'subjPres': ['e', 'es', 'e', 'emos', 'éis', 'en']
+    },
+    'er': {
+      'pres': ['o', 'es', 'e', 'emos', 'éis', 'en'],
+      'pretIndef': ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'],
+      'impf': ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      'fut': ['é', 'ás', 'á', 'emos', 'éis', 'án'],
+      'cond': ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      'subjPres': ['a', 'as', 'a', 'amos', 'áis', 'an']
+    },
+    'ir': {
+      'pres': ['o', 'es', 'e', 'imos', 'ís', 'en'],
+      'pretIndef': ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'],
+      'impf': ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      'fut': ['é', 'ás', 'á', 'emos', 'éis', 'án'],
+      'cond': ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      'subjPres': ['a', 'as', 'a', 'amos', 'áis', 'an']
+    }
+  };
+  return endings[verbEnding]?.[tense] || [];
+}
+
+function analyzeIrregularities(verb, actualForms, tense) {
+  const lemma = verb.lemma;
+  const verbEnding = lemma.slice(-2);
+  const regularStem = getRegularStem(lemma);
+  const regularEndings = getRegularEndings(verbEnding, tense);
+  const families = categorizeVerb(lemma, verb);
+  
+  const pronounOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+  const analysis = [];
+  
+  actualForms.forEach((form, index) => {
+    const expectedRegular = regularStem + regularEndings[index];
+    const actual = form.value;
+    
+    let irregularity = null;
+    let explanation = '';
+    
+    if (actual !== expectedRegular) {
+      // Detect type of irregularity
+      if (families.includes('G_VERBS') && form.person === '1s' && actual.endsWith('go')) {
+        irregularity = 'yo_irregular';
+        explanation = 'Irregular en YO: añade -g-';
+      } else if (families.includes('DIPHT_E_IE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
+        if (actual.includes('ie') && !expectedRegular.includes('ie')) {
+          irregularity = 'diphthong_e_ie';
+          explanation = 'Diptongo: e → ie (sílaba tónica)';
+        }
+      } else if (families.includes('DIPHT_O_UE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
+        if (actual.includes('ue') && !expectedRegular.includes('ue')) {
+          irregularity = 'diphthong_o_ue';
+          explanation = 'Diptongo: o → ue (sílaba tónica)';
+        }
+      } else if (families.includes('ZCO_VERBS') && form.person === '1s' && actual.includes('zc')) {
+        irregularity = 'zco_verbs';
+        explanation = 'Consonante + cer/cir: añade -zc-';
+      } else {
+        irregularity = 'other';
+        explanation = 'Forma irregular';
+      }
+    }
+    
+    analysis.push({
+      person: form.person,
+      expected: expectedRegular,
+      actual: actual,
+      irregularity,
+      explanation,
+      isIrregular: actual !== expectedRegular
+    });
+  });
+  
+  return {
+    verbType: verb.type,
+    families,
+    analysis,
+    hasIrregularities: analysis.some(a => a.isIrregular)
+  };
 }
 
 const storyData = {
@@ -132,15 +228,47 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     return null;
   }, [verbForms, currentPronoun]);
 
+  const irregularityAnalysis = useMemo(() => {
+    if (!verb || !tense || verbForms.length === 0) return null;
+    return analyzeIrregularities(verb, verbForms, tense.tense);
+  }, [verb, tense, verbForms]);
+
   const deconstruction = useMemo(() => {
     if (!verb || !tense) return null;
+    
+    // For irregular verbs, show custom analysis
+    if (irregularityAnalysis?.hasIrregularities) {
+      const lemma = verb.lemma;
+      const verbEnding = lemma.slice(-2);
+      const familyDescriptions = irregularityAnalysis.families.map(family => {
+        const familyMap = {
+          'G_VERBS': 'Irregular en YO',
+          'DIPHT_E_IE': 'Diptongo e→ie', 
+          'DIPHT_O_UE': 'Diptongo o→ue',
+          'ZCO_VERBS': 'Añade -zc-',
+          'E_I_IR': 'Cambio e→i'
+        };
+        return familyMap[family] || family;
+      }).join(', ');
+      
+      return {
+        group: `-${verbEnding}`,
+        verb: lemma,
+        stem: lemma.slice(0, -2),
+        endings: verbForms.map(f => f.value.replace(lemma.slice(0, -2), '')),
+        isIrregular: true,
+        irregularityType: familyDescriptions
+      };
+    }
+    
+    // For regular verbs, use original logic
     const tenseData = storyData[tense.tense];
     if (!tenseData) return null;
     const verbEnding = verb.lemma.slice(-2);
     const group = ['ar', 'er', 'ir'].includes(verbEnding) ? `-${verbEnding}` : null;
     if (!group) return null;
     return tenseData.deconstructions.find(d => d.group === group);
-  }, [tense, verb]);
+  }, [tense, verb, verbForms, irregularityAnalysis]);
 
   const handleSubmit = () => {
     if (!currentForm || inputValue.trim() === '') return;
@@ -279,7 +407,29 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
             <h2>Drill de Terminaciones: {tenseName}</h2>
           </div>
 
-          <div className="verb-lemma">{verb.lemma}</div>
+          <div className="verb-lemma">
+            {verb.lemma}
+            {deconstruction?.isIrregular && (
+              <span className="irregularity-badge">
+                ⚡ {deconstruction.irregularityType}
+              </span>
+            )}
+          </div>
+          
+          {irregularityAnalysis?.hasIrregularities && (
+            <div className="irregularity-explanation">
+              <h4>🎯 Características de este verbo irregular:</h4>
+              <ul>
+                {Array.from(new Set(
+                  irregularityAnalysis.analysis
+                    .filter(a => a.isIrregular && a.explanation)
+                    .map(a => a.explanation)
+                )).map(explanation => (
+                  <li key={explanation}>{explanation}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="person-display">{currentPronoun.text}</div>
 
           <div className="input-container">
@@ -314,14 +464,34 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           )}
 
           <div className="endings-reference">
-            <h4>Terminaciones de Referencia</h4>
+            <h4>{irregularityAnalysis?.hasIrregularities ? 'Formas Irregulares vs Regulares' : 'Terminaciones de Referencia'}</h4>
             <div className="endings-reference-table">
-              {PRONOUNS_DISPLAY.map((pronoun) => (
-                <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''}`}>
-                  <span className="ending-person">{pronoun.text}</span>
-                  <span className="ending-value">{endingFor(deconstruction.group, tense.tense, pronoun.key)}</span>
-                </div>
-              ))}
+              {PRONOUNS_DISPLAY.map((pronoun) => {
+                const actualForm = personToFormMap[pronoun.key];
+                const analysis = irregularityAnalysis?.analysis.find(a => a.person === pronoun.key);
+                const isIrregular = analysis?.isIrregular;
+                
+                return (
+                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular-row' : ''}`}>
+                    <span className="ending-person">{pronoun.text}</span>
+                    {irregularityAnalysis?.hasIrregularities ? (
+                      <div className="form-comparison">
+                        <span className={`actual-form ${isIrregular ? 'irregular' : 'regular'}`}>
+                          {actualForm}
+                          {isIrregular && <span className="irregular-marker">⚡</span>}
+                        </span>
+                        {isIrregular && analysis && (
+                          <span className="expected-regular">
+                            (regular: {analysis.expected})
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="ending-value">{endingFor(deconstruction.group, tense.tense, pronoun.key)}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
