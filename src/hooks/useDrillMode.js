@@ -56,14 +56,15 @@ export function useDrillMode() {
 
   // Generate the next item based on current settings
   const generateNextItem = async (itemToExclude = null, allFormsForRegion, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood) => {
-    console.log('🎯 GENERATE NEXT ITEM - Starting with settings:', {
+    console.log('🔥🎯 GENERATE NEXT ITEM - Starting with settings:', {
       verbType: settings.verbType,
       selectedFamily: settings.selectedFamily,
       practiceMode: settings.practiceMode,
       specificMood: settings.specificMood,
       specificTense: settings.specificTense,
       level: settings.level,
-      itemToExclude: itemToExclude?.lemma
+      itemToExclude: itemToExclude?.lemma,
+      dialect: { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros }
     })
     
     // CRITICAL DEBUG: For specific practice mode
@@ -91,7 +92,7 @@ export function useDrillMode() {
     
     // Define variables in outer scope to avoid scope issues
     const userId = getCurrentUserId()
-    const isSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense
+    const isSpecific = (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && settings.specificMood && settings.specificTense
     const specificMood = isSpecific ? settings.specificMood : null
     const specificTense = isSpecific ? settings.specificTense : null
     
@@ -307,7 +308,9 @@ export function useDrillMode() {
     }
     
     // CRITICAL: Level validation - check if tense is allowed for current level
+    // SKIP level validation for theme-based practice
     const allowsLevel = (form) => {
+      if (settings.practiceMode === 'theme') return true
       const userLevel = settings.level || 'A1'
       const allowed = getAllowedCombosForLevel(userLevel)
       return allowed.has(`${form.mood}|${form.tense}`)
