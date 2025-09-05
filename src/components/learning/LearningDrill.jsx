@@ -141,7 +141,7 @@ function LearningDrill({ eligibleForms, duration, onBack, onFinish, onPhaseCompl
   };
 
   const handleContinue = () => {
-    if (correctStreak >= 5 && onPhaseComplete) {
+    if (correctStreak >= 10 && onPhaseComplete) {
         onPhaseComplete();
     } else {
         // subtle swap animation when moving to next random item

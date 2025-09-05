@@ -86,7 +86,7 @@ const storyData = {
 };
 
 function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue }) {
-  const [visibleSentence, setVisibleSentence] = useState(0);
+  const [visibleSentence, setVisibleSentence] = useState(-1);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const settings = useSettings();
@@ -96,17 +96,24 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const story = storyData[tense.tense];
     if (!story) return;
 
-    const timer = setInterval(() => {
-      setVisibleSentence(prev => {
-        if (prev < story.sentences.length - 1) {
-          return prev + 1;
-        }
-        clearInterval(timer);
-        return prev;
-      });
-    }, 2500);
+    // Start showing sentences after the deconstruction finishes (2s delay)
+    const initialDelay = setTimeout(() => {
+      setVisibleSentence(0); // Show first sentence
+      
+      const timer = setInterval(() => {
+        setVisibleSentence(prev => {
+          if (prev < story.sentences.length - 1) {
+            return prev + 1;
+          }
+          clearInterval(timer);
+          return prev;
+        });
+      }, 1200); // Faster between sentences
 
-    return () => clearInterval(timer);
+      return () => clearInterval(timer);
+    }, 2000);
+
+    return () => clearTimeout(initialDelay);
   }, [tense]);
 
   useEffect(() => {
