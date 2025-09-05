@@ -38,19 +38,20 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
   const { level, region, practiceMode, cameFromTema, specificMood, specificTense } = settings || {}
   // Always enforce dialectal persons
   const allowedPersons = getAllowedPersonsForRegion(region)
-  // Enforce curriculum unless practicing by theme (cameFromTema)
-  const enforceCurriculum = !(practiceMode === 'specific' && cameFromTema === true)
-  const allowedCombos = enforceCurriculum ? getAllowedCombosForLevel(level || 'A1') : null
+  // Enforce curriculum level restrictions unless practicing by theme (cameFromTema)
+  const enforceCurriculumLevel = !(practiceMode === 'specific' && cameFromTema === true) && practiceMode !== 'theme'
+  const allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null
 
   return forms.filter(f => {
     // Persons gate (skip for nonfinite)
     if (f.mood !== 'nonfinite' && allowedPersons && !allowedPersons.has(f.person)) return false
-    // Curriculum gate (combos)
-    if (enforceCurriculum) {
+    // Curriculum level gate (combos) - only when not practicing by theme
+    if (enforceCurriculumLevel) {
       if (!allowedCombos || !allowedCombos.has(`${f.mood}|${f.tense}`)) return false
     }
-    // If specific selection (by level), ensure match unless it's the mixed special cases handled elsewhere
-    if (practiceMode === 'specific' && enforceCurriculum) {
+    // CRITICAL FIX: Always enforce specific mood/tense selection for theme or specific practice
+    // This should work for both 'theme' and 'specific' practice modes
+    if (practiceMode === 'specific' || practiceMode === 'theme') {
       if (specificMood && f.mood !== specificMood) return false
       if (specificTense) {
         if (specificTense === 'impMixed') {

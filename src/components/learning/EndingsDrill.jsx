@@ -84,6 +84,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const [leaving, setLeaving] = useState(false);
   const settings = useSettings();
 
+  // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
+
   const PRONOUNS_DISPLAY = useMemo(() => getPronounsForDialect(settings), [settings.useVoseo, settings.useVosotros]);
 
   useEffect(() => {

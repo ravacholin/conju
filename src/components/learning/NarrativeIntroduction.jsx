@@ -91,6 +91,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const [leaving, setLeaving] = useState(false);
   const settings = useSettings();
 
+  // console.log('NarrativeIntroduction received tense:', tense);
+
   useEffect(() => {
     if (!tense) return;
     const story = storyData[tense.tense];

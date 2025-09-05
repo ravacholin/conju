@@ -138,7 +138,7 @@ function LearnTenseFlow({ onHome }) {
         setExampleVerbs(verbObjects);
       }
       
-      console.log('Starting learning with:', { selectedTense, duration, verbType });
+      console.log('Starting learning with:', { selectedTense, duration, verbType, tenseKey, tenseStoryData });
       setCurrentStep('introduction');
     }
   };

@@ -99,13 +99,15 @@ export function chooseNext({forms, history, currentItem}){
   } = allSettings
   
   // CRITICAL DEBUG: Log ALL settings at start of chooseNext  
-  console.log('🚨 CHOOSENEXT CRITICAL DEBUG - ALL Settings:', {
+  console.log('🔥🚨 CHOOSENEXT CRITICAL DEBUG - ALL Settings:', {
     practiceMode,
     verbType,
     specificMood, 
     specificTense,
     level,
     region,
+    dialect: { useVoseo, useVosotros },
+    formsReceived: forms.length,
     cameFromTema
   })
   
@@ -181,7 +183,7 @@ export function chooseNext({forms, history, currentItem}){
       
       // Level filtering (O(1) with precomputed set)
       // SKIP level filtering SOLO cuando se practica por tema (cameFromTema=true)
-      const isSpecificTopicPractice = practiceMode === 'specific' && cameFromTema === true
+      const isSpecificTopicPractice = (practiceMode === 'specific' && cameFromTema === true) || practiceMode === 'theme'
       if (!isSpecificTopicPractice) {
         // Determine allowed combos: from current block if set, else level
         const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
@@ -207,8 +209,8 @@ export function chooseNext({forms, history, currentItem}){
     }
 
     // Pronoun practice filtering - Subconjunto opcional, nunca puede reintroducir personas bloqueadas por dialecto
-    if (practiceMode === 'specific' && specificMood && specificTense) {
-      // For specific practice, show ALL persons of the selected form
+    if ((practiceMode === 'specific' || practiceMode === 'theme') && specificMood && specificTense) {
+      // For specific/theme practice, show ALL persons of the selected form
       // Don't filter by practicePronoun at all - show variety
     } else {
       // For mixed practice, apply pronoun filtering based on practicePronoun setting
@@ -516,7 +518,7 @@ export function chooseNext({forms, history, currentItem}){
     console.log('🔧 CHOOSENEXT DEBUG - NO ELIGIBLE FORMS! Starting fallback logic...')
     // Failsafe: relax filters progressively to always return something
     // Apply same specific topic practice logic in fallback
-    const isSpecificTopicPractice = practiceMode === 'specific' && specificMood && specificTense
+    const isSpecificTopicPractice = (practiceMode === 'specific' || practiceMode === 'theme') && specificMood && specificTense
     // Optimized: Single pass filtering instead of multiple iterations
     const allowedCombos = isSpecificTopicPractice ? null : getAllowedCombosForLevel(level)
     let fallback = forms.filter(f => {
