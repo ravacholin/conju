@@ -256,6 +256,13 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     const verbObj = exampleVerbs?.find(v => v.lemma === verb);
                     const formMap = getFormMapForVerb(verbObj);
                     const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
+                    const lemmaStem = (v) => {
+                      if (typeof v !== 'string') return '';
+                      if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
+                        return v.slice(0, -2);
+                      }
+                      return v;
+                    };
                     const dialectEndings = pronouns.map(p => {
                       const formVal = formMap[p];
                       const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
@@ -264,7 +271,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     });
                     return (
                       <div key={group} className="deconstruction-item">
-                        <div className="verb-lemma"><span className="lemma-stem">{verb}</span><span className="group-label">{group}</span></div>
+                        <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
                         <div className="verb-deconstruction">
                           <span className="verb-stem">{realStem}-</span>
                           <span className="verb-endings">
