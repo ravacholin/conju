@@ -5,6 +5,20 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import './CommunicativePractice.css';
 
 const chatData = {
+  pres: {
+    title: 'Rutina diaria',
+    initialMessage: '¡Hola! Me gusta conocer la rutina de las personas. ¿Qué haces normalmente durante la semana?',
+    script: [
+      {
+        userKeywords: ['trabajo', 'estudio', 'voy', 'como', 'duermo', 'hago', 'veo', 'hablo', 'vivo', 'tengo', 'soy', 'estoy'],
+        botResponse: '¡Qué interesante! ¿Y en tu tiempo libre? ¿Cómo te gusta relajarte?',
+      },
+      {
+        userKeywords: ['leo', 'escucho', 'veo', 'juego', 'salgo', 'camino', 'cocino', 'escribo', 'practico', 'visito'],
+        botResponse: '¡Me parece genial! Es importante tener actividades que nos gusten. ¡Tienes una rutina muy equilibrada!',
+      },
+    ],
+  },
   pretIndef: {
     title: 'Charla sobre el finde',
     initialMessage: '¡Hola! ¿Qué tal tu fin de semana? ¿Hiciste algo interesante?',
@@ -165,7 +179,10 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       }
     } else {
       // No keyword, give a hint
-      const hint = { author: 'bot', text: `Intenta usar un verbo en ${TENSE_LABELS[tense.tense]} para contarme qué pasó.` };
+      const hintText = tense.tense === 'pres' 
+        ? `Cuéntame usando verbos en presente. Por ejemplo: "Yo trabajo en..." o "Normalmente voy a..."`
+        : `Intenta usar un verbo en ${TENSE_LABELS[tense.tense]} para contarme qué pasó.`;
+      const hint = { author: 'bot', text: hintText };
       newMessages.push(hint);
     }
 
