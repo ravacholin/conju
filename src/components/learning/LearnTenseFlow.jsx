@@ -38,16 +38,16 @@ const storyData = {
   },
   fut: {
     deconstructions: [
-      { group: '-ar', verb: 'visitar' },
-      { group: '-er', verb: 'aprender' },
-      { group: '-ir', verb: 'vivir' },
+      { group: '-ar', verb: 'hablar' },
+      { group: '-er', verb: 'hacer' },
+      { group: '-ir', verb: 'salir' },
     ],
   },
    cond: {
     deconstructions: [
-      { group: '-ar', verb: 'viajar' },
-      { group: '-er', verb: 'comer' },
-      { group: '-ir', verb: 'vivir' },
+      { group: '-ar', verb: 'hablar' },
+      { group: '-er', verb: 'hacer' },
+      { group: '-ir', verb: 'decir' },
     ],
   },
   subjPres: {

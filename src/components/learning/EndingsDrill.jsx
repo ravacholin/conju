@@ -186,14 +186,56 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     return map;
   }, [verbForms]);
 
+  const detectRealStem = (verb, tenseKey) => {
+    if (!verb || !verbForms.length) return null;
+    
+    // For future and conditional, we need to find the common stem among all forms
+    if (tenseKey === 'fut' || tenseKey === 'cond') {
+      const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
+      const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
+      const expectedEndings = tenseKey === 'fut' ? endings : condEndings;
+      
+      // Try to find the stem by looking for common prefix
+      let candidateStem = '';
+      const firstForm = verbForms.find(f => f.person === '1s');
+      if (firstForm) {
+        const value = firstForm.value;
+        // Try different stem lengths
+        for (let i = 1; i < value.length; i++) {
+          const potentialStem = value.slice(0, i);
+          
+          // Check if this stem works for all forms
+          const worksForAll = verbForms.every(form => {
+            const personIndex = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'].indexOf(form.person);
+            if (personIndex === -1) return true; // skip unknown persons
+            const expectedEnding = expectedEndings[personIndex];
+            return form.value === potentialStem + expectedEnding;
+          });
+          
+          if (worksForAll) {
+            candidateStem = potentialStem;
+            break;
+          }
+        }
+      }
+      return candidateStem || verb.lemma;
+    }
+    
+    // For other tenses, use simpler logic or fallback to lemma stem
+    return verb.lemma.slice(0, -2); // remove -ar/-er/-ir
+  };
+
   const endingFor = (group, tenseKey, pronounKey) => {
     const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
     const idx = baseOrder.indexOf(pronounKey === '2s_vos' ? '2s_tu' : pronounKey);
     const fallback = deconstruction?.endings?.[idx] || '';
     const formVal = personToFormMap[pronounKey];
-    const stem = deconstruction?.stem || (verb?.lemma?.replace(/(ar|er|ir)$/,'')) || '';
-    if (formVal && stem && formVal.startsWith(stem)) {
-      return formVal.slice(stem.length);
+    
+    // Use intelligent stem detection instead of hardcoded stems
+    const detectedStem = detectRealStem(verb, tenseKey);
+    
+    if (formVal && detectedStem && formVal.startsWith(detectedStem)) {
+      return formVal.slice(detectedStem.length);
     }
     return fallback;
   };

@@ -46,27 +46,27 @@ const storyData = {
   fut: {
     title: 'Planes para el futuro',
     sentences: [
-      { text: 'Mañana, __visitaré__ a mis abuelos.', verb: 'visitaré' },
-      { text: 'Pronto __aprenderemos__ a programar.', verb: 'aprenderemos' },
-      { text: 'La gente __vivirá__ en Marte.', verb: 'vivirá' },
+      { text: 'Mañana, __hablaré__ con mi jefe.', verb: 'hablaré' },
+      { text: 'Pronto __haré__ mi tarea.', verb: 'haré' },
+      { text: 'Después __saldré__ con mis amigos.', verb: 'saldré' },
     ],
     deconstructions: [
-      { group: '-ar', verb: 'visitar', stem: 'visitar', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
-      { group: '-er', verb: 'aprender', stem: 'aprender', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
-      { group: '-ir', verb: 'vivir', stem: 'vivir', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+      { group: '-ar', verb: 'hablar', stem: 'hablar', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+      { group: '-er', verb: 'hacer', stem: 'har', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
+      { group: '-ir', verb: 'salir', stem: 'saldr', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
     ],
   },
   cond: {
     title: 'Un mundo ideal',
     sentences: [
-      { text: 'Si tuviera tiempo, __viajaría__ por el mundo.', verb: 'viajaría' },
-      { text: 'Nosotros __compraríamos__ una casa en la playa.', verb: 'compraríamos' },
-      { text: '¿Tú qué __harías__ con un millón de dólares?', verb: 'harías' },
+      { text: 'Si tuviera tiempo, __hablaría__ con mi familia más.', verb: 'hablaría' },
+      { text: 'Nosotros __haríamos__ un viaje increíble.', verb: 'haríamos' },
+      { text: '¿Tú qué __dirías__ en esa situación?', verb: 'dirías' },
     ],
     deconstructions: [
-      { group: '-ar', verb: 'viajar', stem: 'viajar', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
-      { group: '-er', verb: 'comer', stem: 'comer', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
-      { group: '-ir', verb: 'vivir', stem: 'vivir', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-ar', verb: 'hablar', stem: 'hablar', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-er', verb: 'hacer', stem: 'har', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
+      { group: '-ir', verb: 'decir', stem: 'dir', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
     ],
   },
   subjPres: {
@@ -170,9 +170,54 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     return map;
   };
 
-  const endingFromForm = (formValue, stem, fallback) => {
-    if (typeof formValue === 'string' && formValue.startsWith(stem)) {
-      return formValue.slice(stem.length);
+  const detectRealStem = (verbObj, tense, mood) => {
+    if (!verbObj) return null;
+    const para = verbObj.paradigms?.find(p => p.forms?.some(f => f.mood === mood && f.tense === tense));
+    if (!para) return null;
+    
+    const forms = para.forms.filter(f => f.mood === mood && f.tense === tense);
+    if (forms.length === 0) return null;
+    
+    // For future and conditional, we need to find the common stem among all forms
+    if (tense === 'fut' || tense === 'cond') {
+      const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
+      const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
+      const expectedEndings = tense === 'fut' ? endings : condEndings;
+      
+      // Try to find the stem by looking for common prefix
+      let candidateStem = '';
+      const firstForm = forms.find(f => f.person === '1s');
+      if (firstForm) {
+        const value = firstForm.value;
+        // Try different stem lengths
+        for (let i = 1; i < value.length; i++) {
+          const potentialStem = value.slice(0, i);
+          const potentialEnding = value.slice(i);
+          
+          // Check if this stem works for all forms
+          const worksForAll = forms.every(form => {
+            const personIndex = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'].indexOf(form.person);
+            if (personIndex === -1) return true; // skip unknown persons
+            const expectedEnding = expectedEndings[personIndex];
+            return form.value === potentialStem + expectedEnding;
+          });
+          
+          if (worksForAll) {
+            candidateStem = potentialStem;
+            break;
+          }
+        }
+      }
+      return candidateStem || verbObj.lemma;
+    }
+    
+    // For other tenses, use simpler logic or fallback to lemma
+    return verbObj.lemma.slice(0, -2); // remove -ar/-er/-ir
+  };
+
+  const endingFromForm = (formValue, detectedStem, fallback) => {
+    if (typeof formValue === 'string' && detectedStem && formValue.startsWith(detectedStem)) {
+      return formValue.slice(detectedStem.length);
     }
     return fallback || '';
   };
@@ -208,17 +253,18 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     const pronouns = pronounsForDialect();
                     const verbObj = exampleVerbs?.find(v => v.lemma === verb);
                     const formMap = getFormMapForVerb(verbObj);
+                    const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const dialectEndings = pronouns.map(p => {
                       const formVal = formMap[p];
                       const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
                       const base = endings?.[baseOrder.indexOf(p)] || '';
-                      return endingFromForm(formVal, stem, base);
+                      return endingFromForm(formVal, realStem, base);
                     });
                     return (
                       <div key={group} className="deconstruction-item">
-                        <div className="verb-lemma"><span className="lemma-stem">{stem}</span><span className="group-label">{group}</span></div>
+                        <div className="verb-lemma"><span className="lemma-stem">{realStem}</span><span className="group-label">{group}</span></div>
                         <div className="verb-deconstruction">
-                          <span className="verb-stem">{stem}-</span>
+                          <span className="verb-stem">{realStem}-</span>
                           <span className="verb-endings">
                             <span className="ending-carousel">
                               {dialectEndings.map((ending, idx) => (
