@@ -407,14 +407,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
             <h2>Drill de Terminaciones: {tenseName}</h2>
           </div>
 
-          <div className="verb-lemma">
-            {verb.lemma}
-            {deconstruction?.isIrregular && (
-              <span className="irregularity-badge" aria-label="verbo irregular">
-                Irregular: {deconstruction.irregularityType}
-              </span>
-            )}
-          </div>
+          <div className="verb-lemma">{verb.lemma}</div>
           
           {irregularityAnalysis?.hasIrregularities && (
             <div className="irregularity-explanation" role="note">
