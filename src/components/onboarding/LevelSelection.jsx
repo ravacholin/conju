@@ -95,7 +95,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           title="Practicar temas específicos (presente, subjuntivo, etc.)"
         >
           <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
-          <p>Elegí un tiemo o modo verbal</p>
+          <p>Practicá un tiempo específico</p>
           <p className="example">Presente, subjuntivo, imperativo, etc.</p>
         </ClickableCard>
         
