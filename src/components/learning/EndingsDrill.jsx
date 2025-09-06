@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { categorizeVerb } from '../../lib/data/irregularFamilies.js';
@@ -391,6 +392,24 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
       }
       return <span className="correct-answer-display">{correctAnswer}</span>;
   }
+
+  // Highlight irregular fragments by diffing expected regular vs actual
+  const renderWithHighlights = (actual, expected) => {
+    if (!actual || !expected) return actual;
+    // If equal ignoring accents, avoid highlighting
+    const strip = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (strip(actual) === strip(expected)) return actual;
+    const parts = diffChars(expected, actual);
+    return parts.map((p, idx) => {
+      if (p.added) {
+        return <span key={idx} className="irreg-frag">{p.value}</span>;
+      }
+      if (p.removed) {
+        return null; // do not render deletions
+      }
+      return <span key={idx}>{p.value}</span>;
+    });
+  };
   
   if (!verb || !deconstruction || !currentPronoun) {
     return (
@@ -466,10 +485,9 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
                     <span className="ending-person">{pronoun.text}</span>
                     {irregularityAnalysis?.hasIrregularities ? (
                       <div className="form-comparison">
-                        <span className="ending-value">{actualForm}</span>
-                        {isIrregular && analysis && (
-                          <span className="expected-regular">regular: {analysis.expected}</span>
-                        )}
+                        <span className="ending-value">
+                          {isIrregular && analysis ? renderWithHighlights(actualForm, analysis.expected) : actualForm}
+                        </span>
                       </div>
                     ) : (
                       <span className="ending-value">{endingFor(deconstruction.group, tense.tense, pronoun.key)}</span>

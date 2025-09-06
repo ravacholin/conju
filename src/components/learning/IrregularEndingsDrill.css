@@ -68,3 +68,7 @@
     padding: 2px 6px;
   }
 }
+.ending-value .irreg-frag {
+  color: #a7c4ff; /* sutil, no saturado */
+  font-weight: 600;
+}
