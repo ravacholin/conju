@@ -940,28 +940,19 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                     const formMap = getFormMapForVerb(verbObj);
                     const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const dialectEndings = pronouns.map(p => {
-                      let formVal = formMap[p];
-                      // Fallbacks for voseo when missing explicit 2s_vos form
-                      if (!formVal && p === '2s_vos' && verbObj) {
-                        const para = verbObj.paradigms?.find(q => q.forms?.some(f => f.mood === tense.mood && f.tense === tense.tense));
-                        const tuForm = para?.forms?.find(f => f.mood === tense.mood && f.tense === tense.tense && f.person === '2s_tu');
-                        if (tuForm?.accepts?.vos) {
-                          formVal = tuForm.accepts.vos;
-                        } else if (tuForm?.value) {
-                          // Morphological fallback for present indicative only
-                          if (tense.mood === 'indicative' && tense.tense === 'pres') {
-                            const grp = group?.slice(-2) || (verb?.endsWith('ar') ? 'ar' : verb?.endsWith('er') ? 'er' : 'ir');
-                            if (/as$/.test(tuForm.value)) formVal = tuForm.value.replace(/as$/, 'ás');
-                            else if (/es$/.test(tuForm.value)) {
-                              formVal = grp === 'ir' ? tuForm.value.replace(/es$/, 'ís') : tuForm.value.replace(/es$/, 'és');
-                            }
-                          } else {
-                            formVal = tuForm.value;
-                          }
-                        }
-                      }
                       const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
-                      const base = endings?.[baseOrder.indexOf(p)] || '';
+                      const grp = group?.slice(-2) || (verb?.endsWith('ar') ? 'ar' : verb?.endsWith('er') ? 'er' : 'ir');
+                      const key = p === '2s_vos' ? '2s_tu' : p;
+                      let base = endings?.[baseOrder.indexOf(key)] || '';
+                      // Morphological voseo for present indicative
+                      if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
+                        if (grp === 'ar' && base === 'as') base = 'ás';
+                        else if (grp === 'er' && base === 'es') base = 'és';
+                        else if (grp === 'ir' && base === 'es') base = 'ís';
+                      }
+                      if (base) return base;
+                      // Fallback: derive from actual form if available
+                      const formVal = formMap[p];
                       return endingFromForm(formVal, realStem, base);
                     });
                     return (
