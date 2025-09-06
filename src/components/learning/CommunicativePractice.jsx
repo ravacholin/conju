@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import './CommunicativePractice.css';
 
 const chatData = {
@@ -112,6 +113,18 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
   const [scriptIndex, setScriptIndex] = useState(0);
 
   const exercise = tense ? chatData[tense.tense] : null;
+  
+  // Create a dummy currentItem for progress tracking
+  const currentItem = {
+    id: `communicative-practice-${tense?.tense}`,
+    lemma: 'communicative-practice',
+    tense: tense?.tense,
+    mood: tense?.mood
+  };
+  
+  const { handleResult } = useProgressTracking(currentItem, (result) => {
+    console.log('Communicative practice progress tracking result:', result);
+  });
 
   useEffect(() => {
     if (exercise) {
@@ -156,9 +169,21 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       const botMessage = { author: 'bot', text: currentScriptNode.botResponse };
       newMessages.push(botMessage);
 
-      // --- Analytics Integration ---
+      // Use official progress tracking system
+      await handleResult({
+        correct: true,
+        userAnswer: inputValue,
+        correctAnswer: keywordFound || 'correct usage',
+        hintsUsed: 0,
+        errorTags: [],
+        latencyMs: 0, // Not applicable for chat-based exercise
+        isIrregular: false,
+        itemId: currentItem.id
+      });
+
+      // Keep SRS scheduling for specific verb forms
       if (keywordFound) {
-        const formObject = eligibleForms.find(f => f.value === keywordFound);
+        const formObject = eligibleForms?.find(f => f.value === keywordFound);
         if (formObject) {
           try {
             const userId = getCurrentUserId();
@@ -178,12 +203,24 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
         setScriptIndex(prev => prev + 1);
       }
     } else {
-      // No keyword, give a hint
+      // No keyword, give a hint and track incorrect attempt
       const hintText = tense.tense === 'pres' 
         ? `Cuéntame usando verbos en presente. Por ejemplo: "Yo trabajo en..." o "Normalmente voy a..."`
         : `Intenta usar un verbo en ${TENSE_LABELS[tense.tense]} para contarme qué pasó.`;
       const hint = { author: 'bot', text: hintText };
       newMessages.push(hint);
+      
+      // Track incorrect attempt
+      await handleResult({
+        correct: false,
+        userAnswer: inputValue,
+        correctAnswer: currentScriptNode.userKeywords.join(' o '),
+        hintsUsed: 1, // Hint was given
+        errorTags: ['incorrect_tense'],
+        latencyMs: 0,
+        isIrregular: false,
+        itemId: currentItem.id
+      });
     }
 
     setMessages(newMessages);

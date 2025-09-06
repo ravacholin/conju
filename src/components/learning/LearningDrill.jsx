@@ -26,13 +26,14 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   const [sessionState, setSessionState] = useState('active'); // active | finished
   const [correctStreak, setCorrectStreak] = useState(0);
   
-  const [points, setPoints] = useState(0);
+  // Removed custom points system - now using official progress tracking
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [responseTimes, setResponseTimes] = useState([]);
   const [startTime, setStartTime] = useState(null);
   const [errorPatterns, setErrorPatterns] = useState({});
   const [showStreakAnimation, setShowStreakAnimation] = useState(false);
+  const [sessionStats, setSessionStats] = useState({ points: 0, streakCount: 0 });
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -40,9 +41,17 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   const [swapAnim, setSwapAnim] = useState(false);
   const settings = useSettings();
 
-  const { handleResult } = useProgressTracking(currentItem, (result) => {
-    // Handle result from progress tracking
+  const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {
+    // Update local session stats based on progress tracking
     console.log('Progress tracking result:', result);
+    if (result.correct) {
+      setSessionStats(prev => ({
+        points: prev.points + (result.isIrregular ? 15 : 10),
+        streakCount: prev.streakCount + 1
+      }));
+    } else {
+      setSessionStats(prev => ({ ...prev, streakCount: 0 }));
+    }
   });
 
   useEffect(() => {
@@ -55,21 +64,19 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   }, [duration]);
 
   const generateNextItem = React.useCallback(() => {
-    // Configure settings for learning session  
+    // Get current settings WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
     
-    // For irregular practice, we need to set verbType to 'irregular' AND
-    // cycle through families for variety
+    // For irregular practice, cycle through families for variety
     let selectedFamilyForGenerator = null;
     if (selectedFamilies && selectedFamilies.length > 0) {
-      // Instead of random, cycle through families to ensure variety
       const familyIndex = (totalAttempts || 0) % selectedFamilies.length;
       const learningFamilyId = selectedFamilies[familyIndex];
-      // CRÍTICO: Convertir familia pedagógica a antigua para el generator
       selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
     }
     
-    const learningSettings = {
+    // Create temporary settings object for this learning session
+    const temporarySettings = {
       ...currentSettings,
       practiceMode: 'specific', 
       specificMood: tense?.mood,
@@ -79,20 +86,26 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       cameFromTema: false
     };
     
-    console.log('🎯 Learning settings:', learningSettings);
+    console.log('🎯 Temporary learning settings:', temporarySettings);
     console.log('🔍 Available families:', selectedFamilies); 
     console.log('🎲 Selected family for generator:', selectedFamilyForGenerator);
     console.log('🎯 Verb type:', verbType);
     
-    // Update settings for this learning session
-    settings.set(learningSettings);
+    // Store original settings to restore later
+    const originalSettings = { ...currentSettings };
     
     try {
+      // Temporarily apply learning settings
+      settings.set(temporarySettings);
+      
       const nextItem = chooseNext({
         forms: Array.from(FORM_LOOKUP_MAP.values()),
         history: [],
         currentItem
       });
+      
+      // IMMEDIATELY restore original settings
+      settings.set(originalSettings);
       
       console.log('📝 Generated item:', nextItem);
       
@@ -108,6 +121,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       }
     } catch (error) {
       console.error('💥 Error generating next item:', error);
+      // Ensure settings are restored even on error
+      settings.set(originalSettings);
       setCurrentItem(null);
     }
   }, [tense, verbType, selectedFamilies, currentItem, settings, totalAttempts]);
@@ -116,22 +131,36 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     generateNextItem();
   }, [generateNextItem]);
 
+  // Track tense drill session and preserve original settings
+  useEffect(() => {
+    // Store original settings on mount
+    const originalSettings = settings.getState ? settings.getState() : settings;
+    console.log('💾 Preserved original settings for learning session:', originalSettings);
+    
+    if (tense?.tense) {
+      handleTenseDrillStarted(tense.tense);
+      console.log(`🔁 Learning drill started for tense: ${tense.tense}`);
+    }
+    
+    // Return cleanup function to track end of session and restore settings
+    return () => {
+      if (tense?.tense) {
+        handleTenseDrillEnded(tense.tense);
+        console.log(`✅ Learning drill ended for tense: ${tense.tense}`);
+      }
+      // Ensure original settings are restored on unmount
+      settings.set(originalSettings);
+      console.log('♾️ Restored original settings on component unmount');
+    };
+  }, [tense?.tense, handleTenseDrillStarted, handleTenseDrillEnded]);
+
   useEffect(() => {
     // enter animation on mount
     const t = setTimeout(() => setEntered(true), 10);
     return () => clearTimeout(t);
   }, []);
 
-  const calculatePoints = (isCorrect, responseTime, isIrregular = false) => {
-    if (!isCorrect) return 0;
-    let basePoints = isIrregular ? 15 : 10;
-    let multiplier = 1;
-    if (responseTime < 2000) multiplier *= 1.5;
-    if (correctStreak >= 5) multiplier *= 1.2;
-    if (correctStreak >= 10) multiplier *= 1.4;
-    if (correctStreak >= 15) multiplier *= 1.6;
-    return Math.round(basePoints * multiplier);
-  };
+  // calculatePoints function removed - now handled by progress tracking system
 
 
   const handleCheckAnswer = async () => {
@@ -156,31 +185,33 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       const newStreak = correctStreak + 1;
       setCorrectStreak(newStreak);
       setCorrectAnswers(prev => prev + 1);
-      const isIrregular = currentItem.type === 'irregular';
-      const earnedPoints = calculatePoints(true, responseTime, isIrregular);
-      setPoints(prev => prev + earnedPoints);
+      
+      // Handle streak animations and tracking
       if (newStreak > 0 && newStreak % 5 === 0) {
         setShowStreakAnimation(true);
         setTimeout(() => setShowStreakAnimation(false), 2000);
+        await handleStreakIncremented();
       }
     } else {
       setResult('incorrect');
       setCorrectStreak(0);
-      // Use grader's error analysis
+      // Use grader's error analysis for session stats
       const errorType = gradeResult.errorTags?.[0] || 'complete_error';
       setErrorPatterns(prev => ({ ...prev, [errorType]: (prev[errorType] || 0) + 1 }));
     }
     
     setTimeout(() => containerRef.current?.focus(), 0);
 
-    // Use the progress tracking system
+    // Use the progress tracking system with complete information
     await handleResult({
       correct: isCorrect,
       userAnswer,
       correctAnswer: currentItem.value,
       hintsUsed: 0,
       errorTags: gradeResult.errorTags || [],
-      latencyMs: responseTime
+      latencyMs: responseTime,
+      isIrregular: currentItem.type === 'irregular',
+      itemId: currentItem.id
     });
   };
 
@@ -204,7 +235,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     else if (accuracy >= 80) grade = 'B';
     else if (accuracy >= 70) grade = 'C';
     else if (accuracy >= 60) grade = 'D';
-    return { grade, accuracy: Math.round(accuracy), averageTime: Math.round(avgTime / 1000 * 10) / 10, maxStreak: correctStreak, points, totalAttempts, correctAnswers, errorPatterns, recommendations: [] };
+    return { grade, accuracy: Math.round(accuracy), averageTime: Math.round(avgTime / 1000 * 10) / 10, maxStreak: correctStreak, points: sessionStats.points, totalAttempts, correctAnswers, errorPatterns, recommendations: [] };
   };
 
   const handleKeyDown = (e) => {
@@ -251,7 +282,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
           </div>
 
           <div className="chrono-panel">
-            <div className="chrono-item"><div className="chrono-value">{points.toLocaleString()}</div><div className="chrono-label">Puntos</div></div>
+            <div className="chrono-item"><div className="chrono-value">{sessionStats.points.toLocaleString()}</div><div className="chrono-label">Puntos</div></div>
             <div className="chrono-item"><div className="chrono-value streak-value">🔥 <span className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></div><div className="chrono-label">Racha</div></div>
             <div className="chrono-item"><div className="chrono-value">{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</div><div className="chrono-label">Precisión</div></div>
           </div>

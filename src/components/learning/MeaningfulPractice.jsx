@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import './MeaningfulPractice.css';
 
 const timelineData = {
@@ -86,6 +87,18 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [story, setStory] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Create a dummy currentItem for progress tracking
+  const currentItem = {
+    id: `meaningful-practice-${tense?.tense}`,
+    lemma: 'meaningful-practice',
+    tense: tense?.tense,
+    mood: tense?.mood
+  };
+  
+  const { handleResult } = useProgressTracking(currentItem, (result) => {
+    console.log('Meaningful practice progress tracking result:', result);
+  });
 
   // Debug logging
   console.log('MeaningfulPractice received tense:', tense);
@@ -151,14 +164,30 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         });
     }
 
-    if (missing.length === 0) {
+    const isCorrect = missing.length === 0;
+    
+    if (isCorrect) {
       setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
+      
+      // Use official progress tracking system
+      await handleResult({
+        correct: true,
+        userAnswer: story,
+        correctAnswer: foundVerbs.join(', '),
+        hintsUsed: 0,
+        errorTags: [],
+        latencyMs: 0, // Not applicable for this type of exercise
+        isIrregular: false,
+        itemId: currentItem.id
+      });
+      
+      // Keep SRS scheduling for found verbs
       try {
         const userId = getCurrentUserId();
         if (userId) {
           console.log('Analytics: Updating schedule for meaningful practice...');
           for (const verbStr of foundVerbs) {
-            const formObject = eligibleForms.find(f => f.value === verbStr);
+            const formObject = eligibleForms?.find(f => f.value === verbStr);
             if (formObject) {
               await updateSchedule(userId, formObject, true, 0);
               console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
@@ -170,6 +199,18 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
       }
     } else {
       setFeedback({ type: 'incorrect', message: `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}` });
+      
+      // Track incorrect attempt
+      await handleResult({
+        correct: false,
+        userAnswer: story,
+        correctAnswer: missing.join(', '),
+        hintsUsed: 0,
+        errorTags: ['missing_verbs'],
+        latencyMs: 0,
+        isIrregular: false,
+        itemId: currentItem.id
+      });
     }
     
     setIsProcessing(false);
