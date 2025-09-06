@@ -69,22 +69,32 @@ function getRegularEndings(verbEnding, tense) {
 function analyzeIrregularities(verb, actualForms, tense) {
   const lemma = verb.lemma;
   const verbEnding = lemma.slice(-2);
-  const regularStem = getRegularStem(lemma);
+  const stemForTense = (t) => (t === 'fut' || t === 'cond') ? lemma : getRegularStem(lemma);
+  const regularStem = stemForTense(tense);
   const regularEndings = getRegularEndings(verbEnding, tense);
   const families = categorizeVerb(lemma, verb);
-  
-  const pronounOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+
+  const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+  const strip = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normalizePerson = (p) => (p === '2s_vos' ? '2s_tu' : p);
+
   const analysis = [];
-  
-  actualForms.forEach((form, index) => {
-    const expectedRegular = regularStem + regularEndings[index];
+
+  actualForms.forEach((form) => {
+    const normalized = normalizePerson(form.person);
+    const idx = baseOrder.indexOf(normalized);
+    const expectedEnding = idx >= 0 ? regularEndings[idx] : '';
+    const expectedRegular = (regularStem || '') + (expectedEnding || '');
     const actual = form.value;
-    
+
+    // Consider accent-only differences as regular (esp. voseo)
+    const isSameIgnoringAccents = strip(actual) === strip(expectedRegular);
+
+    let isIrregular = actual !== expectedRegular && !isSameIgnoringAccents;
     let irregularity = null;
     let explanation = '';
-    
-    if (actual !== expectedRegular) {
-      // Detect type of irregularity
+
+    if (isIrregular) {
       if (families.includes('G_VERBS') && form.person === '1s' && actual.endsWith('go')) {
         irregularity = 'yo_irregular';
         explanation = 'Irregular en YO: añade -g-';
@@ -106,17 +116,17 @@ function analyzeIrregularities(verb, actualForms, tense) {
         explanation = 'Forma irregular';
       }
     }
-    
+
     analysis.push({
       person: form.person,
       expected: expectedRegular,
-      actual: actual,
+      actual,
       irregularity,
       explanation,
-      isIrregular: actual !== expectedRegular
+      isIrregular
     });
   });
-  
+
   return {
     verbType: verb.type,
     families,
@@ -409,7 +419,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
 
           <div className="verb-lemma">{verb.lemma}</div>
           
-          {irregularityAnalysis?.hasIrregularities && (
+          {verb?.type === 'irregular' && irregularityAnalysis?.hasIrregularities && (
             <div className="irregularity-explanation" role="note">
               <h4>Irregularidades que debes notar</h4>
               <ul>
