@@ -49,26 +49,17 @@ function selectAppropriateVerbs(verbType, selectedFamilies, tense) {
     // Seleccionar verbos paradigmáticos de las familias elegidas
     const selectedVerbs = [];
     
-    // Tomar hasta 3 verbos de las familias seleccionadas
+    // Para cada familia, tomar los primeros 3 verbos únicos
     for (const familyId of selectedFamilies) {
       const familyVerbs = PARADIGMATIC_VERBS[familyId] || [];
-      // Agregar el primer verbo de cada familia
-      if (familyVerbs.length > 0 && selectedVerbs.length < 3) {
-        selectedVerbs.push(familyVerbs[0]);
-      }
-    }
-    
-    // Completar con verbos adicionales si es necesario
-    while (selectedVerbs.length < 3) {
-      for (const familyId of selectedFamilies) {
-        const familyVerbs = PARADIGMATIC_VERBS[familyId] || [];
-        for (const verb of familyVerbs) {
-          if (!selectedVerbs.includes(verb) && selectedVerbs.length < 3) {
-            selectedVerbs.push(verb);
-          }
+      for (const verb of familyVerbs) {
+        if (!selectedVerbs.includes(verb) && selectedVerbs.length < 3) {
+          selectedVerbs.push(verb);
         }
       }
-      break; // Evitar bucle infinito
+      
+      // Si ya tenemos 3 verbos, parar
+      if (selectedVerbs.length >= 3) break;
     }
     
     return selectedVerbs.slice(0, 3);
