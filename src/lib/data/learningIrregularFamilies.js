@@ -16,7 +16,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Irregulares en YO (presente)',
     description: 'Verbos muy frecuentes que añaden -g en la primera persona: tengo, pongo, hago, salgo',
     paradigmatic: 'tener',
-    examples: ['tener', 'poner', 'hacer', 'salir', 'venir', 'valer', 'caer'], // Verbos más frecuentes con -g
+    examples: ['tener', 'poner', 'hacer', 'salir', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'seguir', 'conseguir', 'perseguir', 'distinguir'], // Más variedad para drills libres
     pattern: 'tener: tengo, tienes, tiene, tenemos, tenéis, tienen (solo YO cambia)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
@@ -30,7 +30,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Verbos que diptongan',
     description: 'Cambios vocálicos sistemáticos: o→ue (poder), e→ie (querer), e→i (pedir), u→ue (jugar)',
     paradigmatic: 'poder',
-    examples: ['poder', 'querer', 'pedir', 'jugar', 'volver', 'pensar', 'servir'], // Incluir jugar con los diptongos
+    examples: ['poder', 'querer', 'pedir', 'jugar', 'volver', 'pensar', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'dormir', 'morir'], // Mucha más variedad: o→ue, e→ie, e→i, u→ue
     pattern: 'poder: puedo, puedes, puede, podemos, podéis, pueden (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
@@ -44,7 +44,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Muy irregulares',
     description: 'Verbos súper frecuentes con formas completamente irregulares: ser, estar, ir, dar',
     paradigmatic: 'ser',
-    examples: ['ser', 'estar', 'ir', 'dar'], // Los 4 más útiles y frecuentes
+    examples: ['ser', 'estar', 'ir', 'dar', 'saber', 'caber', 'haber'], // Incluir todos los muy irregulares fundamentales
     pattern: 'ser: soy, eres, es, somos, sois, son (formas únicas que hay que memorizar)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A1', // Los más básicos y frecuentes
@@ -90,7 +90,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Muy irregulares del pretérito',
     description: 'Verbos frecuentes con raíces completamente irregulares en pretérito: estar, querer, hacer',
     paradigmatic: 'estar',
-    examples: ['estar', 'querer', 'hacer', 'tener', 'poder', 'poner', 'venir'], // Pretéritos fuertes principales
+    examples: ['estar', 'querer', 'hacer', 'tener', 'poder', 'poner', 'venir', 'saber', 'caber', 'haber', 'andar', 'conducir', 'producir', 'traducir', 'reducir', 'introducir', 'decir', 'traer'], // Muchos más pretéritos fuertes para variedad
     pattern: 'estar: estuve, estuviste, estuvo (raíz nueva + terminaciones sin acento)',
     affectedTenses: ['pretIndef', 'subjImpf'],
     level: 'B1',
@@ -104,7 +104,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Irregulares en 3ª persona',
     description: 'Verbos que cambian solo en 3ª persona: e→i (pidió), o→u (durmió), i→y (leyó)',
     paradigmatic: 'pedir',
-    examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír'], // Ejemplos de cada cambio
+    examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír', 'repetir', 'competir', 'impedir', 'medir', 'seguir', 'conseguir', 'perseguir', 'vestir', 'mentir', 'sentir', 'convertir', 'divertir', 'advertir', 'sugerir', 'referir', 'construir', 'destruir', 'instruir', 'sustituir', 'distribuir', 'contribuir', 'huir', 'incluir', 'concluir', 'excluir', 'influir', 'creer', 'poseer', 'proveer', 'caer', 'traer'], // Muchos más verbos e→i, o→u, i→y para mayor variedad
     pattern: 'pedir: pedí, pediste, pidió, pedimos, pedisteis, pidieron (solo 3ª persona cambia)',
     affectedTenses: ['pretIndef', 'ger'],
     level: 'B1',
@@ -168,6 +168,13 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'venir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
   'valer': ['LEARNING_YO_G_PRESENT'],
   'caer': ['LEARNING_YO_G_PRESENT'],
+  'traer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'oír': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
+  'decir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'seguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
+  'conseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'], 
+  'perseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
+  'distinguir': ['LEARNING_YO_G_PRESENT'],
   // Verbos compuestos también tienen -g
   'obtener': ['LEARNING_YO_G_PRESENT'],
   'mantener': ['LEARNING_YO_G_PRESENT'],
@@ -207,6 +214,37 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'repetir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   'seguir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   
+  // Más verbos e→i 
+  'competir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'impedir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'medir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'reír': ['LEARNING_DIPHTHONGS'],
+  'freír': ['LEARNING_DIPHTHONGS'],
+  'sonreír': ['LEARNING_DIPHTHONGS'],
+  'vestir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'elegir': ['LEARNING_DIPHTHONGS'],
+  'corregir': ['LEARNING_DIPHTHONGS'],
+  
+  // Más verbos o→ue
+  'mostrar': ['LEARNING_DIPHTHONGS'],
+  'costar': ['LEARNING_DIPHTHONGS'],
+  'sonar': ['LEARNING_DIPHTHONGS'],
+  'volar': ['LEARNING_DIPHTHONGS'],
+  
+  // Más verbos e→ie
+  'despertar': ['LEARNING_DIPHTHONGS'],
+  'comenzar': ['LEARNING_DIPHTHONGS'],
+  'sentarse': ['LEARNING_DIPHTHONGS'],
+  'acostarse': ['LEARNING_DIPHTHONGS'],
+  'defender': ['LEARNING_DIPHTHONGS'],
+  'encender': ['LEARNING_DIPHTHONGS'],
+  'mentir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'convertir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'divertir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'advertir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'referir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'sugerir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  
   // u→ue (incluido en diptongos)
   'jugar': ['LEARNING_DIPHTHONGS'],
 
@@ -217,14 +255,38 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
   'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'], 
   'dar': ['LEARNING_VERY_IRREGULAR'],
+  'saber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'caber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'haber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
 
   // ========================================
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
   
-  // Verbos con hiatos (solo pretérito)
+  // Verbos de pretérito fuerte adicionales
+  'andar': ['LEARNING_PRET_MUY_IRREGULARES'],
+  'conducir': ['LEARNING_PRET_MUY_IRREGULARES'],
+  'producir': ['LEARNING_PRET_MUY_IRREGULARES'],
+  'traducir': ['LEARNING_PRET_MUY_IRREGULARES'],
+  'reducir': ['LEARNING_PRET_MUY_IRREGULARES'],
+  'introducir': ['LEARNING_PRET_MUY_IRREGULARES'],
+  
+  // Verbos con hiatos y otros cambios en 3ª persona
+  'construir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'destruir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'instruir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'sustituir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'distribuir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'contribuir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'huir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'incluir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'concluir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'excluir': ['LEARNING_PRET_3AS_PERSONAS'],
+  'influir': ['LEARNING_PRET_3AS_PERSONAS'],
   'leer': ['LEARNING_PRET_3AS_PERSONAS'],
-  'oír': ['LEARNING_PRET_3AS_PERSONAS'],
+  'creer': ['LEARNING_PRET_3AS_PERSONAS'],
+  'poseer': ['LEARNING_PRET_3AS_PERSONAS'],
+  'proveer': ['LEARNING_PRET_3AS_PERSONAS'],
   
   // Ortográficos
   'buscar': ['LEARNING_ORTH_CAR'],
