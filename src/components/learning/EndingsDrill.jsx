@@ -498,7 +498,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
             </div>
           </div>
 
-          <div className="round-counter">Restantes en la cola: {drillQueue.length - currentIndex}</div>
+          <div className="round-counter">Faltan: {drillQueue.length - currentIndex}</div>
 
         </div>
       </div>
