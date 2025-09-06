@@ -346,13 +346,43 @@ function generateIrregularSentences(verbObjects, tense, template, irregularityTy
       );
       break;
       
-    case 'yo-irregular':
-      sentences.push(
-        { text: `Yo __${getConjugation(verbObjects[0], tense, '1s')}__ cosas importantes.`, verb: getConjugation(verbObjects[0], tense, '1s') },
-        { text: `También __${getConjugation(verbObjects[1], tense, '1s')}__ nuevas ideas.`, verb: getConjugation(verbObjects[1], tense, '1s') },
-        { text: `Siempre __${getConjugation(verbObjects[2], tense, '1s')}__ temprano.`, verb: getConjugation(verbObjects[2], tense, '1s') }
-      );
+    case 'yo-irregular': {
+      const complementFor = (lemma) => {
+        switch (lemma) {
+          case 'tener': return 'una idea';
+          case 'conocer': return 'gente nueva';
+          case 'poner': return 'la mesa';
+          case 'salir': return 'temprano';
+          case 'hacer': return 'ejercicio';
+          case 'venir': return 'temprano';
+          case 'traer': return 'café';
+          case 'decir': return 'la verdad';
+          case 'oír': return 'música';
+          case 'conducir': return 'despacio';
+          case 'traducir': return 'bien';
+          case 'producir': return 'resultados';
+          case 'vencer': return 'mis miedos';
+          case 'ejercer': return 'mi profesión';
+          case 'proteger': return 'a mi familia';
+          case 'elegir': return 'bien';
+          case 'distinguir': return 'colores';
+          case 'seguir': return 'el plan';
+          default: return '';
+        }
+      };
+
+      const pickSent = (v) => {
+        const conj = getConjugation(v, tense, '1s');
+        const comp = complementFor(v?.lemma);
+        return {
+          text: comp ? `Yo __${conj}__ ${comp}.` : `Yo __${conj}__.`,
+          verb: conj
+        };
+      };
+
+      verbObjects.slice(0, 3).forEach(v => sentences.push(pickSent(v)));
       break;
+    }
       
     case 'yo-irregular-subjunctive':
       sentences.push(
