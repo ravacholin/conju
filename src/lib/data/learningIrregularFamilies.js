@@ -84,18 +84,32 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     pedagogicalNote: 'Solo verbos esenciales. Jugar se enseña aparte por ser único u→ue.'
   },
 
-  // Pretéritos fuertes
-  'LEARNING_PRET_FUERTE': {
-    id: 'LEARNING_PRET_FUERTE',
-    name: 'Pretéritos fuertes básicos',
-    description: 'Solo los pretéritos fuertes más esenciales',
-    paradigmatic: 'tener',
-    examples: ['tener', 'estar'],
-    pattern: 'tener: tuve, tuviste, tuvo (sin acentos en 1ª y 3ª)',
+  // Pretéritos muy irregulares (raíces completamente nuevas)
+  'LEARNING_PRET_MUY_IRREGULARES': {
+    id: 'LEARNING_PRET_MUY_IRREGULARES',
+    name: 'Muy irregulares del pretérito',
+    description: 'Verbos frecuentes con raíces completamente irregulares en pretérito: estar, querer, hacer',
+    paradigmatic: 'estar',
+    examples: ['estar', 'querer', 'hacer', 'tener', 'poder', 'poner', 'venir'], // Pretéritos fuertes principales
+    pattern: 'estar: estuve, estuviste, estuvo (raíz nueva + terminaciones sin acento)',
     affectedTenses: ['pretIndef', 'subjImpf'],
     level: 'B1',
     concept: 'strong_preterite',
-    pedagogicalNote: 'Solo los más frecuentes para entender que existe el patrón.'
+    pedagogicalNote: 'Verbos muy frecuentes con raíces irregulares: estuv-, quis-, hic-, tuv-, pud-, pus-, vin-.'
+  },
+
+  // Irregulares solo en terceras personas (cambios vocálicos)
+  'LEARNING_PRET_3AS_PERSONAS': {
+    id: 'LEARNING_PRET_3AS_PERSONAS', 
+    name: 'Irregulares en 3ª persona',
+    description: 'Verbos que cambian solo en 3ª persona: e→i (pidió), o→u (durmió), i→y (leyó)',
+    paradigmatic: 'pedir',
+    examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír'], // Ejemplos de cada cambio
+    pattern: 'pedir: pedí, pediste, pidió, pedimos, pedisteis, pidieron (solo 3ª persona cambia)',
+    affectedTenses: ['pretIndef', 'ger'],
+    level: 'B1',
+    concept: 'third_person_changes',
+    pedagogicalNote: 'Cambios vocálicos limitados a 3ª persona singular y plural: e→i, o→u, i→y en hiato.'
   },
 
 
@@ -147,11 +161,11 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // ========================================
   // 1) IRREGULARES EN YO (presente con -g)
   // ========================================
-  'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_FUERTE'],
-  'poner': ['LEARNING_YO_G_PRESENT'],
-  'hacer': ['LEARNING_YO_G_PRESENT'],
+  'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'poner': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'hacer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
   'salir': ['LEARNING_YO_G_PRESENT'],
-  'venir': ['LEARNING_YO_G_PRESENT'],
+  'venir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
   'valer': ['LEARNING_YO_G_PRESENT'],
   'caer': ['LEARNING_YO_G_PRESENT'],
   // Verbos compuestos también tienen -g
@@ -171,27 +185,27 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // e→ie
   'pensar': ['LEARNING_DIPHTHONGS'],
   'cerrar': ['LEARNING_DIPHTHONGS'],
-  'querer': ['LEARNING_DIPHTHONGS'],
+  'querer': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES'],
   'empezar': ['LEARNING_DIPHTHONGS'],
   'entender': ['LEARNING_DIPHTHONGS'],
   'perder': ['LEARNING_DIPHTHONGS'],
   'sentir': ['LEARNING_DIPHTHONGS'],
-  'preferir': ['LEARNING_DIPHTHONGS'],
+  'preferir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   
   // o→ue  
-  'poder': ['LEARNING_DIPHTHONGS'],
+  'poder': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES'],
   'volver': ['LEARNING_DIPHTHONGS'],
   'contar': ['LEARNING_DIPHTHONGS'],
   'encontrar': ['LEARNING_DIPHTHONGS'],
   'recordar': ['LEARNING_DIPHTHONGS'],
-  'dormir': ['LEARNING_DIPHTHONGS'],
-  'morir': ['LEARNING_DIPHTHONGS'],
+  'dormir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'morir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   
   // e→i (verbos -ir)
-  'pedir': ['LEARNING_DIPHTHONGS'],
-  'servir': ['LEARNING_DIPHTHONGS'],
-  'repetir': ['LEARNING_DIPHTHONGS'],
-  'seguir': ['LEARNING_DIPHTHONGS'],
+  'pedir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'servir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'repetir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
+  'seguir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   
   // u→ue (incluido en diptongos)
   'jugar': ['LEARNING_DIPHTHONGS'],
@@ -200,13 +214,17 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // 3) MUY IRREGULARES (formas completamente irregulares)
   // ========================================
   'ser': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'],
-  'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_FUERTE'],
+  'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
   'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'], 
   'dar': ['LEARNING_VERY_IRREGULAR'],
 
   // ========================================
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
+  
+  // Verbos con hiatos (solo pretérito)
+  'leer': ['LEARNING_PRET_3AS_PERSONAS'],
+  'oír': ['LEARNING_PRET_3AS_PERSONAS'],
   
   // Ortográficos
   'buscar': ['LEARNING_ORTH_CAR'],
@@ -237,10 +255,13 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   // Familias para otros tiempos (mantenidas)
   'ORTH_CAR': 'LEARNING_ORTH_CAR',
   'ORTH_GAR': 'LEARNING_ORTH_GAR',
-  'PRET_UV': 'LEARNING_PRET_FUERTE',
-  'PRET_U': 'LEARNING_PRET_FUERTE',
-  'PRET_I': 'LEARNING_PRET_FUERTE',
-  'PRET_J': 'LEARNING_PRET_FUERTE',
+  'PRET_UV': 'LEARNING_PRET_MUY_IRREGULARES',
+  'PRET_U': 'LEARNING_PRET_MUY_IRREGULARES',
+  'PRET_I': 'LEARNING_PRET_MUY_IRREGULARES',
+  'PRET_J': 'LEARNING_PRET_MUY_IRREGULARES',
+  'E_I_PRET': 'LEARNING_PRET_3AS_PERSONAS',
+  'O_U_PRET': 'LEARNING_PRET_3AS_PERSONAS',
+  'HIATUS_Y': 'LEARNING_PRET_3AS_PERSONAS',
   'IMPERFECT_IRREG': 'LEARNING_IMPF_IRREGULAR'
 }
 
@@ -255,7 +276,8 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
   // Familias para otros tiempos (mantenidas)
   'LEARNING_ORTH_CAR': 'ORTH_CAR',
   'LEARNING_ORTH_GAR': 'ORTH_GAR', 
-  'LEARNING_PRET_FUERTE': 'PRET_UV',
+  'LEARNING_PRET_MUY_IRREGULARES': 'PRET_UV', // usar la más común como representante
+  'LEARNING_PRET_3AS_PERSONAS': 'E_I_PRET', // usar la más común como representante
   'LEARNING_IMPF_IRREGULAR': 'IMPERFECT_IRREG'
 }
 

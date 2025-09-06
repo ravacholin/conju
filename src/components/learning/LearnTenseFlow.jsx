@@ -375,6 +375,21 @@ function LearnTenseFlow({ onHome }) {
       };
     }
     
+    // Para PRETÉRITO INDEFINIDO: mostrar las 2 categorías principales
+    else if (selectedTense.tense === 'pretIndef') {
+      irregularCategories['pret_muy_irregulares'] = {
+        name: 'Muy irregulares',
+        description: 'Verbos frecuentes con raíces completamente nuevas: estuve, quise, hice',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_PRET_MUY_IRREGULARES')
+      };
+      
+      irregularCategories['pret_3as_personas'] = {
+        name: 'Irregulares en 3ª persona',
+        description: 'Solo cambian en 3ª persona: pidió/pidieron, durmió/durmieron, leyó/leyeron',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_PRET_3AS_PERSONAS')
+      };
+    }
+    
     // Para IMPERFECTO: mostrar los 3 irregulares
     else if (selectedTense.tense === 'impf') {
       irregularCategories['imperfect'] = {

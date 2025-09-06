@@ -28,8 +28,9 @@ const PARADIGMATIC_VERBS = {
   'LEARNING_ORTH_CAR': ['buscar', 'sacar'],
   'LEARNING_ORTH_GAR': ['llegar', 'pagar'],
   
-  // Pretéritos fuertes
-  'LEARNING_PRET_FUERTE': ['tener', 'estar'],
+  // Pretéritos irregulares
+  'LEARNING_PRET_MUY_IRREGULARES': ['estar', 'querer', 'hacer', 'tener', 'poder'],
+  'LEARNING_PRET_3AS_PERSONAS': ['pedir', 'dormir', 'leer', 'preferir', 'servir'],
   
   // Irregulares del imperfecto
   'LEARNING_IMPF_IRREGULAR': ['ser', 'ir', 'ver']
@@ -198,8 +199,10 @@ function determineIrregularityType(familyTypes, tense) {
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
   
-  else if (familyTypes.includes('LEARNING_PRET_FUERTE')) {
-    return 'strong-preterite';
+  else if (familyTypes.includes('LEARNING_PRET_MUY_IRREGULARES')) {
+    return 'preterite-very-irregular';
+  } else if (familyTypes.includes('LEARNING_PRET_3AS_PERSONAS')) {
+    return 'preterite-third-person';
   } else if (familyTypes.some(f => ['LEARNING_ORTH_CAR', 'LEARNING_ORTH_GAR'].includes(f))) {
     return 'orthographic';
   }
@@ -262,6 +265,26 @@ function getIrregularContentTemplate(irregularityType, tense, familyTypes) {
         title: 'Los únicos tres irregulares del imperfecto',
         explanation: 'En el imperfecto, casi todos los verbos son regulares. Solo hay 3 verbos irregulares en todo el español: ser, ir y ver. Sus formas hay que memorizarlas completamente.',
         sentenceTemplate: 'imperfect-irregular'
+      }
+    },
+    
+    // ========================================
+    // FAMILIAS PARA EL PRETÉRITO INDEFINIDO
+    // ========================================
+    
+    'preterite-very-irregular': {
+      pretIndef: {
+        title: 'Muy irregulares del pretérito',
+        explanation: 'Estos verbos frecuentes cambian completamente la raíz en pretérito: estar → estuve, querer → quise, hacer → hice, tener → tuve, poder → pude. Las terminaciones no llevan acento.',
+        sentenceTemplate: 'preterite-very-irregular'
+      }
+    },
+    
+    'preterite-third-person': {
+      pretIndef: {
+        title: 'Irregulares en 3ª persona',
+        explanation: 'Estos verbos solo cambian en 3ª persona singular y plural: pedir → pidió/pidieron, dormir → durmió/durmieron, leer → leyó/leyeron. Las otras personas son regulares.',
+        sentenceTemplate: 'preterite-third-person'
       }
     },
     
@@ -424,6 +447,26 @@ function generateIrregularSentences(verbObjects, tense, template, irregularityTy
       );
       break;
       
+    // ========================================
+    // FAMILIAS PARA EL PRETÉRITO INDEFINIDO
+    // ========================================
+    
+    case 'preterite-very-irregular':
+      sentences.push(
+        { text: `Ayer __${getConjugation(verbObjects[0], tense, '3s')}__ en casa todo el día.`, verb: getConjugation(verbObjects[0], tense, '3s') },
+        { text: `Mi hermana __${getConjugation(verbObjects[1], tense, '3s')}__ estudiar más para el examen.`, verb: getConjugation(verbObjects[1], tense, '3s') },
+        { text: `Ellos __${getConjugation(verbObjects[2], tense, '3p')}__ toda la tarea en una hora.`, verb: getConjugation(verbObjects[2], tense, '3p') }
+      );
+      break;
+      
+    case 'preterite-third-person':
+      sentences.push(
+        { text: `El cliente __${getConjugation(verbObjects[0], tense, '3s')}__ un café y un pastel.`, verb: getConjugation(verbObjects[0], tense, '3s') },
+        { text: `Mi abuelo __${getConjugation(verbObjects[1], tense, '3s')}__ profundamente toda la noche.`, verb: getConjugation(verbObjects[1], tense, '3s') },
+        { text: `María __${getConjugation(verbObjects[2], tense, '3s')}__ el periódico en el desayuno.`, verb: getConjugation(verbObjects[2], tense, '3s') }
+      );
+      break;
+    
     // ========================================
     // CASOS ESPECIALES Y OTROS TIEMPOS (mantenidos)
     // ========================================
@@ -849,10 +892,11 @@ function getIrregularPattern(verb, selectedFamilies) {
   // ========================================
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
+  if (selectedFamilies.includes('LEARNING_PRET_MUY_IRREGULARES')) return 'pretérito muy irregular: raíces nuevas (estuve, quise, hice)';
+  if (selectedFamilies.includes('LEARNING_PRET_3AS_PERSONAS')) return 'irregular en 3ª persona: pidió, durmió, leyó';
   if (selectedFamilies.includes('LEARNING_IMPF_IRREGULAR')) return 'imperfecto irregular: era, iba, veía';
   if (selectedFamilies.includes('LEARNING_ORTH_CAR')) return 'ortográfico: c→qu (busqué)';
   if (selectedFamilies.includes('LEARNING_ORTH_GAR')) return 'ortográfico: g→gu (llegué)';
-  if (selectedFamilies.includes('LEARNING_PRET_FUERTE')) return 'pretérito fuerte (tuve, estuve)';
   
   return 'irregular';
 }
