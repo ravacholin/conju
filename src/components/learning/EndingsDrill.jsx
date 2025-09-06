@@ -410,15 +410,15 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           <div className="verb-lemma">
             {verb.lemma}
             {deconstruction?.isIrregular && (
-              <span className="irregularity-badge">
-                ⚡ {deconstruction.irregularityType}
+              <span className="irregularity-badge" aria-label="verbo irregular">
+                Irregular: {deconstruction.irregularityType}
               </span>
             )}
           </div>
           
           {irregularityAnalysis?.hasIrregularities && (
-            <div className="irregularity-explanation">
-              <h4>🎯 Características de este verbo irregular:</h4>
+            <div className="irregularity-explanation" role="note">
+              <h4>Irregularidades que debes notar</h4>
               <ul>
                 {Array.from(new Set(
                   irregularityAnalysis.analysis
@@ -464,7 +464,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           )}
 
           <div className="endings-reference">
-            <h4>{irregularityAnalysis?.hasIrregularities ? 'Formas Irregulares vs Regulares' : 'Terminaciones de Referencia'}</h4>
+            <h4>{irregularityAnalysis?.hasIrregularities ? 'Formas: irregular vs regular' : 'Terminaciones de referencia'}</h4>
             <div className="endings-reference-table">
               {PRONOUNS_DISPLAY.map((pronoun) => {
                 const actualForm = personToFormMap[pronoun.key];
@@ -478,7 +478,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
                       <div className="form-comparison">
                         <span className={`actual-form ${isIrregular ? 'irregular' : 'regular'}`}>
                           {actualForm}
-                          {isIrregular && <span className="irregular-marker">⚡</span>}
                         </span>
                         {isIrregular && analysis && (
                           <span className="expected-regular">

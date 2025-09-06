@@ -49,6 +49,21 @@ function AppRouter() {
     })
   }, [])
 
+  // Allow deep-linking into modes via query param (e.g., ?mode=learning)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search || '')
+      const mode = params.get('mode')
+      if (mode && ['onboarding','drill','learning','progress'].includes(mode)) {
+        setCurrentMode(mode)
+        const state = { appNav: true, mode, ts: Date.now() }
+        try { window.history.replaceState(state, '') } catch {}
+      }
+    } catch (err) {
+      // ignore URL parsing issues
+    }
+  }, [])
+
   const handleStartPractice = () => {
     console.log('🚀 handleStartPractice called');
     setCurrentMode('drill')

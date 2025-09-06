@@ -82,9 +82,16 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development'
   },
   server: {
-    // Force IPv4 to avoid rare ::1 issues on some setups
-    host: '127.0.0.1',
-    port: 5175,
-    strictPort: false
+    // Bind to all interfaces for reliability; allow localhost and LAN
+    host: true,
+    port: 5173,
+    strictPort: false,
+    open: '/?mode=learning'
+  },
+  preview: {
+    host: true,
+    port: 4173,
+    strictPort: false,
+    open: '/?mode=learning'
   }
 }))

@@ -49,7 +49,8 @@
 .person-display {
     font-size: 1.5rem;
     font-weight: 500;
-    color: var(--accent-green);
+    color: var(--text);
+    opacity: 0.9;
     margin-bottom: 1.5rem;
     animation: slideInFromRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
 }
@@ -84,9 +85,9 @@
 }
 
 .result.correct .correct-answer-display .ending-highlight {
-    color: var(--accent-orange);
-    font-weight: bold;
-    animation: flash-success 0.8s ease;
+    color: var(--text);
+    font-weight: 600;
+    border-bottom: 1px dotted rgba(255,255,255,0.25);
 }
 
 @keyframes flash-success {
@@ -192,9 +193,9 @@
 
 .ending-row.highlighted {
     opacity: 1;
-    background: rgba(142, 180, 227, 0.08);
+    background: rgba(255, 255, 255, 0.06);
     transform: scale(1.02) translateX(2px);
-    box-shadow: 0 2px 8px rgba(142, 180, 227, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .ending-person {
@@ -209,7 +210,7 @@
 
 .ending-row.highlighted .ending-person,
 .ending-row.highlighted .ending-value {
-    color: var(--accent-blue);
+    color: var(--text);
 }
 
 .round-counter {
@@ -218,31 +219,15 @@
     margin-top: 1rem;
 }
 
-/* Subtle group accent tint to help notice -ar -> -er -> -ir changes */
-.learning-drill.group-ar {
-    box-shadow: 0 0 0 1px rgba(40, 167, 69, 0.18) inset, 0 12px 48px rgba(0,0,0,0.4);
-    border: 1px solid rgba(40, 167, 69, 0.25);
-}
-.learning-drill.group-er {
-    box-shadow: 0 0 0 1px rgba(253, 126, 20, 0.18) inset, 0 12px 48px rgba(0,0,0,0.4);
-    border: 1px solid rgba(253, 126, 20, 0.25);
-}
+/* Monochrome container; no color tint per group */
+.learning-drill.group-ar,
+.learning-drill.group-er,
 .learning-drill.group-ir {
-    box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.18) inset, 0 12px 48px rgba(0,0,0,0.4);
-    border: 1px solid rgba(167, 139, 250, 0.25);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 12px 48px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Accent ribbon on top for extra visual cue */
+/* Remove color ribbons entirely */
 .learning-drill.group-ar::before,
 .learning-drill.group-er::before,
-.learning-drill.group-ir::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
-}
-.learning-drill.group-ar::before { background: linear-gradient(90deg, rgba(40,167,69,0.0), rgba(40,167,69,0.6), rgba(40,167,69,0.0)); }
-.learning-drill.group-er::before { background: linear-gradient(90deg, rgba(253,126,20,0.0), rgba(253,126,20,0.6), rgba(253,126,20,0.0)); }
-.learning-drill.group-ir::before { background: linear-gradient(90deg, rgba(167,139,250,0.0), rgba(167,139,250,0.6), rgba(167,139,250,0.0)); }
+.learning-drill.group-ir::before { display: none; content: none; }

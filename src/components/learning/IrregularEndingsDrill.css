@@ -1,46 +1,46 @@
-/* Estilos específicos para EndingsDrill con irregulares */
+/* Irregular Endings UI — dark, subtle, consistent */
 
 .irregularity-badge {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8em;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
   margin-left: 8px;
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  font-weight: 500;
 }
 
 .irregularity-explanation {
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  border: 2px solid #2196f3;
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+  background: rgba(17, 17, 17, 0.6);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 14px 0 12px;
 }
 
 .irregularity-explanation h4 {
-  color: #1565c0;
-  margin: 0 0 12px 0;
-  font-size: 1.1em;
+  color: var(--text);
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .irregularity-explanation ul {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 18px;
 }
 
 .irregularity-explanation li {
-  color: #0d47a1;
+  color: var(--muted);
   margin: 4px 0;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* Tabla de formas irregulares */
 .irregular-row {
-  background: rgba(255, 193, 7, 0.1);
-  border-left: 4px solid #ffc107;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid rgba(245, 245, 245, 0.12);
 }
 
 .form-comparison {
@@ -51,61 +51,51 @@
 
 .actual-form {
   font-weight: 600;
-  font-size: 1.1em;
+  font-size: 1.05rem;
 }
 
 .actual-form.irregular {
-  color: #d32f2f;
-  background: rgba(211, 47, 47, 0.1);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .actual-form.regular {
-  color: #388e3c;
+  color: var(--text);
+  opacity: 0.9;
 }
 
-.irregular-marker {
-  color: #ff9800;
-  margin-left: 4px;
-  font-size: 0.9em;
-}
+/* marker removed from JSX; keep no-op just in case */
+.irregular-marker { display: none; }
 
 .expected-regular {
-  font-size: 0.85em;
-  color: #666;
-  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: normal;
   margin-top: 2px;
+  opacity: 0.85;
 }
 
-/* Animaciones para destacar irregularidades */
+/* Highlight current irregular row subtly, no pulse */
 .irregular-row.highlighted {
-  background: rgba(255, 193, 7, 0.25);
-  animation: irregularPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes irregularPulse {
-  0%, 100% { 
-    box-shadow: 0 0 0 rgba(255, 193, 7, 0.4);
-  }
-  50% { 
-    box-shadow: 0 0 0 8px rgba(255, 193, 7, 0.1);
-  }
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .irregularity-explanation {
-    padding: 12px;
-    margin: 12px 0;
+    padding: 10px 12px;
+    margin: 10px 0;
   }
   
   .form-comparison {
-    font-size: 0.9em;
+    font-size: 0.95em;
   }
   
   .irregularity-badge {
-    font-size: 0.7em;
+    font-size: 0.7rem;
     padding: 2px 6px;
   }
 }
