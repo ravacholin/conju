@@ -3,6 +3,8 @@ import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { grade } from '../../lib/core/grader.js';
+import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
 
 const chatData = {
@@ -101,6 +103,90 @@ const chatData = {
       {
         userKeywords: ['viviría', 'sería', 'estaría', 'conocería', 'aprendería', 'experimentaría'],
         botResponse: '¡Qué respuesta tan reflexiva! Me gusta cómo piensas.',
+      },
+    ],
+  },
+  plusc: {
+    title: 'Hablando del pasado',
+    initialMessage: '¡Hola! Me encanta escuchar historias del pasado. ¿Te acuerdas de alguna vez que llegaste tarde y ya había pasado algo importante?',
+    script: [
+      {
+        userKeywords: ['había terminado', 'había empezado', 'habían ido', 'había salido', 'había llegado', 'había comido', 'había visto'],
+        botResponse: '¡Qué situación! Seguro que fue frustrante. ¿Y qué hiciste después?',
+      },
+      {
+        userKeywords: ['me quedé', 'volví', 'esperé', 'pregunté', 'llamé', 'buscá'],
+        botResponse: '¡Qué bien que encontraras una solución! A veces las cosas pasan por algo.',
+      },
+    ],
+  },
+  futPerf: {
+    title: 'Planes a largo plazo',
+    initialMessage: '¡Hola! Me gusta hablar del futuro. Para el año que viene, ¿qué cosas habrás logrado?',
+    script: [
+      {
+        userKeywords: ['habré terminado', 'habré aprendido', 'habré viajado', 'habré conseguido', 'me habré mudado', 'habré ahorrado'],
+        botResponse: '¡Qué planes tan ambiciosos! ¿Y para dentro de 5 años, qué habrás logrado?',
+      },
+      {
+        userKeywords: ['habré construido', 'habré creado', 'habré fundado', 'habré escrito', 'me habré casado', 'habré tenido'],
+        botResponse: '¡Me encanta tu visión del futuro! Estoy seguro de que lo lograrás.',
+      },
+    ],
+  },
+  subjImpf: {
+    title: 'Mundo de fantasía',
+    initialMessage: '¡Hola! Me gustan las historias de fantasía. Si fueras un personaje mágico, ¿qué podrías hacer?',
+    script: [
+      {
+        userKeywords: ['volara', 'fuera', 'tuviera', 'pudiera', 'supiera', 'hiciera', 'dijera', 'viviera'],
+        botResponse: '¡Qué fantástico! Si yo fuera mágico, me gustaría poder teletransportarme. ¿Y qué harías para ayudar a los demás?',
+      },
+      {
+        userKeywords: ['ayudara', 'curara', 'salvara', 'protegiera', 'diera', 'compartiera', 'enseñara'],
+        botResponse: '¡Qué noble! El mundo sería mejor si todos pensáramos así.',
+      },
+    ],
+  },
+  condPerf: {
+    title: 'Reflexiones sobre el pasado',
+    initialMessage: '¡Hola! A veces pienso en el pasado. Si hubieras sabido lo que sabes ahora, ¿qué habrías hecho diferente?',
+    script: [
+      {
+        userKeywords: ['habría estudiado', 'habría viajado', 'habría ahorrado', 'me habría mudado', 'habría aprendido', 'habría dicho'],
+        botResponse: 'Es interesante pensar en esas posibilidades. ¿Crees que habría cambiado mucho tu vida?',
+      },
+      {
+        userKeywords: ['habría sido', 'habría tenido', 'habría estado', 'habrían sido', 'habría conocido', 'habría hecho'],
+        botResponse: 'Al final, todas nuestras experiencias nos han traído hasta donde estamos hoy.',
+      },
+    ],
+  },
+  subjPerf: {
+    title: 'Esperanzas y dudas',
+    initialMessage: '¡Hola! Estoy un poco preocupado. Espero que mi amigo haya llegado bien a su destino. ¿Tú también te preocupas por tus seres queridos cuando viajan?',
+    script: [
+      {
+        userKeywords: ['haya llegado', 'haya encontrado', 'se haya adaptado', 'haya comido', 'haya descansado', 'haya llamado'],
+        botResponse: 'Sí, es normal preocuparse. Espero que todo haya salido bien. ¿Sueles enviar mensajes para saber cómo están?',
+      },
+      {
+        userKeywords: ['haya respondido', 'haya visto', 'haya contestado', 'se haya comunicado', 'haya escrito'],
+        botResponse: 'Qué bueno que te mantengas en contacto. La comunicación es muy importante.',
+      },
+    ],
+  },
+  subjPlusc: {
+    title: 'Lamentos del pasado',
+    initialMessage: '¡Hola! Ayer me arrepentí de algo. Ojalá que hubiera estudiado más para el examen. ¿Tú también tienes cosas de las que te arrepientes?',
+    script: [
+      {
+        userKeywords: ['hubiera estudiado', 'hubiera trabajado', 'hubiera ahorrado', 'hubiera dicho', 'hubiera hecho', 'me hubiera esforzado'],
+        botResponse: 'Todos tenemos esos momentos. Lo importante es aprender de ellos. ¿Qué harías diferente la próxima vez?',
+      },
+      {
+        userKeywords: ['estudiaría', 'trabajaría', 'ahorraría', 'diría', 'haría', 'me esforzaría'],
+        botResponse: 'Excelente actitud. Los errores nos enseñan y nos hacen crecer.',
       },
     ],
   },

@@ -39,20 +39,30 @@ const PARADIGMATIC_VERBS = {
 // Seleccionar verbos apropiados según el tipo y familias
 function selectAppropriateVerbs(verbType, selectedFamilies, tense) {
   if (verbType === 'regular') {
-    // Usar verbos regulares clásicos
-    return ['hablar', 'comer', 'vivir'];
+    // Seleccionar verbos regulares de la base de datos
+    const regularVerbs = verbs.filter(v => v.type === 'regular');
+    const arVerbs = regularVerbs.filter(v => v.lemma.endsWith('ar')).slice(0, 1);
+    const erVerbs = regularVerbs.filter(v => v.lemma.endsWith('er')).slice(0, 1);
+    const irVerbs = regularVerbs.filter(v => v.lemma.endsWith('ir')).slice(0, 1);
+    
+    // Combinar representantes de cada conjugación
+    const selected = [...arVerbs, ...erVerbs, ...irVerbs];
+    return selected.length >= 3 ? selected.slice(0, 3).map(v => v.lemma) : ['hablar', 'comer', 'vivir'];
   }
   
   if (selectedFamilies && selectedFamilies.length > 0) {
-    // Seleccionar verbos paradigmáticos de las familias elegidas
+    // Seleccionar verbos de la base de datos que pertenezcan a las familias elegidas
     const selectedVerbs = [];
     
-    // Para cada familia, tomar los primeros 3 verbos únicos
+    // Para cada familia, buscar verbos reales en la base de datos
     for (const familyId of selectedFamilies) {
-      const familyVerbs = PARADIGMATIC_VERBS[familyId] || [];
-      for (const verb of familyVerbs) {
-        if (!selectedVerbs.includes(verb) && selectedVerbs.length < 3) {
-          selectedVerbs.push(verb);
+      const paradigmaticVerbs = PARADIGMATIC_VERBS[familyId] || [];
+      
+      for (const verbLemma of paradigmaticVerbs) {
+        // Buscar el verbo en la base de datos para verificar que existe
+        const verbInDB = verbs.find(v => v.lemma === verbLemma);
+        if (verbInDB && !selectedVerbs.includes(verbLemma) && selectedVerbs.length < 3) {
+          selectedVerbs.push(verbLemma);
         }
       }
       
@@ -60,10 +70,26 @@ function selectAppropriateVerbs(verbType, selectedFamilies, tense) {
       if (selectedVerbs.length >= 3) break;
     }
     
+    // Si no encontramos suficientes verbos en las familias, buscar más irregulares
+    if (selectedVerbs.length < 3) {
+      const irregularVerbs = verbs.filter(v => v.type === 'irregular').slice(0, 3 - selectedVerbs.length);
+      irregularVerbs.forEach(v => {
+        if (!selectedVerbs.includes(v.lemma)) {
+          selectedVerbs.push(v.lemma);
+        }
+      });
+    }
+    
     return selectedVerbs.slice(0, 3);
   }
   
-  // Fallback a verbos regulares
+  // Fallback: seleccionar verbos regulares de la base de datos
+  const regularVerbs = verbs.filter(v => v.type === 'regular');
+  if (regularVerbs.length >= 3) {
+    const selected = regularVerbs.slice(0, 3).map(v => v.lemma);
+    return selected;
+  }
+  
   return ['hablar', 'comer', 'vivir'];
 }
 

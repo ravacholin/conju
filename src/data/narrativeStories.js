@@ -112,4 +112,95 @@ export const storyData = {
       { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['a', 'as', 'a', 'amos', 'áis', 'an'] },
     ],
   },
+  pretPerf: {
+    title: 'Lo que hemos hecho hoy',
+    sentences: [
+      { text: 'Esta mañana __he trabajado__ en un proyecto importante.', verb: 'he trabajado' },
+      { text: 'Mi hermana __ha comido__ ya su desayuno.', verb: 'ha comido' },
+      { text: 'Nosotros __hemos vivido__ muchas experiencias juntos.', verb: 'hemos vivido' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'trabajar', stem: 'he/has/ha/hemos/habéis/han', endings: ['trabajado', 'trabajado', 'trabajado', 'trabajado', 'trabajado', 'trabajado'] },
+      { group: '-er', verb: 'comer', stem: 'he/has/ha/hemos/habéis/han', endings: ['comido', 'comido', 'comido', 'comido', 'comido', 'comido'] },
+      { group: '-ir', verb: 'vivir', stem: 'he/has/ha/hemos/habéis/han', endings: ['vivido', 'vivido', 'vivido', 'vivido', 'vivido', 'vivido'] },
+    ],
+  },
+  plusc: {
+    title: 'Recuerdos del pasado',
+    sentences: [
+      { text: 'Cuando llegamos, él ya __había hablado__ con el director.', verb: 'había hablado' },
+      { text: 'María __había comido__ antes de ir al cine.', verb: 'había comido' },
+      { text: 'Ellos __habían vivido__ allí durante muchos años.', verb: 'habían vivido' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'hablar', stem: 'había/habías/había/habíamos/habíais/habían', endings: ['hablado', 'hablado', 'hablado', 'hablado', 'hablado', 'hablado'] },
+      { group: '-er', verb: 'comer', stem: 'había/habías/había/habíamos/habíais/habían', endings: ['comido', 'comido', 'comido', 'comido', 'comido', 'comido'] },
+      { group: '-ir', verb: 'vivir', stem: 'había/habías/había/habíamos/habíais/habían', endings: ['vivido', 'vivido', 'vivido', 'vivido', 'vivido', 'vivido'] },
+    ],
+  },
+  futPerf: {
+    title: 'Lo que habremos logrado',
+    sentences: [
+      { text: 'Para el viernes, __habré terminado__ todos mis proyectos.', verb: 'habré terminado' },
+      { text: 'En diciembre, tú __habrás aprendido__ mucho español.', verb: 'habrás aprendido' },
+      { text: 'Para entonces, nosotros __habremos decidido__ qué hacer.', verb: 'habremos decidido' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'terminar', stem: 'habré/habrás/habrá/habremos/habréis/habrán', endings: ['terminado', 'terminado', 'terminado', 'terminado', 'terminado', 'terminado'] },
+      { group: '-er', verb: 'aprender', stem: 'habré/habrás/habrá/habremos/habréis/habrán', endings: ['aprendido', 'aprendido', 'aprendido', 'aprendido', 'aprendido', 'aprendido'] },
+      { group: '-ir', verb: 'decidir', stem: 'habré/habrás/habrá/habremos/habréis/habrán', endings: ['decidido', 'decidido', 'decidido', 'decidido', 'decidido', 'decidido'] },
+    ],
+  },
+  subjImpf: {
+    title: 'Si fuera posible...',
+    sentences: [
+      { text: 'Si __hablara__ más español, podría conseguir un mejor trabajo.', verb: 'hablara' },
+      { text: 'Ojalá __tuviera__ más tiempo para estudiar.', verb: 'tuviera' },
+      { text: 'Si __fueran__ más amables, todo sería mejor.', verb: 'fueran' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['ara', 'aras', 'ara', 'áramos', 'arais', 'aran'] },
+      { group: '-er', verb: 'tener', stem: 'tuvi', endings: ['era', 'eras', 'era', 'éramos', 'erais', 'eran'] },
+      { group: '-ir', verb: 'ir', stem: 'fu', endings: ['era', 'eras', 'era', 'éramos', 'erais', 'eran'] },
+    ],
+  },
+  condPerf: {
+    title: 'Lo que habría pasado',
+    sentences: [
+      { text: 'Si hubiera tenido tiempo, __habría estudiado__ más para el examen.', verb: 'habría estudiado' },
+      { text: 'Con más dinero, __habríamos viajado__ por todo el mundo.', verb: 'habríamos viajado' },
+      { text: 'Ellos __habrían terminado__ el proyecto si hubieran tenido ayuda.', verb: 'habrían terminado' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'estudiar', stem: 'habría/habrías/habría/habríamos/habríais/habrían', endings: ['estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado'] },
+      { group: '-ar', verb: 'viajar', stem: 'habría/habrías/habría/habríamos/habríais/habrían', endings: ['viajado', 'viajado', 'viajado', 'viajado', 'viajado', 'viajado'] },
+      { group: '-ar', verb: 'terminar', stem: 'habría/habrías/habría/habríamos/habríais/habrían', endings: ['terminado', 'terminado', 'terminado', 'terminado', 'terminado', 'terminado'] },
+    ],
+  },
+  subjPerf: {
+    title: 'Espero que haya...',
+    sentences: [
+      { text: 'Espero que __hayas estudiado__ para el examen de mañana.', verb: 'hayas estudiado' },
+      { text: 'Es posible que __haya comido__ algo en mal estado.', verb: 'haya comido' },
+      { text: 'Dudo que __hayamos llegado__ demasiado tarde.', verb: 'hayamos llegado' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'estudiar', stem: 'haya/hayas/haya/hayamos/hayáis/hayan', endings: ['estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado'] },
+      { group: '-er', verb: 'comer', stem: 'haya/hayas/haya/hayamos/hayáis/hayan', endings: ['comido', 'comido', 'comido', 'comido', 'comido', 'comido'] },
+      { group: '-ir', verb: 'llegar', stem: 'haya/hayas/haya/hayamos/hayáis/hayan', endings: ['llegado', 'llegado', 'llegado', 'llegado', 'llegado', 'llegado'] },
+    ],
+  },
+  subjPlusc: {
+    title: 'Si hubiera sabido...',
+    sentences: [
+      { text: 'Si __hubiera estudiado__ más, habría aprobado el examen.', verb: 'hubiera estudiado' },
+      { text: 'Ojalá __hubieras venido__ a la fiesta, te habría gustado mucho.', verb: 'hubieras venido' },
+      { text: 'Si __hubieran llegado__ antes, habrían visto el espectáculo.', verb: 'hubieran llegado' },
+    ],
+    deconstructions: [
+      { group: '-ar', verb: 'estudiar', stem: 'hubiera/hubieras/hubiera/hubiéramos/hubierais/hubieran', endings: ['estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado', 'estudiado'] },
+      { group: '-ir', verb: 'venir', stem: 'hubiera/hubieras/hubiera/hubiéramos/hubierais/hubieran', endings: ['venido', 'venido', 'venido', 'venido', 'venido', 'venido'] },
+      { group: '-ar', verb: 'llegar', stem: 'hubiera/hubieras/hubiera/hubiéramos/hubierais/hubieran', endings: ['llegado', 'llegado', 'llegado', 'llegado', 'llegado', 'llegado'] },
+    ],
+  },
 };

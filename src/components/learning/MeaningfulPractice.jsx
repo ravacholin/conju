@@ -3,6 +3,8 @@ import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { grade } from '../../lib/core/grader.js';
+import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
 
 const timelineData = {
@@ -81,6 +83,66 @@ const timelineData = {
         { prompt: 'En tu lugar yo... (decir, hacer)', expected: ['diría', 'haría'] },
     ],
   },
+  plusc: {
+    type: 'prompts',
+    title: 'Cuando llegué, ya había pasado...',
+    prompts: [
+        { prompt: 'Cuando llegué a casa, mi hermana ya... (cocinar, limpiar)', expected: ['había cocinado', 'había limpiado'] },
+        { prompt: 'Cuando empezó la película, nosotros ya... (comprar, buscar)', expected: ['habíamos comprado', 'habíamos buscado'] },
+        { prompt: 'Cuando se despertaron, el sol ya... (salir, calentar)', expected: ['había salido', 'había calentado'] },
+        { prompt: 'Cuando llegaste, ellos ya... (terminar, irse)', expected: ['habían terminado', 'se habían ido'] },
+    ],
+  },
+  futPerf: {
+    type: 'prompts',
+    title: 'Lo que habrá pasado para entonces',
+    prompts: [
+        { prompt: 'Para el viernes, yo ya... (terminar, enviar)', expected: ['habré terminado', 'habré enviado'] },
+        { prompt: 'Para diciembre, tú... (aprender, mejorar)', expected: ['habrás aprendido', 'habrás mejorado'] },
+        { prompt: 'Para el año que viene, nosotros... (ahorrar, decidir)', expected: ['habremos ahorrado', 'habremos decidido'] },
+        { prompt: 'Para entonces, ellos ya... (mudarse, adaptarse)', expected: ['se habrán mudado', 'se habrán adaptado'] },
+    ],
+  },
+  subjImpf: {
+    type: 'prompts',
+    title: 'Si fuera diferente...',
+    prompts: [
+        { prompt: 'Si tuviera más tiempo, yo... (estudiar, viajar)', expected: ['estudiaría', 'viajaría', 'estudiara', 'viajara'] },
+        { prompt: 'Si fueras más paciente, tú... (entender, lograr)', expected: ['entenderías', 'lograrías', 'entendieras', 'lograras'] },
+        { prompt: 'Si viviéramos cerca del mar, nosotros... (nadar, pescar)', expected: ['nadaríamos', 'pescaríamos', 'nadáramos', 'pescáramos'] },
+        { prompt: 'Ojalá que ellos... (venir, quedarse)', expected: ['vinieran', 'se quedaran', 'vendrían', 'se quedarían'] },
+    ],
+  },
+  condPerf: {
+    type: 'prompts',
+    title: 'Lo que habría pasado si...',
+    prompts: [
+        { prompt: 'Si hubiera estudiado más, yo... (aprobar, conseguir)', expected: ['habría aprobado', 'habría conseguido'] },
+        { prompt: 'Si hubieras venido antes, tú... (conocer, disfrutar)', expected: ['habrías conocido', 'habrías disfrutado'] },
+        { prompt: 'Si hubiéramos salido temprano, nosotros... (llegar, evitar)', expected: ['habríamos llegado', 'habríamos evitado'] },
+        { prompt: 'Si hubieran avisado, ellos... (preparar, organizar)', expected: ['habrían preparado', 'habrían organizado'] },
+    ],
+  },
+  subjPerf: {
+    type: 'prompts',
+    title: 'Espero que haya...',
+    prompts: [
+        { prompt: 'Espero que ya... (llegar, encontrar)', expected: ['haya llegado', 'haya encontrado', 'hayas llegado', 'hayas encontrado'] },
+        { prompt: 'Es posible que él... (terminar, decidir)', expected: ['haya terminado', 'haya decidido'] },
+        { prompt: 'Dudo que nosotros... (cometer, olvidar)', expected: ['hayamos cometido', 'hayamos olvidado'] },
+        { prompt: 'No creo que ellos... (resolver, comprender)', expected: ['hayan resuelto', 'hayan comprendido'] },
+    ],
+  },
+  subjPlusc: {
+    type: 'prompts',
+    title: 'Si hubiera sabido que...',
+    prompts: [
+        { prompt: 'Si hubiera sabido que vendrías, yo... (preparar, comprar)', expected: ['hubiera preparado', 'hubiera comprado', 'habría preparado', 'habría comprado'] },
+        { prompt: 'Si hubieras estudiado más, tú... (aprobar, entender)', expected: ['hubieras aprobado', 'hubieras entendido', 'habrías aprobado', 'habrías entendido'] },
+        { prompt: 'Si hubiéramos salido antes, nosotros... (llegar, conseguir)', expected: ['hubiéramos llegado', 'hubiéramos conseguido', 'habríamos llegado', 'habríamos conseguido'] },
+        { prompt: 'Ojalá que ellos... (venir, avisar)', expected: ['hubieran venido', 'hubieran avisado'] },
+    ],
+  },
 };
 
 function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
@@ -135,15 +197,29 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         });
     } else if (exercise.type === 'prompts') {
         exercise.prompts.forEach(p => {
-            const found = p.expected.some(verb => {
-                const regex = new RegExp(`\b${verb}\b`, 'i');
+            let bestMatch = null;
+            let bestScore = 0;
+            
+            // Try to find the best match using the grader system
+            for (const expectedVerb of p.expected) {
+                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\$&')}\b`, 'i');
                 if (regex.test(userText)) {
-                    foundVerbs.push(verb);
-                    return true;
+                    bestMatch = expectedVerb;
+                    bestScore = 1;
+                    break;
                 }
-                return false;
-            });
-            if (!found) {
+                
+                // Also try fuzzy matching using grader for partial credit
+                const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, userText);
+                if (gradeResult.correct || gradeResult.score > bestScore) {
+                    bestMatch = expectedVerb;
+                    bestScore = gradeResult.score;
+                }
+            }
+            
+            if (bestMatch && bestScore > 0.7) {
+                foundVerbs.push(bestMatch);
+            } else {
                 missing.push(p.expected.join(' o '));
             }
         });
@@ -198,15 +274,44 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         console.error("Failed to update SRS schedule:", error);
       }
     } else {
-      setFeedback({ type: 'incorrect', message: `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}` });
+      // Enhanced error analysis for better feedback
+      const errorTags = ['missing_verbs'];
+      let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
       
-      // Track incorrect attempt
+      // Try to provide more specific feedback
+      if (missing.length === 1) {
+        detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
+        errorTags.push('conjugation_error');
+      } else if (missing.length > 1) {
+        detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
+        errorTags.push('multiple_missing');
+      }
+      
+      // Check if user wrote any verbs in wrong tense
+      const currentTense = tense?.tense;
+      if (currentTense) {
+        const wrongTenseHints = {
+          'pres': 'Recuerda usar el presente: yo hablo, tú comes, él vive',
+          'pretIndef': 'Usa el pretérito: yo hablé, tú comiste, él vivió',
+          'impf': 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
+          'fut': 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
+          'pretPerf': 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
+        };
+        
+        if (wrongTenseHints[currentTense]) {
+          detailedFeedback += ` ${wrongTenseHints[currentTense]}.`;
+        }
+      }
+      
+      setFeedback({ type: 'incorrect', message: detailedFeedback });
+      
+      // Track incorrect attempt with enhanced error classification
       await handleResult({
         correct: false,
         userAnswer: story,
         correctAnswer: missing.join(', '),
         hintsUsed: 0,
-        errorTags: ['missing_verbs'],
+        errorTags,
         latencyMs: 0,
         isIrregular: false,
         itemId: currentItem.id
