@@ -527,7 +527,7 @@ function extractRealConjugatedForms(verbObj, tense) {
   
   if (!paradigm || !paradigm.forms) return [];
   
-  // Extraer formas para el dialecto rioplatense (orden: 1s, 2s_vos, 3s, 1p, 3p)
+  // Extraer formas para el dialecto (orden: 1s, 2s_vos, 3s, 1p, 3p)
   const persons = ['1s', '2s_vos', '3s', '1p', '3p'];
   const forms = [];
   
@@ -547,8 +547,15 @@ function extractRealConjugatedForms(verbObj, tense) {
         if (tuForm && tuForm.accepts && tuForm.accepts.vos) {
           forms.push(tuForm.accepts.vos);
         } else if (tuForm && tuForm.value) {
-          // Si no hay forma vos específica, usar la forma tú como fallback
-          forms.push(tuForm.value.replace(/as$/, 'ás').replace(/es$/, 'és'));
+          // Si no hay forma vos específica, usar transformación morfológica en presente; si no, usar forma de tú
+          if (tense === 'pres') {
+            const grp = (verbObj.lemma?.endsWith('ar') ? 'ar' : verbObj.lemma?.endsWith('er') ? 'er' : 'ir');
+            if (/as$/.test(tuForm.value)) forms.push(tuForm.value.replace(/as$/, 'ás'));
+            else if (/es$/.test(tuForm.value)) forms.push(grp === 'ir' ? tuForm.value.replace(/es$/, 'ís') : tuForm.value.replace(/es$/, 'és'));
+            else forms.push(tuForm.value);
+          } else {
+            forms.push(tuForm.value);
+          }
         } else {
           forms.push(''); // Placeholder
         }
@@ -933,7 +940,26 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                     const formMap = getFormMapForVerb(verbObj);
                     const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const dialectEndings = pronouns.map(p => {
-                      const formVal = formMap[p];
+                      let formVal = formMap[p];
+                      // Fallbacks for voseo when missing explicit 2s_vos form
+                      if (!formVal && p === '2s_vos' && verbObj) {
+                        const para = verbObj.paradigms?.find(q => q.forms?.some(f => f.mood === tense.mood && f.tense === tense.tense));
+                        const tuForm = para?.forms?.find(f => f.mood === tense.mood && f.tense === tense.tense && f.person === '2s_tu');
+                        if (tuForm?.accepts?.vos) {
+                          formVal = tuForm.accepts.vos;
+                        } else if (tuForm?.value) {
+                          // Morphological fallback for present indicative only
+                          if (tense.mood === 'indicative' && tense.tense === 'pres') {
+                            const grp = group?.slice(-2) || (verb?.endsWith('ar') ? 'ar' : verb?.endsWith('er') ? 'er' : 'ir');
+                            if (/as$/.test(tuForm.value)) formVal = tuForm.value.replace(/as$/, 'ás');
+                            else if (/es$/.test(tuForm.value)) {
+                              formVal = grp === 'ir' ? tuForm.value.replace(/es$/, 'ís') : tuForm.value.replace(/es$/, 'és');
+                            }
+                          } else {
+                            formVal = tuForm.value;
+                          }
+                        }
+                      }
                       const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
                       const base = endings?.[baseOrder.indexOf(p)] || '';
                       return endingFromForm(formVal, realStem, base);
