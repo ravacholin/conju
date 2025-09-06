@@ -419,20 +419,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
 
           <div className="verb-lemma">{verb.lemma}</div>
           
-          {verb?.type === 'irregular' && irregularityAnalysis?.hasIrregularities && (
-            <div className="irregularity-explanation" role="note">
-              <h4>Irregularidades que debes notar</h4>
-              <ul>
-                {Array.from(new Set(
-                  irregularityAnalysis.analysis
-                    .filter(a => a.isIrregular && a.explanation)
-                    .map(a => a.explanation)
-                )).map(explanation => (
-                  <li key={explanation}>{explanation}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* No panel extra: mantener el layout idéntico al de regulares */}
           <div className="person-display">{currentPronoun.text}</div>
 
           <div className="input-container">
@@ -467,7 +454,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           )}
 
           <div className="endings-reference">
-            <h4>{irregularityAnalysis?.hasIrregularities ? 'Formas: irregular vs regular' : 'Terminaciones de referencia'}</h4>
+            <h4>Terminaciones de referencia</h4>
             <div className="endings-reference-table">
               {PRONOUNS_DISPLAY.map((pronoun) => {
                 const actualForm = personToFormMap[pronoun.key];
@@ -475,17 +462,13 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
                 const isIrregular = analysis?.isIrregular;
                 
                 return (
-                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular-row' : ''}`}>
+                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''}`}>
                     <span className="ending-person">{pronoun.text}</span>
                     {irregularityAnalysis?.hasIrregularities ? (
                       <div className="form-comparison">
-                        <span className={`actual-form ${isIrregular ? 'irregular' : 'regular'}`}>
-                          {actualForm}
-                        </span>
+                        <span className="ending-value">{actualForm}</span>
                         {isIrregular && analysis && (
-                          <span className="expected-regular">
-                            (regular: {analysis.expected})
-                          </span>
+                          <span className="expected-regular">regular: {analysis.expected}</span>
                         )}
                       </div>
                     ) : (
