@@ -28,14 +28,14 @@ export const LEARNING_IRREGULAR_FAMILIES = {
   'LEARNING_DIPHTHONGS': {
     id: 'LEARNING_DIPHTHONGS',
     name: 'Verbos que diptongan',
-    description: 'Cambios vocálicos sistemáticos: o→ue (poder), e→ie (querer), e→i (pedir)',
+    description: 'Cambios vocálicos sistemáticos: o→ue (poder), e→ie (querer), e→i (pedir), u→ue (jugar)',
     paradigmatic: 'poder',
-    examples: ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir'], // Orden: o→ue, e→ie, e→i para drill
+    examples: ['poder', 'querer', 'pedir', 'jugar', 'volver', 'pensar', 'servir'], // Incluir jugar con los diptongos
     pattern: 'poder: puedo, puedes, puede, podemos, podéis, pueden (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
     concept: 'diphthongs_all',
-    pedagogicalNote: 'Tres tipos: o→ue (poder), e→ie (querer), e→i (pedir). Solo en sílabas tónicas (acentuadas).'
+    pedagogicalNote: 'Cuatro tipos: o→ue (poder), e→ie (querer), e→i (pedir), u→ue (jugar). Solo en sílabas tónicas (acentuadas).'
   },
 
   // 3) MUY IRREGULARES (casos especiales frecuentes)
@@ -98,19 +98,6 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     pedagogicalNote: 'Solo los más frecuentes para entender que existe el patrón.'
   },
 
-  // Caso único de jugar
-  'LEARNING_JUGAR_UNICO': {
-    id: 'LEARNING_JUGAR_UNICO',
-    name: 'Caso único (jugar u→ue)',
-    description: 'El único verbo u→ue en español',
-    paradigmatic: 'jugar',
-    examples: ['jugar'],
-    pattern: 'jugar: juego, juegas, juega (único verbo con este cambio)',
-    affectedTenses: ['pres', 'subjPres'],
-    level: 'A2',
-    concept: 'unique_case',
-    pedagogicalNote: 'Excepción única. Enseñar separado de diptongos normales.'
-  },
 
   // ========================================
   // NIVEL 6: IRREGULARES DEL IMPERFECTO
@@ -206,8 +193,8 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'repetir': ['LEARNING_DIPHTHONGS'],
   'seguir': ['LEARNING_DIPHTHONGS'],
   
-  // u→ue (caso especial)
-  'jugar': ['LEARNING_JUGAR_UNICO'], // Mantenemos separado por ser único
+  // u→ue (incluido en diptongos)
+  'jugar': ['LEARNING_DIPHTHONGS'],
 
   // ========================================
   // 3) MUY IRREGULARES (formas completamente irregulares)
@@ -245,7 +232,7 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, estar, dar
   
   // Casos especiales mantenidos
-  'DIPHT_U_UE': 'LEARNING_JUGAR_UNICO', // solo jugar
+  'DIPHT_U_UE': 'LEARNING_DIPHTHONGS', // jugar incluido en diptongos
   
   // Familias para otros tiempos (mantenidas)
   'ORTH_CAR': 'LEARNING_ORTH_CAR',
@@ -264,8 +251,6 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
   'LEARNING_DIPHTHONGS': 'DIPHT_E_IE', // Usar la más común como representante
   'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',
   
-  // Casos especiales
-  'LEARNING_JUGAR_UNICO': 'DIPHT_U_UE',
   
   // Familias para otros tiempos (mantenidas)
   'LEARNING_ORTH_CAR': 'ORTH_CAR',

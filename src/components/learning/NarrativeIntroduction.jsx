@@ -24,9 +24,6 @@ const PARADIGMATIC_VERBS = {
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
   
-  // Caso único
-  'LEARNING_JUGAR_UNICO': ['jugar'],
-  
   // Cambios ortográficos
   'LEARNING_ORTH_CAR': ['buscar', 'sacar'],
   'LEARNING_ORTH_GAR': ['llegar', 'pagar'],
@@ -201,9 +198,7 @@ function determineIrregularityType(familyTypes, tense) {
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
   
-  else if (familyTypes.includes('LEARNING_JUGAR_UNICO')) {
-    return 'jugar-unique';
-  } else if (familyTypes.includes('LEARNING_PRET_FUERTE')) {
+  else if (familyTypes.includes('LEARNING_PRET_FUERTE')) {
     return 'strong-preterite';
   } else if (familyTypes.some(f => ['LEARNING_ORTH_CAR', 'LEARNING_ORTH_GAR'].includes(f))) {
     return 'orthographic';
@@ -235,12 +230,12 @@ function getIrregularContentTemplate(irregularityType, tense, familyTypes) {
     'diphthongs-unified': {
       pres: {
         title: 'Verbos que diptongan',
-        explanation: 'Estos verbos cambian su vocal de la raíz cuando está acentuada: o→ue (puedo), e→ie (quiero), e→i (pido). Solo cambian nosotros y vosotros NO diptongan porque no llevan el acento en la raíz.',
+        explanation: 'Estos verbos cambian su vocal de la raíz cuando está acentuada: o→ue (puedo), e→ie (quiero), e→i (pido), u→ue (juego). Solo cambian cuando la vocal lleva el acento - nosotros y vosotros NO diptongan.',
         sentenceTemplate: 'diphthongs-unified'
       },
       subjPres: {
         title: 'Diptongos en subjuntivo',
-        explanation: 'En presente de subjuntivo, los diptongos se mantienen igual: piense, pueda, pida.',
+        explanation: 'En presente de subjuntivo, los diptongos se mantienen igual: pueda, quiera, pida, juegue.',
         sentenceTemplate: 'diphthongs-unified-subjunctive'
       }
     },
@@ -274,18 +269,6 @@ function getIrregularContentTemplate(irregularityType, tense, familyTypes) {
     // FAMILIAS MANTENIDAS PARA OTROS TIEMPOS
     // ========================================
     
-    'jugar-unique': {
-      pres: {
-        title: 'Caso único: jugar (u→ue)',
-        explanation: 'Jugar es el único verbo en español que cambia u→ue: juego, juegas, juega. Es una excepción única que hay que memorizar aparte.',
-        sentenceTemplate: 'jugar-unique'
-      },
-      subjPres: {
-        title: 'Jugar en subjuntivo',
-        explanation: 'En subjuntivo, jugar mantiene el cambio u→ue: juegue, juegues, juegue.',
-        sentenceTemplate: 'jugar-unique-subjunctive'
-      }
-    },
     'strong-preterite': {
       pretIndef: {
         title: 'Lo que hicieron ayer',
@@ -444,14 +427,6 @@ function generateIrregularSentences(verbObjects, tense, template, irregularityTy
     // ========================================
     // CASOS ESPECIALES Y OTROS TIEMPOS (mantenidos)
     // ========================================
-      
-    case 'jugar-unique':
-      sentences.push(
-        { text: `A mi hermano le encanta __${getConjugation(verbObjects[0], tense, 'infinitive')}__ fútbol.`, verb: getConjugation(verbObjects[0], tense, '3s') },
-        { text: `Los niños __${getConjugation(verbObjects[0], tense, '3p')}__ en el parque todos los días.`, verb: getConjugation(verbObjects[0], tense, '3p') },
-        { text: `¿Tú también __${getConjugation(verbObjects[0], tense, '2s_tu')}__ al tenis?`, verb: getConjugation(verbObjects[0], tense, '2s_tu') }
-      );
-      break;
       
     case 'diphthong':
       sentences.push(
@@ -875,7 +850,6 @@ function getIrregularPattern(verb, selectedFamilies) {
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
   if (selectedFamilies.includes('LEARNING_IMPF_IRREGULAR')) return 'imperfecto irregular: era, iba, veía';
-  if (selectedFamilies.includes('LEARNING_JUGAR_UNICO')) return 'único caso u→ue: juego, juegas';
   if (selectedFamilies.includes('LEARNING_ORTH_CAR')) return 'ortográfico: c→qu (busqué)';
   if (selectedFamilies.includes('LEARNING_ORTH_GAR')) return 'ortográfico: g→gu (llegué)';
   if (selectedFamilies.includes('LEARNING_PRET_FUERTE')) return 'pretérito fuerte (tuve, estuve)';

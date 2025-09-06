@@ -256,7 +256,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           'LEARNING_YO_G': 'YO irregular con -g',
           'LEARNING_E_IE': 'Diptongo e→ie', 
           'LEARNING_O_UE': 'Diptongo o→ue',
-          'LEARNING_JUGAR_UNICO': 'Único u→ue (jugar)',
           'LEARNING_YO_ZCO': 'YO irregular con -zco',
           'LEARNING_E_I': 'Cambio e→i',
           'LEARNING_ORTH_CAR': 'Ortográfico -car→-qu',

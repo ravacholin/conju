@@ -27,7 +27,7 @@ function testLearningFamilies() {
   const jugarVerb = verbs.find(v => v.lemma === 'jugar');
   const jugarFamilies = categorizeLearningVerb('jugar', jugarVerb);
   console.log(`   jugar pertenece a: ${jugarFamilies.join(', ')}`);
-  console.log(`   ✓ ¿Está en su propia categoría u→ue? ${jugarFamilies.includes('LEARNING_JUGAR_UNICO') ? 'SÍ' : 'NO'}`);
+  console.log(`   ✓ ¿Está incluido en LEARNING_DIPHTHONGS? ${jugarFamilies.includes('LEARNING_DIPHTHONGS') ? 'SÍ' : 'NO'}`);
 
   // 3. Verificar separación de YO irregulares
   console.log('\n3️⃣ VERIFICACIÓN - SEPARACIÓN DE YO IRREGULARES:');

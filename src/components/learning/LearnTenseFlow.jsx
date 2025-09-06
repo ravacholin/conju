@@ -354,7 +354,7 @@ function LearnTenseFlow({ onHome }) {
     // Grupos reorganizados con criterio pedagógico claro
     const irregularCategories = {};
     
-    // Para PRESENTE: usar las 3 nuevas categorías principales
+    // Para PRESENTE: SOLO las 3 categorías pedagógicas solicitadas
     if (selectedTense.tense === 'pres') {
       irregularCategories['yo_irregular_g'] = {
         name: 'Irregulares en YO',
@@ -364,7 +364,7 @@ function LearnTenseFlow({ onHome }) {
       
       irregularCategories['diphthongs'] = {
         name: 'Verbos que diptongan',
-        description: 'Cambios vocálicos: o→ue (puedo), e→ie (quiero), e→i (pido)',
+        description: 'Cambios vocálicos: o→ue (puedo), e→ie (quiero), e→i (pido), u→ue (juego)',
         families: availableFamilies.filter(f => f.id === 'LEARNING_DIPHTHONGS')
       };
       
@@ -372,13 +372,6 @@ function LearnTenseFlow({ onHome }) {
         name: 'Muy irregulares',
         description: 'Formas únicas: soy/eres, estoy/estás, voy/vas, doy/das',
         families: availableFamilies.filter(f => f.id === 'LEARNING_VERY_IRREGULAR')
-      };
-      
-      // Caso especial jugar
-      irregularCategories['jugar'] = {
-        name: 'Caso único: jugar',
-        description: 'El único verbo u→ue en español: juego, juegas, juega',
-        families: availableFamilies.filter(f => f.id === 'LEARNING_JUGAR_UNICO')
       };
     }
     
