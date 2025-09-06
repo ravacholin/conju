@@ -1065,11 +1065,6 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                     dangerouslySetInnerHTML={{ __html: sentence.text.replace(/__(.*)__/, '<span class="highlight">$1</span>') }}
                   />
                 ))}
-                {story.explanation && verbType !== 'regular' && (
-                  <div className="explanation-box">
-                    <p className="explanation-text">{story.explanation}</p>
-                  </div>
-                )}
               </div>
 
               <div className="deconstruction-placeholder">
