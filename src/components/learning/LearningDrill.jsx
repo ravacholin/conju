@@ -6,6 +6,7 @@ import { grade } from '../../lib/core/grader.js';
 import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
 import { useSettings } from '../../state/settings.js';
+import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import './LearningDrill.css';
 
 const PRONOUNS_DISPLAY = {
@@ -63,7 +64,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     if (selectedFamilies && selectedFamilies.length > 0) {
       // Instead of random, cycle through families to ensure variety
       const familyIndex = (totalAttempts || 0) % selectedFamilies.length;
-      selectedFamilyForGenerator = selectedFamilies[familyIndex];
+      const learningFamilyId = selectedFamilies[familyIndex];
+      // CRÍTICO: Convertir familia pedagógica a antigua para el generator
+      selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
     }
     
     const learningSettings = {

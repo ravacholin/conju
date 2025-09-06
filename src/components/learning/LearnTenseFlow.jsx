@@ -3,7 +3,7 @@ import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
 import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
-import { getFamiliesForTense, categorizeVerb } from '../../lib/data/irregularFamilies.js';
+import { getLearningFamiliesForTense, categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
@@ -19,7 +19,7 @@ import { useSettings } from '../../state/settings.js';
 // Helper function to get verbs belonging to a specific family
 function getVerbsForFamily(familyId, tense) {
   return verbs.filter(verb => {
-    const families = categorizeVerb(verb.lemma, verb);
+    const families = categorizeLearningVerb(verb.lemma, verb);
     return families.includes(familyId);
   });
 }
@@ -349,36 +349,43 @@ function LearnTenseFlow({ onHome }) {
   
   // Step 2: Type Selection (Regular/Irregular categories)
   if (currentStep === 'type-selection') {
-    const availableFamilies = getFamiliesForTense(selectedTense.tense);
+    const availableFamilies = getLearningFamiliesForTense(selectedTense.tense);
     
     // Group families into logical categories
     const irregularCategories = {
       'basic': {
         name: 'Irregulares básicos',
-        description: 'Diptongación y cambios vocálicos',
+        description: 'Patrones vocálicos principales: e→ie, o→ue, e→i',
         families: availableFamilies.filter(f => 
-          ['DIPHT_E_IE', 'DIPHT_O_UE', 'DIPHT_U_UE', 'E_I_IR', 'O_U_GER_IR'].includes(f.id)
+          ['LEARNING_E_IE', 'LEARNING_O_UE', 'LEARNING_E_I'].includes(f.id)
         )
       },
       'yo': {
         name: 'Irregulares en YO',
-        description: 'Alternancias en 1ª persona: tengo, conozco, vengo',
+        description: 'Alternancias en 1ª persona: tengo, conozco',
         families: availableFamilies.filter(f => 
-          ['G_VERBS', 'JO_VERBS', 'GU_DROP', 'ZCO_VERBS', 'ZO_VERBS', 'UIR_Y'].includes(f.id)
+          ['LEARNING_YO_G', 'LEARNING_YO_ZCO'].includes(f.id)
         )
       },
       'preterite': {
         name: 'Pretéritos fuertes',
-        description: 'Cambios especiales en pretérito: tuve, pude, hice',
+        description: 'Cambios especiales en pretérito: tuve, estuve',
         families: availableFamilies.filter(f => 
-          ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL', 'HIATUS_Y'].includes(f.id)
+          ['LEARNING_PRET_FUERTE', 'LEARNING_SER_IR'].includes(f.id)
         )
       },
       'orthographic': {
         name: 'Cambios ortográficos',
-        description: 'Conservación del sonido: busqué, llegué, empecé',
+        description: 'Conservación del sonido: busqué, llegué',
         families: availableFamilies.filter(f => 
-          ['ORTH_CAR', 'ORTH_GAR', 'ORTH_ZAR', 'ORTH_GUAR'].includes(f.id)
+          ['LEARNING_ORTH_CAR', 'LEARNING_ORTH_GAR'].includes(f.id)
+        )
+      },
+      'special': {
+        name: 'Casos especiales',
+        description: 'Irregularidades únicas: jugar (u→ue), ser/ir',
+        families: availableFamilies.filter(f => 
+          ['LEARNING_JUGAR_UNICO', 'LEARNING_SER_IR'].includes(f.id)
         )
       }
     };

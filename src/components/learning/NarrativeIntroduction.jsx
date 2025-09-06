@@ -5,52 +5,29 @@ import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 import { verbs } from '../../data/verbs.js';
 
-// Verbos paradigmáticos por familia irregular
+// Verbos paradigmáticos PEDAGÓGICOS por familia (solo súper frecuentes y claros)
 const PARADIGMATIC_VERBS = {
-  // Diptongación
-  'DIPHT_E_IE': ['pensar', 'cerrar', 'empezar', 'perder', 'entender', 'querer'],
-  'DIPHT_O_UE': ['volver', 'poder', 'contar', 'encontrar', 'recordar', 'llover'], 
-  'DIPHT_U_UE': ['jugar'],
-  'E_I_IR': ['pedir', 'servir', 'repetir', 'elegir', 'seguir', 'vestir'],
-  'O_U_GER_IR': ['dormir', 'morir'],
+  // Diptongos básicos (solo 3 súper frecuentes cada uno)
+  'LEARNING_E_IE': ['pensar', 'cerrar', 'querer'],
+  'LEARNING_O_UE': ['poder', 'volver', 'contar'], 
+  'LEARNING_E_I': ['pedir', 'servir'],
   
-  // Irregulares en YO
-  'G_VERBS': ['tener', 'poner', 'salir', 'venir', 'hacer', 'traer'],
-  'JO_VERBS': ['proteger', 'elegir', 'dirigir', 'exigir'],
-  'GU_DROP': ['seguir', 'distinguir', 'conseguir'],
-  'ZCO_VERBS': ['conocer', 'parecer', 'conducir', 'traducir', 'producir', 'crecer'],
-  'ZO_VERBS': ['vencer', 'ejercer', 'torcer', 'convencer'],
-  'UIR_Y': ['construir', 'huir', 'destruir', 'incluir', 'concluir', 'sustituir'],
+  // Caso único u→ue
+  'LEARNING_JUGAR_UNICO': ['jugar'],
   
-  // Pretéritos fuertes
-  'PRET_UV': ['andar', 'estar', 'tener'],
-  'PRET_U': ['poder', 'poner', 'saber', 'caber', 'haber'],
-  'PRET_I': ['querer', 'venir', 'hacer'],
-  'PRET_J': ['decir', 'traer', 'conducir', 'traducir', 'producir'],
-  'PRET_SUPPL': ['ir', 'ser', 'dar', 'ver'],
-  'HIATUS_Y': ['leer', 'creer', 'construir', 'caer', 'oír'],
+  // Primera persona irregular (solo súper esenciales)
+  'LEARNING_YO_G': ['tener', 'poner'],
+  'LEARNING_YO_ZCO': ['conocer'],
   
-  // Ortográficos
-  'ORTH_CAR': ['buscar', 'sacar', 'tocar', 'explicar', 'practicar', 'aplicar'],
-  'ORTH_GAR': ['llegar', 'pagar', 'jugar', 'entregar', 'negar', 'apagar'],
-  'ORTH_ZAR': ['empezar', 'almorzar', 'organizar', 'comenzar', 'alcanzar', 'abrazar'],
-  'ORTH_GUAR': ['averiguar', 'apaciguar'],
+  // Cambios ortográficos (solo súper frecuentes)
+  'LEARNING_ORTH_CAR': ['buscar', 'sacar'],
+  'LEARNING_ORTH_GAR': ['llegar', 'pagar'],
   
-  // Acentuación -iar/-uar
-  'IAR_VERBS': ['enviar', 'confiar', 'variar', 'estudiar', 'cambiar'],
-  'UAR_VERBS': ['continuar', 'actuar', 'graduar', 'efectuar'],
+  // Pretéritos fuertes (solo para aprender el patrón)
+  'LEARNING_PRET_FUERTE': ['tener', 'estar'],
   
-  // Otros irregulares
-  'MISC_IRREG': ['oír', 'caer', 'ver', 'dar', 'ir', 'ser', 'estar', 'haber'],
-  'DEFECTIVE': ['soler', 'abolir', 'blandir'],
-  
-  // Futuros/condicionales irregulares
-  'FUT_IRREG_DROP_E': ['poder', 'querer', 'saber', 'caber', 'haber'],
-  'FUT_IRREG_DROP_ER': ['hacer', 'decir'],
-  'FUT_IRREG_D': ['poner', 'tener', 'venir', 'salir'],
-  
-  // Subjuntivos especiales
-  'SUBJ_IRREG': ['ser', 'estar', 'dar', 'ir', 'saber', 'haber']
+  // Casos especiales (memorización)
+  'LEARNING_SER_IR': ['ser', 'ir']
 };
 
 // Seleccionar verbos apropiados según el tipo y familias
@@ -197,11 +174,11 @@ function generateIrregularContent(tense, selectedVerbs, verbObjects, selectedFam
 
 // Determinar el tipo principal de irregularidad
 function determineIrregularityType(familyTypes, tense) {
-  if (familyTypes.includes('DIPHT_E_IE') || familyTypes.includes('DIPHT_O_UE') || familyTypes.includes('DIPHT_U_UE')) {
+  if (familyTypes.includes('LEARNING_E_IE') || familyTypes.includes('LEARNING_O_UE') || familyTypes.includes('LEARNING_U_UE_JUGAR')) {
     return 'diphthong';
   } else if (familyTypes.includes('E_I_IR')) {
     return 'e-i-change';
-  } else if (familyTypes.some(f => ['G_VERBS', 'ZCO_VERBS', 'ZO_VERBS', 'JO_VERBS', 'GU_DROP', 'UIR_Y'].includes(f))) {
+  } else if (familyTypes.some(f => ['LEARNING_YO_G', 'LEARNING_YO_ZCO', 'LEARNING_YO_ZO'].includes(f))) {
     return 'yo-irregular';
   } else if (familyTypes.some(f => ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'].includes(f))) {
     return 'strong-preterite';
@@ -599,16 +576,16 @@ function analyzeIrregularityPattern(verbObj, forms, familyId, tense) {
   const regularStem = lemma.slice(0, -2);
   
   // Diptongación e→ie, o→ue, u→ue
-  if (['DIPHT_E_IE', 'DIPHT_O_UE', 'DIPHT_U_UE'].includes(familyId)) {
+  if (['LEARNING_E_IE', 'LEARNING_O_UE', 'LEARNING_U_UE_JUGAR'].includes(familyId)) {
     // La diptongación ocurre en formas acentuadas
     const thirdPersonForm = forms.find(f => f.person === '3s');
     if (thirdPersonForm && thirdPersonForm.value) {
       // Buscar el cambio vocálico
-      if (familyId === 'DIPHT_E_IE' && thirdPersonForm.value.includes('ie')) {
+      if (familyId === 'LEARNING_E_IE' && thirdPersonForm.value.includes('ie')) {
         return thirdPersonForm.value.split('ie')[0] + 'ie';
-      } else if (familyId === 'DIPHT_O_UE' && thirdPersonForm.value.includes('ue')) {
+      } else if (familyId === 'LEARNING_O_UE' && thirdPersonForm.value.includes('ue')) {
         return thirdPersonForm.value.split('ue')[0] + 'ue';
-      } else if (familyId === 'DIPHT_U_UE' && thirdPersonForm.value.includes('ue')) {
+      } else if (familyId === 'LEARNING_U_UE_JUGAR' && thirdPersonForm.value.includes('ue')) {
         return thirdPersonForm.value.split('ue')[0] + 'ue';
       }
     }
@@ -627,7 +604,7 @@ function analyzeIrregularityPattern(verbObj, forms, familyId, tense) {
   }
   
   // Verbos irregulares en YO
-  if (['G_VERBS', 'ZCO_VERBS', 'ZO_VERBS', 'JO_VERBS', 'GU_DROP', 'UIR_Y'].includes(familyId)) {
+  if (['LEARNING_YO_G', 'LEARNING_YO_ZCO', 'LEARNING_YO_ZO'].includes(familyId)) {
     const firstPersonForm = forms.find(f => f.person === '1s');
     if (firstPersonForm && firstPersonForm.value && tense === 'pres') {
       // Extraer raíz irregular de la forma yo
@@ -726,9 +703,12 @@ function getEndingsForVerb(verbObj, tense) {
 function getIrregularPattern(verb, selectedFamilies) {
   if (!selectedFamilies) return '';
   
-  if (selectedFamilies.includes('DIPHT_E_IE')) return 'e→ie';
-  if (selectedFamilies.includes('DIPHT_O_UE')) return 'o→ue';
-  if (selectedFamilies.includes('G_VERBS')) return 'irregular en yo';
+  if (selectedFamilies.includes('LEARNING_E_IE')) return 'e→ie';
+  if (selectedFamilies.includes('LEARNING_O_UE')) return 'o→ue';
+  if (selectedFamilies.includes('LEARNING_U_UE_JUGAR')) return 'u→ue (jugar)';
+  if (selectedFamilies.includes('LEARNING_YO_G')) return 'irregular en yo (-g)';
+  if (selectedFamilies.includes('LEARNING_YO_ZCO')) return 'irregular en yo (-zco)';
+  if (selectedFamilies.includes('LEARNING_YO_ZO')) return 'irregular en yo (-zo)';
   
   return 'irregular';
 }

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
-import { categorizeVerb } from '../../lib/data/irregularFamilies.js';
+import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
@@ -73,7 +73,7 @@ function analyzeIrregularities(verb, actualForms, tense) {
   const stemForTense = (t) => (t === 'fut' || t === 'cond') ? lemma : getRegularStem(lemma);
   const regularStem = stemForTense(tense);
   const regularEndings = getRegularEndings(verbEnding, tense);
-  const families = categorizeVerb(lemma, verb);
+  const families = categorizeLearningVerb(lemma, verb);
 
   const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
   const strip = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -96,22 +96,22 @@ function analyzeIrregularities(verb, actualForms, tense) {
     let explanation = '';
 
     if (isIrregular) {
-      if (families.includes('G_VERBS') && form.person === '1s' && actual.endsWith('go')) {
+      if (families.includes('LEARNING_YO_G') && form.person === '1s' && actual.endsWith('go')) {
         irregularity = 'yo_irregular';
-        explanation = 'Irregular en YO: añade -g-';
-      } else if (families.includes('DIPHT_E_IE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
+        explanation = 'YO irregular: añade -g';
+      } else if (families.includes('LEARNING_E_IE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
         if (actual.includes('ie') && !expectedRegular.includes('ie')) {
           irregularity = 'diphthong_e_ie';
           explanation = 'Diptongo: e → ie (sílaba tónica)';
         }
-      } else if (families.includes('DIPHT_O_UE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
+      } else if (families.includes('LEARNING_O_UE') && !form.person.includes('p') && form.person !== '2p_vosotros') {
         if (actual.includes('ue') && !expectedRegular.includes('ue')) {
           irregularity = 'diphthong_o_ue';
           explanation = 'Diptongo: o → ue (sílaba tónica)';
         }
-      } else if (families.includes('ZCO_VERBS') && form.person === '1s' && actual.includes('zc')) {
+      } else if (families.includes('LEARNING_YO_ZCO') && form.person === '1s' && actual.includes('zc')) {
         irregularity = 'zco_verbs';
-        explanation = 'Consonante + cer/cir: añade -zc-';
+        explanation = 'YO irregular: añade -zco';
       } else {
         irregularity = 'other';
         explanation = 'Forma irregular';
@@ -253,11 +253,16 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
       const verbEnding = lemma.slice(-2);
       const familyDescriptions = irregularityAnalysis.families.map(family => {
         const familyMap = {
-          'G_VERBS': 'Irregular en YO',
-          'DIPHT_E_IE': 'Diptongo e→ie', 
-          'DIPHT_O_UE': 'Diptongo o→ue',
-          'ZCO_VERBS': 'Añade -zc-',
-          'E_I_IR': 'Cambio e→i'
+          'LEARNING_YO_G': 'YO irregular con -g',
+          'LEARNING_E_IE': 'Diptongo e→ie', 
+          'LEARNING_O_UE': 'Diptongo o→ue',
+          'LEARNING_JUGAR_UNICO': 'Único u→ue (jugar)',
+          'LEARNING_YO_ZCO': 'YO irregular con -zco',
+          'LEARNING_E_I': 'Cambio e→i',
+          'LEARNING_ORTH_CAR': 'Ortográfico -car→-qu',
+          'LEARNING_ORTH_GAR': 'Ortográfico -gar→-gu',
+          'LEARNING_PRET_FUERTE': 'Pretérito fuerte',
+          'LEARNING_SER_IR': 'Muy irregular (ser/ir)'
         };
         return familyMap[family] || family;
       }).join(', ');

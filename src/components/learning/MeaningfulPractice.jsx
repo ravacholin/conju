@@ -22,11 +22,11 @@ const timelineData = {
     title: 'El día de ayer de María',
     events: [
       { time: '7:00', icon: '☕️', prompt: 'tomar café' },
-      { time: '12:00', icon: '🍽️', prompt: 'almorzar' },
+      { time: '12:00', icon: '🍽️', prompt: 'comer' },
       { time: '18:00', icon: '🏋️', prompt: 'ir al gimnasio' },
       { time: '22:00', icon: '🛏️', prompt: 'acostarse' },
     ],
-    expectedVerbs: ['tomó', 'almorzó', 'fue', 'se acostó'],
+    expectedVerbs: ['tomó', 'comió', 'fue', 'se acostó'],
   },
   subjPres: {
     type: 'prompts',
