@@ -42,6 +42,36 @@ export const storyData = {
       { group: '-er', verb: 'leer', stem: 'le', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
       { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
     ],
+    irregularStory: {
+      title: 'Los únicos tres irregulares del imperfecto',
+      introduction: 'En el imperfecto, casi todos los verbos son regulares. Solo hay 3 verbos irregulares en todo el español: ser, ir y ver.',
+      concept: 'Estos verbos tienen formas completamente irregulares que hay que memorizar. No siguen ningún patrón de los verbos regulares.',
+      sentences: [
+        { text: 'Mi abuelo __era__ muy divertido y siempre nos contaba historias.', verb: 'era', lemma: 'ser' },
+        { text: 'Todos los veranos __íbamos__ a la playa con toda la familia.', verb: 'íbamos', lemma: 'ir' },
+        { text: 'Por las noches __veía__ las estrellas desde la ventana de mi cuarto.', verb: 'veía', lemma: 'ver' }
+      ],
+      paradigms: [
+        {
+          lemma: 'ser',
+          meaning: 'to be (permanent qualities, identity)',
+          forms: ['era', 'eras', 'era', 'éramos', 'erais', 'eran'],
+          example: 'Él era muy alto cuando era joven.'
+        },
+        {
+          lemma: 'ir',
+          meaning: 'to go',
+          forms: ['iba', 'ibas', 'iba', 'íbamos', 'ibais', 'iban'],
+          example: 'Todos los días iba al colegio caminando.'
+        },
+        {
+          lemma: 'ver',
+          meaning: 'to see',
+          forms: ['veía', 'veías', 'veía', 'veíamos', 'veíais', 'veían'],
+          example: 'Desde mi ventana veía el mar a lo lejos.'
+        }
+      ]
+    }
   },
   fut: {
     title: 'Planes para el futuro',

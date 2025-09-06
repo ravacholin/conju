@@ -5,29 +5,37 @@ import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 import { verbs } from '../../data/verbs.js';
 
-// Verbos paradigmáticos PEDAGÓGICOS por familia (solo súper frecuentes y claros)
+// Verbos paradigmáticos REORGANIZADOS por familia
 const PARADIGMATIC_VERBS = {
-  // Diptongos básicos (solo 3 súper frecuentes cada uno)
-  'LEARNING_E_IE': ['pensar', 'cerrar', 'querer'],
-  'LEARNING_O_UE': ['poder', 'volver', 'contar'], 
-  'LEARNING_E_I': ['pedir', 'servir'],
+  // ========================================
+  // NUEVAS FAMILIAS DEL PRESENTE
+  // ========================================
   
-  // Caso único u→ue
+  // 1) Irregulares en YO (con -g)
+  'LEARNING_YO_G_PRESENT': ['tener', 'poner', 'hacer', 'salir', 'venir', 'valer'],
+  
+  // 2) Verbos que diptongan (unificados - orden específico para drill)
+  'LEARNING_DIPHTHONGS': ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir'],
+  
+  // 3) Muy irregulares del presente
+  'LEARNING_VERY_IRREGULAR': ['ser', 'estar', 'ir', 'dar'],
+  
+  // ========================================
+  // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
+  // ========================================
+  
+  // Caso único
   'LEARNING_JUGAR_UNICO': ['jugar'],
   
-  // Primera persona irregular (solo súper esenciales)
-  'LEARNING_YO_G': ['tener', 'poner'],
-  'LEARNING_YO_ZCO': ['conocer'],
-  
-  // Cambios ortográficos (solo súper frecuentes)
+  // Cambios ortográficos
   'LEARNING_ORTH_CAR': ['buscar', 'sacar'],
   'LEARNING_ORTH_GAR': ['llegar', 'pagar'],
   
-  // Pretéritos fuertes (solo para aprender el patrón)
+  // Pretéritos fuertes
   'LEARNING_PRET_FUERTE': ['tener', 'estar'],
   
-  // Casos especiales (memorización)
-  'LEARNING_SER_IR': ['ser', 'ir']
+  // Irregulares del imperfecto
+  'LEARNING_IMPF_IRREGULAR': ['ser', 'ir', 'ver']
 };
 
 // Seleccionar verbos apropiados según el tipo y familias
@@ -172,63 +180,119 @@ function generateIrregularContent(tense, selectedVerbs, verbObjects, selectedFam
   };
 }
 
-// Determinar el tipo principal de irregularidad
+// Determinar el tipo principal de irregularidad REORGANIZADO
 function determineIrregularityType(familyTypes, tense) {
-  if (familyTypes.includes('LEARNING_E_IE') || familyTypes.includes('LEARNING_O_UE') || familyTypes.includes('LEARNING_U_UE_JUGAR')) {
-    return 'diphthong';
-  } else if (familyTypes.includes('E_I_IR')) {
-    return 'e-i-change';
-  } else if (familyTypes.some(f => ['LEARNING_YO_G', 'LEARNING_YO_ZCO', 'LEARNING_YO_ZO'].includes(f))) {
-    return 'yo-irregular';
-  } else if (familyTypes.some(f => ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'].includes(f))) {
-    return 'strong-preterite';
-  } else if (familyTypes.includes('HIATUS_Y')) {
-    return 'hiatus-y';
-  } else if (familyTypes.some(f => ['ORTH_CAR', 'ORTH_GAR', 'ORTH_ZAR', 'ORTH_GUAR'].includes(f))) {
-    return 'orthographic';
-  } else if (familyTypes.includes('IAR_VERBS') || familyTypes.includes('UAR_VERBS')) {
-    return 'accent-verbs';
+  // Imperfecto irregular (mantenido)
+  if (familyTypes.includes('LEARNING_IMPF_IRREGULAR') && tense === 'impf') {
+    return 'imperfect-irregular';
   }
+  
+  // ========================================
+  // NUEVAS FAMILIAS DEL PRESENTE
+  // ========================================
+  
+  // 1) Irregulares en YO (con -g)
+  else if (familyTypes.includes('LEARNING_YO_G_PRESENT')) {
+    return 'yo-irregular-g';
+  }
+  
+  // 2) Verbos que diptongan (unificados: e→ie, o→ue, e→i)
+  else if (familyTypes.includes('LEARNING_DIPHTHONGS')) {
+    return 'diphthongs-unified';
+  }
+  
+  // 3) Muy irregulares (ser, estar, ir, dar)
+  else if (familyTypes.includes('LEARNING_VERY_IRREGULAR')) {
+    return 'very-irregular-present';
+  }
+  
+  // ========================================
+  // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
+  // ========================================
+  
+  else if (familyTypes.includes('LEARNING_JUGAR_UNICO')) {
+    return 'jugar-unique';
+  } else if (familyTypes.includes('LEARNING_PRET_FUERTE')) {
+    return 'strong-preterite';
+  } else if (familyTypes.some(f => ['LEARNING_ORTH_CAR', 'LEARNING_ORTH_GAR'].includes(f))) {
+    return 'orthographic';
+  }
+  
   return 'general';
 }
 
-// Obtener template de contenido según el tipo de irregularidad
+// Obtener template de contenido según el tipo de irregularidad REORGANIZADO
 function getIrregularContentTemplate(irregularityType, tense, familyTypes) {
   const templates = {
-    diphthong: {
+    // ========================================
+    // NUEVAS FAMILIAS DEL PRESENTE
+    // ========================================
+    
+    'yo-irregular-g': {
       pres: {
-        title: 'Un día especial',
-        explanation: 'Estos verbos cambian su vocal de la raíz cuando está acentuada: e→ie, o→ue, u→ue.',
-        sentenceTemplate: 'diphthong'
+        title: 'Irregulares en YO (presente)',
+        explanation: 'Estos verbos muy frecuentes añaden -g solo en la primera persona (YO): tengo, pongo, hago, salgo, vengo. El resto de las formas son regulares. Esta irregularidad se extiende a todo el subjuntivo.',
+        sentenceTemplate: 'yo-irregular-g'
       },
       subjPres: {
-        title: 'Deseos con cambio vocálico',
-        explanation: 'En presente de subjuntivo, estos verbos mantienen la diptongación: e→ie, o→ue.',
-        sentenceTemplate: 'diphthong-subjunctive'
+        title: 'Irregulares en YO (subjuntivo)',
+        explanation: 'En subjuntivo, la irregularidad de la 1ª persona se extiende a todas las formas: tenga, pongas, haga, salgan.',
+        sentenceTemplate: 'yo-irregular-g-subjunctive'
       }
     },
-    'e-i-change': {
+    
+    'diphthongs-unified': {
       pres: {
-        title: 'Acciones con cambio e→i',
-        explanation: 'Estos verbos -ir cambian e→i en todas las personas excepto nosotros y vosotros.',
-        sentenceTemplate: 'e-i-change'
-      },
-      pretIndef: {
-        title: 'Acciones pasadas con cambio e→i',
-        explanation: 'En pretérito, estos verbos cambian e→i en las terceras personas y en el gerundio.',
-        sentenceTemplate: 'e-i-preterite'
-      }
-    },
-    'yo-irregular': {
-      pres: {
-        title: 'Lo que hago yo',
-        explanation: 'Estos verbos son irregulares en la primera persona del singular (yo), pero regulares en las demás.',
-        sentenceTemplate: 'yo-irregular'
+        title: 'Verbos que diptongan',
+        explanation: 'Estos verbos cambian su vocal de la raíz cuando está acentuada: o→ue (puedo), e→ie (quiero), e→i (pido). Solo cambian nosotros y vosotros NO diptongan porque no llevan el acento en la raíz.',
+        sentenceTemplate: 'diphthongs-unified'
       },
       subjPres: {
-        title: 'Que yo haga cosas especiales',
-        explanation: 'En subjuntivo, la irregularidad de la 1ª persona se extiende a todas las formas.',
-        sentenceTemplate: 'yo-irregular-subjunctive'
+        title: 'Diptongos en subjuntivo',
+        explanation: 'En presente de subjuntivo, los diptongos se mantienen igual: piense, pueda, pida.',
+        sentenceTemplate: 'diphthongs-unified-subjunctive'
+      }
+    },
+    
+    'very-irregular-present': {
+      pres: {
+        title: 'Muy irregulares del presente',
+        explanation: 'Estos 4 verbos súper frecuentes tienen formas completamente irregulares en presente: soy/eres/es, estoy/estás/está, voy/vas/va, doy/das/da. No siguen ningún patrón regular y hay que memorizarlos.',
+        sentenceTemplate: 'very-irregular-present'
+      },
+      subjPres: {
+        title: 'Muy irregulares en subjuntivo',
+        explanation: 'En subjuntivo también son muy irregulares: sea, esté, vaya, dé.',
+        sentenceTemplate: 'very-irregular-subjunctive'
+      }
+    },
+    
+    // ========================================
+    // IMPERFECTO IRREGULAR (mantenido)
+    // ========================================
+    
+    'imperfect-irregular': {
+      impf: {
+        title: 'Los únicos tres irregulares del imperfecto',
+        explanation: 'En el imperfecto, casi todos los verbos son regulares. Solo hay 3 verbos irregulares en todo el español: ser, ir y ver. Sus formas hay que memorizarlas completamente.',
+        sentenceTemplate: 'imperfect-irregular'
+      }
+    },
+    
+    // ========================================
+    // FAMILIAS MANTENIDAS PARA OTROS TIEMPOS
+    // ========================================
+    
+    'jugar-unique': {
+      pres: {
+        title: 'Caso único: jugar (u→ue)',
+        explanation: 'Jugar es el único verbo en español que cambia u→ue: juego, juegas, juega. Es una excepción única que hay que memorizar aparte.',
+        sentenceTemplate: 'jugar-unique'
+      },
+      subjPres: {
+        title: 'Jugar en subjuntivo',
+        explanation: 'En subjuntivo, jugar mantiene el cambio u→ue: juegue, juegues, juegue.',
+        sentenceTemplate: 'jugar-unique-subjunctive'
       }
     },
     'strong-preterite': {
@@ -322,6 +386,82 @@ function generateIrregularSentences(verbObjects, tense, template, irregularityTy
   
   // Templates específicos según el tipo de irregularidad y tiempo
   switch (template) {
+    // ========================================
+    // NUEVAS FAMILIAS DEL PRESENTE
+    // ========================================
+    
+    case 'yo-irregular-g':
+      sentences.push(
+        { text: `Yo __${getConjugation(verbObjects[0], tense, '1s')}__ muchas cosas importantes.`, verb: getConjugation(verbObjects[0], tense, '1s') },
+        { text: `Siempre __${getConjugation(verbObjects[1], tense, '1s')}__ todo en su lugar correcto.`, verb: getConjugation(verbObjects[1], tense, '1s') },
+        { text: `En el trabajo __${getConjugation(verbObjects[2], tense, '1s')}__ mi mejor esfuerzo.`, verb: getConjugation(verbObjects[2], tense, '1s') }
+      );
+      break;
+      
+    case 'yo-irregular-g-subjunctive':
+      sentences.push(
+        { text: `Es importante que yo __${getConjugation(verbObjects[0], tense, '1s', 'subjunctive')}__ tiempo para mi familia.`, verb: getConjugation(verbObjects[0], tense, '1s', 'subjunctive') },
+        { text: `Espero que __${getConjugation(verbObjects[1], tense, '1s', 'subjunctive')}__ todo en orden.`, verb: getConjugation(verbObjects[1], tense, '1s', 'subjunctive') },
+        { text: `Ojalá que __${getConjugation(verbObjects[2], tense, '1s', 'subjunctive')}__ bien mi trabajo.`, verb: getConjugation(verbObjects[2], tense, '1s', 'subjunctive') }
+      );
+      break;
+      
+    case 'diphthongs-unified':
+      sentences.push(
+        { text: `Todos nosotros __${getConjugation(verbObjects[0], tense, '1p')}__ hacer ejercicio.`, verb: getConjugation(verbObjects[0], tense, '1p') },
+        { text: `Mi hermana __${getConjugation(verbObjects[1], tense, '3s')}__ estudiar idiomas.`, verb: getConjugation(verbObjects[1], tense, '3s') },
+        { text: `En el restaurante siempre __${getConjugation(verbObjects[2], tense, '1s')}__ el menú del día.`, verb: getConjugation(verbObjects[2], tense, '1s') }
+      );
+      break;
+      
+    case 'diphthongs-unified-subjunctive':
+      sentences.push(
+        { text: `Espero que __${getConjugation(verbObjects[0], tense, '3s', 'subjunctive')}__ en sus sueños.`, verb: getConjugation(verbObjects[0], tense, '3s', 'subjunctive') },
+        { text: `Es bueno que __${getConjugation(verbObjects[1], tense, '3s', 'subjunctive')}__ a los demás.`, verb: getConjugation(verbObjects[1], tense, '3s', 'subjunctive') },
+        { text: `Ojalá que el chef __${getConjugation(verbObjects[2], tense, '3s', 'subjunctive')}__ bien la comida.`, verb: getConjugation(verbObjects[2], tense, '3s', 'subjunctive') }
+      );
+      break;
+      
+    case 'very-irregular-present':
+      sentences.push(
+        { text: `Mi hermano __${getConjugation(verbObjects[0], tense, '3s')}__ una persona muy amable.`, verb: getConjugation(verbObjects[0], tense, '3s') },
+        { text: `Ahora __${getConjugation(verbObjects[1], tense, '3s')}__ muy contento con su trabajo.`, verb: getConjugation(verbObjects[1], tense, '3s') },
+        { text: `Los fines de semana __${getConjugation(verbObjects[2], tense, '3s')}__ al parque con sus hijos.`, verb: getConjugation(verbObjects[2], tense, '3s') }
+      );
+      break;
+      
+    case 'very-irregular-subjunctive':
+      sentences.push(
+        { text: `Es importante que __${getConjugation(verbObjects[0], tense, '3s', 'subjunctive')}__ honesto.`, verb: getConjugation(verbObjects[0], tense, '3s', 'subjunctive') },
+        { text: `Espero que __${getConjugation(verbObjects[1], tense, '3s', 'subjunctive')}__ bien de salud.`, verb: getConjugation(verbObjects[1], tense, '3s', 'subjunctive') },
+        { text: `Ojalá que __${getConjugation(verbObjects[2], tense, '3s', 'subjunctive')}__ de vacaciones.`, verb: getConjugation(verbObjects[2], tense, '3s', 'subjunctive') }
+      );
+      break;
+    
+    // ========================================
+    // IMPERFECTO IRREGULAR (mantenido)
+    // ========================================
+    
+    case 'imperfect-irregular':
+      sentences.push(
+        { text: `Mi abuelo __${getConjugation(verbObjects[0], tense, '3s')}__ muy divertido y siempre nos contaba historias.`, verb: getConjugation(verbObjects[0], tense, '3s') },
+        { text: `Todos los veranos __${getConjugation(verbObjects[1], tense, '1p')}__ a la playa con toda la familia.`, verb: getConjugation(verbObjects[1], tense, '1p') },
+        { text: `Por las noches __${getConjugation(verbObjects[2], tense, '1s')}__ las estrellas desde mi ventana.`, verb: getConjugation(verbObjects[2], tense, '1s') }
+      );
+      break;
+      
+    // ========================================
+    // CASOS ESPECIALES Y OTROS TIEMPOS (mantenidos)
+    // ========================================
+      
+    case 'jugar-unique':
+      sentences.push(
+        { text: `A mi hermano le encanta __${getConjugation(verbObjects[0], tense, 'infinitive')}__ fútbol.`, verb: getConjugation(verbObjects[0], tense, '3s') },
+        { text: `Los niños __${getConjugation(verbObjects[0], tense, '3p')}__ en el parque todos los días.`, verb: getConjugation(verbObjects[0], tense, '3p') },
+        { text: `¿Tú también __${getConjugation(verbObjects[0], tense, '2s_tu')}__ al tenis?`, verb: getConjugation(verbObjects[0], tense, '2s_tu') }
+      );
+      break;
+      
     case 'diphthong':
       sentences.push(
         { text: `María __${getConjugation(verbObjects[0], tense, '3s')}__ mucho en el trabajo.`, verb: getConjugation(verbObjects[0], tense, '3s') },
@@ -729,16 +869,25 @@ function getEndingsForVerb(verbObj, tense) {
   return endings[tense] || endings.pres;
 }
 
-// Obtener patrón irregular
+// Obtener patrón irregular REORGANIZADO
 function getIrregularPattern(verb, selectedFamilies) {
   if (!selectedFamilies) return '';
   
-  if (selectedFamilies.includes('LEARNING_E_IE')) return 'e→ie';
-  if (selectedFamilies.includes('LEARNING_O_UE')) return 'o→ue';
-  if (selectedFamilies.includes('LEARNING_U_UE_JUGAR')) return 'u→ue (jugar)';
-  if (selectedFamilies.includes('LEARNING_YO_G')) return 'irregular en yo (-g)';
-  if (selectedFamilies.includes('LEARNING_YO_ZCO')) return 'irregular en yo (-zco)';
-  if (selectedFamilies.includes('LEARNING_YO_ZO')) return 'irregular en yo (-zo)';
+  // ========================================
+  // NUEVAS FAMILIAS DEL PRESENTE
+  // ========================================
+  if (selectedFamilies.includes('LEARNING_YO_G_PRESENT')) return 'irregular en YO: añade -g (tengo, pongo, hago)';
+  if (selectedFamilies.includes('LEARNING_DIPHTHONGS')) return 'diptongan: e→ie, o→ue, e→i (pienso, puedo, pido)';
+  if (selectedFamilies.includes('LEARNING_VERY_IRREGULAR')) return 'muy irregulares (soy, estoy, voy, doy)';
+  
+  // ========================================
+  // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
+  // ========================================
+  if (selectedFamilies.includes('LEARNING_IMPF_IRREGULAR')) return 'imperfecto irregular: era, iba, veía';
+  if (selectedFamilies.includes('LEARNING_JUGAR_UNICO')) return 'único caso u→ue: juego, juegas';
+  if (selectedFamilies.includes('LEARNING_ORTH_CAR')) return 'ortográfico: c→qu (busqué)';
+  if (selectedFamilies.includes('LEARNING_ORTH_GAR')) return 'ortográfico: g→gu (llegué)';
+  if (selectedFamilies.includes('LEARNING_PRET_FUERTE')) return 'pretérito fuerte (tuve, estuve)';
   
   return 'irregular';
 }

@@ -6,91 +6,64 @@ import { categorizeVerb, getFamiliesForTense } from './irregularFamilies.js'
 
 export const LEARNING_IRREGULAR_FAMILIES = {
   // ========================================
-  // NIVEL 1: CAMBIOS VOCÁLICOS FUNDAMENTALES
-  // Solo verbos MUY frecuentes, UNA irregularidad, patrones claros
+  // FAMILIAS REORGANIZADAS PARA EL PRESENTE
+  // Criterio pedagógico: patrones útiles y frecuentes
   // ========================================
   
-  'LEARNING_E_IE': {
-    id: 'LEARNING_E_IE',
-    name: 'Diptongo e → ie',
-    description: 'La vocal e se convierte en ie cuando lleva el acento',
-    paradigmatic: 'pensar',
-    examples: ['pensar', 'cerrar', 'querer'], // Solo 3 súper frecuentes, sin mezclas
-    pattern: 'pensar: pienso, piensas, piensa (nosotros pensamos)',
-    affectedTenses: ['pres', 'subjPres'],
-    level: 'A2',
-    concept: 'diphthong',
-    pedagogicalNote: 'Solo en formas tónicas. Verbos súper frecuentes con patrón claro.'
-  },
-
-  'LEARNING_O_UE': {
-    id: 'LEARNING_O_UE', 
-    name: 'Diptongo o → ue',
-    description: 'La vocal o se convierte en ue cuando lleva el acento',
-    paradigmatic: 'poder',
-    examples: ['poder', 'volver', 'contar'], // Solo 3 súper frecuentes, limpios
-    pattern: 'poder: puedo, puedes, puede (nosotros podemos)',
-    affectedTenses: ['pres', 'subjPres'],
-    level: 'A2',
-    concept: 'diphthong',
-    pedagogicalNote: 'Solo en formas tónicas. Patrón idéntico a e→ie.'
-  },
-
-  'LEARNING_E_I': {
-    id: 'LEARNING_E_I',
-    name: 'Cambio e → i (verbos -ir)',
-    description: 'La vocal e se convierte en i en verbos -ir',
-    paradigmatic: 'pedir',
-    examples: ['pedir', 'servir'], // Solo 2 súper frecuentes y limpios
-    pattern: 'pedir: pido, pides, pide (también gerundio: pidiendo)',
-    affectedTenses: ['pres', 'subjPres', 'pretIndef', 'ger'],
-    level: 'A2', // Más temprano porque son verbos esenciales
-    concept: 'vowel_change',
-    pedagogicalNote: 'Más extenso que diptongos. Solo verbos -ir muy frecuentes.'
-  },
-
-  // ========================================
-  // NIVEL 2: PRIMERA PERSONA IRREGULAR  
-  // Solo los MÁS frecuentes y pedagógicamente claros
-  // ========================================
-
-  'LEARNING_YO_G': {
-    id: 'LEARNING_YO_G',
-    name: 'YO irregular: añade -g',
-    description: 'Verbos súper frecuentes que añaden -g en YO',
+  // 1) IRREGULARES EN YO (primera persona con -g)
+  'LEARNING_YO_G_PRESENT': {
+    id: 'LEARNING_YO_G_PRESENT',
+    name: 'Irregulares en YO (presente)',
+    description: 'Verbos muy frecuentes que añaden -g en la primera persona: tengo, pongo, hago, salgo',
     paradigmatic: 'tener',
-    examples: ['tener', 'poner'], // Solo 2 súper esenciales, sin confusión
-    pattern: 'tener: tengo (pero tienes, tiene) + subjuntivo: tenga',
+    examples: ['tener', 'poner', 'hacer', 'salir', 'venir', 'valer', 'caer'], // Verbos más frecuentes con -g
+    pattern: 'tener: tengo, tienes, tiene, tenemos, tenéis, tienen (solo YO cambia)',
     affectedTenses: ['pres', 'subjPres'],
-    level: 'A2', 
-    concept: 'yo_irregular',
-    pedagogicalNote: 'Solo verbos esenciales. YO irregular = subjuntivo irregular.'
+    level: 'A2',
+    concept: 'yo_irregular_g',
+    pedagogicalNote: 'La irregularidad en YO se extiende a todo el subjuntivo. Patrón muy productivo.'
   },
 
-  'LEARNING_YO_ZCO': {
-    id: 'LEARNING_YO_ZCO',
-    name: 'YO irregular: añade -zco',
-    description: 'Verbos frecuentes vocal + cer que añaden -zco',
-    paradigmatic: 'conocer',
-    examples: ['conocer'], // Solo 1 súper claro y frecuente
-    pattern: 'conocer: conozco (pero conoces, conoce) + subjuntivo: conozca',
+  // 2) VERBOS QUE DIPTONGAN (cambios vocálicos sistemáticos)
+  'LEARNING_DIPHTHONGS': {
+    id: 'LEARNING_DIPHTHONGS',
+    name: 'Verbos que diptongan',
+    description: 'Cambios vocálicos sistemáticos: o→ue (poder), e→ie (querer), e→i (pedir)',
+    paradigmatic: 'poder',
+    examples: ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir'], // Orden: o→ue, e→ie, e→i para drill
+    pattern: 'poder: puedo, puedes, puede, podemos, podéis, pueden (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
-    level: 'A2', // Más temprano - conocer es esencial
-    concept: 'yo_irregular',
-    pedagogicalNote: 'Vocal + cer = -zco. Solo el más frecuente para aprender el patrón.'
+    level: 'A2',
+    concept: 'diphthongs_all',
+    pedagogicalNote: 'Tres tipos: o→ue (poder), e→ie (querer), e→i (pedir). Solo en sílabas tónicas (acentuadas).'
+  },
+
+  // 3) MUY IRREGULARES (casos especiales frecuentes)
+  'LEARNING_VERY_IRREGULAR': {
+    id: 'LEARNING_VERY_IRREGULAR',
+    name: 'Muy irregulares',
+    description: 'Verbos súper frecuentes con formas completamente irregulares: ser, estar, ir, dar',
+    paradigmatic: 'ser',
+    examples: ['ser', 'estar', 'ir', 'dar'], // Los 4 más útiles y frecuentes
+    pattern: 'ser: soy, eres, es, somos, sois, son (formas únicas que hay que memorizar)',
+    affectedTenses: ['pres', 'subjPres'],
+    level: 'A1', // Los más básicos y frecuentes
+    concept: 'very_irregular',
+    pedagogicalNote: 'Sin patrón regular. Hay que memorizar las formas completas. Súper frecuentes en conversación.'
   },
 
   // ========================================
-  // NIVEL 3: CAMBIOS ORTOGRÁFICOS (solo esenciales)
-  // Solo verbos súper frecuentes para aprender la regla básica
+  // FAMILIAS PARA OTROS TIEMPOS VERBALES
+  // (Mantenidas del sistema anterior)
   // ========================================
 
+  // Cambios ortográficos (para pretérito y subjuntivo)
   'LEARNING_ORTH_CAR': {
     id: 'LEARNING_ORTH_CAR',
     name: 'Ortográfico: -car → -qu',
     description: 'Verbos -car súper frecuentes: c → qu delante de e',
     paradigmatic: 'buscar',
-    examples: ['buscar', 'sacar'], // Solo 2 súper frecuentes
+    examples: ['buscar', 'sacar'],
     pattern: 'buscar: busqué, busque (conservar sonido /k/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -103,7 +76,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Ortográfico: -gar → -gu', 
     description: 'Verbos -gar súper frecuentes: g → gu delante de e',
     paradigmatic: 'llegar',
-    examples: ['llegar', 'pagar'], // Solo 2 súper frecuentes, SIN jugar (es excepción)
+    examples: ['llegar', 'pagar'],
     pattern: 'llegar: llegué, llegue (conservar sonido /g/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -111,41 +84,21 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     pedagogicalNote: 'Solo verbos esenciales. Jugar se enseña aparte por ser único u→ue.'
   },
 
-  // ========================================
-  // NIVEL 4: PRETÉRITOS FUERTES (solo esenciales)
-  // Solo los MÁS frecuentes para aprender el concepto
-  // ========================================
-
+  // Pretéritos fuertes
   'LEARNING_PRET_FUERTE': {
     id: 'LEARNING_PRET_FUERTE',
     name: 'Pretéritos fuertes básicos',
     description: 'Solo los pretéritos fuertes más esenciales',
     paradigmatic: 'tener',
-    examples: ['tener', 'estar'], // Solo 2 súper esenciales para aprender el patrón
+    examples: ['tener', 'estar'],
     pattern: 'tener: tuve, tuviste, tuvo (sin acentos en 1ª y 3ª)',
     affectedTenses: ['pretIndef', 'subjImpf'],
-    level: 'B1', // Más temprano - son verbos esenciales
+    level: 'B1',
     concept: 'strong_preterite',
     pedagogicalNote: 'Solo los más frecuentes para entender que existe el patrón.'
   },
 
-  // ========================================
-  // NIVEL 5: CASOS ÚNICOS (memorización)
-  // ========================================
-
-  'LEARNING_SER_IR': {
-    id: 'LEARNING_SER_IR',
-    name: 'Casos únicos (ser/ir)', 
-    description: 'Verbos que hay que memorizar completos',
-    paradigmatic: 'ser',
-    examples: ['ser', 'ir'],
-    pattern: 'ser: soy, eres, es / era, eras, era / fui, fuiste, fue',
-    affectedTenses: ['pres', 'pretIndef', 'impf', 'subjPres'],
-    level: 'A1', // Temprano porque son súper frecuentes
-    concept: 'memorization',
-    pedagogicalNote: 'No hay patrón - memorizar completo. Súper frecuentes.'
-  },
-
+  // Caso único de jugar
   'LEARNING_JUGAR_UNICO': {
     id: 'LEARNING_JUGAR_UNICO',
     name: 'Caso único (jugar u→ue)',
@@ -157,6 +110,24 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     level: 'A2',
     concept: 'unique_case',
     pedagogicalNote: 'Excepción única. Enseñar separado de diptongos normales.'
+  },
+
+  // ========================================
+  // NIVEL 6: IRREGULARES DEL IMPERFECTO
+  // Solo 3 verbos en todo el español tienen imperfecto irregular
+  // ========================================
+
+  'LEARNING_IMPF_IRREGULAR': {
+    id: 'LEARNING_IMPF_IRREGULAR',
+    name: 'Imperfecto irregular (ser, ir, ver)',
+    description: 'Los únicos 3 verbos con imperfecto irregular en español',
+    paradigmatic: 'ser',
+    examples: ['ser', 'ir', 'ver'],
+    pattern: 'ser: era, eras, era / ir: iba, ibas, iba / ver: veía, veías, veía',
+    affectedTenses: ['impf'],
+    level: 'A2',
+    concept: 'imperfect_irregular',
+    pedagogicalNote: 'Solo 3 verbos irregulares en imperfecto. Memorizar las formas completas.'
   }
 }
 
@@ -184,79 +155,123 @@ export function getLearningFamilyById(id) {
   return LEARNING_IRREGULAR_FAMILIES[id] || null
 }
 
-// Mapeo de verbos a familias pedagógicas (solo casos paradigmáticos súper frecuentes)
+// Mapeo de verbos a familias pedagógicas REORGANIZADO
 export const LEARNING_VERB_TO_FAMILIES = {
-  // Diptongos e→ie (solo 3 súper frecuentes)
-  'pensar': ['LEARNING_E_IE'],
-  'cerrar': ['LEARNING_E_IE'], 
-  'querer': ['LEARNING_E_IE'],
+  // ========================================
+  // 1) IRREGULARES EN YO (presente con -g)
+  // ========================================
+  'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_FUERTE'],
+  'poner': ['LEARNING_YO_G_PRESENT'],
+  'hacer': ['LEARNING_YO_G_PRESENT'],
+  'salir': ['LEARNING_YO_G_PRESENT'],
+  'venir': ['LEARNING_YO_G_PRESENT'],
+  'valer': ['LEARNING_YO_G_PRESENT'],
+  'caer': ['LEARNING_YO_G_PRESENT'],
+  // Verbos compuestos también tienen -g
+  'obtener': ['LEARNING_YO_G_PRESENT'],
+  'mantener': ['LEARNING_YO_G_PRESENT'],
+  'contener': ['LEARNING_YO_G_PRESENT'],
+  'sostener': ['LEARNING_YO_G_PRESENT'],
+  'componer': ['LEARNING_YO_G_PRESENT'],
+  'proponer': ['LEARNING_YO_G_PRESENT'],
+  'disponer': ['LEARNING_YO_G_PRESENT'],
+  'exponer': ['LEARNING_YO_G_PRESENT'],
+  'suponer': ['LEARNING_YO_G_PRESENT'],
 
-  // Diptongos o→ue (solo 3 súper frecuentes)
-  'poder': ['LEARNING_O_UE'],
-  'volver': ['LEARNING_O_UE'],
-  'contar': ['LEARNING_O_UE'],
+  // ========================================
+  // 2) VERBOS QUE DIPTONGAN (e→ie, o→ue, e→i)
+  // ========================================
+  // e→ie
+  'pensar': ['LEARNING_DIPHTHONGS'],
+  'cerrar': ['LEARNING_DIPHTHONGS'],
+  'querer': ['LEARNING_DIPHTHONGS'],
+  'empezar': ['LEARNING_DIPHTHONGS'],
+  'entender': ['LEARNING_DIPHTHONGS'],
+  'perder': ['LEARNING_DIPHTHONGS'],
+  'sentir': ['LEARNING_DIPHTHONGS'],
+  'preferir': ['LEARNING_DIPHTHONGS'],
+  
+  // o→ue  
+  'poder': ['LEARNING_DIPHTHONGS'],
+  'volver': ['LEARNING_DIPHTHONGS'],
+  'contar': ['LEARNING_DIPHTHONGS'],
+  'encontrar': ['LEARNING_DIPHTHONGS'],
+  'recordar': ['LEARNING_DIPHTHONGS'],
+  'dormir': ['LEARNING_DIPHTHONGS'],
+  'morir': ['LEARNING_DIPHTHONGS'],
+  
+  // e→i (verbos -ir)
+  'pedir': ['LEARNING_DIPHTHONGS'],
+  'servir': ['LEARNING_DIPHTHONGS'],
+  'repetir': ['LEARNING_DIPHTHONGS'],
+  'seguir': ['LEARNING_DIPHTHONGS'],
+  
+  // u→ue (caso especial)
+  'jugar': ['LEARNING_JUGAR_UNICO'], // Mantenemos separado por ser único
 
-  // Único u→ue (solo jugar - caso especial)
-  'jugar': ['LEARNING_JUGAR_UNICO'],
+  // ========================================
+  // 3) MUY IRREGULARES (formas completamente irregulares)
+  // ========================================
+  'ser': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'],
+  'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_FUERTE'],
+  'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'], 
+  'dar': ['LEARNING_VERY_IRREGULAR'],
 
-  // Cambio e→i (solo 2 súper frecuentes)
-  'pedir': ['LEARNING_E_I'],
-  'servir': ['LEARNING_E_I'],
-
-  // YO añade -g (solo 2 súper esenciales)
-  'tener': ['LEARNING_YO_G', 'LEARNING_PRET_FUERTE'],
-  'poner': ['LEARNING_YO_G', 'LEARNING_PRET_FUERTE'],
-
-  // YO añade -zco (solo 1 súper claro)
-  'conocer': ['LEARNING_YO_ZCO'],
-
-  // Ortográficos -car (solo 2 súper frecuentes)
+  // ========================================
+  // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
+  // ========================================
+  
+  // Ortográficos
   'buscar': ['LEARNING_ORTH_CAR'],
   'sacar': ['LEARNING_ORTH_CAR'],
-
-  // Ortográficos -gar (solo 2 súper frecuentes)
   'llegar': ['LEARNING_ORTH_GAR'],
   'pagar': ['LEARNING_ORTH_GAR'],
 
-  // Pretéritos fuertes (solo 2 súper esenciales para aprender el patrón)
-  'tener': ['LEARNING_YO_G', 'LEARNING_PRET_FUERTE'], // Ya incluido arriba
-  'estar': ['LEARNING_PRET_FUERTE'],
-
-  // Casos especiales (memorización completa)
-  'ser': ['LEARNING_SER_IR'],
-  'ir': ['LEARNING_SER_IR']
+  // Imperfecto irregular (ver se añade aquí)
+  'ver': ['LEARNING_IMPF_IRREGULAR']
 }
 
-// MAPEO DE FAMILIAS ANTIGUAS A PEDAGÓGICAS (solo familias que usamos)
+// MAPEO DE FAMILIAS ANTIGUAS A PEDAGÓGICAS REORGANIZADO
 const OLD_TO_LEARNING_FAMILY_MAP = {
-  'DIPHT_E_IE': 'LEARNING_E_IE',
-  'DIPHT_O_UE': 'LEARNING_O_UE', 
-  'DIPHT_U_UE': 'LEARNING_JUGAR_UNICO',
-  'E_I_IR': 'LEARNING_E_I',
-  'G_VERBS': 'LEARNING_YO_G',
-  'ZCO_VERBS': 'LEARNING_YO_ZCO',
+  // Diptongos → nueva familia unificada
+  'DIPHT_E_IE': 'LEARNING_DIPHTHONGS',
+  'DIPHT_O_UE': 'LEARNING_DIPHTHONGS',
+  'E_I_IR': 'LEARNING_DIPHTHONGS',
+  
+  // YO irregular → nueva familia de YO con -g
+  'G_VERBS': 'LEARNING_YO_G_PRESENT',
+  
+  // Muy irregulares → nueva familia para ser/estar/ir/dar
+  'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, estar, dar
+  
+  // Casos especiales mantenidos
+  'DIPHT_U_UE': 'LEARNING_JUGAR_UNICO', // solo jugar
+  
+  // Familias para otros tiempos (mantenidas)
   'ORTH_CAR': 'LEARNING_ORTH_CAR',
   'ORTH_GAR': 'LEARNING_ORTH_GAR',
   'PRET_UV': 'LEARNING_PRET_FUERTE',
   'PRET_U': 'LEARNING_PRET_FUERTE',
   'PRET_I': 'LEARNING_PRET_FUERTE',
   'PRET_J': 'LEARNING_PRET_FUERTE',
-  'PRET_SUPPL': 'LEARNING_SER_IR'
-  // Eliminadas: ZO_VERBS, ORTH_ZAR (no tienen verbos pedagógicamente útiles)
+  'IMPERFECT_IRREG': 'LEARNING_IMPF_IRREGULAR'
 }
 
 // MAPEO INVERSO: PEDAGÓGICAS A ANTIGUAS (para el generator)
 const LEARNING_TO_OLD_FAMILY_MAP = {
-  'LEARNING_E_IE': 'DIPHT_E_IE',
-  'LEARNING_O_UE': 'DIPHT_O_UE',
+  // Nuevas familias del presente
+  'LEARNING_YO_G_PRESENT': 'G_VERBS',
+  'LEARNING_DIPHTHONGS': 'DIPHT_E_IE', // Usar la más común como representante
+  'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',
+  
+  // Casos especiales
   'LEARNING_JUGAR_UNICO': 'DIPHT_U_UE',
-  'LEARNING_E_I': 'E_I_IR',
-  'LEARNING_YO_G': 'G_VERBS',
-  'LEARNING_YO_ZCO': 'ZCO_VERBS',
+  
+  // Familias para otros tiempos (mantenidas)
   'LEARNING_ORTH_CAR': 'ORTH_CAR',
-  'LEARNING_ORTH_GAR': 'ORTH_GAR',
-  'LEARNING_PRET_FUERTE': 'PRET_UV', // Usar la primera para el generator
-  'LEARNING_SER_IR': 'PRET_SUPPL'
+  'LEARNING_ORTH_GAR': 'ORTH_GAR', 
+  'LEARNING_PRET_FUERTE': 'PRET_UV',
+  'LEARNING_IMPF_IRREGULAR': 'IMPERFECT_IRREG'
 }
 
 // Función para categorizar un verbo usando el sistema pedagógico

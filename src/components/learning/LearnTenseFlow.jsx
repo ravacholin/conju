@@ -293,7 +293,7 @@ function LearnTenseFlow({ onHome }) {
                       // Indicativo
                       'pres': 'yo hablo, tú hablas, él/ella habla',
                       'pretIndef': 'yo hablé, tú hablaste, él/ella habló',
-                      'impf': 'yo hablaba, tú hablabas, él/ella hablaba',
+                      'impf': 'yo hablaba, tú hablabas, él/ella hablaba (regulares) / era, iba, veía (irregulares)',
                       'fut': 'yo hablaré, tú hablarás, él/ella hablará',
                       'pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
                       'plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
@@ -351,44 +351,64 @@ function LearnTenseFlow({ onHome }) {
   if (currentStep === 'type-selection') {
     const availableFamilies = getLearningFamiliesForTense(selectedTense.tense);
     
-    // Group families into logical categories
-    const irregularCategories = {
-      'basic': {
-        name: 'Irregulares básicos',
-        description: 'Patrones vocálicos principales: e→ie, o→ue, e→i',
-        families: availableFamilies.filter(f => 
-          ['LEARNING_E_IE', 'LEARNING_O_UE', 'LEARNING_E_I'].includes(f.id)
-        )
-      },
-      'yo': {
+    // Grupos reorganizados con criterio pedagógico claro
+    const irregularCategories = {};
+    
+    // Para PRESENTE: usar las 3 nuevas categorías principales
+    if (selectedTense.tense === 'pres') {
+      irregularCategories['yo_irregular_g'] = {
         name: 'Irregulares en YO',
-        description: 'Alternancias en 1ª persona: tengo, conozco',
-        families: availableFamilies.filter(f => 
-          ['LEARNING_YO_G', 'LEARNING_YO_ZCO'].includes(f.id)
-        )
-      },
-      'preterite': {
-        name: 'Pretéritos fuertes',
-        description: 'Cambios especiales en pretérito: tuve, estuve',
-        families: availableFamilies.filter(f => 
-          ['LEARNING_PRET_FUERTE', 'LEARNING_SER_IR'].includes(f.id)
-        )
-      },
-      'orthographic': {
+        description: 'Verbos muy frecuentes que añaden -g: tengo, pongo, hago, salgo',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_YO_G_PRESENT')
+      };
+      
+      irregularCategories['diphthongs'] = {
+        name: 'Verbos que diptongan',
+        description: 'Cambios vocálicos: o→ue (puedo), e→ie (quiero), e→i (pido)',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_DIPHTHONGS')
+      };
+      
+      irregularCategories['very_irregular'] = {
+        name: 'Muy irregulares',
+        description: 'Formas únicas: soy/eres, estoy/estás, voy/vas, doy/das',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_VERY_IRREGULAR')
+      };
+      
+      // Caso especial jugar
+      irregularCategories['jugar'] = {
+        name: 'Caso único: jugar',
+        description: 'El único verbo u→ue en español: juego, juegas, juega',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_JUGAR_UNICO')
+      };
+    }
+    
+    // Para IMPERFECTO: mostrar los 3 irregulares
+    else if (selectedTense.tense === 'impf') {
+      irregularCategories['imperfect'] = {
+        name: 'Irregulares del imperfecto',
+        description: 'Los únicos 3 verbos con imperfecto irregular: ser (era), ir (iba), ver (veía)',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_IMPF_IRREGULAR')
+      };
+    }
+    
+    // Para otros tiempos: categorías tradicionales
+    else {
+      irregularCategories['orthographic'] = {
         name: 'Cambios ortográficos',
         description: 'Conservación del sonido: busqué, llegué',
         families: availableFamilies.filter(f => 
           ['LEARNING_ORTH_CAR', 'LEARNING_ORTH_GAR'].includes(f.id)
         )
-      },
-      'special': {
-        name: 'Casos especiales',
-        description: 'Irregularidades únicas: jugar (u→ue), ser/ir',
+      };
+      
+      irregularCategories['preterite'] = {
+        name: 'Pretéritos fuertes',
+        description: 'Cambios especiales en pretérito: tuve, estuve',
         families: availableFamilies.filter(f => 
-          ['LEARNING_JUGAR_UNICO', 'LEARNING_SER_IR'].includes(f.id)
+          f.id === 'LEARNING_PRET_FUERTE'
         )
-      }
-    };
+      };
+    }
     
     return (
       <div className="App">
