@@ -107,7 +107,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           <h3>
             <img src="/icons/brain.png" alt="Aprender" className="option-icon" /> Aprender un tiempo
           </h3>
-          <p>Un camino guiado para dominar un tiempo verbal desde cero</p>
+          <p>Camino guiado paso a paso desde cero</p>
           <p className="example">Introducción, práctica y contexto</p>
         </ClickableCard>
 
