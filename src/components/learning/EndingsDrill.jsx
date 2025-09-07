@@ -193,7 +193,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
 
   // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
 
-  const PRONOUNS_DISPLAY = useMemo(() => getPronounsForDialect(settings), [settings.useVoseo, settings.useVosotros]);
+  const PRONOUNS_DISPLAY = useMemo(() => getPronounsForDialect(settings), [settings?.useVoseo, settings?.useVosotros]);
 
   useEffect(() => {
     const initialQueue = [...PRONOUNS_DISPLAY, ...PRONOUNS_DISPLAY];
@@ -202,26 +202,24 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setResult(null);
     setInputValue('');
     inputRef.current?.focus();
-  }, [verb, PRONOUNS_DISPLAY]);
+  }, [verb?.lemma, PRONOUNS_DISPLAY]);
 
   useEffect(() => {
-    // Ensure it's visible immediately; still schedule a tick for CSS transition compatibility
+    // Ensure it's visible immediately
     setEntered(true);
-    const t = setTimeout(() => setEntered(true), 0);
-    return () => clearTimeout(t);
-  }, [verb]);
+  }, [verb?.lemma]);
 
   const currentPronoun = drillQueue[currentIndex];
 
   const verbForms = useMemo(() => {
     if (!verb || !tense) return [];
-    const paradigm = verb.paradigms.find(p =>
-        p.forms.some(f => f.mood === tense.mood && f.tense === tense.tense)
+    const paradigm = verb.paradigms?.find(p =>
+        p.forms?.some(f => f.mood === tense.mood && f.tense === tense.tense)
     );
     if (!paradigm) return [];
     const allowed = new Set(PRONOUNS_DISPLAY.map(p=>p.key));
-    return paradigm.forms.filter(f => f.mood === tense.mood && f.tense === tense.tense && allowed.has(f.person));
-  }, [verb, tense, PRONOUNS_DISPLAY]);
+    return paradigm.forms?.filter(f => f.mood === tense.mood && f.tense === tense.tense && allowed.has(f.person)) || [];
+  }, [verb?.lemma, tense?.mood, tense?.tense, PRONOUNS_DISPLAY]);
 
   const currentForm = useMemo(() => {
     if (verbForms.length === 0 || !currentPronoun) return null;
@@ -237,12 +235,12 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     if (genericKey === '2s') form = verbForms.find(f => f.person.startsWith('2s'));
     if (form) return form;
     return null;
-  }, [verbForms, currentPronoun]);
+  }, [verbForms, currentPronoun?.key]);
 
   const irregularityAnalysis = useMemo(() => {
     if (!verb || !tense || verbForms.length === 0) return null;
     return analyzeIrregularities(verb, verbForms, tense.tense);
-  }, [verb, tense, verbForms]);
+  }, [verb?.lemma, tense?.tense, verbForms]);
 
   const deconstruction = useMemo(() => {
     if (!verb || !tense) return null;
@@ -283,7 +281,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     const group = ['ar', 'er', 'ir'].includes(verbEnding) ? `-${verbEnding}` : null;
     if (!group) return null;
     return tenseData.deconstructions.find(d => d.group === group);
-  }, [tense, verb, verbForms, irregularityAnalysis]);
+  }, [tense?.tense, verb?.lemma, verbForms, irregularityAnalysis]);
 
   const handleSubmit = () => {
     if (!currentForm || inputValue.trim() === '') return;

@@ -55,7 +55,7 @@ function LearnTenseFlow({ onHome }) {
         console.error('Error calculating adaptive settings:', error);
       }
     }
-  }, [selectedTense, verbType, duration]);
+  }, [selectedTense?.tense, verbType, duration]);
 
   // Initialize A/B testing on component mount
   useEffect(() => {
@@ -205,7 +205,14 @@ function LearnTenseFlow({ onHome }) {
   };
 
   // Handle smart step transitions with skip logic
-  const handleSmartStepTransition = (fromStep, toStep) => {
+  const handleSmartStepTransition = (fromStep, toStep, depth = 0) => {
+    // Prevent infinite recursion
+    if (depth > 10) {
+      console.warn(`⚠️ Max recursion depth reached, defaulting to ${toStep}`);
+      setCurrentStep(toStep);
+      return;
+    }
+
     if (!adaptiveSettings) {
       setCurrentStep(toStep);
       return;
@@ -214,14 +221,20 @@ function LearnTenseFlow({ onHome }) {
     const userId = 'default'; // TODO: Get actual user ID
     
     // Check if target step can be skipped
-    const canSkip = canSkipPhase(userId, selectedTense?.tense, toStep);
+    let canSkip = false;
+    try {
+      canSkip = canSkipPhase(userId, selectedTense?.tense, toStep);
+    } catch (error) {
+      console.warn(`Error checking skip phase for ${toStep}:`, error);
+      canSkip = false;
+    }
     
     if (canSkip) {
-      console.log(`⏭️ Skipping ${toStep} based on user mastery`);
-      // Recursively check next step
+      console.log(`⏭️ Skipping ${toStep} based on user mastery (depth: ${depth})`);
+      // Recursively check next step with depth tracking
       const nextStepAfter = getNextStep(toStep);
       if (nextStepAfter) {
-        handleSmartStepTransition(fromStep, nextStepAfter);
+        handleSmartStepTransition(fromStep, nextStepAfter, depth + 1);
       } else {
         setCurrentStep(toStep); // Fallback if no next step
       }
