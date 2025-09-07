@@ -149,10 +149,32 @@ const pronunciationData = {
 // Función para crear síntesis de voz básica (fallback si no hay archivos de audio)
 const speakText = (text, lang = 'es-ES') => {
   if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 0.8; // Hablar más lento para aprendizaje
-    window.speechSynthesis.speak(utterance);
+    const speak = () => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.rate = 0.8; // Hablar más lento para aprendizaje
+      
+      // Try to find a Spanish voice
+      const voices = window.speechSynthesis.getVoices();
+      const spanishVoice = voices.find(voice => 
+        voice.lang.startsWith('es') || voice.lang.includes('Spanish')
+      );
+      if (spanishVoice) {
+        utterance.voice = spanishVoice;
+      }
+      
+      window.speechSynthesis.speak(utterance);
+    };
+    
+    // Check if voices are loaded, if not wait for them
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length === 0) {
+      window.speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+      // Fallback timeout in case voiceschanged doesn't fire
+      setTimeout(speak, 1000);
+    } else {
+      speak();
+    }
   }
 };
 
@@ -191,13 +213,14 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
     
     if (audioRef.current) {
       audioRef.current.src = audioFile;
-      audioRef.current.play().catch(() => {
+      audioRef.current.play().catch((error) => {
         // Si no hay archivo de audio, usar síntesis de voz como fallback
-        console.log('Audio file not found, using text-to-speech fallback');
+        console.log('Audio file not found, using text-to-speech fallback:', error.message);
         speakText(currentVerb.form);
       });
     } else {
       // Fallback directo a síntesis de voz
+      console.log('Audio element not available, using text-to-speech');
       speakText(currentVerb.form);
     }
   };
