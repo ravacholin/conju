@@ -31,7 +31,7 @@
                 transform 300ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
 }
 
-.drill-header {
+.learning-drill .drill-header {
     position: relative;
     width: 100%;
     display: flex;
@@ -40,7 +40,7 @@
     margin-bottom: 2rem;
 }
 
-.back-to-menu-btn {
+.learning-drill .back-to-menu-btn {
     position: absolute;
     left: 0;
     top: 50%;
@@ -51,9 +51,9 @@
     cursor: pointer;
 }
 
-.back-to-menu-btn .back-icon {
-    width: 40px;
-    height: 40px;
+.learning-drill .back-to-menu-btn .back-icon {
+    width: 56px;
+    height: 56px;
     display: block;
 }
 
