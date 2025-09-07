@@ -12,6 +12,14 @@ export const storyData = {
         er: 'Siempre __VERB__ algo nuevo.',
         ir: 'Él __VERB__ en el centro de la ciudad.',
     },
+    verbSpecific: {
+        hablar: 'Todos los días, Juan __VERB__ con sus amigos.',
+        aprender: 'Siempre __VERB__ algo nuevo.',
+        vivir: 'Él __VERB__ en el centro de la ciudad.',
+        cocinar: 'Ana __VERB__ todos los domingos para su familia.',
+        beber: 'Ella __VERB__ café mientras prepara la comida.',
+        abrir: 'Su hijo __VERB__ la ventana porque hace calor.',
+    }
   },
   pretIndef: {
     title: 'Una tarde ocupada',
@@ -20,6 +28,12 @@ export const storyData = {
         er: 'Luego, __VERB__ un helado de fresa.',
         ir: 'Finalmente, __VERB__ una carta a su abuela.',
     },
+    verbSpecific: {
+        caminar: 'Ayer, María __VERB__ por el parque.',
+        comer: 'Luego, __VERB__ un helado de fresa.',
+        escribir: 'Finalmente, __VERB__ una carta a su abuela.',
+        vivir: 'Durante años, __VERB__ en esa casa.',
+    }
   },
   impf: {
     title: 'Recuerdos de la infancia',

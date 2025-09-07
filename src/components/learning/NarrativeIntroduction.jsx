@@ -238,7 +238,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
 
     const sentences = exampleVerbs.map((verbObj, index) => {
       const verbEnding = verbObj.lemma.slice(-2);
-      const sentenceTemplate = tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
+      const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
       const conjugation = getConjugation(verbObj, '3s');
       const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjugation}</span>`);
       return (
