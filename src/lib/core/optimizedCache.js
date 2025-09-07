@@ -121,7 +121,9 @@ verbs.forEach(verb => {
   verb.paradigms?.forEach(paradigm => {
     paradigm.forms?.forEach(form => {
       const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
-      FORM_LOOKUP_MAP.set(key, form)
+      // Agregar lemma al form para que esté disponible en el drill
+      const enrichedForm = { ...form, lemma: verb.lemma }
+      FORM_LOOKUP_MAP.set(key, enrichedForm)
     })
   })
 })

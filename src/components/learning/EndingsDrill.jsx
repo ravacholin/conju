@@ -375,7 +375,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     return verb.lemma.slice(0, -2); // remove -ar/-er/-ir
   };
 
-  const endingFor = (group, tenseKey, pronounKey) => {
+  const endingFor = (tenseKey, pronounKey) => {
     const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
     const idx = baseOrder.indexOf(pronounKey === '2s_vos' ? '2s_tu' : pronounKey);
     const fallback = deconstruction?.endings?.[idx] || '';
@@ -393,7 +393,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const getCorrectAnswerWithHighlight = () => {
       if (!result || !result.correct) return null;
       const correctAnswer = result.value;
-      const ending = endingFor(deconstruction?.group, tense?.tense, currentPronoun.key);
+      const ending = endingFor(tense?.tense, currentPronoun.key);
       if (correctAnswer && ending && correctAnswer.endsWith(ending)) {
           const stem = correctAnswer.slice(0, -ending.length);
           return <span className="correct-answer-display">{stem}<span className="ending-highlight">{ending}</span></span>;
@@ -498,7 +498,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
                         </span>
                       </div>
                     ) : (
-                      <span className="ending-value">{endingFor(deconstruction.group, tense.tense, pronoun.key)}</span>
+                      <span className="ending-value">{endingFor(tense.tense, pronoun.key)}</span>
                     )}
                   </div>
                 );

@@ -21,6 +21,38 @@ const PRONOUNS_DISPLAY = {
   '3p': 'ellos/ellas/ustedes',
 };
 
+// Mapeo de tiempos verbales a niveles CEFR apropiados
+function getLevelForTense(tense) {
+  const tenseToLevel = {
+    // A1 - Básico
+    'pres': 'A1',           // Presente
+    
+    // A2 - Elemental  
+    'pretIndef': 'A2',      // Pretérito indefinido
+    'impf': 'A2',           // Imperfecto
+    'fut': 'A2',            // Futuro simple
+    
+    // B1 - Intermedio
+    'cond': 'B1',           // Condicional simple
+    'subjPres': 'B1',       // Presente de subjuntivo
+    'impAff': 'B1',         // Imperativo afirmativo
+    'impNeg': 'B1',         // Imperativo negativo
+    
+    // B2 - Intermedio alto
+    'subjImpf': 'B2',       // Imperfecto de subjuntivo
+    'pretPerf': 'B2',       // Pretérito perfecto compuesto
+    'plusc': 'B2',          // Pluscuamperfecto
+    'futPerf': 'B2',        // Futuro perfecto
+    
+    // C1 - Avanzado
+    'condPerf': 'C1',       // Condicional compuesto
+    'subjPerf': 'C1',       // Perfecto de subjuntivo
+    'subjPlusc': 'C1',      // Pluscuamperfecto de subjuntivo
+  };
+  
+  return tenseToLevel[tense];
+}
+
 function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, onFinish, onPhaseComplete }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');
@@ -46,8 +78,10 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   const [allAttempts, setAllAttempts] = useState([]);
   const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
   
-  // Cola de ejercicios fallados para reintegración
+  // Cola de ejercicios fallados para reintegración (almacena objetos completos de ejercicios)
   const [failedItemsQueue, setFailedItemsQueue] = useState([]);
+  // Historial de ejercicios para evitar repeticiones
+  const [exerciseHistory, setExerciseHistory] = useState([]);
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -78,19 +112,6 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   }, [duration]);
 
   const generateNextItem = React.useCallback(() => {
-    // Primero verificar si hay ejercicios fallados en la cola para reintegrar
-    if (failedItemsQueue.length > 0) {
-      const nextFailedItem = failedItemsQueue[0];
-      setFailedItemsQueue(prev => prev.slice(1));
-      setCurrentItem(nextFailedItem);
-      setInputValue('');
-      setResult('idle');
-      setStartTime(Date.now());
-      setTimeout(() => inputRef.current?.focus(), 0);
-      console.log('🔄 Reintegrando ejercicio fallado:', nextFailedItem);
-      return;
-    }
-    
     // Get current settings WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
     
@@ -110,7 +131,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       specificTense: tense?.tense,
       verbType: verbType === 'irregular' ? 'irregular' : verbType,
       selectedFamily: selectedFamilyForGenerator,
-      cameFromTema: false
+      cameFromTema: false,
+      // IMPORTANTE: Usar el nivel apropiado según el tiempo verbal que se está aprendiendo
+      level: getLevelForTense(tense?.tense) || currentSettings.level || 'A1'
     };
     
     console.log('🎯 Temporary learning settings:', temporarySettings);
@@ -127,7 +150,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       
       const nextItem = chooseNext({
         forms: Array.from(FORM_LOOKUP_MAP.values()),
-        history: [],
+        history: exerciseHistory,
         currentItem
       });
       
@@ -141,6 +164,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
         setInputValue('');
         setResult('idle');
         setStartTime(Date.now());
+        // Agregar al historial para evitar repeticiones
+        setExerciseHistory(prev => [...prev, nextItem].slice(-20)); // Mantener últimos 20
         setTimeout(() => inputRef.current?.focus(), 0);
       } else {
         console.error('❌ No item generated - generator returned null');
@@ -152,7 +177,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       settings.set(originalSettings);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, settings, totalAttempts, failedItemsQueue]); // Added failedItemsQueue dependency
+  }, [tense, verbType, selectedFamilies, settings, totalAttempts]); // REMOVED currentItem to prevent infinite loop
 
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
@@ -230,11 +255,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     const responseTime = Date.now() - startTime;
 
     // Use the sophisticated grader from the main system
-    const gradeResult = grade({
+    const gradeResult = grade(userAnswer, {
       value: currentItem.value,
       alt: currentItem.alt || [],
       accepts: currentItem.accepts || {}
-    }, userAnswer);
+    });
 
     const isCorrect = gradeResult.correct;
 
@@ -267,6 +292,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
         setTimeout(() => setShowStreakAnimation(false), 2000);
         await handleStreakIncremented();
       }
+      console.log(`✅ Correcto: ${currentItem.lemma} (${getPersonText(currentItem.person)}) - ${currentItem.value}`);
     } else {
       setResult('incorrect');
       setCorrectStreak(0);
@@ -275,8 +301,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       setErrorPatterns(prev => ({ ...prev, [errorType]: (prev[errorType] || 0) + 1 }));
       
       // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
-      setFailedItemsQueue(prev => [...prev, currentItem]);
-      console.log(`❌ Error en ${currentItem.lemma} (${currentItem.person}) - reintegrando al final de la cola`);
+      setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
+      console.log(`❌ Error en ${currentItem.lemma} (${getPersonText(currentItem.person)}) - agregado a cola de reintegración`);
     }
     
     setTimeout(() => containerRef.current?.focus(), 0);
@@ -320,12 +346,30 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     if (correctStreak >= 10 && onPhaseComplete) {
         setTimeout(() => onPhaseComplete(), 0);
     } else {
-        // subtle swap animation when moving to next random item
-        setSwapAnim(true);
-        setTimeout(() => {
-          setSwapAnim(false);
-          generateNextItem();
-        }, 250);
+        // Verificar si hay ejercicios fallados para reintegrar
+        if (failedItemsQueue.length > 0) {
+          const nextFailedItem = failedItemsQueue[0];
+          setFailedItemsQueue(prev => prev.slice(1));
+          
+          // Configurar el ejercicio fallado como siguiente
+          setSwapAnim(true);
+          setTimeout(() => {
+            setSwapAnim(false);
+            setCurrentItem(nextFailedItem);
+            setInputValue('');
+            setResult('idle');
+            setStartTime(Date.now());
+            setTimeout(() => inputRef.current?.focus(), 0);
+            console.log('🔄 Reintegrando ejercicio fallado:', nextFailedItem.lemma, getPersonText(nextFailedItem.person));
+          }, 250);
+        } else {
+          // subtle swap animation when moving to next random item
+          setSwapAnim(true);
+          setTimeout(() => {
+            setSwapAnim(false);
+            generateNextItem();
+          }, 250);
+        }
     }
   };
 
@@ -340,7 +384,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     else if (accuracy >= 60) grade = 'D';
     
     // Generate next session recommendations
-    let recommendations = [];
+    let recommendations = ['Continuar practicando'];
     try {
       const userId = 'default'; // TODO: Get actual user ID
       const currentSession = {
@@ -353,10 +397,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       };
       
       const nextRec = generateNextSessionRecommendations(userId, currentSession);
-      recommendations = [nextRec];
+      recommendations = nextRec ? [nextRec.recommendedTense || 'Continuar practicando'] : ['Continuar practicando'];
       console.log('🎯 Generated recommendations:', nextRec);
     } catch (error) {
       console.error('Error generating recommendations:', error);
+      recommendations = ['Continuar practicando'];
     }
 
     // Record detailed learning session analytics
