@@ -91,11 +91,17 @@ function analyzeIrregularities(verb, actualForms, tense) {
     // Consider accent-only differences as regular (esp. voseo)
     const isSameIgnoringAccents = strip(actual) === strip(expectedRegular);
 
-    let isIrregular = actual !== expectedRegular && !isSameIgnoringAccents;
+    // Treat standard voseo in present indicative as regular (do not flag as irregular)
+    const isStandardVos = form.person === '2s_vos' && tense === 'pres';
+
+    let isIrregular = !isStandardVos && (actual !== expectedRegular && !isSameIgnoringAccents);
     let irregularity = null;
     let explanation = '';
 
-    if (isIrregular) {
+    if (isStandardVos) {
+      irregularity = null;
+      explanation = 'Forma vos regular';
+    } else if (isIrregular) {
       if (families.includes('LEARNING_YO_G') && form.person === '1s' && actual.endsWith('go')) {
         irregularity = 'yo_irregular';
         explanation = 'YO irregular: añade -g';
