@@ -445,9 +445,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
           <div className="drill-header">
-             <button onClick={() => { onBack && onBack(); }} className="back-to-menu-btn">
+             <button onClick={() => { onBack && onBack(); }} className="back-to-menu-btn" aria-label="Volver">
                 <img src="/back.png" alt="Volver" className="back-icon" />
-                Volver
             </button>
             <h2>Drill de Terminaciones: {tenseName}</h2>
           </div>

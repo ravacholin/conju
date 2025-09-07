@@ -32,10 +32,29 @@
 }
 
 .drill-header {
+    position: relative;
     width: 100%;
     display: flex;
-    justify-content: flex-start; /* Align back button to the left */
+    align-items: center;
+    justify-content: center; /* center the title */
     margin-bottom: 2rem;
+}
+
+.back-to-menu-btn {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+}
+
+.back-to-menu-btn .back-icon {
+    width: 40px;
+    height: 40px;
+    display: block;
 }
 
 .verb-lemma {
