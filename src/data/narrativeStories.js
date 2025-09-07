@@ -54,6 +54,11 @@ export const storyData = {
       // Usamos HTML para resaltar la forma en 1ª plural
       ir: 'Nosotros siempre <span class="highlight">íbamos</span> a la plaza.',
       ver: 'Desde la ventana yo __VERB__ las estrellas.',
+      // Frases específicas para el flujo REGULAR (hablar, comer, vivir)
+      hablar: 'De niño yo siempre __VERB__ con mis amigos en la plaza.',
+      comer: 'Mi familia __VERB__ juntos los domingos.',
+      // Para asegurar 1.ª plural, se fija la forma con highlight
+      vivir: 'Nosotros <span class="highlight">vivíamos</span> en una casa pequeña.',
     },
   },
   fut: {
