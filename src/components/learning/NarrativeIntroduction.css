@@ -189,7 +189,8 @@
   padding: 0.25rem 0.4rem;
   border-radius: 6px;
   border: 1px solid rgba(253, 126, 20, 0.18);
-  font-size: 0.7em;
+  /* Aumentar levemente el tamaño solo en la intro (deconstructor) */
+  font-size: 0.9em;
   animation: fadeInUpBounce 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   opacity: 0;
   transform: translateY(18px) scale(0.85);
