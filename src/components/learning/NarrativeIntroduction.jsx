@@ -938,6 +938,44 @@ function getEndingsForVerb(verbObj, tense) {
   return endings[tense] || endings.pres;
 }
 
+// Get standard endings for verb group and tense
+function getStandardEndings(group, tense) {
+  const endings = {
+    pres: {
+      ar: ['o', 'as', 'a', 'amos', 'áis', 'an'],
+      er: ['o', 'es', 'e', 'emos', 'éis', 'en'],
+      ir: ['o', 'es', 'e', 'imos', 'ís', 'en']
+    },
+    pretIndef: {
+      ar: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'],
+      er: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'],
+      ir: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron']
+    },
+    impf: {
+      ar: ['aba', 'abas', 'aba', 'ábamos', 'abais', 'aban'],
+      er: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      ir: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']
+    },
+    fut: {
+      ar: ['é', 'ás', 'á', 'emos', 'éis', 'án'],
+      er: ['é', 'ás', 'á', 'emos', 'éis', 'án'],
+      ir: ['é', 'ás', 'á', 'emos', 'éis', 'án']
+    },
+    cond: {
+      ar: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      er: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'],
+      ir: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']
+    },
+    subjPres: {
+      ar: ['e', 'es', 'e', 'emos', 'éis', 'en'],
+      er: ['a', 'as', 'a', 'amos', 'áis', 'an'],
+      ir: ['a', 'as', 'a', 'amos', 'áis', 'an']
+    }
+  };
+  
+  return endings[tense]?.[group] || endings.pres[group] || [];
+}
+
 // Obtener patrón irregular REORGANIZADO
 function getIrregularPattern(verb, selectedFamilies) {
   if (!selectedFamilies) return '';
@@ -1035,8 +1073,15 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
     );
   }
 
-  // Usar contenido dinámico en lugar del estático
-  const story = generateStoryContent(tense.tense, verbType, selectedFamilies);
+  // Use the actual narrative story data, not generated content
+  // This ensures consistency with the verbs shown in the story and drills
+  const tenseStoryData = storyData[tense.tense];
+  const story = selectedStory || (tenseStoryData ? {
+    title: tenseStoryData.title,
+    sentences: tenseStoryData.sentences,
+    deconstructions: tenseStoryData.deconstructions
+  } : null);
+  
   const tenseName = TENSE_LABELS[tense.tense] || tense.tense;
   const moodName = MOOD_LABELS[tense.mood] || tense.mood;
 
@@ -1135,7 +1180,88 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {selectedStory?.deconstructions?.map(({ group, stem, endings, verb, isIrregular, realForms }) => {
+                  {/* Use the exampleVerbs passed to this component to ensure consistency */}
+                  {exampleVerbs && exampleVerbs.length > 0 ? exampleVerbs.map((verbObj, index) => {
+                    const pronouns = pronounsForDialect();
+                    const verb = verbObj.lemma;
+                    const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+                    const lemmaStem = (v) => {
+                      if (typeof v !== 'string') return '';
+                      if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
+                        return v.slice(0, -2);
+                      }
+                      return v;
+                    };
+                    
+                    // Check if verb is irregular based on its type
+                    const isIrregular = verbObj.type === 'irregular';
+                    
+                    // Extract real conjugated forms for irregular verbs
+                    const realForms = extractRealConjugatedForms(verbObj, tense.tense);
+                    
+                    if (isIrregular && realForms && realForms.length > 0) {
+                      return (
+                        <div key={`${group}-${index}`} className="deconstruction-item">
+                          <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
+                          <div className="verb-deconstruction irregular">
+                            <span className="irregular-forms">
+                              {realForms.map((form, idx) => (
+                                <span key={`${group}-${idx}-${form}`} className="conjugated-form">
+                                  {form}
+                                  {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
+                                </span>
+                              ))}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // For regular verbs, show stem + endings system
+                    const formMap = getFormMapForVerb(verbObj);
+                    const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
+                    
+                    // Get standard endings for this verb group and tense
+                    const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
+                    
+                    const dialectEndings = pronouns.map(p => {
+                      const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+                      const grp = group.slice(-2);
+                      const key = p === '2s_vos' ? '2s_tu' : p;
+                      let base = standardEndings?.[baseOrder.indexOf(key)] || '';
+                      
+                      // Morphological voseo for present indicative
+                      if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
+                        if (grp === 'ar' && base === 'as') base = 'ás';
+                        else if (grp === 'er' && base === 'es') base = 'és';
+                        else if (grp === 'ir' && base === 'es') base = 'ís';
+                      }
+                      
+                      if (base) return base;
+                      
+                      // Fallback: derive from actual form if available
+                      const formVal = formMap[p];
+                      return endingFromForm(formVal, realStem, base);
+                    });
+                    
+                    return (
+                      <div key={`${group}-${index}`} className="deconstruction-item">
+                        <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
+                        <div className="verb-deconstruction">
+                          <span className="verb-stem">{realStem}-</span>
+                          <span className="verb-endings">
+                            <span className="ending-carousel">
+                              {dialectEndings.map((ending, idx) => (
+                                <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
+                              ))}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }) : 
+                  // Fallback to story deconstructions if no exampleVerbs
+                  story?.deconstructions?.map(({ group, stem, endings, verb, isIrregular, realForms }) => {
                     const pronouns = pronounsForDialect();
                     const verbObj = exampleVerbs?.find(v => v.lemma === verb);
                     const lemmaStem = (v) => {
@@ -1146,7 +1272,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                       return v;
                     };
                     
-                    // Para verbos irregulares, mostrar las formas conjugadas reales
+                    // Original logic for story deconstructions
                     if (isIrregular && realForms && realForms.length > 0) {
                       return (
                         <div key={group} className="deconstruction-item">
@@ -1165,7 +1291,6 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                       );
                     }
                     
-                    // Para verbos regulares, mantener el sistema de raíz + terminaciones
                     const formMap = getFormMapForVerb(verbObj);
                     const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || stem;
                     const dialectEndings = pronouns.map(p => {
@@ -1173,14 +1298,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                       const grp = group?.slice(-2) || (verb?.endsWith('ar') ? 'ar' : verb?.endsWith('er') ? 'er' : 'ir');
                       const key = p === '2s_vos' ? '2s_tu' : p;
                       let base = endings?.[baseOrder.indexOf(key)] || '';
-                      // Morphological voseo for present indicative
                       if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
                         if (grp === 'ar' && base === 'as') base = 'ás';
                         else if (grp === 'er' && base === 'es') base = 'és';
                         else if (grp === 'ir' && base === 'es') base = 'ís';
                       }
                       if (base) return base;
-                      // Fallback: derive from actual form if available
                       const formVal = formMap[p];
                       return endingFromForm(formVal, realStem, base);
                     });

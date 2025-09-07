@@ -137,39 +137,20 @@ function LearnTenseFlow({ onHome }) {
       
       let verbObjects = [];
       
-      if (verbType === 'irregular' && selectedFamilies.length > 0) {
-        // Generate example verbs from selected irregular families
-        const irregularExamples = [];
-        
-        selectedFamilies.forEach(familyId => {
-          // Get paradigmatic verbs for this family
-          const familyVerbs = getVerbsForFamily(familyId, selectedTense.tense);
-          if (familyVerbs.length > 0) {
-            irregularExamples.push(familyVerbs[0]); // Take first verb as example
-          }
-        });
-        
-        // Ensure we have at least 3 examples for the drill phases (-ar, -er, -ir)
-        while (irregularExamples.length < 3 && selectedFamilies.length > 0) {
-          const familyId = selectedFamilies[irregularExamples.length % selectedFamilies.length];
-          const familyVerbs = getVerbsForFamily(familyId, selectedTense.tense);
-          if (familyVerbs.length > irregularExamples.length) {
-            irregularExamples.push(familyVerbs[irregularExamples.length]);
-          } else {
-            // Fill with any irregular verb if needed
-            const anyIrregular = verbs.find(v => v.type === 'irregular' && 
-              v.lemma.endsWith(['ar', 'er', 'ir'][irregularExamples.length % 3]));
-            if (anyIrregular) irregularExamples.push(anyIrregular);
-          }
-        }
-        
-        verbObjects = irregularExamples;
-        console.log('🎯 Generated irregular examples:', irregularExamples.map(v => v?.lemma));
-        
-      } else if (tenseStoryData && tenseStoryData.deconstructions) {
-        // Use regular story examples
+      // ALWAYS use the narrative verbs regardless of verbType
+      // This ensures the same 3 verbs appear in: narrative -> introduction -> drills
+      if (tenseStoryData && tenseStoryData.deconstructions) {
         const exampleVerbLemmas = tenseStoryData.deconstructions.map(d => d.verb);
         verbObjects = exampleVerbLemmas.map(lemma => verbs.find(v => v.lemma === lemma)).filter(Boolean);
+        console.log('🎯 Using narrative verbs for consistency:', verbObjects.map(v => v?.lemma));
+      } else {
+        // Fallback if no narrative data exists
+        console.warn('⚠️ No narrative data found for tense:', tenseKey);
+        verbObjects = [
+          verbs.find(v => v.lemma === 'hablar'),
+          verbs.find(v => v.lemma === 'comer'),
+          verbs.find(v => v.lemma === 'vivir')
+        ].filter(Boolean);
       }
       
       setExampleVerbs(verbObjects);
