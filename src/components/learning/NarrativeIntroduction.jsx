@@ -234,10 +234,11 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
   const renderStorySentences = () => {
     if (!tenseStoryData || !exampleVerbs || exampleVerbs.length < 3) return null;
 
-    const sentences = tenseStoryData.sentences.map((sentence, index) => {
-      const verbObj = exampleVerbs[index % exampleVerbs.length];
+    const sentences = exampleVerbs.map((verbObj, index) => {
+      const verbEnding = verbObj.lemma.slice(-2);
+      const sentenceTemplate = tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
       const conjugation = getConjugation(verbObj, '3s');
-      const filledSentence = sentence.text.replace(/__VERB__/, `<span class="highlight">${conjugation}</span>`);
+      const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjugation}</span>`);
       return (
         <p 
           key={index} 
