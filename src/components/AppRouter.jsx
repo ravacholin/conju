@@ -4,10 +4,8 @@ import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import LearnTenseFlow from './learning/LearnTenseFlow.jsx';
 import { lazy } from 'react'
-import GamificationWrapper from './gamification/GamificationWrapper.jsx'
 
 const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashboard.jsx'))
-const GamifiedProgressDashboard = lazy(() => import('./gamification/ProgressDashboard.jsx'))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 // Debug utilities - commented out to avoid unused imports
@@ -345,43 +343,42 @@ function AppRouter() {
 
   if (currentMode === 'drill') {
     return (
-      <GamificationWrapper showCompactStreak={true}>
-        <DrillMode
-          currentItem={drillMode.currentItem}
-          settings={settings}
-          onDrillResult={drillMode.handleDrillResult}
-          onContinue={() => drillMode.handleContinue(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
-          onHome={handleHome}
-          onRegenerateItem={handleRegenerateItem}
-          onDialectChange={handleDialectChange}
-          onLevelChange={handleLevelChange}
-          onPracticeModeChange={handlePracticeModeChange}
-          onPronounPracticeChange={handlePronounPracticeChange}
-          onVerbTypeChange={handleVerbTypeChange}
-          onStartSpecificPractice={handleStartSpecificPractice}
-          getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
-          getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
-          onNavigateToProgress={handleGoToProgress}
-        />
-      </GamificationWrapper>
+      <DrillMode
+        currentItem={drillMode.currentItem}
+        settings={settings}
+        onDrillResult={drillMode.handleDrillResult}
+        onContinue={() => drillMode.handleContinue(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
+        onHome={handleHome}
+        onRegenerateItem={handleRegenerateItem}
+        onDialectChange={handleDialectChange}
+        onLevelChange={handleLevelChange}
+        onPracticeModeChange={handlePracticeModeChange}
+        onPronounPracticeChange={handlePronounPracticeChange}
+        onVerbTypeChange={handleVerbTypeChange}
+        onStartSpecificPractice={handleStartSpecificPractice}
+        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+        onNavigateToProgress={handleGoToProgress}
+      />
     )
   }
 
   if (currentMode === 'learning') {
     return (
-      <GamificationWrapper showCompactStreak={true}>
-        <LearnTenseFlow 
-          onHome={handleHome}
-          onGoToProgress={handleGoToProgress}
-        />
-      </GamificationWrapper>
+      <LearnTenseFlow 
+        onHome={handleHome}
+        onGoToProgress={handleGoToProgress}
+      />
     )
   }
 
   if (currentMode === 'progress') {
     return (
       <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
-        <GamificationWrapper showDashboard={true} />
+        <ProgressDashboard 
+          onNavigateHome={handleProgressMenu} 
+          onNavigateToDrill={() => setCurrentMode('drill')} 
+        />
       </React.Suspense>
     )
   }
