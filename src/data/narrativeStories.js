@@ -32,7 +32,9 @@ export const storyData = {
         caminar: 'Ayer, María __VERB__ por el parque.',
         comer: 'Luego, __VERB__ un helado de fresa.',
         escribir: 'Finalmente, __VERB__ una carta a su abuela.',
-        vivir: 'Durante años, __VERB__ en esa casa.',
+        vivir: 'Ayer, __VERB__ una experiencia inolvidable.',
+        hablar: 'Esa tarde, __VERB__ con su mejor amigo.',
+        aprender: 'En solo una tarde, __VERB__ a tejer.',
     }
   },
   impf: {
