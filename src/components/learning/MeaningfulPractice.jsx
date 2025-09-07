@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
@@ -6,6 +6,26 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { grade } from '../../lib/core/grader.js';
 import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
+
+// Función para seleccionar ejercicio aleatorio (principal o alternativo)
+function selectRandomExercise(tenseData) {
+  if (!tenseData) return null;
+  
+  // Si no hay ejercicios alternativos, usar el principal
+  if (!tenseData.alternativeExercises || tenseData.alternativeExercises.length === 0) {
+    return tenseData;
+  }
+  
+  // Crear array con todas las opciones (principal + alternativos)
+  const allExercises = [
+    tenseData, // ejercicio principal
+    ...tenseData.alternativeExercises
+  ];
+  
+  // Seleccionar uno aleatoriamente
+  const randomIndex = Math.floor(Math.random() * allExercises.length);
+  return allExercises[randomIndex];
+}
 
 const timelineData = {
   pres: {
@@ -19,6 +39,33 @@ const timelineData = {
       { icon: '🏠', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
       { icon: '🌙', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
     ],
+    // Ejercicios alternativos para mayor variedad
+    alternativeExercises: [
+      {
+        type: 'workplace_scenario',
+        title: 'Un día en la oficina',
+        description: 'Completa las frases sobre lo que pasa en una oficina típica.',
+        prompts: [
+          { icon: '💻', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
+          { icon: '📧', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
+          { icon: '📊', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
+          { icon: '☕', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
+          { icon: '🏃‍♂️', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
+        ]
+      },
+      {
+        type: 'family_life',
+        title: 'La vida familiar',
+        description: 'Describe las actividades de una familia típica.',
+        prompts: [
+          { icon: '👶', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
+          { icon: '👨‍🍳', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
+          { icon: '🎯', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
+          { icon: '📺', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
+          { icon: '🐕', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
+        ]
+      }
+    ]
   },
   pretIndef: {
     type: 'timeline',
@@ -30,6 +77,45 @@ const timelineData = {
       { time: '22:00', icon: '🛏️', prompt: 'acostarse' },
     ],
     expectedVerbs: ['tomó', 'comió', 'fue', 'se acostó'],
+    // Ejercicios alternativos más diversos
+    alternativeExercises: [
+      {
+        type: 'travel_story',
+        title: 'Las vacaciones de verano',
+        description: 'Completa la historia del viaje de Luis a Barcelona.',
+        prompts: [
+          { icon: '✈️', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
+          { icon: '🏨', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
+          { icon: '🏛️', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
+          { icon: '🥘', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
+          { icon: '📸', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
+        ]
+      },
+      {
+        type: 'party_night',
+        title: 'La fiesta de anoche',
+        description: 'Cuenta lo que pasó en la fiesta de cumpleaños de Ana.',
+        prompts: [
+          { icon: '🎉', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
+          { icon: '👥', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
+          { icon: '🍰', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
+          { icon: '💃', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
+          { icon: '🏠', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
+        ]
+      },
+      {
+        type: 'mystery_story',
+        title: 'El misterio del libro perdido',
+        description: 'Resuelve el misterio completando lo que pasó.',
+        prompts: [
+          { icon: '📚', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
+          { icon: '🔍', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
+          { icon: '👮‍♂️', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
+          { icon: '💡', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
+          { icon: '😅', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
+        ]
+      }
+    ]
   },
   subjPres: {
     type: 'prompts',
@@ -61,6 +147,32 @@ const timelineData = {
         { prompt: 'Cuando termine mis estudios... (trabajar, ser)', expected: ['trabajaré', 'seré', 'trabajarás', 'serás'] },
         { prompt: 'En el futuro... (tener, hacer)', expected: ['tendré', 'haré', 'tendrás', 'harás'] },
     ],
+    alternativeExercises: [
+      {
+        type: 'predictions',
+        title: 'Predicciones para el año 2030',
+        description: 'Haz predicciones sobre el futuro usando el futuro simple.',
+        prompts: [
+          { icon: '🚗', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
+          { icon: '🌍', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
+          { icon: '🏠', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
+          { icon: '💻', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
+          { icon: '🎮', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
+        ]
+      },
+      {
+        type: 'life_goals',
+        title: 'Mis metas personales',
+        description: 'Completa tus planes y metas para el futuro.',
+        prompts: [
+          { icon: '🏆', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
+          { icon: '❤️', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
+          { icon: '🏡', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
+          { icon: '🌎', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
+          { icon: '👨‍👩‍👧‍👦', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
+        ]
+      }
+    ]
   },
   pretPerf: {
     type: 'timeline',
@@ -149,6 +261,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [story, setStory] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState(null);
   
   // Create a dummy currentItem for progress tracking
   const currentItem = {
@@ -166,8 +279,17 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   console.log('MeaningfulPractice received tense:', tense);
   console.log('Available exercises:', Object.keys(timelineData));
   
-  const exercise = tense ? timelineData[tense.tense] : null;
-  console.log('Selected exercise:', exercise);
+  // Seleccionar ejercicio aleatorio cuando cambie el tense
+  useEffect(() => {
+    if (tense?.tense) {
+      const tenseData = timelineData[tense.tense];
+      const randomExercise = selectRandomExercise(tenseData);
+      setSelectedExercise(randomExercise);
+      console.log('Selected exercise:', randomExercise);
+    }
+  }, [tense]);
+
+  const exercise = selectedExercise;
 
   const handleCheckStory = async () => {
     if (!exercise || !story.trim()) return;
@@ -343,6 +465,9 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         {exercise.type === 'timeline' && (
             <div className="timeline-container">
               <h3>{exercise.title}</h3>
+              {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
+                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+              )}
               <div className="timeline">
                 {exercise.events.map(event => (
                   <div key={event.time} className="timeline-event">
@@ -358,6 +483,9 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         {exercise.type === 'prompts' && (
             <div className="prompts-container">
                 <h3>{exercise.title}</h3>
+                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                )}
                 <ul>
                     {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
                 </ul>
@@ -367,6 +495,9 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         {exercise.type === 'daily_routine' && (
             <div className="daily-routine-container">
                 <h3>{exercise.title}</h3>
+                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                )}
                 <p className="description">{exercise.description}</p>
                 <div className="routine-prompts">
                     {exercise.prompts.map((prompt, i) => (
