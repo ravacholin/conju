@@ -3,7 +3,7 @@ import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
 import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
-import { getLearningFamiliesForTense, categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
+import { getLearningFamiliesForTense } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
 import { abTesting } from '../../lib/learning/analytics.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
@@ -19,42 +19,115 @@ import { useSettings } from '../../state/settings.js';
 
 
 
-// Helper function to get verbs belonging to a specific family
-function getVerbsForFamily(familyId) {
-  return verbs.filter(verb => {
-    const families = categorizeLearningVerb(verb.lemma, verb);
-    return families.includes(familyId);
-  });
-}
+// Import the family definitions directly
+import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 
-// Function to select 3 example verbs based on user's choice
+// Function to select 3 coherent example verbs based on user's choice
 // This is the single source of truth for the entire learning flow
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
-  console.log('seleccionando verbos con:', { verbType, selectedFamilies, tense });
+  console.log('🔍 Seleccionando verbos coherentes:', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
 
   if (verbType === 'regular') {
-    const regularAr = verbs.find(v => v.lemma.endsWith('ar') && v.type === 'regular');
-    const regularEr = verbs.find(v => v.lemma.endsWith('er') && v.type === 'regular');
-    const regularIr = verbs.find(v => v.lemma.endsWith('ir') && v.type === 'regular');
+    // For regular verbs, use simple regular examples
+    const regularAr = verbs.find(v => v.lemma === 'hablar' && v.type === 'regular');
+    const regularEr = verbs.find(v => v.lemma === 'comer' && v.type === 'regular');
+    const regularIr = verbs.find(v => v.lemma === 'vivir' && v.type === 'regular');
     selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
+    
+    console.log('✅ Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
+    
   } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
-    const familyVerbs = selectedFamilies.flatMap(familyId => getVerbsForFamily(familyId));
-    const uniqueFamilyVerbs = [...new Set(familyVerbs)];
-    selectedVerbs = uniqueFamilyVerbs.slice(0, 3);
+    // For irregular verbs, use examples directly from family definitions
+    console.log('🎯 Seleccionando de familias:', selectedFamilies);
+    
+    const candidateVerbs = [];
+    
+    // Get examples from each selected family
+    selectedFamilies.forEach(familyId => {
+      const family = LEARNING_IRREGULAR_FAMILIES[familyId];
+      if (family && family.examples) {
+        console.log(`📚 Familia ${familyId} tiene ejemplos:`, family.examples);
+        
+        // Add verbs that exist in our database
+        family.examples.forEach(lemma => {
+          const verbObj = verbs.find(v => v.lemma === lemma);
+          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
+            candidateVerbs.push(verbObj);
+          }
+        });
+      } else {
+        console.warn(`⚠️ Familia ${familyId} no encontrada o sin ejemplos`);
+      }
+    });
+    
+    console.log('🔍 Candidatos encontrados:', candidateVerbs.map(v => v.lemma));
+    
+    // Try to select 3 verbs with different endings if possible
+    const selectedByEnding = { ar: null, er: null, ir: null };
+    
+    candidateVerbs.forEach(verb => {
+      if (verb.lemma.endsWith('ar') && !selectedByEnding.ar) {
+        selectedByEnding.ar = verb;
+      } else if (verb.lemma.endsWith('er') && !selectedByEnding.er) {
+        selectedByEnding.er = verb;
+      } else if (verb.lemma.endsWith('ir') && !selectedByEnding.ir) {
+        selectedByEnding.ir = verb;
+      }
+    });
+    
+    // Use the distributed selection if we have 3 different endings
+    if (selectedByEnding.ar && selectedByEnding.er && selectedByEnding.ir) {
+      selectedVerbs = [selectedByEnding.ar, selectedByEnding.er, selectedByEnding.ir];
+      console.log('✅ Selección balanceada por terminación:', selectedVerbs.map(v => v.lemma));
+    } else {
+      // Otherwise just take the first 3 candidates
+      selectedVerbs = candidateVerbs.slice(0, 3);
+      console.log('✅ Selección por orden de candidatos:', selectedVerbs.map(v => v.lemma));
+    }
   }
 
-  // Ensure we always have 3 verbs, filling with defaults if necessary
-  while (selectedVerbs.length < 3) {
-    const defaultVerbs = [
-      verbs.find(v => v.lemma === 'hablar'),
-      verbs.find(v => v.lemma === 'comer'),
-      verbs.find(v => v.lemma === 'vivir')
-    ];
-    selectedVerbs.push(defaultVerbs[selectedVerbs.length]);
+  // Final check: ensure we have exactly 3 verbs
+  if (selectedVerbs.length < 3) {
+    console.warn(`⚠️ Solo se encontraron ${selectedVerbs.length} verbos, buscando más en las familias...`);
+    
+    // For irregular verbs, NEVER fall back to regular verbs - find more from same families
+    if (verbType === 'irregular' && candidateVerbs.length > selectedVerbs.length) {
+      // Take more candidates from the same families to maintain coherence
+      while (selectedVerbs.length < 3 && candidateVerbs.length > selectedVerbs.length) {
+        const nextCandidate = candidateVerbs[selectedVerbs.length];
+        if (!selectedVerbs.some(v => v.lemma === nextCandidate.lemma)) {
+          selectedVerbs.push(nextCandidate);
+        }
+      }
+      console.log('✅ Completado con más irregulares de las mismas familias');
+    }
+    
+    // Only fall back to regular verbs if we're already working with regular verbs
+    // OR if we absolutely can't find enough irregular verbs (which shouldn't happen)
+    if (selectedVerbs.length < 3) {
+      if (verbType === 'regular') {
+        const defaults = [
+          verbs.find(v => v.lemma === 'hablar'),
+          verbs.find(v => v.lemma === 'comer'), 
+          verbs.find(v => v.lemma === 'vivir')
+        ];
+        
+        // Fill missing slots with defaults that don't duplicate
+        while (selectedVerbs.length < 3) {
+          const defaultVerb = defaults[selectedVerbs.length];
+          if (defaultVerb && !selectedVerbs.some(v => v.lemma === defaultVerb.lemma)) {
+            selectedVerbs.push(defaultVerb);
+          }
+        }
+      } else {
+        console.error('🚨 CRITICAL: No se pudieron encontrar suficientes verbos irregulares para', selectedFamilies);
+        console.error('🚨 Esto es un error del sistema - las familias deberían tener suficientes verbos');
+      }
+    }
   }
   
-  console.log('✅ Verbos de ejemplo seleccionados:', selectedVerbs.map(v => v.lemma));
+  console.log('🎯 FINAL: Verbos seleccionados para', verbType, ':', selectedVerbs.map(v => v?.lemma));
   return selectedVerbs.slice(0, 3);
 }
 
