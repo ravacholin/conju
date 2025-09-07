@@ -1124,9 +1124,6 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
             <>
               <div className="story-placeholder">
                 <h3>{selectedStory?.title}</h3>
-                {selectedStory?.theme && selectedStory.theme !== 'principal' && (
-                  <p className="story-theme">📖 Historia temática: {selectedStory.theme}</p>
-                )}
                 {selectedStory?.sentences.map((sentence, index) => (
                   <p 
                     key={index} 
