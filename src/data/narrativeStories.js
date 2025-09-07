@@ -23,6 +23,10 @@ export const storyData = {
         querer: 'Todos los días, Juan __VERB__ hacer cosas nuevas.',
         pedir: 'Siempre __VERB__ consejo a su madre.',
         poder: 'Juan __VERB__ tocar la guitarra muy bien.',
+        // Irregulares en YO (presente indicativo)
+        salir: 'Yo <span class="highlight">salgo</span> al centro todos los días.',
+        hacer: 'También <span class="highlight">hago</span> ejercicio por la mañana.',
+        poner: 'Siempre <span class="highlight">pongo</span> la mesa al mediodía.',
     }
   },
   pretIndef: {
