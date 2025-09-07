@@ -179,6 +179,31 @@ function LearnTenseFlow({ onHome }) {
     }
   };
 
+  // Create stable handler functions to prevent infinite re-renders
+  const handleBackToIntroduction = React.useCallback(() => {
+    setCurrentStep('introduction');
+  }, []);
+
+  const handleBackToArDrill = React.useCallback(() => {
+    setCurrentStep('guided_drill_ar');
+  }, []);
+
+  const handleBackToErDrill = React.useCallback(() => {
+    setCurrentStep('guided_drill_er');
+  }, []);
+
+  const handleCompleteArDrill = React.useCallback(() => {
+    handleSmartStepTransition('guided_drill_ar', 'guided_drill_er');
+  }, []);
+
+  const handleCompleteErDrill = React.useCallback(() => {
+    handleSmartStepTransition('guided_drill_er', 'guided_drill_ir');
+  }, []);
+
+  const handleCompleteIrDrill = React.useCallback(() => {
+    handleSmartStepTransition('guided_drill_ir', 'recap');
+  }, []);
+
   const handleFinish = () => {
     // Record A/B test completion metrics
     if (abTestVariant) {
@@ -303,8 +328,8 @@ function LearnTenseFlow({ onHome }) {
           key={`guided-ar-${exampleVerbs?.[0]?.lemma || 'ar'}`}
           verb={exampleVerbs[0]}
           tense={selectedTense}
-          onBack={() => setCurrentStep('introduction')}
-          onComplete={() => handleSmartStepTransition('guided_drill_ar', 'guided_drill_er')}
+          onBack={handleBackToIntroduction}
+          onComplete={handleCompleteArDrill}
         />
       </ErrorBoundary>
     );
@@ -317,8 +342,8 @@ function LearnTenseFlow({ onHome }) {
           key={`guided-er-${exampleVerbs?.[1]?.lemma || 'er'}`}
           verb={exampleVerbs[1]}
           tense={selectedTense}
-          onBack={() => setCurrentStep('guided_drill_ar')}
-          onComplete={() => handleSmartStepTransition('guided_drill_er', 'guided_drill_ir')}
+          onBack={handleBackToArDrill}
+          onComplete={handleCompleteErDrill}
         />
       </ErrorBoundary>
     );
@@ -331,8 +356,8 @@ function LearnTenseFlow({ onHome }) {
           key={`guided-ir-${exampleVerbs?.[2]?.lemma || 'ir'}`}
           verb={exampleVerbs[2]}
           tense={selectedTense}
-          onBack={() => setCurrentStep('guided_drill_er')}
-          onComplete={() => handleSmartStepTransition('guided_drill_ir', 'recap')}
+          onBack={handleBackToErDrill}
+          onComplete={handleCompleteIrDrill}
         />
       </ErrorBoundary>
     );
