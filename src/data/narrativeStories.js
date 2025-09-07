@@ -25,8 +25,8 @@ export const storyData = {
     title: 'Una tarde ocupada',
     sentences: {
         ar: 'Ayer, María __VERB__ por el parque.',
-        er: 'Luego, __VERB__ un helado de fresa.',
-        ir: 'Finalmente, __VERB__ una carta a su abuela.',
+        er: 'Después, __VERB__ algo delicioso.',
+        ir: 'Luego, __VERB__ en la biblioteca.',
     },
     verbSpecific: {
         caminar: 'Ayer, María __VERB__ por el parque.',
@@ -72,25 +72,25 @@ export const storyData = {
   pretPerf: {
     title: 'Lo que hemos hecho hoy',
     sentences: {
-        ar: 'Esta mañana __VERB__ en un proyecto importante.',
-        er: 'Mi hermana __VERB__ ya su desayuno.',
-        ir: 'Nosotros __VERB__ muchas experiencias juntos.',
+        ar: 'Esta mañana he __VERB__ en un proyecto importante.',
+        er: 'Mi hermana ya ha __VERB__ su desayuno.',
+        ir: 'Nosotros hemos __VERB__ muchas experiencias juntos.',
     },
   },
   plusc: {
     title: 'Recuerdos del pasado',
     sentences: {
-        ar: 'Cuando llegamos, él ya __VERB__ con el director.',
-        er: 'María __VERB__ antes de ir al cine.',
-        ir: 'Ellos __VERB__ allí durante muchos años.',
+        ar: 'Cuando llegamos, él ya había __VERB__ con el director.',
+        er: 'María había __VERB__ antes de ir al cine.',
+        ir: 'Ellos habían __VERB__ allí durante muchos años.',
     },
   },
   futPerf: {
     title: 'Lo que habremos logrado',
     sentences: {
-        ar: 'Para el viernes, __VERB__ todos mis proyectos.',
-        er: 'En diciembre, tú __VERB__ mucho español.',
-        ir: 'Para entonces, nosotros __VERB__ qué hacer.',
+        ar: 'Para el viernes, habré __VERB__ todos mis proyectos.',
+        er: 'En diciembre, tú habrás __VERB__ mucho español.',
+        ir: 'Para entonces, nosotros habremos __VERB__ qué hacer.',
     },
   },
   subjImpf: {
@@ -104,25 +104,25 @@ export const storyData = {
   condPerf: {
     title: 'Lo que habría pasado',
     sentences: {
-        ar: 'Si hubiera tenido tiempo, __VERB__ más para el examen.',
-        er: 'Con más dinero, __VERB__ por todo el mundo.',
-        ir: 'Ellos __VERB__ el proyecto si hubieran tenido ayuda.',
+        ar: 'Si hubiera tenido tiempo, habría __VERB__ más para el examen.',
+        er: 'Con más dinero, habríamos __VERB__ por todo el mundo.',
+        ir: 'Ellos habrían __VERB__ el proyecto si hubieran tenido ayuda.',
     },
   },
   subjPerf: {
     title: 'Espero que haya...',
     sentences: {
-        ar: 'Espero que __VERB__ para el examen de mañana.',
-        er: 'Es posible que __VERB__ algo en mal estado.',
-        ir: 'Dudo que __VERB__ demasiado tarde.',
+        ar: 'Espero que hayas __VERB__ para el examen de mañana.',
+        er: 'Es posible que haya __VERB__ algo en mal estado.',
+        ir: 'Dudo que hayan __VERB__ demasiado tarde.',
     },
   },
   subjPlusc: {
     title: 'Si hubiera sabido...',
     sentences: {
-        ar: 'Si __VERB__ más, habría aprobado el examen.',
-        er: 'Ojalá __VERB__ a la fiesta, te habría gustado mucho.',
-        ir: 'Si __VERB__ antes, habrían visto el espectáculo.',
+        ar: 'Si hubiera __VERB__ más, habría aprobado el examen.',
+        er: 'Ojalá hubieras __VERB__ a la fiesta, te habría gustado mucho.',
+        ir: 'Si hubieran __VERB__ antes, habrían visto el espectáculo.',
     },
   },
 };
