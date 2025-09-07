@@ -47,6 +47,14 @@ export const storyData = {
         er: 'Mi madre siempre me __VERB__ un cuento.',
         ir: 'Nosotros __VERB__ en una casa pequeña.',
     },
+    // Frases específicas para los tres irregulares del imperfecto
+    // Solicitado: reemplazar la narrativa por estas tres oraciones
+    verbSpecific: {
+      ser: 'La casa __VERB__ muy pequeña.',
+      // Usamos HTML para resaltar la forma en 1ª plural
+      ir: 'Nosotros siempre <span class="highlight">íbamos</span> a la plaza.',
+      ver: 'Desde la ventana yo __VERB__ las estrellas.',
+    },
   },
   fut: {
     title: 'Planes para el futuro',

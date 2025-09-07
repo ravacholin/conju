@@ -390,16 +390,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     return fallback;
   };
 
-  const getCorrectAnswerWithHighlight = () => {
-      if (!result || !result.correct) return null;
-      const correctAnswer = result.value;
-      const ending = endingFor(tense?.tense, currentPronoun.key);
-      if (correctAnswer && ending && correctAnswer.endsWith(ending)) {
-          const stem = correctAnswer.slice(0, -ending.length);
-          return <span className="correct-answer-display">{stem}<span className="ending-highlight">{ending}</span></span>;
-      }
-      return <span className="correct-answer-display">{correctAnswer}</span>;
-  }
+  // For respuestas correctas en el drill guiado, no mostramos la forma; solo feedback.
 
   // Highlight irregular fragments by diffing expected regular vs actual
   const renderWithHighlights = (actual, expected) => {
@@ -473,7 +464,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           {result && (
             <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
                 {result.correct ? (
-                    <p>{getCorrectAnswerWithHighlight()} ¡Correcto!</p>
+                    <p>¡Correcto!</p>
                 ) : (
                     <p>La respuesta correcta es: <strong>{result.value}</strong></p>
                 )}
