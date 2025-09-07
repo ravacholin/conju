@@ -133,7 +133,12 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       selectedFamily: selectedFamilyForGenerator,
       cameFromTema: false,
       // IMPORTANTE: Usar el nivel apropiado según el tiempo verbal que se está aprendiendo
-      level: getLevelForTense(tense?.tense) || currentSettings.level || 'A1'
+      level: (() => {
+        const mappedLevel = getLevelForTense(tense?.tense);
+        const finalLevel = mappedLevel || currentSettings.level || 'A1';
+        console.log('🎯 Level mapping:', { tense: tense?.tense, mapped: mappedLevel, current: currentSettings.level, final: finalLevel });
+        return finalLevel;
+      })()
     };
     
     console.log('🎯 Temporary learning settings:', temporarySettings);
