@@ -157,6 +157,11 @@
   font-weight: 600;
 }
 
+/* Irregular forms: show base in white, irregular fragments in blue */
+.verb-deconstruction.irregular .conjugated-form { color: var(--text); }
+.verb-deconstruction.irregular .conjugated-form .irreg-frag { color: var(--accent-blue); }
+.verb-deconstruction.irregular .form-separator { color: var(--text); opacity: 0.9; }
+
 .verb-stem {
   color: var(--accent-green);
   background: rgba(40, 167, 69, 0.1);

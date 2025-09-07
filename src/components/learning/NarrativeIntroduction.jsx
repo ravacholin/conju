@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { diffChars } from 'diff';
 import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
 import './NarrativeIntroduction.css';
@@ -233,6 +234,39 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
     return form?.value || '';
   };
 
+  // Helpers to compute expected regular forms and highlight irregular fragments
+  const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+  const stripAccents = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const renderWithIrregularHighlights = (actual, expected) => {
+    if (!actual || !expected) return actual;
+    if (stripAccents(actual) === stripAccents(expected)) return actual;
+    const parts = diffChars(expected, actual);
+    return parts.map((p, idx) => {
+      if (p.added) return <span key={idx} className="irreg-frag">{p.value}</span>;
+      if (p.removed) return null;
+      return <span key={idx}>{p.value}</span>;
+    });
+  };
+  const expectedRegularForms = (verbObj) => {
+    if (!verbObj) return [];
+    const persons = ['1s', '2s_vos', '3s', '1p', '3p'];
+    const lemma = verbObj.lemma || '';
+    const group = lemma.endsWith('ar') ? 'ar' : lemma.endsWith('er') ? 'er' : 'ir';
+    const endings = getStandardEndings(group, tense.tense) || [];
+    const stem = (tense.tense === 'fut' || tense.tense === 'cond') ? lemma : lemma.slice(0, -2);
+    return persons.map((p) => {
+      const key = p === '2s_vos' ? '2s_tu' : p;
+      const idx = baseOrder.indexOf(key);
+      let ending = idx >= 0 ? endings[idx] : '';
+      if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
+        if (group === 'ar' && ending === 'as') ending = 'ás';
+        else if (group === 'er' && ending === 'es') ending = 'és';
+        else if (group === 'ir' && ending === 'es') ending = 'ís';
+      }
+      return `${stem}${ending || ''}`;
+    });
+  };
+
   const renderStorySentences = () => {
     if (!tenseStoryData || !exampleVerbs || exampleVerbs.length < 3) return null;
 
@@ -290,6 +324,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                     const realForms = extractRealConjugatedForms(verbObj, tense.tense);
                     
                     if (isIrregular && realForms && realForms.length > 0) {
+                      const expectedForms = expectedRegularForms(verbObj);
                       return (
                         <div key={`${group}-${index}`} className="deconstruction-item">
                           <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
@@ -297,7 +332,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
                             <span className="irregular-forms">
                               {realForms.map((form, idx) => (
                                 <span key={`${group}-${idx}-${form}`} className="conjugated-form">
-                                  {form}
+                                  {renderWithIrregularHighlights(form, expectedForms[idx] || '')}
                                   {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
                                 </span>
                               ))}
