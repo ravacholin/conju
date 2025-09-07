@@ -8,6 +8,7 @@ import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, adjustRealTimeDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
+import { recordLearningSession } from '../../lib/learning/analytics.js';
 import './LearningDrill.css';
 
 const PRONOUNS_DISPLAY = {
@@ -42,6 +43,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     complexityBoost: false,
     encouragementLevel: 'normal'
   });
+  const [allAttempts, setAllAttempts] = useState([]);
+  const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -190,6 +193,15 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     }
   }, [tense, verbType]);
 
+  // Initialize session analytics tracking
+  useEffect(() => {
+    if (!sessionStartTimestamp) {
+      const startTime = Date.now();
+      setSessionStartTimestamp(startTime);
+      console.log('📊 Analytics session started:', startTime);
+    }
+  }, [sessionStartTimestamp]);
+
   // calculatePoints function removed - now handled by progress tracking system
 
 
@@ -246,6 +258,28 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     
     setTimeout(() => containerRef.current?.focus(), 0);
 
+    // Record detailed attempt for analytics
+    const detailedAttempt = {
+      timestamp: Date.now(),
+      correct: isCorrect,
+      userAnswer,
+      correctAnswer: currentItem.value,
+      hintsUsed: 0,
+      errorTags: gradeResult.errorTags || [],
+      latencyMs: responseTime,
+      isIrregular: currentItem.type === 'irregular',
+      itemId: currentItem.id,
+      verb: currentItem.lemma,
+      tense: tense?.tense,
+      person: currentItem.person,
+      adaptiveDifficulty: adaptiveSettings?.level || 'intermediate',
+      phaseType: 'mechanical_practice',
+      realTimeDifficulty,
+      sessionPhase: 'drill'
+    };
+
+    setAllAttempts(prev => [...prev, detailedAttempt]);
+
     // Use the progress tracking system with complete information
     await handleResult({
       correct: isCorrect,
@@ -298,6 +332,38 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       console.log('🎯 Generated recommendations:', nextRec);
     } catch (error) {
       console.error('Error generating recommendations:', error);
+    }
+
+    // Record detailed learning session analytics
+    const sessionDuration = sessionStartTimestamp ? Date.now() - sessionStartTimestamp : 0;
+    const completionRate = correctStreak >= 10 ? 1 : (totalAttempts / 20); // Assuming 20 attempts for full session
+    
+    try {
+      const userId = 'default'; // TODO: Get actual user ID
+      const sessionAnalytics = {
+        tense: tense?.tense,
+        verbType,
+        grade,
+        accuracy,
+        averageTime: avgTime,
+        maxStreak: correctStreak,
+        points: sessionStats.points,
+        totalAttempts,
+        correctAnswers,
+        errorPatterns,
+        sessionDuration,
+        completionRate,
+        adaptiveLevel: adaptiveSettings?.level || 'intermediate',
+        phaseType: 'mechanical_drill',
+        attempts: allAttempts,
+        realTimeDifficultyFinal: realTimeDifficulty,
+        recommendations
+      };
+
+      recordLearningSession(userId, sessionAnalytics);
+      console.log('📊 Session analytics recorded:', sessionAnalytics);
+    } catch (error) {
+      console.error('Error recording session analytics:', error);
     }
     
     return { 

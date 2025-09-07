@@ -5,6 +5,7 @@ import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { getLearningFamiliesForTense, categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
+import { abTesting } from '../../lib/learning/analytics.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
@@ -18,7 +19,7 @@ import { useSettings } from '../../state/settings.js';
 
 
 // Helper function to get verbs belonging to a specific family
-function getVerbsForFamily(familyId, tense) {
+function getVerbsForFamily(familyId) {
   return verbs.filter(verb => {
     const families = categorizeLearningVerb(verb.lemma, verb);
     return families.includes(familyId);
@@ -34,7 +35,7 @@ function LearnTenseFlow({ onHome }) {
   const [exampleVerbs, setExampleVerbs] = useState(null);
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
-  const settings = useSettings();
+  const [abTestVariant, setAbTestVariant] = useState(null);
 
   // Calculate adaptive settings when tense and type are selected
   useEffect(() => {
@@ -54,6 +55,27 @@ function LearnTenseFlow({ onHome }) {
       }
     }
   }, [selectedTense, verbType, duration]);
+
+  // Initialize A/B testing on component mount
+  useEffect(() => {
+    const userId = 'default'; // TODO: Get actual user ID
+    
+    // Create sample A/B test for learning flow optimization
+    abTesting.createTest('learning_flow_v1', {
+      name: 'Learning Flow Optimization',
+      description: 'Test different approaches to guided drill progression',
+      variants: ['control', 'enhanced'],
+      trafficSplit: [50, 50],
+      duration: 30 * 24 * 60 * 60 * 1000, // 30 days
+      metrics: ['completion_rate', 'accuracy', 'engagement', 'session_duration']
+    });
+
+    // Assign user to variant
+    const variant = abTesting.assignUserToVariant(userId, 'learning_flow_v1');
+    setAbTestVariant(variant);
+    
+    console.log('🧪 A/B Test variant assigned:', variant);
+  }, []);
 
   const availableTenses = useMemo(() => {
     // Only show tenses that have narrative stories implemented
@@ -157,6 +179,21 @@ function LearnTenseFlow({ onHome }) {
   };
 
   const handleFinish = () => {
+    // Record A/B test completion metrics
+    if (abTestVariant) {
+      const userId = 'default'; // TODO: Get actual user ID
+      const completionMetrics = {
+        completion_rate: 1, // User completed the session
+        session_duration: personalizedDuration?.totalDuration || duration || 0,
+        tense_practiced: selectedTense?.tense,
+        verb_type_practiced: verbType,
+        adaptive_level: adaptiveSettings?.level || 'intermediate'
+      };
+      
+      abTesting.recordTestMetrics(userId, 'learning_flow_v1', completionMetrics);
+      console.log('🧪 A/B test completion metrics recorded:', completionMetrics);
+    }
+
     setSelectedTense(null);
     setDuration(null);
     setVerbType(null);
@@ -554,6 +591,9 @@ function LearnTenseFlow({ onHome }) {
               >
                 <h3>5 minutos</h3>
                 <p className="example">Sesión corta</p>
+                {abTestVariant === 'enhanced' && (
+                  <p className="variant-enhancement">⚡ Con práctica intensiva</p>
+                )}
               </ClickableCard>
               
               <ClickableCard 

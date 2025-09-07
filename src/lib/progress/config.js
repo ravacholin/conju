@@ -196,14 +196,15 @@ export const ERROR_TAGS = {
 // Configuración de almacenamiento
 export const STORAGE_CONFIG = {
   DB_NAME: 'SpanishConjugatorProgress',
-  DB_VERSION: 1,
+  DB_VERSION: 2, // Increment version to add learning_sessions
   STORES: {
     USERS: 'users',
     VERBS: 'verbs',
     ITEMS: 'items',
     ATTEMPTS: 'attempts',
     MASTERY: 'mastery',
-    SCHEDULES: 'schedules'
+    SCHEDULES: 'schedules',
+    LEARNING_SESSIONS: 'learning_sessions'
   }
 }
 

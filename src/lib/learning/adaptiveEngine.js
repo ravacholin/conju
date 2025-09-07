@@ -3,8 +3,7 @@
  * Personalizes learning experience based on user performance and mastery
  */
 
-import { getMasteryByUser } from '../progress/mastery.js';
-import { getProgress } from '../progress/tracking.js';
+import { getMasteryByUser } from '../progress/database.js';
 
 /**
  * Calculates adaptive difficulty level based on user's mastery scores
@@ -182,7 +181,6 @@ export function personalizeSessionDuration(adaptiveSettings, baseDuration = 10) 
 export function generateNextSessionRecommendations(userId, currentSession) {
   try {
     const masteryData = getMasteryByUser(userId);
-    const progressData = getProgress(userId);
     
     if (!masteryData || !currentSession) {
       return {

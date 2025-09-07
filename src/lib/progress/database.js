@@ -100,6 +100,16 @@ export async function initDB() {
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
           console.log('✅ Tabla de schedules creada')
         }
+
+        // Crear tabla de learning sessions (analytics)
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)) {
+          const sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
+          sessionStore.createIndex('userId', 'userId', { unique: false })
+          sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
+          sessionStore.createIndex('tense', 'tense', { unique: false })
+          sessionStore.createIndex('adaptiveLevel', 'adaptiveLevel', { unique: false })
+          console.log('✅ Tabla de learning sessions creada')
+        }
         
         console.log('🔧 Estructura de base de datos actualizada')
       }
