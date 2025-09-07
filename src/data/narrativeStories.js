@@ -38,6 +38,10 @@ export const storyData = {
         vivir: 'Ayer, __VERB__ una experiencia inolvidable.',
         hablar: 'Esa tarde, __VERB__ con su mejor amigo.',
         aprender: 'En solo una tarde, __VERB__ a tejer.',
+        // Irregulares en 3.ª persona: pedir, dormir, leer
+        pedir: 'Primero __VERB__ un libro en la biblioteca.',
+        dormir: 'Después __VERB__ un rato en la sala de lectura.',
+        leer: 'Al final __VERB__ una novela muy interesante.',
     }
   },
   impf: {
