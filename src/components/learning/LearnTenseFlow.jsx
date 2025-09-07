@@ -30,38 +30,28 @@ function getVerbsForFamily(familyId) {
 // Function to select 3 example verbs based on user's choice
 // This is the single source of truth for the entire learning flow
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
+  console.log('seleccionando verbos con:', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
 
   if (verbType === 'regular') {
-    // Find 3 regular verbs for the given tense, one for each ending
     const regularAr = verbs.find(v => v.lemma.endsWith('ar') && v.type === 'regular');
     const regularEr = verbs.find(v => v.lemma.endsWith('er') && v.type === 'regular');
     const regularIr = verbs.find(v => v.lemma.endsWith('ir') && v.type === 'regular');
     selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
-  } else {
-    // For irregular verbs, find one from each selected family
-    if (selectedFamilies && selectedFamilies.length > 0) {
-      selectedFamilies.forEach(familyId => {
-        const familyVerbs = getVerbsForFamily(familyId);
-        if (familyVerbs.length > 0) {
-          // Add a verb from the family if not already added
-          const verbToAdd = familyVerbs.find(v => !selectedVerbs.some(sv => sv.lemma === v.lemma));
-          if (verbToAdd) {
-            selectedVerbs.push(verbToAdd);
-          }
-        }
-      });
-    }
+  } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
+    const familyVerbs = selectedFamilies.flatMap(familyId => getVerbsForFamily(familyId));
+    const uniqueFamilyVerbs = [...new Set(familyVerbs)];
+    selectedVerbs = uniqueFamilyVerbs.slice(0, 3);
   }
 
   // Ensure we always have 3 verbs, filling with defaults if necessary
-  if (selectedVerbs.length < 3) {
+  while (selectedVerbs.length < 3) {
     const defaultVerbs = [
       verbs.find(v => v.lemma === 'hablar'),
       verbs.find(v => v.lemma === 'comer'),
       verbs.find(v => v.lemma === 'vivir')
     ];
-    selectedVerbs = [...selectedVerbs, ...defaultVerbs.slice(selectedVerbs.length)].slice(0, 3);
+    selectedVerbs.push(defaultVerbs[selectedVerbs.length]);
   }
   
   console.log('✅ Verbos de ejemplo seleccionados:', selectedVerbs.map(v => v.lemma));
