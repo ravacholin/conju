@@ -586,13 +586,13 @@ function LearnTenseFlow({ onHome }) {
     if (selectedTense.tense === 'pres') {
       irregularCategories['yo_irregular_g'] = {
         name: 'Irregulares en YO',
-        description: 'Verbos muy frecuentes que añaden -g: tengo, pongo, hago, salgo',
+        description: 'Verbos muy frecuentes que añaden -g: salgo, pongo, hago',
         families: availableFamilies.filter(f => f.id === 'LEARNING_YO_G_PRESENT')
       };
       
       irregularCategories['diphthongs'] = {
         name: 'Verbos que diptongan',
-        description: 'Cambios vocálicos: o→ue (puedo), e→ie (quiero), e→i (pido), u→ue (juego)',
+        description: 'Cambios vocálicos: e→ie (quiero), e→i (pido), o→ue (puedo)',
         families: availableFamilies.filter(f => f.id === 'LEARNING_DIPHTHONGS')
       };
       
