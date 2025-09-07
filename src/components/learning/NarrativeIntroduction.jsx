@@ -241,11 +241,28 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     if (!actual || !expected) return actual;
     if (stripAccents(actual) === stripAccents(expected)) return actual;
     const parts = diffChars(expected, actual);
-    return parts.map((p, idx) => {
-      if (p.added) return <span key={idx} className="irreg-frag">{p.value}</span>;
-      if (p.removed) return null;
-      return <span key={idx}>{p.value}</span>;
-    });
+    const nodes = [];
+    for (let idx = 0; idx < parts.length; idx++) {
+      const p = parts[idx];
+      if (p.added) {
+        let val = p.value || '';
+        // Para diptongos en presente (e→ie, o→ue): resaltar "ie" o "ue" completos
+        // Si el diff marcó solo la i/u añadida y la e quedó como parte sin cambio,
+        // unimos esa primera 'e' a la porción resaltada.
+        const next = parts[idx + 1];
+        if ((val.endsWith('i') || val.endsWith('u')) && next && !next.added && !next.removed && typeof next.value === 'string' && next.value.startsWith('e')) {
+          val += 'e';
+          parts[idx + 1] = { ...next, value: next.value.slice(1) };
+        }
+        nodes.push(<span key={idx} className="irreg-frag">{val}</span>);
+      } else if (p.removed) {
+        // omitimos
+      } else {
+        if (!p.value) continue;
+        nodes.push(<span key={idx}>{p.value}</span>);
+      }
+    }
+    return nodes;
   };
   const expectedRegularForms = (verbObj) => {
     if (!verbObj) return [];

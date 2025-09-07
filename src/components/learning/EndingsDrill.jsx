@@ -399,15 +399,26 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     const strip = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     if (strip(actual) === strip(expected)) return actual;
     const parts = diffChars(expected, actual);
-    return parts.map((p, idx) => {
+    const nodes = [];
+    for (let idx = 0; idx < parts.length; idx++) {
+      const p = parts[idx];
       if (p.added) {
-        return <span key={idx} className="irreg-frag">{p.value}</span>;
+        let val = p.value || '';
+        // Diptongos: ampliar resaltado a "ie"/"ue" cuando corresponda
+        const next = parts[idx + 1];
+        if ((val.endsWith('i') || val.endsWith('u')) && next && !next.added && !next.removed && typeof next.value === 'string' && next.value.startsWith('e')) {
+          val += 'e';
+          parts[idx + 1] = { ...next, value: next.value.slice(1) };
+        }
+        nodes.push(<span key={idx} className="irreg-frag">{val}</span>);
+      } else if (p.removed) {
+        // skip deletions
+      } else {
+        if (!p.value) continue;
+        nodes.push(<span key={idx}>{p.value}</span>);
       }
-      if (p.removed) {
-        return null; // do not render deletions
-      }
-      return <span key={idx}>{p.value}</span>;
-    });
+    }
+    return nodes;
   };
   
   if (!verb || !deconstruction || !currentPronoun) {
