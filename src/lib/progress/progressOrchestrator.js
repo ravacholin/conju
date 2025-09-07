@@ -33,7 +33,9 @@ function dispatchUpdate() {
       const ev = new CustomEvent('progress-emo-update', { detail: { ...lastState } })
       window.dispatchEvent(ev)
     }
-  } catch (_) {}
+  } catch (_) {
+    /* ignore */
+  }
 }
 
 /**
@@ -92,7 +94,9 @@ export function processAttempt(attemptCtx) {
       interruptions: 0,
       sessionType: 'mixed'
     })
-  } catch (_) {}
+  } catch (_) {
+    /* ignore */
+  }
 
   // Actualizar estado compartido para UI
   lastState = {

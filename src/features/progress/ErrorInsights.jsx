@@ -77,7 +77,9 @@ export default function ErrorInsights({ onNavigateToDrill }) {
         recent.forEach(a => (a.errorTags || []).forEach(t => freq.set(t, (freq.get(t) || 0) + 1)))
         const top = Array.from(freq.entries()).sort((a,b)=>b[1]-a[1]).slice(0,5)
         setTopErrors(top)
-      } catch {}
+      } catch {
+        /* ignore */
+      }
     })()
   }, [])
 

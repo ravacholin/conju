@@ -1,7 +1,8 @@
 // Modo docente para el sistema de progreso
 
 import { getMasteryByUser, getAttemptsByItem } from './database.js'
-import { formatDate, msToSeconds } from './helpers.js'
+import { msToSeconds } from './helpers.js'
+// import { formatDate } from './helpers.js'
 
 /**
  * Genera un informe para el modo docente
@@ -82,7 +83,7 @@ export async function generateStudentReport(userId = null) {
  * @param {string} filename - Nombre del archivo
  * @returns {string} Datos en formato CSV
  */
-export function exportToCSV(data, filename = 'progress_data.csv') {
+export function exportToCSV(data) {
   if (!data || data.length === 0) return ''
   
   try {
@@ -211,7 +212,7 @@ export async function generateDetailedReport(userId, options = {}) {
  * @param {string} filename - Nombre del archivo
  * @returns {Promise<Blob>} Blob del PDF generado
  */
-export async function exportToPDF(report, filename = 'student_report.pdf') {
+export async function exportToPDF() {
   try {
     // En una implementación completa, esto generaría un PDF
     // basado en el informe proporcionado
@@ -247,16 +248,11 @@ export async function shareProgressWithTeacher(userId, teacherCode) {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Historial de compartición
  */
-export async function getSharingHistory(userId) {
-  try {
-    // En una implementación completa, esto obtendría el historial
-    // de veces que el usuario ha compartido su progreso
-    
-    return []
-  } catch (error) {
-    console.error('Error al obtener historial de compartición:', error)
-    return []
-  }
+export async function getSharingHistory() {
+  // En una implementación completa, esto obtendría el historial
+  // de veces que el usuario ha compartido su progreso
+  
+  return []
 }
 
 /**

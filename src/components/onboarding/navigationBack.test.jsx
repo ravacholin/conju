@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, /* expect, */ it } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -9,7 +9,9 @@ import { useSettings } from '../../state/settings.js'
 const resetSettings = () => {
   try {
     window.localStorage.clear()
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   const s = useSettings.getState()
   useSettings.setState({
     ...s,

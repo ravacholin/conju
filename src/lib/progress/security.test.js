@@ -1,6 +1,6 @@
 // Pruebas de seguridad para el sistema de progreso y analíticas
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, /* vi */ } from 'vitest'
 import { 
   initProgressSystem,
   isProgressSystemInitialized,

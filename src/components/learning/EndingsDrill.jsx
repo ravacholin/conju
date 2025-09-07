@@ -188,7 +188,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const [result, setResult] = useState(null); // null | { correct: boolean, ... }
   const inputRef = useRef(null);
   const [entered, setEntered] = useState(true);
-  const [leaving, setLeaving] = useState(false);
+  const [leaving] = useState(false);
   const settings = useSettings();
 
   // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });

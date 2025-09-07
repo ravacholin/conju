@@ -1,6 +1,7 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
-import { saveAttempt, saveMastery, getMasteryByCell, getByIndex } from './database.js'
+import { saveAttempt, saveMastery, getByIndex } from './database.js'
+// import { getMasteryByCell } from './database.js'
 import { classifyError } from './errorClassification.js'
 import { getOrCreateItem } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
@@ -84,7 +85,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     try {
       const item = await getOrCreateItem(verbId, mood, tense, person)
       canonicalItemId = item.id
-    } catch (e) {
+    } catch {
       // Continuar con ID canónico aunque falle la creación
     }
 
@@ -117,7 +118,8 @@ export async function trackAttemptSubmitted(attemptId, result) {
         item: { mood, tense, person, verbId, lemma: result.item?.lemma || result.item?.form?.lemma },
         errorTags
       })
-    } catch (e) {
+    } catch {
+      // Failed to get orchestrated data, continue without it
       orchestrated = null
     }
 
@@ -161,17 +163,17 @@ export async function trackAttemptSubmitted(attemptId, result) {
     try {
       // Obtener intentos del usuario y filtrar por celda actual
       const allUserAttempts = await getByIndex('attempts', 'userId', currentSession.userId)
-      const windowMs = 90 * 24 * 60 * 60 * 1000 // 90 días de ventana para recencia
+      const _windowMs = 90 * 24 * 60 * 60 * 1000 // 90 días de ventana para recencia
       const now = Date.now()
       let weightedCorrect = 0
       let weightedTotal = 0
-      let weightedN = 0
+      let _weightedN = 0
       for (const a of allUserAttempts) {
         if (a.mood === mood && a.tense === tense && a.person === person && a.verbId) {
           const ageDays = (now - new Date(a.createdAt).getTime()) / (24*60*60*1000)
           const recencyWeight = Math.exp(-ageDays / PROGRESS_CONFIG.DECAY_TAU)
           weightedTotal += recencyWeight
-          weightedN += recencyWeight
+          _weightedN += recencyWeight
           weightedCorrect += recencyWeight * (a.correct ? 1 : 0)
         }
       }

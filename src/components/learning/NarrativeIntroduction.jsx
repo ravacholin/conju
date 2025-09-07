@@ -4,7 +4,7 @@ import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
-import { verbs } from '../../data/verbs.js';
+// import { verbs } from '../../data/verbs.js';
 
 // Extraer formas conjugadas reales de la base de datos
 function extractRealConjugatedForms(verbObj, tense) {
@@ -96,7 +96,7 @@ function getStandardEndings(group, tense) {
   return endings[tense]?.[group] || endings.pres[group] || [];
 }
 
-function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular', selectedFamilies = [], onBack, onContinue }) {
+function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue }) {
   const [visibleSentence, setVisibleSentence] = useState(-1);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);

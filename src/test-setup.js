@@ -1,5 +1,6 @@
 // Test setup for Spanish Conjugator
 import '@testing-library/jest-dom'
+import { vi } from 'vitest'
 
 // Mock localStorage for tests
 Object.defineProperty(window, 'localStorage', {
@@ -13,7 +14,7 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 // Mock IndexedDB for tests
-global.indexedDB = {
+globalThis.indexedDB = {
   open: vi.fn().mockResolvedValue({
     result: {
       transaction: vi.fn().mockReturnValue({

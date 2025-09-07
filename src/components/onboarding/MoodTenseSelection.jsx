@@ -10,7 +10,7 @@ function MoodTenseSelection({
   onBack,
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
-  getModeSamples,
+  // getModeSamples,
   getConjugationExample
 }) {
   

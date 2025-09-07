@@ -2,7 +2,8 @@
 // Optimiza el aprendizaje basado en patrones temporales y ritmos biológicos
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger, logTemporal, logError, logWarn } from './logger.js'
+import { logger } from './logger.js'
+// import { logTemporal, logError, logWarn } from './logger.js'
 import { memoryManager, registerInterval } from './memoryManager.js'
 
 /**
@@ -248,20 +249,20 @@ export class TemporalIntelligence {
     })
 
     // Calcular promedios por hora
-    hourlyStats.forEach((stats, hour) => {
+    hourlyStats.forEach((stats) => {
       stats.avgPerformance = stats.sessions.reduce((sum, s) => sum + s.performance, 0) / stats.sessions.length
       stats.avgAccuracy = stats.sessions.reduce((sum, s) => sum + s.averageAccuracy, 0) / stats.sessions.length
     })
 
     // Identificar horas pico y bajas
     const sortedHours = Array.from(hourlyStats.entries())
-      .filter(([_, stats]) => stats.sessions.length >= 2) // Al menos 2 sesiones
+      .filter(([, stats]) => stats.sessions.length >= 2) // Al menos 2 sesiones
       .sort((a, b) => b[1].avgPerformance - a[1].avgPerformance)
 
     const minSessions = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.TEMPORAL.CIRCADIAN.PEAK_DETECTION_MIN_SESSIONS
     if (sortedHours.length >= minSessions * 2) {
-      this.circadianProfile.peakHours = sortedHours.slice(0, 2).map(([hour, _]) => hour)
-      this.circadianProfile.lowHours = sortedHours.slice(-2).map(([hour, _]) => hour)
+      this.circadianProfile.peakHours = sortedHours.slice(0, 2).map(([hour]) => hour)
+      this.circadianProfile.lowHours = sortedHours.slice(-2).map(([hour]) => hour)
     }
 
     // Determinar tipo de ritmo circadiano
@@ -277,7 +278,7 @@ export class TemporalIntelligence {
   determineCircadianType(sortedHours) {
     if (sortedHours.length < 3) return 'neutral'
 
-    const topHours = sortedHours.slice(0, 3).map(([hour, _]) => hour)
+    const topHours = sortedHours.slice(0, 3).map(([hour]) => hour)
     const morningHours = topHours.filter(h => h >= 6 && h <= 11).length
     const eveningHours = topHours.filter(h => h >= 18 && h <= 23).length
     const afternoonHours = topHours.filter(h => h >= 12 && h <= 17).length

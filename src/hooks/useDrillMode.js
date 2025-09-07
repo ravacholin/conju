@@ -13,9 +13,9 @@ import { getCoachingRecommendations, getMotivationalInsights } from '../lib/prog
 import { flowDetector, processUserResponse } from '../lib/progress/flowStateDetection.js'
 import { momentumTracker, processResponseForMomentum } from '../lib/progress/momentumTracker.js'
 import { confidenceEngine, processResponseForConfidence } from '../lib/progress/confidenceEngine.js'
-import { temporalIntelligence, processSessionForTempo } from '../lib/progress/temporalIntelligence.js'
+import { temporalIntelligence, /* processSessionForTempo */ } from '../lib/progress/temporalIntelligence.js'
 import { dynamicGoalsSystem, processResponseForGoals } from '../lib/progress/dynamicGoals.js'
-import { shouldFilterVerbByLevel, getVerbSelectionWeight, isHighPriorityVerb } from '../lib/core/levelVerbFiltering.js'
+import { shouldFilterVerbByLevel, getVerbSelectionWeight, /* isHighPriorityVerb */ } from '../lib/core/levelVerbFiltering.js'
 import { categorizeVerb } from '../lib/data/irregularFamilies.js'
 import { varietyEngine } from '../lib/core/advancedVarietyEngine.js'
 

@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Inspect Present Indicative distribution by verb type for a region
 // Usage: REGION=rioplatense node scripts/inspect_present_stats.js
 

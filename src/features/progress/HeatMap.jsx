@@ -3,7 +3,7 @@
 import { useMemo, useState, memo, Fragment } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
-import { getEligiblePool } from '../../lib/core/eligibility.js'
+// import { getEligiblePool } from '../../lib/core/eligibility.js'
 
 /**
  * Componente para mostrar el mapa de calor

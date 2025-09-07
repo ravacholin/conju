@@ -12,7 +12,7 @@ export function getCurrentUserId() {
   }
 }
 
-export function getUserSettings(_userId) {
+export function getUserSettings(_userId) { // eslint-disable-line no-unused-vars
   try {
     if (typeof window === 'undefined') {
       return defaultSettings()
@@ -44,7 +44,7 @@ function defaultSettings() {
   }
 }
 
-export function incrementSessionCount(_userId) {
+export function incrementSessionCount(_userId) { // eslint-disable-line no-unused-vars
   try {
     if (typeof window === 'undefined') return
     const raw = window.localStorage.getItem(LS_KEY)

@@ -17,7 +17,9 @@ export async function initializeItems() {
       const dbModule = await import('./database.js')
       if (typeof dbModule.saveItem === 'function') saveItem = dbModule.saveItem
       if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
-    } catch {}
+    } catch {
+      /* ignore */
+    }
 
     let itemCount = 0
     let skippedCount = 0
@@ -84,7 +86,9 @@ export async function getOrCreateItem(verbId, mood, tense, person) {
     const dbModule = await import('./database.js')
     if (typeof dbModule.saveItem === 'function') saveItem = dbModule.saveItem
     if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   
   // Buscar ítem existente
   let item = await getItemByProperties(verbId, mood, tense, person)
@@ -112,7 +116,7 @@ export async function getOrCreateItem(verbId, mood, tense, person) {
  * @param {string} person - Persona
  * @returns {Promise<Array>} Ítems de la celda
  */
-export async function getItemsByCell(mood, tense, person) {
+export async function getItemsByCell(_mood, _tense, _person) {
   // En una implementación completa, esto buscaría en la base de datos
   // todos los ítems que coincidan con la celda especificada
   
@@ -125,7 +129,7 @@ export async function getItemsByCell(mood, tense, person) {
  * @param {string} verbId - ID del verbo
  * @returns {Promise<Array>} Ítems del verbo
  */
-export async function getItemsByVerb(verbId) {
+export async function getItemsByVerb(_verbId) {
   // En una implementación completa, esto buscaría en la base de datos
   // todos los ítems asociados a un verbo específico
   
@@ -139,7 +143,7 @@ export async function getItemsByVerb(verbId) {
  * @param {Object} updates - Actualizaciones
  * @returns {Promise<void>}
  */
-export async function updateItem(itemId, updates) {
+export async function updateItem(_itemId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el ítem existente
     
@@ -179,7 +183,9 @@ export async function itemExists(verbId, mood, tense, person) {
   try {
     const dbModule = await import('./database.js')
     if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   const item = await getItemByProperties(verbId, mood, tense, person)
   return item !== null
 }

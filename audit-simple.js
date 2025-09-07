@@ -30,7 +30,8 @@ const combinations = Array.from(uniqueCombos).map(combo => {
 console.log(`📊 Found ${combinations.length} unique tense/mood combinations`);
 console.log(`📚 Available learning families: ${Object.keys(LEARNING_IRREGULAR_FAMILIES).length}`);
 
-let totalIssues = 0;
+let _totalIssues = 0;
+void _totalIssues; // Variable intentionally unused for debugging
 const criticalIssues = [];
 const warnings = [];
 

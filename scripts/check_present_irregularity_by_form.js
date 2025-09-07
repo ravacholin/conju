@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Check present indicative irregularity per form (not lemma type)
 // Usage: REGION=rioplatense node scripts/check_present_irregularity_by_form.js
 

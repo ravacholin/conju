@@ -607,7 +607,7 @@ export class MomentumTracker {
     this.currentMomentum = newMomentum
     this.lastMomentumChange = now
     
-    logMomentum('Cambio de momentum', `${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
+    console.log('Cambio de momentum', `${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
   }
 
   /**

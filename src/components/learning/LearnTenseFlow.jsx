@@ -15,7 +15,6 @@ import PronunciationPractice from './PronunciationPractice.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
-import { useSettings } from '../../state/settings.js';
 
 
 
@@ -27,6 +26,7 @@ import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFam
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
   console.log('🔍 Seleccionando verbos coherentes:', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
+  let candidateVerbs = [];
 
   if (verbType === 'regular') {
     // For regular verbs, use simple regular examples
@@ -40,8 +40,6 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
   } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
     // For irregular verbs, use examples directly from family definitions
     console.log('🎯 Seleccionando de familias:', selectedFamilies);
-    
-    const candidateVerbs = [];
     
     // Get examples from each selected family
     selectedFamilies.forEach(familyId => {

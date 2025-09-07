@@ -3,8 +3,8 @@ import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
-import { grade } from '../../lib/core/grader.js';
-import { classifyError } from '../../features/drill/tracking.js';
+// import { grade } from '../../lib/core/grader.js';
+// import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
 
 const chatData = {

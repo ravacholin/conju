@@ -27,8 +27,8 @@ export default function SessionHUD() {
         })
         const top = Array.from(freq.entries()).sort((a,b)=>b[1]-a[1]).slice(0,3)
         setTopErrors(top)
-      } catch (e) {
-        // ignore
+      } catch (_e) {
+        /* ignore */
       }
     })()
   }, [])
@@ -77,8 +77,8 @@ export default function SessionHUD() {
                       currentBlock: { combos: topCombos, itemsRemaining: 5 }
                     })
                     window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
-                  } catch (e) {
-                    // ignore
+                  } catch (_e) {
+                    /* ignore */
                   }
                 }}
               >

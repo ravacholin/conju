@@ -121,7 +121,7 @@ export async function runPerformanceTests() {
   try {
     // Medir tiempo de inicialización
     const initStart = performance.now()
-    const userId = await initProgressSystem()
+    const _userId = await initProgressSystem()
     results.initTime = performance.now() - initStart
     
     console.log('⚡ Pruebas de rendimiento completadas:', results)

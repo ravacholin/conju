@@ -4,7 +4,7 @@ import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade } from '../../lib/core/grader.js';
-import { classifyError } from '../../features/drill/tracking.js';
+// import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
 
 // Función para seleccionar ejercicio aleatorio (principal o alternativo)
@@ -324,7 +324,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             
             // Try to find the best match using the grader system
             for (const expectedVerb of p.expected) {
-                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\$&')}\b`, 'i');
+                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\b`, 'i');
                 if (regex.test(userText)) {
                     bestMatch = expectedVerb;
                     bestScore = 1;

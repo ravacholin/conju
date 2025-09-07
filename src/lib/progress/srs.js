@@ -121,7 +121,7 @@ export function isItemDue(schedule, currentDate = new Date()) {
  * @param {Object} verb - Verbo asociado
  * @returns {number} Mastery score (0-100)
  */
-export function calculateItemMastery(attempt, verb) {
+export function calculateItemMastery() {
   // En una implementación completa, esto calcularía el mastery score
   // basado en el intento y las características del verbo
   
@@ -135,7 +135,7 @@ export function calculateItemMastery(attempt, verb) {
  * @param {Object} verbsMap - Mapa de verbos por ID
  * @returns {number} Mastery score (0-100)
  */
-export function calculateCellMastery(attempts, verbsMap) {
+export function calculateCellMastery() {
   // En una implementación completa, esto calcularía el mastery score
   // para una celda basado en todos los intentos
   
@@ -149,7 +149,7 @@ export function calculateCellMastery(attempts, verbsMap) {
  * @param {Object} weights - Pesos para cada celda
  * @returns {number} Mastery score (0-100)
  */
-export function calculateTimeOrMoodMastery(cells, weights) {
+export function calculateTimeOrMoodMastery() {
   // En una implementación completa, esto calcularía el mastery score
   // para un tiempo o modo completo basado en las celdas
   
@@ -163,7 +163,7 @@ export function calculateTimeOrMoodMastery(cells, weights) {
  * @param {Object} newItem - Nuevo ítem para programar
  * @returns {Object} Schedule actualizado
  */
-export function updateScheduleWithNewItem(schedule, newItem) {
+export function updateScheduleWithNewItem(schedule) {
   // En una implementación completa, esto actualizaría el schedule
   // con información del nuevo ítem
   

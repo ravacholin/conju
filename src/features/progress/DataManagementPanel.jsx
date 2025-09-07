@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { exportProgressData, exportToCSV, downloadExportedData, generateProgressReport } from '../../lib/progress/dataExport.js'
 import { importFromFile, createBackup } from '../../lib/progress/dataRestore.js'
 import { enhancedCloudSync } from '../../lib/progress/enhancedCloudSync.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+// import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
  * Panel avanzado de gestión de datos del usuario
@@ -40,6 +40,7 @@ export default function DataManagementPanel({ onClose }) {
       // En implementación real, verificaría el estado actual
       setSyncStatus('ready')
     } catch (error) {
+      /* handle silently */
       setSyncStatus('error')
     }
   }

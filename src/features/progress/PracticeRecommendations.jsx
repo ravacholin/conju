@@ -311,7 +311,7 @@ export default function PracticeRecommendations({
             <div className="session-activities">
               {(selectedSession.activities || []).map((activity, index) => (
                 <div key={index} className="session-activity">
-                  <span className="activity-icon">{getRecommendationIcon(activity.type)}</span>
+                  <span className="activity-icon">{getRecommendationIconPath(activity.type)}</span>
                   <span className="activity-title">{activity.title}</span>
                   <span className="activity-time">
                     <img src="/icons/timer.png" alt="Tiempo" className="inline-icon" />

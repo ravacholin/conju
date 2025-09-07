@@ -119,7 +119,7 @@ function audit() {
   }
   
   console.log(JSON.stringify(summary, null, 2))
-  if (failures.length > 0) process.exitCode = 1
+  if (failures.length > 0) globalThis.process.exitCode = 1
 }
 
 audit()

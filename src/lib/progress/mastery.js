@@ -3,8 +3,9 @@
 import { getAttemptsByItem } from './database.js'
 import { PROGRESS_CONFIG, VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 import { calculateRecencyWeight } from './helpers.js'
-import { applyPenalties } from './penalties.js'
-import { getIrregularTenses, getVerbIrregularityStats } from '../utils/irregularityUtils.js'
+// import { applyPenalties } from './penalties.js'
+// import { getIrregularTenses, getVerbIrregularityStats } from '../utils/irregularityUtils.js'
+import { getVerbIrregularityStats } from '../utils/irregularityUtils.js'
 
 /**
  * Obtiene la dificultad base de un verbo

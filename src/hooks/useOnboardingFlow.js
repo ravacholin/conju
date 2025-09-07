@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSettings } from '../state/settings.js'
-import { getTensesForMood, getTenseLabel, getMoodLabel } from '../lib/utils/verbLabels.js'
+import { getTensesForMood /* getTenseLabel, getMoodLabel */ } from '../lib/utils/verbLabels.js'
 import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
 import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
 import { LEVELS } from '../lib/data/levels.js'
-import gates from '../data/curriculum.json'
+// import gates from '../data/curriculum.json'
 
 // Helper function to get allowed lemmas from level configuration
 function getAllowedLemmasForLevel(level) {
@@ -606,7 +606,9 @@ export function useOnboardingFlow() {
       // Replace current state with clean onboarding state
       const cleanState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
       window.history.replaceState(cleanState, '')
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     
     setOnboardingStep(1) // Go to step 1: Dialect selection for clean start
   }

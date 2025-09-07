@@ -1,3 +1,4 @@
+/* eslint-env node */
 // Simulation: validate irregular ratio rebalancer (~65%) in theme-specific mixed pools
 // Run: node scripts/simulate_irregular_mix.js
 

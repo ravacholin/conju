@@ -57,9 +57,9 @@ function AppRouter() {
       if (mode && ['onboarding','drill','learning','progress'].includes(mode)) {
         setCurrentMode(mode)
         const state = { appNav: true, mode, ts: Date.now() }
-        try { window.history.replaceState(state, '') } catch {}
+        try { window.history.replaceState(state, '') } catch {/* ignore */}
       }
-    } catch (err) {
+    } catch {
       // ignore URL parsing issues
     }
   }, [])
@@ -85,7 +85,7 @@ function AppRouter() {
       onboardingFlow.setOnboardingStep(2)
       const historyState = { appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }
       window.history.pushState(historyState, '')
-    } catch (e) {
+    } catch {
       // Fallback
       setCurrentMode('onboarding')
       onboardingFlow.setOnboardingStep(2)

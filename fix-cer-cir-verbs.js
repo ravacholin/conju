@@ -56,7 +56,8 @@ function fixVerb(verbData, lemma) {
       
       if (!needsFix) continue;
       
-      const ending = lemma.endsWith('cer') ? 'cer' : 'cir';
+      const _ending = lemma.endsWith('cer') ? 'cer' : 'cir';
+      void _ending; // Variable intentionally unused for debugging
       const stem = lemma.slice(0, -3); // Remove cer/cir
       
       // Fix patterns like "agradecamos" → "agradezcamos"
@@ -157,7 +158,7 @@ async function main() {
       cwd: process.cwd()
     });
     console.log('✅ Validation passed!');
-  } catch (err) {
+  } catch (_err) { // eslint-disable-line no-unused-vars
     console.error('❌ Validation failed. Check the output above.');
     process.exit(1);
   }

@@ -198,16 +198,11 @@ export async function checkGoalsCompletion(userId) {
  * @returns {Promise<Array>} Historial de objetivos
  */
 export async function getGoalsHistory(userId, _weeks = 4) {
-  try {
-    // En una implementación completa, esto obtendría el historial
-    // de objetivos semanales del usuario
-    
-    // Por ahora, devolvemos un historial vacío
-    return []
-  } catch (error) {
-    console.error('Error al obtener historial de objetivos:', error)
-    return []
-  }
+  // En una implementación completa, esto obtendría el historial
+  // de objetivos semanales del usuario
+  
+  // Por ahora, devolvemos un historial vacío
+  return []
 }
 
 /**

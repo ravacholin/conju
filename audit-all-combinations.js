@@ -23,7 +23,8 @@ console.log('=' .repeat(80));
 // Extract all unique tense/mood combinations from curriculum
 const allCombinations = [];
 curriculum.forEach(item => {
-  const combo = `${item.mood}:${item.tense}`;
+  const _combo = `${item.mood}:${item.tense}`;
+  void _combo; // Variable intentionally unused for debugging
   if (!allCombinations.find(c => c.mood === item.mood && c.tense === item.tense)) {
     allCombinations.push({ mood: item.mood, tense: item.tense });
   }

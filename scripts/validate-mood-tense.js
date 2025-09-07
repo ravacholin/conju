@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env node */
 
 // Script de validación automática de integridad mood/tense
 // Detecta problemas de mapeo antes de que lleguen al usuario

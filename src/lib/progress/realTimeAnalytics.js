@@ -1,7 +1,8 @@
 // Análisis en tiempo real basado en datos reales del usuario
 
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
-import { getCurrentUserId, getUserSettings } from './userManager.js'
+// import { getCurrentUserId, getUserSettings } from './userManager.js'
+import { getUserSettings } from './userManager.js'
 
 /**
  * Obtiene estadísticas precisas del usuario basadas en datos reales
@@ -149,7 +150,7 @@ export async function getRealCompetencyRadarData(userId) {
       if (!moodScores[record.mood]) moodScores[record.mood] = []
       moodScores[record.mood].push(record.score)
     })
-    const moodAvgScores = Object.entries(moodScores).map(([mood, scores]) => 
+    const moodAvgScores = Object.entries(moodScores).map(([, scores]) => 
       scores.reduce((sum, score) => sum + score, 0) / scores.length
     )
     const moodMastery = moodAvgScores.length > 0 
@@ -162,7 +163,7 @@ export async function getRealCompetencyRadarData(userId) {
       if (!tenseScores[record.tense]) tenseScores[record.tense] = []
       tenseScores[record.tense].push(record.score)
     })
-    const tenseAvgScores = Object.entries(tenseScores).map(([tense, scores]) => 
+    const tenseAvgScores = Object.entries(tenseScores).map(([, scores]) => 
       scores.reduce((sum, score) => sum + score, 0) / scores.length
     )
     const tenseControl = tenseAvgScores.length > 0 
@@ -196,7 +197,7 @@ export async function getRealCompetencyRadarData(userId) {
       if (!personScores[record.person]) personScores[record.person] = []
       personScores[record.person].push(record.score)
     })
-    const personAvgScores = Object.entries(personScores).map(([person, scores]) => 
+    const personAvgScores = Object.entries(personScores).map(([, scores]) => 
       scores.reduce((sum, score) => sum + score, 0) / scores.length
     )
     const personAccuracy = personAvgScores.length > 0 
