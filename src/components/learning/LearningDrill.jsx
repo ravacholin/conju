@@ -136,11 +136,14 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       settings.set(originalSettings);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, currentItem, settings, totalAttempts]);
+  }, [tense, verbType, selectedFamilies, settings, totalAttempts]); // REMOVED currentItem to prevent infinite loop
 
+  // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
-    generateNextItem();
-  }, [generateNextItem]);
+    if (!currentItem) {
+      generateNextItem();
+    }
+  }, [tense?.tense, verbType, selectedFamilies]); // Don't depend on generateNextItem
 
   // Track tense drill session and preserve original settings
   useEffect(() => {
@@ -163,7 +166,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       settings.set(originalSettings);
       console.log('♾️ Restored original settings on component unmount');
     };
-  }, [tense?.tense, handleTenseDrillStarted, handleTenseDrillEnded]);
+  }, [tense?.tense]); // Removed function dependencies to prevent infinite loops
 
   useEffect(() => {
     // enter animation on mount
@@ -191,7 +194,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
         });
       }
     }
-  }, [tense, verbType]);
+  }, [tense?.tense, verbType]);
 
   // Initialize session analytics tracking
   useEffect(() => {
@@ -295,12 +298,14 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
 
   const handleContinue = () => {
     if (correctStreak >= 10 && onPhaseComplete) {
-        onPhaseComplete();
+        setTimeout(() => onPhaseComplete(), 0);
     } else {
         // subtle swap animation when moving to next random item
         setSwapAnim(true);
-        setTimeout(() => setSwapAnim(false), 250);
-        generateNextItem();
+        setTimeout(() => {
+          setSwapAnim(false);
+          generateNextItem();
+        }, 250);
     }
   };
 

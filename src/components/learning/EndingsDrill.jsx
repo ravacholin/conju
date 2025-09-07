@@ -303,8 +303,10 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     setInputValue('');
     const nextIndex = currentIndex + 1;
     if (nextIndex >= drillQueue.length) {
-      // Proceed immediately to avoid hanging states
-      onComplete();
+      // Use setTimeout to avoid synchronous state updates that can cause infinite loops
+      setTimeout(() => {
+        onComplete();
+      }, 0);
     } else {
       setCurrentIndex(nextIndex);
       // Ensure focus is set for the next item

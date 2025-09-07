@@ -209,12 +209,12 @@ function LearnTenseFlow({ onHome }) {
     // Prevent infinite recursion
     if (depth > 10) {
       console.warn(`⚠️ Max recursion depth reached, defaulting to ${toStep}`);
-      setCurrentStep(toStep);
+      setTimeout(() => setCurrentStep(toStep), 0);
       return;
     }
 
     if (!adaptiveSettings) {
-      setCurrentStep(toStep);
+      setTimeout(() => setCurrentStep(toStep), 0);
       return;
     }
 
@@ -231,15 +231,17 @@ function LearnTenseFlow({ onHome }) {
     
     if (canSkip) {
       console.log(`⏭️ Skipping ${toStep} based on user mastery (depth: ${depth})`);
-      // Recursively check next step with depth tracking
+      // Recursively check next step with depth tracking - use setTimeout to break sync chain
       const nextStepAfter = getNextStep(toStep);
       if (nextStepAfter) {
-        handleSmartStepTransition(fromStep, nextStepAfter, depth + 1);
+        setTimeout(() => {
+          handleSmartStepTransition(fromStep, nextStepAfter, depth + 1);
+        }, 0);
       } else {
-        setCurrentStep(toStep); // Fallback if no next step
+        setTimeout(() => setCurrentStep(toStep), 0); // Fallback if no next step
       }
     } else {
-      setCurrentStep(toStep);
+      setTimeout(() => setCurrentStep(toStep), 0);
     }
   };
 
