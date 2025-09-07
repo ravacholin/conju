@@ -104,14 +104,16 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
   const tenseStoryData = tense ? storyData[tense.tense] : null;
 
   useEffect(() => {
-    if (!tenseStoryData) return;
+    if (!tenseStoryData || !exampleVerbs) return;
+
+    const numSentences = exampleVerbs.length;
 
     const initialDelay = setTimeout(() => {
       setVisibleSentence(0); // Show first sentence
       
       const timer = setInterval(() => {
         setVisibleSentence(prev => {
-          if (prev < tenseStoryData.sentences.length - 1) {
+          if (prev < numSentences - 1) {
             return prev + 1;
           }
           clearInterval(timer);
@@ -123,7 +125,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
     }, 2000);
 
     return () => clearTimeout(initialDelay);
-  }, [tenseStoryData]);
+  }, [tenseStoryData, exampleVerbs]);
 
   useEffect(() => {
     // trigger enter animation on mount
