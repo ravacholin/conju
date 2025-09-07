@@ -15,6 +15,7 @@ import PronunciationPractice from './PronunciationPractice.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
+import { useSettings } from '../../state/settings.js';
 
 
 
@@ -139,6 +140,7 @@ function LearnTenseFlow({ onHome }) {
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
+  const settings = useSettings();
 
   // Calculate adaptive settings when tense and type are selected
   useEffect(() => {
@@ -522,38 +524,42 @@ function LearnTenseFlow({ onHome }) {
               <h2>{MOOD_LABELS[mood] || mood}</h2>
               <div className="options-grid">
                 {tenses.map(tense => {
-                  // Function to get conjugation examples with 1st, 2nd, and 3rd person for "hablar"
-                  const getPersonConjugationExample = (mood, tense) => {
-                    const examples = {
-                      // Indicativo
-                      'pres': 'yo hablo, tú hablas, él/ella habla',
-                      'pretIndef': 'yo hablé, tú hablaste, él/ella habló',
-                      'impf': 'yo hablaba, tú hablabas, él/ella hablaba (regulares) / era, iba, veía (irregulares)',
-                      'fut': 'yo hablaré, tú hablarás, él/ella hablará',
-                      'pretPerf': 'yo he hablado, tú has hablado, él/ella ha hablado',
-                      'plusc': 'yo había hablado, tú habías hablado, él/ella había hablado',
-                      'futPerf': 'yo habré hablado, tú habrás hablado, él/ella habrá hablado',
-                      
-                      // Subjuntivo
-                      'subjPres': 'yo hable, tú hables, él/ella hable',
-                      'subjImpf': 'yo hablara, tú hablaras, él/ella hablara',
-                      'subjPerf': 'yo haya hablado, tú hayas hablado, él/ella haya hablado',
-                      'subjPlusc': 'yo hubiera hablado, tú hubieras hablado, él/ella hubiera hablado',
-                      
-                      // Imperativo
-                      'impAff': 'tú habla, vos hablá, usted hable',
-                      'impNeg': 'no hables, no habléis',
-                      
-                      // Condicional
-                      'cond': 'yo hablaría, tú hablarías, él/ella hablaría',
-                      'condPerf': 'yo habría hablado, tú habrías hablado, él/ella habría hablado',
-                      
-                      // Formas no conjugadas
-                      'ger': 'hablando',
-                      'part': 'hablado'
+                  // Ejemplos dinámicos: 1s, 2s (tú/vos), 3s (ella) para "hablar"
+                  const getPersonConjugationExample = (moodKey, tenseKey) => {
+                    const hablar = verbs.find(v => v.lemma === 'hablar');
+                    if (!hablar) return '';
+                    const para = hablar.paradigms?.find(p => p.forms?.some(f => f.mood === moodKey && f.tense === tenseKey));
+                    if (!para) {
+                      if (tenseKey === 'ger') return 'hablando';
+                      if (tenseKey === 'part') return 'hablado';
+                      return '';
                     }
-                    
-                    return examples[tense] || ''
+                    const forms = para.forms?.filter(f => f.mood === moodKey && f.tense === tenseKey) || [];
+                    const useVos = settings?.useVoseo === true;
+                    const pron2Key = useVos ? '2s_vos' : '2s_tu';
+
+                    const getForm = (key) => {
+                      let f = forms.find(ff => ff.person === key);
+                      if (!f && key === '2s_vos') {
+                        const tu = forms.find(ff => ff.person === '2s_tu');
+                        if (tu && moodKey === 'indicative' && tenseKey === 'pres') {
+                          const base = tu.value || '';
+                          if (/as$/.test(base)) return base.replace(/as$/, 'ás');
+                          if (/es$/.test(base)) return base.replace(/es$/, 'és');
+                        }
+                        return tu?.value || '';
+                      }
+                      return f?.value || '';
+                    };
+
+                    const parts = [];
+                    const f1 = getForm('1s');
+                    if (f1) parts.push(`yo ${f1}`);
+                    const f2 = getForm(pron2Key);
+                    if (f2) parts.push(`${useVos ? 'vos' : 'tú'} ${f2}`);
+                    const f3 = getForm('3s');
+                    if (f3) parts.push(`ella ${f3}`);
+                    return parts.join(', ');
                   }
                   
                   return (
