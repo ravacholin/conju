@@ -5,6 +5,7 @@
 
 export const storyData = {
   pres: {
+    // Variante principal
     title: 'La rutina de Juan',
     sentences: [
       { text: 'Todos los días, Juan __habla__ con sus amigos.', verb: 'habla' },
@@ -16,8 +17,54 @@ export const storyData = {
       { group: '-er', verb: 'aprender', stem: 'aprend', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
       { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'] },
     ],
+    // Narrativas alternativas
+    alternativeStories: [
+      {
+        title: 'En la cocina con Ana',
+        theme: 'cocina',
+        sentences: [
+          { text: 'Ana __cocina__ todos los domingos para su familia.', verb: 'cocina' },
+          { text: 'Ella __bebe__ café mientras prepara la comida.', verb: 'bebe' },
+          { text: 'Su hijo __abre__ la ventana porque hace calor.', verb: 'abre' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'cocinar', stem: 'cocin', endings: ['o', 'as', 'a', 'amos', 'áis', 'an'] },
+          { group: '-er', verb: 'beber', stem: 'beb', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
+          { group: '-ir', verb: 'abrir', stem: 'abr', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'] },
+        ],
+      },
+      {
+        title: 'Un día en la oficina',
+        theme: 'trabajo',
+        sentences: [
+          { text: 'Los empleados __trabajan__ hasta las cinco.', verb: 'trabajan' },
+          { text: 'María __entiende__ todos los reportes complicados.', verb: 'entiende' },
+          { text: 'El jefe __decide__ las políticas importantes de la empresa.', verb: 'decide' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'trabajar', stem: 'trabaj', endings: ['o', 'as', 'a', 'amos', 'áis', 'an'] },
+          { group: '-er', verb: 'entender', stem: 'entiend', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'], note: 'Cambio vocálico e→ie' },
+          { group: '-ir', verb: 'decidir', stem: 'decid', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'] },
+        ],
+      },
+      {
+        title: 'Actividades del fin de semana',
+        theme: 'ocio',
+        sentences: [
+          { text: 'Los sábados, nosotros __bailamos__ en la discoteca.', verb: 'bailamos' },
+          { text: 'Mi hermana __lee__ novelas románticas en el parque.', verb: 'lee' },
+          { text: 'Mis padres __salen__ a caminar por las mañanas.', verb: 'salen' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'bailar', stem: 'bail', endings: ['o', 'as', 'a', 'amos', 'áis', 'an'] },
+          { group: '-er', verb: 'leer', stem: 'le', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
+          { group: '-ir', verb: 'salir', stem: 'salg/sal', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'], note: 'Irregular en primera persona: salgo' },
+        ],
+      }
+    ]
   },
   pretIndef: {
+    // Variante principal
     title: 'Una tarde ocupada',
     sentences: [
       { text: 'Ayer, María __caminó__ por el parque.', verb: 'caminó' },
@@ -29,6 +76,51 @@ export const storyData = {
       { group: '-er', verb: 'comer', stem: 'com', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
       { group: '-ir', verb: 'escribir', stem: 'escrib', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
     ],
+    // Narrativas alternativas
+    alternativeStories: [
+      {
+        title: 'La aventura de Pablo',
+        theme: 'aventura',
+        sentences: [
+          { text: 'El sábado pasado, Pablo __escaló__ una montaña muy alta.', verb: 'escaló' },
+          { text: 'En la cima, __bebió__ agua fresca de su cantimplora.', verb: 'bebió' },
+          { text: 'Después, __durmió__ bajo las estrellas toda la noche.', verb: 'durmió' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'escalar', stem: 'escal', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+          { group: '-er', verb: 'beber', stem: 'beb', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+          { group: '-ir', verb: 'dormir', stem: 'durm/dorm', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'], note: 'Cambio vocálico o→u en 3ª persona' },
+        ],
+      },
+      {
+        title: 'El concierto de anoche',
+        theme: 'música',
+        sentences: [
+          { text: 'Los músicos __tocaron__ durante tres horas seguidas.', verb: 'tocaron' },
+          { text: 'La cantante __vendió__ más de mil discos después del show.', verb: 'vendió' },
+          { text: 'El público __aplaudió__ de pie al final de cada canción.', verb: 'aplaudió' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'tocar', stem: 'toc', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+          { group: '-er', verb: 'vender', stem: 'vend', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+          { group: '-ir', verb: 'aplaudir', stem: 'aplaud', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+        ],
+      },
+      {
+        title: 'Un día especial en la escuela',
+        theme: 'educación',
+        sentences: [
+          { text: 'Los estudiantes __estudiaron__ toda la mañana para el examen.', verb: 'estudiaron' },
+          { text: 'La maestra __respondió__ a todas las dudas con paciencia.', verb: 'respondió' },
+          { text: 'Al final, todos __recibieron__ buenas calificaciones.', verb: 'recibieron' },
+        ],
+        deconstructions: [
+          { group: '-ar', verb: 'estudiar', stem: 'estudi', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+          { group: '-er', verb: 'responder', stem: 'respond', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+          { group: '-ir', verb: 'recibir', stem: 'recib', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+        ],
+      }
+    ]
   },
   impf: {
     title: 'Recuerdos de la infancia',

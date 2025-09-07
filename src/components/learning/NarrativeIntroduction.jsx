@@ -1,6 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
+
+// Función para seleccionar una historia aleatoria (principal o alternativa)
+function selectRandomStory(tenseStoryData) {
+  if (!tenseStoryData) return null;
+  
+  // Si no hay historias alternativas, usar la principal
+  if (!tenseStoryData.alternativeStories || tenseStoryData.alternativeStories.length === 0) {
+    return {
+      title: tenseStoryData.title,
+      sentences: tenseStoryData.sentences,
+      deconstructions: tenseStoryData.deconstructions,
+      theme: 'principal'
+    };
+  }
+  
+  // Crear array con todas las opciones (principal + alternativas)
+  const allStories = [
+    {
+      title: tenseStoryData.title,
+      sentences: tenseStoryData.sentences,
+      deconstructions: tenseStoryData.deconstructions,
+      theme: 'principal'
+    },
+    ...tenseStoryData.alternativeStories
+  ];
+  
+  // Seleccionar una historia aleatoriamente
+  const randomIndex = Math.floor(Math.random() * allStories.length);
+  return allStories[randomIndex];
+}
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 import { verbs } from '../../data/verbs.js';
@@ -932,13 +962,19 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
   const [visibleSentence, setVisibleSentence] = useState(-1);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
   const settings = useSettings();
 
   // console.log('NarrativeIntroduction received tense:', tense);
 
   useEffect(() => {
     if (!tense) return;
-    const story = storyData[tense.tense];
+    const tenseStoryData = storyData[tense.tense];
+    if (!tenseStoryData) return;
+    
+    // Seleccionar una historia aleatoria (principal o alternativa)
+    const story = selectRandomStory(tenseStoryData);
+    setSelectedStory(story);
     if (!story) return;
 
     // Start showing sentences after the deconstruction finishes (2s delay)
@@ -947,7 +983,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
       
       const timer = setInterval(() => {
         setVisibleSentence(prev => {
-          if (prev < story.sentences.length - 1) {
+          if (prev < selectedStory.sentences.length - 1) {
             return prev + 1;
           }
           clearInterval(timer);
@@ -1080,11 +1116,14 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
         </div>
 
         <div className={`narrative-content page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''}`}>
-          {story ? (
+          {selectedStory ? (
             <>
               <div className="story-placeholder">
-                <h3>{story.title}</h3>
-                {story.sentences.map((sentence, index) => (
+                <h3>{selectedStory?.title}</h3>
+                {selectedStory?.theme && selectedStory.theme !== 'principal' && (
+                  <p className="story-theme">📖 Historia temática: {selectedStory.theme}</p>
+                )}
+                {selectedStory?.sentences.map((sentence, index) => (
                   <p 
                     key={index} 
                     className={`story-sentence ${index <= visibleSentence ? 'visible' : ''}`}
@@ -1095,7 +1134,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {story.deconstructions?.map(({ group, stem, endings, verb, isIrregular, realForms }) => {
+                  {selectedStory?.deconstructions?.map(({ group, stem, endings, verb, isIrregular, realForms }) => {
                     const pronouns = pronounsForDialect();
                     const verbObj = exampleVerbs?.find(v => v.lemma === verb);
                     const lemmaStem = (v) => {
