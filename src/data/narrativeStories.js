@@ -19,7 +19,8 @@ export const storyData = {
         cocinar: 'Ana __VERB__ todos los domingos para su familia.',
         beber: 'Ella __VERB__ café mientras prepara la comida.',
         abrir: 'Su hijo __VERB__ la ventana porque hace calor.',
-        querer: 'María __VERB__ aprender francés este año.',
+        // Solicitud: la narrativa para "querer" debe ser "Todos los días, Juan quiere hacer cosas nuevas."
+        querer: 'Todos los días, Juan __VERB__ hacer cosas nuevas.',
         pedir: 'Siempre __VERB__ consejo a su madre.',
         poder: 'Juan __VERB__ tocar la guitarra muy bien.',
     }

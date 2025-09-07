@@ -30,7 +30,8 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Verbos que diptongan',
     description: 'Cambios vocálicos sistemáticos: e→ie (querer), e→i (pedir), o→ue (poder)',
     paradigmatic: 'querer',
-    examples: ['querer', 'pedir', 'poder', 'volver', 'pensar', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'dormir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
+    // Priorizar un ejemplo por cada grupo: o→ue (poder), e→ie (querer), e→i (pedir)
+    examples: ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'dormir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
     pattern: 'querer: quiero, quieres, quiere, queremos, queréis, quieren (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
