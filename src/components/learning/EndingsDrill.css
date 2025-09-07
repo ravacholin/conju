@@ -36,7 +36,7 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center; /* center the title */
+    justify-content: center !important; /* center the title */
     margin-bottom: 2rem;
 }
 
@@ -47,14 +47,25 @@
     transform: translateY(-50%);
     background: transparent;
     border: none;
-    padding: 0.25rem;
+    padding: 0; /* evitar cambios de altura en hover */
     cursor: pointer;
+    width: 64px; /* tamaño fijo del botón para no mover el header */
+    height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, color 0.15s ease; /* sin transform en hover */
 }
 
 .learning-drill .back-to-menu-btn .back-icon {
-    width: 56px;
-    height: 56px;
+    width: 100%;
+    height: 100%;
     display: block;
+}
+
+/* Evitar movimiento vertical en hover: mantener centrado vertical (override App.css) */
+.learning-drill .back-to-menu-btn:hover {
+    transform: translateY(-50%) !important;
 }
 
 .verb-lemma {
