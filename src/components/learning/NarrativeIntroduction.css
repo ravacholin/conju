@@ -29,10 +29,10 @@
   font-optical-sizing: auto;
 }
 
-.narrative-header .subtitle {
+.narrative-intro .narrative-header .subtitle {
   font-size: 1.125rem;
   margin-bottom: 0;
-  color: #fff;
+  color: #fff !important;
   line-height: 1.618;
   font-weight: 350;
   letter-spacing: -0.005em;
