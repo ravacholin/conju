@@ -63,7 +63,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Ortográfico: -car → -qu',
     description: 'Verbos -car súper frecuentes: c → qu delante de e',
     paradigmatic: 'buscar',
-    examples: ['buscar', 'sacar'],
+    examples: ['buscar', 'sacar', 'tocar'],
     pattern: 'buscar: busqué, busque (conservar sonido /k/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -76,7 +76,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Ortográfico: -gar → -gu', 
     description: 'Verbos -gar súper frecuentes: g → gu delante de e',
     paradigmatic: 'llegar',
-    examples: ['llegar', 'pagar'],
+    examples: ['llegar', 'pagar', 'apagar'],
     pattern: 'llegar: llegué, llegue (conservar sonido /g/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -291,8 +291,10 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // Ortográficos
   'buscar': ['LEARNING_ORTH_CAR'],
   'sacar': ['LEARNING_ORTH_CAR'],
+  'tocar': ['LEARNING_ORTH_CAR'],
   'llegar': ['LEARNING_ORTH_GAR'],
   'pagar': ['LEARNING_ORTH_GAR'],
+  'apagar': ['LEARNING_ORTH_GAR'],
 
   // Imperfecto irregular (ver se añade aquí)
   'ver': ['LEARNING_IMPF_IRREGULAR']
