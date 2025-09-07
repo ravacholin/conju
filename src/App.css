@@ -2092,3 +2092,38 @@ body {
     opacity: 1 !important;
   }
 }
+
+/* Gamification Styles */
+.gamified-progress-card {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(255, 215, 0, 0.05)) !important;
+  border: 2px solid rgba(0, 255, 136, 0.3) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.gamified-progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  clip-path: polygon(100% 0%, 0% 0%, 100% 100%);
+  opacity: 0.8;
+}
+
+.gamified-progress-card:hover {
+  border-color: rgba(0, 255, 136, 0.5) !important;
+  box-shadow: 0 8px 32px rgba(0, 255, 136, 0.2) !important;
+  transform: translateY(-4px) !important;
+}
+
+.gamified-progress-card h3 {
+  color: #00ff88 !important;
+}
+
+.gamified-progress-card .example {
+  color: rgba(255, 215, 0, 0.9) !important;
+  font-weight: 500;
+}

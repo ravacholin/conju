@@ -113,9 +113,9 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
 
         {onGoToProgress && (
           <ClickableCard
-            className="option-card"
+            className="option-card gamified-progress-card"
             onClick={() => onGoToProgress()}
-            title="Ver progreso y analíticas"
+            title="Ver progreso, logros y rachas"
           >
             <h3>
               <img
@@ -123,10 +123,10 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
                 alt="Progreso"
                 className="option-icon"
               />{' '}
-              Seguir tu progreso
+              Progreso y Logros 🏆
             </h3>
-            <p>Métricas y análisis para mejorar</p>
-            <p className="example">Dashboard con analíticas y recomendaciones</p>
+            <p>Rachas, achievements y análisis detallado</p>
+            <p className="example">Dashboard gamificado con métricas y recompensas</p>
           </ClickableCard>
         )}
       </div>
