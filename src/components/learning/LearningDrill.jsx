@@ -466,7 +466,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
               
               <div className="action-buttons">
                 {result === 'idle' ? (
-                  <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim()}>Revisar</button>
+                  <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim()}>Continuar</button>
                 ) : (
                   <button className="btn" onClick={handleContinue}>Continuar</button>
                 )}

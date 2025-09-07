@@ -754,8 +754,7 @@ function LearnTenseFlow({ onHome }) {
                 className="btn start-learning-btn"
                 onClick={handleStartLearning}
               >
-                <img src="/play.png" alt="Comenzar" className="play-icon" />
-                Comenzar a Aprender
+                Continuar
               </button>
             )}
           </div>

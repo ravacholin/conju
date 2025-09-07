@@ -391,8 +391,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
         </div>
 
         <button className="btn" onClick={handleAnimatedContinue}>
-          <img src="/play.png" alt="Comenzar" className="play-icon" />
-          ¡Entendido, a practicar!
+          Continuar
         </button>
       </div>
     </div>

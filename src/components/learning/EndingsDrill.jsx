@@ -460,7 +460,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
           
           <div className="action-buttons">
             {!result ? (
-                <button className="btn" onClick={handleSubmit} disabled={!inputValue.trim()}>Revisar</button>
+                <button className="btn" onClick={handleSubmit} disabled={!inputValue.trim()}>Continuar</button>
             ) : (
                 <button className="btn" onClick={handleContinue}>Continuar</button>
             )}
