@@ -27,11 +27,52 @@ function getVerbsForFamily(familyId) {
   });
 }
 
+// Function to select 3 example verbs based on user's choice
+// This is the single source of truth for the entire learning flow
+function selectExampleVerbs(verbType, selectedFamilies, tense) {
+  let selectedVerbs = [];
+
+  if (verbType === 'regular') {
+    // Find 3 regular verbs for the given tense, one for each ending
+    const regularAr = verbs.find(v => v.lemma.endsWith('ar') && v.type === 'regular');
+    const regularEr = verbs.find(v => v.lemma.endsWith('er') && v.type === 'regular');
+    const regularIr = verbs.find(v => v.lemma.endsWith('ir') && v.type === 'regular');
+    selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
+  } else {
+    // For irregular verbs, find one from each selected family
+    if (selectedFamilies && selectedFamilies.length > 0) {
+      selectedFamilies.forEach(familyId => {
+        const familyVerbs = getVerbsForFamily(familyId);
+        if (familyVerbs.length > 0) {
+          // Add a verb from the family if not already added
+          const verbToAdd = familyVerbs.find(v => !selectedVerbs.some(sv => sv.lemma === v.lemma));
+          if (verbToAdd) {
+            selectedVerbs.push(verbToAdd);
+          }
+        }
+      });
+    }
+  }
+
+  // Ensure we always have 3 verbs, filling with defaults if necessary
+  if (selectedVerbs.length < 3) {
+    const defaultVerbs = [
+      verbs.find(v => v.lemma === 'hablar'),
+      verbs.find(v => v.lemma === 'comer'),
+      verbs.find(v => v.lemma === 'vivir')
+    ];
+    selectedVerbs = [...selectedVerbs, ...defaultVerbs.slice(selectedVerbs.length)].slice(0, 3);
+  }
+  
+  console.log('✅ Verbos de ejemplo seleccionados:', selectedVerbs.map(v => v.lemma));
+  return selectedVerbs.slice(0, 3);
+}
+
 function LearnTenseFlow({ onHome }) {
-  const [currentStep, setCurrentStep] = useState('tense-selection'); // 'tense-selection' | 'type-selection' | 'duration-selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'pronunciation_practice' | 'communicative_practice'
+  const [currentStep, setCurrentStep] = useState('tense-selection');
   const [selectedTense, setSelectedTense] = useState(null);
-  const [duration, setDuration] = useState(null); // 5, 10, 15
-  const [verbType, setVerbType] = useState(null); // 'regular', 'irregular-basic', 'irregular-yo', 'irregular-dipthong', 'all'
+  const [duration, setDuration] = useState(null);
+  const [verbType, setVerbType] = useState(null);
   const [selectedFamilies, setSelectedFamilies] = useState([]);
   const [exampleVerbs, setExampleVerbs] = useState(null);
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
@@ -132,30 +173,11 @@ function LearnTenseFlow({ onHome }) {
 
   const handleStartLearning = () => {
     if (selectedTense && duration && verbType) {
-      const tenseKey = selectedTense.tense;
-      const tenseStoryData = storyData[tenseKey];
-      
-      let verbObjects = [];
-      
-      // ALWAYS use the narrative verbs regardless of verbType
-      // This ensures the same 3 verbs appear in: narrative -> introduction -> drills
-      if (tenseStoryData && tenseStoryData.deconstructions) {
-        const exampleVerbLemmas = tenseStoryData.deconstructions.map(d => d.verb);
-        verbObjects = exampleVerbLemmas.map(lemma => verbs.find(v => v.lemma === lemma)).filter(Boolean);
-        console.log('🎯 Using narrative verbs for consistency:', verbObjects.map(v => v?.lemma));
-      } else {
-        // Fallback if no narrative data exists
-        console.warn('⚠️ No narrative data found for tense:', tenseKey);
-        verbObjects = [
-          verbs.find(v => v.lemma === 'hablar'),
-          verbs.find(v => v.lemma === 'comer'),
-          verbs.find(v => v.lemma === 'vivir')
-        ].filter(Boolean);
-      }
-      
+      // The true source of truth: select verbs based on user's choice
+      const verbObjects = selectExampleVerbs(verbType, selectedFamilies, selectedTense.tense);
       setExampleVerbs(verbObjects);
       
-      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, tenseKey, verbObjects: verbObjects.map(v => v?.lemma) });
+      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, verbObjects: verbObjects.map(v => v?.lemma) });
       handleSmartStepTransition('duration-selection', 'introduction');
     }
   };
