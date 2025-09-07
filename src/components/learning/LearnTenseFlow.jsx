@@ -183,6 +183,15 @@ function LearnTenseFlow({ onHome }) {
   }, []);
 
   const availableTenses = useMemo(() => {
+    // Remove compound tenses from learning module
+    const COMPOUND_TENSES = new Set([
+      'pretPerf', // pretérito perfecto compuesto
+      'plusc',    // pluscuamperfecto
+      'futPerf',  // futuro perfecto
+      'condPerf', // condicional compuesto
+      'subjPerf', // perfecto de subjuntivo
+      'subjPlusc' // pluscuamperfecto de subjuntivo
+    ]);
     // Only show tenses that have narrative stories implemented
     const implementedTenses = Object.keys(storyData);
     
@@ -190,7 +199,7 @@ function LearnTenseFlow({ onHome }) {
     curriculum.forEach(item => {
       if (item.tense.includes('Mixed')) return;
       // Only include tenses that are implemented
-      if (implementedTenses.includes(item.tense)) {
+      if (implementedTenses.includes(item.tense) && !COMPOUND_TENSES.has(item.tense)) {
         tenseSet.add(JSON.stringify({ mood: item.mood, tense: item.tense }));
       }
     });
