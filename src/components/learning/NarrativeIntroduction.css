@@ -32,7 +32,7 @@
 .narrative-header .subtitle {
   font-size: 1.125rem;
   margin-bottom: 0;
-  color: var(--text);
+  color: #fff;
   line-height: 1.618;
   font-weight: 350;
   letter-spacing: -0.005em;
