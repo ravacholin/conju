@@ -53,12 +53,12 @@ export const storyData = {
         sentences: [
           { text: 'Los sábados, nosotros __bailamos__ en la discoteca.', verb: 'bailamos' },
           { text: 'Mi hermana __lee__ novelas románticas en el parque.', verb: 'lee' },
-          { text: 'Mis padres __salen__ a caminar por las mañanas.', verb: 'salen' },
+          { text: 'Mis padres __viven__ en el centro de la ciudad.', verb: 'viven' },
         ],
         deconstructions: [
           { group: '-ar', verb: 'bailar', stem: 'bail', endings: ['o', 'as', 'a', 'amos', 'áis', 'an'] },
           { group: '-er', verb: 'leer', stem: 'le', endings: ['o', 'es', 'e', 'emos', 'éis', 'en'] },
-          { group: '-ir', verb: 'salir', stem: 'salg/sal', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'], note: 'Irregular en primera persona: salgo' },
+          { group: '-ir', verb: 'vivir', stem: 'viv', endings: ['o', 'es', 'e', 'imos', 'ís', 'en'] },
         ],
       }
     ]

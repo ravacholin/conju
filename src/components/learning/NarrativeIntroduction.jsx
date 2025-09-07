@@ -69,15 +69,19 @@ const PARADIGMATIC_VERBS = {
 // Seleccionar verbos apropiados según el tipo y familias
 function selectAppropriateVerbs(verbType, selectedFamilies, tense) {
   if (verbType === 'regular') {
-    // Seleccionar verbos regulares de la base de datos
-    const regularVerbs = verbs.filter(v => v.type === 'regular');
-    const arVerbs = regularVerbs.filter(v => v.lemma.endsWith('ar')).slice(0, 1);
-    const erVerbs = regularVerbs.filter(v => v.lemma.endsWith('er')).slice(0, 1);
-    const irVerbs = regularVerbs.filter(v => v.lemma.endsWith('ir')).slice(0, 1);
+    // Lista explícita de verbos regulares garantizados para evitar inconsistencias
+    const guaranteedRegular = {
+      'ar': ['hablar', 'caminar', 'estudiar', 'trabajar', 'cocinar'],
+      'er': ['comer', 'aprender', 'beber', 'vender', 'correr'],
+      'ir': ['vivir', 'escribir', 'abrir', 'subir', 'partir']
+    };
     
-    // Combinar representantes de cada conjugación
-    const selected = [...arVerbs, ...erVerbs, ...irVerbs];
-    return selected.length >= 3 ? selected.slice(0, 3).map(v => v.lemma) : ['hablar', 'comer', 'vivir'];
+    // Seleccionar uno de cada conjugación
+    const arVerb = guaranteedRegular.ar[0]; // hablar
+    const erVerb = guaranteedRegular.er[0]; // comer  
+    const irVerb = guaranteedRegular.ir[0]; // vivir
+    
+    return [arVerb, erVerb, irVerb];
   }
   
   if (selectedFamilies && selectedFamilies.length > 0) {
