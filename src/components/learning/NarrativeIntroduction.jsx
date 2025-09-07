@@ -983,7 +983,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], verbType = 'regular',
       
       const timer = setInterval(() => {
         setVisibleSentence(prev => {
-          if (prev < selectedStory.sentences.length - 1) {
+          if (prev < story.sentences.length - 1) {
             return prev + 1;
           }
           clearInterval(timer);
