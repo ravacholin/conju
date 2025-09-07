@@ -1,0 +1,301 @@
+/* PronunciationPractice.css */
+
+.pronunciation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #000;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.progress-indicator {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.1em;
+  color: #888;
+}
+
+.pronunciation-card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+}
+
+.verb-info {
+  margin-bottom: 30px;
+}
+
+.target-verb {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #00ff88;
+  margin: 0;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.verb-infinitive {
+  font-size: 1.2em;
+  color: #888;
+  margin: 10px 0;
+  font-style: italic;
+}
+
+.audio-section {
+  margin: 30px 0;
+}
+
+.play-audio-btn {
+  background: linear-gradient(145deg, #1e3a8a, #3b82f6);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 1.1em;
+  padding: 15px 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.play-audio-btn:hover {
+  background: linear-gradient(145deg, #3b82f6, #1e3a8a);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+.audio-icon {
+  font-size: 1.3em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.pronunciation-guide {
+  margin: 30px 0;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+.show-pronunciation-btn {
+  background: transparent;
+  border: 1px solid #555;
+  border-radius: 8px;
+  color: #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.show-pronunciation-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.pronunciation-details {
+  background: #0a0a0a;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: left;
+}
+
+.pronunciation-details > div {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.pronunciation-details label {
+  font-weight: bold;
+  color: #00ff88;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.pronunciation-details span {
+  color: #fff;
+  flex: 1;
+}
+
+.ipa-notation span {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2em;
+  background: #222;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.simplified-pronunciation span {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+
+.pronunciation-tip span {
+  font-style: italic;
+  color: #ccc;
+}
+
+.recording-section {
+  margin: 30px 0;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+.record-btn {
+  background: linear-gradient(145deg, #dc2626, #ef4444);
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-size: 1.2em;
+  padding: 20px 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.record-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+}
+
+.record-btn.recording {
+  background: linear-gradient(145deg, #dc2626, #7f1d1d);
+  animation: recording-pulse 1s infinite;
+}
+
+.record-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes recording-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  50% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+}
+
+.mic-icon {
+  font-size: 1.4em;
+}
+
+.recording-result {
+  background: #111;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #333;
+}
+
+.recording-result.good {
+  border-left-color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.recording-result.needs-work {
+  border-left-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.accuracy-score {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.recording-result.good .accuracy-score {
+  color: #00ff88;
+}
+
+.recording-result.needs-work .accuracy-score {
+  color: #fbbf24;
+}
+
+.feedback {
+  font-size: 1.1em;
+  color: #ccc;
+  font-style: italic;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.nav-btn {
+  background: linear-gradient(145deg, #374151, #6b7280);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1em;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #6b7280, #374151);
+  transform: translateY(-2px);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.next-btn {
+  background: linear-gradient(145deg, #059669, #10b981);
+}
+
+.next-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, #10b981, #059669);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pronunciation-container {
+    padding: 15px;
+  }
+  
+  .pronunciation-card {
+    padding: 20px;
+  }
+  
+  .target-verb {
+    font-size: 2.5rem;
+  }
+  
+  .pronunciation-details > div {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pronunciation-details label {
+    min-width: auto;
+  }
+  
+  .navigation-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .nav-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+}

@@ -11,6 +11,7 @@ import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
 import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
+import PronunciationPractice from './PronunciationPractice.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import './LearnTenseFlow.css';
@@ -27,7 +28,7 @@ function getVerbsForFamily(familyId) {
 }
 
 function LearnTenseFlow({ onHome }) {
-  const [currentStep, setCurrentStep] = useState('tense-selection'); // 'tense-selection' | 'type-selection' | 'duration-selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'communicative_practice'
+  const [currentStep, setCurrentStep] = useState('tense-selection'); // 'tense-selection' | 'type-selection' | 'duration-selection' | 'introduction' | 'guided_drill_ar' | 'guided_drill_er' | 'guided_drill_ir' | 'recap' | 'practice' | 'meaningful_practice' | 'pronunciation_practice' | 'communicative_practice'
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null); // 5, 10, 15
   const [verbType, setVerbType] = useState(null); // 'regular', 'irregular-basic', 'irregular-yo', 'irregular-dipthong', 'all'
@@ -239,6 +240,7 @@ function LearnTenseFlow({ onHome }) {
       'recap',
       'practice',
       'meaningful_practice',
+      'pronunciation_practice',
       'communicative_practice'
     ];
     
@@ -255,7 +257,12 @@ function LearnTenseFlow({ onHome }) {
   };
 
   const handleMeaningfulPhaseComplete = () => {
-    console.log('Meaningful phase complete, moving to communicative practice.');
+    console.log('Meaningful phase complete, moving to pronunciation practice.');
+    setCurrentStep('pronunciation_practice');
+  };
+
+  const handlePronunciationPhaseComplete = () => {
+    console.log('Pronunciation practice complete, moving to communicative practice.');
     setCurrentStep('communicative_practice');
   };
 
@@ -361,6 +368,18 @@ function LearnTenseFlow({ onHome }) {
     );
   }
 
+  if (currentStep === 'pronunciation_practice') {
+    return (
+      <ErrorBoundary>
+        <PronunciationPractice 
+          tense={selectedTense}
+          onBack={() => setCurrentStep('meaningful_practice')}
+          onContinue={handlePronunciationPhaseComplete}
+        />
+      </ErrorBoundary>
+    );
+  }
+
   if (currentStep === 'communicative_practice') {
     return (
       <ErrorBoundary>
@@ -368,7 +387,7 @@ function LearnTenseFlow({ onHome }) {
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
-          onBack={() => setCurrentStep('meaningful_practice')}
+          onBack={() => setCurrentStep('pronunciation_practice')}
           onFinish={handleFinish}
         />
       </ErrorBoundary>
