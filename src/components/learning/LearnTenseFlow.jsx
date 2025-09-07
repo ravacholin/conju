@@ -724,10 +724,7 @@ function LearnTenseFlow({ onHome }) {
                 title="Sesión de 5 minutos"
               >
                 <h3>5 minutos</h3>
-                <p className="example">Sesión corta</p>
-                {abTestVariant === 'enhanced' && (
-                  <p className="variant-enhancement">⚡ Con práctica intensiva</p>
-                )}
+                <p className="example">Práctica intensiva</p>
               </ClickableCard>
               
               <ClickableCard 

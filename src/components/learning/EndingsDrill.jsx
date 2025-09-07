@@ -293,8 +293,12 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
 
     setResult({ correct: isCorrect, value: correctAnswer });
 
+    // Si el usuario se equivoca, reintegrar la persona al final de la cola para práctica adicional
     if (!isCorrect) {
       setDrillQueue(prevQueue => [...prevQueue, currentPronoun]);
+      console.log(`❌ Error en ${currentPronoun.text} - reintegrando al final de la cola`);
+    } else {
+      console.log(`✅ Correcto: ${currentPronoun.text} - ${correctAnswer}`);
     }
   };
 

@@ -45,6 +45,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   });
   const [allAttempts, setAllAttempts] = useState([]);
   const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
+  
+  // Cola de ejercicios fallados para reintegración
+  const [failedItemsQueue, setFailedItemsQueue] = useState([]);
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -75,6 +78,19 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   }, [duration]);
 
   const generateNextItem = React.useCallback(() => {
+    // Primero verificar si hay ejercicios fallados en la cola para reintegrar
+    if (failedItemsQueue.length > 0) {
+      const nextFailedItem = failedItemsQueue[0];
+      setFailedItemsQueue(prev => prev.slice(1));
+      setCurrentItem(nextFailedItem);
+      setInputValue('');
+      setResult('idle');
+      setStartTime(Date.now());
+      setTimeout(() => inputRef.current?.focus(), 0);
+      console.log('🔄 Reintegrando ejercicio fallado:', nextFailedItem);
+      return;
+    }
+    
     // Get current settings WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
     
@@ -136,7 +152,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       settings.set(originalSettings);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, settings, totalAttempts]); // REMOVED currentItem to prevent infinite loop
+  }, [tense, verbType, selectedFamilies, settings, totalAttempts, failedItemsQueue]); // Added failedItemsQueue dependency
 
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
@@ -257,6 +273,10 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       // Use grader's error analysis for session stats
       const errorType = gradeResult.errorTags?.[0] || 'complete_error';
       setErrorPatterns(prev => ({ ...prev, [errorType]: (prev[errorType] || 0) + 1 }));
+      
+      // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
+      setFailedItemsQueue(prev => [...prev, currentItem]);
+      console.log(`❌ Error en ${currentItem.lemma} (${currentItem.person}) - reintegrando al final de la cola`);
     }
     
     setTimeout(() => containerRef.current?.focus(), 0);
@@ -432,6 +452,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
             <div className="chrono-item"><div className="chrono-value">{sessionStats.points.toLocaleString()}</div><div className="chrono-label">Puntos</div></div>
             <div className="chrono-item"><div className="chrono-value streak-value">🔥 <span className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></div><div className="chrono-label">Racha</div></div>
             <div className="chrono-item"><div className="chrono-value">{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</div><div className="chrono-label">Precisión</div></div>
+            {failedItemsQueue.length > 0 && (
+              <div className="chrono-item"><div className="chrono-value" style={{color: '#ff6b6b'}}>🔄 {failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
+            )}
           </div>
 
           {currentItem ? (
