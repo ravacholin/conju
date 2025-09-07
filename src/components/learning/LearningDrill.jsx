@@ -7,6 +7,7 @@ import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
+import { calculateAdaptiveDifficulty, adjustRealTimeDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
 import './LearningDrill.css';
 
 const PRONOUNS_DISPLAY = {
@@ -34,6 +35,13 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   const [errorPatterns, setErrorPatterns] = useState({});
   const [showStreakAnimation, setShowStreakAnimation] = useState(false);
   const [sessionStats, setSessionStats] = useState({ points: 0, streakCount: 0 });
+  const [adaptiveSettings, setAdaptiveSettings] = useState(null);
+  const [realTimeDifficulty, setRealTimeDifficulty] = useState({
+    hintsDelay: 5000,
+    timeLimit: null,
+    complexityBoost: false,
+    encouragementLevel: 'normal'
+  });
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -160,6 +168,28 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     return () => clearTimeout(t);
   }, []);
 
+  // Initialize adaptive settings
+  useEffect(() => {
+    if (tense?.tense) {
+      try {
+        const userId = 'default'; // TODO: Get actual user ID
+        const adaptive = calculateAdaptiveDifficulty(userId, tense.tense, verbType);
+        setAdaptiveSettings(adaptive);
+        console.log('🎯 Adaptive settings initialized:', adaptive);
+      } catch (error) {
+        console.error('Error initializing adaptive settings:', error);
+        // Use safe defaults
+        setAdaptiveSettings({
+          level: 'intermediate',
+          practiceIntensity: 'medium',
+          skipIntroduction: false,
+          extendedPractice: false,
+          hintsEnabled: true
+        });
+      }
+    }
+  }, [tense, verbType]);
+
   // calculatePoints function removed - now handled by progress tracking system
 
 
@@ -179,6 +209,20 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
 
     setTotalAttempts(prev => prev + 1);
     setResponseTimes(prev => [...prev, responseTime]);
+
+    // Update real-time difficulty based on current performance
+    const avgResponseTime = [...responseTimes, responseTime].reduce((a, b) => a + b, 0) / (responseTimes.length + 1);
+    const currentAccuracy = (correctAnswers + (isCorrect ? 1 : 0)) / (totalAttempts + 1);
+    
+    const newDifficulty = adjustRealTimeDifficulty({
+      accuracy: currentAccuracy * 100,
+      streak: isCorrect ? correctStreak + 1 : 0,
+      avgResponseTime,
+      totalAttempts: totalAttempts + 1
+    });
+    
+    setRealTimeDifficulty(newDifficulty);
+    console.log('🔄 Real-time difficulty adjusted:', newDifficulty);
 
     if (isCorrect) {
       setResult('correct');
@@ -235,7 +279,39 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     else if (accuracy >= 80) grade = 'B';
     else if (accuracy >= 70) grade = 'C';
     else if (accuracy >= 60) grade = 'D';
-    return { grade, accuracy: Math.round(accuracy), averageTime: Math.round(avgTime / 1000 * 10) / 10, maxStreak: correctStreak, points: sessionStats.points, totalAttempts, correctAnswers, errorPatterns, recommendations: [] };
+    
+    // Generate next session recommendations
+    let recommendations = [];
+    try {
+      const userId = 'default'; // TODO: Get actual user ID
+      const currentSession = {
+        tense: tense?.tense,
+        verbType,
+        accuracy,
+        totalAttempts,
+        correctAnswers,
+        avgResponseTime: avgTime
+      };
+      
+      const nextRec = generateNextSessionRecommendations(userId, currentSession);
+      recommendations = [nextRec];
+      console.log('🎯 Generated recommendations:', nextRec);
+    } catch (error) {
+      console.error('Error generating recommendations:', error);
+    }
+    
+    return { 
+      grade, 
+      accuracy: Math.round(accuracy), 
+      averageTime: Math.round(avgTime / 1000 * 10) / 10, 
+      maxStreak: correctStreak, 
+      points: sessionStats.points, 
+      totalAttempts, 
+      correctAnswers, 
+      errorPatterns, 
+      recommendations,
+      adaptiveLevel: adaptiveSettings?.level || 'intermediate'
+    };
   };
 
   const handleKeyDown = (e) => {

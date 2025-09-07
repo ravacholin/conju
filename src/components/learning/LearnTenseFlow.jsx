@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
 import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { getLearningFamiliesForTense, categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
+import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
@@ -31,9 +32,28 @@ function LearnTenseFlow({ onHome }) {
   const [verbType, setVerbType] = useState(null); // 'regular', 'irregular-basic', 'irregular-yo', 'irregular-dipthong', 'all'
   const [selectedFamilies, setSelectedFamilies] = useState([]);
   const [exampleVerbs, setExampleVerbs] = useState(null);
+  const [adaptiveSettings, setAdaptiveSettings] = useState(null);
+  const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const settings = useSettings();
 
-
+  // Calculate adaptive settings when tense and type are selected
+  useEffect(() => {
+    if (selectedTense?.tense && verbType && duration) {
+      try {
+        const userId = 'default'; // TODO: Get actual user ID
+        const adaptive = calculateAdaptiveDifficulty(userId, selectedTense.tense, verbType);
+        setAdaptiveSettings(adaptive);
+        
+        // Personalize session duration based on adaptive settings
+        const personalized = personalizeSessionDuration(adaptive, duration);
+        setPersonalizedDuration(personalized);
+        
+        console.log('🎯 Adaptive learning configured:', { adaptive, personalized });
+      } catch (error) {
+        console.error('Error calculating adaptive settings:', error);
+      }
+    }
+  }, [selectedTense, verbType, duration]);
 
   const availableTenses = useMemo(() => {
     // Only show tenses that have narrative stories implemented
@@ -132,7 +152,7 @@ function LearnTenseFlow({ onHome }) {
       setExampleVerbs(verbObjects);
       
       console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, tenseKey, verbObjects: verbObjects.map(v => v?.lemma) });
-      setCurrentStep('introduction');
+      handleSmartStepTransition('duration-selection', 'introduction');
     }
   };
 
@@ -144,6 +164,52 @@ function LearnTenseFlow({ onHome }) {
     setExampleVerbs(null);
     setCurrentStep('tense-selection');
     if (onHome) onHome();
+  };
+
+  // Handle smart step transitions with skip logic
+  const handleSmartStepTransition = (fromStep, toStep) => {
+    if (!adaptiveSettings) {
+      setCurrentStep(toStep);
+      return;
+    }
+
+    const userId = 'default'; // TODO: Get actual user ID
+    
+    // Check if target step can be skipped
+    const canSkip = canSkipPhase(userId, selectedTense?.tense, toStep);
+    
+    if (canSkip) {
+      console.log(`⏭️ Skipping ${toStep} based on user mastery`);
+      // Recursively check next step
+      const nextStepAfter = getNextStep(toStep);
+      if (nextStepAfter) {
+        handleSmartStepTransition(fromStep, nextStepAfter);
+      } else {
+        setCurrentStep(toStep); // Fallback if no next step
+      }
+    } else {
+      setCurrentStep(toStep);
+    }
+  };
+
+  // Get next step in sequence
+  const getNextStep = (currentPhase) => {
+    const stepSequence = [
+      'introduction',
+      'guided_drill_ar',
+      'guided_drill_er', 
+      'guided_drill_ir',
+      'recap',
+      'practice',
+      'meaningful_practice',
+      'communicative_practice'
+    ];
+    
+    const currentIndex = stepSequence.indexOf(currentPhase);
+    if (currentIndex >= 0 && currentIndex < stepSequence.length - 1) {
+      return stepSequence[currentIndex + 1];
+    }
+    return null;
   };
 
   const handleMechanicalPhaseComplete = () => {
@@ -165,7 +231,7 @@ function LearnTenseFlow({ onHome }) {
           verbType={verbType}
           selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('duration-selection')} 
-          onContinue={() => setCurrentStep('guided_drill_ar')}
+          onContinue={() => handleSmartStepTransition('introduction', 'guided_drill_ar')}
         />
       </ErrorBoundary>
     );
@@ -179,7 +245,7 @@ function LearnTenseFlow({ onHome }) {
           verb={exampleVerbs[0]}
           tense={selectedTense}
           onBack={() => setCurrentStep('introduction')}
-          onComplete={() => setCurrentStep('guided_drill_er')}
+          onComplete={() => handleSmartStepTransition('guided_drill_ar', 'guided_drill_er')}
         />
       </ErrorBoundary>
     );
@@ -193,7 +259,7 @@ function LearnTenseFlow({ onHome }) {
           verb={exampleVerbs[1]}
           tense={selectedTense}
           onBack={() => setCurrentStep('guided_drill_ar')}
-          onComplete={() => setCurrentStep('guided_drill_ir')}
+          onComplete={() => handleSmartStepTransition('guided_drill_er', 'guided_drill_ir')}
         />
       </ErrorBoundary>
     );
@@ -207,7 +273,7 @@ function LearnTenseFlow({ onHome }) {
           verb={exampleVerbs[2]}
           tense={selectedTense}
           onBack={() => setCurrentStep('guided_drill_er')}
-          onComplete={() => setCurrentStep('recap')}
+          onComplete={() => handleSmartStepTransition('guided_drill_ir', 'recap')}
         />
       </ErrorBoundary>
     );
@@ -222,7 +288,7 @@ function LearnTenseFlow({ onHome }) {
           verbType={verbType}
           selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('guided_drill_ir')} 
-          onContinue={() => setCurrentStep('practice')}
+          onContinue={() => handleSmartStepTransition('recap', 'practice')}
         />
       </ErrorBoundary>
     );
