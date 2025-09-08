@@ -10968,30 +10968,6 @@ export const priorityVerbs = [
             "value": "abolían"
           },
           {
-            "mood": "subjunctive",
-            "tense": "subjPres",
-            "person": "1p",
-            "value": "abolamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "subjPres",
-            "person": "2p_vosotros",
-            "value": "aboláis"
-          },
-          {
-            "mood": "imperative",
-            "tense": "impAff",
-            "person": "1p",
-            "value": "abolamos"
-          },
-          {
-            "mood": "imperative",
-            "tense": "impAff",
-            "person": "2p_vosotros",
-            "value": "abolid"
-          },
-          {
             "mood": "nonfinite",
             "tense": "inf",
             "person": "",
@@ -26870,186 +26846,6 @@ export const priorityVerbs = [
     }
   },
   {
-    "id": "amuar_added",
-    "lemma": "amuar",
-    "type": "irregular",
-    "paradigms": [
-      {
-        "regionTags": ["rioplatense", "la_general", "peninsular"],
-        "forms": [
-          {
-            "tense": "inf",
-            "mood": "nonfinite",
-            "person": "",
-            "value": "amuar",
-            "tags": [],
-            "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1s",
-                    "value": "amuo",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2s_tu",
-                    "value": "amuas",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3s",
-                    "value": "amua",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1p",
-                    "value": "amuamos",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2p_vosotros",
-                    "value": "amuáis",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3p",
-                    "value": "amuan",
-                    "tags": [],
-                    "region": "es"
-          }
-        ]
-      }
-    ],
-    "irregularTenses": [],
-    "irregularityMatrix": {
-      "pres": true,
-      "pretIndef": false,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
-      "inf": false,
-      "ger": false,
-      "part": false
-    }
-  },
-  {
-    "id": "adormir_added",
-    "lemma": "adormir",
-    "type": "irregular",
-    "paradigms": [
-      {
-        "regionTags": ["rioplatense", "la_general", "peninsular"],
-        "forms": [
-          {
-            "tense": "inf",
-            "mood": "nonfinite",
-            "person": "",
-            "value": "adormir",
-            "tags": [],
-            "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1s",
-                    "value": "adormo",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2s_tu",
-                    "value": "adormes",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3s",
-                    "value": "adorme",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1p",
-                    "value": "adormimos",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2p_vosotros",
-                    "value": "adormís",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3p",
-                    "value": "adormen",
-                    "tags": [],
-                    "region": "es"
-          }
-        ]
-      }
-    ],
-    "irregularTenses": [],
-    "irregularityMatrix": {
-      "pres": true,
-      "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
-      "inf": false,
-      "ger": true,
-      "part": false
-    }
-  },
-  {
     "id": "adormecerse_added",
     "lemma": "adormecerse",
     "type": "irregular",
@@ -27066,57 +26862,451 @@ export const priorityVerbs = [
             "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1s",
-                    "value": "adormecerseo",
-                    "tags": [],
-                    "region": "es"
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "adormeciéndose",
+            "tags": [],
+            "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2s_tu",
-                    "value": "adormecersees",
-                    "tags": [],
-                    "region": "es"
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "adormecido",
+            "tags": [],
+            "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3s",
-                    "value": "adormecersee",
-                    "tags": [],
-                    "region": "es"
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "me adormezco",
+            "tags": [],
+            "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1p",
-                    "value": "adormecerseimos",
-                    "tags": [],
-                    "region": "es"
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "te adormeces",
+            "accepts": ["te adormecés"],
+            "tags": [],
+            "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2p_vosotros",
-                    "value": "adormecerseís",
-                    "tags": [],
-                    "region": "es"
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3s",
+            "value": "se adormece",
+            "tags": [],
+            "region": "es"
           },
           {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3p",
-                    "value": "adormecerseen",
-                    "tags": [],
-                    "region": "es"
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1p",
+            "value": "nos adormecemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2p_vosotros",
+            "value": "os adormecéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "3p",
+            "value": "se adormecen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "1s",
+            "value": "me adormecía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "2s_tu",
+            "value": "te adormecías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "3s",
+            "value": "se adormecía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "1p",
+            "value": "nos adormecíamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "2p_vosotros",
+            "value": "os adormecíais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "impf",
+            "person": "3p",
+            "value": "se adormecían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1s",
+            "value": "me adormecí",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2s_tu",
+            "value": "te adormeciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3s",
+            "value": "se adormeció",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "1p",
+            "value": "nos adormecimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "2p_vosotros",
+            "value": "os adormecisteis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretIndef",
+            "person": "3p",
+            "value": "se adormecieron",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "1s",
+            "value": "me adormeceré",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "2s_tu",
+            "value": "te adormecerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "3s",
+            "value": "se adormecerá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "1p",
+            "value": "nos adormeceremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "2p_vosotros",
+            "value": "os adormeceréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "fut",
+            "person": "3p",
+            "value": "se adormecerán",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "1s",
+            "value": "me adormecería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "2s_tu",
+            "value": "te adormecerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "3s",
+            "value": "se adormecería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "1p",
+            "value": "nos adormeceríamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "2p_vosotros",
+            "value": "os adormeceríais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "indicative",
+            "tense": "cond",
+            "person": "3p",
+            "value": "se adormecerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "1s",
+            "value": "me adormezca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "2s_tu",
+            "value": "te adormezcas",
+            "accepts": ["te adormezcás"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "3s",
+            "value": "se adormezca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "1p",
+            "value": "nos adormezcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "2p_vosotros",
+            "value": "os adormezcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "3p",
+            "value": "se adormezcan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "1s",
+            "value": "me adormeciera",
+            "accepts": ["me adormeciese"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "2s_tu",
+            "value": "te adormecieras",
+            "accepts": ["te adormecieses"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "3s",
+            "value": "se adormeciera",
+            "accepts": ["se adormeciese"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "1p",
+            "value": "nos adormeciéramos",
+            "accepts": ["nos adormeciésemos"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "2p_vosotros",
+            "value": "os adormecierais",
+            "accepts": ["os adormecieseis"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjImpf",
+            "person": "3p",
+            "value": "se adormecieran",
+            "accepts": ["se adormeciesen"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "2s_tu",
+            "value": "adormécete",
+            "accepts": ["adormecéte"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "3s",
+            "value": "adormézcase",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "1p",
+            "value": "adormezcámonos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "2p_vosotros",
+            "value": "adormeceos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "3p",
+            "value": "adormézcanle",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "2s_tu",
+            "value": "no te adormezcas",
+            "accepts": ["no te adormezcás"],
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "3s",
+            "value": "no se adormezca",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "1p",
+            "value": "no nos adormezcamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "2p_vosotros",
+            "value": "no os adormezcáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "3p",
+            "value": "no se adormezcan",
+            "tags": [],
+            "region": "es"
           }
         ]
       }
     ],
-    "irregularTenses": [],
+    "irregularTenses": ["pres", "subjPres"],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
@@ -27136,96 +27326,6 @@ export const priorityVerbs = [
       "impNeg": true,
       "inf": false,
       "ger": false,
-      "part": false
-    }
-  },
-  {
-    "id": "redormir_added",
-    "lemma": "redormir",
-    "type": "irregular",
-    "paradigms": [
-      {
-        "regionTags": ["rioplatense", "la_general", "peninsular"],
-        "forms": [
-          {
-            "tense": "inf",
-            "mood": "nonfinite",
-            "person": "",
-            "value": "redormir",
-            "tags": [],
-            "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1s",
-                    "value": "redormo",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2s_tu",
-                    "value": "redormes",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3s",
-                    "value": "redorme",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "1p",
-                    "value": "redormimos",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "2p_vosotros",
-                    "value": "redormís",
-                    "tags": [],
-                    "region": "es"
-          },
-          {
-                    "mood": "indicative",
-                    "tense": "pres",
-                    "person": "3p",
-                    "value": "redormen",
-                    "tags": [],
-                    "region": "es"
-          }
-        ]
-      }
-    ],
-    "irregularTenses": [],
-    "irregularityMatrix": {
-      "pres": true,
-      "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
-      "inf": false,
-      "ger": true,
       "part": false
     }
   },

@@ -111,7 +111,7 @@ export const additionalVerbs = [
   {
     id: 'abrir',
     lemma: 'abrir',
-    type: 'regular',
+    type: 'irregular',
     paradigms: [{
       regionTags: ['rioplatense', 'la_general', 'peninsular'],
       forms: [
@@ -123,7 +123,7 @@ export const additionalVerbs = [
   {
     id: 'cubrir',
     lemma: 'cubrir',
-    type: 'regular',
+    type: 'irregular',
     paradigms: [{
       regionTags: ['rioplatense', 'la_general', 'peninsular'],
       forms: [
@@ -135,7 +135,7 @@ export const additionalVerbs = [
   {
     id: 'descubrir',
     lemma: 'descubrir',
-    type: 'regular',
+    type: 'irregular',
     paradigms: [{
       regionTags: ['rioplatense', 'la_general', 'peninsular'],
       forms: [
@@ -147,7 +147,7 @@ export const additionalVerbs = [
   {
     id: 'escribir',
     lemma: 'escribir',
-    type: 'regular',
+    type: 'irregular',
     paradigms: [{
       regionTags: ['rioplatense', 'la_general', 'peninsular'],
       forms: [
