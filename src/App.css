@@ -203,16 +203,16 @@ body {
   background: none;
   color: var(--muted);
   border: none;
-  padding: 0.75rem 1rem; /* más grande para mejor target táctil */
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 1rem 1.25rem; /* aún más grande */
+  border-radius: 12px;
+  font-size: 1.05rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  min-height: 52px; /* altura mínima mayor */
+  gap: 0.9rem;
+  min-height: 64px; /* altura mínima mayor */
 }
 
 .back-to-menu-btn:hover {
@@ -1185,9 +1185,9 @@ body {
   background: none;
   color: var(--muted);
   border: none;
-  padding: 0.75rem 1rem; /* más grande */
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 1rem 1.25rem; /* aún más grande */
+  border-radius: 12px;
+  font-size: 1.05rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin: 1rem auto 0;
@@ -1203,8 +1203,8 @@ body {
 }
 
 .back-icon {
-  width: 40px; /* flecha aún más grande */
-  height: 40px;
+  width: 48px; /* flecha aún más grande */
+  height: 48px;
   object-fit: contain;
   filter: brightness(0.9) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
