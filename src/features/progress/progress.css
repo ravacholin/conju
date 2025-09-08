@@ -56,8 +56,8 @@
 .nav-btn:hover .nav-icon { opacity: 1; filter: grayscale(0%); }
 
 /* Iconos un poco más grandes y sin contenedor */
-.nav-icon { width: 48px; height: 48px; opacity: 0.95; filter: grayscale(100%); }
-.nav-icon.logo-icon { width: 64px; height: 64px; }
+.nav-icon { width: 54px; height: 54px; opacity: 0.95; filter: grayscale(100%); }
+.nav-icon.logo-icon { width: 72px; height: 72px; }
 
 .dashboard-header h1 {
   color: var(--text);
