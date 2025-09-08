@@ -291,7 +291,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
       const conjugation = getConjugation(verbObj, '3s');
-      const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjugation}</span>`);
+      // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
+      const startsWithVerb = /^[\s\"'“‘(\[¡¿-]*__VERB__/.test(sentenceTemplate);
+      const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
+        ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
+        : conjugation;
+      const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjDisplay}</span>`);
       return (
         <p 
           key={index} 
