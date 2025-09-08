@@ -844,10 +844,45 @@ body {
 
 
 .result {
-  padding: 2rem;
+  padding: 1rem; /* reducido para un bloque más compacto */
   border-radius: 12px;
-  margin-top: 1.5rem;
+  margin-top: 1rem; /* menor separación superior */
   animation: slideIn 0.3s ease;
+}
+
+.result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tts-btn {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tts-btn:hover {
+  background: var(--hover);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.tts-btn:active {
+  transform: translateY(0);
+}
+
+.tts-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .explanation-chip {

@@ -335,6 +335,51 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     }
   };
 
+  // --- Text-to-Speech: pronounce the correct form ---
+  const getSpeakText = () => {
+    if (result && result.value) return result.value;
+    return currentForm?.value || '';
+  };
+
+  const speak = (text) => {
+    try {
+      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      const region = settings?.region || 'la_general';
+      utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
+      utter.rate = 0.95;
+
+      const pickAndSpeak = () => {
+        const voices = synth.getVoices ? synth.getVoices() : [];
+        const byExact = voices.find(v => v.lang && v.lang.toLowerCase() === utter.lang.toLowerCase());
+        const byEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+        const byName = voices.find(v => /spanish|español/i.test(v.name));
+        utter.voice = byExact || byEs || byName || null;
+        synth.cancel();
+        synth.speak(utter);
+      };
+
+      if (synth.getVoices && synth.getVoices().length === 0) {
+        const onVoices = () => {
+          pickAndSpeak();
+          synth.removeEventListener('voiceschanged', onVoices);
+        };
+        synth.addEventListener('voiceschanged', onVoices);
+        setTimeout(pickAndSpeak, 300);
+      } else {
+        pickAndSpeak();
+      }
+    } catch (e) {
+      console.warn('TTS unavailable:', e);
+    }
+  };
+
+  const handleSpeak = () => {
+    const text = getSpeakText();
+    if (text) speak(text);
+  };
+
   const personToFormMap = useMemo(() => {
     const map = {};
     verbForms.forEach(f => { map[f.person] = f.value; });
@@ -479,11 +524,22 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
 
           {result && (
             <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
+              <div className="result-top">
                 {result.correct ? (
-                    <p>¡Correcto!</p>
+                  <p>¡Correcto!</p>
                 ) : (
-                    <p>La respuesta correcta es: <strong>{result.value}</strong></p>
+                  <p>La respuesta correcta es: <strong>{result.value}</strong></p>
                 )}
+                <button
+                  type="button"
+                  className="tts-btn"
+                  onClick={handleSpeak}
+                  title="Pronunciar"
+                  aria-label="Pronunciar"
+                >
+                  <img src="/megaf-imperat.png" alt="Pronunciar" />
+                </button>
+              </div>
             </div>
           )}
 

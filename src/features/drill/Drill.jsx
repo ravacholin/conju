@@ -455,7 +455,65 @@ export default function Drill({
     return PERSON_LABELS[person] || person;
   };
 
+  // Text-to-Speech: pronounce the correct form
+  const getSpeakText = () => {
+    if (!currentItem) return '';
+    // Reverse mode: pronounce the actual target form on screen
+    if (isReverse) {
+      return currentItem?.value || currentItem?.form?.value || '';
+    }
+    // Double mode: pronounce both targets if available
+    if (isDouble && result?.targets?.length) {
+      // Join with a short connector for clarity
+      return result.targets.filter(Boolean).join(' y ');
+    }
+    // Normal mode: prefer the computed correct answer, else the target form
+    if (result?.correctAnswer) return result.correctAnswer;
+    return currentItem?.form?.value || currentItem?.value || '';
+  };
 
+  const speak = (text) => {
+    try {
+      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      const region = settings?.region || 'la_general';
+      utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
+      utter.rate = 0.95; // slightly slower for clarity
+
+      const pickAndSpeak = () => {
+        const voices = synth.getVoices ? synth.getVoices() : [];
+        const byExact = voices.find(v => v.lang && v.lang.toLowerCase() === utter.lang.toLowerCase());
+        const byEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+        const byName = voices.find(v => /spanish|español/i.test(v.name));
+        utter.voice = byExact || byEs || byName || null;
+        synth.cancel(); // ensure clean start
+        synth.speak(utter);
+      };
+
+      // Some browsers load voices asynchronously
+      if (synth.getVoices && synth.getVoices().length === 0) {
+        const onVoices = () => {
+          pickAndSpeak();
+          synth.removeEventListener('voiceschanged', onVoices);
+        };
+        synth.addEventListener('voiceschanged', onVoices);
+        // Fallback speak after a short delay in case event doesn't fire
+        setTimeout(pickAndSpeak, 300);
+      } else {
+        pickAndSpeak();
+      }
+    } catch (e) {
+      console.warn('TTS unavailable:', e);
+    }
+  };
+
+  const handleSpeak = () => {
+    const text = getSpeakText();
+    if (text) speak(text);
+  };
+
+  
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
       {/* Verb lemma (infinitive) - TOP */}
@@ -728,8 +786,19 @@ export default function Drill({
       {/* Result feedback */}
       {result && (
         <div className={`result ${result.correct ? 'correct' : 'incorrect'} slide-in`}>
-          <p>{result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}</p>
-          {result.correct && result.note && (
+          <div className="result-top">
+            <p>{result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}</p>
+            <button 
+              type="button" 
+              className="tts-btn" 
+              onClick={handleSpeak}
+              title="Pronunciar"
+              aria-label="Pronunciar"
+            >
+              <img src="/megaf-imperat.png" alt="Pronunciar" />
+            </button>
+          </div>
+          {result.correct && result.note && result.note.trim() !== '¡Correcto!' && (
             <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', opacity: 0.8 }}>
               {result.note}
             </p>

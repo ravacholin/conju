@@ -470,6 +470,51 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       return PRONOUNS_DISPLAY[personCode] || personCode;
   }
 
+  // --- Text-to-Speech for learning drills ---
+  const getSpeakText = () => {
+    // Pronounce the correct form for the current item
+    return currentItem?.value || '';
+  };
+
+  const speak = (text) => {
+    try {
+      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      const region = settings?.region || 'la_general';
+      utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
+      utter.rate = 0.95;
+
+      const pickAndSpeak = () => {
+        const voices = synth.getVoices ? synth.getVoices() : [];
+        const byExact = voices.find(v => v.lang && v.lang.toLowerCase() === utter.lang.toLowerCase());
+        const byEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+        const byName = voices.find(v => /spanish|español/i.test(v.name));
+        utter.voice = byExact || byEs || byName || null;
+        synth.cancel();
+        synth.speak(utter);
+      };
+
+      if (synth.getVoices && synth.getVoices().length === 0) {
+        const onVoices = () => {
+          pickAndSpeak();
+          synth.removeEventListener('voiceschanged', onVoices);
+        };
+        synth.addEventListener('voiceschanged', onVoices);
+        setTimeout(pickAndSpeak, 300);
+      } else {
+        pickAndSpeak();
+      }
+    } catch (e) {
+      console.warn('TTS unavailable:', e);
+    }
+  };
+
+  const handleSpeak = () => {
+    const text = getSpeakText();
+    if (text) speak(text);
+  };
+
   if (!currentItem) {
     return (
       <div className="App"><div className="main-content"><div className="drill-container learning-drill">
@@ -527,13 +572,24 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
               
               {result !== 'idle' && (
                 <div className={`result ${result}`}>
-                  {result === 'correct' ? (
-                    <div className="correct-feedback">¡Correcto!</div>
-                  ) : (
-                    <div className="incorrect-feedback">
-                      La respuesta correcta es: <span className="correct-answer">{currentItem.value}</span>
-                    </div>
-                  )}
+                  <div className="result-top">
+                    {result === 'correct' ? (
+                      <div className="correct-feedback">¡Correcto!</div>
+                    ) : (
+                      <div className="incorrect-feedback">
+                        La respuesta correcta es: <span className="correct-answer">{currentItem.value}</span>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      className="tts-btn"
+                      onClick={handleSpeak}
+                      title="Pronunciar"
+                      aria-label="Pronunciar"
+                    >
+                      <img src="/megaf-imperat.png" alt="Pronunciar" />
+                    </button>
+                  </div>
                 </div>
               )}
               
