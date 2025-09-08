@@ -17,6 +17,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos muy frecuentes que añaden -g en la primera persona: salgo, pongo, hago',
     paradigmatic: 'salir',
     examples: ['salir', 'poner', 'hacer', 'tener', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'seguir', 'conseguir', 'perseguir', 'distinguir'], // Más variedad para drills libres
+    priorityExamples: ['salir', 'poner', 'hacer'], // Verbos más representativos y pedagógicos
     pattern: 'salir: salgo, sales, sale, salimos, salís, salen (solo YO cambia)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
@@ -32,11 +33,12 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     paradigmatic: 'querer',
     // Priorizar un ejemplo por cada grupo: o→ue (poder), e→ie (querer), e→i (pedir)
     examples: ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'dormir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
+    priorityExamples: ['poder', 'querer', 'pedir'], // Casos más representativos: o→ue, e→ie, e→i (NO jugar u→ue que es excepcional)
     pattern: 'querer: quiero, quieres, quiere, queremos, queréis, quieren (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
     concept: 'diphthongs_all',
-    pedagogicalNote: 'Cuatro tipos: o→ue (poder), e→ie (querer), e→i (pedir), u→ue (jugar). Solo en sílabas tónicas (acentuadas).'
+    pedagogicalNote: 'Tres tipos principales: o→ue (poder), e→ie (querer), e→i (pedir). Solo en sílabas tónicas (acentuadas).'
   },
 
   // 3) MUY IRREGULARES (casos especiales frecuentes)
@@ -46,6 +48,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos súper frecuentes con formas completamente irregulares: ser, estar, ir, dar',
     paradigmatic: 'ser',
     examples: ['ser', 'estar', 'ir', 'dar', 'saber', 'caber', 'haber'], // Incluir todos los muy irregulares fundamentales
+    priorityExamples: ['ser', 'estar', 'ir'], // Los 3 más fundamentales y pedagógicos
     pattern: 'ser: soy, eres, es, somos, sois, son (formas únicas que hay que memorizar)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A1', // Los más básicos y frecuentes
@@ -65,6 +68,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos -car súper frecuentes: c → qu delante de e',
     paradigmatic: 'buscar',
     examples: ['buscar', 'sacar', 'tocar'],
+    priorityExamples: ['buscar', 'sacar', 'tocar'], // Todos son igualmente representativos
     pattern: 'buscar: busqué, busque (conservar sonido /k/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -78,6 +82,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos -gar súper frecuentes: g → gu delante de e',
     paradigmatic: 'llegar',
     examples: ['llegar', 'pagar', 'apagar'],
+    priorityExamples: ['llegar', 'pagar', 'apagar'], // Todos son igualmente representativos
     pattern: 'llegar: llegué, llegue (conservar sonido /g/)',
     affectedTenses: ['pretIndef', 'subjPres'],
     level: 'A2',
@@ -92,6 +97,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos frecuentes con raíces completamente irregulares en pretérito: estar, querer, hacer',
     paradigmatic: 'estar',
     examples: ['estar', 'querer', 'hacer', 'tener', 'poder', 'poner', 'venir', 'saber', 'caber', 'haber', 'andar', 'conducir', 'producir', 'traducir', 'reducir', 'introducir', 'decir', 'traer'], // Muchos más pretéritos fuertes para variedad
+    priorityExamples: ['estar', 'hacer', 'querer'], // Más frecuentes y pedagógicos: estuv-, hic-, quis-
     pattern: 'estar: estuve, estuviste, estuvo (raíz nueva + terminaciones sin acento)',
     affectedTenses: ['pretIndef', 'subjImpf'],
     level: 'B1',
@@ -106,6 +112,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos que cambian solo en 3ª persona: e→i (pidió), o→u (durmió), i→y (leyó)',
     paradigmatic: 'pedir',
     examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír', 'repetir', 'competir', 'impedir', 'medir', 'seguir', 'conseguir', 'perseguir', 'vestir', 'mentir', 'sentir', 'convertir', 'divertir', 'advertir', 'sugerir', 'referir', 'construir', 'destruir', 'instruir', 'sustituir', 'distribuir', 'contribuir', 'huir', 'incluir', 'concluir', 'excluir', 'influir', 'creer', 'poseer', 'proveer', 'caer', 'traer'], // Muchos más verbos e→i, o→u, i→y para mayor variedad
+    priorityExamples: ['pedir', 'dormir', 'leer'], // Tres patrones más claros: e→i, o→u, i→y
     pattern: 'pedir: pedí, pediste, pidió, pedimos, pedisteis, pidieron (solo 3ª persona cambia)',
     affectedTenses: ['pretIndef', 'ger'],
     level: 'B1',
@@ -125,6 +132,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Los únicos 3 verbos con imperfecto irregular en español',
     paradigmatic: 'ser',
     examples: ['ser', 'ir', 'ver'],
+    priorityExamples: ['ser', 'ir', 'ver'], // Los únicos 3, todos igualmente importantes
     pattern: 'ser: era, eras, era / ir: iba, ibas, iba / ver: veía, veías, veía',
     affectedTenses: ['impf'],
     level: 'A2',

@@ -39,17 +39,27 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
     console.log('✅ Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
     
   } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
-    // For irregular verbs, use examples directly from family definitions
+    // For irregular verbs, PRIORITIZE representative examples from family definitions
     console.log('🎯 Seleccionando de familias:', selectedFamilies);
     
-    // Get examples from each selected family
+    // Get PRIORITY examples from each selected family first
     selectedFamilies.forEach(familyId => {
       const family = LEARNING_IRREGULAR_FAMILIES[familyId];
-      if (family && family.examples) {
-        console.log(`📚 Familia ${familyId} tiene ejemplos:`, family.examples);
+      if (family && family.priorityExamples) {
+        console.log(`🏆 Familia ${familyId} - verbos prioritarios:`, family.priorityExamples);
         
-        // Add verbs that exist in our database
-        family.examples.forEach(lemma => {
+        // Add priority verbs that exist in our database
+        family.priorityExamples.forEach(lemma => {
+          const verbObj = verbs.find(v => v.lemma === lemma);
+          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
+            candidateVerbs.push(verbObj);
+          }
+        });
+      } else if (family && family.examples) {
+        console.log(`📚 Familia ${familyId} sin verbos prioritarios, usando ejemplos regulares:`, family.examples.slice(0, 3));
+        
+        // Fallback to first 3 regular examples if no priorityExamples defined
+        family.examples.slice(0, 3).forEach(lemma => {
           const verbObj = verbs.find(v => v.lemma === lemma);
           if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
             candidateVerbs.push(verbObj);
@@ -60,30 +70,12 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
       }
     });
     
-    console.log('🔍 Candidatos encontrados:', candidateVerbs.map(v => v.lemma));
+    console.log('🔍 Candidatos prioritarios encontrados:', candidateVerbs.map(v => v.lemma));
     
-    // Try to select 3 verbs with different endings if possible
-    const selectedByEnding = { ar: null, er: null, ir: null };
-    
-    candidateVerbs.forEach(verb => {
-      if (verb.lemma.endsWith('ar') && !selectedByEnding.ar) {
-        selectedByEnding.ar = verb;
-      } else if (verb.lemma.endsWith('er') && !selectedByEnding.er) {
-        selectedByEnding.er = verb;
-      } else if (verb.lemma.endsWith('ir') && !selectedByEnding.ir) {
-        selectedByEnding.ir = verb;
-      }
-    });
-    
-    // Use the distributed selection if we have 3 different endings
-    if (selectedByEnding.ar && selectedByEnding.er && selectedByEnding.ir) {
-      selectedVerbs = [selectedByEnding.ar, selectedByEnding.er, selectedByEnding.ir];
-      console.log('✅ Selección balanceada por terminación:', selectedVerbs.map(v => v.lemma));
-    } else {
-      // Otherwise just take the first 3 candidates
-      selectedVerbs = candidateVerbs.slice(0, 3);
-      console.log('✅ Selección por orden de candidatos:', selectedVerbs.map(v => v.lemma));
-    }
+    // For learning purposes, just take the first 3 priority candidates
+    // They are already carefully selected to be pedagogically optimal
+    selectedVerbs = candidateVerbs.slice(0, 3);
+    console.log('✅ Selección de verbos prioritarios:', selectedVerbs.map(v => v.lemma));
   }
 
   // Final check: ensure we have exactly 3 verbs
