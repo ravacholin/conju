@@ -54,7 +54,7 @@ export const storyData = {
         
         // IRREGULARES EN 3ª PERSONA - Narrativa coherente de rutina nocturna familiar
         pedir: 'El niño __VERB__ un cuento antes de dormir.',
-        dormir: '__VERB__ profundamente toda la noche.',
+        dormir: 'Él __VERB__ profundamente toda la noche.',
         leer: 'Su madre __VERB__ hasta muy tarde.',
     }
   },
