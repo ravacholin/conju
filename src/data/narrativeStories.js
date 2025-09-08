@@ -217,4 +217,86 @@ export const storyData = {
         vivir: 'Si hubieran __VERB__ en el campo, habrían sido mucho más felices.',
     },
   },
+  ger: {
+    title: 'Actividades en progreso',
+    sentences: {
+        ar: 'Juan está __VERB__ con mucha concentración.',
+        er: 'María está __VERB__ algo delicioso.',
+        ir: 'Pedro está __VERB__ nuevas experiencias.',
+    },
+    verbSpecific: {
+        // NARRATIVA COHERENTE - Actividades simultáneas en el presente
+        hablar: 'Juan está __VERB__ por teléfono con un cliente.',
+        comer: 'María está __VERB__ una ensalada saludable.',
+        vivir: 'Pedro está __VERB__ momentos únicos en su nuevo trabajo.',
+        
+        // Verbos irregulares mantienen la misma coherencia narrativa
+        hacer: 'Ana está __VERB__ ejercicio en el gimnasio.',
+        poner: 'Carlos está __VERB__ música relajante.',
+        salir: 'Lucía está __VERB__ con sus amigos.',
+    },
+  },
+  part: {
+    title: 'Estados y resultados',
+    sentences: {
+        ar: 'El trabajo ya está __VERB__.',
+        er: 'La comida ha sido __VERB__.',
+        ir: 'La experiencia ha __VERB__ increíble.',
+    },
+    verbSpecific: {
+        // NARRATIVA COHERENTE - Resultados de acciones completadas
+        hablar: 'Todo ha sido __VERB__ en la reunión.',
+        comer: 'El almuerzo ya ha sido __VERB__ por todos.',
+        vivir: 'Esta historia ha sido __VERB__ intensamente.',
+        
+        // Participios irregulares frecuentes
+        hacer: 'El proyecto está completamente __VERB__.',
+        abrir: 'La puerta permanece __VERB__ todo el día.',
+        escribir: 'La carta fue __VERB__ con mucho cariño.',
+    },
+  },
+  impAff: {
+    title: 'Consejos y recomendaciones',
+    sentences: {
+        ar: '¡__VERB__ con confianza!',
+        er: '¡__VERB__ bien esta noche!',
+        ir: '¡__VERB__ tu mejor vida!',
+    },
+    verbSpecific: {
+        // NARRATIVA COHERENTE - Consejos motivacionales
+        hablar: '¡__VERB__ con seguridad en la presentación!',
+        comer: '¡__VERB__ despacio y disfruta la comida!',
+        vivir: '¡__VERB__ cada momento intensamente!',
+        
+        // Imperativos irregulares frecuentes
+        hacer: '¡__VERB__ siempre tu mejor esfuerzo!',
+        poner: '¡__VERB__ atención a los detalles!',
+        salir: '¡__VERB__ y diviértete con tus amigos!',
+        tener: '¡__VERB__ paciencia, todo mejorará!',
+        venir: '¡__VERB__ a visitarnos pronto!',
+        decir: '¡__VERB__ siempre la verdad!',
+    },
+  },
+  impNeg: {
+    title: 'Advertencias importantes',
+    sentences: {
+        ar: 'No __VERB__ sin pensarlo bien.',
+        er: 'No __VERB__ si no tienes hambre.',
+        ir: 'No __VERB__ con tanto estrés.',
+    },
+    verbSpecific: {
+        // NARRATIVA COHERENTE - Advertencias de seguridad y bienestar
+        hablar: 'No __VERB__ cuando estés muy enfadado.',
+        comer: 'No __VERB__ tan rápido, es malo para la salud.',
+        vivir: 'No __VERB__ con tanto estrés innecesario.',
+        
+        // Imperativos negativos irregulares
+        hacer: 'No __VERB__ las cosas a última hora.',
+        poner: 'No __VERB__ música muy alta por la noche.',
+        salir: 'No __VERB__ sin abrigo, hace mucho frío.',
+        tener: 'No __VERB__ miedo de intentar cosas nuevas.',
+        venir: 'No __VERB__ si no te encuentras bien.',
+        decir: 'No __VERB__ mentiras, siempre se descubren.',
+    },
+  },
 };
