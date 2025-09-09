@@ -120,6 +120,10 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
 
 ## Registro de Actualizaciones
+- 2025-09-09:
+  - fix(levels): A1 → Mixto/Todos respeta el nivel CEFR para el pool de verbos. Se aplica un filtro global por nivel (a regulares e irregulares) antes de cualquier otra lógica de selección. Esto evita que aparezcan verbos avanzados en A1 (p. ej., “fraguar”, “atestiguar”, “ampliar”).
+  - test: agregado en `src/lib/core/generator.levels.test.js` el caso “A1 mixed/all: excludes advanced lemmas from selection”.
+  - impacto: práctica por nivel A1 se siente más coherente (verbos de uso básico y alta frecuencia).
 - 2025-08-27 (Final):
   - **CRÍTICO**: Sistema de filtrado nivel/dialecto completamente reforzado
   - **fix(nivel A1)**: Guardia de integridad impide formas avanzadas (pluscuamperfecto, subjuntivo perfecto) en nivel A1
