@@ -152,9 +152,15 @@ export async function trackAttemptSubmitted(attemptId, result) {
       }))
     }
 
-    // Actualizar SRS para la celda practicada
+    // Actualizar SRS para la celda practicada (pasar metadatos para adaptación)
     try {
-      await updateSchedule(currentSession.userId, { mood, tense, person }, attempt.correct, attempt.hintsUsed)
+      await updateSchedule(
+        currentSession.userId,
+        { mood, tense, person },
+        attempt.correct,
+        attempt.hintsUsed,
+        { latencyMs: attempt.latencyMs, errorTags }
+      )
     } catch (e) {
       console.warn('No se pudo actualizar SRS:', e)
     }

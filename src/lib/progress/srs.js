@@ -1,7 +1,11 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
 
-import { PROGRESS_CONFIG } from './config.js'
+import { PROGRESS_CONFIG, ERROR_TAGS } from './config.js'
 import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
+
+// Helpers
+const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
+const randomInRange = (min, max) => min + Math.random() * (max - min)
 
 /**
  * Calcula el próximo intervalo basado en el desempeño
@@ -10,43 +14,95 @@ import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
  * @param {number} hintsUsed - Número de pistas usadas
  * @returns {Object} Nuevo intervalo y fecha
  */
-export function calculateNextInterval(schedule, correct, hintsUsed) {
-  let { interval = 0, ease = 2.5, reps = 0 } = schedule
+export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
+  // Campos existentes + defaults razonables
+  let {
+    interval = 0,   // días
+    ease = PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5,
+    reps = 0,
+    lapses = 0,
+    leech = false
+  } = schedule || {}
 
-  const intervals = PROGRESS_CONFIG.SRS_INTERVALS
-  const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1))
-  const currentInterval = reps > 0 ? intervals[currentIdx] : 1
+  const ADV = PROGRESS_CONFIG.SRS_ADVANCED || {}
+  const intervals = PROGRESS_CONFIG.SRS_INTERVALS || [1, 3, 7, 14, 30, 90]
 
-  if (!correct) {
-    // Error: refuerzo inmediato
-    reps = Math.max(0, reps - 1)
-    interval = 1
-    // Decremento suave del ease (mínimo 1.3)
-    ease = Math.max(1.3, ease - 0.1)
+  // Derivar calificación (Q: 0-5) a partir del resultado y metadatos
+  // Q=5: correcto sin pista y en tiempo normal; Q=4: correcto con pista o lento; Q=3: fallo leve (p.ej. acento)
+  // Q<=2: fallo normal
+  let q
+  if (correct) {
+    q = 5
+    if (hintsUsed > 0) q -= ADV.HINT_Q_PENALTY || 1
+    const slowMs = ADV.SPEED?.SLOW_MS ?? 6000
+    if (typeof meta.latencyMs === 'number' && meta.latencyMs > slowMs) {
+      q = Math.max(3, q - 1)
+    }
   } else {
+    // Detectar error leve: solo acentuación
+    const onlyAccent = Array.isArray(meta.errorTags) && meta.errorTags.length > 0 &&
+      meta.errorTags.every(t => t === ERROR_TAGS.ACCENT)
+    q = onlyAccent ? 3 : 2
+  }
+
+  // SM-2 inspired adjustment of ease
+  const deltaE = 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)
+  ease = clamp(
+    (ease ?? ADV.EASE_START ?? 2.5) + deltaE,
+    ADV.EASE_MIN ?? 1.3,
+    ADV.EASE_MAX ?? 3.2
+  )
+
+  // Calcular siguiente intervalo y reps
+  if (q < 3) {
+    // Lapse: reforzar pronto
+    lapses = (lapses || 0) + 1
+    reps = 0 // reiniciar aprendizaje
+    const rl = ADV.RELEARN_STEPS || [0.25, 1]
+    interval = rl[0] // 6 horas por defecto
+    // Leech handling (no suspendemos, pero avisamos con intervalos cortos y ease penalizado)
+    if (lapses >= (ADV.LEECH_THRESHOLD || 8)) {
+      leech = true
+      ease = Math.max(ADV.EASE_MIN ?? 1.3, ease - (ADV.LEECH_EASE_PENALTY || 0.4))
+    }
+  } else {
+    // Correcto (Q>=3)
     if (hintsUsed > 0) {
-      // Correcto con pista: progreso moderado
-      const nextIdx = Math.min(reps, intervals.length - 1)
+      // Correcto con pistas: progresar sin subir reps (mid-point hacia el siguiente intervalo)
+      const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1))
+      const currentInterval = reps > 0 ? intervals[currentIdx] : (ADV.FIRST_STEPS?.[0] || 1)
+      const nextIdx = Math.min(Math.max(reps, 0), intervals.length - 1)
       const nextInterval = intervals[nextIdx]
-      // Avanzar ~50% hacia el siguiente intervalo sin subir reps
-      interval = Math.max(1, Math.round((currentInterval + nextInterval) / 2))
-      // Pequeño ajuste negativo al ease
-      ease = Math.max(1.3, ease - 0.05)
+      interval = Math.max(ADV.FIRST_STEPS?.[0] || 1, Math.round((currentInterval + nextInterval) / 2))
     } else {
-      // Correcto sin pista: subir de nivel
-      reps += 1
-      const newIdx = Math.min(reps - 1, intervals.length - 1)
-      interval = intervals[newIdx]
-      // Ajuste positivo al ease (cap 3.0)
-      ease = Math.min(3.0, ease + 0.05)
+      // Correcto sin pistas: subir nivel
+      if (reps === 0) {
+        interval = (ADV.FIRST_STEPS?.[0] || 1)
+        reps = 1
+      } else if (reps === 1) {
+        interval = (ADV.FIRST_STEPS?.[1] || 3)
+        reps = 2
+      } else {
+        // Crecimiento multiplicativo por ease (estilo SM-2)
+        interval = Math.max(1, Math.round((interval || intervals[reps - 1] || 1) * ease))
+        reps += 1
+      }
+      // Afinar por calidad
+      if (q === 3) interval = Math.max(1, Math.round(interval * 0.8))
+      if (q === 5) interval = Math.max(1, Math.round(interval * 1.1))
     }
   }
 
+  // Añadir fuzz para evitar concentraciones
+  const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval
+  const randomizedRaw = randomInRange(Math.max(0, interval - fuzz), interval + fuzz)
+  const randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw
+
   // Calcular próxima fecha de revisión
   const now = new Date()
-  const nextDue = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000)
+  const nextDue = new Date(now.getTime() + randomized * 24 * 60 * 60 * 1000)
 
-  return { interval, ease, reps, nextDue }
+  return { interval: randomized, ease, reps, lapses, leech, nextDue, lastAnswerCorrect: !!correct, lastLatencyMs: meta.latencyMs }
 }
 
 /**
@@ -57,28 +113,33 @@ export function calculateNextInterval(schedule, correct, hintsUsed) {
  * @param {number} hintsUsed - Número de pistas usadas
  * @returns {Promise<void>}
  */
-export async function updateSchedule(userId, cell, correct, hintsUsed) {
+export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}) {
   // Buscar schedule existente para esta celda
   let schedule = await getScheduleByCell(userId, cell.mood, cell.tense, cell.person)
   
   // Si no existe, crear uno nuevo
   if (!schedule) {
     schedule = {
+      id: `${userId}|${cell.mood}|${cell.tense}|${cell.person}`,
       userId,
       mood: cell.mood,
       tense: cell.tense,
       person: cell.person,
       interval: 0,
-      ease: 2.5,
+      ease: PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5,
       reps: 0,
-      nextDue: new Date()
+      lapses: 0,
+      leech: false,
+      nextDue: new Date(),
+      createdAt: new Date()
     }
   }
   
   // Calcular nuevo intervalo
   const updatedSchedule = {
     ...schedule,
-    ...calculateNextInterval(schedule, correct, hintsUsed)
+    ...calculateNextInterval(schedule, correct, hintsUsed, meta),
+    updatedAt: new Date()
   }
   
   // Guardar en la base de datos

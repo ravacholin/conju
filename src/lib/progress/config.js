@@ -24,6 +24,28 @@ export const PROGRESS_CONFIG = {
   
   // Intervalos SRS
   SRS_INTERVALS: [1, 3, 7, 14, 30, 90], // Días
+
+  // Configuración avanzada del SRS (SM-2 inspirado + mejoras)
+  SRS_ADVANCED: {
+    EASE_START: 2.5,
+    EASE_MIN: 1.3,
+    EASE_MAX: 3.2,
+    // Primeros pasos (modo aprendizaje)
+    FIRST_STEPS: [1, 3], // días
+    // Penalización por fallos consecutivos (lapses)
+    LEECH_THRESHOLD: 8,
+    LEECH_EASE_PENALTY: 0.4,
+    // Micro-reaprendizaje tras fallo: intervalos en días (se permiten fracciones)
+    RELEARN_STEPS: [0.25, 1], // 6h, 1d
+    // Influencia de pistas y velocidad en la calidad (Q)
+    HINT_Q_PENALTY: 1,       // restar 1 punto de Q si hubo pistas
+    SPEED: {
+      FAST_GUESS_MS: 900,
+      SLOW_MS: 6000
+    },
+    // Jitter para evitar sincronías exactas
+    FUZZ_RATIO: 0.10 // ±10%
+  },
   
   // Configuración de UI
   UI: {

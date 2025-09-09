@@ -20,12 +20,12 @@ describe('SRS calculateNextInterval', () => {
     expect(next.ease).toBeLessThanOrEqual(2.5)
   })
 
-  it('resets to short interval on incorrect', () => {
+  it('resets to short interval on incorrect (relearn)', () => {
     const schedule = { interval: 7, ease: 2.5, reps: 3 }
     const next = calculateNextInterval(schedule, false, 0)
-    expect(next.interval).toBe(1)
+    // Reaprendizaje rápido (<= 1 día)
+    expect(next.interval).toBeLessThanOrEqual(1)
     expect(next.reps).toBeLessThan(3)
     expect(next.ease).toBeLessThanOrEqual(2.5)
   })
 })
-
