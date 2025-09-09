@@ -182,7 +182,7 @@ export async function getErrorIntelligence(userId) {
     for (let i = 20; i >= 0; i--) {
       const k = new Date(now - i * 86400000).toDateString()
       days.push(k)
-      byDay.set(k, { tagCounts: new Map(), totalIncorrect: 0 })
+      byDay.set(k, { tagCounts: new Map(), totalIncorrect: 0, total: 0 })
     }
     const tagTotals = new Map()
     const tagRawCounts = new Map()
@@ -191,10 +191,11 @@ export async function getErrorIntelligence(userId) {
     for (const a of attempts) {
       const k = new Date(a.createdAt || 0).toDateString()
       if (!byDay.has(k)) continue
+      const day = byDay.get(k)
+      day.total += 1
       if (!a.correct && Array.isArray(a.errorTags)) {
         const ageDays = (now - new Date(a.createdAt).getTime()) / 86400000
         const w = Math.exp(-ageDays / DECAY_TAU)
-        const day = byDay.get(k)
         day.totalIncorrect += 1
         for (const t of a.errorTags) {
           day.tagCounts.set(t, (day.tagCounts.get(t) || 0) + 1)
@@ -326,10 +327,34 @@ export async function getErrorIntelligence(userId) {
         .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue, lapses: s.lapses || 0, ease: s.ease, interval: s.interval }))
     } catch {}
 
-    return { tags, heatmap: { moods, tenses, cells }, leeches }
+    // Resumen 7d vs 7d previos
+    const last7 = days.slice(-7)
+    const prev7 = days.slice(-14, -7)
+    const sumObj = (range) => range.reduce((acc, d) => {
+      const day = byDay.get(d)
+      if (!day) return acc
+      acc.incorrect += day.totalIncorrect || 0
+      acc.total += day.total || 0
+      return acc
+    }, { incorrect: 0, total: 0 })
+    const cur = sumObj(last7)
+    const prev = sumObj(prev7)
+    const errorRate7 = cur.total > 0 ? cur.incorrect / cur.total : 0
+    const errorRatePrev7 = prev.total > 0 ? prev.incorrect / prev.total : 0
+    const trend = errorRate7 > errorRatePrev7 ? 'up' : errorRate7 < errorRatePrev7 ? 'down' : 'flat'
+
+    const summary = {
+      errorRate7,
+      errorRatePrev7,
+      incorrect7: cur.incorrect,
+      total7: cur.total,
+      trend
+    }
+
+    return { tags, heatmap: { moods, tenses, cells }, leeches, summary }
   } catch (e) {
     console.warn('Error intelligence unavailable:', e)
-    return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [] }
+    return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [], summary: { errorRate7: 0, errorRatePrev7: 0, incorrect7: 0, total7: 0, trend: 'flat' } }
   }
 }
 

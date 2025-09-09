@@ -81,7 +81,21 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
 
   return (
     <div className="error-intelligence" style={{ display: 'grid', gap: '1.25rem', fontSize: isCompact ?  '0.95rem' : undefined }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+          <strong style={{ fontSize: '1.05rem' }}>Tasa de error (últimos 7 días):</strong>
+          <span style={{ fontFamily: 'monospace' }}>
+            {Math.round(((data.summary?.errorRate7 || 0) * 100))}%
+          </span>
+          <span style={{ opacity: 0.75, fontSize: 12 }}>
+            {data.summary?.incorrect7 || 0} / {data.summary?.total7 || 0}
+          </span>
+          {data.summary && (
+            <span style={{ marginLeft: 8, fontSize: 12, color: data.summary.trend==='up' ? '#ff6b6b' : data.summary.trend==='down' ? '#5ee6a5' : '#ffd166' }}>
+              {data.summary.trend==='up' ? '▲ peor' : data.summary.trend==='down' ? '▼ mejor' : '■ estable'}
+            </span>
+          )}
+        </div>
         <button className="btn btn-outline btn-compact" onClick={() => setIsCompact(v => !v)}>
           {isCompact ? 'Ver todo' : 'Ver menos'}
         </button>
