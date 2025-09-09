@@ -301,10 +301,13 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
         : conjugation;
       const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjDisplay}</span>`);
+      const isVisible = index <= visibleSentence;
       return (
-        <p 
-          key={index} 
-          className={`story-sentence ${index <= visibleSentence ? 'visible' : ''}`}
+        <p
+          key={index}
+          className={`story-sentence ${isVisible ? 'visible' : ''}`}
+          style={{ opacity: isVisible ? 1 : 0 }}
+          aria-hidden={!isVisible}
           dangerouslySetInnerHTML={{ __html: filledSentence }}
         />
       );
