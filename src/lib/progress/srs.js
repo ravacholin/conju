@@ -1,6 +1,7 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
 
-import { PROGRESS_CONFIG, ERROR_TAGS } from './config.js'
+import { PROGRESS_CONFIG } from './config.js'
+import { ERROR_TAGS } from './dataModels.js'
 import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 
 // Helpers

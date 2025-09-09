@@ -30,6 +30,21 @@ export function classifyError(userAnswer, correctAnswer, item) {
     errors.push(ERROR_TAGS.ACCENT)
   }
   
+  // 1.b Forma válida pero de otra celda (antes de otras heurísticas)
+  const match = findMatchingFormForLemma(item?.lemma, normalizedUser)
+  if (match) {
+    // Indicar que es una forma válida del mismo verbo
+    errors.push(ERROR_TAGS.OTHER_VALID_FORM)
+    if (match.mood !== item.mood) {
+      errors.push(ERROR_TAGS.WRONG_MOOD)
+    } else if (match.tense !== item.tense) {
+      errors.push(ERROR_TAGS.WRONG_TENSE)
+    } else if (match.person !== item.person) {
+      errors.push(ERROR_TAGS.WRONG_PERSON)
+    }
+    // Continuar con otras señales (p.ej., ortografía) si procede
+  }
+
   // 2. Ortografía por cambio g/gu, c/qu, z/c (prioridad alta)
   if (hasOrthographicError(normalizedUser, normalizedCorrect)) {
     const orthErrors = getOrthographicErrors(normalizedUser, normalizedCorrect)
@@ -41,6 +56,11 @@ export function classifyError(userAnswer, correctAnswer, item) {
     errors.push(ERROR_TAGS.WRONG_PERSON)
   }
   
+  // 3.b Pronombres clíticos (imperativos o enclíticos anexados)
+  if (hasCliticPronounIssue(userAnswer, correctAnswer)) {
+    errors.push(ERROR_TAGS.CLITIC_PRONOUNS)
+  }
+
   // 4. Terminación verbal
   if (hasDifferentEnding(normalizedUser, normalizedCorrect)) {
     errors.push(ERROR_TAGS.VERBAL_ENDING)
@@ -83,6 +103,30 @@ export function classifyError(userAnswer, correctAnswer, item) {
 }
 
 /**
+ * Busca si la respuesta coincide con otra forma válida del mismo verbo
+ * (considera value, alt y accepts.*) comparando en forma normalizada
+ */
+function findMatchingFormForLemma(lemma, normalizedUser) {
+  if (!lemma || !normalizedUser) return null
+  const verb = verbs.find(v => v.lemma === lemma)
+  if (!verb || !Array.isArray(verb.paradigms)) return null
+  for (const p of verb.paradigms) {
+    for (const f of p.forms || []) {
+      const candidates = new Set()
+      if (f.value) candidates.add(normalizeAnswer(f.value))
+      ;(f.alt || []).forEach(a => candidates.add(normalizeAnswer(a)))
+      if (f.accepts && typeof f.accepts === 'object') {
+        Object.values(f.accepts).forEach(a => candidates.add(normalizeAnswer(String(a))))
+      }
+      if (candidates.has(normalizedUser)) {
+        return { mood: f.mood, tense: f.tense, person: f.person }
+      }
+    }
+  }
+  return null
+}
+
+/**
  * Normaliza una respuesta para comparación
  * @param {string} answer - Respuesta a normalizar
  * @returns {string} Respuesta normalizada
@@ -96,6 +140,19 @@ function normalizeAnswer(answer) {
     .replace(/[\u0300-\u036f]/g, '') // Remover acentos
     .replace(/\s+/g, ' ') // Normalizar espacios
     .trim()
+}
+
+/**
+ * Detecta problemas con pronombres clíticos (presencia/ausencia o posición)
+ * Heurística simple: si una respuesta contiene clíticos y la otra no.
+ */
+function hasCliticPronounIssue(userRaw, correctRaw) {
+  if (typeof userRaw !== 'string' || typeof correctRaw !== 'string') return false
+  const CLITICS = ['me','te','se','lo','la','los','las','le','les','nos','os']
+  const containsClitic = (s) => CLITICS.some(p => new RegExp(`(^|\b|-)${p}($|\b|-)`, 'i').test(s))
+  const uHas = containsClitic(userRaw)
+  const cHas = containsClitic(correctRaw)
+  return uHas !== cHas
 }
 
 /**

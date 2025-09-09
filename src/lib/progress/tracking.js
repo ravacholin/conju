@@ -174,6 +174,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
       let weightedCorrect = 0
       let weightedTotal = 0
       let _weightedN = 0
+      const errorCounts = {}
       for (const a of allUserAttempts) {
         if (a.mood === mood && a.tense === tense && a.person === person && a.verbId) {
           const ageDays = (now - new Date(a.createdAt).getTime()) / (24*60*60*1000)
@@ -181,6 +182,12 @@ export async function trackAttemptSubmitted(attemptId, result) {
           weightedTotal += recencyWeight
           _weightedN += recencyWeight
           weightedCorrect += recencyWeight * (a.correct ? 1 : 0)
+          // Acumular errores con decaimiento
+          if (Array.isArray(a.errorTags)) {
+            for (const tag of a.errorTags) {
+              errorCounts[tag] = (errorCounts[tag] || 0) + recencyWeight
+            }
+          }
         }
       }
       let score = 50
@@ -194,6 +201,8 @@ export async function trackAttemptSubmitted(attemptId, result) {
         tense,
         person,
         score: Math.round(score * 100) / 100,
+        n: Math.round(_weightedN),
+        errorCounts,
         updatedAt: new Date()
       }
       await saveMastery(masteryRecord)

@@ -69,6 +69,7 @@
 // Definiciones de tipos para errores
 export const ERROR_TAGS = {
   WRONG_PERSON: 'persona_equivocada',
+  WRONG_TENSE: 'tiempo_equivocado',
   VERBAL_ENDING: 'terminación_verbal',
   IRREGULAR_STEM: 'raíz_irregular',
   ACCENT: 'acentuación',
@@ -77,7 +78,8 @@ export const ERROR_TAGS = {
   ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
   ORTHOGRAPHY_Z_C: 'ortografía_z/c',
   NUMBER_AGREEMENT: 'concordancia_número',
-  WRONG_MOOD: 'modo_equivocado'
+  WRONG_MOOD: 'modo_equivocado',
+  OTHER_VALID_FORM: 'otra_forma_válida'
 }
 
 // Definiciones de tipos para frecuencia léxica
