@@ -7,6 +7,7 @@ import { useSettings } from '../../state/settings.js'
 export default function ErrorIntelligence({ data: externalData = null, compact = true, onNavigateToDrill = null }) {
   const [data, setData] = useState({ tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [] })
   const [loading, setLoading] = useState(!externalData)
+  const [isCompact, setIsCompact] = useState(!!compact)
   const settings = useSettings()
 
   // If external data arrives, use it; otherwise fetch
@@ -32,12 +33,15 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
     return () => { cancelled = true }
   }, [externalData])
 
+  // Sync internal compact state when prop changes
+  useEffect(() => { setIsCompact(!!compact) }, [compact])
+
   const heatmapMatrix = useMemo(() => {
     const { moods = [], tenses = [], cells = [] } = data.heatmap || {}
     const map = new Map(cells.map(c => [`${c.mood}|${c.tense}`, c]))
     // In compact mode, show only top 6 tenses by total attempts
     let tensesToShow = tenses
-    if (compact) {
+    if (isCompact) {
       const tally = new Map()
       for (const c of cells) {
         tally.set(c.tense, (tally.get(c.tense) || 0) + (c.attempts || 0))
@@ -46,7 +50,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
     }
     // In compact, also trim tags to top 3 (already sorted by impact at source)
     return { moods, tenses: tensesToShow, map }
-  }, [data.heatmap, compact])
+  }, [data.heatmap, isCompact])
 
   const startMicroDrill = async (tagOrCombo) => {
     try {
@@ -76,20 +80,25 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   }
 
   return (
-    <div className="error-intelligence" style={{ display: 'grid', gap: '1.25rem', fontSize: compact ?  '0.95rem' : undefined }}>
+    <div className="error-intelligence" style={{ display: 'grid', gap: '1.25rem', fontSize: isCompact ?  '0.95rem' : undefined }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button className="btn btn-outline btn-compact" onClick={() => setIsCompact(v => !v)}>
+          {isCompact ? 'Ver todo' : 'Ver menos'}
+        </button>
+      </div>
       {/* Burbujas por tema con tendencia */}
       <section>
         <h4 style={{ margin: '0 0 0.5rem 0' }}>Temas prioritarios</h4>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          {(compact ? data.tags.slice(0,3) : data.tags).map((t) => (
+          {(isCompact ? data.tags.slice(0,3) : data.tags).map((t) => (
             <div key={t.tag} style={{
               background: 'rgba(17,17,17,0.7)',
               border: '1px solid rgba(245,245,245,0.08)',
               borderRadius: 14,
-              padding: compact ? '10px 12px' : '12px 14px',
+              padding: isCompact ? '10px 12px' : '12px 14px',
               display: 'flex',
               flexDirection: 'column',
-              minWidth: compact ? 160 : 180,
+              minWidth: isCompact ? 160 : 180,
               boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => startMicroDrill(t.tag)} title="Practicar este tema">
@@ -100,7 +109,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
                 </span>
               </div>
               <Sparkline values={t.sparkline} />
-              <div style={{ display: 'flex', gap: 8, marginTop: compact ? 6 : 8 }}>
+              <div style={{ display: 'flex', gap: 8, marginTop: isCompact ? 6 : 8 }}>
                 <button className="btn btn-compact" onClick={() => startMicroDrill(t.tag)}>Practicar</button>
                 {t.topCombos?.[0] && (
                   <button className="btn btn-secondary btn-compact" onClick={() => startMicroDrill(t.topCombos[0])}>
@@ -120,16 +129,16 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
           <table style={{ borderCollapse: 'collapse', width: '100%' }}>
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', padding: compact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>Modo / Tiempo</th>
+                <th style={{ textAlign: 'left', padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>Modo / Tiempo</th>
                 {heatmapMatrix.tenses.map(t => (
-                  <th key={t} style={{ padding: compact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>{formatTense(t)}</th>
+                  <th key={t} style={{ padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>{formatTense(t)}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {heatmapMatrix.moods.map(mood => (
                 <tr key={mood}>
-                  <td style={{ padding: compact ? '4px 6px' : '6px 8px', opacity: 0.9, whiteSpace: 'nowrap' }}>{formatMood(mood)}</td>
+                  <td style={{ padding: isCompact ? '4px 6px' : '6px 8px', opacity: 0.9, whiteSpace: 'nowrap' }}>{formatMood(mood)}</td>
                   {heatmapMatrix.tenses.map(tense => {
                     const c = heatmapMatrix.map.get(`${mood}|${tense}`)
                     const rate = c?.errorRate || 0
@@ -138,7 +147,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
                     return (
                       <td key={tense} title={`${Math.round(rate*100)}% · ${c?.attempts||0} ej.`}
                         onClick={() => c && startMicroDrill({ mood, tense })}
-                        style={{ cursor: c?'pointer':'default', padding: compact ? 4 : 6, border: '1px solid rgba(245,245,245,0.06)', background: rate>0?bg:'rgba(17,17,17,0.5)', textAlign: 'center', fontSize: compact ? 11 : 12 }}>
+                        style={{ cursor: c?'pointer':'default', padding: isCompact ? 4 : 6, border: '1px solid rgba(245,245,245,0.06)', background: rate>0?bg:'rgba(17,17,17,0.5)', textAlign: 'center', fontSize: isCompact ? 11 : 12 }}>
                         {c ? `${intensity}%` : '—'}
                       </td>
                     )
@@ -160,8 +169,8 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
                 background: 'rgba(17,17,17,0.7)',
                 border: '1px solid rgba(245,245,245,0.08)',
                 borderRadius: 12,
-                padding: compact ? '8px 10px' : '10px 12px',
-                minWidth: compact ? 200 : 220
+                padding: isCompact ? '8px 10px' : '10px 12px',
+                minWidth: isCompact ? 200 : 220
               }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{formatCombo(l)}</div>
                 <div style={{ fontSize: 12, opacity: 0.8 }}>Lapses: {l.lapses} · Ease: {Math.round((l.ease||0)*100)/100}</div>
