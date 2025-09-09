@@ -3,6 +3,8 @@
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
+import { getAttemptsByUser, getMasteryByUser } from './database.js'
+import { ERROR_TAGS } from './dataModels.js'
 
 /**
  * Obtiene datos para el mapa de calor
@@ -88,6 +90,82 @@ function getMasteryColorClass(score) {
  */
 // Use real-time analytics for competency radar data
 export const getCompetencyRadarData = getRealCompetencyRadarData
+
+/**
+ * Obtiene datos para un radar de errores (top temas por frecuencia reciente)
+ * @param {string} userId
+ * @returns {Promise<{ axes: Array<{key:string,label:string,value:number,tag:string,count:number}> }>} 
+ */
+export async function getErrorRadarData(userId) {
+  try {
+    const [attempts, mastery] = await Promise.all([
+      getAttemptsByUser(userId),
+      getMasteryByUser(userId)
+    ])
+
+    const recent = attempts.slice(-400)
+    // Contar errores por tag (solo intentos incorrectos con tags)
+    const counts = new Map()
+    let totalIncorrect = 0
+    for (const a of recent) {
+      if (!a.correct && Array.isArray(a.errorTags) && a.errorTags.length > 0) {
+        totalIncorrect += 1
+        for (const t of a.errorTags) {
+          counts.set(t, (counts.get(t) || 0) + 1)
+        }
+      }
+    }
+    // Complementar con agregados guardados en mastery.errorCounts (ponderación suave)
+    for (const m of mastery) {
+      if (m?.errorCounts && typeof m.errorCounts === 'object') {
+        for (const [tag, n] of Object.entries(m.errorCounts)) {
+          counts.set(tag, (counts.get(tag) || 0) + 0.5 * Number(n || 0))
+        }
+      }
+    }
+
+    // Mapear etiquetas a nombres amigables y agrupar ortografía
+    const ORTHO = new Set([ERROR_TAGS.ORTHOGRAPHY_G_GU, ERROR_TAGS.ORTHOGRAPHY_C_QU, ERROR_TAGS.ORTHOGRAPHY_Z_C])
+    const labelOf = (tag) => {
+      switch (tag) {
+        case ERROR_TAGS.ACCENT: return 'Acentuación'
+        case ERROR_TAGS.VERBAL_ENDING: return 'Terminaciones'
+        case ERROR_TAGS.IRREGULAR_STEM: return 'Raíz irregular'
+        case ERROR_TAGS.WRONG_PERSON: return 'Persona'
+        case ERROR_TAGS.WRONG_TENSE: return 'Tiempo'
+        case ERROR_TAGS.WRONG_MOOD: return 'Modo'
+        case ERROR_TAGS.CLITIC_PRONOUNS: return 'Clíticos'
+        case ERROR_TAGS.OTHER_VALID_FORM: return 'Otra forma válida'
+        default: return 'Ortografía'
+      }
+    }
+
+    // Reducir counts agrupando ortografía
+    const reduced = new Map()
+    for (const [tag, n] of counts.entries()) {
+      const key = ORTHO.has(tag) ? 'orthography' : tag
+      reduced.set(key, (reduced.get(key) || 0) + n)
+    }
+
+    // Elegir top 5
+    const top = Array.from(reduced.entries())
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,5)
+
+    const maxCount = top.length > 0 ? top[0][1] : 0
+    const axes = top.map(([key, count]) => {
+      const tag = key === 'orthography' ? 'orthography' : key
+      const label = key === 'orthography' ? 'Ortografía' : labelOf(key)
+      const value = maxCount > 0 ? (count / maxCount) * 100 : 0
+      return { key: String(key), label, value, tag, count }
+    })
+
+    return { axes }
+  } catch (e) {
+    console.warn('Error radar unavailable:', e)
+    return { axes: [] }
+  }
+}
 
 /**
  * Obtiene datos para la línea de progreso temporal

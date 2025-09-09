@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import VerbMasteryMap from './VerbMasteryMap.jsx'
-import { CompetencyRadar } from './CompetencyRadar.jsx'
+import ErrorRadar from './ErrorRadar.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import SRSPanel from './SRSPanel.jsx'
 import ErrorInsights from './ErrorInsights.jsx'
@@ -21,7 +21,7 @@ import './practice-recommendations.css'
 export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
   const settings = useSettings()
   const [heatMapData, setHeatMapData] = useState([])
-  const [radarData, setRadarData] = useState({})
+  const [errorRadar, setErrorRadar] = useState({ axes: [] })
   const [userStats, setUserStats] = useState({})
   const [weeklyGoals, setWeeklyGoals] = useState({})
   const [weeklyProgress, setWeeklyProgress] = useState({})
@@ -81,10 +81,15 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           console.warn('Failed to load heat map data:', e)
           return [] // fallback
         }),
-        getCompetencyRadarData(userId).catch(e => {
-          console.warn('Failed to load radar data:', e) 
-          return {} // fallback
-        }),
+        (async () => {
+          try {
+            const { getErrorRadarData } = await import('../../lib/progress/analytics.js')
+            return await getErrorRadarData(userId)
+          } catch (e) {
+            console.warn('Failed to load error radar data:', e)
+            return { axes: [] }
+          }
+        })(),
         getUserStats(userId).catch(e => {
           console.warn('Failed to load user stats:', e)
           return {} // fallback
@@ -122,7 +127,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       
       // Defensive assignment with fallbacks
       setHeatMapData(Array.isArray(heatMap) ? heatMap : [])
-      setRadarData(radar && typeof radar === 'object' ? radar : {})
+      setErrorRadar(radar && typeof radar === 'object' ? radar : { axes: [] })
       setUserStats(stats && typeof stats === 'object' ? stats : {})
       setWeeklyGoals(goals && typeof goals === 'object' ? goals : {})
       setWeeklyProgress(progress && typeof progress === 'object' ? progress : {})
@@ -285,13 +290,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         </section>
       </SafeComponent>
 
-      <SafeComponent name="Radar de Competencias">
+      <SafeComponent name="Radar de Errores">
         <section className="dashboard-section">
           <h2>
-            <img src="/radar.png" alt="Radar" className="section-icon" />
-            Radar de Competencias
+            <img src="/radar.png" alt="Errores" className="section-icon" />
+            Radar de Errores
           </h2>
-          <CompetencyRadar data={radarData} />
+          <ErrorRadar axes={errorRadar.axes || []} />
         </section>
       </SafeComponent>
 
