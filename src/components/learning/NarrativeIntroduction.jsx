@@ -290,7 +290,11 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const sentences = exampleVerbs.map((verbObj, index) => {
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
-      const conjugation = getConjugation(verbObj, '3s');
+      // Elegir persona según el texto de la narrativa (si comienza con "Yo", usar 1s; si "Nosotros", usar 1p; si no, 3s)
+      const personHint = /^\s*["'“‘(\[¡¿-]*Yo\b/i.test(sentenceTemplate)
+        ? '1s'
+        : (/^\s*["'“‘(\[¡¿-]*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s')
+      const conjugation = getConjugation(verbObj, personHint);
       // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
       const startsWithVerb = /^[\s\"'“‘(\[¡¿-]*__VERB__/.test(sentenceTemplate);
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length

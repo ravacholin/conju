@@ -20,8 +20,8 @@ export const storyData = {
         
         // IRREGULARES EN YO - Narrativa coherente de rutina personal
         salir: 'Yo __VERB__ de casa a las 8.',
-        poner: '__VERB__ música mientras trabajo.',
-        hacer: '__VERB__ ejercicio por la tarde.',
+        poner: 'Yo __VERB__ música mientras trabajo.',
+        hacer: 'Yo __VERB__ ejercicio por la tarde.',
         
         // DIPTONGOS - Narrativa coherente de flexibilidad laboral
         poder: 'María __VERB__ trabajar desde casa.',
