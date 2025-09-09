@@ -296,7 +296,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
             <img src="/radar.png" alt="Errores" className="section-icon" />
             Inteligencia de Errores
           </h2>
-          <ErrorIntelligence data={errorIntel} />
+          <ErrorIntelligence data={errorIntel} compact={true} onNavigateToDrill={onNavigateToDrill} />
         </section>
       </SafeComponent>
 
