@@ -569,11 +569,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
               <img src="/enie.png" alt="Tildes" className="menu-icon" />
             </button>
-            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
-            </button>
             <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
               <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+            </button>
+            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
             </button>
           </div>
         </header>
@@ -603,11 +603,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
             <img src="/enie.png" alt="Tildes" className="menu-icon" />
           </button>
-          <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-            <img src="/home.png" alt="Inicio" className="menu-icon" />
-          </button>
           <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
             <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+          </button>
+          <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+            <img src="/home.png" alt="Inicio" className="menu-icon" />
           </button>
         </div>
       </header>
