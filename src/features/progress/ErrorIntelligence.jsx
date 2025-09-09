@@ -86,41 +86,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
           {isCompact ? 'Ver todo' : 'Ver menos'}
         </button>
       </div>
-      {/* Burbujas por tema con tendencia */}
-      <section>
-        <h4 style={{ margin: '0 0 0.5rem 0' }}>Temas prioritarios</h4>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          {(isCompact ? data.tags.slice(0,3) : data.tags).map((t) => (
-            <div key={t.tag} style={{
-              background: 'rgba(17,17,17,0.7)',
-              border: '1px solid rgba(245,245,245,0.08)',
-              borderRadius: 14,
-              padding: isCompact ? '10px 12px' : '12px 14px',
-              display: 'flex',
-              flexDirection: 'column',
-              minWidth: isCompact ? 160 : 180,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => startMicroDrill(t.tag)} title="Practicar este tema">
-                <strong style={{ cursor: 'pointer' }}>{t.label}</strong>
-                <span style={{ opacity: 0.7, fontSize: 12 }}>({t.count})</span>
-                <span style={{ marginLeft: 'auto', fontSize: 12, opacity: 0.9, color: t.trend==='up'?'#ff6b6b':t.trend==='down'?'#5ee6a5':'#ffd166' }}>
-                  {t.trend==='up' ? '▲' : t.trend==='down' ? '▼' : '■'}
-                </span>
-              </div>
-              <Sparkline values={t.sparkline} />
-              <div style={{ display: 'flex', gap: 8, marginTop: isCompact ? 6 : 8 }}>
-                <button className="btn btn-compact" onClick={() => startMicroDrill(t.tag)}>Practicar</button>
-                {t.topCombos?.[0] && (
-                  <button className="btn btn-secondary btn-compact" onClick={() => startMicroDrill(t.topCombos[0])}>
-                    Foco: {formatCombo(t.topCombos[0])}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* (Se elimina "Temas prioritarios" para evitar redundancia con módulos superiores) */}
 
       {/* Heatmap Modo x Tiempo por tasa de error */}
       <section>
@@ -187,19 +153,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   )
 }
 
-function Sparkline({ values = [] }) {
-  const max = Math.max(1, ...values)
-  const pts = values.map((v, i) => {
-    const x = (i / Math.max(1, values.length - 1)) * 100
-    const y = 20 - (v / max) * 20
-    return `${x},${y}`
-  }).join(' ')
-  return (
-    <svg width="100%" height="24" viewBox="0 0 100 20">
-      <polyline fill="none" stroke="#8eb4e3" strokeWidth="1.5" points={pts} />
-    </svg>
-  )
-}
+// (Sparkline eliminado junto con Temas prioritarios)
 
 function formatCombo(obj) {
   if (!obj) return ''
