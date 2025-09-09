@@ -25695,7 +25695,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "1s",
-                    "value": "prefiro",
+                    "value": "prefiero",
                     "tags": [],
                     "region": "es"
           },
@@ -25703,7 +25703,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "2s_tu",
-                    "value": "prefires",
+                    "value": "prefieres",
                     "tags": [],
                     "region": "es"
           },
@@ -25711,7 +25711,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "3s",
-                    "value": "prefire",
+                    "value": "prefiere",
                     "tags": [],
                     "region": "es"
           },
@@ -25785,7 +25785,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "1s",
-                    "value": "minto",
+                    "value": "miento",
                     "tags": [],
                     "region": "es"
           },
@@ -25793,7 +25793,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "2s_tu",
-                    "value": "mintes",
+                    "value": "mientes",
                     "tags": [],
                     "region": "es"
           },
@@ -25801,7 +25801,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "3s",
-                    "value": "minte",
+                    "value": "miente",
                     "tags": [],
                     "region": "es"
           },
