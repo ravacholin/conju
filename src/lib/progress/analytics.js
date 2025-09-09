@@ -3,7 +3,6 @@
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
-import { getAttemptsByUser, getMasteryByUser } from './database.js'
 import { ERROR_TAGS } from './dataModels.js'
 
 /**
