@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
-import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
@@ -187,7 +186,7 @@ const storyData = {
   },
 };
 
-function EndingsDrill({ verb, tense, onComplete, onBack }) {
+function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress }) {
   const [drillQueue, setDrillQueue] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
@@ -196,6 +195,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
   const [entered, setEntered] = useState(true);
   const [leaving] = useState(false);
   const settings = useSettings();
+  const [showAccentKeys, setShowAccentKeys] = useState(false);
 
   // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
 
@@ -306,6 +306,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     } else {
       console.log(`✅ Correcto: ${currentPronoun.text} - ${correctAnswer}`);
     }
+  };
+
+  // Accent/tilde keypad support
+  const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
+  const insertChar = (char) => {
+    setInputValue(prev => prev + char);
+    // keep focus in input
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   const handleContinue = () => {
@@ -482,19 +490,49 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
     );
   }
 
-  const tenseName = TENSE_LABELS[tense.tense] || tense.tense;
+  // const tenseName = TENSE_LABELS[tense.tense] || tense.tense; // header label removed in favor of icon bar
   const groupKey = (verb.lemma || '').endsWith('ar') ? 'ar' : (verb.lemma || '').endsWith('er') ? 'er' : (verb.lemma || '').endsWith('ir') ? 'ir' : 'x';
 
   return (
     <div className="App" onKeyDown={handleGlobalKeyDown} tabIndex={-1}>
+      <header className="header">
+        <div className="icon-row">
+          <button
+            onClick={() => { onBack && onBack(); }}
+            className="icon-btn"
+            title="Volver"
+            aria-label="Volver"
+          >
+            <img src="/back.png" alt="Volver" className="menu-icon" />
+          </button>
+          <button
+            onClick={() => setShowAccentKeys(v => !v)}
+            className="icon-btn"
+            title="Tildes"
+            aria-label="Tildes"
+          >
+            <img src="/enie.png" alt="Tildes" className="menu-icon" />
+          </button>
+          <button
+            onClick={() => { onHome && onHome(); }}
+            className="icon-btn"
+            title="Inicio"
+            aria-label="Inicio"
+          >
+            <img src="/home.png" alt="Inicio" className="menu-icon" />
+          </button>
+          <button
+            onClick={() => { onGoToProgress && onGoToProgress(); }}
+            className="icon-btn"
+            title="Métricas"
+            aria-label="Métricas"
+          >
+            <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+          </button>
+        </div>
+      </header>
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
-          <div className="drill-header">
-             <button onClick={() => { onBack && onBack(); }} className="back-to-menu-btn" aria-label="Volver">
-                <img src="/back.png" alt="Volver" className="back-icon" />
-            </button>
-            <h2>Drill de Terminaciones: {tenseName}</h2>
-          </div>
 
           <div className="verb-lemma">{verb.lemma}</div>
           
@@ -512,6 +550,19 @@ function EndingsDrill({ verb, tense, onComplete, onBack }) {
               autoFocus
               placeholder="Escribe la conjugación..."
             />
+            {showAccentKeys && (
+              <div className="accent-keypad" style={{ marginTop: '1rem' }}>
+                {specialChars.map(ch => (
+                  <button
+                    key={ch}
+                    type="button"
+                    className="accent-key"
+                    onClick={() => insertChar(ch)}
+                    tabIndex={-1}
+                  >{ch}</button>
+                ))}
+              </div>
+            )}
           </div>
           
           <div className="action-buttons">

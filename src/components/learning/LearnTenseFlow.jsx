@@ -122,7 +122,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
   return selectedVerbs.slice(0, 3);
 }
 
-function LearnTenseFlow({ onHome }) {
+function LearnTenseFlow({ onHome, onGoToProgress }) {
   const [currentStep, setCurrentStep] = useState('tense-selection');
   const [selectedTense, setSelectedTense] = useState(null);
   const [duration, setDuration] = useState(null);
@@ -397,6 +397,8 @@ function LearnTenseFlow({ onHome }) {
           tense={selectedTense}
           onBack={handleBackToIntroduction}
           onComplete={handleCompleteArDrill}
+          onHome={onHome}
+          onGoToProgress={onGoToProgress}
         />
       </ErrorBoundary>
     );
@@ -411,6 +413,8 @@ function LearnTenseFlow({ onHome }) {
           tense={selectedTense}
           onBack={handleBackToArDrill}
           onComplete={handleCompleteErDrill}
+          onHome={onHome}
+          onGoToProgress={onGoToProgress}
         />
       </ErrorBoundary>
     );
@@ -425,6 +429,8 @@ function LearnTenseFlow({ onHome }) {
           tense={selectedTense}
           onBack={handleBackToErDrill}
           onComplete={handleCompleteIrDrill}
+          onHome={onHome}
+          onGoToProgress={onGoToProgress}
         />
       </ErrorBoundary>
     );
@@ -456,6 +462,8 @@ function LearnTenseFlow({ onHome }) {
           onBack={() => setCurrentStep('recap')} 
           onFinish={handleFinish}
           onPhaseComplete={handleMechanicalPhaseComplete}
+          onHome={onHome}
+          onGoToProgress={onGoToProgress}
         />
       </ErrorBoundary>
     );

@@ -53,7 +53,7 @@ function getLevelForTense(tense) {
   return tenseToLevel[tense];
 }
 
-function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, onFinish, onPhaseComplete }) {
+function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState('idle'); // idle | correct | incorrect
@@ -88,6 +88,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
   const [entered, setEntered] = useState(false);
   const [swapAnim, setSwapAnim] = useState(false);
   const settings = useSettings();
+  const [showAccentKeys, setShowAccentKeys] = useState(false);
 
   const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {
     // Update local session stats based on progress tracking
@@ -466,6 +467,13 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     }
   };
 
+  // Accent/tilde keypad support
+  const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
+  const insertChar = (char) => {
+    setInputValue(prev => prev + char);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
   const getPersonText = (personCode) => {
       return PRONOUNS_DISPLAY[personCode] || personCode;
   }
@@ -517,10 +525,29 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
 
   if (!currentItem) {
     return (
-      <div className="App"><div className="main-content"><div className="drill-container learning-drill">
-        <div className="drill-header"><button onClick={onBack} className="back-to-menu-btn"><img src="/back.png" alt="Volver" className="back-icon" />Volver</button><h2>Sin ejercicios</h2></div>
-        <div className="center-column"><p>No hay ejercicios disponibles.</p></div>
-      </div></div></div>
+      <div className="App">
+        <header className="header">
+          <div className="icon-row">
+            <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
+              <img src="/back.png" alt="Volver" className="menu-icon" />
+            </button>
+            <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
+              <img src="/enie.png" alt="Tildes" className="menu-icon" />
+            </button>
+            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
+            </button>
+            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
+              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+            </button>
+          </div>
+        </header>
+        <div className="main-content">
+          <div className="drill-container learning-drill">
+            <div className="center-column"><p>No hay ejercicios disponibles.</p></div>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -529,19 +556,28 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
     return <SessionSummary onFinish={onFinish} summary={summary} />;
   }
 
-  const tenseName = TENSE_LABELS[tense?.tense] || tense?.tense;
+  // const tenseName = TENSE_LABELS[tense?.tense] || tense?.tense; // header shows only icons
 
   return (
     <div className="App" onKeyDown={handleKeyDown} tabIndex={-1} ref={containerRef}>
+      <header className="header">
+        <div className="icon-row">
+          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
+            <img src="/back.png" alt="Volver" className="menu-icon" />
+          </button>
+          <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
+            <img src="/enie.png" alt="Tildes" className="menu-icon" />
+          </button>
+          <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+            <img src="/home.png" alt="Inicio" className="menu-icon" />
+          </button>
+          <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
+            <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+          </button>
+        </div>
+      </header>
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
-          <div className="drill-header">
-            <button onClick={onBack} className="back-to-menu-btn">
-              <img src="/back.png" alt="Volver" className="back-icon" />
-              Volver
-            </button>
-            <h2>Practicando: {tenseName}</h2>
-          </div>
 
           <div className="chrono-panel">
             <div className="chrono-item"><div className="chrono-value">{sessionStats.points.toLocaleString()}</div><div className="chrono-label">Puntos</div></div>
@@ -568,6 +604,19 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
                   disabled={result !== 'idle'}
                   autoFocus
                 />
+                {showAccentKeys && (
+                  <div className="accent-keypad" style={{ marginTop: '1rem' }}>
+                    {specialChars.map(ch => (
+                      <button
+                        key={ch}
+                        type="button"
+                        className="accent-key"
+                        onClick={() => insertChar(ch)}
+                        tabIndex={-1}
+                      >{ch}</button>
+                    ))}
+                  </div>
+                )}
               </div>
               
               {result !== 'idle' && (
