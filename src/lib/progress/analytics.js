@@ -328,8 +328,8 @@ export async function getErrorIntelligence(userId) {
     } catch {}
 
     // Resumen 7d vs 7d previos
-    const last7 = days.slice(-7)
-    const prev7 = days.slice(-14, -7)
+    const last7Days = days.slice(-7)
+    const prev7Days = days.slice(-14, -7)
     const sumObj = (range) => range.reduce((acc, d) => {
       const day = byDay.get(d)
       if (!day) return acc
@@ -337,8 +337,8 @@ export async function getErrorIntelligence(userId) {
       acc.total += day.total || 0
       return acc
     }, { incorrect: 0, total: 0 })
-    const cur = sumObj(last7)
-    const prev = sumObj(prev7)
+    const cur = sumObj(last7Days)
+    const prev = sumObj(prev7Days)
     const errorRate7 = cur.total > 0 ? cur.incorrect / cur.total : 0
     const errorRatePrev7 = prev.total > 0 ? prev.incorrect / prev.total : 0
     const trend = errorRate7 > errorRatePrev7 ? 'up' : errorRate7 < errorRatePrev7 ? 'down' : 'flat'
