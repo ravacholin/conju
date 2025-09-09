@@ -459,6 +459,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
           verbType={verbType}
           selectedFamilies={selectedFamilies}
           duration={duration}
+          excludeLemmas={(exampleVerbs || []).map(v => v?.lemma).filter(Boolean)}
           onBack={() => setCurrentStep('recap')} 
           onFinish={handleFinish}
           onPhaseComplete={handleMechanicalPhaseComplete}

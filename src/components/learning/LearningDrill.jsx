@@ -53,7 +53,7 @@ function getLevelForTense(tense) {
   return tenseToLevel[tense];
 }
 
-function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
+function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLemmas = [], onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState('idle'); // idle | correct | incorrect
@@ -154,11 +154,25 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       // Temporarily apply learning settings
       settings.set(temporarySettings);
       
-      const nextItem = chooseNext({
-        forms: Array.from(FORM_LOOKUP_MAP.values()),
+      const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
+      const allForms = Array.from(FORM_LOOKUP_MAP.values())
+      const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
+
+      // Try with filtered forms first
+      let nextItem = chooseNext({
+        forms: filteredForms,
         history: exerciseHistory,
         currentItem
       });
+
+      // Fallback: if no item was generated (e.g., too restrictive), use all forms
+      if (!nextItem) {
+        nextItem = chooseNext({
+          forms: allForms,
+          history: exerciseHistory,
+          currentItem
+        })
+      }
       
       // IMMEDIATELY restore original settings
       settings.set(originalSettings);
@@ -183,7 +197,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, onBack, on
       settings.set(originalSettings);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, settings, totalAttempts]); // REMOVED currentItem to prevent infinite loop
+  }, [tense, verbType, selectedFamilies, settings, totalAttempts, excludeLemmas]); // REMOVED currentItem to prevent infinite loop
 
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
