@@ -287,7 +287,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const renderStorySentences = () => {
     if (!tenseStoryData || !exampleVerbs || exampleVerbs.length < 3) return null;
 
-    const sentences = exampleVerbs.map((verbObj, index) => {
+    const count = Math.max(0, visibleSentence + 1);
+    const sentences = exampleVerbs.slice(0, count).map((verbObj, index) => {
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
       // Elegir persona según el texto de la narrativa (si comienza con "Yo", usar 1s; si "Nosotros", usar 1p; si no, 3s)
@@ -301,13 +302,10 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
         : conjugation;
       const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjDisplay}</span>`);
-      const isVisible = index <= visibleSentence;
       return (
         <p
           key={index}
-          className={`story-sentence ${isVisible ? 'visible' : ''}`}
-          style={{ opacity: isVisible ? 1 : 0 }}
-          aria-hidden={!isVisible}
+          className="story-sentence enter"
           dangerouslySetInnerHTML={{ __html: filledSentence }}
         />
       );
