@@ -872,29 +872,25 @@ body {
 
 .tts-btn {
   background: transparent;
-  border: 1px solid var(--border-2);
-  border-radius: 999px;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  border: none;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  padding: 0;
+  line-height: 0; /* evita espacio extra alrededor de la imagen */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
-.tts-btn:hover {
-  background: var(--hover);
-  transform: translateY(-1px) scale(1.02);
-}
-
-.tts-btn:active {
-  transform: translateY(0);
-}
+.tts-btn:hover { transform: translateY(-1px); }
+.tts-btn:active { transform: translateY(0); }
 
 .tts-btn img {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
