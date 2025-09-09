@@ -242,7 +242,21 @@ export function chooseNext({forms, history, currentItem}){
       if (isC1Debug) console.log('🚨 C1 FILTER - No verb found:', f.lemma)
       return false
     }
-    
+
+    // Always enforce MCER level-based verb allowances (regular and irregular)
+    // Apply before any later branching so A1/A2 never see advanced lemmas
+    try {
+      const verbFamilies = categorizeVerb(f.lemma, verb)
+      if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🚫 LEVEL FILTER (global) - Excluding verb for level', level, ':', f.lemma)
+        }
+        return false
+      }
+    } catch {
+      // If categorization fails for any reason, fall through (no extra exclusion)
+    }
+
     
     // Check MCER level restrictions first
     // COMPLETE compound tenses definition: all 6 compound tenses in Spanish

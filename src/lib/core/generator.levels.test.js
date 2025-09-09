@@ -72,5 +72,16 @@ describe('Generator + CurriculumGate work in harmony', () => {
       }
     }
   })
-})
 
+  it('A1 mixed/all: excludes advanced lemmas from selection', () => {
+    setBaseSettings({ level: 'A1', region: 'rioplatense', practiceMode: 'mixed', cameFromTema: false, verbType: 'all' })
+    const base = buildFormsForRegion('rioplatense')
+    // Run multiple selections to ensure filtering is consistently applied
+    const banned = new Set(['fraguar', 'atestiguar', 'ampliar'])
+    for (let i = 0; i < 50; i++) {
+      const next = chooseNext({ forms: base, history: {}, currentItem: null })
+      expect(next, 'no selection for A1 mixed/all').toBeTruthy()
+      expect(banned.has(next.lemma), `banned lemma surfaced at A1: ${next.lemma}`).toBe(false)
+    }
+  })
+})
