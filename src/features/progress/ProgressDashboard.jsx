@@ -238,33 +238,30 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     <div className="progress-dashboard">
       <header className="dashboard-header">
         <div className="header-top">
-          <div className="header-buttons">
+          <div className="icon-row">
             <button
               onClick={() => {
-                try {
-                  if (window.history && window.history.length > 1) {
-                    window.history.back()
-                  } else if (onNavigateHome) {
-                    onNavigateHome()
-                  }
-                } catch (e) {
-                  if (onNavigateHome) onNavigateHome()
-                }
+                let popped = false
+                const onPop = () => { popped = true; window.removeEventListener('popstate', onPop) }
+                try { window.addEventListener('popstate', onPop) } catch {}
+                try { if (window.history && window.history.length > 1) window.history.back() } catch {}
+                // Fallback if no history state handled shortly
+                setTimeout(() => { if (!popped && onNavigateHome) onNavigateHome() }, 250)
               }}
-              className="nav-btn"
+              className="icon-btn"
               title="Volver"
               aria-label="Volver"
             >
-              <img src="/back.png" alt="Volver" className="nav-icon" />
+              <img src="/back.png" alt="Volver" className="menu-icon" />
             </button>
             {onNavigateHome && (
-              <button onClick={onNavigateHome} className="nav-btn" title="Menú">
-                <img src="/home.png" alt="Menú" className="nav-icon" />
+              <button onClick={onNavigateHome} className="icon-btn" title="Menú">
+                <img src="/home.png" alt="Menú" className="menu-icon" />
               </button>
             )}
             {onNavigateToDrill && (
-              <button onClick={onNavigateToDrill} className="nav-btn" title="Práctica">
-                <img src="/verbosmain_transparent.png" alt="Práctica" className="nav-icon logo-icon" />
+              <button onClick={onNavigateToDrill} className="icon-btn" title="Práctica">
+                <img src="/verbosmain_transparent.png" alt="Práctica" className="menu-icon" />
               </button>
             )}
           </div>
