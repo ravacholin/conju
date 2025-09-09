@@ -1,6 +1,6 @@
 // Componente para mostrar el radar de errores
 
-import { useEffect, useRef, memo, useMemo } from 'react'
+import { useEffect, useRef, memo, useMemo, useState, useCallback } from 'react'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
@@ -11,6 +11,8 @@ import { useSettings } from '../../state/settings.js'
 export function ErrorRadar({ axes = [] }) {
   const canvasRef = useRef(null)
   const settings = useSettings()
+  const [openTag, setOpenTag] = useState(null)
+  const [examplesByTag, setExamplesByTag] = useState({})
 
   const safeAxes = useMemo(() => (Array.isArray(axes) ? axes.slice(0, 6) : []), [axes])
 
@@ -122,6 +124,46 @@ export function ErrorRadar({ axes = [] }) {
     }
   }
 
+  const formatMoodTense = useCallback((mood, tense) => {
+    const MOOD = {
+      indicative: 'Indicativo', subjunctive: 'Subjuntivo', imperative: 'Imperativo', conditional: 'Condicional', nonfinite: 'No finito'
+    }
+    const TENSE = {
+      pres: 'Presente', pretIndef: 'Pretérito indefinido', impf: 'Imperfecto', fut: 'Futuro',
+      pretPerf: 'Pretérito perfecto', plusc: 'Pluscuamperfecto', futPerf: 'Futuro perfecto',
+      subjPres: 'Presente de subj.', subjImpf: 'Imperfecto de subj.', subjPerf: 'Perfecto de subj.', subjPlusc: 'Plusc. de subj.',
+      impAff: 'Imperativo afirmativo', impNeg: 'Imperativo negativo', cond: 'Condicional', condPerf: 'Condicional compuesto',
+      ger: 'Gerundio', part: 'Participio'
+    }
+    const m = MOOD[mood] || mood
+    const t = TENSE[tense] || tense
+    if (mood === 'indicative') return t
+    if (mood === 'subjunctive' && t.includes('subj')) return t
+    return `${t} (${m})`
+  }, [])
+
+  const loadExamples = useCallback(async (tag) => {
+    try {
+      if (examplesByTag[tag]) return
+      const uid = getCurrentUserId()
+      const attempts = await getAttemptsByUser(uid)
+      const list = attempts
+        .filter(a => Array.isArray(a.errorTags) && a.errorTags.includes(tag))
+        .slice(-100) // tomar recientes
+        .reverse()   // los más recientes primero
+        .slice(0, 3)
+        .map(a => ({
+          mood: a.mood,
+          tense: a.tense,
+          user: a.userAnswer,
+          correct: a.correctAnswer
+        }))
+      setExamplesByTag(prev => ({ ...prev, [tag]: list }))
+    } catch (e) {
+      // ignore
+    }
+  }, [examplesByTag])
+
   return (
     <div className="error-radar">
       <canvas
@@ -135,10 +177,49 @@ export function ErrorRadar({ axes = [] }) {
         <h3>Temas más problemáticos</h3>
         <div className="competency-stats">
           {safeAxes.map(axis => (
-            <div key={axis.key} className="stat-item" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-              <span className="stat-label">{axis.label}:</span>
-              <span className="stat-value">{Math.round(axis.value)}%</span>
-              <button className="btn btn-small" onClick={() => practiceForTag(axis.tag)}>Practicar</button>
+            <div key={axis.key} className="stat-item" style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className="stat-label">{axis.label}:</span>
+                <span className="stat-value">{Math.round(axis.value)}%</span>
+                <span className="stat-extra" style={{ opacity: 0.8, fontSize: 12 }}>
+                  ({axis.count || 0} casos)
+                </span>
+                <span style={{ flex: 1 }} />
+                <button className="btn btn-secondary btn-compact" onClick={() => practiceForTag(axis.tag)}>Practicar</button>
+                <button
+                  className="btn btn-compact"
+                  onClick={async () => {
+                    const next = openTag === axis.tag ? null : axis.tag
+                    setOpenTag(next)
+                    if (next) await loadExamples(axis.tag)
+                  }}
+                  title="Ver ejemplos recientes"
+                >
+                  Ejemplos
+                </button>
+              </div>
+              {openTag === axis.tag && (
+                <div style={{ padding: '8px 10px', border: '1px solid rgba(245,245,245,0.08)', borderRadius: 8, background: 'rgba(17,17,17,0.6)' }}>
+                  {(examplesByTag[axis.tag] || []).length === 0 ? (
+                    <div style={{ opacity: 0.8, fontSize: 13 }}>Sin ejemplos recientes</div>
+                  ) : (
+                    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                      {(examplesByTag[axis.tag] || []).map((ex, i) => (
+                        <li key={i} style={{ marginBottom: 6 }}>
+                          <div style={{ opacity: 0.8, fontSize: 12, marginBottom: 2 }}>
+                            {formatMoodTense(ex.mood, ex.tense)}
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <span style={{ color: 'var(--muted-2)', fontFamily: 'monospace' }}>{ex.user}</span>
+                            <span style={{ opacity: 0.6 }}>→</span>
+                            <span style={{ color: 'var(--text)', fontFamily: 'monospace' }}>{ex.correct}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -151,4 +232,3 @@ export function ErrorRadar({ axes = [] }) {
 }
 
 export default memo(ErrorRadar)
-
