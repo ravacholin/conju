@@ -624,7 +624,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
                 const isIrregular = analysis?.isIrregular;
                 
                 return (
-                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''}`}>
+                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular' : ''}`}>
                     <span className="ending-person">{pronoun.text}</span>
                     {irregularityAnalysis?.hasIrregularities ? (
                       <div className="form-comparison">
