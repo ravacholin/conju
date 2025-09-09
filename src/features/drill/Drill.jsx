@@ -481,12 +481,35 @@ export default function Drill({
       utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
       utter.rate = 0.95; // slightly slower for clarity
 
+      const pickPreferredSpanishVoice = (voices, targetLang) => {
+        const lower = (s) => (s || '').toLowerCase()
+        const spanish = voices.filter(v => lower(v.lang).startsWith('es'))
+        if (spanish.length === 0) return null
+        const prefNames = ['mónica','monica','paulina','luciana','helena','elvira','google español','google us español','google español de estados','microsoft sabina','microsoft helena']
+        const preferOrder = (region === 'rioplatense')
+          ? ['es-ar','es-419','es-mx','es-es']
+          : ['es-es','es-mx','es-419','es-us']
+        const byLangExact = spanish.find(v => lower(v.lang) === lower(targetLang))
+        if (byLangExact) return byLangExact
+        for (const lang of preferOrder) {
+          const femaleByName = spanish.find(v => lower(v.lang).startsWith(lang) && prefNames.some(n => lower(v.name).includes(n)))
+          if (femaleByName) return femaleByName
+          const anyByLang = spanish.find(v => lower(v.lang).startsWith(lang))
+          if (anyByLang) return anyByLang
+        }
+        // As last resort, any Spanish voice with preferred name
+        const anyFemale = spanish.find(v => prefNames.some(n => lower(v.name).includes(n)))
+        return anyFemale || spanish[0]
+      };
+
       const pickAndSpeak = () => {
         const voices = synth.getVoices ? synth.getVoices() : [];
-        const byExact = voices.find(v => v.lang && v.lang.toLowerCase() === utter.lang.toLowerCase());
-        const byEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
-        const byName = voices.find(v => /spanish|español/i.test(v.name));
-        utter.voice = byExact || byEs || byName || null;
+        const chosen = pickPreferredSpanishVoice(voices, utter.lang)
+        if (chosen) {
+          utter.voice = chosen
+          // sync utter.lang to chosen to avoid engine mismatches
+          utter.lang = chosen.lang || utter.lang
+        }
         synth.cancel(); // ensure clean start
         synth.speak(utter);
       };
