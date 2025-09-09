@@ -69,9 +69,9 @@
   }
 }
 .ending-value .irreg-frag {
-  color: #ffd166; /* alto contraste en fondo oscuro */
-  background: rgba(255, 209, 102, 0.14);
-  border-bottom: 2px solid #ffd166;
+  color: var(--accent-blue);
+  background: rgba(0, 123, 255, 0.14);
+  border-bottom: 2px solid var(--accent-blue);
   padding: 0 2px;
   border-radius: 3px;
   font-weight: 700;
@@ -80,12 +80,12 @@
 
 /* Resalta toda la fila cuando la forma correspondiente es irregular */
 .ending-row.irregular {
-  background: rgba(255, 209, 102, 0.08);
-  border: 1px solid rgba(255, 209, 102, 0.2);
+  background: rgba(0, 123, 255, 0.10);
+  border: 1px solid rgba(0, 123, 255, 0.35);
 }
 
 .ending-row.irregular .ending-person {
-  color: #ffd166;
+  color: var(--accent-blue);
 }
 
 .ending-row.irregular .ending-value {
