@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import VerbMasteryMap from './VerbMasteryMap.jsx'
-import ErrorRadar from './ErrorRadar.jsx'
+import ErrorIntelligence from './ErrorIntelligence.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import SRSPanel from './SRSPanel.jsx'
 import ErrorInsights from './ErrorInsights.jsx'
@@ -21,7 +21,7 @@ import './practice-recommendations.css'
 export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
   const settings = useSettings()
   const [heatMapData, setHeatMapData] = useState([])
-  const [errorRadar, setErrorRadar] = useState({ axes: [] })
+  const [errorIntel, setErrorIntel] = useState(null)
   const [userStats, setUserStats] = useState({})
   const [weeklyGoals, setWeeklyGoals] = useState({})
   const [weeklyProgress, setWeeklyProgress] = useState({})
@@ -83,11 +83,11 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         }),
         (async () => {
           try {
-            const { getErrorRadarData } = await import('../../lib/progress/analytics.js')
-            return await getErrorRadarData(userId)
+            const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
+            return await getErrorIntelligence(userId)
           } catch (e) {
-            console.warn('Failed to load error radar data:', e)
-            return { axes: [] }
+            console.warn('Failed to load error intelligence data:', e)
+            return null
           }
         })(),
         getUserStats(userId).catch(e => {
@@ -127,7 +127,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       
       // Defensive assignment with fallbacks
       setHeatMapData(Array.isArray(heatMap) ? heatMap : [])
-      setErrorRadar(radar && typeof radar === 'object' ? radar : { axes: [] })
+      setErrorIntel(radar && typeof radar === 'object' ? radar : null)
       setUserStats(stats && typeof stats === 'object' ? stats : {})
       setWeeklyGoals(goals && typeof goals === 'object' ? goals : {})
       setWeeklyProgress(progress && typeof progress === 'object' ? progress : {})
@@ -290,13 +290,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         </section>
       </SafeComponent>
 
-      <SafeComponent name="Radar de Errores">
+      <SafeComponent name="Inteligencia de Errores">
         <section className="dashboard-section">
           <h2>
             <img src="/radar.png" alt="Errores" className="section-icon" />
-            Radar de Errores
+            Inteligencia de Errores
           </h2>
-          <ErrorRadar axes={errorRadar.axes || []} />
+          <ErrorIntelligence data={errorIntel} />
         </section>
       </SafeComponent>
 

@@ -1,6 +1,6 @@
 // Análisis de progreso para el sistema de progreso
 
-import { getMasteryByUser, getAttemptsByUser } from './database.js'
+import { getMasteryByUser, getAttemptsByUser, getAllFromDB } from './database.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
@@ -163,6 +163,173 @@ export async function getErrorRadarData(userId) {
   } catch (e) {
     console.warn('Error radar unavailable:', e)
     return { axes: [] }
+  }
+}
+
+/**
+ * Genera dataset de Inteligencia de Errores (tags, heatmap, leeches)
+ */
+export async function getErrorIntelligence(userId) {
+  try {
+    const [attempts, mastery] = await Promise.all([
+      getAttemptsByUser(userId),
+      getMasteryByUser(userId)
+    ])
+    const DECAY_TAU = 10
+    const now = Date.now()
+    const byDay = new Map()
+    const days = []
+    for (let i = 20; i >= 0; i--) {
+      const k = new Date(now - i * 86400000).toDateString()
+      days.push(k)
+      byDay.set(k, { tagCounts: new Map(), totalIncorrect: 0 })
+    }
+    const tagTotals = new Map()
+    const tagRawCounts = new Map()
+    const comboCountsByTag = new Map()
+
+    for (const a of attempts) {
+      const k = new Date(a.createdAt || 0).toDateString()
+      if (!byDay.has(k)) continue
+      if (!a.correct && Array.isArray(a.errorTags)) {
+        const ageDays = (now - new Date(a.createdAt).getTime()) / 86400000
+        const w = Math.exp(-ageDays / DECAY_TAU)
+        const day = byDay.get(k)
+        day.totalIncorrect += 1
+        for (const t of a.errorTags) {
+          day.tagCounts.set(t, (day.tagCounts.get(t) || 0) + 1)
+          tagTotals.set(t, (tagTotals.get(t) || 0) + w)
+          tagRawCounts.set(t, (tagRawCounts.get(t) || 0) + 1)
+          if (!comboCountsByTag.has(t)) comboCountsByTag.set(t, new Map())
+          const key = `${a.mood}|${a.tense}`
+          const m = comboCountsByTag.get(t)
+          m.set(key, (m.get(key) || 0) + 1)
+        }
+      }
+    }
+    for (const m of mastery) {
+      if (m?.errorCounts && typeof m.errorCounts === 'object') {
+        for (const [tag, n] of Object.entries(m.errorCounts)) {
+          tagTotals.set(tag, (tagTotals.get(tag) || 0) + 0.5 * Number(n || 0))
+          tagRawCounts.set(tag, (tagRawCounts.get(tag) || 0) + Number(n || 0))
+        }
+      }
+    }
+    const severityOf = (tag) => {
+      switch (tag) {
+        case ERROR_TAGS.WRONG_MOOD:
+        case ERROR_TAGS.WRONG_TENSE: return 2.0
+        case ERROR_TAGS.IRREGULAR_STEM: return 1.8
+        case ERROR_TAGS.VERBAL_ENDING: return 1.5
+        case ERROR_TAGS.CLITIC_PRONOUNS: return 1.4
+        case ERROR_TAGS.OTHER_VALID_FORM: return 1.2
+        case ERROR_TAGS.ACCENT:
+        case ERROR_TAGS.ORTHOGRAPHY_C_QU:
+        case ERROR_TAGS.ORTHOGRAPHY_G_GU:
+        case ERROR_TAGS.ORTHOGRAPHY_Z_C: return 1.1
+        case ERROR_TAGS.WRONG_PERSON:
+        default: return 1.6
+      }
+    }
+    const labelOf = (tag) => {
+      switch (tag) {
+        case ERROR_TAGS.ACCENT: return 'Acentuación'
+        case ERROR_TAGS.VERBAL_ENDING: return 'Terminaciones'
+        case ERROR_TAGS.IRREGULAR_STEM: return 'Raíz irregular'
+        case ERROR_TAGS.WRONG_PERSON: return 'Persona'
+        case ERROR_TAGS.WRONG_TENSE: return 'Tiempo'
+        case ERROR_TAGS.WRONG_MOOD: return 'Modo'
+        case ERROR_TAGS.CLITIC_PRONOUNS: return 'Clíticos'
+        case ERROR_TAGS.OTHER_VALID_FORM: return 'Otra forma válida'
+        case ERROR_TAGS.ORTHOGRAPHY_C_QU:
+        case ERROR_TAGS.ORTHOGRAPHY_G_GU:
+        case ERROR_TAGS.ORTHOGRAPHY_Z_C: return 'Ortografía'
+        default: return String(tag)
+      }
+    }
+    const last14 = days.slice(-14)
+    const last7 = days.slice(-7)
+    const prev7 = days.slice(-14, -7)
+    const sparkByTag = new Map()
+    const trendByTag = new Map()
+    for (const d of last14) {
+      const day = byDay.get(d)
+      if (!day) continue
+      for (const [tag, c] of day.tagCounts.entries()) {
+        if (!sparkByTag.has(tag)) sparkByTag.set(tag, Array(last14.length).fill(0))
+        const arr = sparkByTag.get(tag)
+        const idx = last14.indexOf(d)
+        arr[idx] = c
+      }
+    }
+    for (const [tag] of tagTotals.entries()) {
+      const sum = (range) => range.reduce((s, k) => s + (byDay.get(k)?.tagCounts.get(tag) || 0), 0)
+      const cur = sum(last7)
+      const prev = sum(prev7)
+      const trend = cur > prev ? 'up' : cur < prev ? 'down' : 'flat'
+      trendByTag.set(tag, { cur, prev, trend })
+    }
+    const topCombosFor = (tag) => {
+      const map = comboCountsByTag.get(tag)
+      if (!map) return []
+      return Array.from(map.entries())
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,3)
+        .map(([k, n]) => { const [mood, tense] = k.split('|'); return { mood, tense, count: n } })
+    }
+    const tags = Array.from(tagTotals.entries())
+      .map(([tag, w]) => ({
+        tag,
+        label: labelOf(tag),
+        weighted: w,
+        count: tagRawCounts.get(tag) || 0,
+        severity: severityOf(tag),
+        impact: (w || 0) * severityOf(tag),
+        sparkline: sparkByTag.get(tag) || [],
+        trend: trendByTag.get(tag)?.trend || 'flat',
+        topCombos: topCombosFor(tag)
+      }))
+      .sort((a,b)=>b.impact - a.impact)
+      .slice(0,6)
+    const maxImpact = tags.length ? Math.max(...tags.map(a=>a.impact)) : 1
+    tags.forEach(a => { a.value = maxImpact ? (a.impact / maxImpact) * 100 : 0 })
+
+    // Heatmap error rate por Modo x Tiempo
+    const moods = ['indicative','subjunctive','imperative','conditional','nonfinite']
+    const tenses = ['pres','pretIndef','impf','fut','pretPerf','plusc','futPerf','subjPres','subjImpf','subjPerf','subjPlusc','impAff','impNeg','cond','condPerf','ger','part']
+    const counter = new Map()
+    for (const a of attempts) {
+      const key = `${a.mood}|${a.tense}`
+      if (!counter.has(key)) counter.set(key, { incorrect: 0, total: 0 })
+      const obj = counter.get(key)
+      obj.total += 1
+      if (!a.correct) obj.incorrect += 1
+    }
+    const cells = []
+    for (const mood of moods) {
+      for (const tense of tenses) {
+        const key = `${mood}|${tense}`
+        const obj = counter.get(key) || { incorrect: 0, total: 0 }
+        const errorRate = obj.total > 0 ? obj.incorrect / obj.total : 0
+        if (obj.total > 0) cells.push({ mood, tense, errorRate, attempts: obj.total })
+      }
+    }
+
+    // Leeches
+    let leeches = []
+    try {
+      const schedules = await getAllFromDB('schedules')
+      leeches = (schedules || [])
+        .filter(s => s.userId === userId && s.leech)
+        .sort((a,b)=> (b.lapses||0) - (a.lapses||0))
+        .slice(0,6)
+        .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue, lapses: s.lapses || 0, ease: s.ease, interval: s.interval }))
+    } catch {}
+
+    return { tags, heatmap: { moods, tenses, cells }, leeches }
+  } catch (e) {
+    console.warn('Error intelligence unavailable:', e)
+    return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [] }
   }
 }
 
