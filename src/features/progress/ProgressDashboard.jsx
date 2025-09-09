@@ -239,6 +239,24 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       <header className="dashboard-header">
         <div className="header-top">
           <div className="header-buttons">
+            <button
+              onClick={() => {
+                try {
+                  if (window.history && window.history.length > 1) {
+                    window.history.back()
+                  } else if (onNavigateHome) {
+                    onNavigateHome()
+                  }
+                } catch (e) {
+                  if (onNavigateHome) onNavigateHome()
+                }
+              }}
+              className="nav-btn"
+              title="Volver"
+              aria-label="Volver"
+            >
+              <img src="/back.png" alt="Volver" className="nav-icon" />
+            </button>
             {onNavigateHome && (
               <button onClick={onNavigateHome} className="nav-btn" title="Menú">
                 <img src="/home.png" alt="Menú" className="nav-icon" />
