@@ -307,8 +307,8 @@
     font-size: 2rem;
   }
   
-  .story-placeholder { padding: 0.85rem 1rem; }
-  .deconstruction-placeholder { padding: 1.15rem; }
+  .story-placeholder { padding: 0.75rem 0.9rem; }
+  .deconstruction-placeholder { padding: 0.95rem; }
   
   .verb-deconstruction {
     font-size: 1rem;
