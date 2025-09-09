@@ -96,9 +96,6 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
             </span>
           )}
         </div>
-        <button className="btn btn-outline btn-compact" onClick={() => setIsCompact(v => !v)}>
-          {isCompact ? 'Ver todo' : 'Ver menos'}
-        </button>
       </div>
       {/* (Se elimina "Temas prioritarios" para evitar redundancia con módulos superiores) */}
 
