@@ -67,15 +67,15 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
   border-radius: 16px;
-  padding: 1.4rem;
-  margin-bottom: 1rem;
+  padding: 1rem 1.25rem; /* menos espacio vertical */
+  margin-bottom: 0.85rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 .story-placeholder h3 {
   font-size: 1.2rem;
   font-weight: 400;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem; /* reducir espacio bajo el título */
   color: var(--text);
   letter-spacing: -0.01em;
 }
@@ -83,7 +83,7 @@
 .story-sentence {
   font-size: 0.95rem;
   line-height: 1.5;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.5rem; /* compactar separación entre frases */
   color: var(--text);
   opacity: 0; /* hidden until animated in */
   transform: translateY(16px) scale(0.96);
@@ -268,19 +268,18 @@
     font-size: 1rem;
   }
   
-  .story-placeholder,
-  .deconstruction-placeholder {
-    padding: 1.5rem;
-  }
+  /* Ajuste: menos padding vertical en el cuadro de narrativa en móvil */
+  .story-placeholder { padding: 0.9rem 1.1rem; }
+  .deconstruction-placeholder { padding: 1.25rem; }
   
   .story-placeholder h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    margin-bottom: 0.7rem;
   }
   
   .story-sentence {
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.55rem;
   }
   
   .verb-deconstruction {
@@ -308,10 +307,8 @@
     font-size: 2rem;
   }
   
-  .story-placeholder,
-  .deconstruction-placeholder {
-    padding: 1.25rem;
-  }
+  .story-placeholder { padding: 0.85rem 1rem; }
+  .deconstruction-placeholder { padding: 1.15rem; }
   
   .verb-deconstruction {
     font-size: 1rem;
