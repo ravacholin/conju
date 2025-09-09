@@ -32,7 +32,7 @@ export function ErrorRadar({ axes = [] }) {
     drawPolarGrid(ctx, centerX, centerY, radius, safeAxes.length)
     drawAxes(ctx, centerX, centerY, radius, safeAxes)
     drawData(ctx, centerX, centerY, radius, safeAxes)
-    drawLegend(ctx, width, height, safeAxes)
+    drawLegend(ctx, width, height)
   }, [safeAxes])
 
   function drawPolarGrid(ctx, cx, cy, r, n) {
@@ -99,6 +99,16 @@ export function ErrorRadar({ axes = [] }) {
     ctx.closePath()
     ctx.fill()
     ctx.stroke()
+  }
+
+  function drawLegend(ctx, width, height) {
+    const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
+    const textColor = styles?.getPropertyValue('--muted')?.trim() || '#cccccc'
+    ctx.fillStyle = textColor
+    ctx.font = '14px Inter, Arial'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('Radar de Errores', 20, 30)
   }
 
   async function practiceForTag(tag) {
