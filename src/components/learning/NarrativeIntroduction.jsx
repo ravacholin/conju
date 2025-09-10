@@ -295,7 +295,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const personHint = /^\s*["'“‘(\[¡¿-]*Yo\b/i.test(sentenceTemplate)
         ? '1s'
         : (/^\s*["'“‘(\[¡¿-]*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s')
-      const conjugation = getConjugation(verbObj, personHint);
+      // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
+      const conjugation = getConjugation(verbObj, personHint, tense.mood);
       // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
       const startsWithVerb = /^[\s\"'“‘(\[¡¿-]*__VERB__/.test(sentenceTemplate);
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
