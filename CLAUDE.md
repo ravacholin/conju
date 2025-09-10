@@ -29,6 +29,12 @@ npm test
 # Run tests with coverage
 npm test -- --coverage
 
+# Run a single test file
+npx vitest run src/path/to/test.js
+
+# Run tests in watch mode
+npx vitest
+
 # Data validation (critical - run before commits)
 node src/validate-data.js
 
@@ -160,6 +166,13 @@ The app uses IndexedDB for local storage with these stores:
 - The progress system has extensive TypeScript-style JSDoc annotations
 - PWA functionality provided by vite-plugin-pwa (auto-registration in production)
 - Code chunking strategy: vendor libs, verb data, progress system, and core engine are separate chunks
+
+## Configuration Files
+
+- **Vite**: Development server configured with PWA support, code chunking, and terser minification
+- **ESLint**: Configured for React with hooks linting, separate rules for Node.js scripts
+- **Vitest**: Test configuration with jsdom environment, 20s timeout, coverage reporting
+- **PWA**: Auto-registration, workbox caching, 5MB file size limit, offline support
 
 ## Known Issues & Limitations
 

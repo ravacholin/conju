@@ -191,7 +191,7 @@ export function createLogger(context) {
     debug: (message, data) => debug(context, message, data),
     info: (message, data) => info(context, message, data),
     warn: (message, data) => warn(context, message, data),
-    error: (message, error) => error(context, message, error),
+    error: (message, errorData) => error(context, message, errorData),
     perf: {
       start: (key) => perf.start(`${context}-${key}`),
       end: (key, operation, threshold) => perf.end(`${context}-${key}`, context, operation, threshold),
