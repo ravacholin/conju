@@ -1,8 +1,8 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/`: app code (React + Vite). Key areas:
-  - `src/lib/progress/`: progress/SRS, analytics, and orchestration (see `README.md`).
+- `src/`: React + Vite app code.
+  - `src/lib/progress/`: SRS/progress logic, analytics, orchestrators (read `README.md`).
   - `src/features/`: feature-level UI (dashboards, tracking wrappers).
   - `src/components/`, `src/hooks/`, `src/state/`, `src/lib/utils/`.
 - `public/`: static assets. `dist/`: build output. `scripts/`: helper scripts.
@@ -12,30 +12,31 @@
 - `npm run dev`: start Vite dev server.
 - `npm run build`: production build to `dist/`.
 - `npm run preview`: preview the production build locally.
-- `npm run lint`: run ESLint using `eslint.config.js`.
-- `npm test`: run Vitest (jsdom, globals; setup via `test-setup.js`).
-- `npm test -- --coverage`: run tests with coverage reports.
-- Example script usage: `node src/validate-data.js` (dataset checks).
+- `npm run lint`: run ESLint (`eslint.config.js`).
+- `npm test`: run Vitest (jsdom, globals). `npm test -- --coverage` for coverage.
+- Example script: `node src/validate-data.js` for dataset checks.
 
 ## Coding Style & Naming Conventions
-- JavaScript (ESM) + React. Prefer functional components.
-- Indentation: 2 spaces; keep lines focused and small functions.
-- Naming: Components `PascalCase.jsx`; utilities/tests `camelCase.js` with `*.test.js` for tests.
-- Linting: ESLint configured for React hooks and Node scripts; fix findings before PR.
-- Formatting: Prettier available — e.g., `npx prettier -w .` before submitting.
+- Language: JavaScript (ESM) + React functional components.
+- Indentation: 2 spaces; prefer small, focused functions.
+- Naming: Components `PascalCase.jsx`; utilities/tests `camelCase.js`; tests `*.test.js`/`*.spec.js`.
+- Linting: fix all ESLint findings before PR; respect React Hooks rules.
+- Formatting: use Prettier when touching many files (`npx prettier -w .`).
 
 ## Testing Guidelines
 - Framework: Vitest with jsdom; global setup in `test-setup.js` (IndexedDB, localStorage, matchMedia mocks).
-- Location: co-locate tests near code; pattern `*.test.js` or `*.spec.js`.
-- Run: `npm test` or a single file (e.g., `npx vitest run src/lib/progress/progress.test.js`).
-- Coverage: include meaningful assertions for core flows (tracking, mastery, SRS, orchestrator). Use `--coverage` when relevant.
+- Location: co-locate tests near code (e.g., `src/lib/progress/progress.test.js`).
+- Run: `npm test` or a single file via `npx vitest run <path/to/file.test.js>`.
+- Aim for meaningful coverage on progress tracking, mastery, SRS, and orchestrator flows.
 
 ## Commit & Pull Request Guidelines
-- Commit style: Conventional-ish prefixes seen in history — `feat:`, `fix(scope):`, `docs:`, `chore:`, `ui:`, `theme(scope):`.
+- Commits: conventional-ish prefixes — `feat:`, `fix(scope):`, `docs:`, `chore:`, `ui:`, `theme(scope):`.
 - Branches: `feature/<short-desc>` or `fix/<short-desc>`.
-- PRs must: describe scope and rationale, link issues, include screenshots for UI changes, and pass `npm run lint` and `npm test`.
-- Keep PRs focused and small; update adjacent docs (e.g., `src/lib/progress/README.md`, `README.md`) when behavior changes.
+- PRs must: describe scope/rationale, link issues, add screenshots for UI changes, and pass `npm run lint` and `npm test`.
+- Update adjacent docs when behavior changes (e.g., `src/lib/progress/README.md`, `README.md`).
 
-## Pointers & Architecture
+## Architecture & Data Notes
 - Read `ARCHITECTURE.md` and `src/lib/progress/README.md` before modifying progress/SRS.
-- IndexedDB is the local store; avoid breaking schema — coordinate changes via `src/lib/progress/database.js` and config.
+- IndexedDB is the local store; avoid breaking schema — coordinate via `src/lib/progress/database.js` and config.
+- Keep changes focused; avoid unrelated refactors in the same PR.
+
