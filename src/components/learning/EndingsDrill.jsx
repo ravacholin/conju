@@ -390,12 +390,21 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       };
 
       if (synth.getVoices && synth.getVoices().length === 0) {
+        let hasSpoken = false;
         const onVoices = () => {
-          pickAndSpeak();
+          if (!hasSpoken) {
+            hasSpoken = true;
+            pickAndSpeak();
+          }
           synth.removeEventListener('voiceschanged', onVoices);
         };
         synth.addEventListener('voiceschanged', onVoices);
-        setTimeout(pickAndSpeak, 300);
+        setTimeout(() => {
+          if (!hasSpoken) {
+            hasSpoken = true;
+            pickAndSpeak();
+          }
+        }, 500);
       } else {
         pickAndSpeak();
       }

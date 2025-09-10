@@ -516,13 +516,22 @@ export default function Drill({
 
       // Some browsers load voices asynchronously
       if (synth.getVoices && synth.getVoices().length === 0) {
+        let hasSpoken = false;
         const onVoices = () => {
-          pickAndSpeak();
+          if (!hasSpoken) {
+            hasSpoken = true;
+            pickAndSpeak();
+          }
           synth.removeEventListener('voiceschanged', onVoices);
         };
         synth.addEventListener('voiceschanged', onVoices);
         // Fallback speak after a short delay in case event doesn't fire
-        setTimeout(pickAndSpeak, 300);
+        setTimeout(() => {
+          if (!hasSpoken) {
+            hasSpoken = true;
+            pickAndSpeak();
+          }
+        }, 500);
       } else {
         pickAndSpeak();
       }

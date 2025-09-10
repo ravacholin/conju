@@ -169,9 +169,16 @@ const speakText = (text, lang = 'es-ES') => {
     // Check if voices are loaded, if not wait for them
     const voices = window.speechSynthesis.getVoices();
     if (voices.length === 0) {
-      window.speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+      let hasSpoken = false;
+      const speakOnce = () => {
+        if (!hasSpoken) {
+          hasSpoken = true;
+          speak();
+        }
+      };
+      window.speechSynthesis.addEventListener('voiceschanged', speakOnce, { once: true });
       // Fallback timeout in case voiceschanged doesn't fire
-      setTimeout(speak, 1000);
+      setTimeout(speakOnce, 1000);
     } else {
       speak();
     }
