@@ -39,12 +39,15 @@ export const storyData = {
     sentences: {
         ar: 'Ayer Laura __VERB__ con el director.',
         er: '__VERB__ en el restaurante nuevo.',
-        ir: '__VERB__ el informe final.',
+        // Para -ir, usar una construcción natural para "vivir"
+        ir: '__VERB__ en la ciudad nueva.',
     },
     verbSpecific: {
         // VERBOS REGULARES - Narrativa coherente de día de trabajo importante
         hablar: 'Ayer Laura __VERB__ con el director.',
         comer: '__VERB__ en el restaurante nuevo.',
+        // Asegurar frase natural para VIVIR en pretérito indefinido
+        vivir: '__VERB__ en la ciudad nueva.',
         escribir: '__VERB__ el informe final.',
         
         // MUY IRREGULARES DEL PRETÉRITO - Narrativa coherente de viaje especial
