@@ -459,7 +459,27 @@ export function useOnboardingFlow() {
   const selectTense = (tense) => {
     console.log('ACTION: selectTense', tense);
     closeTopPanelsAndFeatures()
-    settings.set({ specificTense: tense })
+
+    const tenseNameMapping = {
+      'presente': 'pres',
+      'preterito_perfecto_simple': 'pretIndef',
+      'preterito_imperfecto': 'impf',
+      'futuro_simple': 'fut',
+      'imperativo_afirmativo': 'impAff',
+      'preterito_pluscuamperfecto': 'plusc',
+      'preterito_perfecto_compuesto': 'pretPerf',
+      'futuro_compuesto': 'futPerf',
+      'presente_subjuntivo': 'subjPres',
+      'preterito_perfecto_subjuntivo': 'subjPerf',
+      'imperativo_negativo': 'impNeg',
+      'condicional_simple': 'cond',
+      'imperfecto_subjuntivo': 'subjImpf',
+      'pluscuamperfecto_subjuntivo': 'subjPlusc',
+      'condicional_compuesto': 'condPerf'
+    };
+    const mappedTense = tenseNameMapping[tense] || tense;
+
+    settings.set({ specificTense: mappedTense })
     
     if (settings.practiceMode === 'theme') {
       // For theme-based practice, go to step 7 (VerbTypeSelection)

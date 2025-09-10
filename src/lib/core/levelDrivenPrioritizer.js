@@ -235,19 +235,18 @@ export class LevelDrivenPrioritizer {
     // Sort tenses within level by pedagogical order
     return levelTenses.sort((a, b) => {
       // 1. Prerequisites first
-      const aHasPrereqs = CURRICULUM_ANALYSIS.prerequisites[a.key]
-      const bHasPrereqs = CURRICULUM_ANALYSIS.prerequisites[b.key]
+      const aHasPrereqs = a.key && CURRICULUM_ANALYSIS.prerequisites[a.key]
+      const bHasPrereqs = b.key && CURRICULUM_ANALYSIS.prerequisites[b.key]
       
       if (aHasPrereqs && !bHasPrereqs) return 1
       if (!aHasPrereqs && bHasPrereqs) return -1
       
       // 2. Core tenses before review tenses
-      if (a.isCore && !b.isCore) return -1
-      if (!a.isCore && b.isCore) return 1
+      if (a.isCore !== b.isCore) return a.isCore ? -1 : 1;
       
       // 3. Complexity order
       if (a.complexity !== b.complexity) {
-        return a.complexity - b.complexity
+        return (a.complexity || 5) - (b.complexity || 5)
       }
       
       // 4. Family grouping (learn related tenses together)
@@ -792,7 +791,7 @@ export class LevelDrivenPrioritizer {
     // Calculate group statistics
     Object.values(groups).forEach(group => {
       const masteries = group.tenses.map(t => t.mastery)
-      group.avgMastery = masteries.reduce((sum, m) => sum + m, 0) / masteries.length
+      group.avgMastery = masteries.length > 0 ? masteries.reduce((sum, m) => sum + m, 0) / masteries.length : 0
       
       const mastered = masteries.filter(m => m >= 75).length
       const total = masteries.length
@@ -878,7 +877,7 @@ export class LevelDrivenPrioritizer {
     // Family completion bonus
     const familyTenses = this.curriculumData.tenseFamilies[tense.family] || []
     const familyMasteries = familyTenses.map(ft => masteryMap.get(ft.key) || 0)
-    const familyAvg = familyMasteries.reduce((sum, m) => sum + m, 0) / familyMasteries.length
+    const familyAvg = familyMasteries.length > 0 ? familyMasteries.reduce((sum, m) => sum + m, 0) / familyMasteries.length : 0
 
     if (familyAvg > 30 && familyAvg < 70) {
       priority += 10 // Complete partially learned families
@@ -922,7 +921,7 @@ export class LevelDrivenPrioritizer {
 
     // Calculate overall mastery level
     const masteries = Array.from(masteryMap.values())
-    const avgMastery = masteries.reduce((sum, m) => sum + m, 0) / masteries.length
+    const avgMastery = masteries.length > 0 ? masteries.reduce((sum, m) => sum + m, 0) / masteries.length : 0
 
     // Adjust consolidation need based on performance
     if (avgMastery < 40) {

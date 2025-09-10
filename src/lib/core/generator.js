@@ -97,6 +97,7 @@ export function chooseNext({forms, history, currentItem}){
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
     nextSecondPerson, cliticsPercent
   } = allSettings
+
   
   // CRITICAL DEBUG: Log ALL settings at start of chooseNext  
   console.log('🔥🚨 CHOOSENEXT CRITICAL DEBUG - ALL Settings:', {
@@ -182,8 +183,8 @@ export function chooseNext({forms, history, currentItem}){
       }
       
       // Level filtering (O(1) with precomputed set)
-      // SKIP level filtering SOLO cuando se practica por tema (cameFromTema=true)
-      const isSpecificTopicPractice = (practiceMode === 'specific' && cameFromTema === true) || practiceMode === 'theme'
+      // SKIP level filtering for specific practice OR when practicing by theme
+      const isSpecificTopicPractice = practiceMode === 'specific' || practiceMode === 'theme'
       if (!isSpecificTopicPractice) {
         // Determine allowed combos: from current block if set, else level
         const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
@@ -197,7 +198,7 @@ export function chooseNext({forms, history, currentItem}){
       } else {
         // For specific topic practice, log that we're bypassing level restrictions
         if (process.env.NODE_ENV === 'development') {
-          console.log('🎯 SPECIFIC TOPIC - Bypassing level restrictions for:', `${f.mood}|${f.tense}`, f.lemma)
+          console.log('🎯 SPECIFIC PRACTICE - Bypassing level restrictions for:', `${f.mood}|${f.tense}`, f.lemma)
         }
       }
     
@@ -281,7 +282,7 @@ export function chooseNext({forms, history, currentItem}){
     
     // Restrict lemmas if configured by level/packs
     // BUT skip this restriction when user explicitly selects "all" verbs OR practices by specific topic
-    const shouldBypassLemmaRestrictions = (verbType === 'all') || isSpecificTopicPractice
+    const shouldBypassLemmaRestrictions = (verbType === 'all') || (practiceMode === 'specific' || practiceMode === 'theme')
     if (allowedLemmas && !shouldBypassLemmaRestrictions) {
       if (!allowedLemmas.has(f.lemma)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
@@ -532,7 +533,7 @@ export function chooseNext({forms, history, currentItem}){
     console.log('🔧 CHOOSENEXT DEBUG - NO ELIGIBLE FORMS! Starting fallback logic...')
     // Failsafe: relax filters progressively to always return something
     // Apply same specific topic practice logic in fallback
-    const isSpecificTopicPractice = (practiceMode === 'specific' || practiceMode === 'theme') && specificMood && specificTense
+    const isSpecificTopicPractice = (practiceMode === 'specific' || practiceMode === 'theme')
     // Optimized: Single pass filtering instead of multiple iterations
     const allowedCombos = isSpecificTopicPractice ? null : getAllowedCombosForLevel(level)
     let fallback = forms.filter(f => {
@@ -959,12 +960,11 @@ function getPersonWeightsForLevel(settings) {
 function applyLevelFormWeighting(forms, settings) {
   const level = settings.level || 'B1'
   const practiceMode = settings.practiceMode
-  const cameFromTema = settings.cameFromTema
   const boosted = []
   const pushN = (f, n) => { for (let i=0;i<n;i++) boosted.push(f) }
 
   // Determine if this is level-based practice (should reduce compound frequency)
-  const isLevelBasedPractice = practiceMode !== 'specific' || !cameFromTema
+  const isLevelBasedPractice = practiceMode !== 'specific' && practiceMode !== 'theme'
   
   // Compound tense reduction factor for level-based practice
   const COMPOUND_REDUCTION_FACTOR = 0.4 // Reduce to 40% of normal frequency

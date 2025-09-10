@@ -52,7 +52,8 @@ const applyVerbTypeFilter = (forms, verbType) => {
  * @returns {Object|null} - Selected form or null if all strategies fail
  */
 export const tryIntelligentFallback = async (settings, eligibleForms, context) => {
-  const { specificMood, specificTense, matchesSpecific, allowsPerson, allowsLevel } = context
+  const { specificMood, specificTense, isSpecific } = context
+  const specificConstraints = { isSpecific, specificMood, specificTense };
   
   logger.info('tryIntelligentFallback', 'Starting intelligent fallback with multiple strategies')
   
@@ -67,7 +68,7 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
   // Strategy 1: Try direct filtering with basic forms
   logger.debug('tryIntelligentFallback', 'Attempting Strategy 1: Direct filtering')
   const gated = gateFormsByCurriculumAndDialect(verbTypeFiltered, settings)
-  const compliant = gated.filter(f => matchesSpecific(f) && allowsPerson(f.person) && allowsLevel(f))
+  const compliant = gated.filter(f => matchesSpecific(f, specificConstraints) && allowsPerson(f.person, settings) && allowsLevel(f, settings))
   
   if (compliant.length > 0) {
     const selected = compliant[Math.floor(Math.random() * compliant.length)]
@@ -84,7 +85,7 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
     const relaxedPerson = gated.filter(f => 
       f.mood === specificMood && 
       f.tense === specificTense && 
-      allowsLevel(f)
+      allowsLevel(f, settings)
     )
     
     if (relaxedPerson.length > 0) {
@@ -107,8 +108,8 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
       const altForms = gated.filter(f => 
         f.mood === specificMood && 
         f.tense === altTense && 
-        allowsPerson(f.person) && 
-        allowsLevel(f)
+        allowsPerson(f.person, settings) && 
+        allowsLevel(f, settings)
       )
       
       if (altForms.length > 0) {
@@ -129,9 +130,9 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
     logger.debug('tryIntelligentFallback', 'Attempting Strategy 4: Relaxed verb type constraints')
     const allTypesGated = gateFormsByCurriculumAndDialect(eligibleForms, settings)
     const relaxedType = allTypesGated.filter(f => 
-      matchesSpecific(f) && 
-      allowsPerson(f.person) && 
-      allowsLevel(f)
+      matchesSpecific(f, specificConstraints) && 
+      allowsPerson(f.person, settings) && 
+      allowsLevel(f, settings)
     )
     
     if (relaxedType.length > 0) {

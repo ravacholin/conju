@@ -89,8 +89,8 @@ export const matchesSpecific = (form, specificConstraints) => {
  * @returns {boolean} - Whether the form is allowed for the level
  */
 export const allowsLevel = (form, settings) => {
-  // Skip level validation for theme-based practice
-  if (settings.practiceMode === 'theme') return true
+  // Skip level validation for specific and theme-based practice
+  if (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') return true
   
   const userLevel = settings.level || 'A1'
   const allowed = getAllowedCombosForLevel(userLevel)
