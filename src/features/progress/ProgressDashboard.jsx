@@ -1,7 +1,7 @@
 // Componente principal del dashboard de progreso
 
-import { useEffect, useState } from 'react'
-import { getHeatMapData, getCompetencyRadarData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
+import { useEffect, useState, useRef } from 'react'
+import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
@@ -12,6 +12,8 @@ import { useSettings } from '../../state/settings.js'
 import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
 import { buildFormsForRegion } from '../../lib/core/eligibility.js'
 import SafeComponent from '../../components/SafeComponent.jsx'
+import { AsyncController } from '../../lib/utils/AsyncController.js'
+import router from '../../lib/routing/Router.js'
 import './progress.css'
 import './practice-recommendations.css'
 
@@ -28,9 +30,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [personFilter, setPersonFilter] = useState('')
+  const [personFilter] = useState('')
   const [refreshing, setRefreshing] = useState(false)
   const [systemReady, setSystemReady] = useState(false)
+  
+  // AsyncController for managing cancellable operations
+  const asyncController = useRef(new AsyncController())
 
   // Handle generic (lower) recommendations click
   const handleGeneralRecommendation = (rec) => {
@@ -66,72 +71,98 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         setRefreshing(true)
       } else {
         setLoading(true)
-        setError(null) // Clear previous errors
+        setError(null)
       }
       
-      // Obtener el ID del usuario actual
+      // Cancel any previous data loading operations
+      asyncController.current.cancel('loadDashboardData')
+      
+      // Get current user ID
       const userId = getCurrentUserId()
       if (!userId) {
         throw new Error('Usuario no inicializado. Espera un momento y reintenta.')
       }
       
-      // Cargar todos los datos en paralelo con timeout y fallbacks
-      const dataPromises = [
-        getHeatMapData(userId, personFilter || null).catch(e => {
-          console.warn('Failed to load heat map data:', e)
-          return [] // fallback
-        }),
-        (async () => {
+      // Define operations with proper cancellation support
+      const operations = {
+        heatMap: async (signal) => {
+          try {
+            const result = await getHeatMapData(userId, personFilter || null)
+            if (signal.aborted) throw new Error('Cancelled')
+            return Array.isArray(result) ? result : []
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load heat map data:', e)
+            return []
+          }
+        },
+        
+        errorIntel: async (signal) => {
           try {
             const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
-            return await getErrorIntelligence(userId)
+            const result = await getErrorIntelligence(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return result && typeof result === 'object' ? result : null
           } catch (e) {
-            console.warn('Failed to load error intelligence data:', e)
+            if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
             return null
           }
-        })(),
-        getUserStats(userId).catch(e => {
-          console.warn('Failed to load user stats:', e)
-          return {} // fallback
-        }),
-        getWeeklyGoals(userId).catch(e => {
-          console.warn('Failed to load weekly goals:', e)
-          return {} // fallback
-        }),
-        checkWeeklyProgress(userId).catch(e => {
-          console.warn('Failed to load weekly progress:', e)
-          return {} // fallback
-        }),
-        getRecommendations(userId).catch(e => {
-          console.warn('Failed to load recommendations:', e)
-          return [] // fallback
-        })
-      ]
+        },
+        
+        userStats: async (signal) => {
+          try {
+            const result = await getUserStats(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return result && typeof result === 'object' ? result : {}
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load user stats:', e)
+            return {}
+          }
+        },
+        
+        weeklyGoals: async (signal) => {
+          try {
+            const result = await getWeeklyGoals(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return result && typeof result === 'object' ? result : {}
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load weekly goals:', e)
+            return {}
+          }
+        },
+        
+        weeklyProgress: async (signal) => {
+          try {
+            const result = await checkWeeklyProgress(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return result && typeof result === 'object' ? result : {}
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load weekly progress:', e)
+            return {}
+          }
+        },
+        
+        recommendations: async (signal) => {
+          try {
+            const result = await getRecommendations(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return Array.isArray(result) ? result : []
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load recommendations:', e)
+            return []
+          }
+        }
+      }
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout al cargar datos')), 10000)
-      )
+      // Execute all operations with proper cancellation and timeout
+      const results = await asyncController.current.executeAll(operations, 10000)
       
-      const [
-        heatMap,
-        radar,
-        stats,
-        goals,
-        progress,
-        recs
-      ] = await Promise.race([
-        Promise.all(dataPromises),
-        timeoutPromise
-      ])
-      
-      // Defensive assignment with fallbacks
-      setHeatMapData(Array.isArray(heatMap) ? heatMap : [])
-      setErrorIntel(radar && typeof radar === 'object' ? radar : null)
-      setUserStats(stats && typeof stats === 'object' ? stats : {})
-      setWeeklyGoals(goals && typeof goals === 'object' ? goals : {})
-      setWeeklyProgress(progress && typeof progress === 'object' ? progress : {})
-      setRecommendations(Array.isArray(recs) ? recs : [])
+      // Update state with results
+      setHeatMapData(results.heatMap || [])
+      setErrorIntel(results.errorIntel || null)
+      setUserStats(results.userStats || {})
+      setWeeklyGoals(results.weeklyGoals || {})
+      setWeeklyProgress(results.weeklyProgress || {})
+      setRecommendations(results.recommendations || [])
       
       setError(null)
       setLoading(false)
@@ -199,6 +230,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }, [personFilter])
 
+  // Cleanup async operations on component unmount
+  useEffect(() => {
+    return () => {
+      asyncController.current.destroy()
+    }
+  }, [])
+
   if (loading) {
     return (
       <div className="progress-dashboard loading">
@@ -240,14 +278,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         <div className="header-top">
           <div className="icon-row">
             <button
-              onClick={() => {
-                let popped = false
-                const onPop = () => { popped = true; window.removeEventListener('popstate', onPop) }
-                try { window.addEventListener('popstate', onPop) } catch {}
-                try { if (window.history && window.history.length > 1) window.history.back() } catch {}
-                // Fallback if no history state handled shortly
-                setTimeout(() => { if (!popped && onNavigateHome) onNavigateHome() }, 250)
-              }}
+              onClick={() => router.back()}
               className="icon-btn"
               title="Volver"
               aria-label="Volver"
@@ -413,13 +444,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   )
 }
 
-// Attach handler on component prototype (closure-friendly alternative)
-// This function will be hoisted by JS; it accesses settings via window if needed (fallback)
-function handleGeneralRecommendation(rec) {
-  try {
-    const evt = new CustomEvent('progress:generalRecommendation', { detail: rec })
-    window.dispatchEvent(evt)
-  } catch (e) {
-    console.warn('Failed to dispatch general recommendation event:', e)
-  }
-}
+// Unused function - can be removed if not needed elsewhere
+// function handleGeneralRecommendation(rec) {
+//   try {
+//     const evt = new CustomEvent('progress:generalRecommendation', { detail: rec })
+//     window.dispatchEvent(evt)
+//   } catch (e) {
+//     console.warn('Failed to dispatch general recommendation event:', e)
+//   }
+// }

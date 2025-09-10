@@ -5,20 +5,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Development server (starts on port 5175)
+# Development server (starts on port 5173, opens in learning mode)
 npm run dev
 
-# Build for production
+# Development server with learning mode pre-opened
+npm run dev:learning
+
+# Build for production (includes prebuild validation)
 npm run build
 
 # Preview production build
 npm run preview
 
-# Run linting
+# Preview with learning mode pre-opened
+npm run preview:learning
+
+# Run linting with ESLint
 npm run lint
 
 # Run tests with Vitest
 npm test
+
+# Run tests with coverage
+npm test -- --coverage
 
 # Data validation (critical - run before commits)
 node src/validate-data.js
@@ -149,6 +158,8 @@ The app uses IndexedDB for local storage with these stores:
 - Prefer explicit imports from specific modules
 - Cache performance is critical - always consider lookup efficiency
 - The progress system has extensive TypeScript-style JSDoc annotations
+- PWA functionality provided by vite-plugin-pwa (auto-registration in production)
+- Code chunking strategy: vendor libs, verb data, progress system, and core engine are separate chunks
 
 ## Known Issues & Limitations
 

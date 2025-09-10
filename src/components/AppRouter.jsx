@@ -8,11 +8,9 @@ import { lazy } from 'react'
 const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashboard.jsx'))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
-// Debug utilities - commented out to avoid unused imports
-// import { warmupCaches, getCacheStats } from '../lib/core/optimizedCache.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
-// import { getEligiblePool, buildNonfiniteFormsForLemma } from '../lib/core/nonfiniteBuilder.js'
 import { initProgressSystem } from '../lib/progress/index.js'
+import router from '../lib/routing/Router.js'
 
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
@@ -49,87 +47,59 @@ function AppRouter() {
     })
   }, [])
 
-  // Allow deep-linking into modes via query param (e.g., ?mode=learning)
+  // Initialize router and subscribe to route changes
   useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search || '')
-      const mode = params.get('mode')
-      if (mode && ['onboarding','drill','learning','progress'].includes(mode)) {
-        setCurrentMode(mode)
-        const state = { appNav: true, mode, ts: Date.now() }
-        try { window.history.replaceState(state, '') } catch {/* ignore */}
-      }
-    } catch {
-      // ignore URL parsing issues
+    // Set initial route from router
+    const initialRoute = router.getCurrentRoute()
+    setCurrentMode(initialRoute.mode)
+    if (initialRoute.step) {
+      onboardingFlow.setOnboardingStep(initialRoute.step)
     }
-  }, [])
+
+    // Subscribe to route changes
+    const unsubscribe = router.subscribe((route, type) => {
+      console.log('📍 Route changed:', route, 'via', type)
+      setCurrentMode(route.mode)
+      
+      if (route.mode === 'onboarding' && route.step) {
+        cleanupStateForStep(route.step)
+        onboardingFlow.setOnboardingStep(route.step)
+      }
+      
+      // Regenerate drill item if navigating to drill without current item
+      if (route.mode === 'drill' && !drillMode.currentItem) {
+        setTimeout(() => {
+          drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+        }, 100)
+      }
+    })
+
+    return unsubscribe
+  }, [onboardingFlow, drillMode, allFormsForRegion])
 
   const handleStartPractice = () => {
     console.log('🚀 handleStartPractice called');
-    setCurrentMode('drill')
-    // Push history state for drill mode
-    try {
-      const historyState = { appNav: true, mode: 'drill', ts: Date.now() };
-      window.history.pushState(historyState, '')
-    } catch {
-      // Ignore history API errors
-    }
+    router.navigate({ mode: 'drill' })
   }
 
   const handleHome = () => {
     console.log('🏠 handleHome called');
-    try {
-      setCurrentMode('onboarding')
-      // Navigate to onboarding step 2 (menú por tema/nivel/seguir)
-      cleanupStateForStep(2)
-      onboardingFlow.setOnboardingStep(2)
-      const historyState = { appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }
-      window.history.pushState(historyState, '')
-    } catch {
-      // Fallback
-      setCurrentMode('onboarding')
-      onboardingFlow.setOnboardingStep(2)
-    }
+    router.navigate({ mode: 'onboarding', step: 2 })
   }
 
   const handleGoToProgress = () => {
     console.log('📊 handleGoToProgress called');
-    setCurrentMode('progress')
-    // Push history state for progress mode
-    try {
-      const historyState = { appNav: true, mode: 'progress', ts: Date.now() };
-      window.history.pushState(historyState, '')
-    } catch {
-      // Ignore history API errors
-    }
+    router.navigate({ mode: 'progress' })
   }
 
   const handleStartLearningNewTense = () => {
     console.log('🧠 handleStartLearningNewTense called');
-    setCurrentMode('learning');
-    // You might want to push a history state here as well
-    try {
-      const historyState = { appNav: true, mode: 'learning', ts: Date.now() };
-      window.history.pushState(historyState, '');
-    } catch {
-      // Ignore
-    }
+    router.navigate({ mode: 'learning' })
   };
 
   // From Progress page: go to onboarding menu step 2 (no dialects)
   const handleProgressMenu = () => {
-    try {
-      setCurrentMode('onboarding')
-      // Clean up state for step 2 but keep region (dialect) as selected
-      cleanupStateForStep(2)
-      onboardingFlow.setOnboardingStep(2)
-      const historyState = { appNav: true, mode: 'onboarding', step: 2, ts: Date.now() }
-      window.history.pushState(historyState, '')
-    } catch (e) {
-      console.warn('Failed to navigate to onboarding step 2 from progress:', e)
-      setCurrentMode('onboarding')
-      onboardingFlow.setOnboardingStep(2)
-    }
+    router.navigate({ mode: 'onboarding', step: 2 })
   }
 
   // Generate next item when entering drill mode OR when settings change while in drill mode
@@ -167,61 +137,7 @@ function AppRouter() {
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
 
-  // Sync browser/hardware back with in-app state using History API state
-  useEffect(() => {
-    const onPopState = (e) => {
-      console.group('🔙 PopState Triggered');
-      console.log('History event state:', e.state);
-      
-      const st = e.state || window.history.state || {}
-      if (st && st.appNav) {
-        console.log('📋 Valid app navigation state found:', st)
-        
-        if (st.mode === 'drill' && currentMode === 'drill') {
-          // Only allow drill mode navigation when already in drill mode
-          setCurrentMode('drill')
-          if (!drillMode.currentItem) {
-            console.log('🔧 Regenerating drill item after back navigation')
-            setTimeout(() => {
-              drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-            }, 100)
-          }
-        } else if (st.mode === 'progress') {
-          // Handle progress navigation
-          setCurrentMode('progress')
-        } else if (st.mode === 'onboarding' || (st.mode === 'drill' && currentMode === 'onboarding')) {
-          // Handle onboarding navigation OR ignore drill states when in onboarding
-          console.log('PRE-UPDATE state:', { currentMode, step: onboardingFlow.onboardingStep });
-          setCurrentMode('onboarding')
-          
-          if (typeof st.step === 'number' && st.step >= 1 && st.step <= 8) {
-            console.log(`🎯 Navigating to step ${st.step}`)
-            try { 
-              cleanupStateForStep(st.step)
-              onboardingFlow.setOnboardingStep(st.step)
-            } catch (err) {
-              console.error('Error setting onboarding step:', err)
-              cleanupStateForStep(1)
-              onboardingFlow.setOnboardingStep(1)
-            }
-          } else {
-            console.log(`⚠️  Invalid step in state, defaulting to step 1`)
-            try { 
-              onboardingFlow.setOnboardingStep(1)
-            } catch (error) {
-              console.error('Failed to set onboarding step:', error)
-            }
-          }
-        }
-      } else {
-        // ... (same)
-      }
-      console.groupEnd();
-    }
-    
-    window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
-  }, [onboardingFlow.setOnboardingStep, currentMode, drillMode, allFormsForRegion])
+  // The router now handles all popstate events
 
   // Enhanced state cleanup function
   const cleanupStateForStep = (targetStep) => {
