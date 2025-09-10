@@ -69,7 +69,7 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
-    target: 'es2020',
+    target: 'esnext',
     chunkSizeWarningLimit: 600,
     minify: mode === 'production' ? 'terser' : false,
     terserOptions: mode === 'production' ? {

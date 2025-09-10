@@ -10,25 +10,32 @@
  */
 
 import { verbs } from '../../data/verbs.js'
-import { gates } from '../../lib/data/levels.js'
-
-// Helper function for level ordering
-const levelOrder = (L) => ['A1','A2','B1','B2','C1','C2','ALL'].indexOf(L)
+import { LEVELS } from '../../lib/data/levels.js'
 
 /**
- * Get allowed mood/tense combinations for a specific CEFR level
+ * Get allowed mood/tense combinations for a specific CEFR level.
+ * The inventory for each level in `levels.js` is cumulative.
  * @param {string} level - CEFR level (A1, A2, B1, B2, C1, C2, ALL)
  * @returns {Set} - Set of allowed "mood|tense" combinations
  */
 const getAllowedCombosForLevel = (level) => {
   if (!level) return new Set()
-  if (level === 'ALL') return new Set(gates.map(g => `${g.mood}|${g.tense}`))
-  const maxIdx = levelOrder(level)
-  return new Set(
-    gates
-      .filter(g => levelOrder(g.level) <= maxIdx)
-      .map(g => `${g.mood}|${g.tense}`)
-  )
+
+  if (level === 'ALL') {
+    const allCombos = new Set()
+    Object.values(LEVELS).forEach(levelConfig => {
+      levelConfig.inventory.forEach(combo => {
+        allCombos.add(`${combo.mood}|${combo.tense}`)
+      })
+    })
+    return allCombos
+  }
+
+  if (LEVELS[level]) {
+    return new Set(LEVELS[level].inventory.map(g => `${g.mood}|${g.tense}`))
+  }
+
+  return new Set()
 }
 
 /**
