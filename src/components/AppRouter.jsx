@@ -9,7 +9,6 @@ const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashbo
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
-import { initProgressSystem } from '../lib/progress/index.js'
 import router from '../lib/routing/Router.js'
 
 function AppRouter() {
@@ -37,15 +36,7 @@ function AppRouter() {
   // Compute forms for current region (memoized for performance)
   const allFormsForRegion = useMemo(() => buildFormsForRegion(settings.region), [settings.region])
 
-  // Initialize app state
-  useEffect(() => {
-    // Initialize progress system on app load
-    initProgressSystem().then((userId) => {
-      console.log('✅ Sistema de progreso inicializado con usuario:', userId)
-    }).catch((error) => {
-      console.error('❌ Error inicializando sistema de progreso:', error)
-    })
-  }, [])
+  // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 
   // Initialize router and subscribe to route changes
   useEffect(() => {
