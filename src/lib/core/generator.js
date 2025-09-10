@@ -183,8 +183,8 @@ export function chooseNext({forms, history, currentItem}){
       }
       
       // Level filtering (O(1) with precomputed set)
-      // SKIP level filtering for specific practice OR when practicing by theme
-      const isSpecificTopicPractice = practiceMode === 'specific' || practiceMode === 'theme'
+      // SKIP level filtering only for Theme, or Specific when explicitly coming from Tema
+      const isSpecificTopicPractice = (practiceMode === 'theme') || (practiceMode === 'specific' && cameFromTema === true)
       if (!isSpecificTopicPractice) {
         // Determine allowed combos: from current block if set, else level
         const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
@@ -308,13 +308,22 @@ export function chooseNext({forms, history, currentItem}){
     }
     
     if (verbType === 'regular' && !isMixedPractice) {
-      // DEBUG CRÍTICO: Verificar por qué verbos irregulares pasan este filtro
-      if (verb.type !== 'regular') {
-        console.log(`🚨 FILTRO VERBTYPE DEBUG - Filtrando verbo irregular: ${f.lemma}, verb.type: ${verb.type}, verbType setting: ${verbType}`)
-        return false
+      // Morphology-based regular filter per form (ignore global boolean types)
+      if (isCompoundTense) {
+        const part = (f.value || '').split(/\s+/).pop()
+        if (!isRegularNonfiniteForm(f.lemma, 'part', part)) {
+          return false
+        }
+      } else if (f.mood === 'nonfinite') {
+        if (!isRegularNonfiniteForm(f.lemma, f.tense, f.value)) {
+          return false
+        }
       } else {
-        console.log(`✅ FILTRO VERBTYPE DEBUG - Permitiendo verbo regular: ${f.lemma}, verb.type: ${verb.type}, verbType setting: ${verbType}`)
+        if (!isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)) {
+          return false
+        }
       }
+      console.log(`✅ FILTRO VERBTYPE DEBUG - Permitiendo forma regular: ${f.lemma} ${f.mood}/${f.tense}/${f.person}`)
     } else if (verbType === 'irregular' && !isMixedPractice) {
       // For compound tenses, check if the verb has an irregular participle first
       if (isCompoundTense) {

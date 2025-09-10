@@ -10,6 +10,11 @@
  */
 
 import { verbs } from '../../data/verbs.js'
+import { 
+  isRegularFormForMood, 
+  isRegularNonfiniteForm,
+  hasIrregularParticiple
+} from '../../lib/core/conjugationRules.js'
 import { LEVELS } from '../../lib/data/levels.js'
 
 /**
@@ -89,9 +94,11 @@ export const matchesSpecific = (form, specificConstraints) => {
  * @returns {boolean} - Whether the form is allowed for the level
  */
 export const allowsLevel = (form, settings) => {
-  // Skip level validation for specific and theme-based practice
-  if (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') return true
-  
+  // Theme practice always shows all topics across levels
+  if (settings.practiceMode === 'theme') return true
+  // Specific practice: only bypass level gating when explicitly coming from Tema
+  if (settings.practiceMode === 'specific' && settings.cameFromTema === true) return true
+
   const userLevel = settings.level || 'A1'
   const allowed = getAllowedCombosForLevel(userLevel)
   return allowed.has(`${form.mood}|${form.tense}`)
@@ -132,12 +139,28 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
  */
 export const filterByVerbType = (forms, verbType) => {
   if (!verbType || verbType === 'all') return forms
-  
-  return forms.filter(form => {
-    const verb = verbs.find(v => v.lemma === form.lemma)
-    if (!verb) return false
-    return verb.type === verbType
-  })
+
+  const isIrregularForm = (f) => {
+    if (!f || !f.value) return false
+    if (f.mood === 'nonfinite') {
+      // Gerund/Participle irregularity by morphology
+      return !isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+    }
+    // Simple/compound tenses: detect irregular surface form
+    if (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc') {
+      // Compound: participle must be irregular to count as irregular form
+      // If the participle is regular, consider the whole periphrasis regular
+      // Detect regularity from surface string
+      return !isRegularNonfiniteForm(f.lemma, 'part', (f.value || '').split(/\s+/).pop()) && hasIrregularParticiple(f.lemma)
+    }
+    return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+  }
+
+  if (verbType === 'irregular') {
+    return forms.filter(isIrregularForm)
+  }
+  // verbType === 'regular'
+  return forms.filter(f => !isIrregularForm(f))
 }
 
 /**
