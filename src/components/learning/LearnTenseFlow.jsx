@@ -14,6 +14,7 @@ import CommunicativePractice from './CommunicativePractice.jsx';
 import PronunciationPractice from './PronunciationPractice.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
+import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 
@@ -22,10 +23,12 @@ import { useSettings } from '../../state/settings.js';
 // Import the family definitions directly
 import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 
+const logger = createLogger('LearnTenseFlow');
+
 // Function to select 3 coherent example verbs based on user's choice
 // This is the single source of truth for the entire learning flow
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
-  console.log('🔍 Seleccionando verbos coherentes:', { verbType, selectedFamilies, tense });
+  logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
   let candidateVerbs = [];
 
@@ -36,17 +39,17 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
     const regularIr = verbs.find(v => v.lemma === 'vivir' && v.type === 'regular');
     selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
     
-    console.log('✅ Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
+    logger.debug('Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
     
   } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
     // For irregular verbs, PRIORITIZE representative examples from family definitions
-    console.log('🎯 Seleccionando de familias:', selectedFamilies);
+    logger.debug('Seleccionando de familias:', selectedFamilies);
     
     // Get PRIORITY examples from each selected family first
     selectedFamilies.forEach(familyId => {
       const family = LEARNING_IRREGULAR_FAMILIES[familyId];
       if (family && family.priorityExamples) {
-        console.log(`🏆 Familia ${familyId} - verbos prioritarios:`, family.priorityExamples);
+        logger.debug(`Familia ${familyId} - verbos prioritarios:`, family.priorityExamples);
         
         // Add priority verbs that exist in our database
         family.priorityExamples.forEach(lemma => {
@@ -56,7 +59,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
           }
         });
       } else if (family && family.examples) {
-        console.log(`📚 Familia ${familyId} sin verbos prioritarios, usando ejemplos regulares:`, family.examples.slice(0, 3));
+        logger.debug(`Familia ${familyId} sin verbos prioritarios, usando ejemplos regulares:`, family.examples.slice(0, 3));
         
         // Fallback to first 3 regular examples if no priorityExamples defined
         family.examples.slice(0, 3).forEach(lemma => {
@@ -66,21 +69,21 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
           }
         });
       } else {
-        console.warn(`⚠️ Familia ${familyId} no encontrada o sin ejemplos`);
+        logger.warn(`Familia ${familyId} no encontrada o sin ejemplos`);
       }
     });
     
-    console.log('🔍 Candidatos prioritarios encontrados:', candidateVerbs.map(v => v.lemma));
+    logger.debug('Candidatos prioritarios encontrados:', candidateVerbs.map(v => v.lemma));
     
     // For learning purposes, just take the first 3 priority candidates
     // They are already carefully selected to be pedagogically optimal
     selectedVerbs = candidateVerbs.slice(0, 3);
-    console.log('✅ Selección de verbos prioritarios:', selectedVerbs.map(v => v.lemma));
+    logger.debug('Selección de verbos prioritarios:', selectedVerbs.map(v => v.lemma));
   }
 
   // Final check: ensure we have exactly 3 verbs
   if (selectedVerbs.length < 3) {
-    console.warn(`⚠️ Solo se encontraron ${selectedVerbs.length} verbos, buscando más en las familias...`);
+    logger.warn(`Solo se encontraron ${selectedVerbs.length} verbos, buscando más en las familias...`);
     
     // For irregular verbs, NEVER fall back to regular verbs - find more from same families
     if (verbType === 'irregular' && candidateVerbs.length > selectedVerbs.length) {
@@ -91,7 +94,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
           selectedVerbs.push(nextCandidate);
         }
       }
-      console.log('✅ Completado con más irregulares de las mismas familias');
+      logger.debug('Completado con más irregulares de las mismas familias');
     }
     
     // Only fall back to regular verbs if we're already working with regular verbs
@@ -112,13 +115,13 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
           }
         }
       } else {
-        console.error('🚨 CRITICAL: No se pudieron encontrar suficientes verbos irregulares para', selectedFamilies);
-        console.error('🚨 Esto es un error del sistema - las familias deberían tener suficientes verbos');
+        logger.error('CRITICAL: No se pudieron encontrar suficientes verbos irregulares para', selectedFamilies);
+        logger.error('Esto es un error del sistema - las familias deberían tener suficientes verbos');
       }
     }
   }
   
-  console.log('🎯 FINAL: Verbos seleccionados para', verbType, ':', selectedVerbs.map(v => v?.lemma));
+  logger.debug('FINAL: Verbos seleccionados para', verbType, ':', selectedVerbs.map(v => v?.lemma));
   return selectedVerbs.slice(0, 3);
 }
 
@@ -146,9 +149,9 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
         const personalized = personalizeSessionDuration(adaptive, duration);
         setPersonalizedDuration(personalized);
         
-        console.log('🎯 Adaptive learning configured:', { adaptive, personalized });
+        logger.debug('Adaptive learning configured:', { adaptive, personalized });
       } catch (error) {
-        console.error('Error calculating adaptive settings:', error);
+        logger.error('Error calculating adaptive settings:', error);
       }
     }
   }, [selectedTense?.tense, verbType, duration]);
@@ -171,7 +174,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
     const variant = abTesting.assignUserToVariant(userId, 'learning_flow_v1');
     setAbTestVariant(variant);
     
-    console.log('🧪 A/B Test variant assigned:', variant);
+    logger.debug('A/B Test variant assigned:', variant);
   }, []);
 
   const availableTenses = useMemo(() => {
@@ -215,7 +218,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   };
   
   const handleTypeSelection = (type, families = []) => {
-    console.log('🎯 Type selection:', { type, families });
+    logger.debug('Type selection:', { type, families });
     setVerbType(type);
     setSelectedFamilies(families);
     setCurrentStep('duration-selection');
@@ -241,7 +244,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
       const verbObjects = selectExampleVerbs(verbType, selectedFamilies, selectedTense.tense);
       setExampleVerbs(verbObjects);
       
-      console.log('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, verbObjects: verbObjects.map(v => v?.lemma) });
+      logger.debug('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, verbObjects: verbObjects.map(v => v?.lemma) });
       handleSmartStepTransition('duration-selection', 'introduction');
     }
   };
@@ -284,7 +287,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
       };
       
       abTesting.recordTestMetrics(userId, 'learning_flow_v1', completionMetrics);
-      console.log('🧪 A/B test completion metrics recorded:', completionMetrics);
+      logger.debug('A/B test completion metrics recorded:', completionMetrics);
     }
 
     setSelectedTense(null);
@@ -300,7 +303,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   const handleSmartStepTransition = (fromStep, toStep, depth = 0) => {
     // Prevent infinite recursion
     if (depth > 10) {
-      console.warn(`⚠️ Max recursion depth reached, defaulting to ${toStep}`);
+      logger.warn(`Max recursion depth reached, defaulting to ${toStep}`);
       setTimeout(() => setCurrentStep(toStep), 0);
       return;
     }
@@ -317,12 +320,12 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
     try {
       canSkip = canSkipPhase(userId, selectedTense?.tense, toStep);
     } catch (error) {
-      console.warn(`Error checking skip phase for ${toStep}:`, error);
+      logger.warn(`Error checking skip phase for ${toStep}:`, error);
       canSkip = false;
     }
     
     if (canSkip) {
-      console.log(`⏭️ Skipping ${toStep} based on user mastery (depth: ${depth})`);
+      logger.debug(`Skipping ${toStep} based on user mastery (depth: ${depth})`);
       // Recursively check next step with depth tracking - use setTimeout to break sync chain
       const nextStepAfter = getNextStep(toStep);
       if (nextStepAfter) {
@@ -359,17 +362,17 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   };
 
   const handleMechanicalPhaseComplete = () => {
-    console.log('Mechanical phase complete, moving to meaningful practice.');
+    logger.debug('Mechanical phase complete, moving to meaningful practice.');
     setCurrentStep('meaningful_practice');
   };
 
   const handleMeaningfulPhaseComplete = () => {
-    console.log('Meaningful phase complete, moving to pronunciation practice.');
+    logger.debug('Meaningful phase complete, moving to pronunciation practice.');
     setCurrentStep('pronunciation_practice');
   };
 
   const handlePronunciationPhaseComplete = () => {
-    console.log('Pronunciation practice complete, moving to communicative practice.');
+    logger.debug('Pronunciation practice complete, moving to communicative practice.');
     setCurrentStep('communicative_practice');
   };
 

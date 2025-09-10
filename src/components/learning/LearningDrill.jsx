@@ -9,7 +9,10 @@ import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, adjustRealTimeDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
 import { recordLearningSession } from '../../lib/learning/analytics.js';
+import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
+
+const logger = createLogger('LearningDrill');
 
 const PRONOUNS_DISPLAY = {
   '1s': 'yo',
@@ -113,7 +116,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   }, [duration]);
 
   const generateNextItem = React.useCallback(() => {
-    // Get current settings WITHOUT modifying global state
+    // Get current settings snapshot WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
     
     // For irregular practice, cycle through families for variety
@@ -124,8 +127,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
     }
     
-    // Create temporary settings object for this learning session
-    const temporarySettings = {
+    // Create isolated settings object for generator (NO GLOBAL MUTATION)
+    const sessionSettings = {
       ...currentSettings,
       practiceMode: 'specific', 
       specificMood: tense?.mood,
@@ -133,71 +136,61 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       verbType: verbType === 'irregular' ? 'irregular' : verbType,
       selectedFamily: selectedFamilyForGenerator,
       cameFromTema: false,
-      // IMPORTANTE: Usar el nivel apropiado según el tiempo verbal que se está aprendiendo
       level: (() => {
         const mappedLevel = getLevelForTense(tense?.tense);
-        const finalLevel = mappedLevel || currentSettings.level || 'A1';
-        console.log('🎯 Level mapping:', { tense: tense?.tense, mapped: mappedLevel, current: currentSettings.level, final: finalLevel });
-        return finalLevel;
+        return mappedLevel || currentSettings.level || 'A1';
       })()
     };
     
-    console.log('🎯 Temporary learning settings:', temporarySettings);
-    console.log('🔍 Available families:', selectedFamilies); 
-    console.log('🎲 Selected family for generator:', selectedFamilyForGenerator);
-    console.log('🎯 Verb type:', verbType);
-    
-    // Store original settings to restore later
-    const originalSettings = { ...currentSettings };
+    logger.debug('Session settings for generator', {
+      mood: tense?.mood,
+      tense: tense?.tense,
+      verbType,
+      selectedFamily: selectedFamilyForGenerator,
+      level: sessionSettings.level
+    });
     
     try {
-      // Temporarily apply learning settings
-      settings.set(temporarySettings);
-      
       const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
       const allForms = Array.from(FORM_LOOKUP_MAP.values())
       const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
 
-      // Try with filtered forms first
+      // Use generator with isolated settings - NO GLOBAL MUTATION
       let nextItem = chooseNext({
         forms: filteredForms,
         history: exerciseHistory,
-        currentItem
+        currentItem,
+        sessionSettings // Pass settings as parameter instead of mutating global state
       });
 
-      // Fallback: if no item was generated (e.g., too restrictive), use all forms
+      // Fallback: if no item was generated, use all forms
       if (!nextItem) {
         nextItem = chooseNext({
           forms: allForms,
           history: exerciseHistory,
-          currentItem
+          currentItem,
+          sessionSettings
         })
       }
       
-      // IMMEDIATELY restore original settings
-      settings.set(originalSettings);
-      
-      console.log('📝 Generated item:', nextItem);
+      logger.debug('Generated exercise item', { lemma: nextItem?.lemma, person: nextItem?.person });
       
       if (nextItem) {
         setCurrentItem(nextItem);
         setInputValue('');
         setResult('idle');
         setStartTime(Date.now());
-        // Agregar al historial para evitar repeticiones
-        setExerciseHistory(prev => [...prev, nextItem].slice(-20)); // Mantener últimos 20
+        setExerciseHistory(prev => [...prev, nextItem].slice(-20));
         setTimeout(() => inputRef.current?.focus(), 0);
       } else {
-        console.error('❌ No item generated - generator returned null');
+        logger.warn('No item generated - generator returned null');
         setCurrentItem(null);
       }
     } catch (error) {
-      console.error('💥 Error generating next item:', error);
-      // Ensure settings are restored even on error
-      settings.set(originalSettings);
+      logger.error('Error generating next item', error);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, settings, totalAttempts, excludeLemmas]); // REMOVED currentItem to prevent infinite loop
+  }, [tense, verbType, selectedFamilies, totalAttempts, excludeLemmas, exerciseHistory]); // Include exerciseHistory dependency
 
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
@@ -206,28 +199,20 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     }
   }, [tense?.tense, verbType, selectedFamilies]); // Don't depend on generateNextItem
 
-  // Track tense drill session and preserve original settings
+  // Track tense drill session WITHOUT mutating global settings
   useEffect(() => {
-    // Store original settings on mount
-    const originalSettings = settings.getState ? settings.getState() : settings;
-    console.log('💾 Preserved original settings for learning session:', originalSettings);
-    
     if (tense?.tense) {
       handleTenseDrillStarted(tense.tense);
-      console.log(`🔁 Learning drill started for tense: ${tense.tense}`);
+      logger.debug('Learning drill started', { tense: tense.tense });
     }
     
-    // Return cleanup function to track end of session and restore settings
     return () => {
       if (tense?.tense) {
         handleTenseDrillEnded(tense.tense);
-        console.log(`✅ Learning drill ended for tense: ${tense.tense}`);
+        logger.debug('Learning drill ended', { tense: tense.tense });
       }
-      // Ensure original settings are restored on unmount
-      settings.set(originalSettings);
-      console.log('♾️ Restored original settings on component unmount');
     };
-  }, [tense?.tense]); // Removed function dependencies to prevent infinite loops
+  }, [tense?.tense, handleTenseDrillStarted, handleTenseDrillEnded]);
 
   useEffect(() => {
     // enter animation on mount
@@ -242,9 +227,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         const userId = 'default'; // TODO: Get actual user ID
         const adaptive = calculateAdaptiveDifficulty(userId, tense.tense, verbType);
         setAdaptiveSettings(adaptive);
-        console.log('🎯 Adaptive settings initialized:', adaptive);
+        logger.debug('Adaptive settings initialized', adaptive);
       } catch (error) {
-        console.error('Error initializing adaptive settings:', error);
+        logger.error('Error initializing adaptive settings', error);
         // Use safe defaults
         setAdaptiveSettings({
           level: 'intermediate',
@@ -262,7 +247,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     if (!sessionStartTimestamp) {
       const startTime = Date.now();
       setSessionStartTimestamp(startTime);
-      console.log('📊 Analytics session started:', startTime);
+      logger.debug('Analytics session started', { startTime });
     }
   }, [sessionStartTimestamp]);
 
@@ -298,7 +283,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     });
     
     setRealTimeDifficulty(newDifficulty);
-    console.log('🔄 Real-time difficulty adjusted:', newDifficulty);
+    logger.debug('Real-time difficulty adjusted', newDifficulty);
 
     if (isCorrect) {
       setResult('correct');
@@ -312,7 +297,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         setTimeout(() => setShowStreakAnimation(false), 2000);
         await handleStreakIncremented();
       }
-      console.log(`✅ Correcto: ${currentItem.lemma} (${getPersonText(currentItem.person)}) - ${currentItem.value}`);
+      logger.debug('Correct answer', { lemma: currentItem.lemma, person: getPersonText(currentItem.person), value: currentItem.value });
     } else {
       setResult('incorrect');
       setCorrectStreak(0);
@@ -322,7 +307,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       
       // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
       setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
-      console.log(`❌ Error en ${currentItem.lemma} (${getPersonText(currentItem.person)}) - agregado a cola de reintegración`);
+      logger.debug('Incorrect answer - added to retry queue', { lemma: currentItem.lemma, person: getPersonText(currentItem.person) });
     }
     
     setTimeout(() => containerRef.current?.focus(), 0);
@@ -380,7 +365,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             setResult('idle');
             setStartTime(Date.now());
             setTimeout(() => inputRef.current?.focus(), 0);
-            console.log('🔄 Reintegrando ejercicio fallado:', nextFailedItem.lemma, getPersonText(nextFailedItem.person));
+            logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
           }, 250);
         } else {
           // subtle swap animation when moving to next random item
@@ -418,9 +403,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       
       const nextRec = generateNextSessionRecommendations(userId, currentSession);
       recommendations = nextRec ? [nextRec.recommendedTense || 'Continuar practicando'] : ['Continuar practicando'];
-      console.log('🎯 Generated recommendations:', nextRec);
+      logger.debug('Generated recommendations', nextRec);
     } catch (error) {
-      console.error('Error generating recommendations:', error);
+      logger.error('Error generating recommendations', error);
       recommendations = ['Continuar practicando'];
     }
 
@@ -451,9 +436,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       };
 
       recordLearningSession(userId, sessionAnalytics);
-      console.log('📊 Session analytics recorded:', sessionAnalytics);
+      logger.debug('Session analytics recorded', sessionAnalytics);
     } catch (error) {
-      console.error('Error recording session analytics:', error);
+      logger.error('Error recording session analytics', error);
     }
     
     return { 
@@ -558,7 +543,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         pickAndSpeak();
       }
     } catch (e) {
-      console.warn('TTS unavailable:', e);
+      logger.warn('TTS unavailable', e);
     }
   };
 

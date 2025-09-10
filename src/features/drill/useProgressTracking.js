@@ -1,6 +1,6 @@
 // Hook personalizado para tracking de progreso en Drill
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { 
   trackAttemptStarted, 
   trackAttemptSubmitted,
@@ -11,6 +11,7 @@ import {
 } from './tracking.js'
 import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
 import { isProgressSystemInitialized } from '../../lib/progress/index.js'
+import { createLogger } from '../../lib/utils/logger.js'
 
 /**
  * Hook personalizado para tracking de progreso en Drill
@@ -19,23 +20,24 @@ import { isProgressSystemInitialized } from '../../lib/progress/index.js'
  * @returns {Object} Funciones para manejar el tracking
  */
 export function useProgressTracking(currentItem, onResult) {
+  const logger = createLogger('useProgressTracking')
   const attemptIdRef = useRef(null)
   const itemStartTimeRef = useRef(null)
   const sessionInitializedRef = useRef(false)
-  const progressSystemReadyRef = useRef(false)
+  const [progressSystemReady, setProgressSystemReady] = useState(false)
 
   // Verificar si el sistema de progreso está listo
   useEffect(() => {
     const checkProgressSystem = () => {
       try {
         const isReady = isProgressSystemInitialized()
-        if (isReady !== progressSystemReadyRef.current) {
-          progressSystemReadyRef.current = isReady
-          console.log(`📊 Sistema de progreso ${isReady ? 'listo' : 'no disponible'}`)
+        if (isReady !== progressSystemReady) {
+          setProgressSystemReady(isReady)
+          logger.debug(`Sistema de progreso ${isReady ? 'listo' : 'no disponible'}`)
         }
       } catch (error) {
-        console.warn('Error al verificar estado del sistema de progreso:', error)
-        progressSystemReadyRef.current = false
+        logger.warn('Error al verificar estado del sistema de progreso:', error)
+        setProgressSystemReady(false)
       }
     }
 
@@ -44,7 +46,7 @@ export function useProgressTracking(currentItem, onResult) {
 
     // Verificar periódicamente hasta que esté listo
     const interval = setInterval(() => {
-      if (!progressSystemReadyRef.current) {
+      if (!progressSystemReady) {
         checkProgressSystem()
       } else {
         clearInterval(interval)
@@ -52,11 +54,11 @@ export function useProgressTracking(currentItem, onResult) {
     }, 500)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [progressSystemReady])
 
   // Efecto para iniciar el tracking cuando cambia el ítem
   useEffect(() => {
-    if (currentItem && currentItem.id && progressSystemReadyRef.current) {
+    if (currentItem && currentItem.id && progressSystemReady) {
       // Inicializar sesión solo una vez
       if (!sessionInitializedRef.current) {
         try {
@@ -64,12 +66,12 @@ export function useProgressTracking(currentItem, onResult) {
           if (userId) {
             incrementSessionCount(userId)
             sessionInitializedRef.current = true
-            console.log('📊 Nueva sesión de práctica iniciada')
+            logger.debug('Nueva sesión de práctica iniciada')
           } else {
-            console.warn('Usuario no disponible para inicializar sesión')
+            logger.warn('Usuario no disponible para inicializar sesión')
           }
         } catch (error) {
-          console.warn('Error al inicializar sesión:', error)
+          logger.warn('Error al inicializar sesión:', error)
         }
       }
       
@@ -77,26 +79,26 @@ export function useProgressTracking(currentItem, onResult) {
       try {
         attemptIdRef.current = trackAttemptStarted(currentItem)
         itemStartTimeRef.current = Date.now()
-        console.log(`🎯 Intento iniciado para ítem ${currentItem.id}`)
+        logger.debug(`Intento iniciado para ítem ${currentItem.id}`)
       } catch (error) {
-        console.warn('Error al iniciar tracking de intento:', error)
+        logger.warn('Error al iniciar tracking de intento:', error)
         // Continuar sin tracking para no romper el flujo
         attemptIdRef.current = null
         itemStartTimeRef.current = Date.now() // Mantener tiempo para latencia
       }
-    } else if (currentItem && currentItem.id && !progressSystemReadyRef.current) {
-      console.log('⏳ Esperando a que el sistema de progreso esté listo...')
+    } else if (currentItem && currentItem.id && !progressSystemReady) {
+      logger.debug('Esperando a que el sistema de progreso esté listo...')
     }
     
     // Cleanup: registrar fin de intento si es necesario
     return () => {
       if (attemptIdRef.current) {
-        console.log(`🔚 Intento ${attemptIdRef.current} finalizado (cleanup)`)
+        logger.debug(`Intento ${attemptIdRef.current} finalizado (cleanup)`)
         attemptIdRef.current = null
         itemStartTimeRef.current = null
       }
     }
-  }, [currentItem?.id, progressSystemReadyRef.current])
+  }, [currentItem?.id, progressSystemReady])
 
   /**
    * Maneja el resultado de un intento
@@ -109,7 +111,7 @@ export function useProgressTracking(currentItem, onResult) {
     }
     
     // Registrar el resultado del intento solo si el sistema está listo
-    if (progressSystemReadyRef.current && attemptIdRef.current && itemStartTimeRef.current) {
+    if (progressSystemReady && attemptIdRef.current && itemStartTimeRef.current) {
       try {
         const latencyMs = Date.now() - itemStartTimeRef.current
         
@@ -124,9 +126,9 @@ export function useProgressTracking(currentItem, onResult) {
           item: currentItem
         })
         
-        console.log(`✅ Intento ${attemptIdRef.current} registrado`)
+        logger.debug(`Intento ${attemptIdRef.current} registrado`)
       } catch (error) {
-        console.warn('Error al registrar resultado del intento:', error)
+        logger.warn('Error al registrar resultado del intento:', error)
       } finally {
         // Limpiar referencias siempre
         attemptIdRef.current = null
@@ -134,7 +136,7 @@ export function useProgressTracking(currentItem, onResult) {
       }
     } else if (itemStartTimeRef.current) {
       // Si no hay tracking pero sí había tiempo, limpiarlo
-      console.log('🔄 Resultado procesado sin tracking (sistema no listo)')
+      logger.debug('Resultado procesado sin tracking (sistema no listo)')
       itemStartTimeRef.current = null
     }
   }
@@ -143,16 +145,16 @@ export function useProgressTracking(currentItem, onResult) {
    * Registra que se mostró una pista
    */
   const handleHintShown = async () => {
-    if (!progressSystemReadyRef.current) {
-      console.log('💡 Pista mostrada (sin tracking)')
+    if (!progressSystemReady) {
+      logger.debug('Pista mostrada (sin tracking)')
       return
     }
     
     try {
       await trackHintShown()
-      console.log('💡 Pista mostrada y registrada')
+      logger.debug('Pista mostrada y registrada')
     } catch (error) {
-      console.warn('Error al registrar pista:', error)
+      logger.warn('Error al registrar pista:', error)
     }
   }
 
@@ -160,16 +162,16 @@ export function useProgressTracking(currentItem, onResult) {
    * Registra que se incrementó una racha
    */
   const handleStreakIncremented = async () => {
-    if (!progressSystemReadyRef.current) {
-      console.log('🔥 Racha incrementada (sin tracking)')
+    if (!progressSystemReady) {
+      logger.debug('Racha incrementada (sin tracking)')
       return
     }
     
     try {
       await trackStreakIncremented()
-      console.log('🔥 Racha incrementada y registrada')
+      logger.debug('Racha incrementada y registrada')
     } catch (error) {
-      console.warn('Error al registrar racha:', error)
+      logger.warn('Error al registrar racha:', error)
     }
   }
 
@@ -178,16 +180,16 @@ export function useProgressTracking(currentItem, onResult) {
    * @param {string} tense - Tiempo que se practica
    */
   const handleTenseDrillStarted = async (tense) => {
-    if (!progressSystemReadyRef.current) {
-      console.log(`🔁 Drill de tiempo ${tense} iniciado (sin tracking)`)
+    if (!progressSystemReady) {
+      logger.debug(`Drill de tiempo ${tense} iniciado (sin tracking)`)
       return
     }
     
     try {
       await trackTenseDrillStarted(tense)
-      console.log(`🔁 Drill de tiempo ${tense} iniciado y registrado`)
+      logger.debug(`Drill de tiempo ${tense} iniciado y registrado`)
     } catch (error) {
-      console.warn('Error al registrar inicio de drill:', error)
+      logger.warn('Error al registrar inicio de drill:', error)
     }
   }
 
@@ -196,16 +198,16 @@ export function useProgressTracking(currentItem, onResult) {
    * @param {string} tense - Tiempo que se practicaba
    */
   const handleTenseDrillEnded = async (tense) => {
-    if (!progressSystemReadyRef.current) {
-      console.log(`✅ Drill de tiempo ${tense} finalizado (sin tracking)`)
+    if (!progressSystemReady) {
+      logger.debug(`Drill de tiempo ${tense} finalizado (sin tracking)`)
       return
     }
     
     try {
       await trackTenseDrillEnded(tense)
-      console.log(`✅ Drill de tiempo ${tense} finalizado y registrado`)
+      logger.debug(`Drill de tiempo ${tense} finalizado y registrado`)
     } catch (error) {
-      console.warn('Error al registrar fin de drill:', error)
+      logger.warn('Error al registrar fin de drill:', error)
     }
   }
 
