@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { diffChars } from 'diff';
 import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
+import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 // import { verbs } from '../../data/verbs.js';
@@ -300,7 +301,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
         ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
         : conjugation;
-      const filledSentence = sentenceTemplate.replace(/__VERB__/, `<span class="highlight">${conjDisplay}</span>`);
+      
       const isVisible = index <= visibleSentence;
       return (
         <p
@@ -308,8 +309,13 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           className={`story-sentence ${isVisible ? 'visible' : ''}`}
           style={{ opacity: isVisible ? 1 : 0, visibility: isVisible ? 'visible' : 'hidden' }}
           aria-hidden={!isVisible}
-          dangerouslySetInnerHTML={{ __html: filledSentence }}
-        />
+        >
+          <SafeTemplate 
+            template={sentenceTemplate}
+            replacements={{ verb: conjDisplay }}
+            highlightClass="highlight"
+          />
+        </p>
       );
     });
 

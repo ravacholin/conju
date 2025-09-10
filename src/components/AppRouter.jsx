@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
@@ -38,35 +38,56 @@ function AppRouter() {
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 
+  // Create stable refs for hooks to avoid dependency issues
+  const onboardingFlowRef = useRef(onboardingFlow)
+  const drillModeRef = useRef(drillMode)
+  
+  // Update refs when hooks change
+  useEffect(() => {
+    onboardingFlowRef.current = onboardingFlow
+  }, [onboardingFlow])
+  
+  useEffect(() => {
+    drillModeRef.current = drillMode
+  }, [drillMode])
+
+  // Stable route handler function
+  const handleRouteChange = useCallback((route, type) => {
+    console.log('📍 Route changed:', route, 'via', type)
+    setCurrentMode(route.mode)
+    
+    if (route.mode === 'onboarding' && route.step) {
+      cleanupStateForStep(route.step)
+      onboardingFlowRef.current.setOnboardingStep(route.step)
+    }
+    
+    // Regenerate drill item if navigating to drill without current item
+    if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
+      setTimeout(() => {
+        drillModeRef.current.generateNextItem(
+          null, 
+          allFormsForRegion, 
+          onboardingFlowRef.current.getAvailableMoodsForLevel, 
+          onboardingFlowRef.current.getAvailableTensesForLevelAndMood
+        )
+      }, 100)
+    }
+  }, [allFormsForRegion])
+
   // Initialize router and subscribe to route changes
   useEffect(() => {
     // Set initial route from router
     const initialRoute = router.getCurrentRoute()
     setCurrentMode(initialRoute.mode)
     if (initialRoute.step) {
-      onboardingFlow.setOnboardingStep(initialRoute.step)
+      onboardingFlowRef.current.setOnboardingStep(initialRoute.step)
     }
 
     // Subscribe to route changes
-    const unsubscribe = router.subscribe((route, type) => {
-      console.log('📍 Route changed:', route, 'via', type)
-      setCurrentMode(route.mode)
-      
-      if (route.mode === 'onboarding' && route.step) {
-        cleanupStateForStep(route.step)
-        onboardingFlow.setOnboardingStep(route.step)
-      }
-      
-      // Regenerate drill item if navigating to drill without current item
-      if (route.mode === 'drill' && !drillMode.currentItem) {
-        setTimeout(() => {
-          drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-        }, 100)
-      }
-    })
+    const unsubscribe = router.subscribe(handleRouteChange)
 
     return unsubscribe
-  }, [onboardingFlow, drillMode, allFormsForRegion])
+  }, [handleRouteChange])
 
   const handleStartPractice = () => {
     console.log('🚀 handleStartPractice called');

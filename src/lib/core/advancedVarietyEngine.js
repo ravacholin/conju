@@ -623,9 +623,21 @@ export class AdvancedVarietyEngine {
    * Weighted random selection from scored forms
    */
   weightedRandomSelection(scoredForms) {
+    // Validate input - handle empty arrays
+    if (!scoredForms || !Array.isArray(scoredForms) || scoredForms.length === 0) {
+      console.warn('weightedRandomSelection: Empty or invalid scoredForms array provided')
+      return null
+    }
+    
+    // Single item - no need for complex selection
+    if (scoredForms.length === 1) {
+      return scoredForms[0].form
+    }
+    
     // Normalize scores and convert to selection weights (higher score = higher probability)
-    const maxScore = Math.max(...scoredForms.map(item => item.totalScore))
-    const minScore = Math.min(...scoredForms.map(item => item.totalScore))
+    const scores = scoredForms.map(item => item.totalScore)
+    const maxScore = Math.max(...scores)
+    const minScore = Math.min(...scores)
     const scoreRange = maxScore - minScore || 1
     
     const weights = scoredForms.map(item => {
@@ -634,6 +646,13 @@ export class AdvancedVarietyEngine {
     })
     
     const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
+    
+    // Handle edge case where all weights are 0
+    if (totalWeight === 0) {
+      const randomIndex = Math.floor(Math.random() * scoredForms.length)
+      return scoredForms[randomIndex].form
+    }
+    
     let randomValue = Math.random() * totalWeight
     
     for (let i = 0; i < scoredForms.length; i++) {
@@ -643,8 +662,8 @@ export class AdvancedVarietyEngine {
       }
     }
     
-    // Fallback
-    return scoredForms[0].form
+    // Fallback - should never reach here but ensure we return something valid
+    return scoredForms[scoredForms.length - 1].form
   }
 
   /**
