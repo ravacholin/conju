@@ -1,23 +1,21 @@
 import { LEVELS } from '../data/levels.js';
+import gates from '../../data/curriculum.json';
 
 export function getAllowedCombosForLevel(level) {
   if (!level) return new Set();
-
+  // Use curriculum.json (canonical) for mood/tense keys
   if (level === 'ALL') {
-    const allCombos = new Set();
-    Object.values(LEVELS).forEach(levelConfig => {
-      levelConfig.inventory.forEach(combo => {
-        allCombos.add(`${combo.mood}|${combo.tense}`);
-      });
-    });
-    return allCombos;
+    return new Set(gates.map(g => `${g.mood}|${g.tense}`));
   }
-
-  if (LEVELS[level]) {
-    return new Set(LEVELS[level].inventory.map(g => `${g.mood}|${g.tense}`));
-  }
-
-  return new Set();
+  const order = ['A1','A2','B1','B2','C1','C2'];
+  const maxIdx = order.indexOf(level);
+  if (maxIdx === -1) return new Set();
+  const set = new Set(
+    gates
+      .filter(g => order.indexOf(g.level) <= maxIdx)
+      .map(g => `${g.mood}|${g.tense}`)
+  );
+  return set;
 }
 
 export function getAllowedPersonsForRegion(region) {

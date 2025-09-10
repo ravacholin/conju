@@ -10,8 +10,8 @@ export function getEligibleFormsForSettings(allFormsForRegion, settings) {
 // Returns allowed moods for a level (cumulative by curriculum), or for theme practice returns all moods
 export function getAllowedMoods(settings) {
   const { level, practiceMode, cameFromTema } = settings || {}
-  if (practiceMode === 'specific' || practiceMode === 'theme') {
-    // For specific or theme practice: allow all moods
+  // Theme shows all; Specific only shows all when coming explicitly from Tema
+  if (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true)) {
     return ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
   }
   const combos = getAllowedCombosForLevel(level || 'A1')
@@ -26,8 +26,8 @@ export function getAllowedMoods(settings) {
 // Returns allowed tenses for a given mood under current settings
 export function getAllowedTensesForMood(settings, mood) {
   const { level, practiceMode, cameFromTema } = settings || {}
-  if (practiceMode === 'specific' || practiceMode === 'theme') {
-    // For specific or theme practice: allow all tenses for the mood
+  // Theme shows all; Specific only shows all when coming explicitly from Tema
+  if (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true)) {
     const map = {
       indicative: ['pres','pretPerf','pretIndef','impf','plusc','fut','futPerf'],
       subjunctive: ['subjPres','subjImpf','subjPerf','subjPlusc'],

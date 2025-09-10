@@ -16,6 +16,7 @@ import {
   hasIrregularParticiple
 } from '../../lib/core/conjugationRules.js'
 import { LEVELS } from '../../lib/data/levels.js'
+import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
 
 /**
  * Get allowed mood/tense combinations for a specific CEFR level.
@@ -23,25 +24,8 @@ import { LEVELS } from '../../lib/data/levels.js'
  * @param {string} level - CEFR level (A1, A2, B1, B2, C1, C2, ALL)
  * @returns {Set} - Set of allowed "mood|tense" combinations
  */
-const getAllowedCombosForLevel = (level) => {
-  if (!level) return new Set()
-
-  if (level === 'ALL') {
-    const allCombos = new Set()
-    Object.values(LEVELS).forEach(levelConfig => {
-      levelConfig.inventory.forEach(combo => {
-        allCombos.add(`${combo.mood}|${combo.tense}`)
-      })
-    })
-    return allCombos
-  }
-
-  if (LEVELS[level]) {
-    return new Set(LEVELS[level].inventory.map(g => `${g.mood}|${g.tense}`))
-  }
-
-  return new Set()
-}
+// Delegate to core gating to avoid mood-name mismatches
+const getAllowedCombosForLevel = (level) => gateCombos(level)
 
 /**
  * Check if a person/pronoun is allowed based on dialect settings
