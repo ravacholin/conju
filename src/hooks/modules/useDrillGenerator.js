@@ -91,6 +91,11 @@ export const useDrillGenerator = () => {
 
       // Check if double mode is requested and viable
       if (settings.doubleActive) {
+        // Defensive: ensure helper functions exist before attempting double mode
+        const helpersOk = typeof getAvailableMoodsForLevel === 'function' && typeof getAvailableTensesForLevelAndMood === 'function'
+        if (!helpersOk) {
+          logger.warn('generateNextItem', 'Double mode helpers missing, skipping double mode path')
+        }
         if (isDoubleModeViable(allFormsForRegion, settings, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)) {
           logger.debug('generateNextItem', 'Attempting double mode generation')
           // Note: DoubleModeManager handles setCurrentItem internally
@@ -232,10 +237,7 @@ export const useDrillGenerator = () => {
         const fallbackForm = await tryIntelligentFallback(settings, eligibleForms, {
           specificMood: specificConstraints.specificMood,
           specificTense: specificConstraints.specificTense,
-          isSpecific: specificConstraints.isSpecific,
-          matchesSpecific: (form) => matchesSpecific(form, specificConstraints),
-          allowsPerson: (person) => allowsPerson(person, settings),
-          allowsLevel: (form) => allowsLevel(form, settings)
+          isSpecific: specificConstraints.isSpecific
         })
         
         if (fallbackForm) {
