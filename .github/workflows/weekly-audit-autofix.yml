@@ -1,0 +1,71 @@
+name: Weekly Dataset Auto-Fix
+
+on:
+  schedule:
+    - cron: '0 4 * * 3' # Every Wednesday at 04:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run auto-fix audits (apply + resolve conflicts)
+        run: |
+          npm run audit:duplicates -- --apply --resolve-conflicts || true
+          npm run audit:truncated -- --apply || true
+          # Re-run full audit (report only) to get current status
+          npm run audit:all || true
+
+      - name: Create Pull Request with changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: audit/autofix-${{ github.run_id }}
+          title: "chore(data): weekly dataset auto-fixes"
+          body: |
+            This automated PR applies safe dataset corrections from weekly audits.
+
+            Included:
+            - Removed exact duplicates (verbs + derived datasets)
+            - Fixed safe truncated forms and propagated to derived datasets
+            - Backups are uploaded as artifacts in the workflow run
+
+            Please review any remaining warnings in the audit logs.
+          commit-message: |
+            chore(data): apply weekly audit auto-fixes
+
+            - remove exact duplicates (verbs/enriched/chunks)
+            - fix safe truncated forms and propagate
+          labels: |
+            automated
+            audit
+          delete-branch: true
+
+      - name: Upload audit artifacts (backups)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-autofix-backups-and-logs
+          path: |
+            src/data/*.backup-*
+            src/data/chunks/*.backup-*
+            scripts/**/*.js
+            package.json
+
