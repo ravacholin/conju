@@ -38,6 +38,7 @@ function getRegularForm(lemma, mood, tense, person) {
   return null
 }
 
+const FAIL = process.argv.includes('--fail-on-findings')
 const all = loadAllVerbs()
 const problems = []
 
@@ -78,6 +79,10 @@ for (const [lemma, list] of byLemma.entries()) {
 }
 console.log('\nJSON:\n' + JSON.stringify(problems, null, 2))
 
+if (FAIL) {
+  process.exit(1)
+}
+
 function normalizeMood(tense) {
   if (tense.startsWith('subj')) return 'subjunctive'
   if (tense.startsWith('imp')) return 'imperative'
@@ -85,4 +90,3 @@ function normalizeMood(tense) {
   if (tense === 'inf' || tense === 'ger' || tense === 'part' || tense === 'pp') return 'nonfinite'
   return 'indicative'
 }
-

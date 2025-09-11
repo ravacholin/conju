@@ -83,6 +83,7 @@ function getRegularForm(lemma, mood, tense, person) {
   return null
 }
 
+const FAIL = process.argv.includes('--fail-on-findings')
 const all = loadAllVerbs()
 const findings = []
 for (const verb of all) {
@@ -113,3 +114,6 @@ for (const [lemma, list] of byLemma.entries()) {
 }
 console.log('\nJSON:\n' + JSON.stringify(findings, null, 2))
 
+if (FAIL) {
+  process.exit(1)
+}

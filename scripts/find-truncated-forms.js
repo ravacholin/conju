@@ -58,6 +58,7 @@ function needsIrregularReview(lemma) {
 
 const findings = []
 const APPLY = process.argv.includes('--apply')
+const FAIL = process.argv.includes('--fail-on-findings')
 
 allVerbs.forEach((verb) => {
   verb.paradigms?.forEach((paradigm, pIndex) => {
@@ -111,6 +112,10 @@ for (const [lemma, items] of byLemma.entries()) {
 
 // Also print machine-readable JSON for tooling
 console.log('\nJSON:\n' + JSON.stringify(findings, null, 2))
+
+if (FAIL) {
+  process.exit(1)
+}
 
 if (APPLY) {
   // Apply only safe suggestions (have suggested, and not flagged for irregular review)

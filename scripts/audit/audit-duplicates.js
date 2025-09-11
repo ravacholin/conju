@@ -7,6 +7,7 @@ const all = loadAllVerbs()
 const findings = []
 const APPLY = process.argv.includes('--apply')
 const RESOLVE = process.argv.includes('--resolve-conflicts')
+const FAIL = process.argv.includes('--fail-on-findings')
 
 for (const verb of all) {
   const slotMap = new Map() // mood|tense|person -> values[]
@@ -48,6 +49,10 @@ for (const [lemma, list] of byLemma) {
   })
 }
 console.log('\nJSON:\n' + JSON.stringify(findings, null, 2))
+
+if (FAIL) {
+  process.exit(1)
+}
 
 if (APPLY) {
   // Only remove exact duplicates; ignore slot_conflict and slot_duplicate (non-exact) for safety

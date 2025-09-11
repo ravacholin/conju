@@ -6,11 +6,12 @@
 import { spawn } from 'node:child_process'
 
 const APPLY = process.argv.includes('--apply')
+const FAIL = process.argv.includes('--fail-on-findings')
 const scripts = [
-  { name: 'duplicates', cmd: 'node', args: ['scripts/audit/audit-duplicates.js', ...(APPLY ? ['--apply'] : [])] },
-  { name: 'regularity', cmd: 'node', args: ['scripts/audit/audit-regularity.js'] },
-  { name: 'irregular_consistency', cmd: 'node', args: ['scripts/audit/audit-irregular-consistency.js'] },
-  { name: 'truncated_forms', cmd: 'node', args: ['scripts/find-truncated-forms.js', ...(APPLY ? ['--apply'] : [])] }
+  { name: 'duplicates', cmd: 'node', args: ['scripts/audit/audit-duplicates.js', ...(APPLY ? ['--apply'] : []), ...(FAIL ? ['--fail-on-findings'] : [])] },
+  { name: 'regularity', cmd: 'node', args: ['scripts/audit/audit-regularity.js', ...(FAIL ? ['--fail-on-findings'] : [])] },
+  { name: 'irregular_consistency', cmd: 'node', args: ['scripts/audit/audit-irregular-consistency.js', ...(FAIL ? ['--fail-on-findings'] : [])] },
+  { name: 'truncated_forms', cmd: 'node', args: ['scripts/find-truncated-forms.js', ...(APPLY ? ['--apply'] : []), ...(FAIL ? ['--fail-on-findings'] : [])] }
 ]
 
 let exitCode = 0
