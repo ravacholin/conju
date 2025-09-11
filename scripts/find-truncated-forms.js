@@ -52,7 +52,12 @@ function needsIrregularReview(lemma) {
   return (
     /(?:cer|cir)$/.test(lemma) || // conocer -> conozcan, conducir -> conduzcan
     /(?:ger|gir)$/.test(lemma) || // proteger -> protejan (g->j)
-    /(?:guir)$/.test(lemma)       // distinguir -> distingan (gu->g)
+    /(?:guir)$/.test(lemma)   ||  // distinguir -> distingan (gu->g)
+    /poner$/.test(lemma)      ||  // disponer, proponer, suponer -> pongan
+    /tener$/.test(lemma)      ||  // contener, mantener, detener -> tengan
+    /venir$/.test(lemma)      ||  // convenir, intervenir -> vengan
+    /decir$/.test(lemma)      ||  // bendecir, maldecir -> digan
+    /hacer$/.test(lemma)         // rehacer, satisfacer -> hagan
   )
 }
 

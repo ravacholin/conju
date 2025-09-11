@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { loadAllVerbs, eachForm } from './utils.js'
+import { isIrregularInTense } from '../../src/lib/utils/irregularityUtils.js'
 
 // Minimal regular morphology generator (aligned with validators)
 function getRegularForm(lemma, mood, tense, person) {
@@ -87,8 +88,10 @@ const FAIL = process.argv.includes('--fail-on-findings')
 const all = loadAllVerbs()
 const findings = []
 for (const verb of all) {
-  if ((verb.type || 'regular') !== 'regular') continue
   eachForm(verb, (form) => {
+    // Auditar SOLO slots regulares según matriz por tiempo
+    const irregularInTense = isIrregularInTense(verb, form.tense)
+    if (irregularInTense) return
     const exp = getRegularForm(verb.lemma, form.mood, form.tense, form.person)
     if (!exp) return
     if ((form.value || '').trim() !== exp) {
