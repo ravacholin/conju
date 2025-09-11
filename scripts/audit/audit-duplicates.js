@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { loadAllVerbs, eachForm } from './utils.js'
+import { loadAllVerbs, eachForm, isTruncated, allowedShortImperatives } from './utils.js'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const all = loadAllVerbs()
 const findings = []
 const APPLY = process.argv.includes('--apply')
+const RESOLVE = process.argv.includes('--resolve-conflicts')
 
 for (const verb of all) {
   const slotMap = new Map() // mood|tense|person -> values[]
@@ -87,7 +88,7 @@ if (APPLY) {
     const prefix = prefixMatch ? prefixMatch[0] : ''
     const out = prefix + 'export const verbs = ' + JSON.stringify(verbs, null, 2) + '\n'
     fs.writeFileSync(verbsPath, out, 'utf8')
-  console.log(`✅ Removed ${removed} exact duplicates. Backup: ${path.basename(backup)}`)
+    console.log(`✅ Removed ${removed} exact duplicates. Backup: ${path.basename(backup)}`)
     // Propagate removals to derived datasets by removing exact duplicates per (lemma, slot, value)
     const targets = [path.resolve('src/data/verbs-enriched.js'), path.resolve('src/data/chunks/irregulars.js')]
     for (const file of targets) {
@@ -131,6 +132,57 @@ if (APPLY) {
         }
       } catch (e) {
         console.warn('Propagation skipped for', file, e?.message)
+      }
+    }
+    // Optional: resolve conflicts by removing truncated variants when a correct value exists
+    if (RESOLVE) {
+      const files = [verbsPath, ...targets]
+      for (const file of files) {
+        try {
+          const mod = await import(file + '?t=' + Date.now())
+          const arr = Array.isArray(mod.verbs) ? mod.verbs : null
+          if (!arr) continue
+          let removedTrunc = 0
+          for (const verb of arr) {
+            for (const p of verb.paradigms || []) {
+              if (!Array.isArray(p.forms)) continue
+              // Group by slot
+              const slotMap = new Map()
+              p.forms.forEach((f, idx) => {
+                const k = `${f.mood}|${f.tense}|${f.person}`
+                if (!slotMap.has(k)) slotMap.set(k, [])
+                slotMap.get(k).push({ f, idx })
+              })
+              // For each slot, if multiple values and one is truncated → remove truncated
+              for (const [slot, entries] of slotMap.entries()) {
+                if (entries.length <= 1) continue
+                const values = [...new Set(entries.map(e => (e.f.value || '').trim()))]
+                if (values.length <= 1) continue
+                const truncatedIdxs = entries
+                  .filter(e => isTruncated(verb.lemma, e.f.value) && !allowedShortImperatives(verb.lemma, e.f))
+                  .map(e => e.idx)
+                const hasNonTruncated = entries.some(e => !isTruncated(verb.lemma, e.f.value))
+                if (hasNonTruncated && truncatedIdxs.length > 0) {
+                  // Remove all truncated variants for this slot
+                  // Remove in descending order
+                  truncatedIdxs.sort((a,b)=>b-a).forEach(i => { if (p.forms[i]) { p.forms.splice(i,1); removedTrunc++ } })
+                }
+              }
+            }
+          }
+          if (removedTrunc > 0) {
+            const backup3 = file + '.backup-' + Date.now()
+            fs.copyFileSync(file, backup3)
+            const original3 = fs.readFileSync(file, 'utf8')
+            const pref3 = original3.match(/^[\s\S]*?(?=export const verbs\s*=)/)
+            const prefix3 = pref3 ? pref3[0] : ''
+            const out3 = prefix3 + 'export const verbs = ' + JSON.stringify(arr, null, 2) + '\n'
+            fs.writeFileSync(file, out3, 'utf8')
+            console.log(`🧹 Resolved ${removedTrunc} truncated conflicts in ${path.basename(file)} (backup: ${path.basename(backup3)})`)
+          }
+        } catch (e) {
+          console.warn('Conflict resolution skipped for', file, e?.message)
+        }
       }
     }
   } else {
