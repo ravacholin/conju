@@ -11,6 +11,8 @@
 
 // Dynamic verb loading with chunk manager
 import { verbChunkManager } from '../../lib/core/verbChunkManager.js'
+// Fallback dataset for lemma-type lookups
+import { verbs as FULL_VERB_DATASET } from '../../data/verbs.js'
 import { 
   isRegularFormForMood, 
   isRegularNonfiniteForm,
@@ -236,7 +238,8 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
  */
 export const filterByVerbType = (forms, verbType, settings = null) => {
   if (!verbType || verbType === 'all') return forms
-  const mode = settings?.irregularityFilterMode || 'tense' // 'tense' | 'lemma'
+  // Default: lemma mode for 'regular' (prefer pure regular lemmas), tense mode for 'irregular'
+  const mode = settings?.irregularityFilterMode || (verbType === 'regular' ? 'lemma' : 'tense') // 'tense' | 'lemma'
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
@@ -254,8 +257,23 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
     return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
   }
   if (mode === 'lemma') {
-    if (verbType === 'irregular') return forms.filter(f => f.verbType === 'irregular')
-    return forms.filter(f => f.verbType === 'regular')
+    // Build quick lookup maps once
+    const lemmaTypeCache = new Map()
+    const getLemmaType = (lemma, fallback) => {
+      if (!lemma) return fallback || 'regular'
+      if (lemmaTypeCache.has(lemma)) return lemmaTypeCache.get(lemma)
+      // Prefer embedded verbType if present in any form
+      let t = fallback
+      if (!t) {
+        const v = FULL_VERB_DATASET.find(vb => vb.lemma === lemma)
+        t = v?.type || 'regular'
+      }
+      lemmaTypeCache.set(lemma, t)
+      return t
+    }
+    if (verbType === 'irregular') return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular')
+    // verbType === 'regular'
+    return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'regular')
   }
   // mode === 'tense' (default): decide per-form by morphology/tense
   if (verbType === 'irregular') return forms.filter(isIrregularForm)
