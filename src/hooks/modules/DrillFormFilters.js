@@ -239,18 +239,8 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
 export const filterByVerbType = (forms, verbType, settings = null) => {
   if (!verbType || verbType === 'all') return forms
   
-  // EMERGENCY FIX: Add critical debugging for regular verb filtering
-  console.log(`🚨🚨🚨 EMERGENCY filterByVerbType - verbType: ${verbType}, forms: ${forms.length}`)
-  if (verbType === 'regular') {
-    console.log(`🚨🚨🚨 EMERGENCY - First 5 forms with verb types:`, forms.slice(0, 5).map(f => {
-      const verb = FULL_VERB_DATASET.find(vb => vb.lemma === f.lemma)
-      return `${f.lemma}(${verb?.type || 'unknown'})`
-    }))
-  }
-  
   // Default: lemma mode for 'regular' (prefer pure regular lemmas), tense mode for 'irregular'
   const mode = settings?.irregularityFilterMode || (verbType === 'regular' ? 'lemma' : 'tense') // 'tense' | 'lemma'
-  console.log(`🚨🚨🚨 EMERGENCY MODE DEBUG - verbType: ${verbType}, irregularityFilterMode: ${settings?.irregularityFilterMode}, calculated mode: ${mode}`)
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
