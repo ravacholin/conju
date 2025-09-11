@@ -153,7 +153,57 @@ if (APPLY) {
     const out = prefix + 'export const verbs = ' + JSON.stringify(verbs, null, 2) + '\n'
     fs.writeFileSync(verbsPath, out, 'utf8')
     console.log(`✅ Applied ${applied} fixes. Backup: ${path.basename(backup)}`)
+    // Propagate to derived datasets
+    await propagateDerived(safe)
   } else {
     console.log('\nℹ️  --apply: nothing changed (data already fixed?)')
+  }
+}
+
+async function propagateDerived(fixes) {
+  const targets = [
+    path.resolve('src/data/verbs-enriched.js'),
+    path.resolve('src/data/chunks/irregulars.js')
+  ]
+  for (const file of targets) {
+    try {
+      const mod = await import(file + '?t=' + Date.now())
+      const arr = Array.isArray(mod.verbs) ? mod.verbs : null
+      if (!arr) continue
+      let changed = 0
+      const idxByLemma = new Map(arr.map((v,i)=>[v.lemma,i]))
+      for (const fx of fixes) {
+        const vi = idxByLemma.get(fx.lemma)
+        if (vi == null) continue
+        const verb = arr[vi]
+        const par = verb.paradigms?.[fx.pIndex]
+        const frm = par?.forms?.[fx.fIndex]
+        if (frm && frm.mood === fx.mood && frm.tense === fx.tense && frm.person === fx.person) {
+          const current = (frm.value || '').trim()
+          if (current === fx.value) { frm.value = fx.suggested; changed++ }
+        } else {
+          // Fallback: search form by slot and current truncated value
+          outer: for (const p of verb.paradigms || []) {
+            for (const f of p.forms || []) {
+              if (f.mood === fx.mood && f.tense === fx.tense && f.person === fx.person) {
+                if ((f.value || '').trim() === fx.value) { f.value = fx.suggested; changed++; break outer }
+              }
+            }
+          }
+        }
+      }
+      if (changed > 0) {
+        const backup = file + '.backup-' + Date.now()
+        fs.copyFileSync(file, backup)
+        const original = fs.readFileSync(file, 'utf8')
+        const prefixMatch = original.match(/^[\s\S]*?(?=export const verbs\s*=)/)
+        const prefix = prefixMatch ? prefixMatch[0] : ''
+        const out = prefix + 'export const verbs = ' + JSON.stringify(arr, null, 2) + '\n'
+        fs.writeFileSync(file, out, 'utf8')
+        console.log(`↪️  Propagated ${changed} fixes to ${path.basename(file)} (backup: ${path.basename(backup)})`)
+      }
+    } catch (e) {
+      console.warn('Propagation skipped for', file, e?.message)
+    }
   }
 }

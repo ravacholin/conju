@@ -87,7 +87,52 @@ if (APPLY) {
     const prefix = prefixMatch ? prefixMatch[0] : ''
     const out = prefix + 'export const verbs = ' + JSON.stringify(verbs, null, 2) + '\n'
     fs.writeFileSync(verbsPath, out, 'utf8')
-    console.log(`✅ Removed ${removed} exact duplicates. Backup: ${path.basename(backup)}`)
+  console.log(`✅ Removed ${removed} exact duplicates. Backup: ${path.basename(backup)}`)
+    // Propagate removals to derived datasets by removing exact duplicates per (lemma, slot, value)
+    const targets = [path.resolve('src/data/verbs-enriched.js'), path.resolve('src/data/chunks/irregulars.js')]
+    for (const file of targets) {
+      try {
+        const mod = await import(file + '?t=' + Date.now())
+        const arr = Array.isArray(mod.verbs) ? mod.verbs : null
+        if (!arr) continue
+        let changed = 0
+        const lemmaToIndex = new Map(arr.map((v,i)=>[v.lemma,i]))
+        const byLemma = new Map()
+        exacts.forEach(e => {
+          if (!byLemma.has(e.lemma)) byLemma.set(e.lemma, [])
+          byLemma.get(e.lemma).push(e)
+        })
+        for (const [lemma, items] of byLemma.entries()) {
+          const vi2 = lemmaToIndex.get(lemma)
+          if (vi2 == null) continue
+          const verb = arr[vi2]
+          // Build a seen set per paradigm to remove duplicates across all forms
+          const seen = new Set()
+          for (const p of verb.paradigms || []) {
+            if (!Array.isArray(p.forms)) continue
+            const newForms = []
+            for (const f of p.forms) {
+              const slot = `${f.mood}|${f.tense}|${f.person}|${f.value}`
+              if (seen.has(slot)) { changed++; continue }
+              seen.add(slot); newForms.push(f)
+            }
+            p.forms = newForms
+          }
+        }
+        if (changed > 0) {
+          const backup2 = file + '.backup-' + Date.now()
+          fs.copyFileSync(file, backup2)
+          const original2 = fs.readFileSync(file, 'utf8')
+          const prefixMatch2 = original2.match(/^[\s\S]*?(?=export const verbs\s*=)/)
+          const prefix2 = prefixMatch2 ? prefixMatch2[0] : ''
+          const out2 = prefix2 + 'export const verbs = ' + JSON.stringify(arr, null, 2) + '\n'
+          fs.writeFileSync(file, out2, 'utf8')
+          console.log(`↪️  Propagated removal of ${changed} duplicates to ${path.basename(file)} (backup: ${path.basename(backup2)})`)
+        }
+      } catch (e) {
+        console.warn('Propagation skipped for', file, e?.message)
+      }
+    }
   } else {
     console.log('\nℹ️  --apply: nothing changed (data already normalized?)')
   }
