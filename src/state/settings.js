@@ -31,6 +31,8 @@ const useSettings = create(
       specificTense: null,
       // Se definirá al elegir variante; sin valor inicial
       practicePronoun: null,
+      // Filtro de irregularidad: 'tense' (por forma) | 'lemma' (por verbo)
+      irregularityFilterMode: 'tense',
       verbType: 'all', // 'all', 'regular', 'irregular'
       selectedFamily: null,
       
@@ -75,6 +77,7 @@ const useSettings = create(
       setSpecificMood: (mood) => set({ specificMood: mood }),
       setSpecificTense: (tense) => set({ specificTense: tense }),
       setPracticePronoun: (pronoun) => set({ practicePronoun: pronoun }),
+      setIrregularityFilterMode: (mode) => set({ irregularityFilterMode: mode === 'lemma' ? 'lemma' : 'tense' }),
       setVerbType: (type) => set({ verbType: type }),
       setSelectedFamily: (family) => set({ selectedFamily: family }),
       setAllowedLemmas: (lemmas) => set({ allowedLemmas: lemmas }),
@@ -116,6 +119,7 @@ const useSettings = create(
         specificMood: state.specificMood,
         specificTense: state.specificTense,
         practicePronoun: state.practicePronoun,
+        irregularityFilterMode: state.irregularityFilterMode,
         verbType: state.verbType,
         selectedFamily: state.selectedFamily,
         // Persistir conmutación C2 para asegurar continuidad y variedad

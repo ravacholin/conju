@@ -168,7 +168,7 @@ export const useDrillGenerator = () => {
             f.person === pickFromDue.person
           )
           
-          candidateForms = filterByVerbType(candidateForms, settings.verbType)
+          candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
           
           if (candidateForms.length > 0) {
             nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history) ||
@@ -208,7 +208,7 @@ export const useDrillGenerator = () => {
               }
             }
             
-            candidateForms = filterByVerbType(candidateForms, settings.verbType)
+            candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
             
             if (candidateForms.length > 0) {
               nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history) ||

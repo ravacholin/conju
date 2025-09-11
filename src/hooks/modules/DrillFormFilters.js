@@ -234,8 +234,9 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
  * @param {string} verbType - 'regular', 'irregular', or null/undefined for all
  * @returns {Array} - Filtered forms
  */
-export const filterByVerbType = (forms, verbType) => {
+export const filterByVerbType = (forms, verbType, settings = null) => {
   if (!verbType || verbType === 'all') return forms
+  const mode = settings?.irregularityFilterMode || 'tense' // 'tense' | 'lemma'
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
@@ -252,12 +253,13 @@ export const filterByVerbType = (forms, verbType) => {
     }
     return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
   }
-  if (verbType === 'irregular') {
-    // Strict irregular: include verbs marked irregular OR surface-irregular forms
-    return forms.filter(f => f.verbType === 'irregular' || isIrregularForm(f))
+  if (mode === 'lemma') {
+    if (verbType === 'irregular') return forms.filter(f => f.verbType === 'irregular')
+    return forms.filter(f => f.verbType === 'regular')
   }
-  // Strict regular: include only lemmas marked regular (exclude irregular lemmas entirely)
-  return forms.filter(f => f.verbType === 'regular')
+  // mode === 'tense' (default): decide per-form by morphology/tense
+  if (verbType === 'irregular') return forms.filter(isIrregularForm)
+  return forms.filter(f => !isIrregularForm(f))
 }
 
 /**
@@ -274,7 +276,7 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
   filtered = filterForSpecificPractice(filtered, specificConstraints)
   
   // 2. Filter by verb type
-  filtered = filterByVerbType(filtered, settings.verbType)
+  filtered = filterByVerbType(filtered, settings.verbType, settings)
   
   // 3. Filter by person/pronoun constraints
   filtered = filtered.filter(form => allowsPerson(form.person, settings))
