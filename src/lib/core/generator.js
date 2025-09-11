@@ -282,8 +282,8 @@ export function chooseNext({forms, history, currentItem}){
     }
     
     // Restrict lemmas if configured by level/packs
-    // BUT skip this restriction when user explicitly selects "all" verbs OR practices by specific topic
-    const shouldBypassLemmaRestrictions = (verbType === 'all') || (practiceMode === 'specific' || practiceMode === 'theme')
+    // Skip restriction only for Theme, or Specific explicitly coming from Tema
+    const shouldBypassLemmaRestrictions = (verbType === 'all') || (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true))
     if (allowedLemmas && !shouldBypassLemmaRestrictions) {
       if (!allowedLemmas.has(f.lemma)) {
         if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
@@ -635,9 +635,32 @@ export function chooseNext({forms, history, currentItem}){
     console.warn('Level-aware prioritization failed, using fallback:', error)
     // Continue with traditional approach as fallback
   }
-
+  
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
+
+  // Strong preference for PURE regular lemmas when user selects 'regular'
+  if (verbType === 'regular') {
+    try {
+      const pureRegularSet = new Set(verbs.filter(v => v.type === 'regular').map(v => v.lemma))
+      const isCompound = (t) => (t === 'pretPerf' || t === 'plusc' || t === 'futPerf' || t === 'condPerf' || t === 'subjPerf' || t === 'subjPlusc')
+      // Keep only pure regular lemmas and forms that are morphologically regular
+      const pureRegularForms = eligible.filter(f => {
+        if (!pureRegularSet.has(f.lemma)) return false
+        if (f.mood === 'nonfinite') return isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+        if (isCompound(f.tense)) {
+          const part = (f.value || '').split(/\s+/).pop()
+          return isRegularNonfiniteForm(f.lemma, 'part', part)
+        }
+        return isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+      })
+      if (pureRegularForms.length > 0) {
+        eligible = pureRegularForms
+      }
+    } catch (e) {
+      console.warn('Regular-only preference failed, continuing with existing eligible:', e)
+    }
+  }
 
   // C2 conmutación: asegurar variedad sin quedarse "pegado" en una persona
   // - Usa la secuencia configurada pero la adapta a las personas disponibles por región
