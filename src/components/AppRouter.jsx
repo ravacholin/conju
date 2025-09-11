@@ -11,6 +11,13 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
 import router from '../lib/routing/Router.js'
 
+// Conditional logging - only in development
+const debugLog = (message, ...args) => {
+  if (import.meta.env?.DEV) {
+    console.log(message, ...args)
+  }
+}
+
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
   const settings = useSettings()
@@ -28,7 +35,7 @@ function AppRouter() {
     selectedFamily: settings.selectedFamily
   })
 
-  console.log('--- RENDER AppRouter ---', { 
+  debugLog('--- RENDER AppRouter ---', { 
     currentMode,
     onboardingStep: onboardingFlow.onboardingStep
   });
@@ -52,8 +59,9 @@ function AppRouter() {
   }, [drillMode])
 
   // Stable route handler function
+  // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
   const handleRouteChange = useCallback((route, type) => {
-    console.log('📍 Route changed:', route, 'via', type)
+    debugLog('📍 Route changed:', route, 'via', type)
     setCurrentMode(route.mode)
     
     if (route.mode === 'onboarding' && route.step) {
@@ -64,15 +72,15 @@ function AppRouter() {
     // Regenerate drill item if navigating to drill without current item
     if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
       setTimeout(() => {
+        // Use the new dynamic forms generation - no need to pass allFormsForRegion
         drillModeRef.current.generateNextItem(
           null, 
-          allFormsForRegion, 
           onboardingFlowRef.current.getAvailableMoodsForLevel, 
           onboardingFlowRef.current.getAvailableTensesForLevelAndMood
         )
       }, 100)
     }
-  }, [allFormsForRegion])
+  }, []) // No dependencies - prevents router re-subscriptions
 
   // Initialize router and subscribe to route changes
   useEffect(() => {
@@ -90,22 +98,22 @@ function AppRouter() {
   }, [handleRouteChange])
 
   const handleStartPractice = () => {
-    console.log('🚀 handleStartPractice called');
+    debugLog('🚀 handleStartPractice called');
     router.navigate({ mode: 'drill' })
   }
 
   const handleHome = () => {
-    console.log('🏠 handleHome called');
+    debugLog('🏠 handleHome called');
     router.navigate({ mode: 'onboarding', step: 2 })
   }
 
   const handleGoToProgress = () => {
-    console.log('📊 handleGoToProgress called');
+    debugLog('📊 handleGoToProgress called');
     router.navigate({ mode: 'progress' })
   }
 
   const handleStartLearningNewTense = () => {
-    console.log('🧠 handleStartLearningNewTense called');
+    debugLog('🧠 handleStartLearningNewTense called');
     router.navigate({ mode: 'learning' })
   };
 
@@ -128,14 +136,14 @@ function AppRouter() {
 
       // If settings changed and we have a current item, clear it first
       if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
-        console.log('🔄 Practice settings changed while in drill mode, clearing current item');
+        debugLog('🔄 Practice settings changed while in drill mode, clearing current item');
         drillMode.clearCurrentItem();
       }
 
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem) {
-        console.log('🎯 Generating drill item');
-        drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+        debugLog('🎯 Generating drill item');
+        drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
       }
 
       // Update previous settings reference
@@ -153,7 +161,7 @@ function AppRouter() {
 
   // Enhanced state cleanup function
   const cleanupStateForStep = (targetStep) => {
-    console.log(`🧹 cleanupStateForStep called for step: ${targetStep}`);
+    debugLog(`🧹 cleanupStateForStep called for step: ${targetStep}`);
     const updates = {}
     
     // Clear settings based on target step
@@ -179,7 +187,7 @@ function AppRouter() {
     }
 
     if (Object.keys(updates).length > 0) {
-      console.log('Applying state cleanup:', updates);
+      debugLog('Applying state cleanup:', updates);
       settings.set(updates)
     }
   }
@@ -188,27 +196,27 @@ function AppRouter() {
   // Handler functions for drill mode settings changes
   const handleDialectChange = (dialect) => {
     onboardingFlow.selectDialect(dialect)
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
   const handleLevelChange = (level) => {
     onboardingFlow.selectLevel(level)
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
   const handlePracticeModeChange = (mode, mood = null, tense = null) => {
-    console.log(`Practice mode change: ${mode}, mood: ${mood}, tense: ${tense}`)
+    debugLog(`Practice mode change: ${mode}, mood: ${mood}, tense: ${tense}`)
     settings.set({ 
       practiceMode: mode,
       specificMood: mood,
       specificTense: tense
     })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
   const handlePronounPracticeChange = (pronoun) => {
     settings.set({ practicePronoun: pronoun })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
   const handleVerbTypeChange = (verbType, selectedFamily) => {
@@ -216,7 +224,7 @@ function AppRouter() {
       verbType,
       selectedFamily: verbType !== 'irregular' ? null : selectedFamily
     })
-    drillMode.clearHistoryAndRegenerate(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
   const handleStartSpecificPractice = () => {

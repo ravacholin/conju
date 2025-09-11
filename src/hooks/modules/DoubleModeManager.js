@@ -25,21 +25,50 @@ const logger = createLogger('DoubleModeManager')
  * @returns {*} - Selected item
  */
 const weightedRandomSelection = (items, weights) => {
-  if (!items.length || !weights.length) return null
+  // Robust input validation
+  if (!Array.isArray(items) || !Array.isArray(weights)) {
+    console.warn('weightedRandomSelection: items and weights must be arrays')
+    return null
+  }
   
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-  if (totalWeight === 0) return items[0]
+  if (items.length === 0) {
+    return null
+  }
+  
+  if (weights.length === 0) {
+    // If no weights provided, use uniform random selection
+    return items[Math.floor(Math.random() * items.length)]
+  }
+  
+  if (items.length !== weights.length) {
+    console.warn(`weightedRandomSelection: items length (${items.length}) must match weights length (${weights.length})`)
+    return null
+  }
+  
+  // Validate that all weights are valid numbers
+  const validWeights = weights.map(w => {
+    const num = Number(w)
+    return isNaN(num) || num < 0 ? 0 : num
+  })
+  
+  const totalWeight = validWeights.reduce((sum, weight) => sum + weight, 0)
+  
+  // If total weight is 0, all weights are invalid/zero - use uniform selection
+  if (totalWeight === 0) {
+    return items[Math.floor(Math.random() * items.length)]
+  }
   
   let randomValue = Math.random() * totalWeight
   
   for (let i = 0; i < items.length; i++) {
-    randomValue -= weights[i]
+    randomValue -= validWeights[i]
     if (randomValue <= 0) {
       return items[i]
     }
   }
   
-  return items[0]
+  // Fallback to last item (should rarely happen due to floating point precision)
+  return items[items.length - 1]
 }
 
 /**

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
@@ -16,6 +17,53 @@ import { AsyncController } from '../../lib/utils/AsyncController.js'
 import router from '../../lib/routing/Router.js'
 import './progress.css'
 import './practice-recommendations.css'
+
+// Add styles for the refresh button
+const refreshButtonStyles = `
+  .dashboard-controls {
+    margin: 0.5rem 0;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .refresh-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .inline-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+  }
+`
+
+// Inject styles
+if (typeof document !== 'undefined' && !document.querySelector('#dashboard-refresh-styles')) {
+  const styleElement = document.createElement('style')
+  styleElement.id = 'dashboard-refresh-styles'
+  styleElement.textContent = refreshButtonStyles
+  document.head.appendChild(styleElement)
+}
 
 /**
  * Componente principal del dashboard de progreso
@@ -83,11 +131,25 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         throw new Error('Usuario no inicializado. Espera un momento y reintenta.')
       }
       
-      // Define operations with proper cancellation support
+      // Cache warmup for commonly used data
+      if (!isRefresh) {
+        const warmupLoaders = {
+          userStats: () => getUserStats(userId),
+          weeklyGoals: () => getWeeklyGoals(userId)
+        }
+        progressDataCache.warmup(userId, warmupLoaders)
+      }
+      
+      // Define operations with cache integration
       const operations = {
         heatMap: async (signal) => {
           try {
-            const result = await getHeatMapData(userId, personFilter || null)
+            const cacheKey = `${userId}:heatMap:${personFilter || 'all'}`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => getHeatMapData(userId, personFilter || null),
+              'heatMap'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return Array.isArray(result) ? result : []
           } catch (e) {
@@ -98,8 +160,15 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         
         errorIntel: async (signal) => {
           try {
-            const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
-            const result = await getErrorIntelligence(userId)
+            const cacheKey = `${userId}:errorIntel`
+            const result = await progressDataCache.get(
+              cacheKey,
+              async () => {
+                const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
+                return getErrorIntelligence(userId)
+              },
+              'errorIntel'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : null
           } catch (e) {
@@ -110,7 +179,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         
         userStats: async (signal) => {
           try {
-            const result = await getUserStats(userId)
+            const cacheKey = `${userId}:userStats`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => getUserStats(userId),
+              'userStats'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
           } catch (e) {
@@ -121,7 +195,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         
         weeklyGoals: async (signal) => {
           try {
-            const result = await getWeeklyGoals(userId)
+            const cacheKey = `${userId}:weeklyGoals`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => getWeeklyGoals(userId),
+              'weeklyGoals'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
           } catch (e) {
@@ -132,7 +211,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         
         weeklyProgress: async (signal) => {
           try {
-            const result = await checkWeeklyProgress(userId)
+            const cacheKey = `${userId}:weeklyProgress`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => checkWeeklyProgress(userId),
+              'weeklyProgress'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
           } catch (e) {
@@ -143,7 +227,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         
         recommendations: async (signal) => {
           try {
-            const result = await getRecommendations(userId)
+            const cacheKey = `${userId}:recommendations`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => getRecommendations(userId),
+              'recommendations'
+            )
             if (signal.aborted) throw new Error('Cancelled')
             return Array.isArray(result) ? result : []
           } catch (e) {
@@ -237,6 +326,20 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }, [])
 
+  // Debug cache performance in development
+  useEffect(() => {
+    if (import.meta.env?.DEV) {
+      const logCacheStats = () => {
+        const stats = progressDataCache.getStats()
+        console.log('📊 Cache Stats:', stats)
+      }
+      
+      // Log cache stats every 30 seconds in development
+      const interval = setInterval(logCacheStats, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [])
+
   if (loading) {
     return (
       <div className="progress-dashboard loading">
@@ -302,6 +405,24 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           Progreso y Analíticas
         </h1>
         <p>Seguimiento detallado de tu dominio del español</p>
+        <div className="dashboard-controls">
+          <button 
+            onClick={() => {
+              // Clear cache and force refresh
+              const userId = getCurrentUserId()
+              if (userId) {
+                progressDataCache.invalidateUser(userId)
+              }
+              loadData(true)
+            }}
+            className="refresh-btn"
+            disabled={loading || refreshing}
+            title="Refrescar datos (bypasa caché)"
+          >
+            <img src="/icons/refresh.png" alt="Refrescar" className="inline-icon" />
+            {refreshing ? 'Actualizando...' : 'Refrescar'}
+          </button>
+        </div>
         {refreshing && (
           <div className="refresh-indicator">
             <img src="/icons/refresh.png" alt="Actualizando" className="inline-icon" />
