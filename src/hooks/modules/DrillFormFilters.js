@@ -252,12 +252,12 @@ export const filterByVerbType = (forms, verbType) => {
     }
     return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
   }
-
   if (verbType === 'irregular') {
-    return forms.filter(isIrregularForm)
+    // Strict irregular: include verbs marked irregular OR surface-irregular forms
+    return forms.filter(f => f.verbType === 'irregular' || isIrregularForm(f))
   }
-  // verbType === 'regular'
-  return forms.filter(f => !isIrregularForm(f))
+  // Strict regular: include only lemmas marked regular (exclude irregular lemmas entirely)
+  return forms.filter(f => f.verbType === 'regular')
 }
 
 /**
