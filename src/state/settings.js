@@ -118,6 +118,12 @@ const useSettings = create(
         practicePronoun: state.practicePronoun,
         verbType: state.verbType,
         selectedFamily: state.selectedFamily,
+        // Persistir conmutación C2 para asegurar continuidad y variedad
+        enableC2Conmutacion: state.enableC2Conmutacion,
+        conmutacionSeq: state.conmutacionSeq,
+        conmutacionIdx: state.conmutacionIdx,
+        rotateSecondPerson: state.rotateSecondPerson,
+        nextSecondPerson: state.nextSecondPerson,
         enableFuturoSubjProd: state.enableFuturoSubjProd,
         enableFuturoSubjRead: state.enableFuturoSubjRead,
         cliticsPercent: state.cliticsPercent,

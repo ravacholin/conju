@@ -638,21 +638,70 @@ export function chooseNext({forms, history, currentItem}){
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
 
-  // C2 conmutación: asegurar variedad pero sin ocultar otras personas
-  // Suavizamos: priorizamos la persona objetivo si existe, pero mantenemos el resto disponible
+  // C2 conmutación: asegurar variedad sin quedarse "pegado" en una persona
+  // - Usa la secuencia configurada pero la adapta a las personas disponibles por región
+  // - Si la persona objetivo no existe en el pool, avanza al siguiente objetivo disponible en esta misma llamada
   if (enableC2Conmutacion && level === 'C2' && eligible.length > 0) {
-    const base = eligible[Math.floor(Math.random() * eligible.length)]
-    const seq = conmutacionSeq || ['2s_vos','3p','3s']
-    const idx = conmutacionIdx || 0
-    const targetPerson = seq[idx % seq.length]
-    const boosted = []
-    eligible.forEach(f => {
-      let w = 1
-      if (f.lemma === base.lemma && f.person === targetPerson) w = 3
-      for (let i=0;i<w;i++) boosted.push(f)
-    })
-    eligible = boosted
-    useSettings.getState().set({ conmutacionIdx: (idx + 1) % seq.length })
+    try {
+      // Obtener personas permitidas por región y filtrar la secuencia
+      const allowedPersons = new Set(
+        (function(region){
+          if (region === 'rioplatense') return ['1s','2s_vos','3s','1p','3p']
+          if (region === 'la_general') return ['1s','2s_tu','3s','1p','3p']
+          if (region === 'peninsular') return ['1s','2s_tu','3s','1p','2p_vosotros','3p']
+          return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p']
+        })(region)
+      )
+
+      const rawSeq = Array.isArray(conmutacionSeq) && conmutacionSeq.length > 0
+        ? conmutacionSeq
+        : ['2s_vos','3p','3s']
+      const effectiveSeq = rawSeq.filter(p => allowedPersons.has(p))
+      // Fallback robusto
+      const seq = effectiveSeq.length > 0 ? effectiveSeq : ['3s','3p']
+
+      // Elegir índice seguro (evitar || 0 por si es 0 válido)
+      const currentIdx = Number.isInteger(conmutacionIdx) ? conmutacionIdx : 0
+
+      // Buscar primera persona de la secuencia que tenga candidatos en el pool
+      let usedIdx = currentIdx % seq.length
+      let targetPerson = seq[usedIdx]
+      let candidatesForTarget = eligible.filter(f => f.person === targetPerson)
+      if (candidatesForTarget.length === 0) {
+        // Avanzar circularmente hasta encontrar una disponible o dar una vuelta completa
+        for (let step = 1; step < seq.length; step++) {
+          const tryIdx = (currentIdx + step) % seq.length
+          const tryPerson = seq[tryIdx]
+          const tryCandidates = eligible.filter(f => f.person === tryPerson)
+          if (tryCandidates.length > 0) {
+            usedIdx = tryIdx
+            targetPerson = tryPerson
+            candidatesForTarget = tryCandidates
+            break
+          }
+        }
+      }
+
+      // Elegir un lema base que tenga la persona objetivo
+      const baseCandidates = candidatesForTarget.length > 0
+        ? candidatesForTarget
+        : eligible
+      const base = baseCandidates[Math.floor(Math.random() * baseCandidates.length)]
+
+      // Boost suave: prioriza lema+persona objetivo, mantiene el resto
+      const boosted = []
+      eligible.forEach(f => {
+        let w = 1
+        if (f.lemma === base.lemma && f.person === targetPerson) w = 3
+        for (let i = 0; i < w; i++) boosted.push(f)
+      })
+      eligible = boosted
+
+      // Avanzar el índice solo una posición desde el índice realmente usado
+      useSettings.getState().set({ conmutacionIdx: (usedIdx + 1) % seq.length })
+    } catch (e) {
+      console.warn('C2 conmutación fallback (no variety boost applied):', e)
+    }
   }
   
   // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection

@@ -9829,14 +9829,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "tense": "subjPres",
-            "mood": "subjunctive",
-            "person": "3p",
-            "value": "vend",
-            "tags": [],
-            "region": "es"
-          },
-          {
             "tense": "impAff",
             "mood": "imperative",
             "person": "2s_tu",
@@ -9856,7 +9848,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "2p_vosotros",
-            "value": "vendáis",
+            "value": "vended",
             "tags": [],
             "region": "es"
           },
@@ -9864,7 +9856,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "vend",
+            "value": "vendan",
             "tags": [],
             "region": "es"
           },
@@ -9905,14 +9897,6 @@ export const verbs = [
             "mood": "imperative",
             "person": "3p",
             "value": "no vendan",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impNeg",
-            "mood": "imperative",
-            "person": "3p",
-            "value": "no vend",
             "tags": [],
             "region": "es"
           },

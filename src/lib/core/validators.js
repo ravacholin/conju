@@ -43,6 +43,10 @@ export class VerbValidator {
     
     if (!verb.paradigms) return { errors, warnings }
     
+    // Acumuladores para detectar duplicados y formas truncadas
+    const slotMap = new Map() // key: mood|tense|person -> [{value, pIndex, fIndex}]
+    const exactMap = new Set() // key: mood|tense|person|value
+
     verb.paradigms.forEach((paradigm, pIndex) => {
       if (!paradigm.regionTags || !Array.isArray(paradigm.regionTags)) {
         errors.push(`Verb ${verb.lemma} paradigm ${pIndex} missing regionTags`)
@@ -98,9 +102,54 @@ export class VerbValidator {
         if (form.lemma && form.lemma !== verb.lemma) {
           warnings.push(`Verb ${verb.lemma} form ${fIndex} has mismatched lemma: ${form.lemma}`)
         }
+
+        // 1) Duplicados: por slot y por coincidencia exacta
+        const slotKey = `${form.mood}|${form.tense}|${form.person}`
+        if (!slotMap.has(slotKey)) slotMap.set(slotKey, [])
+        slotMap.get(slotKey).push({ value: form.value, pIndex, fIndex })
+
+        const exactKey = `${slotKey}|${form.value}`
+        if (exactMap.has(exactKey)) {
+          warnings.push(`Duplicate form entry (exact) in ${verb.lemma}: ${slotKey} -> "${form.value}" (paradigm ${pIndex}, form ${fIndex})`)
+        } else {
+          exactMap.add(exactKey)
+        }
+
+        // 2) Formas truncadas: valor igual al lexema sin terminación (o con prefijo 'no ')
+        try {
+          if (typeof verb.lemma === 'string' && /(?:ar|er|ir)$/.test(verb.lemma)) {
+            const stem = verb.lemma.slice(0, -2)
+            const val = (form.value || '').trim().toLowerCase()
+            // Allow a few known imperative 2s_tu short forms that equal the stem
+            const allowedImperativeStem = new Map([
+              ['venir', 'ven'],
+              ['tener', 'ten'],
+              ['poner', 'pon'],
+              ['salir', 'sal']
+            ])
+            const isAllowedStemImperative = (
+              form.mood === 'imperative' && form.tense === 'impAff' && form.person === '2s_tu' &&
+              allowedImperativeStem.get(verb.lemma) === val
+            )
+
+            if (!isAllowedStemImperative) {
+              if (val === stem || val === `no ${stem}`) {
+                errors.push(`Truncated form detected in ${verb.lemma}: ${form.mood}|${form.tense}|${form.person} -> "${form.value}" (paradigm ${pIndex}, form ${fIndex})`)
+              }
+            }
+          }
+        } catch {/* ignore */}
       })
     })
     
+    // Reportar duplicados por slot (múltiples valores para la misma combinación)
+    for (const [slotKey, entries] of slotMap.entries()) {
+      if (entries.length > 1) {
+        const values = [...new Set(entries.map(e => e.value))]
+        warnings.push(`Duplicate slot entries in ${verb.lemma}: ${slotKey} -> [${values.join(', ')}] (${entries.length} entries)`) 
+      }
+    }
+
     return { errors, warnings }
   }
 
