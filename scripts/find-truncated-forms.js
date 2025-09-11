@@ -11,6 +11,8 @@
 
 import { verbs as mainVerbs } from '../src/data/verbs.js'
 import { getAllVerbsWithPriority } from '../src/data/priorityVerbs.js'
+import fs from 'node:fs'
+import path from 'node:path'
 
 const allVerbs = getAllVerbsWithPriority(mainVerbs)
 
@@ -55,6 +57,7 @@ function needsIrregularReview(lemma) {
 }
 
 const findings = []
+const APPLY = process.argv.includes('--apply')
 
 allVerbs.forEach((verb) => {
   verb.paradigms?.forEach((paradigm, pIndex) => {
@@ -109,3 +112,48 @@ for (const [lemma, items] of byLemma.entries()) {
 // Also print machine-readable JSON for tooling
 console.log('\nJSON:\n' + JSON.stringify(findings, null, 2))
 
+if (APPLY) {
+  // Apply only safe suggestions (have suggested, and not flagged for irregular review)
+  const safe = findings.filter(f => f.suggested && !f.needs_irregular_review)
+  if (safe.length === 0) {
+    console.log('\nℹ️  --apply: no safe fixes to apply')
+    process.exit(0)
+  }
+  console.log(`\n🛠  Applying ${safe.length} safe fixes to src/data/verbs.js ...`)
+  const verbsPath = path.resolve('src/data/verbs.js')
+  // Load fresh copy to mutate
+  const { verbs } = await import(path.resolve('src/data/verbs.js') + '?t=' + Date.now())
+  let applied = 0
+  const indexByLemma = new Map(verbs.map((v, i) => [v.lemma, i]))
+  for (const fx of safe) {
+    const vi = indexByLemma.get(fx.lemma)
+    if (vi == null) continue
+    const verb = verbs[vi]
+    const par = verb.paradigms?.[fx.pIndex]
+    const frm = par?.forms?.[fx.fIndex]
+    if (!frm) continue
+    // Confirm slot matches (defensive)
+    if (frm.mood === fx.mood && frm.tense === fx.tense && frm.person === fx.person) {
+      // Only change if current value still equals the truncated one we detected
+      const current = (frm.value || '').trim()
+      if (current === fx.value) {
+        frm.value = fx.suggested
+        applied++
+      }
+    }
+  }
+  if (applied > 0) {
+    // Backup
+    const backup = verbsPath + '.backup-' + Date.now()
+    fs.copyFileSync(verbsPath, backup)
+    // Preserve leading comments if any
+    const original = fs.readFileSync(verbsPath, 'utf8')
+    const prefixMatch = original.match(/^[\s\S]*?(?=export const verbs\s*=)/)
+    const prefix = prefixMatch ? prefixMatch[0] : ''
+    const out = prefix + 'export const verbs = ' + JSON.stringify(verbs, null, 2) + '\n'
+    fs.writeFileSync(verbsPath, out, 'utf8')
+    console.log(`✅ Applied ${applied} fixes. Backup: ${path.basename(backup)}`)
+  } else {
+    console.log('\nℹ️  --apply: nothing changed (data already fixed?)')
+  }
+}

@@ -5,11 +5,12 @@
  */
 import { spawn } from 'node:child_process'
 
+const APPLY = process.argv.includes('--apply')
 const scripts = [
-  { name: 'duplicates', cmd: 'node', args: ['scripts/audit/audit-duplicates.js'] },
+  { name: 'duplicates', cmd: 'node', args: ['scripts/audit/audit-duplicates.js', ...(APPLY ? ['--apply'] : [])] },
   { name: 'regularity', cmd: 'node', args: ['scripts/audit/audit-regularity.js'] },
   { name: 'irregular_consistency', cmd: 'node', args: ['scripts/audit/audit-irregular-consistency.js'] },
-  { name: 'truncated_forms', cmd: 'node', args: ['scripts/find-truncated-forms.js'] }
+  { name: 'truncated_forms', cmd: 'node', args: ['scripts/find-truncated-forms.js', ...(APPLY ? ['--apply'] : [])] }
 ]
 
 let exitCode = 0
@@ -30,4 +31,3 @@ function run(spec) {
     })
   })
 }
-
