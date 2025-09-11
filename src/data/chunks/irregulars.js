@@ -11491,7 +11491,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "respond",
+            "value": "respondan",
             "tags": [],
             "region": "es"
           },
@@ -11523,7 +11523,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "respond",
+            "value": "respondan",
             "tags": [],
             "region": "es"
           },
@@ -11571,7 +11571,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no respond",
+            "value": "no respondan",
             "tags": [],
             "region": "es"
           },
@@ -12384,7 +12384,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "corr",
+            "value": "corran",
             "tags": [],
             "region": "es"
           },
@@ -12416,7 +12416,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "corr",
+            "value": "corran",
             "tags": [],
             "region": "es"
           },
@@ -12464,7 +12464,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no corr",
+            "value": "no corran",
             "tags": [],
             "region": "es"
           },
@@ -15714,7 +15714,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "descubr",
+            "value": "descubran",
             "tags": [],
             "region": "es"
           },
@@ -15746,7 +15746,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "descubr",
+            "value": "descubran",
             "tags": [],
             "region": "es"
           },
@@ -15794,7 +15794,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no descubr",
+            "value": "no descubran",
             "tags": [],
             "region": "es"
           },
@@ -16613,7 +16613,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "sub",
+            "value": "suban",
             "tags": [],
             "region": "es"
           },
@@ -16645,7 +16645,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "sub",
+            "value": "suban",
             "tags": [],
             "region": "es"
           },
@@ -16693,7 +16693,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no sub",
+            "value": "no suban",
             "tags": [],
             "region": "es"
           },
@@ -17507,7 +17507,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "decid",
+            "value": "decidan",
             "tags": [],
             "region": "es"
           },
@@ -17539,7 +17539,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "decid",
+            "value": "decidan",
             "tags": [],
             "region": "es"
           },
@@ -17587,7 +17587,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no decid",
+            "value": "no decidan",
             "tags": [],
             "region": "es"
           },
@@ -18401,7 +18401,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "permit",
+            "value": "permitan",
             "tags": [],
             "region": "es"
           },
@@ -18433,7 +18433,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "permit",
+            "value": "permitan",
             "tags": [],
             "region": "es"
           },
@@ -18481,7 +18481,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no permit",
+            "value": "no permitan",
             "tags": [],
             "region": "es"
           },
@@ -19295,7 +19295,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "sufr",
+            "value": "sufran",
             "tags": [],
             "region": "es"
           },
@@ -19327,7 +19327,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "sufr",
+            "value": "sufran",
             "tags": [],
             "region": "es"
           },
@@ -19375,7 +19375,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no sufr",
+            "value": "no sufran",
             "tags": [],
             "region": "es"
           },
@@ -20189,7 +20189,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "un",
+            "value": "unan",
             "tags": [],
             "region": "es"
           },
@@ -20221,7 +20221,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "un",
+            "value": "unan",
             "tags": [],
             "region": "es"
           },
@@ -20269,7 +20269,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no un",
+            "value": "no unan",
             "tags": [],
             "region": "es"
           },
@@ -22899,7 +22899,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "obedec",
+            "value": "obedezcan",
             "tags": [],
             "region": "es"
           },
@@ -22931,7 +22931,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "obedec",
+            "value": "obedezcan",
             "tags": [],
             "region": "es"
           },
@@ -22979,7 +22979,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no obedec",
+            "value": "no obedezcan",
             "tags": [],
             "region": "es"
           },
@@ -23793,7 +23793,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "merec",
+            "value": "merezcan",
             "tags": [],
             "region": "es"
           },
@@ -23825,7 +23825,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "merec",
+            "value": "merezcan",
             "tags": [],
             "region": "es"
           },
@@ -23873,7 +23873,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no merec",
+            "value": "no merezcan",
             "tags": [],
             "region": "es"
           },
@@ -24687,7 +24687,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "agradec",
+            "value": "agradezcan",
             "tags": [],
             "region": "es"
           },
@@ -24719,7 +24719,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "agradec",
+            "value": "agradezcan",
             "tags": [],
             "region": "es"
           },
@@ -24767,7 +24767,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no agradec",
+            "value": "no agradezcan",
             "tags": [],
             "region": "es"
           },
@@ -25581,7 +25581,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "establec",
+            "value": "establezcan",
             "tags": [],
             "region": "es"
           },
@@ -25613,7 +25613,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "establec",
+            "value": "establezcan",
             "tags": [],
             "region": "es"
           },
@@ -25661,7 +25661,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no establec",
+            "value": "no establezcan",
             "tags": [],
             "region": "es"
           },
@@ -26475,7 +26475,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "ofrec",
+            "value": "ofrezcan",
             "tags": [],
             "region": "es"
           },
@@ -26507,7 +26507,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "ofrec",
+            "value": "ofrezcan",
             "tags": [],
             "region": "es"
           },
@@ -26555,7 +26555,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no ofrec",
+            "value": "no ofrezcan",
             "tags": [],
             "region": "es"
           },
@@ -29159,7 +29159,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "introduc",
+            "value": "introduzcan",
             "tags": [],
             "region": "es"
           },
@@ -29191,7 +29191,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "introduc",
+            "value": "introduzcan",
             "tags": [],
             "region": "es"
           },
@@ -29239,7 +29239,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no introduc",
+            "value": "no introduzcan",
             "tags": [],
             "region": "es"
           },
@@ -30053,7 +30053,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "reduc",
+            "value": "reduzcan",
             "tags": [],
             "region": "es"
           },
@@ -30085,7 +30085,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "3p",
-            "value": "reduc",
+            "value": "reduzcan",
             "tags": [],
             "region": "es"
           },
@@ -30133,7 +30133,7 @@ export const verbs = [
             "tense": "impNeg",
             "mood": "imperative",
             "person": "3p",
-            "value": "no reduc",
+            "value": "no reduzcan",
             "tags": [],
             "region": "es"
           },
@@ -96613,7 +96613,7 @@ export const verbs = [
             "tense": "subjPres",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "bland",
+            "value": "blandan",
             "tags": [],
             "region": "es"
           },
