@@ -100,53 +100,7 @@ export function chooseNext({forms, history, currentItem}){
   } = allSettings
 
   
-  // CRITICAL DEBUG: Log ALL settings at start of chooseNext  
-  console.log('🔥🚨 CHOOSENEXT CRITICAL DEBUG - ALL Settings:', {
-    practiceMode,
-    verbType,
-    specificMood, 
-    specificTense,
-    level,
-    region,
-    dialect: { useVoseo, useVosotros },
-    formsReceived: forms.length,
-    cameFromTema
-  })
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔧 CHOOSENEXT DEBUG - Called with settings:', {
-      level, useVoseo, useTuteo, useVosotros,
-      practiceMode, specificMood, specificTense, practicePronoun, verbType,
-      selectedFamily, currentBlock: !!currentBlock,
-      formsCount: forms.length
-    })
-    
-    // CRITICAL DEBUG: Show specific practice settings
-    if (practiceMode === 'specific') {
-      console.log('🚨 SPECIFIC PRACTICE DEBUG - Settings:', {
-        practiceMode, specificMood, specificTense
-      })
-    }
-  }
-  
-  // CRITICAL DEBUG: Special focus on B1 level filtering
-  const isB1Debug = level === 'B1' && process.env.NODE_ENV === 'development'
-  if (isB1Debug) {
-    console.log('🚨 B1 DEBUG - Initial analysis')
-    console.log('🚨 B1 DEBUG - Total forms:', forms.length)
-    console.log('🚨 B1 DEBUG - Sample forms:', forms.slice(0,10).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
-    console.log('🚨 B1 DEBUG - Settings:', {
-      level, practiceMode, specificMood, specificTense, verbType, selectedFamily
-    })
-  }
-  
-  // DIAGNOSTIC: Special focus on C1 mixed practice
-  if (level === 'C1' && practiceMode === 'mixed' && process.env.NODE_ENV === 'development') {
-    console.log('🚨 C1 MIXED DEBUG - Initial forms count:', forms.length)
-    console.log('🚨 C1 MIXED DEBUG - currentBlock:', currentBlock)
-    console.log('🚨 C1 MIXED DEBUG - verbType:', verbType)
-    console.log('🚨 C1 MIXED DEBUG - First 5 forms:', forms.slice(0,5).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
-  }
   
   // Crear cache key para este filtrado
   // Include region and allowedLemmas signature in the cache key to avoid stale pools
@@ -174,12 +128,9 @@ export function chooseNext({forms, history, currentItem}){
     // Paso 2: Filtros adicionales (valor definido, toggles, pronoun subset)
     eligible = pre.filter(f=>{
       
-      // DIAGNOSTIC: Track C1 and B1 filtering step by step  
-      const isC1Debug = level === 'C1' && practiceMode === 'mixed'
       
       // Filter out forms with undefined/null values first
       if (!f.value && !f.form) {
-        if (isC1Debug) console.log('🚨 C1 FILTER - No value/form:', f.lemma, f.mood, f.tense)
         return false
       }
       
@@ -192,14 +143,7 @@ export function chooseNext({forms, history, currentItem}){
           ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
           : getAllowedCombosForLevel(level)
         if(!allowed.has(`${f.mood}|${f.tense}`)) {
-          if (isC1Debug) console.log('🚨 C1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
-          if (isB1Debug) console.log('🚨 B1 FILTER - Combo not allowed:', `${f.mood}|${f.tense}`, f.lemma)
           return false
-        }
-      } else {
-        // For specific topic practice, log that we're bypassing level restrictions
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🎯 SPECIFIC PRACTICE - Bypassing level restrictions for:', `${f.mood}|${f.tense}`, f.lemma)
         }
       }
     
@@ -241,7 +185,6 @@ export function chooseNext({forms, history, currentItem}){
     // Verb type filtering - check both user selection and MCER level restrictions
     const verb = LEMMA_TO_VERB.get(f.lemma)
     if (!verb) {
-      if (isC1Debug) console.log('🚨 C1 FILTER - No verb found:', f.lemma)
       return false
     }
 
@@ -250,9 +193,6 @@ export function chooseNext({forms, history, currentItem}){
     try {
       const verbFamilies = categorizeVerb(f.lemma, verb)
       if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🚫 LEVEL FILTER (global) - Excluding verb for level', level, ':', f.lemma)
-        }
         return false
       }
     } catch {
@@ -264,7 +204,6 @@ export function chooseNext({forms, history, currentItem}){
     // COMPLETE compound tenses definition: all 6 compound tenses in Spanish
     const isCompoundTense = (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc')
     if (!isCompoundTense && f.mood !== 'nonfinite' && !isVerbTypeAllowedForLevel(verb.type, level)) {
-      if (isC1Debug) console.log('🚨 C1 FILTER - Verb type not allowed for level:', verb.type, level, f.lemma)
       return false
     }
 
@@ -286,15 +225,7 @@ export function chooseNext({forms, history, currentItem}){
     const shouldBypassLemmaRestrictions = (verbType === 'all') || (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true))
     if (allowedLemmas && !shouldBypassLemmaRestrictions) {
       if (!allowedLemmas.has(f.lemma)) {
-        if (isC1Debug) console.log('🚨 C1 FILTER - Lemma not in allowedLemmas:', f.lemma)
-        console.log(`🔧 ALLOWEDLEMMAS DEBUG - Filtering out: ${f.lemma} (not in allowed set)`)
         return false
-      }
-    } else if (shouldBypassLemmaRestrictions) {
-      // When user selects "all verbs" OR practices by topic, ignore level-based lemma restrictions
-      if (process.env.NODE_ENV === 'development') {
-        const reason = verbType === 'all' ? 'ALL VERBS MODE' : 'SPECIFIC TOPIC PRACTICE'
-        console.log(`🌟 ${reason} - Bypassing allowedLemmas restriction for:`, f.lemma)
       }
     }
 
@@ -303,13 +234,15 @@ export function chooseNext({forms, history, currentItem}){
     // QUICK FIX: Para práctica mixta (sin verbType específico), permitir todos los verbos
     const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
     
-    // DEBUG CRÍTICO: Verificar configuración de verbType para TODOS los verbos
-    if (verbType === 'regular') {
-      console.log(`🔍 VERBTYPE DEBUG - ${f.lemma}: verbType=${verbType}, isMixedPractice=${isMixedPractice}, verb.type=${verb.type}`)
-    }
     
     if (verbType === 'regular' && !isMixedPractice) {
-      // Morphology-based regular filter per form (ignore global boolean types)
+      // CRITICAL FIX: First check if the verb is globally regular (verb.type === 'regular')
+      // This ensures only pure regular verbs are considered, not just regular forms of irregular verbs
+      if (verb.type !== 'regular') {
+        return false
+      }
+      
+      // Then apply morphology-based filtering to ensure the specific form is also regular
       if (isCompoundTense) {
         const part = (f.value || '').split(/\s+/).pop()
         if (!isRegularNonfiniteForm(f.lemma, 'part', part)) {
@@ -324,7 +257,6 @@ export function chooseNext({forms, history, currentItem}){
           return false
         }
       }
-      console.log(`✅ FILTRO VERBTYPE DEBUG - Permitiendo forma regular: ${f.lemma} ${f.mood}/${f.tense}/${f.person}`)
     } else if (verbType === 'irregular' && !isMixedPractice) {
       // For compound tenses, check if the verb has an irregular participle first
       if (isCompoundTense) {
@@ -399,9 +331,6 @@ export function chooseNext({forms, history, currentItem}){
         // Level-based filtering for specific verb types
         // ALWAYS apply level filtering, including for specific topic practice
         if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('🚫 LEVEL FILTER - Excluding verb for level', level, ':', f.lemma, '(requires higher level)')
-          }
           return false
         }
       } else {
@@ -409,9 +338,6 @@ export function chooseNext({forms, history, currentItem}){
         // ALWAYS apply this filtering, including for specific topic practice
         const verbFamilies = categorizeVerb(f.lemma, verb)
         if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('🚫 LEVEL FILTER - Excluding verb for level', level, ':', f.lemma, '(requires higher level)')
-          }
           return false
         }
       }
@@ -420,14 +346,7 @@ export function chooseNext({forms, history, currentItem}){
     
     // Specific practice filtering
     if(practiceMode === 'specific') {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 SPECIFIC FILTER - Checking form:', `${f.lemma}-${f.mood}-${f.tense}`, 'against settings:', { specificMood, specificTense })
-      }
-      
       if(specificMood && f.mood !== specificMood) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🚫 SPECIFIC FILTER - Mood mismatch:', f.mood, '!==', specificMood)
-        }
         return false
       }
       
@@ -461,9 +380,6 @@ export function chooseNext({forms, history, currentItem}){
             }
           }
         } else if(f.tense !== specificTense) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('🚫 SPECIFIC FILTER - Tense mismatch:', f.tense, '!==', specificTense)
-          }
           return false
         }
       }
@@ -477,35 +393,6 @@ export function chooseNext({forms, history, currentItem}){
     return true
   })
   
-    // DIAGNOSTIC: Log C1 and B1 filtering results
-    if (level === 'C1' && practiceMode === 'mixed') {
-      console.log('🚨 C1 MIXED DEBUG - After filtering:', eligible.length, 'forms remain')
-      if (eligible.length > 0) {
-        console.log('🚨 C1 MIXED DEBUG - Sample survivors:', eligible.slice(0,3).map(f => `${f.lemma}-${f.mood}-${f.tense}`))
-      } else {
-        console.log('🚨 C1 MIXED DEBUG - NO FORMS SURVIVED FILTERING!')
-      }
-    }
-    
-    if (isB1Debug) {
-      console.log('🚨 B1 DEBUG - After filtering:', eligible.length, 'forms remain')
-      if (eligible.length > 0) {
-        console.log('🚨 B1 DEBUG - Sample survivors:', eligible.slice(0,10).map(f => `${f.lemma}-${f.mood}-${f.tense}-${f.person}`))
-        
-        // Analyze mood/tense diversity
-        const moodTenseCombos = new Set(eligible.map(f => `${f.mood}|${f.tense}`))
-        console.log('🚨 B1 DEBUG - Available mood/tense combinations:', Array.from(moodTenseCombos))
-        
-        // Count by mood
-        const moodCounts = {}
-        eligible.forEach(f => {
-          moodCounts[f.mood] = (moodCounts[f.mood] || 0) + 1
-        })
-        console.log('🚨 B1 DEBUG - Forms by mood:', moodCounts)
-      } else {
-        console.log('🚨 B1 DEBUG - NO FORMS SURVIVED FILTERING!')
-      }
-    }
   
     // Guardar en cache para futuros usos
     formFilterCache.set(filterKey, eligible)
@@ -519,11 +406,7 @@ export function chooseNext({forms, history, currentItem}){
     if (practiceMode === 'specific') {
       const filteredByLemma = eligible.filter(f => f.lemma !== lemma)
       if (filteredByLemma.length > 0) {
-        console.log(`[Specific Practice] Excluded lemma ${lemma}, ${filteredByLemma.length} forms remain.`)
         eligible = filteredByLemma
-      } else {
-        // If excluding the lemma removes all options, fall back to original list to avoid errors
-        console.warn(`[Specific Practice] Could not exclude lemma ${lemma} as it would leave no forms.`)
       }
     } else {
       const filteredEligible = eligible.filter(f =>
@@ -540,7 +423,6 @@ export function chooseNext({forms, history, currentItem}){
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
-    console.log('🔧 CHOOSENEXT DEBUG - NO ELIGIBLE FORMS! Starting fallback logic...')
     // Failsafe: relax filters progressively to always return something
     // Apply same specific topic practice logic in fallback
     const isSpecificTopicPractice = (practiceMode === 'specific' || practiceMode === 'theme')
@@ -561,8 +443,6 @@ export function chooseNext({forms, history, currentItem}){
       }
       return true
     })
-    console.log('🔧 FALLBACK DEBUG - After optimized filtering:', fallback.length, isSpecificTopicPractice ? '(bypassed for specific practice)' : '')
-    console.log('🔧 FALLBACK DEBUG - After tense filter:', fallback.length)
     // Respect dialect minimally for conjugated forms
     fallback = fallback.filter(f => {
       if (f.mood === 'nonfinite') return true
@@ -583,22 +463,16 @@ export function chooseNext({forms, history, currentItem}){
         return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p'].includes(f.person)
       }
     })
-    console.log('🔧 FALLBACK DEBUG - After dialect filter:', fallback.length)
     // If still empty, drop tense constraint
     if (fallback.length === 0 && specificTense) {
       fallback = forms.filter(f => f.mood === specificMood)
-      console.log('🔧 FALLBACK DEBUG - After dropping tense:', fallback.length)
     }
     // If still empty, drop mood constraint
     if (fallback.length === 0 && specificMood) {
       fallback = forms
-      console.log('🔧 FALLBACK DEBUG - After dropping mood:', fallback.length)
     }
     // As last resort, return any form
-    console.log('🔧 FALLBACK DEBUG - Final fallback result:', fallback[0] ? `${fallback[0].lemma} - ${fallback[0].value}` : 'null')
     return fallback[0] || null
-  } else {
-    console.log('🔧 CHOOSENEXT DEBUG - Found', eligible.length, 'eligible forms')
   }
   
   // Apply weighted selection for "all" verb types to balance regular vs irregular per level
@@ -624,11 +498,6 @@ export function chooseNext({forms, history, currentItem}){
     const levelWeightedForms = getWeightedFormsSelection(eligible, level, userProgress)
     
     if (levelWeightedForms.length > 0) {
-      console.log(`🎯 Level-aware prioritization applied for ${level}:`, {
-        original: eligible.length,
-        weighted: levelWeightedForms.length,
-        sampleWeighted: levelWeightedForms.slice(0, 3).map(f => `${f.mood}/${f.tense}`)
-      })
       eligible = levelWeightedForms
     }
   } catch (error) {
@@ -639,14 +508,18 @@ export function chooseNext({forms, history, currentItem}){
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
 
-  // Strong preference for PURE regular lemmas when user selects 'regular'
+  // ENHANCED: Strong preference for PURE regular lemmas when user selects 'regular'
   if (verbType === 'regular') {
     try {
       const pureRegularSet = new Set(verbs.filter(v => v.type === 'regular').map(v => v.lemma))
       const isCompound = (t) => (t === 'pretPerf' || t === 'plusc' || t === 'futPerf' || t === 'condPerf' || t === 'subjPerf' || t === 'subjPlusc')
+      
+      
       // Keep only pure regular lemmas and forms that are morphologically regular
       const pureRegularForms = eligible.filter(f => {
-        if (!pureRegularSet.has(f.lemma)) return false
+        if (!pureRegularSet.has(f.lemma)) {
+          return false
+        }
         if (f.mood === 'nonfinite') return isRegularNonfiniteForm(f.lemma, f.tense, f.value)
         if (isCompound(f.tense)) {
           const part = (f.value || '').split(/\s+/).pop()
@@ -654,6 +527,7 @@ export function chooseNext({forms, history, currentItem}){
         }
         return isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
       })
+      
       if (pureRegularForms.length > 0) {
         eligible = pureRegularForms
       }
@@ -729,13 +603,11 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection
-  console.log(`🚀 Using Advanced Variety Engine for ${practiceMode} practice (${level})`)
   
   // Use the advanced variety engine for all selection
   const selectedForm = varietyEngine.selectVariedForm(eligible, level, practiceMode, history)
   
   if (selectedForm) {
-    console.log(`🎯 Advanced selection result: ${selectedForm.lemma} - ${selectedForm.mood}/${selectedForm.tense} - ${selectedForm.person}`)
     
     // Apply any final transformations (clitics, etc.)
     let finalForm = selectedForm
@@ -751,56 +623,28 @@ export function chooseNext({forms, history, currentItem}){
       }
     }
     
-    // CRITICAL DEBUG: Log chosen exercise from advanced engine
-    if (practiceMode === 'specific' && (specificMood || specificTense)) {
-      console.log('🚨 CRITICAL - Returning exercise from ADVANCED ENGINE:', {
-        lemma: finalForm.lemma,
-        mood: finalForm.mood,
-        tense: finalForm.tense,
-        person: finalForm.person,
-        value: finalForm.value,
-        expectedMood: specificMood,
-        expectedTense: specificTense,
-        MATCHES_MOOD: finalForm.mood === specificMood,
-        MATCHES_TENSE: finalForm.tense === specificTense
-      })
-    }
     
     // STRICT VALIDATION: Prevent incorrect exercises from being returned
     if (practiceMode === 'specific') {
       if (specificMood && finalForm.mood !== specificMood) {
-        console.error('🚨 CRITICAL ERROR: Mood mismatch detected in ADVANCED ENGINE!', {
-          expected: specificMood,
-          actual: finalForm.mood,
-          form: finalForm
-        })
         // Clear caches to prevent corrupted data from persisting
-        console.warn('🧹 Clearing caches due to filtering error')
         clearAllCaches()
         
         // Try to find a correct form from eligible forms as last resort
         const correctForms = eligible.filter(f => f.mood === specificMood && (!specificTense || f.tense === specificTense))
         if (correctForms.length > 0) {
-          console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }
         // If no correct form found, throw error to prevent wrong exercise
         throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
       }
       if (specificTense && finalForm.tense !== specificTense) {
-        console.error('🚨 CRITICAL ERROR: Tense mismatch detected in ADVANCED ENGINE!', {
-          expected: specificTense,
-          actual: finalForm.tense,
-          form: finalForm
-        })
         // Clear caches to prevent corrupted data from persisting
-        console.warn('🧹 Clearing caches due to filtering error')
         clearAllCaches()
         
         // Try to find a correct form from eligible forms as last resort
         const correctForms = eligible.filter(f => (!specificMood || f.mood === specificMood) && f.tense === specificTense)
         if (correctForms.length > 0) {
-          console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }
         // If no correct form found, throw error to prevent wrong exercise
@@ -812,7 +656,6 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   // Fallback to legacy selection if advanced engine fails
-  console.log('⚠️  Advanced Variety Engine failed, using fallback selection')
   let candidates = eligible
   
   // Balance selection by person to ensure variety
@@ -851,7 +694,6 @@ export function chooseNext({forms, history, currentItem}){
   if (formsForPerson.length > 1 && formsForPerson[0].mood === 'nonfinite' && formsForPerson[0].tense === 'part') {
     // For participles with multiple forms (e.g. provisto/proveído), always choose the first (standard) one
     fallbackSelectedForm = formsForPerson[0]
-    console.log(`🔧 PARTICIPLE FIX - Selected standard form: ${fallbackSelectedForm.value} instead of random from [${formsForPerson.map(f => f.value).join(', ')}]`)
   } else {
     fallbackSelectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
   }
@@ -872,20 +714,6 @@ export function chooseNext({forms, history, currentItem}){
   }
   
   
-  // CRITICAL DEBUG: Log chosen exercise from fallback
-  if (practiceMode === 'specific' && (specificMood || specificTense)) {
-    console.log('🚨 CRITICAL - Returning exercise from FALLBACK:', {
-      lemma: fallbackSelectedForm.lemma,
-      mood: fallbackSelectedForm.mood,
-      tense: fallbackSelectedForm.tense,
-      person: fallbackSelectedForm.person,
-      value: fallbackSelectedForm.value,
-      expectedMood: specificMood,
-      expectedTense: specificTense,
-      MATCHES_MOOD: fallbackSelectedForm.mood === specificMood,
-      MATCHES_TENSE: fallbackSelectedForm.tense === specificTense
-    })
-  }
   
   // STRICT VALIDATION: Prevent incorrect exercises from being returned
   if (practiceMode === 'specific') {
@@ -896,19 +724,12 @@ export function chooseNext({forms, history, currentItem}){
     const isMixedTense = specificTense && mixedMap.has(specificTense)
     const mixedAllowed = isMixedTense ? mixedMap.get(specificTense) : null
     if (specificMood && fallbackSelectedForm.mood !== specificMood) {
-      console.error('🚨 CRITICAL ERROR: Mood mismatch detected!', {
-        expected: specificMood,
-        actual: fallbackSelectedForm.mood,
-        form: fallbackSelectedForm
-      })
       // Clear caches to prevent corrupted data from persisting
-      console.warn('🧹 Clearing caches due to filtering error')
       clearAllCaches()
       
       // Try to find a correct form from eligible forms as last resort
       const correctForms = eligible.filter(f => f.mood === specificMood && (!specificTense || f.tense === specificTense))
       if (correctForms.length > 0) {
-        console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
         return correctForms[Math.floor(Math.random() * correctForms.length)]
       }
       // If no correct form found, throw error to prevent wrong exercise
@@ -918,13 +739,7 @@ export function chooseNext({forms, history, currentItem}){
       (!isMixedTense && fallbackSelectedForm.tense !== specificTense) ||
       (isMixedTense && !mixedAllowed.includes(fallbackSelectedForm.tense))
     )) {
-      console.error('🚨 CRITICAL ERROR: Tense mismatch detected!', {
-        expected: specificTense,
-        actual: fallbackSelectedForm.tense,
-        form: fallbackSelectedForm
-      })
       // Clear caches to prevent corrupted data from persisting
-      console.warn('🧹 Clearing caches due to filtering error')
       clearAllCaches()
       
       // Try to find a correct form from eligible forms as last resort
@@ -935,7 +750,6 @@ export function chooseNext({forms, history, currentItem}){
         )
       ))
       if (correctForms.length > 0) {
-        console.warn('🔧 EMERGENCY FIX: Using correct form from eligible list')
         return correctForms[Math.floor(Math.random() * correctForms.length)]
       }
       // If no correct form found, throw error to prevent wrong exercise
@@ -964,11 +778,6 @@ function applyWeightedSelection(forms) {
     }
   })
   
-  console.log('Verb distribution before weighting:', {
-    regular: regularForms.length,
-    irregular: irregularForms.length,
-    total: forms.length
-  })
   
   // Calculate target distribution: 30% regular, 70% irregular
   const targetRegularRatio = 0.3
@@ -1000,17 +809,6 @@ function applyWeightedSelection(forms) {
     selectedForms.push(...sampleArray(remainingForms, totalForms - selectedForms.length))
   }
   
-  console.log('Verb distribution after weighting:', {
-    regular: selectedForms.filter(f => {
-      const verb = findVerbByLemma(f.lemma)
-      return verb && !isIrregularInTense(verb, f.tense)
-    }).length,
-    irregular: selectedForms.filter(f => {
-      const verb = findVerbByLemma(f.lemma)
-      return verb && isIrregularInTense(verb, f.tense)
-    }).length,
-    total: selectedForms.length
-  })
   
   return selectedForms
 }
@@ -1186,13 +984,11 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
     const useTuteo = settings.useTuteo !== false
     const useVosotros = settings.useVosotros !== false
     
-    console.log(`🔍 VALIDATION - Checking ${mood}|${tense} for level ${level}, region ${region}`)
     
     // Step 1: Check if combination is allowed for the user's level
     const allowedCombos = getAllowedCombosForLevel(level)
     const comboKey = `${mood}|${tense}`
     if (!allowedCombos.has(comboKey)) {
-      console.log(`❌ VALIDATION - ${comboKey} not allowed for level ${level}`)
       return false
     }
     
@@ -1220,7 +1016,6 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
     })
     
     const isAvailable = matchingForms.length > 0
-    console.log(`${isAvailable ? '✅' : '❌'} VALIDATION - ${comboKey}: ${matchingForms.length} forms available`)
     
     return isAvailable
   } catch (error) {

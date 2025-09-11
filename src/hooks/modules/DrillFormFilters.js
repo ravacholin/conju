@@ -238,8 +238,19 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
  */
 export const filterByVerbType = (forms, verbType, settings = null) => {
   if (!verbType || verbType === 'all') return forms
+  
+  // EMERGENCY FIX: Add critical debugging for regular verb filtering
+  console.log(`🚨🚨🚨 EMERGENCY filterByVerbType - verbType: ${verbType}, forms: ${forms.length}`)
+  if (verbType === 'regular') {
+    console.log(`🚨🚨🚨 EMERGENCY - First 5 forms with verb types:`, forms.slice(0, 5).map(f => {
+      const verb = FULL_VERB_DATASET.find(vb => vb.lemma === f.lemma)
+      return `${f.lemma}(${verb?.type || 'unknown'})`
+    }))
+  }
+  
   // Default: lemma mode for 'regular' (prefer pure regular lemmas), tense mode for 'irregular'
   const mode = settings?.irregularityFilterMode || (verbType === 'regular' ? 'lemma' : 'tense') // 'tense' | 'lemma'
+  console.log(`🚨🚨🚨 EMERGENCY MODE DEBUG - verbType: ${verbType}, irregularityFilterMode: ${settings?.irregularityFilterMode}, calculated mode: ${mode}`)
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
@@ -272,12 +283,22 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
       return t
     }
     if (verbType === 'irregular') return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular')
-    // verbType === 'regular'
-    return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'regular')
+    // verbType === 'regular' - CRITICAL FIX with debugging
+    const regularForms = forms.filter(f => {
+      const actualType = f.verbType || getLemmaType(f.lemma)
+      return actualType === 'regular'
+    })
+    return regularForms
   }
   // mode === 'tense' (default): decide per-form by morphology/tense
-  if (verbType === 'irregular') return forms.filter(isIrregularForm)
-  return forms.filter(f => !isIrregularForm(f))
+  if (verbType === 'irregular') {
+    return forms.filter(isIrregularForm)
+  }
+  // verbType === 'regular'
+  const regularForms = forms.filter(f => {
+    return !isIrregularForm(f)
+  })
+  return regularForms
 }
 
 /**
