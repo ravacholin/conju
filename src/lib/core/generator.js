@@ -8,6 +8,7 @@ import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } 
 import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
+import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePolicy.js'
 import { 
   isIrregularInTense, 
   hasAnyIrregularTense, 
