@@ -1,5 +1,6 @@
 // Sistema de cache avanzado para optimizar el generador de verbos
-import { verbs } from '../../data/verbs.js'
+// Ahora con soporte para chunks dinámicos
+import { verbChunkManager } from './verbChunkManager.js'
 import { sanitizeVerbsInPlace } from './dataSanitizer.js'
 
 // Cache inteligente optimizado con expiración y límite de memoria
@@ -90,47 +91,133 @@ export const verbCategorizationCache = new IntelligentCache(500, 10 * 60 * 1000)
 export const formFilterCache = new IntelligentCache(1000, 3 * 60 * 1000) // 3 min para filtrado
 export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 min para combinaciones
 
-// Sanitize known data issues before building indexes
-try { sanitizeVerbsInPlace(verbs) } catch (e) { if (import.meta.env.DEV) console.warn('Data sanitizer failed:', e) }
+// Cache para chunks dinámicos
+export const chunkCache = new IntelligentCache(100, 30 * 60 * 1000) // 30 min para chunks
+export const verbLookupCache = new IntelligentCache(2000, 15 * 60 * 1000) // 15 min para lookups
 
-// Pre-computar mapas frecuentemente utilizados
-// FIX CRÍTICO: Manejar sufijos _priority para lookup correcto
+// Mapas de lookup que se construyen dinámicamente con chunks
 export const VERB_LOOKUP_MAP = new Map()
-verbs.forEach(verb => {
-  // Mapear lemma completo 
-  VERB_LOOKUP_MAP.set(verb.lemma, verb)
-  
-  // CRÍTICO: Si el ID tiene sufijo _priority pero el lemma no, mapear ambos
-  if (verb.id && verb.id.endsWith('_priority') && !verb.lemma.endsWith('_priority')) {
-    // Map both the ID and the base form to the verb
-    VERB_LOOKUP_MAP.set(verb.id, verb)
-    const baseLemma = verb.id.replace('_priority', '')
-    VERB_LOOKUP_MAP.set(baseLemma, verb)
-  }
-  
-  // Si el lemma tiene sufijo _priority, también mapear el lemma base
-  if (verb.lemma.endsWith('_priority')) {
-    const baseLemma = verb.lemma.replace('_priority', '')
-    VERB_LOOKUP_MAP.set(baseLemma, verb)
-  }
-})
 export const FORM_LOOKUP_MAP = new Map()
 
-// Inicializar form lookup map
-verbs.forEach(verb => {
-  verb.paradigms?.forEach(paradigm => {
-    paradigm.forms?.forEach(form => {
-      const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
-      // Agregar lemma al form para que esté disponible en el drill
-      const enrichedForm = { ...form, lemma: verb.lemma }
-      FORM_LOOKUP_MAP.set(key, enrichedForm)
-    })
+// Funciones para cargar y cache de verbos por chunks
+export async function getVerbByLemma(lemma) {
+  // Check cache first
+  const cacheKey = `verb:${lemma}`
+  let verb = verbLookupCache.get(cacheKey)
+  
+  if (verb) {
+    return verb
+  }
+  
+  // Load from chunk manager
+  verb = await verbChunkManager.getVerbByLemma(lemma)
+  
+  if (verb) {
+    // Cache the result
+    verbLookupCache.set(cacheKey, verb)
+    
+    // Also update the lookup map for compatibility
+    VERB_LOOKUP_MAP.set(lemma, verb)
+    
+    // Handle priority suffixes
+    if (verb.id && verb.id.endsWith('_priority') && !verb.lemma.endsWith('_priority')) {
+      VERB_LOOKUP_MAP.set(verb.id, verb)
+      const baseLemma = verb.id.replace('_priority', '')
+      VERB_LOOKUP_MAP.set(baseLemma, verb)
+    }
+    
+    if (verb.lemma.endsWith('_priority')) {
+      const baseLemma = verb.lemma.replace('_priority', '')
+      VERB_LOOKUP_MAP.set(baseLemma, verb)
+    }
+  }
+  
+  return verb
+}
+
+export async function getVerbsByLemmas(lemmas) {
+  // Check cache for already loaded verbs
+  const uncachedLemmas = []
+  const cachedVerbs = []
+  
+  lemmas.forEach(lemma => {
+    const cacheKey = `verb:${lemma}`
+    const verb = verbLookupCache.get(cacheKey)
+    if (verb) {
+      cachedVerbs.push(verb)
+    } else {
+      uncachedLemmas.push(lemma)
+    }
   })
-})
+  
+  // Load uncached verbs
+  let newVerbs = []
+  if (uncachedLemmas.length > 0) {
+    newVerbs = await verbChunkManager.ensureVerbsLoaded(uncachedLemmas)
+    
+    // Cache the new verbs
+    newVerbs.forEach(verb => {
+      const cacheKey = `verb:${verb.lemma}`
+      verbLookupCache.set(cacheKey, verb)
+      VERB_LOOKUP_MAP.set(verb.lemma, verb)
+    })
+  }
+  
+  return [...cachedVerbs, ...newVerbs]
+}
+
+// Backward compatibility: initialize with core chunk
+async function initializeCoreVerbs() {
+  try {
+    await verbChunkManager.loadChunk('core')
+    const coreVerbs = verbChunkManager.loadedChunks.get('core') || []
+    
+    coreVerbs.forEach(verb => {
+      try {
+        sanitizeVerbsInPlace([verb])
+      } catch (e) {
+        if (import.meta.env?.DEV) console.warn('Data sanitizer failed for:', verb.lemma, e)
+      }
+      
+      // Populate lookup maps for immediate availability
+      VERB_LOOKUP_MAP.set(verb.lemma, verb)
+      
+      // Handle priority suffixes
+      if (verb.id && verb.id.endsWith('_priority') && !verb.lemma.endsWith('_priority')) {
+        VERB_LOOKUP_MAP.set(verb.id, verb)
+        const baseLemma = verb.id.replace('_priority', '')
+        VERB_LOOKUP_MAP.set(baseLemma, verb)
+      }
+      
+      if (verb.lemma.endsWith('_priority')) {
+        const baseLemma = verb.lemma.replace('_priority', '')
+        VERB_LOOKUP_MAP.set(baseLemma, verb)
+      }
+      
+      // Populate form lookup map
+      verb.paradigms?.forEach(paradigm => {
+        paradigm.forms?.forEach(form => {
+          const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+          const enrichedForm = { ...form, lemma: verb.lemma }
+          FORM_LOOKUP_MAP.set(key, enrichedForm)
+        })
+      })
+    })
+    
+    if (import.meta.env?.DEV) {
+      console.log(`🚀 Core verbs initialized: ${coreVerbs.length} verbs`)
+    }
+  } catch (error) {
+    console.error('Failed to initialize core verbs:', error)
+  }
+}
+
+// Initialize core verbs immediately
+initializeCoreVerbs()
 
 // Función para pre-calentar caches con datos frecuentes
-export function warmupCaches() {
-  if (import.meta.env.DEV) {
+export async function warmupCaches() {
+  if (import.meta.env?.DEV) {
     console.log('🔥 Calentando caches del generador...')
   }
   
@@ -139,18 +226,22 @@ export function warmupCaches() {
     'indicative|pres', 'subjunctive|pres', 'indicative|pretIndef'
   ]
   
-  // Pre-categorizar verbos comunes
   const startTime = Date.now()
   let categorized = 0
   
-  commonVerbs.forEach(lemma => {
-    const verb = VERB_LOOKUP_MAP.get(lemma)
+  // Preload common chunks
+  await verbChunkManager.loadChunk('core')
+  await verbChunkManager.loadChunk('common')
+  
+  // Pre-categorizar verbos comunes (ahora async)
+  for (const lemma of commonVerbs) {
+    const verb = await getVerbByLemma(lemma)
     if (verb) {
       // Simular categorización (se hará lazy cuando sea necesario)
       verbCategorizationCache.set(`categorize|${lemma}`, [])
       categorized++
     }
-  })
+  }
   
   // Pre-computar combinaciones frecuentes
   let combinations = 0
@@ -159,13 +250,14 @@ export function warmupCaches() {
     combinations++
   })
   
-  if (import.meta.env.DEV) {
+  if (import.meta.env?.DEV) {
     const warmupTime = Date.now() - startTime
     console.log(`✅ Cache warmup completado en ${warmupTime}ms`)
     console.log(`   - ${categorized} verbos categorizados`)
     console.log(`   - ${combinations} combinaciones pre-computadas`)
     console.log(`   - ${VERB_LOOKUP_MAP.size} verbos indexados`)
     console.log(`   - ${FORM_LOOKUP_MAP.size} formas indexadas`)
+    console.log(`   - Chunk stats:`, verbChunkManager.getStats())
   }
 }
 
@@ -174,8 +266,15 @@ export function clearAllCaches() {
   verbCategorizationCache.clear()
   formFilterCache.clear()
   combinationCache.clear()
+  chunkCache.clear()
+  verbLookupCache.clear()
+  VERB_LOOKUP_MAP.clear()
+  FORM_LOOKUP_MAP.clear()
   
-  if (import.meta.env.DEV) {
+  // También limpiar chunk manager
+  verbChunkManager.loadedChunks.clear()
+  
+  if (import.meta.env?.DEV) {
     console.log('🧹 Todos los caches han sido limpiados')
   }
 }
@@ -186,8 +285,11 @@ export function getCacheStats() {
     verbCategorization: verbCategorizationCache.getStats(),
     formFilter: formFilterCache.getStats(),
     combination: combinationCache.getStats(),
+    chunkCache: chunkCache.getStats(),
+    verbLookupCache: verbLookupCache.getStats(),
     verbLookup: { size: VERB_LOOKUP_MAP.size },
-    formLookup: { size: FORM_LOOKUP_MAP.size }
+    formLookup: { size: FORM_LOOKUP_MAP.size },
+    chunkManager: verbChunkManager.getStats()
   }
 }
 

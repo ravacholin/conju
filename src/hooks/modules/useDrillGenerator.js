@@ -25,7 +25,8 @@ import {
   filterDueForSpecific,
   matchesSpecific,
   allowsPerson,
-  allowsLevel 
+  allowsLevel,
+  generateAllFormsForRegion
 } from './DrillFormFilters.js'
 import { 
   validateEligibleForms, 
@@ -57,7 +58,6 @@ export const useDrillGenerator = () => {
   /**
    * Generate next drill item using comprehensive selection algorithms
    * @param {Object} itemToExclude - Previous item to exclude from selection
-   * @param {Array} allFormsForRegion - All available forms for user's region
    * @param {Function} getAvailableMoodsForLevel - Function to get moods for level
    * @param {Function} getAvailableTensesForLevelAndMood - Function to get tenses for level/mood
    * @param {Array} history - Generation history for variety
@@ -65,7 +65,6 @@ export const useDrillGenerator = () => {
    */
   const generateNextItem = useCallback(async (
     itemToExclude = null,
-    allFormsForRegion,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood,
     history = {}
@@ -88,6 +87,16 @@ export const useDrillGenerator = () => {
         excludedItem: itemToExclude?.lemma,
         doubleActive: settings.doubleActive
       })
+      
+      // Generar formas dinámicamente basado en configuración del usuario
+      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      
+      if (!allFormsForRegion || allFormsForRegion.length === 0) {
+        logger.error('generateNextItem', 'No forms available for region', settings.region)
+        return null
+      }
+      
+      logger.debug('generateNextItem', `Generated ${allFormsForRegion.length} forms for processing`)
 
       // Check if double mode is requested and viable
       if (settings.doubleActive) {
@@ -286,22 +295,23 @@ export const useDrillGenerator = () => {
 
   /**
    * Check if generation is currently possible
-   * @param {Array} allFormsForRegion - All available forms
    * @returns {boolean} - Whether generation is viable
    */
-  const isGenerationViable = useCallback((allFormsForRegion) => {
-    if (!allFormsForRegion || allFormsForRegion.length === 0) {
-      return false
-    }
-
-    const specificConstraints = {
-      isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
-                  settings.specificMood && settings.specificTense,
-      specificMood: settings.specificMood,
-      specificTense: settings.specificTense
-    }
-
+  const isGenerationViable = useCallback(async () => {
     try {
+      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      
+      if (!allFormsForRegion || allFormsForRegion.length === 0) {
+        return false
+      }
+
+      const specificConstraints = {
+        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
+                    settings.specificMood && settings.specificTense,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense
+      }
+
       const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
       return eligibleForms.length > 0
     } catch (error) {
@@ -312,38 +322,55 @@ export const useDrillGenerator = () => {
 
   /**
    * Get generation statistics for debugging
-   * @param {Array} allFormsForRegion - All available forms
    * @returns {Object} - Generation statistics
    */
-  const getGenerationStats = useCallback((allFormsForRegion) => {
-    const specificConstraints = {
-      isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
-                  settings.specificMood && settings.specificTense,
-      specificMood: settings.specificMood,
-      specificTense: settings.specificTense
-    }
+  const getGenerationStats = useCallback(async () => {
+    try {
+      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      
+      const specificConstraints = {
+        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
+                    settings.specificMood && settings.specificTense,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense
+      }
 
-    const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
-    
-    return {
-      totalForms: allFormsForRegion.length,
-      eligibleForms: eligibleForms.length,
-      filteringEfficiency: allFormsForRegion.length > 0 
-        ? Math.round((eligibleForms.length / allFormsForRegion.length) * 100) 
-        : 0,
-      settings: {
-        practiceMode: settings.practiceMode,
-        verbType: settings.verbType,
-        level: settings.level,
-        region: settings.region
-      },
-      isSpecific: specificConstraints.isSpecific,
-      lastGenerated: lastGeneratedItem ? {
-        lemma: lastGeneratedItem.lemma,
-        mood: lastGeneratedItem.mood,
-        tense: lastGeneratedItem.tense,
-        method: lastGeneratedItem.selectionMethod
-      } : null
+      const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+      
+      return {
+        totalForms: allFormsForRegion.length,
+        eligibleForms: eligibleForms.length,
+        filteringEfficiency: allFormsForRegion.length > 0 
+          ? Math.round((eligibleForms.length / allFormsForRegion.length) * 100) 
+          : 0,
+        settings: {
+          practiceMode: settings.practiceMode,
+          verbType: settings.verbType,
+          level: settings.level,
+          region: settings.region
+        },
+        isSpecific: specificConstraints.isSpecific,
+        lastGenerated: lastGeneratedItem ? {
+          lemma: lastGeneratedItem.lemma,
+          mood: lastGeneratedItem.mood,
+          tense: lastGeneratedItem.tense,
+          method: lastGeneratedItem.selectionMethod
+        } : null
+      }
+    } catch (error) {
+      logger.warn('getGenerationStats', 'Error getting generation stats', error)
+      return {
+        totalForms: 0,
+        eligibleForms: 0,
+        filteringEfficiency: 0,
+        settings: {
+          practiceMode: settings.practiceMode,
+          verbType: settings.verbType,
+          level: settings.level,
+          region: settings.region
+        },
+        error: error.message
+      }
     }
   }, [settings, lastGeneratedItem])
 

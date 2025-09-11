@@ -9,7 +9,8 @@
  * - Mixed tense handling (imperative mixed, nonfinite mixed)
  */
 
-import { verbs } from '../../data/verbs.js'
+// Dynamic verb loading with chunk manager
+import { verbChunkManager } from '../../lib/core/verbChunkManager.js'
 import { 
   isRegularFormForMood, 
   isRegularNonfiniteForm,
@@ -17,6 +18,118 @@ import {
 } from '../../lib/core/conjugationRules.js'
 import { LEVELS } from '../../lib/data/levels.js'
 import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
+
+// Cache for generated forms to avoid regenerating
+const formsCache = new Map()
+
+/**
+ * Genera dinámicamente todas las formas de verbos para una región específica
+ * Optimizado para el sistema de chunks - carga solo los verbos necesarios
+ * @param {string} region - Región (rioplatense, la_general, peninsular)
+ * @param {Object} settings - Configuración del usuario para optimizar carga
+ * @returns {Array} - Array de formas enriquecidas con lemma
+ */
+export async function generateAllFormsForRegion(region = 'la_general', settings = {}) {
+  const cacheKey = `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}`
+  
+  // Check cache first
+  if (formsCache.has(cacheKey)) {
+    return formsCache.get(cacheKey)
+  }
+  
+  const startTime = performance.now()
+  let verbs = []
+  
+  try {
+    // Estrategia de carga inteligente basada en contexto del usuario
+    if (settings.practiceMode === 'theme' || settings.selectedFamily) {
+      // Para práctica por tema, usar getVerbsByTheme
+      const theme = settings.selectedFamily || 'mixed'
+      const families = settings.selectedFamily ? [settings.selectedFamily] : []
+      verbs = await verbChunkManager.getVerbsByTheme(theme, families)
+    } else if (settings.level && ['A1', 'A2'].includes(settings.level)) {
+      // Para niveles básicos, cargar core + common
+      await verbChunkManager.loadChunk('core')
+      await verbChunkManager.loadChunk('common')
+      
+      const coreVerbs = verbChunkManager.loadedChunks.get('core') || []
+      const commonVerbs = verbChunkManager.loadedChunks.get('common') || []
+      verbs = [...coreVerbs, ...commonVerbs]
+    } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
+      // Para verbos irregulares o niveles avanzados, incluir chunk de irregulares
+      await verbChunkManager.loadChunk('core')
+      await verbChunkManager.loadChunk('common')
+      await verbChunkManager.loadChunk('irregulars')
+      
+      const loadedChunks = ['core', 'common', 'irregulars']
+      verbs = []
+      loadedChunks.forEach(chunkName => {
+        const chunk = verbChunkManager.loadedChunks.get(chunkName)
+        if (chunk) verbs.push(...chunk)
+      })
+    } else {
+      // Fallback: cargar todos los verbos disponibles en chunks actuales
+      // Si no hay suficientes, usar fallback rápido
+      const currentVerbs = []
+      verbChunkManager.loadedChunks.forEach(chunk => {
+        currentVerbs.push(...chunk)
+      })
+      
+      if (currentVerbs.length < 50) { // Threshold mínimo
+        console.log('⚠️ Pocos verbos en chunks, usando fallback completo')
+        verbs = await verbChunkManager.getAllVerbs()
+      } else {
+        verbs = currentVerbs
+      }
+    }
+  } catch (error) {
+    console.error('Error loading verbs for forms generation:', error)
+    // Ultimate fallback: usar fallback con timeout
+    verbs = await verbChunkManager.getVerbsWithFallback(['ser', 'estar', 'haber', 'tener'], 1000)
+  }
+  
+  // Generar formas de todos los verbos cargados
+  const allForms = []
+  
+  verbs.forEach(verb => {
+    verb.paradigms?.forEach(paradigm => {
+      // Filtrar por región si está especificada
+      if (region !== 'ALL' && !paradigm.regionTags?.includes(region)) {
+        return
+      }
+      
+      paradigm.forms?.forEach(form => {
+        // Enriquecer forma con información del verbo
+        const enrichedForm = {
+          ...form,
+          lemma: verb.lemma,
+          verbId: verb.id,
+          verbType: verb.type || 'regular'
+        }
+        allForms.push(enrichedForm)
+      })
+    })
+  })
+  
+  const loadTime = performance.now() - startTime
+  
+  // Cache el resultado
+  formsCache.set(cacheKey, allForms)
+  
+  // Log de performance
+  if (loadTime > 100) { // Solo log si toma más de 100ms
+    console.log(`📊 Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
+  }
+  
+  return allForms
+}
+
+/**
+ * Limpia el cache de formas - útil cuando se cambian configuraciones importantes
+ */
+export function clearFormsCache() {
+  formsCache.clear()
+}
 
 /**
  * Get allowed mood/tense combinations for a specific CEFR level.

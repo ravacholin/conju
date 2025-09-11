@@ -57,16 +57,14 @@ export function useDrillMode() {
   } = useDrillValidation()
 
   /**
-   * Generate next drill item - maintains original API
+   * Generate next drill item - updated to use dynamic forms generation
    * @param {Object} itemToExclude - Previous item to exclude
-   * @param {Array} allFormsForRegion - All available forms for region
    * @param {Function} getAvailableMoodsForLevel - Function to get moods for level
    * @param {Function} getAvailableTensesForLevelAndMood - Function to get tenses for level/mood
    * @returns {Promise<void>}
    */
   const generateNextItem = async (
     itemToExclude = null,
-    allFormsForRegion,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
@@ -81,10 +79,9 @@ export function useDrillMode() {
       dialect: { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros }
     })
 
-    // Use the specialized generator
+    // Use the specialized generator (now generates forms dynamically)
     const newItem = await generateNextItemInternal(
       itemToExclude,
-      allFormsForRegion,
       getAvailableMoodsForLevel,
       getAvailableTensesForLevelAndMood,
       history
