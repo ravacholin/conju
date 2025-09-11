@@ -235,6 +235,7 @@ export function chooseNext({forms, history, currentItem}){
     const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
     
     
+    
     if (verbType === 'regular' && !isMixedPractice) {
       // CRITICAL FIX: First check if the verb is globally regular (verb.type === 'regular')
       // This ensures only pure regular verbs are considered, not just regular forms of irregular verbs
@@ -441,6 +442,19 @@ export function chooseNext({forms, history, currentItem}){
       if (specificTense && f.tense !== specificTense) {
         return false
       }
+      
+      // CRITICAL FIX: Respect verbType restriction even in fallback!
+      const verb = LEMMA_TO_VERB.get(f.lemma)
+      if (verb && verbType === 'regular' && !isMixedPractice) {
+        if (verb.type !== 'regular') {
+          return false
+        }
+      } else if (verb && verbType === 'irregular' && !isMixedPractice) {
+        if (verb.type !== 'irregular') {
+          return false
+        }
+      }
+      
       return true
     })
     // Respect dialect minimally for conjugated forms
