@@ -92,7 +92,9 @@ export default defineConfig(({ mode }) => ({
       }
     },
     target: 'esnext',
-    chunkSizeWarningLimit: 1000, // Increased for verb chunks
+    // Verb datasets are intentionally split but some single modules (legacy fallbacks)
+    // remain heavy; raise limit to avoid noisy warnings while keeping code-splitting.
+    chunkSizeWarningLimit: 3000,
     minify: mode === 'production' ? 'terser' : false,
     terserOptions: mode === 'production' ? {
       compress: {

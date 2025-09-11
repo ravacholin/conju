@@ -1,9 +1,3 @@
 {
-  "dependencies": {
-    "idb": "^7.1.1",
-    "idb-keyval": "^6.2.1"
-  },
-  "devDependencies": {
-    "@types/uuid": "^9.0.0"
-  }
+  "type": "module"
 }

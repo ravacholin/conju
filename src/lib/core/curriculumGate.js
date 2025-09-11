@@ -1,5 +1,5 @@
 import { LEVELS } from '../data/levels.js';
-import gates from '../../data/curriculum.json' with { type: 'json' };
+import gates from '../../data/curriculum.json';
 
 export function getAllowedCombosForLevel(level) {
   if (!level) return new Set();
