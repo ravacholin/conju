@@ -156,18 +156,14 @@ export function useDrillMode() {
    * @returns {Promise<void>}
    */
   const handleContinue = async (
-    allFormsForRegion,
+    _allFormsForRegion,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
     logger.debug('handleContinue', 'Continuing to next item')
     
-    await generateNextItem(
-      currentItem,
-      allFormsForRegion,
-      getAvailableMoodsForLevel,
-      getAvailableTensesForLevelAndMood
-    )
+    // Correct argument order: (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    await generateNextItem(currentItem, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
 
   /**

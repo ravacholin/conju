@@ -240,12 +240,22 @@ function AppRouter() {
     } else {
       settings.set({ currentBlock: null })
     }
-    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    // Correct argument order: (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    drillMode.generateNextItem(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handleRegenerateItem = () => {
     drillMode.setCurrentItem(null)
-    drillMode.generateNextItem(null, allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    // Correct argument order: (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    drillMode.generateNextItem(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   if (currentMode === 'onboarding') {

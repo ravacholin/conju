@@ -146,9 +146,46 @@ export const useDrillGenerator = () => {
 
       // Apply comprehensive filtering
       let eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
-      
-      // Validate that we have eligible forms
-      validateEligibleForms(eligibleForms, specificConstraints)
+
+      // Validate that we have eligible forms. If none, try graceful fallbacks
+      try {
+        validateEligibleForms(eligibleForms, specificConstraints)
+      } catch (e) {
+        logger.warn('generateNextItem', 'No eligible forms after filtering; attempting graceful fallback', {
+          reason: e?.message,
+          settings: {
+            level: settings.level,
+            region: settings.region,
+            practiceMode: settings.practiceMode,
+            specificMood: settings.specificMood,
+            specificTense: settings.specificTense,
+            verbType: settings.verbType
+          }
+        })
+
+        // First attempt: progressively relax constraints within the same pool
+        try {
+          const { progressiveConstraintRelaxation } = await import('./DrillFallbackStrategies.js')
+          const relaxed = progressiveConstraintRelaxation(allFormsForRegion, settings, specificConstraints)
+          if (relaxed) {
+            eligibleForms = [relaxed]
+            logger.info('generateNextItem', 'Progressive relaxation produced a candidate')
+          }
+        } catch (relaxErr) {
+          logger.warn('generateNextItem', 'Progressive relaxation failed', relaxErr)
+        }
+
+        // If still no candidates, last resort: mixed practice fallback
+        if (!eligibleForms || eligibleForms.length === 0) {
+          const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
+          if (mixedFallbackItem) {
+            setLastGeneratedItem(mixedFallbackItem)
+            return mixedFallbackItem
+          }
+          // If even mixed fallback failed, abort
+          return null
+        }
+      }
 
       let nextForm = null
       let selectionMethod = 'standard'
