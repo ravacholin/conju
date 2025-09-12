@@ -24,7 +24,7 @@ const INVENTORY = {
     P("subjuntivo","subjPres"),
     P("subjuntivo","subjPerf"),
     P("imperativo","impNeg"),
-    P("conditional","cond"),
+    P("condicional","cond"),
     P("indicativo","pres"),
     P("indicativo","pretIndef"),
     P("indicativo","impf"),
@@ -34,7 +34,7 @@ const INVENTORY = {
   B2: [
     P("subjuntivo","subjImpf"),
     P("subjuntivo","subjPlusc"),
-    P("conditional","condPerf"),
+    P("condicional","condPerf"),
     P("indicativo","pres"),
     P("indicativo","pretIndef"),
     P("indicativo","impf"),
@@ -46,7 +46,7 @@ const INVENTORY = {
     P("subjuntivo","subjPerf"),
     P("imperativo","impAff"),
     P("imperativo","impNeg"),
-    P("conditional","cond"),
+    P("condicional","cond"),
   ],
   C1: [
     P("indicativo","pres"),
@@ -62,8 +62,8 @@ const INVENTORY = {
     P("subjuntivo","subjPlusc"),
     P("imperativo","impAff"),
     P("imperativo","impNeg"),
-    P("conditional","cond"),
-    P("conditional","condPerf"),
+    P("condicional","cond"),
+    P("condicional","condPerf"),
     P("subjuntivo","subjFut"),
     P("subjuntivo","subjFutPerf"),
   ],
@@ -81,8 +81,8 @@ const INVENTORY = {
     ].map(t=>P("subjuntivo",t)),
     P("imperativo","impAff"),
     P("imperativo","impNeg"),
-    P("conditional","cond"),
-    P("conditional","condPerf"),
+    P("condicional","cond"),
+    P("condicional","condPerf"),
   ],
 };
 
