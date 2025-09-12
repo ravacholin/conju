@@ -199,10 +199,14 @@ export const useDrillGenerator = () => {
         
         const pickFromDue = dueCells.find(Boolean)
         if (pickFromDue) {
+          // In práctica específica (tema fijo), NO fijar la persona desde SRS.
+          // Queremos variedad de pronombres dentro del mismo modo/tiempo.
+          // Seguimos usando el due item para priorizar el mood/tense, pero dejamos flotar la persona.
           let candidateForms = eligibleForms.filter(f =>
-            f.mood === pickFromDue.mood && 
-            f.tense === pickFromDue.tense && 
-            f.person === pickFromDue.person
+            f.mood === pickFromDue.mood &&
+            f.tense === pickFromDue.tense &&
+            // Solo fijamos la persona cuando NO es práctica específica.
+            (!isSpecific ? (f.person === pickFromDue.person) : true)
           )
           
           candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
