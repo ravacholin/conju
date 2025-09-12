@@ -64,7 +64,7 @@ export const TENSE_LABELS = {
   // Formas no conjugadas
   'ger': 'Gerundio',
   'part': 'Participio',
-  'nonfiniteMixed': 'Participios y Gerundios'
+  'nonfiniteMixed': 'Formas no conjugadas (mixto)'
 }
 
 export const PERSON_LABELS = {

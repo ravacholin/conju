@@ -176,7 +176,7 @@ async function initializeCoreVerbs() {
       try {
         sanitizeVerbsInPlace([verb])
       } catch (e) {
-        if (import.meta.env?.DEV) console.warn('Data sanitizer failed for:', verb.lemma, e)
+    if (import.meta.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) console.warn('Data sanitizer failed for:', verb.lemma, e)
       }
       
       // Populate lookup maps for immediate availability
@@ -204,7 +204,7 @@ async function initializeCoreVerbs() {
       })
     })
     
-    if (import.meta.env?.DEV) {
+    if (import.meta.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) {
       console.log(`🚀 Core verbs initialized: ${coreVerbs.length} verbs`)
     }
   } catch (error) {
@@ -217,7 +217,7 @@ initializeCoreVerbs()
 
 // Función para pre-calentar caches con datos frecuentes
 export async function warmupCaches() {
-  if (import.meta.env?.DEV) {
+  if (import.meta.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) {
     console.log('🔥 Calentando caches del generador...')
   }
   
@@ -250,7 +250,7 @@ export async function warmupCaches() {
     combinations++
   })
   
-  if (import.meta.env?.DEV) {
+  if (import.meta.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) {
     const warmupTime = Date.now() - startTime
     console.log(`✅ Cache warmup completado en ${warmupTime}ms`)
     console.log(`   - ${categorized} verbos categorizados`)
@@ -274,7 +274,7 @@ export function clearAllCaches() {
   // También limpiar chunk manager
   verbChunkManager.loadedChunks.clear()
   
-  if (import.meta.env?.DEV) {
+  if (import.meta.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) {
     console.log('🧹 Todos los caches han sido limpiados')
   }
 }

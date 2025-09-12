@@ -14,20 +14,25 @@ import { isIrregularInTense } from '../utils/irregularityUtils.js'
 export function classifyError(userAnswer, correctAnswer, item) {
   const errors = []
   
-  // Normalizar respuestas para comparación
-  const normalizedUser = normalizeAnswer(userAnswer)
-  const normalizedCorrect = normalizeAnswer(correctAnswer)
-  
-  // Si las respuestas son idénticas, no hay error
-  if (normalizedUser === normalizedCorrect) {
+  // 0. Coincidencia exacta (incluye acentos) => sin error
+  const rawUser = (userAnswer || '').toLowerCase().trim()
+  const rawCorrect = (correctAnswer || '').toLowerCase().trim()
+  if (rawUser === rawCorrect) {
     return []
   }
   
-  // Verificar errores específicos en orden de prioridad
-  
-  // 1. Acentuación (verificar ANTES de normalizar)
+  // 1. Acentuación (verificar ANTES de normalizar). Si sólo difieren en tildes, reportar y terminar.
   if (hasAccentError(userAnswer, correctAnswer)) {
     errors.push(ERROR_TAGS.ACCENT)
+  }
+  
+  // Normalizar respuestas para comparación (sin acentos)
+  const normalizedUser = normalizeAnswer(userAnswer)
+  const normalizedCorrect = normalizeAnswer(correctAnswer)
+  
+  // Si tras normalizar son idénticas, eran iguales salvo por acentos
+  if (normalizedUser === normalizedCorrect) {
+    return errors.length ? errors : []
   }
   
   // 1.b Forma válida pero de otra celda (antes de otras heurísticas)
@@ -341,6 +346,22 @@ function hasGGuError(user, correct) {
     return true
   }
   
+  // Heurística adicional: casos como "segues" vs "sigues" (misma secuencia "gue" pero vocal precedente distinta)
+  // Detectar g + u + e y comparar la vocal inmediatamente anterior cuando ambos contienen "gue"
+  for (let i = 1; i < user.length - 2; i++) {
+    if (user[i] === 'g' && user[i + 1] === 'u' && user[i + 2] === 'e') {
+      const prevU = user[i - 1]
+      for (let j = 1; j < correct.length - 2; j++) {
+        if (correct[j] === 'g' && correct[j + 1] === 'u' && correct[j + 2] === 'e') {
+          const prevC = correct[j - 1]
+          if (/[ei]/.test(prevU) && /[ei]/.test(prevC) && prevU !== prevC) {
+            return true
+          }
+        }
+      }
+    }
+  }
+
   return false
 }
 

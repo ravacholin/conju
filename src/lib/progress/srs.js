@@ -95,9 +95,13 @@ export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
   }
 
   // Añadir fuzz para evitar concentraciones
-  const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval
-  const randomizedRaw = randomInRange(Math.max(0, interval - fuzz), interval + fuzz)
-  const randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw
+  // Para respuestas con pistas, mantener el punto medio exacto (sin fuzz) para estabilidad
+  let randomized = interval
+  if (!(hintsUsed > 0)) {
+    const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval
+    const randomizedRaw = randomInRange(Math.max(0, interval - fuzz), interval + fuzz)
+    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw
+  }
 
   // Calcular próxima fecha de revisión
   const now = new Date()

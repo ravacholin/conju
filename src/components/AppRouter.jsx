@@ -13,7 +13,7 @@ import router from '../lib/routing/Router.js'
 
 // Conditional logging - only in development
 const debugLog = (message, ...args) => {
-  if (import.meta.env?.DEV) {
+  if (import.meta.env?.DEV && !import.meta?.vitest) {
     console.log(message, ...args)
   }
 }
@@ -87,7 +87,15 @@ function AppRouter() {
     // Set initial route from router
     const initialRoute = router.getCurrentRoute()
     setCurrentMode(initialRoute.mode)
-    if (initialRoute.step) {
+    if (initialRoute.mode === 'onboarding') {
+      // If dialect not selected yet, force onboarding to start at step 1
+      if (!useSettings.getState().region) {
+        onboardingFlowRef.current.setOnboardingStep(1)
+        try { router.navigate({ mode: 'onboarding', step: 1 }) } catch {}
+      } else if (initialRoute.step) {
+        onboardingFlowRef.current.setOnboardingStep(initialRoute.step)
+      }
+    } else if (initialRoute.step) {
       onboardingFlowRef.current.setOnboardingStep(initialRoute.step)
     }
 

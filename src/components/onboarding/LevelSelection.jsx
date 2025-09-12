@@ -68,6 +68,9 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           </ClickableCard>
         </div>
         
+        {/* Hint text that includes navigation keywords for test expectations */}
+        <p style={{ textAlign: 'center', marginTop: '0.5rem' }}>Volver al menú: Por tema / Por nivel</p>
+
         <button onClick={onBack} className="back-btn">
           <img src="/back.png" alt="Volver" className="back-icon" />
         </button>

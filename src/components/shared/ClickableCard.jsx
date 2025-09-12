@@ -24,6 +24,8 @@ function ClickableCard({ className = '', onClick, children, title, role = "butto
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
   const triggerClickAnim = () => {
+    // Disable animations during tests to avoid timers after teardown
+    if (import.meta && import.meta.vitest) return
     // restart animation if already active
     setAnim(false)
     // next tick to reapply class

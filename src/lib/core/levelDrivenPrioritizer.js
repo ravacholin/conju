@@ -3,6 +3,11 @@
 
 import curriculum from '../../data/curriculum.json'
 
+// Quiet logs during tests while keeping them in dev runtime
+const debug = (...args) => {
+  if (import.meta?.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) console.log(...args)
+}
+
 /**
  * Advanced prioritization weights derived from curriculum analysis
  * These weights are now based on the actual curriculum structure and progression
@@ -205,7 +210,7 @@ export class LevelDrivenPrioritizer {
       processed.prerequisiteChains[tenseKey] = this.buildPrerequisiteChain(tenseKey, prereqs)
     })
 
-    console.log('📚 Enhanced Curriculum processed:', {
+    debug('📚 Enhanced Curriculum processed:', {
       levels: Object.keys(processed.byLevel).length,
       totalCombinations: Object.keys(processed.levelIntroductions).length,
       tenseFamilies: Object.keys(processed.tenseFamilies).length,
@@ -1030,7 +1035,7 @@ export class LevelDrivenPrioritizer {
     const prioritizedTenses = this.getPrioritizedTenses(userLevel, userProgress)
     const weights = prioritizedTenses.weights
     
-    console.log(`🧠 Advanced curriculum weighting for ${userLevel}:`, {
+    debug(`🧠 Advanced curriculum weighting for ${userLevel}:`, {
       totalForms: forms.length,
       coreCount: prioritizedTenses.core.length,
       prerequisiteGaps: prioritizedTenses.prerequisites.length,
@@ -1130,7 +1135,7 @@ export class LevelDrivenPrioritizer {
         weightedForms.push(...forms)
       }
       
-      console.log(`  📊 ${category}: ${forms.length} forms × ${repetitionsPerForm} = ${forms.length * repetitionsPerForm} weighted forms`)
+      debug(`  📊 ${category}: ${forms.length} forms × ${repetitionsPerForm} = ${forms.length * repetitionsPerForm} weighted forms`)
     }
 
     // Apply sophisticated weighting based on curriculum priorities
@@ -1150,10 +1155,10 @@ export class LevelDrivenPrioritizer {
       for (let i = 0; i < consolidationBoost; i++) {
         weightedForms.push(...categorizedForms.review)
       }
-      console.log(`  🔄 Consolidation boost: +${consolidationBoost * categorizedForms.review.length} review forms`)
+      debug(`  🔄 Consolidation boost: +${consolidationBoost * categorizedForms.review.length} review forms`)
     }
 
-    console.log(`⚖️  Enhanced weighted selection for ${userLevel}:`, {
+    debug(`⚖️  Enhanced weighted selection for ${userLevel}:`, {
       totalWeighted: weightedForms.length,
       originalForms: forms.length,
       weightingRatio: Math.round(weightedForms.length / forms.length * 10) / 10,
