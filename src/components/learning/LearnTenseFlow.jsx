@@ -5,6 +5,12 @@ import { storyData } from '../../data/narrativeStories.js';
 import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import { getLearningFamiliesForTense } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
+import { 
+  SESSION_DURATIONS, 
+  getSessionDurationOptions, 
+  getNextFlowStep, 
+  AB_TESTING_CONFIG 
+} from '../../lib/learning/learningConfig.js';
 import { abTesting } from '../../lib/learning/analytics.js';
 import ClickableCard from '../shared/ClickableCard.jsx';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
@@ -161,17 +167,18 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
     const userId = 'default'; // TODO: Get actual user ID
     
     // Create sample A/B test for learning flow optimization
-    abTesting.createTest('learning_flow_v1', {
-      name: 'Learning Flow Optimization',
-      description: 'Test different approaches to guided drill progression',
-      variants: ['control', 'enhanced'],
-      trafficSplit: [50, 50],
-      duration: 30 * 24 * 60 * 60 * 1000, // 30 days
-      metrics: ['completion_rate', 'accuracy', 'engagement', 'session_duration']
+    const abConfig = AB_TESTING_CONFIG.LEARNING_FLOW_V1;
+    abTesting.createTest(abConfig.testId, {
+      name: abConfig.name,
+      description: abConfig.description,
+      variants: abConfig.variants,
+      trafficSplit: abConfig.trafficSplit,
+      duration: abConfig.duration,
+      metrics: abConfig.metrics
     });
 
     // Assign user to variant
-    const variant = abTesting.assignUserToVariant(userId, 'learning_flow_v1');
+    const variant = abTesting.assignUserToVariant(userId, abConfig.testId);
     setAbTestVariant(variant);
     
     logger.debug('A/B Test variant assigned:', variant);
@@ -286,7 +293,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
         adaptive_level: adaptiveSettings?.level || 'intermediate'
       };
       
-      abTesting.recordTestMetrics(userId, 'learning_flow_v1', completionMetrics);
+      abTesting.recordTestMetrics(userId, AB_TESTING_CONFIG.LEARNING_FLOW_V1.testId, completionMetrics);
       logger.debug('A/B test completion metrics recorded:', completionMetrics);
     }
 
@@ -340,25 +347,9 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
     }
   };
 
-  // Get next step in sequence
+  // Get next step in sequence - now using centralized config
   const getNextStep = (currentPhase) => {
-    const stepSequence = [
-      'introduction',
-      'guided_drill_ar',
-      'guided_drill_er', 
-      'guided_drill_ir',
-      'recap',
-      'practice',
-      'meaningful_practice',
-      'pronunciation_practice',
-      'communicative_practice'
-    ];
-    
-    const currentIndex = stepSequence.indexOf(currentPhase);
-    if (currentIndex >= 0 && currentIndex < stepSequence.length - 1) {
-      return stepSequence[currentIndex + 1];
-    }
-    return null;
+    return getNextFlowStep(currentPhase);
   };
 
   const handleMechanicalPhaseComplete = () => {
@@ -726,32 +717,17 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
             <h2>Duración de la sesión</h2>
             
             <div className="options-grid">
-              <ClickableCard 
-                className="option-card"
-                onClick={() => setDuration(5)}
-                title="Sesión de 5 minutos"
-              >
-                <h3>5 minutos</h3>
-                <p className="example">Práctica intensiva</p>
-              </ClickableCard>
-              
-              <ClickableCard 
-                className="option-card"
-                onClick={() => setDuration(10)}
-                title="Sesión de 10 minutos"
-              >
-                <h3>10 minutos</h3>
-                <p className="example">Sesión media</p>
-              </ClickableCard>
-              
-              <ClickableCard 
-                className="option-card"
-                onClick={() => setDuration(15)}
-                title="Sesión de 15 minutos"
-              >
-                <h3>15 minutos</h3>
-                <p className="example">Sesión larga</p>
-              </ClickableCard>
+              {getSessionDurationOptions().map(durationConfig => (
+                <ClickableCard 
+                  key={durationConfig.minutes}
+                  className="option-card"
+                  onClick={() => setDuration(durationConfig.minutes)}
+                  title={durationConfig.title}
+                >
+                  <h3>{durationConfig.label}</h3>
+                  <p className="example">{durationConfig.description}</p>
+                </ClickableCard>
+              ))}
             </div>
             
             {duration && (

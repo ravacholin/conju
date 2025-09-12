@@ -7,7 +7,14 @@ import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
-import { calculateAdaptiveDifficulty, adjustRealTimeDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
+import { calculateAdaptiveDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
+import { 
+  getLevelForTense, 
+  getRealTimeDifficultyConfig, 
+  DRILL_THRESHOLDS, 
+  DIFFICULTY_PARAMS,
+  SCORING_CONFIG 
+} from '../../lib/learning/learningConfig.js';
 import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
@@ -24,37 +31,7 @@ const PRONOUNS_DISPLAY = {
   '3p': 'ellos/ellas/ustedes',
 };
 
-// Mapeo de tiempos verbales a niveles CEFR apropiados
-function getLevelForTense(tense) {
-  const tenseToLevel = {
-    // A1 - Básico
-    'pres': 'A1',           // Presente
-    
-    // A2 - Elemental  
-    'pretIndef': 'A2',      // Pretérito indefinido
-    'impf': 'A2',           // Imperfecto
-    'fut': 'A2',            // Futuro simple
-    
-    // B1 - Intermedio
-    'cond': 'B1',           // Condicional simple
-    'subjPres': 'B1',       // Presente de subjuntivo
-    'impAff': 'B1',         // Imperativo afirmativo
-    'impNeg': 'B1',         // Imperativo negativo
-    
-    // B2 - Intermedio alto
-    'subjImpf': 'B2',       // Imperfecto de subjuntivo
-    'pretPerf': 'B2',       // Pretérito perfecto compuesto
-    'plusc': 'B2',          // Pluscuamperfecto
-    'futPerf': 'B2',        // Futuro perfecto
-    
-    // C1 - Avanzado
-    'condPerf': 'C1',       // Condicional compuesto
-    'subjPerf': 'C1',       // Perfecto de subjuntivo
-    'subjPlusc': 'C1',      // Pluscuamperfecto de subjuntivo
-  };
-  
-  return tenseToLevel[tense];
-}
+// CEFR level mapping now handled by centralized config
 
 function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLemmas = [], onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
   const [currentItem, setCurrentItem] = useState(null);
@@ -72,12 +49,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [showStreakAnimation, setShowStreakAnimation] = useState(false);
   const [sessionStats, setSessionStats] = useState({ points: 0, streakCount: 0 });
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
-  const [realTimeDifficulty, setRealTimeDifficulty] = useState({
-    hintsDelay: 5000,
-    timeLimit: null,
-    complexityBoost: false,
-    encouragementLevel: 'normal'
-  });
+  const [realTimeDifficulty, setRealTimeDifficulty] = useState(DIFFICULTY_PARAMS.DEFAULT);
   const [allAttempts, setAllAttempts] = useState([]);
   const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
   
@@ -98,7 +70,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     console.log('Progress tracking result:', result);
     if (result.correct) {
       setSessionStats(prev => ({
-        points: prev.points + (result.isIrregular ? 15 : 10),
+        points: prev.points + (result.isIrregular ? SCORING_CONFIG.IRREGULAR_VERB_POINTS : SCORING_CONFIG.REGULAR_VERB_POINTS),
         streakCount: prev.streakCount + 1
       }));
     } else {
@@ -180,7 +152,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         setInputValue('');
         setResult('idle');
         setStartTime(Date.now());
-        setExerciseHistory(prev => [...prev, nextItem].slice(-20));
+        setExerciseHistory(prev => [...prev, nextItem].slice(-DRILL_THRESHOLDS.EXERCISE_HISTORY_SIZE));
         setTimeout(() => inputRef.current?.focus(), 0);
       } else {
         logger.warn('No item generated - generator returned null');
@@ -275,7 +247,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     const avgResponseTime = [...responseTimes, responseTime].reduce((a, b) => a + b, 0) / (responseTimes.length + 1);
     const currentAccuracy = (correctAnswers + (isCorrect ? 1 : 0)) / (totalAttempts + 1);
     
-    const newDifficulty = adjustRealTimeDifficulty({
+    const newDifficulty = getRealTimeDifficultyConfig({
       accuracy: currentAccuracy * 100,
       streak: isCorrect ? correctStreak + 1 : 0,
       avgResponseTime,
@@ -292,7 +264,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       setCorrectAnswers(prev => prev + 1);
       
       // Handle streak animations and tracking
-      if (newStreak > 0 && newStreak % 5 === 0) {
+      if (newStreak > 0 && newStreak % SCORING_CONFIG.STREAK_ANIMATION_INTERVAL === 0) {
         setShowStreakAnimation(true);
         setTimeout(() => setShowStreakAnimation(false), 2000);
         await handleStreakIncremented();
@@ -348,7 +320,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   };
 
   const handleContinue = () => {
-    if (correctStreak >= 10 && onPhaseComplete) {
+    if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
         setTimeout(() => onPhaseComplete(), 0);
     } else {
         // Verificar si hay ejercicios fallados para reintegrar

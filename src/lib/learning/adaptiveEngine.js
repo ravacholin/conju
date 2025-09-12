@@ -4,6 +4,12 @@
  */
 
 import { getMasteryByUser } from '../progress/database.js';
+import { 
+  getAdaptiveLevelConfig, 
+  MASTERY_THRESHOLDS,
+  PHASE_DISTRIBUTION,
+  calculatePhaseDurations
+} from './learningConfig.js';
 
 /**
  * Calculates adaptive difficulty level based on user's mastery scores
@@ -47,38 +53,11 @@ export function calculateAdaptiveDifficulty(userId, tense, verbType) {
     const highMasteryCount = tenseItems.filter(m => m > 0.8).length;
     const masteryPercentage = highMasteryCount / tenseItems.length;
 
-    // Determine difficulty level
-    let level, practiceIntensity, skipIntroduction, extendedPractice, hintsEnabled;
-
-    if (avgMastery > 0.85 && masteryPercentage > 0.7) {
-      // Advanced user
-      level = 'advanced';
-      practiceIntensity = 'high';
-      skipIntroduction = true;
-      extendedPractice = false;
-      hintsEnabled = false;
-    } else if (avgMastery > 0.65 && masteryPercentage > 0.5) {
-      // Intermediate user
-      level = 'intermediate';
-      practiceIntensity = 'medium';
-      skipIntroduction = false;
-      extendedPractice = false;
-      hintsEnabled = true;
-    } else {
-      // Beginner/struggling user
-      level = 'beginner';
-      practiceIntensity = 'low';
-      skipIntroduction = false;
-      extendedPractice = true;
-      hintsEnabled = true;
-    }
+    // Get adaptive level configuration using centralized config
+    const adaptiveConfig = getAdaptiveLevelConfig(avgMastery, masteryPercentage);
 
     return {
-      level,
-      practiceIntensity,
-      skipIntroduction,
-      extendedPractice,
-      hintsEnabled,
+      ...adaptiveConfig,
       avgMastery,
       masteryPercentage
     };
@@ -103,73 +82,8 @@ export function calculateAdaptiveDifficulty(userId, tense, verbType) {
  * @returns {Object} Phase duration settings
  */
 export function personalizeSessionDuration(adaptiveSettings, baseDuration = 10) {
-  const { level, practiceIntensity, extendedPractice } = adaptiveSettings;
-  
-  let multiplier = 1;
-  let phaseWeights = {
-    introduction: 1,
-    guided_drills: 1,
-    recap: 1,
-    practice: 1,
-    meaningful_practice: 1,
-    communicative_practice: 1
-  };
-
-  // Adjust overall duration based on level
-  switch (level) {
-    case 'advanced':
-      multiplier = 0.8; // 20% shorter sessions
-      phaseWeights.introduction = 0.5; // Much shorter intro
-      phaseWeights.guided_drills = 0.7; // Shorter guided practice
-      phaseWeights.practice = 1.2; // More free practice
-      break;
-    
-    case 'intermediate':
-      multiplier = 1; // Standard duration
-      phaseWeights.introduction = 0.8;
-      phaseWeights.guided_drills = 1;
-      phaseWeights.practice = 1.1;
-      break;
-    
-    case 'beginner':
-      multiplier = 1.2; // 20% longer sessions
-      phaseWeights.introduction = 1.2; // Longer introduction
-      phaseWeights.guided_drills = 1.3; // More guided practice
-      phaseWeights.recap = 1.2; // Longer recap
-      break;
-  }
-
-  // Adjust for practice intensity
-  if (practiceIntensity === 'high') {
-    phaseWeights.practice *= 1.3;
-    phaseWeights.meaningful_practice *= 1.2;
-    phaseWeights.communicative_practice *= 1.2;
-  } else if (practiceIntensity === 'low') {
-    phaseWeights.practice *= 0.8;
-    phaseWeights.meaningful_practice *= 0.9;
-    phaseWeights.communicative_practice *= 0.9;
-  }
-
-  // Extended practice for struggling users
-  if (extendedPractice) {
-    phaseWeights.guided_drills *= 1.2;
-    phaseWeights.practice *= 1.1;
-  }
-
-  const adjustedDuration = baseDuration * multiplier;
-  
-  return {
-    totalDuration: Math.round(adjustedDuration),
-    phaseWeights,
-    phases: {
-      introduction: Math.round((adjustedDuration * 0.15) * phaseWeights.introduction),
-      guided_drills: Math.round((adjustedDuration * 0.35) * phaseWeights.guided_drills),
-      recap: Math.round((adjustedDuration * 0.10) * phaseWeights.recap),
-      practice: Math.round((adjustedDuration * 0.20) * phaseWeights.practice),
-      meaningful_practice: Math.round((adjustedDuration * 0.10) * phaseWeights.meaningful_practice),
-      communicative_practice: Math.round((adjustedDuration * 0.10) * phaseWeights.communicative_practice)
-    }
-  };
+  // Use centralized phase duration calculation
+  return calculatePhaseDurations(baseDuration, adaptiveSettings);
 }
 
 /**
@@ -284,15 +198,17 @@ export function canSkipPhase(userId, tense, phase) {
   try {
     const adaptiveSettings = calculateAdaptiveDifficulty(userId, tense, 'regular');
     
+    const thresholds = MASTERY_THRESHOLDS;
+    
     switch (phase) {
       case 'introduction':
-        return adaptiveSettings.skipIntroduction && adaptiveSettings.avgMastery > 0.8;
+        return adaptiveSettings.skipIntroduction && adaptiveSettings.avgMastery > thresholds.ADVANCED.skipIntroductionMastery;
       
       case 'guided_drill_ar':
       case 'guided_drill_er': 
       case 'guided_drill_ir':
         // Can skip if very high mastery in regular verbs of this tense
-        return adaptiveSettings.level === 'advanced' && adaptiveSettings.avgMastery > 0.9;
+        return adaptiveSettings.level === 'advanced' && adaptiveSettings.avgMastery > thresholds.ADVANCED.skipGuidedDrillsMastery;
       
       case 'recap':
         // Can skip recap if performing very well
@@ -313,41 +229,7 @@ export function canSkipPhase(userId, tense, phase) {
  * @returns {Object} Adjusted difficulty settings
  */
 export function adjustRealTimeDifficulty(currentPerformance) {
-  const { accuracy, streak, avgResponseTime, totalAttempts } = currentPerformance;
-  
-  let adjustments = {
-    hintsDelay: 5000, // Default 5 seconds before showing hints
-    timeLimit: null, // No time limit by default
-    complexityBoost: false,
-    encouragementLevel: 'normal'
-  };
-
-  if (totalAttempts < 3) {
-    // Not enough data yet
-    return adjustments;
-  }
-
-  if (accuracy >= 90 && streak >= 5) {
-    // User is performing excellently
-    adjustments.hintsDelay = 10000; // Longer before hints
-    adjustments.complexityBoost = true; // More complex exercises
-    adjustments.encouragementLevel = 'minimal';
-  } else if (accuracy >= 75 && streak >= 3) {
-    // Good performance
-    adjustments.hintsDelay = 7000;
-    adjustments.encouragementLevel = 'normal';
-  } else if (accuracy < 50 || streak === 0) {
-    // Struggling
-    adjustments.hintsDelay = 3000; // Faster hints
-    adjustments.timeLimit = 30000; // 30 second time limit to prevent overthinking
-    adjustments.encouragementLevel = 'supportive';
-  }
-
-  // Adjust based on response time
-  if (avgResponseTime > 15000) { // Over 15 seconds average
-    adjustments.hintsDelay = Math.min(adjustments.hintsDelay, 4000);
-    adjustments.encouragementLevel = 'supportive';
-  }
-
-  return adjustments;
+  // Delegate to centralized config function for consistency
+  const { getRealTimeDifficultyConfig } = require('./learningConfig.js');
+  return getRealTimeDifficultyConfig(currentPerformance);
 }
