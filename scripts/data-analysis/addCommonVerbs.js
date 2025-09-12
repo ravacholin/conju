@@ -1,12 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { commonVerbs } from '../data/commonVerbs.js'
+import { commonVerbs } from '../../src/data/commonVerbs.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const verbsPath = path.join(__dirname, '../data/verbs.js')
+const verbsPath = path.join(__dirname, '../../src/data/verbs.js')
 
 console.log('🔧 AGREGANDO VERBOS COMUNES...')
 console.log('='.repeat(80))

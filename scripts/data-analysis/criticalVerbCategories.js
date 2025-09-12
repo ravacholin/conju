@@ -6,8 +6,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // Read JSON files
-const curriculumPath = path.join(__dirname, '../data/curriculum.json')
-const verbsPath = path.join(__dirname, '../data/verbs.js')
+const curriculumPath = path.join(__dirname, '../../src/data/curriculum.json')
+const verbsPath = path.join(__dirname, '../../src/data/verbs.js')
 
 const gates = JSON.parse(fs.readFileSync(curriculumPath, 'utf8'))
 
