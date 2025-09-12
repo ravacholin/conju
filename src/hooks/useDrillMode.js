@@ -174,7 +174,7 @@ export function useDrillMode() {
    * @returns {Promise<void>}
    */
   const clearHistoryAndRegenerate = async (
-    allFormsForRegion,
+    _allFormsForRegion,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
@@ -183,12 +183,7 @@ export function useDrillMode() {
     setHistory({})
     resetProgressStats()
     
-    await generateNextItem(
-      null,
-      allFormsForRegion,
-      getAvailableMoodsForLevel,
-      getAvailableTensesForLevelAndMood
-    )
+    await generateNextItem(null, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
 
   /**

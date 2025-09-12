@@ -63,6 +63,16 @@ function DrillMode({
     setShowQuickSwitch(false)
   }
 
+  // Safety net: if no item is present shortly after mount or filter changes, trigger regeneration
+  useEffect(() => {
+    if (!currentItem && typeof onRegenerateItem === 'function') {
+      const id = setTimeout(() => {
+        try { onRegenerateItem() } catch {}
+      }, 300)
+      return () => clearTimeout(id)
+    }
+  }, [currentItem, onRegenerateItem])
+
   // Listen for navigation requests from ProgressDashboard
   useEffect(() => {
     const handler = (event) => {
