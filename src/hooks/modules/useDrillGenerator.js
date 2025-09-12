@@ -319,7 +319,12 @@ export const useDrillGenerator = () => {
         }
       }
 
-      logger.error('generateNextItem', 'Failed to generate drill item')
+      logger.error('generateNextItem', 'Failed to generate drill item, attempting mixed fallback')
+      const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
+      if (mixedFallbackItem) {
+        setLastGeneratedItem(mixedFallbackItem)
+        return mixedFallbackItem
+      }
       return null
 
     } catch (error) {
