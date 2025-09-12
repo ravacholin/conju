@@ -39,10 +39,29 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
   const allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null;
 
   return forms.filter(f => {
+    // Filter by allowed persons for region
     if (f.mood !== 'nonfinite' && allowedPersons && !allowedPersons.has(f.person)) return false;
+    
+    // Filter by curriculum level
     if (enforceCurriculumLevel) {
       if (!allowedCombos || !allowedCombos.has(`${f.mood}|${f.tense}`)) return false;
     }
+    
+    // CRITICAL FIX: Filter by individual form region attribute
+    // Forms with "region": "es" should be available for all regions (universal forms)
+    // Only filter out if form has a specific region that conflicts with user's region
+    if (f.region && f.region !== 'es' && region) {
+      const regionMapping = {
+        'rioplatense': ['rioplatense', 'es'], 
+        'la_general': ['la_general', 'es'],
+        'peninsular': ['peninsular', 'es']
+      };
+      const allowedRegions = regionMapping[region] || [region, 'es'];
+      if (!allowedRegions.includes(f.region)) {
+        return false;
+      }
+    }
+    
     return true;
   });
 }

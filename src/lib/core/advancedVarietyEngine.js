@@ -110,11 +110,27 @@ class SessionMemory {
   cleanupMap(map, maxSize) {
     if (map.size > maxSize) {
       const entries = Array.from(map.entries())
-      entries.sort((a, b) => b[1] - a[1])
-      map.clear()
-      entries.slice(0, maxSize).forEach(([key, count]) => {
-        map.set(key, count)
-      })
+      
+      // Apply decay to person counts for better variety
+      if (map === this.recentPersons) {
+        const decayedEntries = entries.map(([key, count]) => {
+          // Gradual decay for person counts to prevent permanent blocking
+          const decayedCount = Math.max(0, count - 0.15) // Decay 0.15 per cleanup
+          return [key, decayedCount]
+        }).filter(([key, count]) => count > 0) // Remove entries with zero count
+        
+        map.clear()
+        decayedEntries.slice(0, maxSize).forEach(([key, count]) => {
+          map.set(key, count)
+        })
+      } else {
+        // Standard cleanup for other maps
+        entries.sort((a, b) => b[1] - a[1])
+        map.clear()
+        entries.slice(0, maxSize).forEach(([key, count]) => {
+          map.set(key, count)
+        })
+      }
     }
   }
 
@@ -141,10 +157,11 @@ class SessionMemory {
       penalty += Math.min(0.6, tenseCount * 0.2) // Up to 0.6 penalty
     }
     
-    // Person repetition penalty
+    // Person repetition penalty - REDUCED for specific practice to ensure variety
     const personCount = this.recentPersons.get(form.person) || 0
     if (personCount > 0) {
-      penalty += Math.min(0.4, personCount * 0.15) // Up to 0.4 penalty
+      // Lighter penalty for person repetition to allow natural variety
+      penalty += Math.min(0.2, personCount * 0.08) // Reduced from 0.4 to 0.2, from 0.15 to 0.08
     }
     
     // CRITICAL: Exact combination penalty (verb+person) to prevent "estudiar tú" twice
@@ -432,12 +449,16 @@ export class AdvancedVarietyEngine {
   
   /**
    * Get person variety bonus to encourage different pronouns
+   * ENHANCED for better person variety in specific practice
    */
   getPersonVarietyBonus(person) {
     const recentPersonCount = this.sessionMemory.recentPersons.get(person) || 0
-    if (recentPersonCount === 0) return 0.3 // Bonus for unused persons
-    if (recentPersonCount === 1) return 0.1 // Small bonus for lightly used
-    return -0.2 // Penalty for overused persons
+    
+    // Stronger bonuses for unused/lightly used persons to ensure variety
+    if (recentPersonCount === 0) return 0.6 // Strong bonus for unused persons (doubled)
+    if (recentPersonCount <= 1) return 0.3 // Good bonus for lightly used
+    if (recentPersonCount <= 2) return 0.1 // Small bonus 
+    return -0.1 // Lighter penalty (reduced from -0.2)
   }
 
   /**

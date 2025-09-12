@@ -141,7 +141,7 @@ function AppRouter() {
       }
 
       // Generate new item if we don't have one (either new entry or after clearing)
-      if (!drillMode.currentItem) {
+      if (!drillMode.currentItem && !drillMode.isGenerating) {
         debugLog('🎯 Generating drill item');
         drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
       }
@@ -155,7 +155,7 @@ function AppRouter() {
         selectedFamily: settings.selectedFamily
       };
     }
-  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, allFormsForRegion, drillMode, onboardingFlow])
+  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, drillMode.currentItem, drillMode.isGenerating])
 
   // The router now handles all popstate events
 

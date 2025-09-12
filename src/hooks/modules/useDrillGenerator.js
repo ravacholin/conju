@@ -328,6 +328,17 @@ export const useDrillGenerator = () => {
       return null
 
     } catch (error) {
+      console.error('💥 CRITICAL ERROR in useDrillGenerator:', error)
+      console.error('💥 Error stack:', error.stack)
+      console.error('💥 Settings causing error:', {
+        level: settings.level,
+        region: settings.region,
+        practiceMode: settings.practiceMode,
+        specificMood: settings.specificMood,
+        specificTense: settings.specificTense,
+        verbType: settings.verbType,
+        enableChunks: settings.enableChunks
+      })
       logger.error('generateNextItem', 'Error during item generation', error)
       return null
     } finally {

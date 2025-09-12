@@ -44,50 +44,82 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
   
   try {
     // Estrategia de carga inteligente basada en contexto del usuario
-    if (settings.practiceMode === 'theme' || settings.selectedFamily) {
-      // Para práctica por tema, usar getVerbsByTheme
-      const theme = settings.selectedFamily || 'mixed'
-      const families = settings.selectedFamily ? [settings.selectedFamily] : []
-      verbs = await verbChunkManager.getVerbsByTheme(theme, families)
-    } else if (settings.level && ['A1', 'A2'].includes(settings.level)) {
-      // Para niveles básicos, cargar core + common
-      await verbChunkManager.loadChunk('core')
-      await verbChunkManager.loadChunk('common')
-      
-      const coreVerbs = verbChunkManager.loadedChunks.get('core') || []
-      const commonVerbs = verbChunkManager.loadedChunks.get('common') || []
-      verbs = [...coreVerbs, ...commonVerbs]
-    } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
-      // Para verbos irregulares o niveles avanzados, incluir chunk de irregulares
-      await verbChunkManager.loadChunk('core')
-      await verbChunkManager.loadChunk('common')
-      await verbChunkManager.loadChunk('irregulars')
-      
-      const loadedChunks = ['core', 'common', 'irregulars']
-      verbs = []
-      loadedChunks.forEach(chunkName => {
-        const chunk = verbChunkManager.loadedChunks.get(chunkName)
-        if (chunk) verbs.push(...chunk)
-      })
+    if (settings.enableChunks === false) {
+      // FALLBACK SYSTEM: Si chunks están deshabilitados, usar archivo principal
+      console.log('🚨 CHUNKS DISABLED - Using fallback to main verbs file')
+      const { verbs: allVerbs } = await import('../../data/verbs.js')
+      verbs = allVerbs
     } else {
-      // Fallback: cargar todos los verbos disponibles en chunks actuales
-      // Si no hay suficientes, usar fallback rápido
-      const currentVerbs = []
-      verbChunkManager.loadedChunks.forEach(chunk => {
-        currentVerbs.push(...chunk)
-      })
-      
-      if (currentVerbs.length < 50) { // Threshold mínimo
-        console.log('⚠️ Pocos verbos en chunks, usando fallback completo')
-        verbs = await verbChunkManager.getAllVerbs()
+      // Sistema de chunks normal
+      if (settings.practiceMode === 'theme' || settings.selectedFamily) {
+        // Para práctica por tema, usar getVerbsByTheme
+        const theme = settings.selectedFamily || 'mixed'
+        const families = settings.selectedFamily ? [settings.selectedFamily] : []
+        verbs = await verbChunkManager.getVerbsByTheme(theme, families)
+      } else if (settings.level && ['A1', 'A2'].includes(settings.level)) {
+        // Para niveles básicos, cargar core + common
+        await verbChunkManager.loadChunk('core')
+        await verbChunkManager.loadChunk('common')
+        
+        const coreVerbs = verbChunkManager.loadedChunks.get('core') || []
+        const commonVerbs = verbChunkManager.loadedChunks.get('common') || []
+        verbs = [...coreVerbs, ...commonVerbs]
+      } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
+        // Para verbos irregulares o niveles avanzados, incluir chunk de irregulares
+        await verbChunkManager.loadChunk('core')
+        await verbChunkManager.loadChunk('common')
+        await verbChunkManager.loadChunk('irregulars')
+        
+        const loadedChunks = ['core', 'common', 'irregulars']
+        verbs = []
+        loadedChunks.forEach(chunkName => {
+          const chunk = verbChunkManager.loadedChunks.get(chunkName)
+          if (chunk) verbs.push(...chunk)
+        })
       } else {
-        verbs = currentVerbs
+        // Fallback: cargar todos los verbos disponibles en chunks actuales
+        // Si no hay suficientes, usar fallback rápido
+        const currentVerbs = []
+        verbChunkManager.loadedChunks.forEach(chunk => {
+          currentVerbs.push(...chunk)
+        })
+        
+        if (currentVerbs.length < 50) { // Threshold mínimo
+          console.log('⚠️ Pocos verbos en chunks, usando fallback completo')
+          verbs = await verbChunkManager.getAllVerbs()
+        } else {
+          verbs = currentVerbs
+        }
       }
     }
   } catch (error) {
     console.error('Error loading verbs for forms generation:', error)
-    // Ultimate fallback: usar fallback con timeout
-    verbs = await verbChunkManager.getVerbsWithFallback(['ser', 'estar', 'haber', 'tener'], 1000)
+    console.log('🚨 CHUNKS FAILED - Using emergency fallback to main verbs file')
+    
+    // CRITICAL: Auto-disable chunks if they keep failing
+    if (settings.enableChunks !== false) {
+      console.log('💥 AUTO-DISABLING CHUNKS DUE TO REPEATED FAILURES')
+      try {
+        const { useSettings } = await import('../../state/settings.js')
+        useSettings.getState().set({ enableChunks: false })
+      } catch (settingsError) {
+        console.warn('Could not auto-disable chunks:', settingsError.message)
+      }
+    }
+    
+    try {
+      // Emergency fallback: cargar directamente desde archivo principal
+      const { verbs: allVerbs } = await import('../../data/verbs.js')
+      verbs = allVerbs
+    } catch (fallbackError) {
+      console.error('💀 CRITICAL: Emergency fallback also failed:', fallbackError)
+      // Last resort: usar verbChunkManager con timeout muy corto
+      verbs = await verbChunkManager.getVerbsWithFallback(['ser', 'estar', 'haber', 'tener'], 500)
+      
+      if (!verbs || verbs.length === 0) {
+        throw new Error('CRITICAL: All verb loading methods failed - system cannot continue')
+      }
+    }
   }
   
   // Generar formas de todos los verbos cargados
@@ -113,15 +145,12 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
     })
   })
   
+  // Log generation statistics
   const loadTime = performance.now() - startTime
+  console.log(`📊 Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
   
   // Cache el resultado
   formsCache.set(cacheKey, allForms)
-  
-  // Log de performance
-  if (loadTime > 100) { // Solo log si toma más de 100ms
-    console.log(`📊 Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
-  }
   
   return allForms
 }

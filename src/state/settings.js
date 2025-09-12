@@ -66,6 +66,9 @@ const useSettings = create(
       // Verbos raros para C2
       c2RareBoostLemmas: [],
       
+      // Sistema de chunks - toggle para fallback de emergencia
+      enableChunks: true, // Puede deshabilitarse si hay problemas
+      
       // Métodos para actualizar configuración
       set: (newSettings) => set({ ...get(), ...newSettings }),
       setLevel: (level) => set({ level }),
@@ -92,6 +95,7 @@ const useSettings = create(
       toggleFuturoSubjRead: () => set((state) => ({ enableFuturoSubjRead: !state.enableFuturoSubjRead })),
       setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
       setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
+      toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
       
       // Métodos para debugging
       getCacheStats: () => {

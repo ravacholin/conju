@@ -88,6 +88,10 @@ function isVerbAllowedForTenseAndLevel(verb, tense, verbType, level) {
 }
 
 export function chooseNext({forms, history, currentItem}){
+  // CRITICAL: Clear caches to prevent stale data
+  console.log('🧹 CLEARING ALL CACHES to prevent stale data')
+  clearAllCaches()
+  
   // Extract all settings once to avoid repeated state access
   const allSettings = useSettings.getState()
   const { 
@@ -98,6 +102,10 @@ export function chooseNext({forms, history, currentItem}){
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
     nextSecondPerson, cliticsPercent
   } = allSettings
+  
+  console.log('🔍 chooseNext called with settings:', {
+    level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length
+  })
 
   
   
@@ -444,6 +452,8 @@ export function chooseNext({forms, history, currentItem}){
       }
       
       // CRITICAL FIX: Respect verbType restriction even in fallback!
+      // Redefine isMixedPractice for fallback scope
+      const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
       const verb = LEMMA_TO_VERB.get(f.lemma)
       if (verb && verbType === 'regular' && !isMixedPractice) {
         if (verb.type !== 'regular') {
@@ -485,8 +495,10 @@ export function chooseNext({forms, history, currentItem}){
     if (fallback.length === 0 && specificMood) {
       fallback = forms
     }
-    // As last resort, return any form
-    return fallback[0] || null
+    
+    // FIX: Return random element instead of always first to prevent repetition
+    const randomIndex = Math.floor(Math.random() * fallback.length)
+    return fallback[randomIndex] || null
   }
   
   // Apply weighted selection for "all" verb types to balance regular vs irregular per level
@@ -618,8 +630,19 @@ export function chooseNext({forms, history, currentItem}){
   
   // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection
   
+  // CRITICAL: Reset variety engine to prevent stuck selections
+  console.log('🔄 RESETTING varietyEngine to prevent stuck selections')
+  if (typeof varietyEngine.resetSession === 'function') {
+    varietyEngine.resetSession()
+  }
+  
   // Use the advanced variety engine for all selection
+  console.log('🎯 BEFORE varietyEngine.selectVariedForm - eligible forms:', eligible.length)
+  console.log('🎯 Sample eligible:', eligible.slice(0, 10).map(f => `${f.lemma}-${f.person}-${f.value}`))
+  
   const selectedForm = varietyEngine.selectVariedForm(eligible, level, practiceMode, history)
+  
+  console.log('🎯 varietyEngine.selectVariedForm RETURNED:', selectedForm ? `${selectedForm.lemma}-${selectedForm.person}-${selectedForm.value}` : 'null')
   
   if (selectedForm) {
     
