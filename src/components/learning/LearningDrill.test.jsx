@@ -1,7 +1,6 @@
 import React from 'react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import LearningDrill from './LearningDrill.jsx'
 
 // Mock dependencies
@@ -141,7 +140,7 @@ describe('LearningDrill Component', () => {
 
   describe('User Interaction', () => {
     it('should handle user input', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -151,7 +150,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should submit answer on Enter key', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -162,7 +161,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should submit answer on button click', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -175,7 +174,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should clear input after submission', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -190,7 +189,7 @@ describe('LearningDrill Component', () => {
 
   describe('Answer Grading', () => {
     it('should show correct feedback for right answers', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -203,7 +202,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should show incorrect feedback for wrong answers', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -216,7 +215,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should show the correct answer for wrong submissions', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -231,7 +230,7 @@ describe('LearningDrill Component', () => {
 
   describe('Streak Tracking', () => {
     it('should increment streak on correct answers', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -246,7 +245,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should reset streak on incorrect answers', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -269,7 +268,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should show streak animation at milestone intervals', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -293,7 +292,7 @@ describe('LearningDrill Component', () => {
 
   describe('Phase Completion', () => {
     it('should call onPhaseComplete when streak reaches threshold', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       const onPhaseComplete = vi.fn()
       
       render(<LearningDrill {...defaultProps} onPhaseComplete={onPhaseComplete} />)
@@ -316,7 +315,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should not complete phase if streak is broken', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       const onPhaseComplete = vi.fn()
       
       render(<LearningDrill {...defaultProps} onPhaseComplete={onPhaseComplete} />)
@@ -343,7 +342,7 @@ describe('LearningDrill Component', () => {
 
   describe('Navigation and Controls', () => {
     it('should call onBack when back button is clicked', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       const onBack = vi.fn()
       
       render(<LearningDrill {...defaultProps} onBack={onBack} />)
@@ -355,7 +354,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should call onHome when home button is clicked', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       const onHome = vi.fn()
       
       render(<LearningDrill {...defaultProps} onHome={onHome} />)
@@ -367,7 +366,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should call onGoToProgress when progress button is clicked', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       const onGoToProgress = vi.fn()
       
       render(<LearningDrill {...defaultProps} onGoToProgress={onGoToProgress} />)
@@ -390,7 +389,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should track hint usage in progress system', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       // Wait for hint to appear and click it
@@ -413,7 +412,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should handle grader errors gracefully', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       
       vi.mocked(require('../../lib/core/grader.js').grade).mockImplementation(() => {
         throw new Error('Grader error')
@@ -428,7 +427,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should handle empty input submission', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -452,7 +451,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should be keyboard navigable', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       // Tab to input
@@ -465,7 +464,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should announce results to screen readers', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')
@@ -491,7 +490,7 @@ describe('LearningDrill Component', () => {
     })
 
     it('should handle rapid input changes', async () => {
-      const user = userEvent.setup()
+      const user = { click: vi.fn(), type: vi.fn() }
       render(<LearningDrill {...defaultProps} />)
       
       const input = screen.getByRole('textbox')

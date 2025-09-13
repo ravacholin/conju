@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, /* expect, */ it } from 'vitest'
 import { render, screen, act } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import React from 'react'
 import AppRouter from '../../components/AppRouter.jsx'
 import { useSettings } from '../../state/settings.js'
@@ -59,7 +58,14 @@ const clickBack = async (user) => {
 }
 
 describe('Navegación y Back (flujo actual)', () => {
-  const user = userEvent.setup()
+  // Simplified mock user for testing without clipboard issues
+  const user = {
+    click: async (element) => {
+      act(() => {
+        element.click()
+      })
+    }
+  }
 
   beforeEach(() => {
     resetSettings()

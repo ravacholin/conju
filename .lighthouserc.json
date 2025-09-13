@@ -1,0 +1,59 @@
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "startServerCommand": "npm run preview",
+      "startServerReadyPattern": "Local:.*:(\\d+)",
+      "startServerReadyTimeout": 30000,
+      "url": [
+        "http://localhost:4173",
+        "http://localhost:4173/?mode=learning",
+        "http://localhost:4173/?mode=practice"
+      ],
+      "settings": {
+        "chromeFlags": "--no-sandbox --disable-dev-shm-usage",
+        "preset": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        }
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["warn", {"minScore": 0.8}],
+        "categories:accessibility": ["error", {"minScore": 0.95}],
+        "categories:best-practices": ["warn", {"minScore": 0.9}],
+        "categories:seo": ["warn", {"minScore": 0.8}],
+        "categories:pwa": ["warn", {"minScore": 0.8}],
+
+        "first-contentful-paint": ["warn", {"maxNumericValue": 2000}],
+        "largest-contentful-paint": ["warn", {"maxNumericValue": 3000}],
+        "interactive": ["error", {"maxNumericValue": 4000}],
+        "cumulative-layout-shift": ["warn", {"maxNumericValue": 0.1}],
+
+        "uses-responsive-images": "warn",
+        "efficient-animated-content": "warn",
+        "uses-webp-images": "off",
+        "modern-image-formats": "warn",
+
+        "unused-javascript": ["warn", {"maxLength": 0}],
+        "unused-css-rules": ["warn", {"maxLength": 0}],
+        "uses-long-cache-ttl": "warn",
+
+        "viewport": "error",
+        "document-title": "error",
+        "meta-description": "warn",
+        "html-has-lang": "error",
+        "color-contrast": "error",
+        "button-name": "error",
+        "link-name": "error"
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage",
+      "reportFilenamePattern": "lighthouse-%%PATHNAME%%-%%DATETIME%%.html"
+    }
+  }
+}
