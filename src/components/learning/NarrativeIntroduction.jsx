@@ -288,7 +288,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const key = p === '2s_vos' ? '2s_tu' : p;
       const idx = baseOrder.indexOf(key);
       let ending = idx >= 0 ? endings[idx] : '';
-      if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
+      if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
         if (group === 'ar' && ending === 'as') ending = 'ás';
         else if (group === 'er' && ending === 'es') ending = 'és';
         else if (group === 'ir' && ending === 'es') ending = 'ís';
@@ -404,7 +404,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                       const key = p === '2s_vos' ? '2s_tu' : p;
                       let base = standardEndings?.[baseOrder.indexOf(key)] || '';
                       
-                      if (p === '2s_vos' && tense.mood === 'indicative' && tense.tense === 'pres') {
+                      if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
                         if (grp === 'ar' && base === 'as') base = 'ás';
                         else if (grp === 'er' && base === 'es') base = 'és';
                         else if (grp === 'ir' && base === 'es') base = 'ís';

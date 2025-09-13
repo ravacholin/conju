@@ -217,14 +217,30 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
   const currentPronoun = drillQueue[currentIndex];
 
+  // Mood mapping from Spanish to English for verb data lookup
+  const moodMapping = {
+    'indicativo': 'indicative',
+    'subjuntivo': 'subjunctive',
+    'imperativo': 'imperative',
+    'condicional': 'conditional',
+    'nonfinite': 'nonfinite'
+  };
+
   const verbForms = useMemo(() => {
     if (!verb || !tense) return [];
+    
+    // Map Spanish mood to English mood for data lookup
+    const englishMood = moodMapping[tense.mood] || tense.mood;
+    
     const paradigm = verb.paradigms?.find(p =>
-        p.forms?.some(f => f.mood === tense.mood && f.tense === tense.tense)
+        p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense)
     );
+    
     if (!paradigm) return [];
     const allowed = new Set(PRONOUNS_DISPLAY.map(p=>p.key));
-    return paradigm.forms?.filter(f => f.mood === tense.mood && f.tense === tense.tense && allowed.has(f.person)) || [];
+    const filteredForms = paradigm.forms?.filter(f => f.mood === englishMood && f.tense === tense.tense && allowed.has(f.person)) || [];
+    
+    return filteredForms;
   }, [verb?.lemma, tense?.mood, tense?.tense, PRONOUNS_DISPLAY]);
 
   const currentForm = useMemo(() => {
@@ -247,6 +263,12 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     if (!verb || !tense || verbForms.length === 0) return null;
     return analyzeIrregularities(verb, verbForms, tense.tense);
   }, [verb?.lemma, tense?.tense, verbForms]);
+
+  const personToFormMap = useMemo(() => {
+    const map = {};
+    verbForms.forEach(f => { map[f.person] = f.value; });
+    return map;
+  }, [verbForms]);
 
   const deconstruction = useMemo(() => {
     if (!verb || !tense) return null;
@@ -418,12 +440,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     if (text) speak(text);
   };
 
-  const personToFormMap = useMemo(() => {
-    const map = {};
-    verbForms.forEach(f => { map[f.person] = f.value; });
-    return map;
-  }, [verbForms]);
-
   const detectRealStem = (verb, tenseKey) => {
     if (!verb || !verbForms.length) return null;
     
@@ -465,9 +481,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   };
 
   const endingFor = (tenseKey, pronounKey) => {
-    const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
-    const idx = baseOrder.indexOf(pronounKey === '2s_vos' ? '2s_tu' : pronounKey);
-    const fallback = deconstruction?.endings?.[idx] || '';
     const formVal = personToFormMap[pronounKey];
     
     // Use intelligent stem detection instead of hardcoded stems
@@ -476,7 +489,16 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     if (formVal && detectedStem && formVal.startsWith(detectedStem)) {
       return formVal.slice(detectedStem.length);
     }
-    return fallback;
+    
+    // Fallback: try to extract ending from verb lemma
+    if (formVal && verb?.lemma) {
+      const basicStem = verb.lemma.slice(0, -2); // Remove -ar/-er/-ir
+      if (formVal.startsWith(basicStem)) {
+        return formVal.slice(basicStem.length);
+      }
+    }
+    
+    return '';
   };
 
   // For respuestas correctas en el drill guiado, no mostramos la forma; solo feedback.
