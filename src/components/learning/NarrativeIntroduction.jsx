@@ -229,9 +229,21 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
   const getConjugation = (verbObj, person, mood = 'indicative') => {
     if (!verbObj || !verbObj.paradigms) return '';
-    const paradigm = verbObj.paradigms.find(p => p.forms?.some(f => f.mood === mood && f.tense === tense.tense));
+    
+    // Mapear nombres de español a inglés porque los datos están en inglés
+    const moodMap = {
+      'indicativo': 'indicative',
+      'subjuntivo': 'subjunctive', 
+      'imperativo': 'imperative',
+      'condicional': 'conditional',
+      'nonfinite': 'nonfinite'
+    };
+    
+    const englishMood = moodMap[mood] || mood;
+    
+    const paradigm = verbObj.paradigms.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense));
     if (!paradigm || !paradigm.forms) return '';
-    const form = paradigm.forms.find(f => f.mood === mood && f.tense === tense.tense && f.person === person);
+    const form = paradigm.forms.find(f => f.mood === englishMood && f.tense === tense.tense && f.person === person);
     return form?.value || '';
   };
 
@@ -292,22 +304,26 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
       // Elegir persona según el texto de la narrativa (si comienza con "Yo", usar 1s; si "Nosotros", usar 1p; si no, 3s)
-      const personHint = /^\s*["'“‘(\[¡¿-]*Yo\b/i.test(sentenceTemplate)
+      const personHint = /^\s*Yo\b/i.test(sentenceTemplate)
         ? '1s'
-        : (/^\s*["'“‘(\[¡¿-]*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s')
+        : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s')
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
       const conjugation = getConjugation(verbObj, personHint, tense.mood);
+      
+      // Debug: log what we're getting
+      
       // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
-      const startsWithVerb = /^[\s\"'“‘(\[¡¿-]*__VERB__/.test(sentenceTemplate);
+      const startsWithVerb = /^__VERB__/.test(sentenceTemplate);
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
         ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
         : conjugation;
+        
       
       const isVisible = index <= visibleSentence;
       return (
         <p
           key={index}
-          className={`story-sentence ${isVisible ? 'visible' : ''}`}
+          className={isVisible ? "story-sentence visible" : "story-sentence"}
           style={{ opacity: isVisible ? 1 : 0, visibility: isVisible ? 'visible' : 'hidden' }}
           aria-hidden={!isVisible}
         >

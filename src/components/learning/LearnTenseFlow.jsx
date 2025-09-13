@@ -606,14 +606,28 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
                   // Ejemplos dinámicos: 1s, 2s (tú/vos), 3s (ella) para "hablar"
                   const getPersonConjugationExample = (moodKey, tenseKey) => {
                     const hablar = verbs.find(v => v.lemma === 'hablar');
-                    if (!hablar) return '';
-                    const para = hablar.paradigms?.find(p => p.forms?.some(f => f.mood === moodKey && f.tense === tenseKey));
+                    if (!hablar) {
+                      return '';
+                    }
+                    
+                    // Mapear nombres de español a inglés porque los datos están en inglés
+                    const moodMap = {
+                      'indicativo': 'indicative',
+                      'subjuntivo': 'subjunctive', 
+                      'imperativo': 'imperative',
+                      'condicional': 'conditional',
+                      'nonfinite': 'nonfinite'
+                    };
+                    
+                    const englishMood = moodMap[moodKey] || moodKey;
+                    
+                    const para = hablar.paradigms?.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tenseKey));
                     if (!para) {
                       if (tenseKey === 'ger') return 'hablando';
                       if (tenseKey === 'part') return 'hablado';
                       return '';
                     }
-                    const forms = para.forms?.filter(f => f.mood === moodKey && f.tense === tenseKey) || [];
+                    const forms = para.forms?.filter(f => f.mood === englishMood && f.tense === tenseKey) || [];
                     const useVos = settings?.useVoseo === true;
                     const pron2Key = useVos ? '2s_vos' : '2s_tu';
 
@@ -638,7 +652,8 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
                     if (f2) parts.push(`${useVos ? 'vos' : 'tú'} ${f2}`);
                     const f3 = getForm('3s');
                     if (f3) parts.push(`ella ${f3}`);
-                    return parts.join(', ');
+                    const result = parts.join(', ');
+                    return result;
                   }
                   
                   return (
