@@ -1,3 +1,77 @@
+/**
+ * OnboardingFlow.jsx - Componente principal del flujo de configuración inicial
+ * 
+ * Este componente orquesta el proceso de configuración inicial del usuario,
+ * guiándolo a través de múltiples pasos para personalizar su experiencia de práctica.
+ * 
+ * @component
+ * @description
+ * Responsabilidades principales:
+ * - Gestión del flujo multi-paso de onboarding (7 pasos máximo)
+ * - Coordinación entre diferentes paneles de selección
+ * - Manejo de navegación hacia atrás usando historial del navegador
+ * - Integración con sistema de configuraciones globales
+ * - Transición fluida hacia modo de práctica configurado
+ * 
+ * Flujo de pasos del onboarding:
+ * 1. DialectSelection: Selección de dialecto regional (rioplatense/general/peninsular)
+ * 2. LevelSelection: Modo básico de selección de nivel o navegación avanzada
+ * 3. LevelSelection (detalles): Selección específica de nivel CEFR con descripción
+ * 4. PracticeModeSelection: Elección entre práctica mixta o específica por tiempo
+ * 5. MoodTenseSelection | VerbTypeSelection: Configuración específica según modo
+ * 6. VerbTypeSelection: Tipo de verbos (regular/irregular/familia específica)
+ * 7. FamilySelection: Selección de familias irregulares específicas
+ * 
+ * @example
+ * ```jsx
+ * // Uso típico desde AppRouter
+ * <OnboardingFlow 
+ *   onStartPractice={handleStartPractice}
+ *   setCurrentMode={setCurrentMode}
+ *   formsForRegion={allFormsForRegion}
+ *   onboardingStep={onboardingFlow.onboardingStep}
+ *   selectDialect={onboardingFlow.selectDialect}
+ *   selectLevel={onboardingFlow.selectLevel}
+ *   // ... otros props del hook onboardingFlow
+ * />
+ * ```
+ * 
+ * @param {Object} props - Propiedades del componente
+ * @param {Function} props.onStartPractice - Callback para iniciar práctica configurada
+ * @param {Function} props.setCurrentMode - Setter para cambiar modo de aplicación
+ * @param {Array} props.formsForRegion - Forms elegibles para la región seleccionada
+ * @param {Function} props.onStartLearningNewTense - Iniciar flujo de aprendizaje estructurado
+ * @param {number} props.onboardingStep - Paso actual del onboarding (1-7)
+ * @param {Function} props.selectDialect - Seleccionar dialecto y avanzar
+ * @param {Function} props.selectLevel - Seleccionar nivel CEFR
+ * @param {Function} props.selectPracticeMode - Seleccionar modo de práctica
+ * @param {Function} props.selectMood - Seleccionar modo verbal
+ * @param {Function} props.selectTense - Seleccionar tiempo verbal específico
+ * @param {Function} props.selectVerbType - Seleccionar tipo de verbos
+ * @param {Function} props.selectFamily - Seleccionar familia irregular específica
+ * @param {Function} props.goToLevelDetails - Navegar a detalles de nivel
+ * @param {Function} props.handleHome - Navegar al menú principal con limpieza de estado
+ * @param {Object} props.settings - Configuraciones globales de usuario (Zustand store)
+ * @param {Function} props.getAvailableMoodsForLevel - Obtener modos disponibles por nivel
+ * @param {Function} props.getAvailableTensesForLevelAndMood - Obtener tiempos por nivel/modo
+ * @param {Function} props.getModeSamples - Obtener ejemplos para modos de práctica
+ * @param {Function} props.getConjugationExample - Obtener ejemplo de conjugación
+ * @param {Function} props.onGoToProgress - Navegar al dashboard de progreso
+ * 
+ * @requires DialectSelection - Selección de dialecto regional
+ * @requires LevelSelection - Selección de nivel CEFR con opciones avanzadas
+ * @requires PracticeModeSelection - Elección de modo de práctica
+ * @requires MoodTenseSelection - Selección específica de tiempo verbal
+ * @requires VerbTypeSelection - Selección de tipo de verbos
+ * @requires FamilySelection - Selección de familias irregulares
+ * @requires ClickableCard - Componente base de interfaz
+ * 
+ * @see {@link ./DialectSelection.jsx} - Selección de dialecto
+ * @see {@link ./LevelSelection.jsx} - Selección de nivel
+ * @see {@link ./MoodTenseSelection.jsx} - Selección de tiempo específico
+ * @see {@link ../../hooks/useOnboardingFlow.js} - Hook de lógica del flujo
+ */
+
 import React from 'react'
 import DialectSelection from './DialectSelection.jsx'
 import LevelSelection from './LevelSelection.jsx'
@@ -7,6 +81,12 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
+/**
+ * Componente principal del flujo de configuración inicial
+ * 
+ * @param {Object} props - Propiedades del componente según la documentación JSDoc superior
+ * @returns {JSX.Element} El componente de flujo de onboarding
+ */
 function OnboardingFlow({ 
   onStartPractice, 
   setCurrentMode, 

@@ -1,3 +1,36 @@
+/**
+ * AppRouter.jsx - Componente principal de enrutamiento de la aplicación
+ * 
+ * Este es el componente central que maneja el enrutamiento y la navegación
+ * entre diferentes modos de la aplicación de conjugaciones españolas.
+ * 
+ * @component
+ * @description
+ * Responsabilidades principales:
+ * - Enrutamiento entre onboarding, drill, aprendizaje y progreso
+ * - Gestión del estado global de navegación
+ * - Integración con sistema de configuraciones de usuario
+ * - Manejo de transiciones entre modos de práctica
+ * - Optimización de rendimiento con memoización
+ * 
+ * Estados de la aplicación:
+ * - 'onboarding': Configuración inicial del usuario
+ * - 'drill': Modo de práctica rápida
+ * - 'learning': Flujo de aprendizaje estructurado
+ * - 'progress': Dashboard de estadísticas y progreso
+ * 
+ * @example
+ * ```jsx
+ * // Uso típico en main.jsx
+ * <AppRouter />
+ * ```
+ * 
+ * @requires useSettings - Hook de configuraciones globales
+ * @requires useDrillMode - Hook para modo drill
+ * @requires useOnboardingFlow - Hook para flujo de onboarding
+ * @requires router - Sistema de enrutamiento interno
+ */
+
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
@@ -18,6 +51,10 @@ const debugLog = (message, ...args) => {
   }
 }
 
+/**
+ * Componente principal de enrutamiento de la aplicación
+ * @returns {JSX.Element} El componente de enrutamiento principal
+ */
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
   const settings = useSettings()

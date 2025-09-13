@@ -6,6 +6,7 @@
 import { initTracking } from './tracking.js'
 import { initializeItems } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
+import { markProgressSystemReady } from './ProgressSystemEvents.js'
 
 // Estado del sistema
 let isInitialized = false
@@ -120,6 +121,9 @@ export async function initProgressSystem(userId = null) {
       isInitialized = true
       currentUserId = userId
       
+      // Notificar a través del sistema de eventos que el sistema está listo
+      markProgressSystemReady()
+      
       console.log(`🎉 Sistema de progreso completamente inicializado para usuario ${userId}`)
       return userId
     })()
@@ -141,6 +145,14 @@ export async function initProgressSystem(userId = null) {
 export function isProgressSystemInitialized() {
   return isInitialized
 }
+
+// Re-exportar funciones del sistema de eventos para conveniencia
+export { 
+  isProgressSystemReady, 
+  waitForProgressSystem, 
+  onProgressSystemReady,
+  useProgressSystemReady
+} from './ProgressSystemEvents.js'
 
 /**
  * Obtiene el ID del usuario actual

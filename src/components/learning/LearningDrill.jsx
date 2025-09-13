@@ -1,3 +1,52 @@
+/**
+ * LearningDrill.jsx - Componente principal para práctica de conjugaciones
+ * 
+ * @component
+ * @description
+ * Componente central del sistema de aprendizaje que proporciona práctica
+ * interactiva de conjugaciones verbales con seguimiento de progreso en tiempo real.
+ * 
+ * Características principales:
+ * - Generación automática de ejercicios basada en configuración
+ * - Evaluación inteligente de respuestas con tolerancia de acentos
+ * - Sistema de rachas y puntuación adaptativa
+ * - Integración completa con sistema de progreso SRS
+ * - Analytics en tiempo real y métricas de rendimiento
+ * - Configuración de dificultad adaptativa según nivel CEFR
+ * 
+ * @param {Object} props - Propiedades del componente
+ * @param {string} props.tense - Tiempo verbal a practicar (ej: 'pres', 'pretIndef')
+ * @param {string} props.verbType - Tipo de verbos ('all', 'regular', 'irregular', familia específica)
+ * @param {Array<string>} [props.selectedFamilies] - Familias irregulares específicas a incluir
+ * @param {number} props.duration - Duración de la sesión en minutos
+ * @param {Array<string>} [props.excludeLemmas=[]] - Verbos a excluir de la práctica
+ * @param {Function} props.onBack - Callback para volver al paso anterior
+ * @param {Function} props.onFinish - Callback al completar la sesión
+ * @param {Function} [props.onPhaseComplete] - Callback al completar una fase del aprendizaje
+ * @param {Function} [props.onHome] - Callback para ir al inicio
+ * @param {Function} [props.onGoToProgress] - Callback para ir al dashboard de progreso
+ * 
+ * @example
+ * ```jsx
+ * <LearningDrill
+ *   tense="pres"
+ *   verbType="irregular"
+ *   selectedFamilies={["e_ie", "o_ue"]}
+ *   duration={10}
+ *   excludeLemmas={["ser", "estar"]}
+ *   onBack={() => goToPreviousStep()}
+ *   onFinish={(stats) => handleSessionComplete(stats)}
+ *   onPhaseComplete={(phase) => handlePhaseComplete(phase)}
+ * />
+ * ```
+ * 
+ * @requires useProgressTracking - Hook para seguimiento de progreso
+ * @requires useSettings - Hook de configuraciones globales
+ * @requires grade - Sistema de evaluación de respuestas
+ * @requires chooseNext - Generador de ejercicios
+ * @requires learningConfig - Configuración de parámetros de aprendizaje
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SessionSummary from './SessionSummary.jsx';
@@ -33,6 +82,11 @@ const PRONOUNS_DISPLAY = {
 
 // CEFR level mapping now handled by centralized config
 
+/**
+ * Componente de práctica de conjugaciones con seguimiento de progreso
+ * @param {Object} props - Propiedades del componente
+ * @returns {JSX.Element} Interfaz de práctica de conjugaciones
+ */
 function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLemmas = [], onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');

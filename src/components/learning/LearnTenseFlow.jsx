@@ -1,3 +1,63 @@
+/**
+ * LearnTenseFlow.jsx - Componente principal del flujo de aprendizaje estructurado
+ * 
+ * Este componente orquesta el flujo completo de aprendizaje de tiempos verbales,
+ * desde la selección hasta la práctica comunicativa con algoritmos adaptativos.
+ * 
+ * @component
+ * @description
+ * Responsabilidades principales:
+ * - Gestión del flujo de aprendizaje multi-etapa (introducción → práctica mecánica → práctica significativa → práctica comunicativa)
+ * - Selección dinámica de verbos basada en familias irregulares y nivel de dificultad
+ * - Integración con motor de aprendizaje adaptativo y sistema de A/B testing
+ * - Manejo de configuraciones de sesión personalizadas por duración
+ * - Navegación inteligente con salto de fases según nivel de dominio del usuario
+ * 
+ * Fases del flujo de aprendizaje:
+ * 1. 'tense-selection': Selección de tiempo verbal con ejemplos dinámicos
+ * 2. 'type-selection': Elección entre verbos regulares/irregulares con categorías pedagógicas
+ * 3. 'duration-selection': Configuración de duración personalizada de sesión
+ * 4. 'introduction': Introducción narrativa con contexto cultural
+ * 5. 'guided_drill_*': Práctica mecánica guiada por conjugaciones (-ar, -er, -ir)
+ * 6. 'recap': Resumen y consolidación de patrones aprendidos
+ * 7. 'practice': Práctica mecánica con verbos adicionales (excluyendo ejemplos iniciales)
+ * 8. 'meaningful_practice': Práctica contextual con oraciones completas
+ * 9. 'pronunciation_practice': Práctica de pronunciación con audio
+ * 10. 'communicative_practice': Práctica comunicativa con situaciones reales
+ * 
+ * @example
+ * ```jsx
+ * // Uso típico desde AppRouter
+ * <LearnTenseFlow 
+ *   onHome={() => router.navigate({ mode: 'onboarding', step: 2 })}
+ *   onGoToProgress={() => router.navigate({ mode: 'progress' })}
+ * />
+ * ```
+ * 
+ * Características avanzadas:
+ * - Selección coherente de verbos ejemplo usando familias irregulares prioritarias
+ * - Integración con motor adaptativo para personalización de dificultad
+ * - Sistema de A/B testing para optimización de flujo
+ * - Manejo de errores con ErrorBoundary por fase
+ * - Soporte para dialectos regionales (voseo/tuteo)
+ * 
+ * @param {Object} props - Propiedades del componente
+ * @param {Function} props.onHome - Función para navegar al menú principal
+ * @param {Function} props.onGoToProgress - Función para navegar al dashboard de progreso
+ * 
+ * @requires useSettings - Hook de configuraciones globales (dialecto, voseo)
+ * @requires verbs - Base de datos de verbos con paradigmas regionales
+ * @requires curriculum - Configuración CEFR de niveles y tiempos
+ * @requires adaptiveEngine - Motor de personalización de dificultad
+ * @requires abTesting - Sistema de experimentación A/B
+ * 
+ * @see {@link ./LearningDrill.jsx} - Componente de práctica mecánica
+ * @see {@link ./NarrativeIntroduction.jsx} - Componente de introducción narrativa
+ * @see {@link ../shared/ClickableCard.jsx} - Componente base de selección
+ * @see {@link ../../lib/data/learningIrregularFamilies.js} - Familias pedagógicas de verbos irregulares
+ * @see {@link ../../lib/learning/adaptiveEngine.js} - Motor de aprendizaje adaptativo
+ */
+
 import React, { useState, useMemo, useEffect } from 'react';
 import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
@@ -31,8 +91,24 @@ import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFam
 
 const logger = createLogger('LearnTenseFlow');
 
-// Function to select 3 coherent example verbs based on user's choice
-// This is the single source of truth for the entire learning flow
+/**
+ * Selecciona 3 verbos ejemplo coherentes basados en la elección del usuario
+ * 
+ * Esta función es la fuente única de verdad para la selección de verbos
+ * en todo el flujo de aprendizaje, garantizando coherencia pedagógica.
+ * 
+ * @function selectExampleVerbs
+ * @param {string} verbType - Tipo de verbos ('regular' | 'irregular')
+ * @param {Array<string>} selectedFamilies - IDs de familias irregulares seleccionadas
+ * @param {string} tense - Tiempo verbal objetivo
+ * @returns {Array<Object>} Array de exactamente 3 objetos verb con paradigmas completos
+ * 
+ * Estrategia de selección:
+ * - Regular: hablar (-ar), comer (-er), vivir (-ir)
+ * - Irregular: Prioriza verbos de alta frecuencia de familias pedagógicas
+ * - Mantiene coherencia: nunca mezcla regulares e irregulares
+ * - Garantiza exactamente 3 verbos para demos consistentes
+ */
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
@@ -131,6 +207,14 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
   return selectedVerbs.slice(0, 3);
 }
 
+/**
+ * Componente principal del flujo de aprendizaje estructurado
+ * 
+ * @param {Object} props - Propiedades del componente
+ * @param {Function} props.onHome - Callback para navegar al menú principal
+ * @param {Function} props.onGoToProgress - Callback para navegar al dashboard de progreso
+ * @returns {JSX.Element} El componente de flujo de aprendizaje
+ */
 function LearnTenseFlow({ onHome, onGoToProgress }) {
   const [currentStep, setCurrentStep] = useState('tense-selection');
   const [selectedTense, setSelectedTense] = useState(null);

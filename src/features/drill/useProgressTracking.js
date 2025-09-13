@@ -10,7 +10,11 @@ import {
   trackTenseDrillEnded
 } from './tracking.js'
 import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
-import { isProgressSystemInitialized } from '../../lib/progress/index.js'
+import { 
+  isProgressSystemInitialized, 
+  useProgressSystemReady,
+  onProgressSystemReady 
+} from '../../lib/progress/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 /**
@@ -26,35 +30,23 @@ export function useProgressTracking(currentItem, onResult) {
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
 
-  // Verificar si el sistema de progreso está listo
+  // Verificar si el sistema de progreso está listo usando eventos
   useEffect(() => {
-    const checkProgressSystem = () => {
-      try {
-        const isReady = isProgressSystemInitialized()
-        if (isReady !== progressSystemReady) {
-          setProgressSystemReady(isReady)
-          logger.debug(`Sistema de progreso ${isReady ? 'listo' : 'no disponible'}`)
-        }
-      } catch (error) {
-        logger.warn('Error al verificar estado del sistema de progreso:', error)
-        setProgressSystemReady(false)
-      }
+    // Verificar estado inicial
+    const initialState = isProgressSystemInitialized()
+    if (initialState !== progressSystemReady) {
+      setProgressSystemReady(initialState)
+      logger.debug(`Estado inicial del sistema de progreso: ${initialState ? 'listo' : 'no disponible'}`)
     }
 
-    // Verificar inmediatamente
-    checkProgressSystem()
+    // Suscribirse a eventos de cambio de estado (más eficiente que sondeo)
+    const unsubscribe = onProgressSystemReady((isReady) => {
+      setProgressSystemReady(isReady)
+      logger.debug(`Sistema de progreso ahora está: ${isReady ? 'listo' : 'no disponible'}`)
+    })
 
-    // Verificar periódicamente hasta que esté listo
-    const interval = setInterval(() => {
-      if (!progressSystemReady) {
-        checkProgressSystem()
-      } else {
-        clearInterval(interval)
-      }
-    }, 500)
-
-    return () => clearInterval(interval)
-  }, [progressSystemReady])
+    return unsubscribe
+  }, [])
 
   // Efecto para iniciar el tracking cuando cambia el ítem
   useEffect(() => {
