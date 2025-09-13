@@ -5,7 +5,7 @@
 // Detecta problemas de mapeo antes de que lleguen al usuario
 
 import { generateIntegrityReport } from '../src/lib/utils/moodTenseValidator.js';
-import { GET_MASTERY_BY_USER } from '../src/lib/progress/database.js';
+import { getMasteryByUser } from '../src/lib/progress/database.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
