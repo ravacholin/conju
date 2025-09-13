@@ -15,7 +15,7 @@ const gates = JSON.parse(fs.readFileSync(curriculumPath, 'utf8'))
 const verbsFileContent = fs.readFileSync(verbsPath, 'utf8')
 
 // Extract verbs using a more robust approach
-let verbs = []
+let VERBS = []
 try {
   // Find the export const verbs = [...] section
   const match = verbsFileContent.match(/export const verbs = (\[[\s\S]*?\])/)

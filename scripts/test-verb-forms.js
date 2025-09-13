@@ -10,7 +10,7 @@
  * Usage: node scripts/test-verb-forms.js [verb-name]
  */
 
-import fs from 'fs';
+import FS from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 

@@ -12,7 +12,7 @@ import {
 import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
 import { 
   isProgressSystemInitialized, 
-  useProgressSystemReady,
+  USE_PROGRESS_SYSTEM_READY,
   onProgressSystemReady 
 } from '../../lib/progress/index.js'
 import { createLogger } from '../../lib/utils/logger.js'

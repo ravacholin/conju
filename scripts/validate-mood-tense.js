@@ -5,7 +5,7 @@
 // Detecta problemas de mapeo antes de que lleguen al usuario
 
 import { generateIntegrityReport } from '../src/lib/utils/moodTenseValidator.js';
-import { getMasteryByUser } from '../src/lib/progress/database.js';
+import { GET_MASTERY_BY_USER } from '../src/lib/progress/database.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -86,8 +86,8 @@ async function validateRealProgressData() {
     // Por ahora solo mostramos que el framework está listo
     console.log('⚠️  Validación de datos reales requiere conexión a base de datos');
     console.log('📋 Framework de validación instalado y listo\n');
-    
-  } catch (error) {
+
+  } catch (_error) {
     console.log('⚠️  No se pueden validar datos reales sin base de datos inicializada');
   }
 }

@@ -40,7 +40,7 @@ function deriveYoStem(verb) {
   try {
     const yo = verb.paradigms?.flatMap(p => p.forms||[]).find(f => f.mood==='indicative' && f.tense==='pres' && f.person==='1s')?.value
     if (yo && yo.endsWith('o')) return yo.slice(0,-1)
-  } catch {}
+  } catch { /* Form parsing error ignored */ }
   return null
 }
 
@@ -104,7 +104,7 @@ export function sanitizeVerbsInPlace(verbs){
                 }
               }
             }
-          } catch {}
+          } catch { /* Sanitization error ignored */ }
         }
       }
     }

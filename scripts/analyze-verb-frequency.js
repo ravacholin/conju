@@ -4,7 +4,7 @@ import { verbs } from '../src/data/verbs.js'
 import { readFileSync } from 'fs'
 const gates = JSON.parse(readFileSync(new URL('../src/data/curriculum.json', import.meta.url), 'utf8'))
 import { IRREGULAR_FAMILIES } from '../src/lib/data/irregularFamilies.js'
-import { categorizeVerb } from '../src/lib/data/irregularFamilies.js'
+import { CATEGORIZE_VERB } from '../src/lib/data/irregularFamilies.js'
 
 // Lista de verbos más frecuentes en español (datos reales de corpus)
 const HIGH_FREQUENCY_VERBS = [

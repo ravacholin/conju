@@ -32,7 +32,7 @@ export default function SessionInsights() {
         // Auto-show insights when user has meaningful progress
         setShowInsights(stats.totalAttempts > 5)
         
-      } catch (_error) {
+      } catch {
         /* fail silently */
       }
     }

@@ -111,7 +111,7 @@ export default function ErrorInsights({ onNavigateToDrill }) {
         // Backward-compat: dispatch for when handled from DrillMode overlay
         window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
       }
-    } catch {}
+    } catch { /* Navigation error ignored */ }
   }
 
   const getErrorInfo = (tag) => {

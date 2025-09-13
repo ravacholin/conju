@@ -140,7 +140,7 @@ function DrillMode({
   useEffect(() => {
     if (!currentItem && typeof onRegenerateItem === 'function') {
       const id = setTimeout(() => {
-        try { onRegenerateItem() } catch {}
+        try { onRegenerateItem() } catch { /* Generation error ignored */ }
       }, 300)
       return () => clearTimeout(id)
     }

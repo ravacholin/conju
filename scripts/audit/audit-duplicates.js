@@ -108,7 +108,7 @@ if (APPLY) {
           if (!byLemma.has(e.lemma)) byLemma.set(e.lemma, [])
           byLemma.get(e.lemma).push(e)
         })
-        for (const [lemma, items] of byLemma.entries()) {
+        for (const [lemma, ITEMS] of byLemma.entries()) {
           const vi2 = lemmaToIndex.get(lemma)
           if (vi2 == null) continue
           const verb = arr[vi2]
@@ -159,7 +159,7 @@ if (APPLY) {
                 slotMap.get(k).push({ f, idx })
               })
               // For each slot, if multiple values and one is truncated → remove truncated
-              for (const [slot, entries] of slotMap.entries()) {
+              for (const [SLOT, entries] of slotMap.entries()) {
                 if (entries.length <= 1) continue
                 const values = [...new Set(entries.map(e => (e.f.value || '').trim()))]
                 if (values.length <= 1) continue

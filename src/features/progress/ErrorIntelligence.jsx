@@ -72,7 +72,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
       settings.set({ practiceMode: 'mixed', currentBlock: { combos, itemsRemaining: 8 } })
       if (typeof onNavigateToDrill === 'function') onNavigateToDrill()
       else window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { size: 8 } } }))
-    } catch {}
+    } catch { /* Practice configuration error ignored */ }
   }
 
   if (loading) {
