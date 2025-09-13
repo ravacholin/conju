@@ -140,7 +140,7 @@ test.describe('Smoke Tests - Critical User Paths', () => {
     await expect(page.locator('main')).toBeVisible()
 
     // Check for mobile-friendly interactions
-    const mobileElements = page.locator('[data-mobile="true"]')
+    const MOBILE_ELEMENTS = page.locator('[data-mobile="true"]')
       .or(page.locator('.mobile-only'))
 
     // At least the main content should be visible

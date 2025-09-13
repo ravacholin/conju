@@ -75,7 +75,7 @@ Object.defineProperty(window, 'ClipboardItem', {
 // Enhanced IndexedDB mock
 const { mockDB } = createIndexedDBMock()
 globalThis.indexedDB = {
-  open: vi.fn().mockImplementation((name, version) => {
+  open: vi.fn().mockImplementation((_name, _version) => {
     return Promise.resolve({
       result: mockDB,
       transaction: mockDB.transaction

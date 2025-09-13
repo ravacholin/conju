@@ -74,7 +74,6 @@ const IRREGULAR_PARTICIPLES = {
   'envolver': 'envuelto',
   'desenvolver': 'desenvuelto',
   'descubrir': 'descubierto',
-  'escribir': 'escrito',
   'componer': 'compuesto',
   'disponer': 'dispuesto',
   'exponer': 'expuesto',

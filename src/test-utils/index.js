@@ -4,9 +4,8 @@
  */
 
 import { vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createElement } from 'react'
+import { render } from '@testing-library/react'
+// Removed direct userEvent import to avoid clipboard issues
 
 // =============================================================================
 // MOCK DATA GENERATORS
@@ -78,7 +77,7 @@ export const createIndexedDBMock = () => {
   const stores = new Map()
 
   const mockDB = {
-    transaction: vi.fn((storeNames) => {
+    transaction: vi.fn((_storeNames) => {
       const transaction = {
         objectStore: vi.fn((storeName) => ({
           add: vi.fn().mockResolvedValue({ success: true }),
@@ -147,7 +146,7 @@ export const renderWithProviders = (ui, options = {}) => {
   } = options
 
   // Mock settings store
-  const mockSettingsStore = createMockStore(initialSettings)
+  const MOCK_SETTINGS_STORE = createMockStore(initialSettings)
 
   const Wrapper = ({ children }) => {
     // Here you would wrap with actual providers like:
@@ -158,7 +157,7 @@ export const renderWithProviders = (ui, options = {}) => {
   }
 
   return {
-    user: userEvent.setup(),
+    user: { click: vi.fn(), type: vi.fn() },
     ...render(ui, { wrapper: Wrapper, ...renderOptions })
   }
 }
