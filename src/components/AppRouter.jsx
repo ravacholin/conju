@@ -37,8 +37,11 @@ import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import LearnTenseFlow from './learning/LearnTenseFlow.jsx';
 import { lazy } from 'react'
+import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
 
-const ProgressDashboard = lazy(() => import('../features/progress/ProgressDashboard.jsx'))
+const ProgressDashboard = lazy(lazyWithRetry(
+  () => import('../features/progress/ProgressDashboard.jsx')
+))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'

@@ -5,6 +5,8 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 // Inicializar automáticamente el sistema de progreso
 import './lib/progress/autoInit.js'
+// Initialize service worker update handling
+import './utils/swUpdateHandler.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

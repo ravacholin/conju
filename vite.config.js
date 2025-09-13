@@ -19,7 +19,22 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         skipWaiting: true,
         clientsClaim: true,
-        cleanupOutdatedCaches: true
+        cleanupOutdatedCaches: true,
+        // Force immediate activation and cache invalidation
+        navigateFallbackDenylist: [/^\/_/],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/verb-os\.vercel\.app\/assets\/.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'dynamic-assets',
+              cacheKeyWillBeUsed: async ({ request }) => {
+                // Force fresh fetch for chunks when they fail to load
+                return `${request.url}?t=${Date.now()}`
+              }
+            }
+          }
+        ]
       },
       manifest: {
         name: 'VerbOS - Conjugador de Español',
@@ -40,6 +55,15 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
+        // Generate more stable chunk names to reduce cache invalidation
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId
+          if (facadeModuleId) {
+            const name = facadeModuleId.split('/').pop()?.replace('.jsx', '') || 'chunk'
+            return `assets/${name}-[hash].js`
+          }
+          return 'assets/[name]-[hash].js'
+        },
         manualChunks: (id) => {
           // Vendor libraries
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
