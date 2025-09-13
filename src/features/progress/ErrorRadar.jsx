@@ -32,7 +32,7 @@ export function ErrorRadar({ axes = [] }) {
     drawPolarGrid(ctx, centerX, centerY, radius, safeAxes.length)
     drawAxes(ctx, centerX, centerY, radius, safeAxes)
     drawData(ctx, centerX, centerY, radius, safeAxes)
-    drawLegend(ctx, width, height)
+    drawLegend(ctx)
   }, [safeAxes])
 
   function drawPolarGrid(ctx, cx, cy, r, n) {
@@ -101,7 +101,7 @@ export function ErrorRadar({ axes = [] }) {
     ctx.stroke()
   }
 
-  function drawLegend(ctx, WIDTH, HEIGHT) {
+  function drawLegend(ctx) {
     const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
     const textColor = styles?.getPropertyValue('--muted')?.trim() || '#cccccc'
     ctx.fillStyle = textColor

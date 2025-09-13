@@ -18,14 +18,14 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { chooseNext } from '../../lib/core/generator.js'
 import { varietyEngine } from '../../lib/core/advancedVarietyEngine.js'
 import { getNextRecommendedItem } from '../../lib/progress/AdaptivePracticeEngine.js'
-import { 
-  filterForSpecificPractice, 
-  filterByVerbType, 
+import {
+  filterForSpecificPractice as FILTER_FOR_SPECIFIC_PRACTICE,
+  filterByVerbType,
   applyComprehensiveFiltering,
   filterDueForSpecific,
-  matchesSpecific,
-  allowsPerson,
-  allowsLevel,
+  matchesSpecific as MATCHES_SPECIFIC,
+  allowsPerson as ALLOWS_PERSON,
+  allowsLevel as ALLOWS_LEVEL,
   generateAllFormsForRegion
 } from './DrillFormFilters.js'
 import { 

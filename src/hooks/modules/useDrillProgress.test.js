@@ -52,14 +52,14 @@ vi.mock('../../lib/utils/logger.js', () => ({
 let mockProgressSystemReady = false
 
 // Mock de los módulos de progreso que se importan dinámicamente
-let mockProcessUserResponse = null
-let mockFlowDetector = null
-let mockMomentumTracker = null
-let mockConfidenceEngine = null
-let mockDynamicGoalsSystem = null
-let mockRecordAttempt = null
-let mockUpdateMastery = null
-let mockScheduleNextReview = null
+let MOCK_PROCESS_USER_RESPONSE = null
+let MOCK_FLOW_DETECTOR = null
+let MOCK_MOMENTUM_TRACKER = null
+let MOCK_CONFIDENCE_ENGINE = null
+let MOCK_DYNAMIC_GOALS_SYSTEM = null
+let MOCK_RECORD_ATTEMPT = null
+let MOCK_UPDATE_MASTERY = null
+let MOCK_SCHEDULE_NEXT_REVIEW = null
 
 describe('useDrillProgress Hook', () => {
   beforeEach(() => {
@@ -67,13 +67,13 @@ describe('useDrillProgress Hook', () => {
     mockProgressSystemReady = false
     
     // Mock de los módulos de progreso
-    mockProcessUserResponse = vi.fn().mockResolvedValue({
+    MOCK_PROCESS_USER_RESPONSE = vi.fn().mockResolvedValue({
       success: true,
       masteryUpdate: { score: 85 },
       analytics: { streakBonus: 10 }
     })
     
-    mockFlowDetector = {
+    MOCK_FLOW_DETECTOR = {
       processResponse: vi.fn().mockResolvedValue({
         state: 'flow',
         level: 0.8,
@@ -81,7 +81,7 @@ describe('useDrillProgress Hook', () => {
       })
     }
     
-    mockMomentumTracker = {
+    MOCK_MOMENTUM_TRACKER = {
       processResponse: vi.fn().mockResolvedValue({
         level: 'high',
         velocity: 1.2,
@@ -89,7 +89,7 @@ describe('useDrillProgress Hook', () => {
       })
     }
     
-    mockConfidenceEngine = {
+    MOCK_CONFIDENCE_ENGINE = {
       processResponse: vi.fn().mockResolvedValue({
         level: 'high',
         score: 0.9,
@@ -97,13 +97,13 @@ describe('useDrillProgress Hook', () => {
       })
     }
     
-    mockDynamicGoalsSystem = {
+    MOCK_DYNAMIC_GOALS_SYSTEM = {
       processResponse: vi.fn().mockResolvedValue({ goalProgress: 0.7 })
     }
     
-    mockRecordAttempt = vi.fn().mockResolvedValue(true)
-    mockUpdateMastery = vi.fn().mockResolvedValue(true)
-    mockScheduleNextReview = vi.fn().mockResolvedValue(true)
+    MOCK_RECORD_ATTEMPT = vi.fn().mockResolvedValue(true)
+    MOCK_UPDATE_MASTERY = vi.fn().mockResolvedValue(true)
+    MOCK_SCHEDULE_NEXT_REVIEW = vi.fn().mockResolvedValue(true)
     
     // Limpiar mocks de las funciones importadas
     vi.clearAllMocks()
@@ -492,7 +492,7 @@ describe('useDrillProgress Hook', () => {
       mockProgressSystemReady = true
       
       // Mock que lanza error
-      mockProcessUserResponse = vi.fn().mockRejectedValue(new Error('Progress system error'))
+      MOCK_PROCESS_USER_RESPONSE = vi.fn().mockRejectedValue(new Error('Progress system error'))
       
       const { result } = renderHook(() => useDrillProgress())
       

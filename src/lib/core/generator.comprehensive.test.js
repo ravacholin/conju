@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { chooseNext, buildEligiblePool } from './generator.js'
 import { useSettings } from '../../state/settings.js'
-import { mockSettings, mockVerb, expectValidGeneratorOutput } from '../../test-utils/index.js'
+import { mockSettings, mockVerb as MOCK_VERB, expectValidGeneratorOutput } from '../../test-utils/index.js'
 
 describe('Generator - Comprehensive Tests', () => {
   beforeEach(() => {

@@ -4,11 +4,12 @@
  */
 
 import { getMasteryByUser } from '../progress/database.js';
-import { 
-  getAdaptiveLevelConfig, 
+import {
+  getAdaptiveLevelConfig,
   MASTERY_THRESHOLDS,
   PHASE_DISTRIBUTION,
-  calculatePhaseDurations
+  calculatePhaseDurations,
+  getRealTimeDifficultyConfig
 } from './learningConfig.js';
 
 /**
@@ -230,6 +231,5 @@ export function canSkipPhase(userId, tense, phase) {
  */
 export function adjustRealTimeDifficulty(currentPerformance) {
   // Delegate to centralized config function for consistency
-  const { getRealTimeDifficultyConfig } = require('./learningConfig.js');
   return getRealTimeDifficultyConfig(currentPerformance);
 }

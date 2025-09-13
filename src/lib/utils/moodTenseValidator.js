@@ -75,7 +75,7 @@ export function formatMoodTenseSafe(mood, tense) {
   const formatted = `${tenseLabel} (${moodLabel})`
   
   // En desarrollo, mostrar advertencias visuales
-  if (hasWarnings && process.env.NODE_ENV === 'development') {
+  if (hasWarnings && import.meta.env.DEV) {
     return `⚠️ ${formatted}`
   }
   

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel } from './curriculumGate.js'
+import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel as GET_ALLOWED_COMBOS_FOR_LEVEL } from './curriculumGate.js'
 
 describe('CurriculumGate', () => {
   const mk = (mood, tense, person='1s', lemma='hablar', value='x') => ({ mood, tense, person, lemma, value })

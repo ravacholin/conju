@@ -70,7 +70,7 @@ export async function testCachePerformance() {
   try {
     await progressDataCache.get(`${userId}:error`, mockLoaders.errorData, 'errorIntel')
     console.log('❌ Error test should have failed')
-  } catch (e) {
+  } catch {
     console.log('✅ Error handling working correctly')
     results.errorHandling = true
   }

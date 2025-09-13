@@ -11,16 +11,16 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { useSettings } from '../../state/settings.js'
-import { 
-  validateEligibleForms,
+import {
+  validateEligibleForms as VALIDATE_ELIGIBLE_FORMS,
   performIntegrityGuard,
   validateSpecificPracticeConfig,
-  validateFinalFormSelection,
+  validateFinalFormSelection as VALIDATE_FINAL_FORM_SELECTION,
   validateVerbTypeFiltering,
   validateDrillItem
 } from './DrillValidationSystem.js'
-import { 
-  passesIntegrityChecks,
+import {
+  passesIntegrityChecks as PASSES_INTEGRITY_CHECKS,
   getFilteringStats
 } from './DrillFormFilters.js'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -61,7 +61,7 @@ export const useDrillValidation = () => {
       })
 
       // Basic structure validation
-      const structureValidation = validateDrillItem(item, settings)
+      const structureValidation = validateDrillItem(item)
       
       if (!structureValidation.valid) {
         logger.warn('validateItem', 'Item structure validation failed', structureValidation)

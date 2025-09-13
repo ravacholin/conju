@@ -3,7 +3,7 @@
 
 // Advanced Variety Engine - needs verb lookup for type-based balancing
 import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
-import { isIrregularInTense, getEffectiveVerbType } from '../utils/irregularityUtils.js'
+import { isIrregularInTense, getEffectiveVerbType as GET_EFFECTIVE_VERB_TYPE } from '../utils/irregularityUtils.js'
 import { getVerbSelectionWeight, getVerbPriority, isHighPriorityVerb } from './levelVerbFiltering.js'
 
 /**
@@ -51,7 +51,7 @@ class SessionMemory {
     // CRITICAL: Record exact combination (verb|person) to prevent identical repetition
     const exactCombo = `${form.lemma}|${form.person}`
     this.recentCombinations.set(exactCombo, now)
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`✅ RECORDED COMBO - ${exactCombo} at ${now}`)
     }
     
@@ -117,7 +117,7 @@ class SessionMemory {
           // Gradual decay for person counts to prevent permanent blocking
           const decayedCount = Math.max(0, count - 0.15) // Decay 0.15 per cleanup
           return [key, decayedCount]
-        }).filter(([key, count]) => count > 0) // Remove entries with zero count
+        }).filter(([, count]) => count > 0) // Remove entries with zero count
         
         map.clear()
         decayedEntries.slice(0, maxSize).forEach(([key, count]) => {
@@ -145,7 +145,7 @@ class SessionMemory {
       penalty += verbPenalty
       
       // DEBUG: Log penalty calculation
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log(`🚫 REPETITION PENALTY - ${form.lemma}: age=${Math.floor(age/1000)}s, penalty=${verbPenalty.toFixed(3)}`)
       }
     }
@@ -168,7 +168,7 @@ class SessionMemory {
     const exactCombo = `${form.lemma}|${form.person}`
     if (this.recentCombinations && this.recentCombinations.has(exactCombo)) {
       penalty += 0.95 // Very high penalty for exact same combination
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log(`🚫 EXACT COMBO PENALTY - ${exactCombo}: +0.95 penalty`)
       }
     }
@@ -338,7 +338,7 @@ export class AdvancedVarietyEngine {
     if (eligibleForms.length === 0) return null
     
     // Log high-priority vs advanced verb distribution for topic practice
-    if (practiceMode === 'specific' && process.env.NODE_ENV === 'development') {
+    if (practiceMode === 'specific' && import.meta.env.DEV) {
       const highPriorityCount = eligibleForms.filter(f => isHighPriorityVerb(f.lemma)).length
       const totalCount = eligibleForms.length
       const highPriorityPercent = ((highPriorityCount / totalCount) * 100).toFixed(1)
@@ -763,7 +763,7 @@ export class AdvancedVarietyEngine {
     const weightMultiplier = Math.min(2.0, weight / 50) // Normalize weight to 0-2 range
     const finalScore = priorityScore * weightMultiplier
     
-    if (process.env.NODE_ENV === 'development' && Math.random() < 0.05) {
+    if (import.meta.env.DEV && Math.random() < 0.05) {
       console.log(`🎯 VERB PRIORITY - ${lemma}: priority=${priority}, weight=${weight}, score=${finalScore.toFixed(2)}`)
     }
     
@@ -792,7 +792,7 @@ export class AdvancedVarietyEngine {
         const compoundPenalty = Math.min(0.8, recentCompoundCount * 0.25) // Up to 80% penalty
         score = Math.max(0.05, score - compoundPenalty) // Minimum 5% chance
         
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log(`🔄 COMPOUND COOLDOWN - Recent compounds: ${recentCompoundCount}, penalty: ${(compoundPenalty * 100).toFixed(1)}%, final score: ${(score * 100).toFixed(1)}%`)
         }
       }

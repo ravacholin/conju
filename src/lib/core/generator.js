@@ -4,27 +4,27 @@ import { verbs } from '../../data/verbs.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
-import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple } from './conjugationRules.js'
-import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
+import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple as HAS_IRREGULAR_PARTICIPLE } from './conjugationRules.js'
+import { levelPrioritizer as LEVEL_PRIORITIZER, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
 import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePolicy.js'
-import { 
-  isIrregularInTense, 
-  hasAnyIrregularTense, 
+import {
+  isIrregularInTense,
+  hasAnyIrregularTense as HAS_ANY_IRREGULAR_TENSE,
   getEffectiveVerbType,
-  shouldTargetIrregularForSettings 
+  shouldTargetIrregularForSettings as SHOULD_TARGET_IRREGULAR_FOR_SETTINGS
 } from '../utils/irregularityUtils.js'
 
 
 // Imports optimizados
-import { 
-  VERB_LOOKUP_MAP, 
+import {
+  VERB_LOOKUP_MAP,
   FORM_LOOKUP_MAP,
   // verbCategorizationCache,  // UNUSED
   formFilterCache,
   // combinationCache,        // UNUSED
-  warmupCaches,
+  warmupCaches as WARMUP_CACHES,
   clearAllCaches
 } from './optimizedCache.js'
 

@@ -305,7 +305,7 @@ export const validateVerbTypeFiltering = (originalForms, filteredForms, verbType
  * @param {Object} settings - User settings
  * @returns {Object} - Comprehensive validation result
  */
-export const validateDrillItem = (item, settings) => {
+export const validateDrillItem = (item) => {
   if (!item) {
     return {
       valid: false,
