@@ -143,7 +143,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
     }
   }
 
-  const getUrgencyLabel = (urgency) => {
+  const GET_URGENCY_LABEL = (urgency) => {
     switch(urgency) {
       case 4: return 'Vencido'
       case 3: return 'Muy urgente'

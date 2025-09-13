@@ -101,7 +101,7 @@ export function ErrorRadar({ axes = [] }) {
     ctx.stroke()
   }
 
-  function drawLegend(ctx, width, height) {
+  function drawLegend(ctx, WIDTH, HEIGHT) {
     const styles = typeof window !== 'undefined' ? getComputedStyle(document.documentElement) : null
     const textColor = styles?.getPropertyValue('--muted')?.trim() || '#cccccc'
     ctx.fillStyle = textColor
@@ -169,7 +169,7 @@ export function ErrorRadar({ axes = [] }) {
           correct: a.correctAnswer
         }))
       setExamplesByTag(prev => ({ ...prev, [tag]: list }))
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [examplesByTag])

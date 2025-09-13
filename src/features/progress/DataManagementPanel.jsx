@@ -39,7 +39,7 @@ export default function DataManagementPanel({ onClose }) {
     try {
       // En implementación real, verificaría el estado actual
       setSyncStatus('ready')
-    } catch (error) {
+    } catch {
       /* handle silently */
       setSyncStatus('error')
     }
