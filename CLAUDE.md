@@ -38,8 +38,8 @@ npx vitest
 # Data validation (critical - run before commits)
 node src/validate-data.js
 
-# Audit dataset consistency (validate person/mood/tense alignment)
-node scripts/audit-consistency.js
+# Audit dataset consistency and linguistic data validation
+npm run audit:all
 
 # Validate mood/tense mapping integrity (prevents "Undefined - undefined" bugs)
 npm run validate-integrity
@@ -128,13 +128,14 @@ clearAllCaches()   // Clear all caches for testing
 
 ## Data Validation Requirements
 
-**Critical:** Always run `node src/validate-data.js` before committing. This detects:
+**Critical:** Always run `node src/validate-data.js` and `npm run validate-integrity` before committing. This detects:
 - Duplicate verbs
 - Missing verb forms
 - Broken references in irregular families
 - Structural inconsistencies
+- Mood/tense mapping integrity issues
 
-The validator must exit with code 0 (no errors) for CI/CD pipeline success.
+The validator must exit with code 0 (no errors) for CI/CD pipeline success. Use `npm run audit:all` for comprehensive data auditing.
 
 ## Performance Considerations
 

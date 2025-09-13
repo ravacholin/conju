@@ -72,6 +72,7 @@ const IRREGULAR_PARTICIPLES = {
   'devolver': 'devuelto',
   'revolver': 'revuelto',
   'envolver': 'envuelto',
+  'desenvolver': 'desenvuelto',
   'descubrir': 'descubierto',
   'escribir': 'escrito',
   'componer': 'compuesto',
@@ -92,7 +93,7 @@ export function buildGerund(lemma) {
   const endsWith = (s) => lemma.endsWith(s)
   const stem = lemma.slice(0, -2)
   const lastStemChar = stem.slice(-1)
-  if ((endsWith('er') || endsWith('ir')) && /[aeiuoáéíóú]/i.test(lastStemChar)) {
+  if ((endsWith('er') || endsWith('ir')) && /[aeioáéíóú]/i.test(lastStemChar)) {
     return stem + 'yendo'
   }
   if (lemma.endsWith('uir') && !lemma.endsWith('guir')) {

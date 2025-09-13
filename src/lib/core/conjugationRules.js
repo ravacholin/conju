@@ -511,7 +511,7 @@ export function hasIrregularParticiple(lemma) {
     'satisfacer': 'satisfecho',
     'revolver': 'revuelto',
     'envolver': 'envuelto',
-    'desenvolver': 'desenvolvuelto',
+    'desenvolver': 'desenvuelto',
     
     // Compuestos de verbos irregulares
     'describir': 'descrito',
