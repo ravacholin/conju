@@ -32,22 +32,30 @@ const resetSettings = () => {
 
 const chooseDialectVos = async (user) => {
   const vosBtn = await screen.findByRole('button', { name: /Seleccionar dialecto rioplatense/i })
-  await user.click(vosBtn)
+  await act(async () => {
+    await user.click(vosBtn)
+  })
 }
 
 const goToPorTema = async (user) => {
   const porTema = await screen.findByText(/Por tema/i)
-  await user.click(porTema)
+  await act(async () => {
+    await user.click(porTema)
+  })
 }
 
 const chooseMood = async (user, moodLabel) => {
   const moodBtn = await screen.findByRole('button', { name: new RegExp(moodLabel, 'i') })
-  await user.click(moodBtn)
+  await act(async () => {
+    await user.click(moodBtn)
+  })
 }
 
 const clickBack = async (user) => {
   const back = await screen.findByRole('button', { name: /Volver/i })
-  await user.click(back)
+  await act(async () => {
+    await user.click(back)
+  })
 }
 
 describe('Navegación y Back (flujo actual)', () => {
@@ -101,7 +109,9 @@ describe('Navegación y Back (flujo actual)', () => {
 
     // Paso 6: elegir un tiempo para ir al paso 7
     const presente = await screen.findByRole('button', { name: /Presente/i })
-    await user.click(presente)
+    await act(async () => {
+      await user.click(presente)
+    })
 
     // Paso 7: opciones de tipo de verbo
     await screen.findByText(/Verbos Irregulares/i)
@@ -117,7 +127,9 @@ describe('Navegación y Back (flujo actual)', () => {
 
     // Paso 2: menú principal (Por nivel / Por tema)
     const porNivel = await screen.findByText(/Por nivel/i)
-    await user.click(porNivel)
+    await act(async () => {
+      await user.click(porNivel)
+    })
 
     // Paso 3: niveles (A1..C2)
     await screen.findByRole('button', { name: /Seleccionar nivel A1/i })
@@ -131,9 +143,13 @@ describe('Navegación y Back (flujo actual)', () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
     const porNivel = await screen.findByText(/Por nivel/i)
-    await user.click(porNivel)
+    await act(async () => {
+      await user.click(porNivel)
+    })
     const nivelC1 = await screen.findByRole('button', { name: /Seleccionar nivel C1/i })
-    await user.click(nivelC1)
+    await act(async () => {
+      await user.click(nivelC1)
+    })
 
     // Paso 4: práctica mixta/específica
     await screen.findByText(/Práctica Mixta/i)
