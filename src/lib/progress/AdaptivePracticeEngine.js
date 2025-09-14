@@ -7,67 +7,9 @@ import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
 import { validateMoodTenseAvailability } from '../core/generator.js'
 import { useSettings } from '../../state/settings.js'
 import { buildFormsForRegion } from '../core/eligibility.js'
+import { formatMoodTense } from '../utils/verbLabels.js'
 
-/**
- * Mapeo de modos a nombres gramaticales amigables
- */
-const MOOD_LABELS = {
-  'indicative': 'Indicativo',
-  'subjunctive': 'Subjuntivo',
-  'imperative': 'Imperativo',
-  'conditional': 'Condicional',
-  'nonfinite': 'Formas no personales'
-}
-
-/**
- * Mapeo de tiempos a nombres gramaticales amigables
- */
-const TENSE_LABELS = {
-  'pres': 'Presente',
-  'pretIndef': 'Pretérito indefinido',
-  'impf': 'Pretérito imperfecto',
-  'fut': 'Futuro simple',
-  'pretPerf': 'Pretérito perfecto compuesto',
-  'plusc': 'Pretérito pluscuamperfecto',
-  'futPerf': 'Futuro perfecto',
-  'subjPres': 'Presente de subjuntivo',
-  'subjImpf': 'Pretérito imperfecto de subjuntivo',
-  'subjFut': 'Futuro de subjuntivo',
-  'subjPerf': 'Pretérito perfecto de subjuntivo',
-  'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
-  'impAff': 'Imperativo afirmativo',
-  'impNeg': 'Imperativo negativo',
-  'imperativo_afirmativo': 'Imperativo afirmativo',
-  'imperativo_negativo': 'Imperativo negativo',
-  'cond': 'Condicional simple',
-  'condPerf': 'Condicional compuesto',
-  'inf': 'Infinitivo',
-  'part': 'Participio',
-  'ger': 'Gerundio'
-}
-
-/**
- * Convierte mood/tense a nombres amigables para el usuario
- * @param {string} mood - Modo gramatical
- * @param {string} tense - Tiempo verbal
- * @returns {string} Nombre amigable
- */
-function formatMoodTense(mood, tense) {
-  const moodLabel = MOOD_LABELS[mood] || mood
-  const tenseLabel = TENSE_LABELS[tense] || tense
-  
-  // Para subjuntivo, el tiempo ya incluye "de subjuntivo"
-  if (mood === 'subjunctive' && tenseLabel.includes('subjuntivo')) {
-    return tenseLabel
-  }
-  
-  // Para otros casos, combinar modo y tiempo
-  if (mood === 'indicative') {
-    return tenseLabel // "Presente", "Pretérito imperfecto", etc.
-  }
-  
-  return `${tenseLabel} (${moodLabel})` // "Presente (Condicional)", etc.
-}
+// Use centralized formatter for consistency
 
 /**
  * Motor principal para generar recomendaciones de práctica adaptativa

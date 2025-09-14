@@ -4,62 +4,13 @@ import { getDueSchedules, getMasteryByUser } from '../../lib/progress/database.j
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
 import './srs-panel.css'
-
-/**
- * Mapeo de modos a nombres gramaticales amigables
- */
-const MOOD_LABELS = {
-  'indicative': 'Indicativo',
-  'subjunctive': 'Subjuntivo', 
-  'imperative': 'Imperativo',
-  'conditional': 'Condicional',
-  'nonfinite': 'Formas no personales'
-}
-
-/**
- * Mapeo de tiempos a nombres gramaticales amigables
- */
-const TENSE_LABELS = {
-  'pres': 'Presente',
-  'pretIndef': 'Pretérito indefinido',
-  'impf': 'Pretérito imperfecto',
-  'fut': 'Futuro simple',
-  'pretPerf': 'Pretérito perfecto compuesto',
-  'plusc': 'Pretérito pluscuamperfecto',
-  'futPerf': 'Futuro perfecto',
-  'subjPres': 'Presente de subjuntivo',
-  'subjImpf': 'Pretérito imperfecto de subjuntivo',
-  'subjFut': 'Futuro de subjuntivo',
-  'subjPerf': 'Pretérito perfecto de subjuntivo',
-  'subjPlusc': 'Pretérito pluscuamperfecto de subjuntivo',
-  'impAff': 'Imperativo afirmativo',
-  'impNeg': 'Imperativo negativo',
-  'imperativo_afirmativo': 'Imperativo afirmativo',
-  'imperativo_negativo': 'Imperativo negativo',
-  'cond': 'Condicional simple',
-  'condPerf': 'Condicional compuesto',
-  'inf': 'Infinitivo',
-  'part': 'Participio',
-  'ger': 'Gerundio'
-}
+import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 
 /**
  * Formatea mood/tense a nombres amigables
  */
-function formatMoodTense(mood, tense) {
-  const moodLabel = MOOD_LABELS[mood] || mood
-  const tenseLabel = TENSE_LABELS[tense] || tense
-  
-  if (mood === 'subjunctive' && tenseLabel.includes('subjuntivo')) {
-    return tenseLabel
-  }
-  
-  if (mood === 'indicative') {
-    return tenseLabel
-  }
-  
-  return `${tenseLabel} (${moodLabel})`
-}
+// Use centralized formatter for consistent display
+const formatMoodTenseLocal = (mood, tense) => formatMoodTense(mood, tense)
 
 export default function SRSPanel({ onNavigateToDrill }) {
   const [stats, setStats] = useState({ dueNow: 0, dueToday: 0 })
@@ -101,7 +52,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
         return {
           ...schedule,
           masteryScore: mastery.score,
-          formattedName: formatMoodTense(schedule.mood, schedule.tense),
+          formattedName: formatMoodTenseLocal(schedule.mood, schedule.tense),
           urgency: getUrgency(schedule.nextDue, now)
         }
       }).sort((a, b) => {

@@ -1,6 +1,7 @@
 // Componente para mostrar el radar de errores
 
 import { useEffect, useRef, memo, useMemo, useState, useCallback } from 'react'
+import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
@@ -134,23 +135,7 @@ export function ErrorRadar({ axes = [] }) {
     }
   }
 
-  const formatMoodTense = useCallback((mood, tense) => {
-    const MOOD = {
-      indicative: 'Indicativo', subjunctive: 'Subjuntivo', imperative: 'Imperativo', conditional: 'Condicional', nonfinite: 'No finito'
-    }
-    const TENSE = {
-      pres: 'Presente', pretIndef: 'Pretérito indefinido', impf: 'Imperfecto', fut: 'Futuro',
-      pretPerf: 'Pretérito perfecto', plusc: 'Pluscuamperfecto', futPerf: 'Futuro perfecto',
-      subjPres: 'Presente de subj.', subjImpf: 'Imperfecto de subj.', subjPerf: 'Perfecto de subj.', subjPlusc: 'Plusc. de subj.',
-      impAff: 'Imperativo afirmativo', impNeg: 'Imperativo negativo', cond: 'Condicional', condPerf: 'Condicional compuesto',
-      ger: 'Gerundio', part: 'Participio'
-    }
-    const m = MOOD[mood] || mood
-    const t = TENSE[tense] || tense
-    if (mood === 'indicative') return t
-    if (mood === 'subjunctive' && t.includes('subj')) return t
-    return `${t} (${m})`
-  }, [])
+  const formatMoodTenseLocal = useCallback((mood, tense) => formatMoodTense(mood, tense), [])
 
   const loadExamples = useCallback(async (tag) => {
     try {
@@ -217,7 +202,7 @@ export function ErrorRadar({ axes = [] }) {
                       {(examplesByTag[axis.tag] || []).map((ex, i) => (
                         <li key={i} style={{ marginBottom: 6 }}>
                           <div style={{ opacity: 0.8, fontSize: 12, marginBottom: 2 }}>
-                            {formatMoodTense(ex.mood, ex.tense)}
+                            {formatMoodTenseLocal(ex.mood, ex.tense)}
                           </div>
                           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                             <span style={{ color: 'var(--muted-2)', fontFamily: 'monospace' }}>{ex.user}</span>

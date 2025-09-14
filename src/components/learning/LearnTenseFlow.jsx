@@ -62,7 +62,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import curriculum from '../../data/curriculum.json';
 import { verbs } from '../../data/verbs.js';
 import { storyData } from '../../data/narrativeStories.js';
-import { MOOD_LABELS, TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { MOOD_LABELS, TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { getLearningFamiliesForTense } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
 import { 
@@ -661,10 +661,10 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
                       key={tense}
                       className="option-card"
                       onClick={() => handleTenseSelection(mood, tense)}
-                      title={`Seleccionar ${TENSE_LABELS[tense] || tense}`}
+                      title={`Seleccionar ${formatMoodTense(mood, tense)}`}
                     >
                       <h3>
-                        {TENSE_LABELS[tense] || tense}
+                        {formatMoodTense(mood, tense)}
                       </h3>
                       <p className="example">{getPersonConjugationExample(mood, tense)}</p>
                     </ClickableCard>
@@ -762,7 +762,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
           </ClickableCard>
           
           <div className="tense-section">
-            <h2>Elegir tipo de verbos para {TENSE_LABELS[selectedTense.tense]}</h2>
+            <h2>Elegir tipo de verbos para {formatMoodTense(selectedTense.mood, selectedTense.tense)}</h2>
             
             <div className="options-grid">
               {/* Regular verbs */}

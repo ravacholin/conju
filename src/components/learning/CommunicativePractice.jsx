@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
@@ -292,7 +292,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       // No keyword, give a hint and track incorrect attempt
       const hintText = tense.tense === 'pres' 
         ? `Cuéntame usando verbos en presente. Por ejemplo: "Yo trabajo en..." o "Normalmente voy a..."`
-        : `Intenta usar un verbo en ${TENSE_LABELS[tense.tense]} para contarme qué pasó.`;
+        : `Intenta usar un verbo en ${formatMoodTense(tense.mood, tense.tense)} para contarme qué pasó.`;
       const hint = { author: 'bot', text: hintText };
       newMessages.push(hint);
       
@@ -340,7 +340,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
             <button onClick={onBack} className="back-btn-drill">
                 <img src="/back.png" alt="Volver" className="back-icon" />
             </button>
-            <h2>Práctica Comunicativa: {TENSE_LABELS[tense.tense]}</h2>
+            <h2>Práctica Comunicativa: {formatMoodTense(tense.mood, tense.tense)}</h2>
         </div>
 
         <div className="chat-container">

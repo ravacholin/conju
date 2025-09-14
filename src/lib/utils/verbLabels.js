@@ -116,3 +116,40 @@ export function getTenseLabel(tense) {
 export function getPersonLabel(person) {
   return PERSON_LABELS[person] || person
 }
+
+// Normalize alternative tense keys to canonical ones used across the app
+export function normalizeTenseKey(tense) {
+  const map = {
+    'imperativo_afirmativo': 'impAff',
+    'imperativo_negativo': 'impNeg'
+  }
+  return map[tense] || tense
+}
+
+// Format a human-friendly label combining mood and tense when needed
+export function formatMoodTense(mood, tense) {
+  const moodLabel = MOOD_LABELS[mood] || mood
+  const normalized = normalizeTenseKey(tense)
+  const tenseLabel = TENSE_LABELS[normalized] || normalized
+
+  // Imperative: show "Imperativo afirmativo/negativo"
+  if (mood === 'imperative' || mood === 'imperativo') {
+    if (normalized === 'impAff') return 'Imperativo afirmativo'
+    if (normalized === 'impNeg') return 'Imperativo negativo'
+    if (normalized === 'impMixed') return 'Imperativo (todas)'
+    // Fallback to combining text
+    return `Imperativo ${String(tenseLabel || '').toLowerCase()}`
+  }
+
+  // Subjunctive: if label already expands, return it
+  if (mood === 'subjunctive' || mood === 'subjuntivo') {
+    if ((tenseLabel || '').toLowerCase().includes('subjuntivo')) return tenseLabel
+    return `${tenseLabel} (${moodLabel})`
+  }
+
+  // Indicative: tense label is enough
+  if (mood === 'indicative' || mood === 'indicativo') return tenseLabel
+
+  // Other moods: combine
+  return `${tenseLabel} (${moodLabel})`
+}

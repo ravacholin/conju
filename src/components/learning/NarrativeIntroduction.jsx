@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { diffChars } from 'diff';
-import { TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
+import { formatMoodTense, TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
 import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
@@ -163,7 +163,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     );
   }
 
-  const tenseName = TENSE_LABELS[tense.tense] || tense.tense;
+  const tenseName = formatMoodTense(tense.mood, tense.tense) || TENSE_LABELS[tense.tense] || tense.tense;
   const moodName = MOOD_LABELS[tense.mood] || tense.mood;
 
   const pronounsForDialect = () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
@@ -459,7 +459,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <button onClick={onBack} className="back-btn-drill">
                 <img src="/back.png" alt="Volver" className="back-icon" />
             </button>
-            <h2>Práctica Significativa: {TENSE_LABELS[tense.tense]}</h2>
+            <h2>Práctica Significativa: {formatMoodTense(tense.mood, tense.tense)}</h2>
         </div>
 
         {exercise.type === 'timeline' && (
