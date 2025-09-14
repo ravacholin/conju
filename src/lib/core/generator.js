@@ -29,7 +29,7 @@ import {
 } from './optimizedCache.js'
 
 // Quiet debug logging during tests; keep in dev runtime
-const dbg = (...args) => { if (import.meta?.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) console.log(...args) }
+const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args) }
 
 // Fast lookups (ahora usando cache optimizado)
 const LEMMA_TO_VERB = VERB_LOOKUP_MAP
@@ -51,8 +51,8 @@ function getAllowedCombosForLevel(level) {
   return set
 }
 
-const regularMoodMemo = new Map() // key: lemma|mood|tense|person|value
-const regularNonfiniteMemo = new Map() // key: lemma|tense|value
+const REGULAR_MOOD_MEMO = new Map() // key: lemma|mood|tense|person|value
+const REGULAR_NONFINITE_MEMO = new Map() // key: lemma|tense|value
 
 // MCER Level verb type restrictions
 const levelVerbRestrictions = {
@@ -72,7 +72,7 @@ function isVerbTypeAllowedForLevel(verbType, level) {
 }
 
 // New helper function for per-tense verb filtering
-function isVerbAllowedForTenseAndLevel(verb, tense, verbType, level) {
+function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
   // Check level restrictions first
   const effectiveVerbType = getEffectiveVerbType(verb)
   if (!isVerbTypeAllowedForLevel(effectiveVerbType, level)) {
@@ -90,7 +90,7 @@ function isVerbAllowedForTenseAndLevel(verb, tense, verbType, level) {
   return true
 }
 
-export function chooseNext({forms, history, currentItem}){
+export function chooseNext({forms, history: HISTORY, currentItem}){
   
   // Extract all settings once to avoid repeated state access
   const allSettings = useSettings.getState()
@@ -380,7 +380,7 @@ export function chooseNext({forms, history, currentItem}){
   }
 
   // Show which persons were included
-  const includedPersons = [...new Set(eligible.map(f => f.person))]
+  const INCLUDED_PERSONS = [...new Set(eligible.map(f => f.person))]
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
@@ -465,10 +465,9 @@ export function chooseNext({forms, history, currentItem}){
     try {
       // Try to get mastery data from the progress system if available
       const userId = useSettings.getState().userId
-      if (userId && typeof getMasteryByUser === 'function') {
-        userProgress = getMasteryByUser(userId)
-      }
-    } catch (e) {
+      // Progress system integration disabled for now
+      // TODO: Re-enable when progress system is stable
+    } catch {
       // Progress system might not be available, continue without it
     }
 
@@ -509,7 +508,7 @@ export function chooseNext({forms, history, currentItem}){
       if (pureRegularForms.length > 0) {
         eligible = pureRegularForms
       }
-    } catch (e) {
+    } catch {
       console.warn('Regular-only preference failed, continuing with existing eligible:', e)
     }
   }
@@ -575,7 +574,7 @@ export function chooseNext({forms, history, currentItem}){
 
       // Avanzar el índice solo una posición desde el índice realmente usado
       useSettings.getState().set({ conmutacionIdx: (usedIdx + 1) % seq.length })
-    } catch (e) {
+    } catch {
       if (!import.meta?.vitest) console.warn('C2 conmutación fallback (no variety boost applied):', e)
     }
   }
@@ -770,7 +769,7 @@ function applyWeightedSelection(forms) {
   
   // Calculate target distribution: 30% regular, 70% irregular
   const targetRegularRatio = 0.3
-  const targetIrregularRatio = 0.7
+  const TARGET_IRREGULAR_RATIO = 0.7
   
   // Calculate how many forms we should select from each type
   const totalForms = forms.length
@@ -810,7 +809,7 @@ function sampleArray(array, count) {
 }
 
 // Helper function to find a verb by its lemma
-function findVerbByLemma(lemma) {
+function FIND_VERB_BY_LEMMA(lemma) {
   return verbs.find(v => v.lemma === lemma)
 }
 
@@ -832,7 +831,7 @@ function adjustAccentForImperativeWithClitics(lemma, person, base, clitics) {
       if (/ir$/.test(lemma)) return s.replace(/i(?=[^i]*$)/, 'í')
       return s
     }
-    const removeTildeFinal = (s)=> s.replace(/[á]([^á]*)$/,'a$1').replace(/[é]([^é]*)$/,'e$1').replace(/[í]([^í]*)$/,'i$1')
+    const REMOVE_TILDE_FINAL = (s)=> s.replace(/[á]([^á]*)$/,'a$1').replace(/[é]([^é]*)$/,'e$1').replace(/[í]([^í]*)$/,'i$1')
     let core = raw
     // normalizar núcleo verbal (antes de clíticos)
     const verb = base
@@ -938,7 +937,7 @@ export function debugVerbAvailability() {
 }
 
 // Helper function to determine if a verb is irregular (fallback)
-function isIrregularVerb(lemma) {
+function IS_IRREGULAR_VERB(lemma) {
   const irregularVerbs = [
     'ser', 'estar', 'tener', 'hacer', 'ir', 'venir', 'decir', 'dar', 'ver', 'saber',
     'poder', 'querer', 'poner', 'salir', 'traer', 'caer', 'oir', 'valer', 'caber',
@@ -948,7 +947,7 @@ function isIrregularVerb(lemma) {
 }
 
 
-function acc(f, history){
+function ACC(f, history){
   const k = key(f); const h = history[k]||{seen:0, correct:0}
   return (h.correct + 1) / (h.seen + 2)
 }

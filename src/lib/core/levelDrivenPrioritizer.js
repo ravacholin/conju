@@ -5,7 +5,7 @@ import curriculum from '../../data/curriculum.json'
 
 // Quiet logs during tests while keeping them in dev runtime
 const debug = (...args) => {
-  if (import.meta?.env?.DEV && (typeof process === 'undefined' || process?.env?.NODE_ENV !== 'test')) console.log(...args)
+  if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args)
 }
 
 /**
@@ -151,7 +151,7 @@ export class LevelDrivenPrioritizer {
     }
 
     // Group curriculum by level with enhanced analysis
-    this.levelHierarchy.forEach((level, levelIndex) => {
+    this.levelHierarchy.forEach((level, LEVEL_INDEX) => {
       processed.byLevel[level] = curriculum
         .filter(item => item.level === level)
         .map(item => {
@@ -272,7 +272,7 @@ export class LevelDrivenPrioritizer {
   /**
    * Build complete prerequisite chain for a tense
    */
-  buildPrerequisiteChain(tenseKey, directPrereqs) {
+  buildPrerequisiteChain(tenseKey, DIRECT_PREREQS) {
     const chain = new Set()
     const visited = new Set()
     
@@ -299,7 +299,7 @@ export class LevelDrivenPrioritizer {
    */
   getPrioritizedTenses(userLevel, userProgress = null) {
     const weights = LEVEL_PRIORITY_WEIGHTS[userLevel] || LEVEL_PRIORITY_WEIGHTS.B1
-    const levelData = this.curriculumData.levelOrder[userLevel] || []
+    const LEVEL_DATA = this.curriculumData.levelOrder[userLevel] || []
     
     const categorized = {
       // Enhanced categorization with curriculum intelligence
@@ -952,7 +952,7 @@ export class LevelDrivenPrioritizer {
   /**
    * Apply advanced progress adjustments using comprehensive curriculum data
    */
-  applyAdvancedProgressAdjustments(categorized, userProgress, userLevel) {
+  applyAdvancedProgressAdjustments(categorized, userProgress, USER_LEVEL) {
     const masteryMap = this.createMasteryMap(userProgress)
 
     const adjustCategory = (tenses, categoryType) => {

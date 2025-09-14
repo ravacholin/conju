@@ -256,10 +256,10 @@ export function testSemanticDiversity() {
     'comer', 'dormir', 'trabajar' // physical
   ]
   
-  const testForms = []
+  const testForms = [];
   diverseVerbs.forEach(lemma => {
     ['indicative', 'subjunctive'].forEach(mood => {
-      const tense = mood === 'indicative' ? 'pres' : 'subjPres'
+      const tense = mood === 'indicative' ? 'pres' : 'subjPres';
       ['1s', '3s'].forEach(person => {
         testForms.push({
           lemma,
