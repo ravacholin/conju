@@ -25,9 +25,9 @@
   cursor: pointer;
 }
 
-.toast-info { border-left: 3px solid #60a5fa; }
-.toast-success { border-left: 3px solid #22c55e; }
-.toast-error { border-left: 3px solid #ef4444; }
+.toast-info { border-left: 3px solid var(--accent-blue); }
+.toast-success { border-left: 3px solid var(--accent-green); }
+.toast-error { border-left: 3px solid var(--accent-red); }
 
 @media (max-width: 640px) {
   .toast-container {
