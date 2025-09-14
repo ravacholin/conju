@@ -25,7 +25,7 @@ export function getUserSettings(_userId) { // eslint-disable-line no-unused-vars
       ...defaultSettings(),
       ...parsed
     }
-  } catch (e) {
+  } catch {
     console.warn('Fallo leyendo user settings; usando valores por defecto', e)
     return defaultSettings()
   }

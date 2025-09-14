@@ -920,7 +920,7 @@ export class DynamicGoalsSystem {
           this.goalMetrics = { ...this.goalMetrics, ...data.goalMetrics }
         }
       }
-    } catch (e) {
+    } catch {
       console.warn('Failed to load goals data:', e)
     }
   }
@@ -938,7 +938,7 @@ export class DynamicGoalsSystem {
         lastSaved: Date.now()
       }
       localStorage.setItem('dynamic-goals-data', JSON.stringify(data))
-    } catch (e) {
+    } catch {
       console.warn('Failed to save goals data:', e)
     }
   }

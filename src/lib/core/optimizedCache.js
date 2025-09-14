@@ -175,7 +175,7 @@ async function initializeCoreVerbs() {
     coreVerbs.forEach(verb => {
       try {
         sanitizeVerbsInPlace([verb])
-      } catch (e) {
+      } catch {
     if (import.meta.env?.DEV && !import.meta.env?.VITEST) console.warn('Data sanitizer failed for:', verb.lemma, e)
       }
       

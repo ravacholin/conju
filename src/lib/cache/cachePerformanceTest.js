@@ -35,7 +35,7 @@ export async function testCachePerformance() {
     const end1 = performance.now()
     results.cacheMiss = end1 - start1
     console.log(`✅ Cache miss time: ${results.cacheMiss.toFixed(2)}ms`)
-  } catch (e) {
+  } catch {
     console.error('❌ Cache miss test failed:', e)
   }
   
@@ -46,7 +46,7 @@ export async function testCachePerformance() {
     const end2 = performance.now()
     results.cacheHit = end2 - start2
     console.log(`✅ Cache hit time: ${results.cacheHit.toFixed(2)}ms`)
-  } catch (e) {
+  } catch {
     console.error('❌ Cache hit test failed:', e)
   }
   
@@ -62,7 +62,7 @@ export async function testCachePerformance() {
     const end3 = performance.now()
     results.deduplication = end3 - start3
     console.log(`✅ Deduplication time: ${results.deduplication.toFixed(2)}ms`)
-  } catch (e) {
+  } catch {
     console.error('❌ Deduplication test failed:', e)
   }
   

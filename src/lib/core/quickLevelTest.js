@@ -74,7 +74,7 @@ export function quickB1Test() {
         } else {
           console.log(`  ${level}: No core tenses`)
         }
-      } catch (e) {
+      } catch {
         console.log(`  ${level}: Error - ${e.message}`)
       }
     })
@@ -202,7 +202,7 @@ export function testGeneratorIntegration() {
         if (selected) {
           selections.push(`${selected.mood}/${selected.tense}`)
         }
-      } catch (e) {
+      } catch {
         console.log(`Selection ${i + 1} failed: ${e.message}`)
       }
     }

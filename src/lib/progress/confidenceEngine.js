@@ -539,7 +539,7 @@ export class ConfidenceEngine {
           this.sessionConfidence = { ...this.sessionConfidence, ...data.sessionConfidence }
         }
       }
-    } catch (e) {
+    } catch {
       console.warn('Failed to load confidence data:', e)
     }
   }
@@ -555,7 +555,7 @@ export class ConfidenceEngine {
         lastSaved: Date.now()
       }
       localStorage.setItem('confidence-engine-data', JSON.stringify(data))
-    } catch (e) {
+    } catch {
       console.warn('Failed to save confidence data:', e)
     }
   }

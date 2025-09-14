@@ -2,8 +2,8 @@
 // - Person weights by level
 // - Level-based form weighting rules (compound tenses, subjunctive, imperative, etc.)
 
-import { verbs } from '../../data/verbs.js'
-import { isIrregularInTense } from '../utils/irregularityUtils.js'
+import { verbs as VERBS } from '../../data/verbs.js'
+import { isIrregularInTense as IS_IRREGULAR_IN_TENSE } from '../utils/irregularityUtils.js'
 
 // Person weights per CEFR level (easy to tune and extend)
 export const PERSON_WEIGHTS_BY_LEVEL = {

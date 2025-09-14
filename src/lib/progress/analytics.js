@@ -160,7 +160,7 @@ export async function getErrorRadarData(userId) {
     })
 
     return { axes }
-  } catch (e) {
+  } catch {
     console.warn('Error radar unavailable:', e)
     return { axes: [] }
   }
@@ -352,7 +352,7 @@ export async function getErrorIntelligence(userId) {
     }
 
     return { tags, heatmap: { moods, tenses, cells }, leeches, summary }
-  } catch (e) {
+  } catch {
     console.warn('Error intelligence unavailable:', e)
     return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [], summary: { errorRate7: 0, errorRatePrev7: 0, incorrect7: 0, total7: 0, trend: 'flat' } }
   }
@@ -467,7 +467,7 @@ export async function getSRSStats(userId, now = new Date()) {
     const dueToday = allDue.length
     // For simplicity, consider dueNow same as dueToday (no time granularity in UI yet)
     return { dueNow: allDue.length, dueToday }
-  } catch (e) {
+  } catch {
     console.warn('SRS stats unavailable:', e)
     return { dueNow: 0, dueToday: 0 }
   }

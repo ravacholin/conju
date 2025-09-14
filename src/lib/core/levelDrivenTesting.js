@@ -282,7 +282,7 @@ export class LevelDrivenTester {
       try {
         const analysis = await coach.getCoachingAnalysis('B1')
         analysisWorked = analysis && typeof analysis === 'object'
-      } catch (e) {
+      } catch {
         // Expected to potentially fail without user data
         analysisWorked = true // Don't fail the test for missing data
       }

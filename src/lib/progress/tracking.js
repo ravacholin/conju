@@ -161,7 +161,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         attempt.hintsUsed,
         { latencyMs: attempt.latencyMs, errorTags }
       )
-    } catch (e) {
+    } catch {
       console.warn('No se pudo actualizar SRS:', e)
     }
 
@@ -206,7 +206,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         updatedAt: new Date()
       }
       await saveMastery(masteryRecord)
-    } catch (e) {
+    } catch {
       console.warn('No se pudo actualizar mastery de la celda:', e)
     }
   } catch (error) {

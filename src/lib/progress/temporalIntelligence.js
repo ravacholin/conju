@@ -602,7 +602,7 @@ export class TemporalIntelligence {
           this.cognitiveLoad = { ...this.cognitiveLoad, ...data.cognitiveLoad }
         }
       }
-    } catch (e) {
+    } catch {
       console.warn('Failed to load temporal data:', e)
     }
   }
@@ -620,7 +620,7 @@ export class TemporalIntelligence {
         lastSaved: Date.now()
       }
       localStorage.setItem('temporal-intelligence-data', JSON.stringify(data))
-    } catch (e) {
+    } catch {
       console.warn('Failed to save temporal data:', e)
     }
   }
