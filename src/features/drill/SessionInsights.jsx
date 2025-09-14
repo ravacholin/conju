@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { initProgressSystem } from '../../lib/progress/index.js'
 
 export default function SessionInsights() {
   const [insights, setInsights] = useState({
@@ -10,6 +11,8 @@ export default function SessionInsights() {
     inFlow: false
   })
   const [showInsights, setShowInsights] = useState(false)
+  const [missingUser, setMissingUser] = useState(false)
+  const [registering, setRegistering] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -17,6 +20,11 @@ export default function SessionInsights() {
     const updateInsights = async () => {
       try {
         const userId = getCurrentUserId()
+        if (!userId) {
+          setMissingUser(true)
+          setShowInsights(false)
+          return
+        }
         const stats = await getRealUserStats(userId)
         
         if (!mounted) return
@@ -49,6 +57,42 @@ export default function SessionInsights() {
       window.removeEventListener('progress:update', handleProgressUpdate)
     }
   }, [])
+
+  if (missingUser) {
+    return (
+      <div className="session-insights" style={{ padding: '8px 12px' }}>
+        <div style={{ fontSize: 13, opacity: 0.9 }}>
+          No se encontró un perfil de usuario. Crea un perfil local para habilitar métricas.
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <button
+            className="btn"
+            onClick={async () => {
+              try {
+                setRegistering(true)
+                await initProgressSystem()
+                setMissingUser(false)
+                // Trigger refresh of insights after registration
+                setShowInsights(false)
+                setTimeout(() => {
+                  const ev = new Event('progress:update')
+                  window.dispatchEvent(ev)
+                }, 50)
+              } catch {
+                setMissingUser(true)
+              } finally {
+                setRegistering(false)
+              }
+            }}
+            disabled={registering}
+            aria-label="Crear perfil local"
+          >
+            {registering ? 'Creando perfil…' : 'Crear perfil local'}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   if (!showInsights) return null
 
