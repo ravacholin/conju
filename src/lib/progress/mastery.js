@@ -84,8 +84,8 @@ export function getVerbTenseDifficulty(verb, tense) {
  */
 export async function calculateMasteryForItem(itemId, verb) {
   // Obtener todos los intentos para este ítem
-  const attempts = await getAttemptsByItem(itemId)
-  
+  const attempts = await getAttemptsByItem(itemId) || []
+
   if (attempts.length === 0) {
     // Si no hay intentos, devolver mastery score neutral
     return { score: 50, n: 0, weightedAttempts: 0 }

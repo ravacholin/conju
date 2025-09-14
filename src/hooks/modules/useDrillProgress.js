@@ -9,7 +9,7 @@
  * - Progress analytics and insights
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { validateDrillItemStructure } from './DrillItemGenerator.js'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -71,6 +71,7 @@ const logger = createLogger('useDrillProgress')
  */
 export const useDrillProgress = () => {
   const [isProcessing, setIsProcessing] = useState(false)
+  const processingRef = useRef(false)
   const [systemReady, setSystemReady] = useState(isProgressSystemReady())
   const [progressStats, setProgressStats] = useState({
     totalAttempts: 0,
@@ -90,11 +91,12 @@ export const useDrillProgress = () => {
    * @returns {Promise<Object>} - Processing result
    */
   const handleResponse = useCallback(async (item, response, onResult) => {
-    if (isProcessing) {
+    if (processingRef.current) {
       logger.warn('handleResponse', 'Progress processing already in progress')
       return { success: false, reason: 'Processing in progress' }
     }
 
+    processingRef.current = true
     setIsProcessing(true)
 
     try {
@@ -289,6 +291,7 @@ export const useDrillProgress = () => {
       
       return { success: false, reason: 'Unexpected error', error }
     } finally {
+      processingRef.current = false
       setIsProcessing(false)
     }
   }, [isProcessing, progressStats])
