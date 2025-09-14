@@ -1,0 +1,186 @@
+import { useState } from 'react'
+import authService from '../../lib/auth/authService.js'
+import './AuthModal.css'
+
+export default function AuthModal({ isOpen, onClose, onSuccess }) {
+  const [mode, setMode] = useState('login') // 'login' | 'register'
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: ''
+  })
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+    setError('') // Clear error when user types
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      let result
+      if (mode === 'register') {
+        result = await authService.register(
+          formData.email,
+          formData.password,
+          formData.name || null
+        )
+      } else {
+        result = await authService.login(
+          formData.email,
+          formData.password
+        )
+      }
+
+      authService.emitLoginEvent()
+      onSuccess?.(result)
+      onClose()
+
+      // Reset form
+      setFormData({ email: '', password: '', name: '' })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setError('Google OAuth próximamente disponible')
+    // TODO: Implement Google OAuth
+  }
+
+  const switchMode = () => {
+    setMode(mode === 'login' ? 'register' : 'login')
+    setError('')
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="auth-modal-overlay" onClick={onClose}>
+      <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="auth-modal-header">
+          <h2>{mode === 'login' ? '🔐 Iniciar Sesión' : '📝 Crear Cuenta'}</h2>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="auth-modal-content">
+          <p className="auth-description">
+            {mode === 'login'
+              ? 'Accedé a tu progreso desde cualquier dispositivo'
+              : 'Sincronizá tu progreso en todos tus dispositivos'
+            }
+          </p>
+
+          <form onSubmit={handleSubmit} className="auth-form">
+            {mode === 'register' && (
+              <div className="form-group">
+                <label htmlFor="name">Nombre (opcional)</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Tu nombre"
+                />
+              </div>
+            )}
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="tu@email.com"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Contraseña</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Mínimo 6 caracteres"
+                minLength={6}
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="error-message">
+                ⚠️ {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="auth-submit-btn"
+              disabled={loading}
+            >
+              {loading ? '⏳ Procesando...' : (mode === 'login' ? '🔓 Iniciar Sesión' : '🎯 Crear Cuenta')}
+            </button>
+          </form>
+
+          <div className="auth-divider">
+            <span>o</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="google-login-btn"
+            disabled={loading}
+          >
+            🌐 Continuar con Google
+          </button>
+
+          <div className="auth-switch">
+            {mode === 'login' ? (
+              <p>
+                ¿No tenés cuenta?{' '}
+                <button type="button" onClick={switchMode} className="link-btn">
+                  Creá una acá
+                </button>
+              </p>
+            ) : (
+              <p>
+                ¿Ya tenés cuenta?{' '}
+                <button type="button" onClick={switchMode} className="link-btn">
+                  Iniciá sesión
+                </button>
+              </p>
+            )}
+          </div>
+
+          <div className="auth-benefits">
+            <h4>✨ Beneficios de tener cuenta:</h4>
+            <ul>
+              <li>📱 Sincronización entre dispositivos</li>
+              <li>☁️ Backup automático de tu progreso</li>
+              <li>📊 Historial completo de aprendizaje</li>
+              <li>🎯 Recomendaciones personalizadas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

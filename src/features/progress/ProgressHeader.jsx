@@ -1,5 +1,6 @@
 import React from 'react'
 import router from '../../lib/routing/Router.js'
+import AccountButton from '../../components/auth/AccountButton.jsx'
 
 // Styles dedicated to the dashboard header and refresh button
 const refreshButtonStyles = `
@@ -9,7 +10,7 @@ const refreshButtonStyles = `
     gap: 0.5rem;
     align-items: center;
   }
-  
+
   .refresh-btn {
     display: flex;
     align-items: center;
@@ -23,20 +24,32 @@ const refreshButtonStyles = `
     cursor: pointer;
     transition: background-color 0.2s;
   }
-  
+
   .refresh-btn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.2);
   }
-  
+
   .refresh-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
-  
+
   .inline-icon {
     width: 14px;
     height: 14px;
     opacity: 0.8;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .header-account-section {
+    display: flex;
+    align-items: center;
   }
 `
 
@@ -81,6 +94,9 @@ export default function ProgressHeader({
               <img src="/verbosmain_transparent.png" alt="Práctica" className="menu-icon" />
             </button>
           )}
+        </div>
+        <div className="header-account-section">
+          <AccountButton />
         </div>
       </div>
       <h1>
