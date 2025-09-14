@@ -1,0 +1,249 @@
+import { Router } from 'express'
+import {
+  createAccount,
+  authenticateAccount,
+  authenticateWithGoogle,
+  createOrGetUserDevice,
+  generateJWT,
+  verifyJWT,
+  getAccountDevices,
+  mergeAccountData
+} from './auth-service.js'
+
+export function createAuthRoutes() {
+  const router = Router()
+
+  // Register new account
+  router.post('/register', async (req, res) => {
+    try {
+      const deviceInfo = {
+        userAgent: req.get('User-Agent') || 'unknown',
+        ip: req.ip || req.connection.remoteAddress
+      }
+
+      const result = await createAccount({
+        ...req.body,
+        deviceInfo
+      })
+
+      res.status(201).json({
+        success: true,
+        message: 'Account created successfully',
+        account: result.account,
+        user: result.user,
+        token: result.token
+      })
+    } catch (error) {
+      console.error('Registration error:', error)
+      res.status(400).json({
+        success: false,
+        error: error.message
+      })
+    }
+  })
+
+  // Login with email/password
+  router.post('/login', async (req, res) => {
+    try {
+      const { email, password, deviceName } = req.body
+
+      // Authenticate account
+      const account = await authenticateAccount(email, password)
+
+      // Get or create device/user for this login
+      const deviceInfo = {
+        userAgent: req.get('User-Agent') || 'unknown',
+        ip: req.ip || req.connection.remoteAddress
+      }
+
+      const userDevice = createOrGetUserDevice(
+        account.id,
+        deviceName || 'Unknown Device',
+        deviceInfo
+      )
+
+      // Generate JWT
+      const token = generateJWT({
+        accountId: account.id,
+        userId: userDevice.userId,
+        deviceId: userDevice.deviceId
+      })
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        account,
+        user: {
+          id: userDevice.userId,
+          deviceId: userDevice.deviceId,
+          deviceName: userDevice.deviceName
+        },
+        token
+      })
+    } catch (error) {
+      console.error('Login error:', error)
+      res.status(401).json({
+        success: false,
+        error: error.message
+      })
+    }
+  })
+
+  // Google OAuth login
+  router.post('/google', async (req, res) => {
+    try {
+      const { deviceName } = req.body
+
+      // Authenticate with Google
+      const account = await authenticateWithGoogle(req.body)
+
+      // Get or create device/user
+      const deviceInfo = {
+        userAgent: req.get('User-Agent') || 'unknown',
+        ip: req.ip || req.connection.remoteAddress
+      }
+
+      const userDevice = createOrGetUserDevice(
+        account.id,
+        deviceName || 'Unknown Device',
+        deviceInfo
+      )
+
+      // Generate JWT
+      const token = generateJWT({
+        accountId: account.id,
+        userId: userDevice.userId,
+        deviceId: userDevice.deviceId
+      })
+
+      res.json({
+        success: true,
+        message: 'Google login successful',
+        account,
+        user: {
+          id: userDevice.userId,
+          deviceId: userDevice.deviceId,
+          deviceName: userDevice.deviceName
+        },
+        token
+      })
+    } catch (error) {
+      console.error('Google auth error:', error)
+      res.status(400).json({
+        success: false,
+        error: error.message
+      })
+    }
+  })
+
+  // Get account info (protected route)
+  router.get('/me', requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.auth
+
+      const devices = getAccountDevices(accountId)
+      const mergedData = mergeAccountData(accountId)
+
+      res.json({
+        success: true,
+        account: req.account,
+        devices,
+        data: mergedData
+      })
+    } catch (error) {
+      console.error('Get account info error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get account info'
+      })
+    }
+  })
+
+  // Merge data from all devices
+  router.get('/data/merged', requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.auth
+      const mergedData = mergeAccountData(accountId)
+
+      res.json({
+        success: true,
+        data: mergedData,
+        totalDevices: Object.keys(mergedData).length
+      })
+    } catch (error) {
+      console.error('Merge data error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to merge data'
+      })
+    }
+  })
+
+  // Link anonymous account to authenticated account
+  router.post('/migrate', requireAuth, async (req, res) => {
+    try {
+      const { anonymousUserId } = req.body
+      const { accountId } = req.auth
+
+      if (!anonymousUserId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Anonymous user ID required'
+        })
+      }
+
+      // Update anonymous user to link to account
+      const db = (await import('./db.js')).db
+      const result = db.prepare(`
+        UPDATE users
+        SET account_id = ?
+        WHERE id = ? AND account_id IS NULL
+      `).run(accountId, anonymousUserId)
+
+      if (result.changes === 0) {
+        return res.status(404).json({
+          success: false,
+          error: 'Anonymous user not found or already linked'
+        })
+      }
+
+      res.json({
+        success: true,
+        message: 'Anonymous account migrated successfully'
+      })
+    } catch (error) {
+      console.error('Migration error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to migrate account'
+      })
+    }
+  })
+
+  return router
+}
+
+// Auth middleware
+export function requireAuth(req, res, next) {
+  try {
+    const authHeader = req.get('Authorization')
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authorization token required'
+      })
+    }
+
+    const token = authHeader.slice(7)
+    const decoded = verifyJWT(token)
+
+    req.auth = decoded
+    next()
+  } catch (error) {
+    console.error('Auth middleware error:', error)
+    res.status(401).json({
+      success: false,
+      error: 'Invalid or expired token'
+    })
+  }
+}

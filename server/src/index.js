@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import { migrate } from './db.js'
 import { authMiddleware } from './auth.js'
 import { createRoutes } from './routes.js'
+import { createAuthRoutes } from './auth-routes.js'
 
 const PORT = process.env.PORT || 8787
 const API_PREFIX = process.env.API_PREFIX || '/api'
@@ -17,6 +18,11 @@ app.use(express.json({ limit: '2mb' }))
 app.use(morgan('dev'))
 
 app.get('/', (_req, res) => res.json({ ok: true, name: 'progress-sync-server', ts: Date.now() }))
+
+// Auth routes (public)
+app.use(`${API_PREFIX}/auth`, createAuthRoutes())
+
+// Progress routes (protected by legacy auth for backward compatibility)
 app.use(API_PREFIX, authMiddleware, createRoutes())
 
 app.listen(PORT, '0.0.0.0', () => {
