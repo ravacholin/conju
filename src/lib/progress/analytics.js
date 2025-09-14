@@ -105,10 +105,10 @@ export async function getErrorRadarData(userId) {
     const recent = attempts.slice(-400)
     // Contar errores por tag (solo intentos incorrectos con tags)
     const counts = new Map()
-    let totalIncorrect = 0
+    let _totalIncorrect = 0
     for (const a of recent) {
       if (!a.correct && Array.isArray(a.errorTags) && a.errorTags.length > 0) {
-        totalIncorrect += 1
+        _totalIncorrect += 1
         for (const t of a.errorTags) {
           counts.set(t, (counts.get(t) || 0) + 1)
         }
@@ -160,8 +160,8 @@ export async function getErrorRadarData(userId) {
     })
 
     return { axes }
-  } catch {
-    console.warn('Error radar unavailable:', e)
+  } catch (error) {
+    console.warn('Error radar unavailable:', error)
     return { axes: [] }
   }
 }
@@ -325,7 +325,9 @@ export async function getErrorIntelligence(userId) {
         .sort((a,b)=> (b.lapses||0) - (a.lapses||0))
         .slice(0,6)
         .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue, lapses: s.lapses || 0, ease: s.ease, interval: s.interval }))
-    } catch {}
+    } catch {
+      // Silent fail for leeches calculation
+    }
 
     // Resumen 7d vs 7d previos
     const last7Days = days.slice(-7)
@@ -352,8 +354,8 @@ export async function getErrorIntelligence(userId) {
     }
 
     return { tags, heatmap: { moods, tenses, cells }, leeches, summary }
-  } catch {
-    console.warn('Error intelligence unavailable:', e)
+  } catch (error) {
+    console.warn('Error intelligence unavailable:', error)
     return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [], summary: { errorRate7: 0, errorRatePrev7: 0, incorrect7: 0, total7: 0, trend: 'flat' } }
   }
 }
@@ -467,8 +469,8 @@ export async function getSRSStats(userId, now = new Date()) {
     const dueToday = allDue.length
     // For simplicity, consider dueNow same as dueToday (no time granularity in UI yet)
     return { dueNow: allDue.length, dueToday }
-  } catch {
-    console.warn('SRS stats unavailable:', e)
+  } catch (error) {
+    console.warn('SRS stats unavailable:', error)
     return { dueNow: 0, dueToday: 0 }
   }
 }

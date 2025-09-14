@@ -74,8 +74,8 @@ export function quickB1Test() {
         } else {
           console.log(`  ${level}: No core tenses`)
         }
-      } catch {
-        console.log(`  ${level}: Error - ${e.message}`)
+      } catch (error) {
+        console.log(`  ${level}: Error - ${error.message}`)
       }
     })
     
@@ -188,8 +188,8 @@ export function testGeneratorIntegration() {
   
   try {
     // Mock useSettings temporarily (in a real test environment)
-    const originalUseSettings = global.useSettings
-    global.useSettings = () => mockSettings
+    const originalUseSettings = globalThis.useSettings
+    globalThis.useSettings = () => mockSettings
     
     // Test multiple selections to see the pattern
     console.log('Testing 10 selections from chooseNext...')
@@ -202,8 +202,8 @@ export function testGeneratorIntegration() {
         if (selected) {
           selections.push(`${selected.mood}/${selected.tense}`)
         }
-      } catch {
-        console.log(`Selection ${i + 1} failed: ${e.message}`)
+      } catch (error) {
+        console.log(`Selection ${i + 1} failed: ${error.message}`)
       }
     }
     
@@ -229,7 +229,7 @@ export function testGeneratorIntegration() {
     
     // Restore original useSettings
     if (originalUseSettings) {
-      global.useSettings = originalUseSettings
+      globalThis.useSettings = originalUseSettings
     }
     
     console.log('\n✅ Generator integration test completed!')

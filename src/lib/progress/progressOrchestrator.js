@@ -131,9 +131,15 @@ export function getOrchestratorState() {
 }
 
 export function resetOrchestrator() {
-  try { flowDetector.reset() } catch (_) {}
-  try { momentum.reset() } catch (_) {}
-  try { confidenceEngine.reset && confidenceEngine.reset() } catch (_) {}
+  try { flowDetector.reset() } catch (_) {
+    // Ignore reset errors
+  }
+  try { momentum.reset() } catch (_) {
+    // Ignore reset errors
+  }
+  try { confidenceEngine.reset && confidenceEngine.reset() } catch (_) {
+    // Ignore reset errors
+  }
 }
 
 export default {

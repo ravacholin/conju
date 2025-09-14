@@ -175,7 +175,7 @@ export function isVerbAllowedForLevel(lemma, userLevel) {
 }
 
 // Función principal para determinar si un verbo debería filtrarse por nivel
-export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, tense) {
+export function shouldFilterVerbByLevel(lemma, verbFamilies, userLevel, _tense) {
   // Si el verbo no está permitido para este nivel, debe filtrarse
   if (!isVerbAllowedForLevel(lemma, userLevel)) {
     return true // Filtrar (excluir) este verbo

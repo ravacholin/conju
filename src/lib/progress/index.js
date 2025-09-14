@@ -113,8 +113,8 @@ export async function initProgressSystem(userId = null) {
           })
         }
         // En entorno de pruebas, saltar para evitar timeouts por E/S pesada
-      } catch {
-        console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', e)
+      } catch (error) {
+        console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', error)
       }
       
       // Marcar como inicializado

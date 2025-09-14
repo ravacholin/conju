@@ -20,7 +20,7 @@ describe('Error Classification', () => {
 
   it('should classify verbal ending errors correctly', () => {
     const item = { lemma: 'comer', person: '1s', tense: 'pres', verbType: 'regular' }
-    const errors = classifyError('como', 'como', item) // Misma raíz, diferente terminación
+    const _errors = classifyError('como', 'como', item) // Misma raíz, diferente terminación
     // Caso más obvio: 
     const errors2 = classifyError('coma', 'como', item) // Error de terminación
     expect(errors2).toContain(ERROR_TAGS.VERBAL_ENDING)

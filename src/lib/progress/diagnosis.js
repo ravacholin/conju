@@ -262,7 +262,7 @@ export async function saveDiagnosisResults(_userId, diagnosis) {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Historial de diagnósticos
  */
-export async function getDiagnosisHistory(userId) {
+export async function getDiagnosisHistory(_userId) {
   try {
     // En una implementación completa, esto obtendría el historial
     // de diagnósticos del usuario

@@ -133,7 +133,7 @@ export async function generateProgressReport(userId = null) {
     const actualUserId = userId || getCurrentUserId()
     const exportData = await exportProgressData(actualUserId)
     
-    const { attempts, mastery, schedules } = exportData.data
+    const { attempts, mastery, schedules: _schedules } = exportData.data
     
     // Calcular estadísticas
     const stats = {

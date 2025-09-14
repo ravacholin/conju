@@ -261,7 +261,7 @@ export function isPersonAllowed(lemma, person, level){
 }
 
 /** Normalización suave (espacios múltiples, mayúsculas). No toca tildes salvo que strict=false. */
-function normalize(s, strictAccents){
+function _normalize(s, strictAccents){
   if (!strictAccents) {
     // minúsculas + quita acentos/diéresis SOLO si no son estrictos
     return s
@@ -275,7 +275,7 @@ function normalize(s, strictAccents){
 }
 
 /** Chequea clíticos y acentuación básica de imperativo afirmativo + enclíticos */
-function checkClitics(user, spec){
+function _checkClitics(user, spec){
   const c = spec.policies.clitics;
   if (!c || !c.required) return { ok:true, reason:null };
   // posición mínima: si imperativo afirmativo ⇒ enclítico

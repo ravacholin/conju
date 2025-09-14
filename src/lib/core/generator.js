@@ -90,7 +90,7 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
   return true
 }
 
-export async function chooseNext({forms, history: HISTORY, currentItem, sessionSettings}){
+export async function chooseNext({forms, history: _history, currentItem, sessionSettings}){
 
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()
@@ -545,8 +545,8 @@ export async function chooseNext({forms, history: HISTORY, currentItem, sessionS
       if (pureRegularForms.length > 0) {
         eligible = pureRegularForms
       }
-    } catch {
-      console.warn('Regular-only preference failed, continuing with existing eligible:', e)
+    } catch (error) {
+      console.warn('Regular-only preference failed, continuing with existing eligible:', error)
     }
   }
 
@@ -611,8 +611,8 @@ export async function chooseNext({forms, history: HISTORY, currentItem, sessionS
 
       // Avanzar el índice solo una posición desde el índice realmente usado
       useSettings.getState().set({ conmutacionIdx: (usedIdx + 1) % seq.length })
-    } catch {
-      if (!import.meta?.vitest) console.warn('C2 conmutación fallback (no variety boost applied):', e)
+    } catch (error) {
+      if (!import.meta?.vitest) console.warn('C2 conmutación fallback (no variety boost applied):', error)
     }
   }
   

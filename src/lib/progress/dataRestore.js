@@ -198,7 +198,7 @@ export async function importFromFile(file, options = {}) {
     
     try {
       importData = JSON.parse(text)
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error('El archivo no contiene JSON válido')
     }
     

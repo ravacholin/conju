@@ -2,7 +2,7 @@
 
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { getCurrentUserId } from './userManager.js'
-import { getMasteryByUser } from './database.js'
+import { getMasteryByUser as _getMasteryByUser } from './database.js'
 
 /**
  * Gestiona la dificultad dinámica basada en el rendimiento del usuario

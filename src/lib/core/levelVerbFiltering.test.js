@@ -195,7 +195,7 @@ describe('Level Verb Filtering System', () => {
       
       for (let i = 0; i < levels.length - 1; i++) {
         const currentLevel = levels[i]
-        const nextLevel = levels[i + 1]
+        const _nextLevel = levels[i + 1]
         
         // Test with representative verbs from each category
         const currentLevelVerb = currentLevel === 'A1' ? 'ser' :

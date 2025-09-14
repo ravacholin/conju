@@ -106,17 +106,13 @@ export const useDrillProgress = () => {
       }
 
       // Check if progress system is ready using event-based state
-      if (!processUserResponse || !systemReady) {
-        logger.warn('handleResponse', 'Progress system not ready, graceful degradation')
-        // Still call onResult for UI consistency
-        if (onResult) {
-          onResult(response)
-        }
-        return { success: true, reason: 'Graceful degradation - progress system not ready' }
+      const progressSystemAvailable = processUserResponse && systemReady
+      if (!progressSystemAvailable) {
+        logger.warn('handleResponse', 'Progress system not ready, using graceful degradation mode')
       }
 
-      const userId = getCurrentUserId()
-      if (!userId) {
+      const userId = progressSystemAvailable ? getCurrentUserId() : 'test-user'
+      if (progressSystemAvailable && !userId) {
         logger.warn('handleResponse', 'No user ID available')
         if (onResult) {
           onResult(response)
@@ -137,7 +133,7 @@ export const useDrillProgress = () => {
 
       // Process with main progress tracking system
       let progressResult = null
-      if (processUserResponse) {
+      if (progressSystemAvailable && processUserResponse) {
         try {
           progressResult = await processUserResponse(item, response, {
             userId,
@@ -147,7 +143,7 @@ export const useDrillProgress = () => {
               level: item.settings?.level
             }
           })
-          
+
           logger.debug('handleResponse', 'Progress tracking completed', progressResult)
         } catch (error) {
           logger.error('handleResponse', 'Error in progress tracking', error)
@@ -155,7 +151,7 @@ export const useDrillProgress = () => {
       }
 
       // Record SRS attempt
-      if (recordAttempt) {
+      if (progressSystemAvailable && recordAttempt) {
         try {
           await recordAttempt(userId, {
             lemma: item.lemma,
@@ -169,7 +165,7 @@ export const useDrillProgress = () => {
       }
 
       // Update mastery if needed
-      if (updateMastery && response.isCorrect) {
+      if (progressSystemAvailable && updateMastery && response.isCorrect) {
         try {
           await updateMastery(userId, {
             lemma: item.lemma,
@@ -183,7 +179,7 @@ export const useDrillProgress = () => {
       }
 
       // Schedule next review
-      if (scheduleNextReview) {
+      if (progressSystemAvailable && scheduleNextReview) {
         try {
           await scheduleNextReview(userId, {
             lemma: item.lemma,
@@ -197,7 +193,7 @@ export const useDrillProgress = () => {
       }
 
       // Process flow state
-      if (flowDetector) {
+      if (progressSystemAvailable && flowDetector) {
         try {
           const newFlowState = await flowDetector.processResponse(response, {
             item,
@@ -211,7 +207,7 @@ export const useDrillProgress = () => {
       }
 
       // Process momentum
-      if (momentumTracker) {
+      if (progressSystemAvailable && momentumTracker) {
         try {
           const newMomentum = await momentumTracker.processResponse(response, {
             item,
@@ -225,7 +221,7 @@ export const useDrillProgress = () => {
       }
 
       // Process confidence
-      if (confidenceEngine) {
+      if (progressSystemAvailable && confidenceEngine) {
         try {
           const newConfidence = await confidenceEngine.processResponse(response, {
             item,
@@ -239,7 +235,7 @@ export const useDrillProgress = () => {
       }
 
       // Process dynamic goals
-      if (dynamicGoalsSystem) {
+      if (progressSystemAvailable && dynamicGoalsSystem) {
         try {
           await dynamicGoalsSystem.processResponse(response, {
             item,
@@ -252,6 +248,7 @@ export const useDrillProgress = () => {
       }
 
       // Update local progress stats
+      let updatedStats = null
       setProgressStats(prev => {
         const newStats = {
           totalAttempts: prev.totalAttempts + 1,
@@ -259,9 +256,11 @@ export const useDrillProgress = () => {
           currentStreak: response.isCorrect ? prev.currentStreak + 1 : 0,
           accuracyRate: 0
         }
-        newStats.accuracyRate = newStats.totalAttempts > 0 
+        newStats.accuracyRate = newStats.totalAttempts > 0
           ? Math.round((newStats.correctAttempts / newStats.totalAttempts) * 100)
           : 0
+
+        updatedStats = newStats
         return newStats
       })
 
@@ -276,7 +275,8 @@ export const useDrillProgress = () => {
         flowState,
         momentum,
         confidence,
-        stats: progressStats
+        stats: updatedStats,
+        reason: !progressSystemAvailable ? 'Graceful degradation - progress system not ready' : undefined
       }
 
     } catch (error) {

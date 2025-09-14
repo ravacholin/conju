@@ -361,7 +361,7 @@ export function getFamiliesForMood(mood) {
   const relevantTenses = tensesByMood[mood] || []
   const families = []
   
-  for (const [id, family] of Object.entries(IRREGULAR_FAMILIES)) {
+  for (const [_id, family] of Object.entries(IRREGULAR_FAMILIES)) {
     const hasRelevantTense = family.affectedTenses.some(t => relevantTenses.includes(t))
     if (hasRelevantTense) {
       families.push(family)
@@ -382,7 +382,7 @@ export function getFamilyById(id) {
 }
 
 // Función para categorizar un verbo en familias (clasificación automática básica)
-export function categorizeVerb(lemma, verbData) {
+export function categorizeVerb(lemma, _verbData) {
   const families = []
   
   // Análisis de patrones basado en el lemma y datos del verbo

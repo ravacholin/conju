@@ -19,7 +19,7 @@ import {
  * @param {string} verbType - Type of verbs (regular/irregular)
  * @returns {Object} Difficulty settings
  */
-export function calculateAdaptiveDifficulty(userId, tense, verbType) {
+export function calculateAdaptiveDifficulty(userId, tense, _verbType) {
   try {
     const masteryData = getMasteryByUser(userId);
     
@@ -36,8 +36,8 @@ export function calculateAdaptiveDifficulty(userId, tense, verbType) {
 
     // Calculate average mastery for this tense
     const tenseItems = Object.entries(masteryData)
-      .filter(([itemId, data]) => data.tense === tense)
-      .map(([itemId, data]) => data.mastery);
+      .filter(([_itemId, data]) => data.tense === tense)
+      .map(([_itemId, data]) => data.mastery);
 
     if (tenseItems.length === 0) {
       // No experience with this tense
@@ -156,7 +156,7 @@ export function generateNextSessionRecommendations(userId, currentSession) {
 
     // Check for weak areas from mastery data
     const weakTenses = Object.entries(masteryData)
-      .reduce((acc, [itemId, data]) => {
+      .reduce((acc, [_itemId, data]) => {
         if (data.mastery < 0.6) {
           acc[data.tense] = (acc[data.tense] || 0) + 1;
         }

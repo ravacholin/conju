@@ -47,7 +47,7 @@ describe('Generator Progress Integration', () => {
     // Mock progress system con datos simulados
     vi.doMock('../../lib/progress/all.js', async () => ({
       getCurrentUserId: () => 'test-user-123',
-      getMasteryByUser: async (userId) => [
+      getMasteryByUser: async (_userId) => [
         { mood: 'indicativo', tense: 'pres', score: 85 },
         { mood: 'indicativo', tense: 'pretIndef', score: 60 }
       ]

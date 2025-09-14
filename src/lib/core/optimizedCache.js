@@ -175,8 +175,8 @@ async function initializeCoreVerbs() {
     coreVerbs.forEach(verb => {
       try {
         sanitizeVerbsInPlace([verb])
-      } catch {
-    if (import.meta.env?.DEV && !import.meta.env?.VITEST) console.warn('Data sanitizer failed for:', verb.lemma, e)
+      } catch (error) {
+    if (import.meta.env?.DEV && !import.meta.env?.VITEST) console.warn('Data sanitizer failed for:', verb.lemma, error)
       }
       
       // Populate lookup maps for immediate availability

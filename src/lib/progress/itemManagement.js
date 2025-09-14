@@ -147,9 +147,9 @@ export async function updateItem(_itemId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el ítem existente
     
-    console.log(`✅ Ítem ${itemId} actualizado`)
+    console.log(`✅ Ítem ${_itemId} actualizado`)
   } catch (error) {
-    console.error(`❌ Error al actualizar ítem ${itemId}:`, error)
+    console.error(`❌ Error al actualizar ítem ${_itemId}:`, error)
     throw error
   }
 }

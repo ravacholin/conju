@@ -394,7 +394,7 @@ export function validateAllData() {
   const verbValidator = new VerbValidator()
   const semanticValidator = new SemanticValidator()
   const familyValidator = new FamilyValidator()
-  const patternValidator = new IrregularPatternValidator() // NUEVO
+  const _patternValidator = new IrregularPatternValidator() // NUEVO
   
   let totalErrors = 0
   let totalWarnings = 0

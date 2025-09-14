@@ -151,7 +151,7 @@ export class LevelDrivenPrioritizer {
     }
 
     // Group curriculum by level with enhanced analysis
-    this.levelHierarchy.forEach((level, LEVEL_INDEX) => {
+    this.levelHierarchy.forEach((level, _LEVEL_INDEX) => {
       processed.byLevel[level] = curriculum
         .filter(item => item.level === level)
         .map(item => {
@@ -272,7 +272,7 @@ export class LevelDrivenPrioritizer {
   /**
    * Build complete prerequisite chain for a tense
    */
-  buildPrerequisiteChain(tenseKey, DIRECT_PREREQS) {
+  buildPrerequisiteChain(tenseKey, _DIRECT_PREREQS) {
     const chain = new Set()
     const visited = new Set()
     
@@ -952,7 +952,7 @@ export class LevelDrivenPrioritizer {
   /**
    * Apply advanced progress adjustments using comprehensive curriculum data
    */
-  applyAdvancedProgressAdjustments(categorized, userProgress, USER_LEVEL) {
+  applyAdvancedProgressAdjustments(categorized, userProgress, _USER_LEVEL) {
     const masteryMap = this.createMasteryMap(userProgress)
 
     const adjustCategory = (tenses, categoryType) => {
@@ -1321,7 +1321,7 @@ export class LevelDrivenPrioritizer {
   /**
    * Determine learning stage based on mastery and priorities
    */
-  determineLearningStage(avgMastery, prioritized) {
+  determineLearningStage(avgMastery, _prioritized) {
     if (avgMastery < 30) return 'foundation_building'
     if (avgMastery < 60) return 'skill_development'
     if (avgMastery < 80) return 'competency_building'
@@ -1331,15 +1331,15 @@ export class LevelDrivenPrioritizer {
   /**
    * Get recommended focus based on prioritization analysis
    */
-  getRecommendedFocus(prioritized, userLevel) {
-    if (prioritized.prerequisites.length > 2) return 'prerequisite_gaps'
+  getRecommendedFocus(_prioritized, _userLevel) {
+    if (_prioritized.prerequisites.length > 2) return 'prerequisite_gaps'
     
-    const inProgressFamilies = Object.values(prioritized.familyGroups)
+    const inProgressFamilies = Object.values(_prioritized.familyGroups)
       .filter(g => g.completionStatus === 'in_progress').length
     
     if (inProgressFamilies > 2) return 'family_completion'
-    if (prioritized.core.length > 0) return 'core_learning'
-    if (prioritized.progression.length > 3) return 'systematic_progression'
+    if (_prioritized.core.length > 0) return 'core_learning'
+    if (_prioritized.progression.length > 3) return 'systematic_progression'
     return 'comprehensive_review'
   }
 
@@ -1451,7 +1451,7 @@ function applyLevelVerbFiltering(forms, levelConfig) {
 /**
  * Apply tense family balancing for variety
  */
-function applyTenseVarietyBalancing(forms, level) {
+function applyTenseVarietyBalancing(forms, _level) {
   const familyGroups = new Map()
   
   // Group by tense family
@@ -1467,7 +1467,7 @@ function applyTenseVarietyBalancing(forms, level) {
   const balanced = []
   const maxFromFamily = Math.max(5, Math.floor(forms.length / Math.max(1, familyGroups.size)))
   
-  familyGroups.forEach((familyForms, family) => {
+  familyGroups.forEach((familyForms, _family) => {
     // Shuffle and take up to maxFromFamily
     const shuffled = familyForms.sort(() => Math.random() - 0.5)
     balanced.push(...shuffled.slice(0, maxFromFamily))
@@ -1516,7 +1516,7 @@ function applyProgressiveDifficultyWeighting(forms, level, sessionHistory) {
 /**
  * Apply semantic category rotation for verb variety
  */
-function applySemanticCategoryRotation(forms, level) {
+function applySemanticCategoryRotation(forms, _level) {
   // This would integrate with the semantic categories from advancedVarietyEngine
   // For now, return forms as-is but this is where verb semantic balancing would occur
   return forms
@@ -1544,7 +1544,7 @@ function getTenseFamily(mood, tense) {
   return 'other'
 }
 
-function getFormComplexity(form, level) {
+function getFormComplexity(form, _level) {
   const complexityScores = {
     'indicative|pres': 1,
     'nonfinite|ger': 2,
