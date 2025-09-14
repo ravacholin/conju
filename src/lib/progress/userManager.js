@@ -226,8 +226,13 @@ async function postJSON(path, body, timeoutMs = 30000) {
   if (!SYNC_BASE_URL || typeof fetch === 'undefined') {
     throw new Error('Sync endpoint not configured')
   }
+
   const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null
-  const t = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs) : null
+  const t = ctrl ? setTimeout(() => {
+    console.log(`⏰ Timeout de ${timeoutMs}ms alcanzado para ${path}`)
+    ctrl.abort()
+  }, timeoutMs) : null
+
   try {
     const headers = { 'Content-Type': 'application/json' }
     const token = getSyncAuthToken()
@@ -240,17 +245,27 @@ async function postJSON(path, body, timeoutMs = 30000) {
       if (uid) headers['X-User-Id'] = uid
     }
 
+    console.log(`📡 Enviando ${path} con timeout ${timeoutMs}ms`)
+    const startTime = Date.now()
+
     const res = await fetch(`${SYNC_BASE_URL}${path}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
       signal: ctrl?.signal
     })
+
+    const elapsed = Date.now() - startTime
+    console.log(`✅ ${path} completado en ${elapsed}ms`)
+
     if (!res.ok) {
       const text = await res.text().catch(() => '')
       throw new Error(`HTTP ${res.status}: ${text}`)
     }
     return await res.json().catch(() => ({}))
+  } catch (error) {
+    console.error(`❌ Error en ${path}:`, error.message)
+    throw error
   } finally {
     if (t) clearTimeout(t)
   }
@@ -282,13 +297,22 @@ async function wakeUpServer() {
   try {
     console.log('☁️ Despertando servidor...')
     const baseUrl = SYNC_BASE_URL.replace('/api', '')
-    await fetch(baseUrl, {
+
+    // Mobile-compatible timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 25000)
+
+    const response = await fetch(baseUrl, {
       method: 'GET',
-      signal: AbortSignal.timeout(25000) // 25 second timeout for wake-up
+      signal: controller.signal
     })
-    return true
+
+    clearTimeout(timeoutId)
+    console.log('✅ Servidor despierto')
+    return response.ok
   } catch (error) {
     console.warn('⚠️ No se pudo despertar el servidor:', error.message)
+    // Even if wake-up fails, continue with sync attempt
     return false
   }
 }
@@ -299,10 +323,26 @@ async function wakeUpServer() {
  */
 export async function syncNow({ include = ['attempts','mastery','schedules'] } = {}) {
   const userId = getCurrentUserId()
-  if (!userId) return { success: false, reason: 'no_user' }
-  if (!isSyncEnabled() || !isBrowserOnline()) return { success: false, reason: 'offline_or_disabled' }
+  if (!userId) {
+    console.log('❌ Sync failed: no user ID')
+    return { success: false, reason: 'no_user' }
+  }
+
+  if (!isSyncEnabled()) {
+    console.log('❌ Sync failed: not enabled. URL:', SYNC_BASE_URL)
+    return { success: false, reason: 'sync_disabled' }
+  }
+
+  if (!isBrowserOnline()) {
+    console.log('❌ Sync failed: browser offline')
+    return { success: false, reason: 'offline' }
+  }
+
+  console.log('🔄 Iniciando sincronización para usuario:', userId)
+  console.log('🌐 URL del servidor:', SYNC_BASE_URL)
 
   // Wake up server first (Render free tier issue)
+  console.log('⏰ Despertando servidor antes de sincronizar...')
   await wakeUpServer()
 
   const results = {}
