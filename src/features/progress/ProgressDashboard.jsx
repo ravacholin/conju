@@ -46,6 +46,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
   const handleSync = async () => {
     try {
+      if (!syncAvailable) {
+        setToast({
+          message: 'Sincronización deshabilitada. Configura VITE_PROGRESS_SYNC_URL o usa setSyncEndpoint(url).',
+          type: 'info'
+        })
+        return
+      }
       setSyncing(true)
       const res = await syncNow()
       if (res?.success) {

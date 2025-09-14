@@ -101,8 +101,8 @@ export default function ProgressHeader({
           <button
             onClick={onSync}
             className="refresh-btn"
-            disabled={loading || refreshing || syncing || !syncEnabled}
-            title={syncEnabled ? 'Sincronizar con la nube' : 'Sincronización deshabilitada'}
+            disabled={loading || refreshing || syncing}
+            title={syncEnabled ? 'Sincronizar con la nube' : 'Configurar sincronización'}
           >
             <img src="/icons/cloud-sync.png" alt="Sincronizar" className="inline-icon" />
             {syncing ? 'Sincronizando...' : 'Sync ahora'}

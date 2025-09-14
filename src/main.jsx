@@ -39,7 +39,7 @@ if (typeof window !== 'undefined') {
       if (document.getElementById(id)) return
       const el = document.createElement('div')
       el.id = id
-      el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#7f1d1d;color:#fff;padding:8px 12px;z-index:9999;font-family:sans-serif;font-size:14px;'
+      el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--accent-red);color:#fff;padding:8px 12px;z-index:9999;font-family:sans-serif;font-size:14px;'
       el.textContent = `⚠️ Error de aplicación: ${msg}`
       document.body.appendChild(el)
     } catch {/* ignore DOM errors */}

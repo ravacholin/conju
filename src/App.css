@@ -980,7 +980,7 @@ body {
   position: absolute; inset: 0; border-radius: 6px; pointer-events: none;
   box-shadow: inset 0 0 22px rgba(0,0,0,0.5);
 }
-.resistance-caption{ font-size: 0.9rem; color: #9aa5b1; text-transform: uppercase; letter-spacing: 0.08em; }
+.resistance-caption{ font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; }
 
 /* Urgent mode - last 5 seconds (red color) */
 .digit-clock.urgent {
@@ -1004,12 +1004,12 @@ body {
 }
 
 .digit-clock.urgent .digit {
-  color: #ff4444;
+  color: var(--accent-red);
   text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
 }
 
 .digit-clock.urgent .digit.colon {
-  color: #ff4444;
+  color: var(--accent-red);
   text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
 }
 
@@ -1029,12 +1029,12 @@ body {
 /* Shake animation when countdown reaches zero */
 .digit-clock.shake {
   animation: countdown-explosion 1.2s ease-in-out;
-  color: #ff0000 !important;
+  color: var(--accent-red) !important;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
 }
 
 .digit-clock.shake .digit {
-  color: #ff0000 !important;
+  color: var(--accent-red) !important;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
 }
 
