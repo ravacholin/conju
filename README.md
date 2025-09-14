@@ -156,3 +156,38 @@ Parte del proyecto Spanish Conjugator; misma licencia que el proyecto principal.
   - **Bug fix crítico**: Corrigió selección de tiempos verbales en práctica específica
   - **Debugging mejorado**: Panel visual para validar configuración vs ejercicio actual
 - 2025-08-26 (Mañana): Integrado orquestador emocional, indicador UI y cableado SRS post‑intento. Arreglo `database.deleteDB()` (usa `idb.deleteDB`).
+
+## Cloud Sync (opcional)
+
+Soporte de sincronización remota para progreso (intentos, mastery y schedules) con fallback local cuando no hay conexión.
+
+- Endpoints esperados bajo `VITE_PROGRESS_SYNC_URL`:
+  - `POST /progress/attempts/bulk`
+  - `POST /progress/mastery/bulk`
+  - `POST /progress/schedules/bulk`
+
+### Variables de entorno
+
+Define en `.env` (no se comitea):
+
+- `VITE_PROGRESS_SYNC_URL` — Base URL del servicio (ej. `https://api.example.com`).
+- `VITE_PROGRESS_SYNC_AUTH_HEADER_NAME` — Nombre del header de autenticación. Por defecto: `Authorization`.
+- `VITE_PROGRESS_SYNC_TOKEN` — Token. Si el header es `Authorization`, se envía como `Bearer <token>`; en otro caso, valor crudo.
+
+La app lee estas variables al iniciar (ver `src/main.jsx`) y configura automáticamente el cliente de sync.
+
+### Uso manual
+
+- Botón “Sync ahora” en el Dashboard de Progreso para forzar sincronización inmediata.
+- También se intenta sincronizar automáticamente al recuperar conexión y al volver a la pestaña.
+
+### API (programática)
+
+`src/lib/progress/userManager.js` expone:
+
+- `setSyncEndpoint(url)`, `getSyncEndpoint()`, `isSyncEnabled()`
+- `setSyncAuthToken(token, { persist })`, `getSyncAuthToken()`, `clearSyncAuthToken()`
+- `setSyncAuthHeaderName(name)`, `getSyncAuthHeaderName()`
+- `syncNow({ include })`, `flushSyncQueue()`
+
+Ajustes de usuario se almacenan por usuario en localStorage (`progress-user-settings`), indexados por `userId`.

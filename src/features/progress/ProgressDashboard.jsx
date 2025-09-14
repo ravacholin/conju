@@ -16,6 +16,7 @@ import ProgressHeader from './ProgressHeader.jsx'
 import WeeklyGoalsPanel from './WeeklyGoalsPanel.jsx'
 import GeneralRecommendations from './GeneralRecommendations.jsx'
 import useProgressDashboardData from './useProgressDashboardData.js'
+import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
 
 // Styles moved to ProgressHeader.jsx
 
@@ -37,6 +38,28 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     systemReady,
     refresh
   } = useProgressDashboardData()
+
+  const [syncing, setSyncing] = React.useState(false)
+  const [lastSyncMsg, setLastSyncMsg] = React.useState('')
+  const syncAvailable = isSyncEnabled()
+
+  const handleSync = async () => {
+    try {
+      setSyncing(true)
+      setLastSyncMsg('')
+      const res = await syncNow()
+      if (res?.success) {
+        setLastSyncMsg('Sincronización completa')
+      } else {
+        setLastSyncMsg('No se pudo sincronizar (offline o deshabilitado)')
+      }
+    } catch (e) {
+      console.error('Error en sincronización:', e)
+      setLastSyncMsg('Error al sincronizar')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   // Handle generic (lower) recommendations click
   const handleGeneralRecommendation = (rec) => {
@@ -111,7 +134,15 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         loading={loading}
         refreshing={refreshing}
         onRefresh={refresh}
+        syncing={syncing}
+        onSync={handleSync}
+        syncEnabled={syncAvailable}
       />
+      {lastSyncMsg && (
+        <div style={{ margin: '0.5rem 0', fontSize: '0.9rem', opacity: 0.85 }}>
+          {lastSyncMsg}
+        </div>
+      )}
 
       <SafeComponent name="Mapa de Dominio">
         <section className="dashboard-section">

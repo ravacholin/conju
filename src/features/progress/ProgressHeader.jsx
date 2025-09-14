@@ -53,7 +53,10 @@ export default function ProgressHeader({
   onNavigateToDrill,
   loading,
   refreshing,
-  onRefresh
+  onRefresh,
+  syncing = false,
+  onSync,
+  syncEnabled = true
 }) {
   return (
     <header className="dashboard-header">
@@ -94,6 +97,17 @@ export default function ProgressHeader({
           <img src="/icons/refresh.png" alt="Refrescar" className="inline-icon" />
           {refreshing ? 'Actualizando...' : 'Refrescar'}
         </button>
+        {typeof onSync === 'function' && (
+          <button
+            onClick={onSync}
+            className="refresh-btn"
+            disabled={loading || refreshing || syncing || !syncEnabled}
+            title={syncEnabled ? 'Sincronizar con la nube' : 'Sincronización deshabilitada'}
+          >
+            <img src="/icons/cloud-sync.png" alt="Sincronizar" className="inline-icon" />
+            {syncing ? 'Sincronizando...' : 'Sync ahora'}
+          </button>
+        )}
       </div>
       {refreshing && (
         <div className="refresh-indicator">
