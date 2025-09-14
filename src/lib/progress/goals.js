@@ -119,9 +119,11 @@ export async function setCustomWeeklyGoals(userId, customGoals) {
     // Persistir en localStorage via userSettings
     if (typeof window !== 'undefined') {
       const raw = window.localStorage.getItem('progress-user-settings')
-      const base = raw ? JSON.parse(raw) : {}
-      const next = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS, ...customGoals } }
-      window.localStorage.setItem('progress-user-settings', JSON.stringify(next))
+      const store = raw ? JSON.parse(raw) : {}
+      const key = userId || 'default'
+      const base = store[key] || {}
+      store[key] = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS, ...customGoals } }
+      window.localStorage.setItem('progress-user-settings', JSON.stringify(store))
     }
     console.log(`✅ Objetivos personalizados establecidos para usuario ${userId}:`, customGoals)
   } catch (error) {
@@ -139,9 +141,11 @@ export async function resetWeeklyGoals(userId) {
   try {
     if (typeof window !== 'undefined') {
       const raw = window.localStorage.getItem('progress-user-settings')
-      const base = raw ? JSON.parse(raw) : {}
-      const next = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS } }
-      window.localStorage.setItem('progress-user-settings', JSON.stringify(next))
+      const store = raw ? JSON.parse(raw) : {}
+      const key = userId || 'default'
+      const base = store[key] || {}
+      store[key] = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS } }
+      window.localStorage.setItem('progress-user-settings', JSON.stringify(store))
     }
     console.log(`✅ Objetivos semanales reiniciados para usuario ${userId}`)
   } catch (error) {

@@ -83,6 +83,7 @@ import ErrorBoundary from '../ErrorBoundary.jsx';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
+import { getCurrentUserId } from '../../lib/progress/userManager.js';
 
 
 
@@ -231,7 +232,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   useEffect(() => {
     if (selectedTense?.tense && verbType && duration) {
       try {
-        const userId = 'default'; // TODO: Get actual user ID
+        const userId = getCurrentUserId();
         const adaptive = calculateAdaptiveDifficulty(userId, selectedTense.tense, verbType);
         setAdaptiveSettings(adaptive);
         
@@ -248,7 +249,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
 
   // Initialize A/B testing on component mount
   useEffect(() => {
-    const userId = 'default'; // TODO: Get actual user ID
+    const userId = getCurrentUserId();
     
     // Create sample A/B test for learning flow optimization
     const abConfig = AB_TESTING_CONFIG.LEARNING_FLOW_V1;
@@ -368,7 +369,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   const handleFinish = () => {
     // Record A/B test completion metrics
     if (abTestVariant) {
-      const userId = 'default'; // TODO: Get actual user ID
+      const userId = getCurrentUserId();
       const completionMetrics = {
         completion_rate: 1, // User completed the session
         session_duration: personalizedDuration?.totalDuration || duration || 0,
@@ -404,7 +405,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
       return;
     }
 
-    const userId = 'default'; // TODO: Get actual user ID
+    const userId = getCurrentUserId();
     
     // Check if target step can be skipped
     let canSkip = false;

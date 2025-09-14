@@ -67,6 +67,7 @@ import {
 import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
+import { getCurrentUserId } from '../../lib/progress/userManager.js';
 
 const logger = createLogger('LearningDrill');
 
@@ -250,7 +251,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   useEffect(() => {
     if (tense?.tense) {
       try {
-        const userId = 'default'; // TODO: Get actual user ID
+        const userId = getCurrentUserId();
         const adaptive = calculateAdaptiveDifficulty(userId, tense.tense, verbType);
         setAdaptiveSettings(adaptive);
         logger.debug('Adaptive settings initialized', adaptive);
@@ -417,7 +418,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     // Generate next session recommendations
     let recommendations = ['Continuar practicando'];
     try {
-      const userId = 'default'; // TODO: Get actual user ID
+      const userId = getCurrentUserId();
       const currentSession = {
         tense: tense?.tense,
         verbType,
@@ -440,7 +441,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     const completionRate = correctStreak >= 10 ? 1 : (totalAttempts / 20); // Assuming 20 attempts for full session
     
     try {
-      const userId = 'default'; // TODO: Get actual user ID
+      const userId = getCurrentUserId();
       const sessionAnalytics = {
         tense: tense?.tense,
         verbType,

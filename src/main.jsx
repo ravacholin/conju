@@ -7,6 +7,18 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './lib/progress/autoInit.js'
 // Initialize service worker update handling
 import './utils/swUpdateHandler.js'
+// Wire sync endpoint and auth from env (if provided)
+import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName } from './lib/progress/userManager.js'
+
+// Read env-provided sync config and apply once on load
+if (typeof window !== 'undefined') {
+  const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL
+  const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN
+  const syncHeader = import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME
+  if (syncUrl) setSyncEndpoint(syncUrl)
+  if (syncHeader) setSyncAuthHeaderName(syncHeader)
+  if (syncToken) setSyncAuthToken(syncToken, { persist: false })
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
