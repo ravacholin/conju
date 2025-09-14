@@ -269,7 +269,7 @@ export const useDrillGenerator = () => {
 
       // Tier 3: Standard generator
       if (!nextForm) {
-        nextForm = chooseNext({ forms: eligibleForms, history, currentItem: itemToExclude })
+        nextForm = await chooseNext({ forms: eligibleForms, history, currentItem: itemToExclude })
         selectionMethod = 'standard_generator'
         
         logger.debug('generateNextItem', 'Standard generator used', {

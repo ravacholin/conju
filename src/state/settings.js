@@ -68,6 +68,9 @@ const useSettings = create(
       
       // Sistema de chunks - toggle para fallback de emergencia
       enableChunks: true, // Puede deshabilitarse si hay problemas
+
+      // Sistema de progreso - toggle para la integración con mastery data
+      enableProgressIntegration: true, // Puede deshabilitarse si hay problemas
       
       // Métodos para actualizar configuración
       set: (newSettings) => set({ ...get(), ...newSettings }),
@@ -96,6 +99,7 @@ const useSettings = create(
       setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
       setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
       toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
+      toggleProgressIntegration: () => set((state) => ({ enableProgressIntegration: !state.enableProgressIntegration })),
       
       // Métodos para debugging
       getCacheStats: () => {

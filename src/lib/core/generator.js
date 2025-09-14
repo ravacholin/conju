@@ -90,17 +90,17 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
   return true
 }
 
-export function chooseNext({forms, history: HISTORY, currentItem, sessionSettings}){
+export async function chooseNext({forms, history: HISTORY, currentItem, sessionSettings}){
 
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()
-  const { 
+  const {
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
     currentBlock, selectedFamily, region, enableFuturoSubjProd, allowedLemmas,
     cameFromTema,
-    enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson, 
-    nextSecondPerson, cliticsPercent
+    enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson,
+    nextSecondPerson, cliticsPercent, enableProgressIntegration
   } = allSettings
   
   dbg('🔍 chooseNext called with settings:', {
@@ -487,12 +487,23 @@ export function chooseNext({forms, history: HISTORY, currentItem, sessionSetting
     // Get user's mastery data for context (if available from state)
     let userProgress = null
     try {
-      // Try to get mastery data from the progress system if available
-      const userId = useSettings.getState().userId
-      // Progress system integration disabled for now
-      // TODO: Re-enable when progress system is stable
-    } catch {
+      // Only try to get mastery data if progress integration is enabled
+      if (enableProgressIntegration !== false) {
+        const { getCurrentUserId, getMasteryByUser } = await import('../../lib/progress/all.js')
+        const userId = getCurrentUserId()
+        if (userId) {
+          const masteryData = await getMasteryByUser(userId)
+          userProgress = masteryData
+          dbg('📊 Progress system data loaded:', { userId, masteryRecords: masteryData?.length || 0 })
+        } else {
+          dbg('👤 No current user, continuing without mastery data')
+        }
+      } else {
+        dbg('⏸️ Progress integration disabled, continuing without mastery data')
+      }
+    } catch (error) {
       // Progress system might not be available, continue without it
+      dbg('⚠️ Progress system not available, continuing without mastery data:', error.message)
     }
 
     // Apply level-driven weighted selection (but only for non-A1 to avoid double weighting)

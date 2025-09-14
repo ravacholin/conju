@@ -141,7 +141,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     }
   }, [duration]);
 
-  const generateNextItem = React.useCallback(() => {
+  const generateNextItem = React.useCallback(async () => {
     // Get current settings snapshot WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
     
@@ -182,7 +182,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
 
       // Use generator with isolated settings - NO GLOBAL MUTATION
-      let nextItem = chooseNext({
+      let nextItem = await chooseNext({
         forms: filteredForms,
         history: exerciseHistory,
         currentItem,
@@ -191,7 +191,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
       // Fallback: if no item was generated, use all forms
       if (!nextItem) {
-        nextItem = chooseNext({
+        nextItem = await chooseNext({
           forms: allForms,
           history: exerciseHistory,
           currentItem,
@@ -221,7 +221,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
     if (!currentItem) {
-      generateNextItem();
+      generateNextItem().catch(console.error);
     }
   }, [tense?.tense, verbType, selectedFamilies]); // Don't depend on generateNextItem
 
@@ -398,7 +398,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           setSwapAnim(true);
           setTimeout(() => {
             setSwapAnim(false);
-            generateNextItem();
+            generateNextItem().catch(console.error);
           }, 250);
         }
     }

@@ -321,4 +321,5 @@ export async function getUserStats() {
   }
 }
 
-// Error classification now lives in ./errorClassification.js and is imported above.
+// Re-export classifyError for backward compatibility
+export { classifyError }
