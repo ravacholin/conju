@@ -20,7 +20,7 @@ vi.mock('../../lib/progress/index.js', () => ({
 }))
 
 describe('SessionInsights - missing userId handling', () => {
-  it('shows a notice and a registration button when userId is absent', async () => {
+  it('shows a notice and a registration button when userId is absent, and displays a toast after registering', async () => {
     render(<SessionInsights />)
 
     const notice = await screen.findByText(/No se encontró un perfil de usuario/i)
@@ -29,8 +29,9 @@ describe('SessionInsights - missing userId handling', () => {
     const btn = screen.getByRole('button', { name: /Crear perfil local/i })
     expect(btn).toBeInTheDocument()
 
-    // Simulate click; we don't assert follow-up behavior here
+    // Simulate click and expect toast to appear
     fireEvent.click(btn)
+    const toast = await screen.findByText(/Perfil creado, cargando métricas/i)
+    expect(toast).toBeInTheDocument()
   })
 })
-

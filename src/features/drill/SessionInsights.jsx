@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { initProgressSystem } from '../../lib/progress/index.js'
+import Toast from '../../components/Toast.jsx'
 
 export default function SessionInsights() {
   const [insights, setInsights] = useState({
@@ -13,6 +14,7 @@ export default function SessionInsights() {
   const [showInsights, setShowInsights] = useState(false)
   const [missingUser, setMissingUser] = useState(false)
   const [registering, setRegistering] = useState(false)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     let mounted = true
@@ -74,6 +76,7 @@ export default function SessionInsights() {
                 setMissingUser(false)
                 // Trigger refresh of insights after registration
                 setShowInsights(false)
+                setToast({ message: 'Perfil creado, cargando métricas…', type: 'success' })
                 setTimeout(() => {
                   const ev = new Event('progress:update')
                   window.dispatchEvent(ev)
@@ -90,6 +93,15 @@ export default function SessionInsights() {
             {registering ? 'Creando perfil…' : 'Crear perfil local'}
           </button>
         </div>
+        {toast?.message && (
+          <Toast
+            key={`${toast.type}-${toast.message}`}
+            message={toast.message}
+            type={toast.type}
+            duration={2200}
+            onClose={() => setToast(null)}
+          />
+        )}
       </div>
     )
   }
