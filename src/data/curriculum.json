@@ -67,9 +67,8 @@
   {"level":"C2","mood":"imperativo","tense":"impNeg","target":"produce"},
   {"level":"C2","mood":"condicional","tense":"cond","target":"produce"},
   {"level":"C2","mood":"condicional","tense":"condPerf","target":"produce"},
-  
   {"level":"A1","mood":"nonfinite","tense":"part","target":"produce"},
-  {"level":"A1","mood":"nonfinite","tense":"ger","target":"produce"},
+
   {"level":"A2","mood":"nonfinite","tense":"part","target":"produce"},
   {"level":"A2","mood":"nonfinite","tense":"ger","target":"produce"},
   {"level":"B1","mood":"nonfinite","tense":"part","target":"produce"},

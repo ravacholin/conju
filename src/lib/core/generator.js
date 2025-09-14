@@ -167,24 +167,31 @@ export function chooseNext({forms, history: HISTORY, currentItem, sessionSetting
       // For specific/theme practice, show ALL persons of the selected form
       // Don't filter by practicePronoun at all - show variety
     } else {
-      // For mixed practice, apply pronoun filtering based on practicePronoun setting
-      if (practicePronoun === 'tu_only') {
-        // Only tú forms
-        if (f.person !== '2s_tu') {
-          return false
+      // For mixed practice, prioritize variety over strict pronoun filtering
+      // Only apply strict pronoun filtering for specific practice modes
+      if (practiceMode === 'mixed' || practiceMode === 'all' || !practiceMode) {
+        // Mixed practice: show variety of persons, don't restrict to single pronoun
+        // Let regional dialect filtering handle person restrictions
+      } else {
+        // Non-mixed practice: apply pronoun filtering based on practicePronoun setting
+        if (practicePronoun === 'tu_only') {
+          // Only tú forms
+          if (f.person !== '2s_tu') {
+            return false
+          }
+        } else if (practicePronoun === 'vos_only') {
+          // Only vos forms
+          if (f.person !== '2s_vos') {
+            return false
+          }
+        } else if (practicePronoun === 'all') {
+          // ALL forms including vosotros - override region restrictions for 2nd person
+          // This means we allow ALL persons regardless of dialect when 'all' is selected
+          // No filtering needed - let all forms through (including vosotros)
+        } else if (practicePronoun === 'both') {
+          // Both tú and vos, but still respect regional vosotros restrictions
+          // No additional filtering beyond regional dialect filtering
         }
-      } else if (practicePronoun === 'vos_only') {
-        // Only vos forms  
-        if (f.person !== '2s_vos') {
-          return false
-        }
-      } else if (practicePronoun === 'all') {
-        // ALL forms including vosotros - override region restrictions for 2nd person
-        // This means we allow ALL persons regardless of dialect when 'all' is selected
-        // No filtering needed - let all forms through (including vosotros)
-      } else if (practicePronoun === 'both') {
-        // Both tú and vos, but still respect regional vosotros restrictions
-        // No additional filtering beyond regional dialect filtering
       }
       // Note: 'both' and 'all' both allow the regional dialect filtering to work normally,
       // but 'all' will override vosotros restrictions later in the dialect filtering
@@ -458,6 +465,23 @@ export function chooseNext({forms, history: HISTORY, currentItem, sessionSetting
     eligible = applyWeightedSelection(eligible)
   }
 
+  // A1 PEDAGOGICAL PRIORITIZATION: Heavily favor presente de indicativo
+  if (level === 'A1') {
+    const presenteIndicativo = eligible.filter(f => f.mood === 'indicativo' && f.tense === 'pres')
+    const participios = eligible.filter(f => f.mood === 'nonfinite' && f.tense === 'part')
+
+    if (presenteIndicativo.length > 0 && participios.length > 0) {
+      // 85% presente indicativo, 15% participios for A1
+      const weighted = []
+      for (let i = 0; i < 85; i++) weighted.push(...presenteIndicativo)
+      for (let i = 0; i < 15; i++) weighted.push(...participios)
+      eligible = weighted
+    } else if (presenteIndicativo.length > 0) {
+      // If only presente available, heavily favor it
+      eligible = presenteIndicativo
+    }
+  }
+
   // LEVEL-AWARE PRIORITIZATION: Apply curriculum-driven tense weighting
   try {
     // Get user's mastery data for context (if available from state)
@@ -471,11 +495,13 @@ export function chooseNext({forms, history: HISTORY, currentItem, sessionSetting
       // Progress system might not be available, continue without it
     }
 
-    // Apply level-driven weighted selection 
-    const levelWeightedForms = getWeightedFormsSelection(eligible, level, userProgress)
-    
-    if (levelWeightedForms.length > 0) {
-      eligible = levelWeightedForms
+    // Apply level-driven weighted selection (but only for non-A1 to avoid double weighting)
+    if (level !== 'A1') {
+      const levelWeightedForms = getWeightedFormsSelection(eligible, level, userProgress)
+
+      if (levelWeightedForms.length > 0) {
+        eligible = levelWeightedForms
+      }
     }
   } catch (error) {
     console.warn('Level-aware prioritization failed, using fallback:', error)
