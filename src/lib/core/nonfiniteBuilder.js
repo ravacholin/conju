@@ -92,7 +92,8 @@ export function buildGerund(lemma) {
   const endsWith = (s) => lemma.endsWith(s)
   const stem = lemma.slice(0, -2)
   const lastStemChar = stem.slice(-1)
-  if ((endsWith('er') || endsWith('ir')) && /[aeioáéíóú]/i.test(lastStemChar)) {
+  // Nota: incluir 'u' explícitamente para casos como secuencias con vocal simple
+  if ((endsWith('er') || endsWith('ir')) && /[aeiouáéíóú]/i.test(lastStemChar)) {
     return stem + 'yendo'
   }
   if (lemma.endsWith('uir') && !lemma.endsWith('guir')) {
