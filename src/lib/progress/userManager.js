@@ -222,7 +222,7 @@ function enqueue(type, payload) {
   setQueue(q)
 }
 
-async function postJSON(path, body, timeoutMs = 10000) {
+async function postJSON(path, body, timeoutMs = 30000) {
   if (!SYNC_BASE_URL || typeof fetch === 'undefined') {
     throw new Error('Sync endpoint not configured')
   }
@@ -275,6 +275,25 @@ async function markSynced(storeName, ids) {
 }
 
 /**
+ * Wake up the server (Render free tier sleeps after 15 min)
+ */
+async function wakeUpServer() {
+  if (!SYNC_BASE_URL) return false
+  try {
+    console.log('☁️ Despertando servidor...')
+    const baseUrl = SYNC_BASE_URL.replace('/api', '')
+    await fetch(baseUrl, {
+      method: 'GET',
+      signal: AbortSignal.timeout(25000) // 25 second timeout for wake-up
+    })
+    return true
+  } catch (error) {
+    console.warn('⚠️ No se pudo despertar el servidor:', error.message)
+    return false
+  }
+}
+
+/**
  * Sincroniza intentos, mastery y schedules del usuario actual.
  * Envia solo registros sin syncedAt.
  */
@@ -282,6 +301,9 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   const userId = getCurrentUserId()
   if (!userId) return { success: false, reason: 'no_user' }
   if (!isSyncEnabled() || !isBrowserOnline()) return { success: false, reason: 'offline_or_disabled' }
+
+  // Wake up server first (Render free tier issue)
+  await wakeUpServer()
 
   const results = {}
   try {
