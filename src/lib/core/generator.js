@@ -90,10 +90,10 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
   return true
 }
 
-export function chooseNext({forms, history: HISTORY, currentItem}){
-  
-  // Extract all settings once to avoid repeated state access
-  const allSettings = useSettings.getState()
+export function chooseNext({forms, history: HISTORY, currentItem, sessionSettings}){
+
+  // Use sessionSettings if provided, otherwise fallback to global settings
+  const allSettings = sessionSettings || useSettings.getState()
   const { 
     level, useVoseo, useTuteo, useVosotros,
     practiceMode, specificMood, specificTense, practicePronoun, verbType,
