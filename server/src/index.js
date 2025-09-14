@@ -7,7 +7,7 @@ import { createRoutes } from './routes.js'
 
 const PORT = process.env.PORT || 8787
 const API_PREFIX = process.env.API_PREFIX || '/api'
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*'
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://verb-os.vercel.app,http://localhost:5173,http://localhost:4173'
 
 migrate()
 
@@ -19,6 +19,8 @@ app.use(morgan('dev'))
 app.get('/', (_req, res) => res.json({ ok: true, name: 'progress-sync-server', ts: Date.now() }))
 app.use(API_PREFIX, authMiddleware, createRoutes())
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`☁️  Progress Sync Server listening on http://localhost:${PORT}${API_PREFIX}`)
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`🔒 CORS Origins: ${CORS_ORIGIN}`)
 })

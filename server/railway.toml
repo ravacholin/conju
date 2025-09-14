@@ -1,0 +1,16 @@
+[build]
+# Railway automaticamente detecta Node.js y ejecuta npm install
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[environments.production]
+# Variables de entorno para producción
+PORT = 8787
+NODE_ENV = "production"
+API_PREFIX = "/api"
+# CORS_ORIGIN se configura automáticamente desde las variables de Railway

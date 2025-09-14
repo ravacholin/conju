@@ -5,7 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "postinstall": "node -e \"console.log('Server dependencies installed successfully')\""
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "better-sqlite3": "^9.4.3",
