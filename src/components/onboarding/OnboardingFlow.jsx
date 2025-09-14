@@ -73,6 +73,7 @@
  */
 
 import React from 'react'
+import Toast from '../Toast.jsx'
 import DialectSelection from './DialectSelection.jsx'
 import LevelSelection from './LevelSelection.jsx'
 import PracticeModeSelection from './PracticeModeSelection.jsx'
@@ -112,6 +113,32 @@ function OnboardingFlow({
   onGoToProgress
 }) {
 
+  const [toast, setToast] = React.useState(null)
+  const showToast = (message, type = 'success') => setToast({ message, type })
+  const dialectLabel = (d) => ({ rioplatense: 'Rioplatense', la_general: 'Latinoamericano', peninsular: 'Peninsular', both: 'Todos' }[d] || 'Configurado')
+
+  // Wrap handlers to add toasts
+  const handleSelectDialect = (d) => {
+    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch {}
+  }
+  const handleSelectLevel = (lvl) => {
+    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch {}
+  }
+  const handleSelectPracticeMode = (mode) => {
+    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch {}
+  }
+  const handleSelectMood = (mood) => {
+    try { selectMood(mood); showToast(`Modo seleccionado`) } catch {}
+  }
+  const handleSelectTense = (tense) => {
+    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch {}
+  }
+  const handleSelectVerbType = (verbType, onStart) => {
+    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch {}
+  }
+  const handleSelectFamily = (familyId, onStart) => {
+    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch {}
+  }
   // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {
     try { 
@@ -132,14 +159,14 @@ function OnboardingFlow({
           
           {/* Step 1: Dialect Selection */}
           {onboardingStep === 1 && (
-            <DialectSelection onSelectDialect={selectDialect} />
+            <DialectSelection onSelectDialect={handleSelectDialect} />
           )}
 
           {/* Step 2: Level Selection Mode */}
           {onboardingStep === 2 && (
             <LevelSelection 
-              onSelectLevel={selectLevel}
-              onSelectPracticeMode={selectPracticeMode}
+              onSelectLevel={handleSelectLevel}
+              onSelectPracticeMode={handleSelectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={false}
@@ -151,8 +178,8 @@ function OnboardingFlow({
           {/* Step 3: Specific Level Selection */}
           {onboardingStep === 3 && (
             <LevelSelection 
-              onSelectLevel={selectLevel}
-              onSelectPracticeMode={selectPracticeMode}
+              onSelectLevel={handleSelectLevel}
+              onSelectPracticeMode={handleSelectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={true}
@@ -162,7 +189,7 @@ function OnboardingFlow({
           {/* Step 4: Practice Mode Selection */}
           {onboardingStep === 4 && (
             <PracticeModeSelection 
-              onSelectPracticeMode={selectPracticeMode}
+              onSelectPracticeMode={handleSelectPracticeMode}
               onBack={handleBack}
               settings={settings}
             />
@@ -173,15 +200,15 @@ function OnboardingFlow({
             <>
               {settings.practiceMode === 'mixed' ? (
                 <VerbTypeSelection 
-                  onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
+                  onSelectVerbType={(verbType) => handleSelectVerbType(verbType, onStartPractice)}
                   onBack={handleBack}
                 />
               ) : (
                 <MoodTenseSelection 
                   formsForRegion={formsForRegion}
                   settings={settings}
-                  onSelectMood={selectMood}
-                  onSelectTense={selectTense}
+                  onSelectMood={handleSelectMood}
+                  onSelectTense={handleSelectTense}
                   onBack={handleBack}
                   getAvailableMoodsForLevel={getAvailableMoodsForLevel}
                   getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
@@ -198,15 +225,15 @@ function OnboardingFlow({
               {settings.practiceMode === 'mixed' && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
                 <FamilySelection 
                   settings={settings}
-                  onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
+                  onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
                   onBack={handleBack}
                 />
               ) : (
                 <MoodTenseSelection 
                   formsForRegion={formsForRegion}
                   settings={settings}
-                  onSelectMood={selectMood}
-                  onSelectTense={selectTense}
+                  onSelectMood={handleSelectMood}
+                  onSelectTense={handleSelectTense}
                   onBack={handleBack}
                   getAvailableMoodsForLevel={getAvailableMoodsForLevel}
                   getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
@@ -220,7 +247,7 @@ function OnboardingFlow({
           {/* Step 7: VerbTypeSelection for any practice mode */}
           {onboardingStep === 7 && (
             <VerbTypeSelection 
-              onSelectVerbType={(verbType) => selectVerbType(verbType, onStartPractice)}
+              onSelectVerbType={(verbType) => handleSelectVerbType(verbType, onStartPractice)}
               onBack={handleBack}
             />
           )}
@@ -229,11 +256,20 @@ function OnboardingFlow({
           {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
             <FamilySelection 
               settings={settings}
-              onSelectFamily={(familyId) => selectFamily(familyId, onStartPractice)}
+              onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
               onBack={handleBack}
             />
           )}
         </div>
+        {toast?.message && (
+          <Toast
+            key={`${toast.type}-${toast.message}`}
+            message={toast.message}
+            type={toast.type}
+            duration={1800}
+            onClose={() => setToast(null)}
+          />
+        )}
       </div>
     </div>
   );
