@@ -56,7 +56,8 @@ export default function ProgressHeader({
   onRefresh,
   syncing = false,
   onSync,
-  syncEnabled = true
+  syncEnabled = true,
+  onOpenDataPanel
 }) {
   return (
     <header className="dashboard-header">
@@ -106,6 +107,16 @@ export default function ProgressHeader({
           >
             <img src="/icons/cloud-sync.png" alt="Sincronizar" className="inline-icon" />
             {syncing ? 'Sincronizando...' : 'Sync ahora'}
+          </button>
+        )}
+        {typeof onOpenDataPanel === 'function' && (
+          <button
+            onClick={onOpenDataPanel}
+            className="refresh-btn"
+            title="Gestión de datos y Sync"
+          >
+            <img src="/icons/gear.png" alt="Config" className="inline-icon" />
+            Configuración
           </button>
         )}
       </div>

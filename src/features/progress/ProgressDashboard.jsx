@@ -17,6 +17,7 @@ import WeeklyGoalsPanel from './WeeklyGoalsPanel.jsx'
 import GeneralRecommendations from './GeneralRecommendations.jsx'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
+import DataManagementPanel from './DataManagementPanel.jsx'
 import Toast from '../../components/Toast.jsx'
 
 // Styles moved to ProgressHeader.jsx
@@ -42,6 +43,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
+  const [showDataPanel, setShowDataPanel] = React.useState(false)
   const syncAvailable = isSyncEnabled()
 
   const handleSync = async () => {
@@ -144,6 +146,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         syncing={syncing}
         onSync={handleSync}
         syncEnabled={syncAvailable}
+        onOpenDataPanel={() => setShowDataPanel(true)}
       />
       {toast?.message && (
         <Toast
@@ -153,6 +156,9 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           duration={1800}
           onClose={() => setToast(null)}
         />
+      )}
+      {showDataPanel && (
+        <DataManagementPanel onClose={() => setShowDataPanel(false)} />
       )}
 
       <SafeComponent name="Mapa de Dominio">

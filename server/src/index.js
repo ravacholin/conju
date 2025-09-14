@@ -7,11 +7,12 @@ import { createRoutes } from './routes.js'
 
 const PORT = process.env.PORT || 8787
 const API_PREFIX = process.env.API_PREFIX || '/api'
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*'
 
 migrate()
 
 const app = express()
-app.use(cors())
+app.use(cors({ origin: CORS_ORIGIN === '*' ? true : CORS_ORIGIN.split(',').map(s => s.trim()), credentials: false }))
 app.use(express.json({ limit: '2mb' }))
 app.use(morgan('dev'))
 
@@ -21,4 +22,3 @@ app.use(API_PREFIX, authMiddleware, createRoutes())
 app.listen(PORT, () => {
   console.log(`☁️  Progress Sync Server listening on http://localhost:${PORT}${API_PREFIX}`)
 })
-

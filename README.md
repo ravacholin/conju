@@ -209,3 +209,15 @@ Incluye un servidor Express simple para sincronización local.
   - `GET  /progress/export`
 - Auth admitida: `Authorization: Bearer <token>`, `X-API-Key: <token>` o `X-User-Id: <user>`.
 - Almacenamiento: SQLite en `.data/progress-sync.db` con tablas `users`, `attempts`, `mastery`, `schedules`.
+
+### Cero configuración (dev)
+
+- Ejecuta `npm run dev` y Vite arrancará el servidor de sync local automáticamente.
+- El cliente usa por defecto `http://localhost:8787/api` y envía `X-User-Id` con tu `userId` local si no hay token.
+- Abre el Dashboard de Progreso y pulsa “Sync ahora”.
+
+### Configurar Sync desde la UI
+
+- Abre el panel “Gestión de Datos” (Data Management) y la pestaña “⚙️ Configurar Sync”.
+- Define la URL del servidor, el header de auth y el token/user id.
+- Guarda y pulsa “Probar” para verificar conectividad.

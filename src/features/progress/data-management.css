@@ -85,6 +85,7 @@
 .export-section,
 .import-section,
 .sync-section,
+.sync-config-section,
 .backup-section {
   max-width: 800px;
   margin: 0 auto;
@@ -93,11 +94,55 @@
 .export-section h3,
 .import-section h3,
 .sync-section h3,
+.sync-config-section h3,
 .backup-section h3 {
   color: #f1f5f9;
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 1.5rem 0;
+}
+
+.sync-config-section .config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.sync-config-section label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #cbd5e1;
+}
+
+.sync-config-section input[type="text"] {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.sync-config-section .config-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sync-config-section .config-actions button {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .sync-config-section .config-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .export-options {

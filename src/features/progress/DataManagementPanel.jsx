@@ -5,6 +5,16 @@ import { useState, useEffect } from 'react'
 import { exportProgressData, exportToCSV, downloadExportedData, generateProgressReport } from '../../lib/progress/dataExport.js'
 import { importFromFile, createBackup } from '../../lib/progress/dataRestore.js'
 import { enhancedCloudSync } from '../../lib/progress/enhancedCloudSync.js'
+import {
+  setSyncEndpoint,
+  getSyncEndpoint,
+  setSyncAuthHeaderName,
+  getSyncAuthHeaderName,
+  setSyncAuthToken,
+  getSyncAuthToken,
+  isSyncEnabled,
+  syncNow
+} from '../../lib/progress/userManager.js'
 // import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
@@ -29,10 +39,22 @@ export default function DataManagementPanel({ onClose }) {
     strategy: 'smart',
     conflictStrategy: 'merge'
   })
+  const [syncConfig, setSyncConfig] = useState({
+    url: '',
+    header: '',
+    token: ''
+  })
 
   useEffect(() => {
     // Verificar estado de sincronización al cargar
     checkSyncStatus()
+    try {
+      setSyncConfig({
+        url: getSyncEndpoint() || '',
+        header: getSyncAuthHeaderName() || 'Authorization',
+        token: getSyncAuthToken() || ''
+      })
+    } catch {/* ignore */}
   }, [])
 
   const checkSyncStatus = async () => {
@@ -129,6 +151,39 @@ export default function DataManagementPanel({ onClose }) {
     }
   }
 
+  const handleSaveSyncConfig = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      setSyncEndpoint((syncConfig.url || '').trim())
+      setSyncAuthHeaderName((syncConfig.header || 'Authorization').trim())
+      setSyncAuthToken((syncConfig.token || '').trim(), { persist: true })
+      setStatus('✅ Configuración de sync guardada')
+      await checkSyncStatus()
+    } catch (err) {
+      setError(`Error al guardar configuración: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleTestSync = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await syncNow({ include: [] }) // prueba rápida de conectividad
+      if (res && (res.success || res.reason === 'offline_or_disabled')) {
+        setStatus(isSyncEnabled() ? '✅ Conectividad OK' : 'ℹ️ Sync deshabilitado, configura URL/token')
+      } else {
+        setStatus('⚠️ No se pudo verificar conectividad')
+      }
+    } catch (err) {
+      setError(`Error al probar sync: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSync = async () => {
     setLoading(true)
     setSyncStatus('syncing')
@@ -180,6 +235,12 @@ export default function DataManagementPanel({ onClose }) {
           onClick={() => setActiveTab('sync')}
         >
           ☁️ Sincronizar
+        </button>
+        <button 
+          className={activeTab === 'config' ? 'active' : ''} 
+          onClick={() => setActiveTab('config')}
+        >
+          ⚙️ Configurar Sync
         </button>
         <button 
           className={activeTab === 'backup' ? 'active' : ''} 
@@ -294,6 +355,48 @@ export default function DataManagementPanel({ onClose }) {
               <p>Estado: {syncStatus}</p>
               <p>Última sincronización: {new Date().toLocaleString()}</p>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'config' && (
+          <div className="sync-config-section">
+            <h3>Configuración de Sincronización</h3>
+            <div className="config-grid">
+              <label>
+                URL del servidor
+                <input
+                  type="text"
+                  placeholder="http://localhost:8787/api"
+                  value={syncConfig.url}
+                  onChange={(e) => setSyncConfig(prev => ({ ...prev, url: e.target.value }))}
+                />
+              </label>
+              <label>
+                Nombre del header de auth
+                <input
+                  type="text"
+                  placeholder="Authorization / X-API-Key / X-User-Id"
+                  value={syncConfig.header}
+                  onChange={(e) => setSyncConfig(prev => ({ ...prev, header: e.target.value }))}
+                />
+              </label>
+              <label>
+                Token / User ID
+                <input
+                  type="text"
+                  placeholder="tu-token-o-user-id"
+                  value={syncConfig.token}
+                  onChange={(e) => setSyncConfig(prev => ({ ...prev, token: e.target.value }))}
+                />
+              </label>
+            </div>
+            <div className="config-actions">
+              <button onClick={handleSaveSyncConfig} disabled={loading}>💾 Guardar</button>
+              <button onClick={handleTestSync} disabled={loading}>🔌 Probar</button>
+            </div>
+            <p style={{ opacity: 0.75, fontSize: 12, marginTop: 8 }}>
+              Sugerencia: en desarrollo puedes usar <code>X-User-Id</code> y el valor de tu usuario local.
+            </p>
           </div>
         )}
 
