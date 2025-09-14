@@ -62,7 +62,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       }
     } catch (e) {
       console.error('Error en sincronización:', e)
-      setToast({ message: 'Error al sincronizar', type: 'error' })
+      setToast({ message: 'Error al sincronizar. ¿Servidor activo? cd server && npm i && npm run start', type: 'error' })
     } finally {
       setSyncing(false)
     }

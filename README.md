@@ -191,3 +191,21 @@ La app lee estas variables al iniciar (ver `src/main.jsx`) y configura automáti
 - `syncNow({ include })`, `flushSyncQueue()`
 
 Ajustes de usuario se almacenan por usuario en localStorage (`progress-user-settings`), indexados por `userId`.
+
+### Backend local de Sync
+
+Incluye un servidor Express simple para sincronización local.
+
+- Arranque:
+  - `cd server && npm i && npm run start`
+  - Servidor en `http://localhost:8787/api`
+- Config del cliente:
+  - `.env`: `VITE_PROGRESS_SYNC_URL=http://localhost:8787/api`
+  - Para desarrollo: `VITE_PROGRESS_SYNC_TOKEN=<tu-user-id>` (el servidor usa el token como userId). Header por defecto `Authorization`.
+- Endpoints:
+  - `POST /progress/attempts/bulk`
+  - `POST /progress/mastery/bulk`
+  - `POST /progress/schedules/bulk`
+  - `GET  /progress/export`
+- Auth admitida: `Authorization: Bearer <token>`, `X-API-Key: <token>` o `X-User-Id: <user>`.
+- Almacenamiento: SQLite en `.data/progress-sync.db` con tablas `users`, `attempts`, `mastery`, `schedules`.

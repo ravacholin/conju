@@ -1,10 +1,36 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { spawn, spawnSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
+    // Dev helper: auto-arranca el servidor de sync local si existe
+    {
+      name: 'spawn-sync-server',
+      apply: 'serve',
+      configureServer() {
+        try {
+          const serverDir = join(process.cwd(), 'server')
+          const nodeModulesDir = join(serverDir, 'node_modules')
+          if (!existsSync(nodeModulesDir)) {
+            console.log('[spawn-sync-server] Instalando dependencias del servidor...')
+            spawnSync('npm', ['i', '--silent'], { stdio: 'inherit', cwd: serverDir })
+          }
+          const proc = spawn(process.env.NODE || 'node', ['src/index.js'], {
+            stdio: 'inherit',
+            env: process.env,
+            cwd: serverDir,
+          })
+          process.on('exit', () => { try { proc.kill() } catch {} })
+        } catch (e) {
+          console.warn('[spawn-sync-server] No se pudo iniciar el servidor de sync:', e?.message)
+        }
+      }
+    },
     react(),
     VitePWA({
       // Disable PWA in non‑production or when explicitly requested, or on some Node 22 builds

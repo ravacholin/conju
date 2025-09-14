@@ -9,15 +9,23 @@ import './lib/progress/autoInit.js'
 import './utils/swUpdateHandler.js'
 // Wire sync endpoint and auth from env (if provided)
 import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName } from './lib/progress/userManager.js'
+import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
 
 // Read env-provided sync config and apply once on load
 if (typeof window !== 'undefined') {
-  const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL
-  const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN
-  const syncHeader = import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME
+  const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL || 'http://localhost:8787/api'
+  const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN || null
+  const syncHeader = import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME || null
   if (syncUrl) setSyncEndpoint(syncUrl)
   if (syncHeader) setSyncAuthHeaderName(syncHeader)
-  if (syncToken) setSyncAuthToken(syncToken, { persist: false })
+  if (syncToken) {
+    setSyncAuthToken(syncToken, { persist: false })
+  } else {
+    // Fallback: usar userId local como token y cabecera X-User-Id
+    setSyncAuthHeaderName('X-User-Id')
+    const uid = getUID()
+    if (uid) setSyncAuthToken(uid, { persist: false })
+  }
 }
 
 createRoot(document.getElementById('root')).render(

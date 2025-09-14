@@ -28,7 +28,8 @@ function resolveSyncBaseUrl() {
   const envUrl = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_URL) ||
                  (typeof process !== 'undefined' && process?.env?.VITE_PROGRESS_SYNC_URL) ||
                  null
-  return envUrl || null
+  // Fallback por defecto a servidor local
+  return envUrl || 'http://localhost:8787/api'
 }
 
 let SYNC_BASE_URL = resolveSyncBaseUrl()
@@ -233,6 +234,10 @@ async function postJSON(path, body, timeoutMs = 10000) {
     const headerName = getSyncAuthHeaderName()
     if (token && headerName) {
       headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${token}` : token
+    } else {
+      // Sin token configurado: enviar userId local como X-User-Id
+      const uid = getCurrentUserId()
+      if (uid) headers['X-User-Id'] = uid
     }
 
     const res = await fetch(`${SYNC_BASE_URL}${path}`, {
