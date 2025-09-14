@@ -91,11 +91,13 @@ export const useDrillProgress = () => {
    * @returns {Promise<Object>} - Processing result
    */
   const handleResponse = useCallback(async (item, response, onResult) => {
+    // Check processing lock immediately and return early if locked
     if (processingRef.current) {
       logger.warn('handleResponse', 'Progress processing already in progress')
       return { success: false, reason: 'Processing in progress' }
     }
 
+    // Set lock immediately to prevent race conditions
     processingRef.current = true
     setIsProcessing(true)
 

@@ -309,17 +309,22 @@ describe('useDrillProgress Hook', () => {
       
       // Simular que ya está procesando
       await act(async () => {
-        // Primera llamada (debería procesar)
+        // Iniciar la primera llamada
         const firstCall = result.current.handleResponse(testItem, testResponse)
-        
-        // Segunda llamada concurrente (debería rechazarse)
-        const secondCall = result.current.handleResponse(testItem, testResponse)
-        
-        const [firstResult, secondResult] = await Promise.all([firstCall, secondCall])
-        
-        expect(firstResult.success).toBe(true)
+
+        // Hacer que el hook reporte que está procesando
+        expect(result.current.isProcessing).toBe(true)
+
+        // Ahora intentar una segunda llamada mientras la primera está en progreso
+        const secondResult = await result.current.handleResponse(testItem, testResponse)
+
+        // La segunda debería ser rechazada inmediatamente
         expect(secondResult.success).toBe(false)
         expect(secondResult.reason).toBe('Processing in progress')
+
+        // Esperar a que la primera termine
+        const firstResult = await firstCall
+        expect(firstResult.success).toBe(true)
       })
     })
   })
