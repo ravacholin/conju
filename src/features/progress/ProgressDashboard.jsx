@@ -17,6 +17,7 @@ import WeeklyGoalsPanel from './WeeklyGoalsPanel.jsx'
 import GeneralRecommendations from './GeneralRecommendations.jsx'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
+import Toast from '../../components/Toast.jsx'
 
 // Styles moved to ProgressHeader.jsx
 
@@ -40,22 +41,21 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   } = useProgressDashboardData()
 
   const [syncing, setSyncing] = React.useState(false)
-  const [lastSyncMsg, setLastSyncMsg] = React.useState('')
+  const [toast, setToast] = React.useState(null)
   const syncAvailable = isSyncEnabled()
 
   const handleSync = async () => {
     try {
       setSyncing(true)
-      setLastSyncMsg('')
       const res = await syncNow()
       if (res?.success) {
-        setLastSyncMsg('Sincronización completa')
+        setToast({ message: 'Sincronización completa', type: 'success' })
       } else {
-        setLastSyncMsg('No se pudo sincronizar (offline o deshabilitado)')
+        setToast({ message: 'No se pudo sincronizar (offline o deshabilitado)', type: 'info' })
       }
     } catch (e) {
       console.error('Error en sincronización:', e)
-      setLastSyncMsg('Error al sincronizar')
+      setToast({ message: 'Error al sincronizar', type: 'error' })
     } finally {
       setSyncing(false)
     }
@@ -138,10 +138,14 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         onSync={handleSync}
         syncEnabled={syncAvailable}
       />
-      {lastSyncMsg && (
-        <div style={{ margin: '0.5rem 0', fontSize: '0.9rem', opacity: 0.85 }}>
-          {lastSyncMsg}
-        </div>
+      {toast?.message && (
+        <Toast
+          key={`${toast.type}-${toast.message}`}
+          message={toast.message}
+          type={toast.type}
+          duration={2500}
+          onClose={() => setToast(null)}
+        />
       )}
 
       <SafeComponent name="Mapa de Dominio">
