@@ -98,7 +98,7 @@ export default function SessionInsights() {
             key={`${toast.type}-${toast.message}`}
             message={toast.message}
             type={toast.type}
-            duration={2200}
+            duration={1600}
             onClose={() => setToast(null)}
           />
         )}

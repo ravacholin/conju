@@ -266,7 +266,7 @@ function OnboardingFlow({
             key={`${toast.type}-${toast.message}`}
             message={toast.message}
             type={toast.type}
-            duration={1800}
+            duration={1400}
             onClose={() => setToast(null)}
           />
         )}

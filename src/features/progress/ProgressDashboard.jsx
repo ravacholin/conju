@@ -143,7 +143,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           key={`${toast.type}-${toast.message}`}
           message={toast.message}
           type={toast.type}
-          duration={2500}
+          duration={1800}
           onClose={() => setToast(null)}
         />
       )}
