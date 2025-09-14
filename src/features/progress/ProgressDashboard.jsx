@@ -1,4 +1,5 @@
 // Componente principal del dashboard de progreso
+import React from 'react'
 
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
