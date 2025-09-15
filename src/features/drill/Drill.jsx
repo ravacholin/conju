@@ -5,6 +5,10 @@ import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
 import { useSettings } from '../../state/settings.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
+import ReverseInputs from './ReverseInputs.jsx';
+import ResistanceHUD from './ResistanceHUD.jsx';
+import { useSpeech } from './useSpeech.ts';
+import { useResistanceTimer } from './useResistanceTimer.ts';
 
 export default function Drill({ 
   currentItem, 
@@ -18,16 +22,8 @@ export default function Drill({
   // Removed unused hint state
   const [showDiff, setShowDiff] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [clockClickFeedback, setClockClickFeedback] = useState(false);
-  const [showExplosion, setShowExplosion] = useState(false);
-  const [urgentTick, setUrgentTick] = useState(false);
+  const { showExplosion, urgentTick, clockClickFeedback, handleClockClick } = useResistanceTimer();
   const [secondInput, setSecondInput] = useState('');
-  
-  // Reverse mode state variables
-  const [infinitiveGuess, setInfinitiveGuess] = useState('');
-  const [personGuess, setPersonGuess] = useState('');
-  const [moodGuess, setMoodGuess] = useState('');
-  const [tenseGuess, setTenseGuess] = useState('');
 
   const inputRef = useRef(null);
   const firstRef = useRef(null);
@@ -71,90 +67,14 @@ export default function Drill({
     return () => clearTimeout(timer);
   }, [currentItem]);
 
-  // Resistance countdown - Original implementation
-  useEffect(() => {
-    if (!settings.resistanceActive) return;
-    if (settings.resistanceMsLeft <= 0) return;
-    const id = setInterval(() => {
-      const left = Math.max(0, useSettings.getState().resistanceMsLeft - 100);
-      settings.set({ resistanceMsLeft: left });
-      
-      // Vibración ligera en modo urgente (últimos 5 segundos)
-      if (left <= 5000 && left > 0) {
-        setUrgentTick(true);
-        setTimeout(() => setUrgentTick(false), 150);
-      }
-      
-      if (left === 0) {
-        // Activar animación de explosión
-        setShowExplosion(true);
-        
-        // Mantener la explosión visible por 2 segundos
-        setTimeout(() => {
-          setShowExplosion(false);
-          // update best by level
-          const lvl = settings.level || 'A1';
-          const best = useSettings.getState().resistanceBestMsByLevel || {};
-          const survived = (Date.now() - (useSettings.getState().resistanceStartTs||Date.now()));
-          if (!best[lvl] || survived > best[lvl]) {
-            best[lvl] = survived;
-            settings.set({ resistanceBestMsByLevel: { ...best } });
-          }
-          settings.set({ resistanceActive: false });
-        }, 2000);
-      }
-    }, 100);
-    return () => clearInterval(id);
-  }, [settings.resistanceActive, settings.resistanceMsLeft]);
+  // Resistance countdown moved to useResistanceTimer hook
 
   // Game mode helpers and configuration
   const isReverse = !!settings.reverseActive;
   const isDouble = !!settings.doubleActive;
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense;
 
-  // Reverse mode field visibility
-  const showPersonField = isReverse && currentItem?.mood !== 'nonfinite';
-  const showMoodField = isReverse && !inSpecific;
-  const showTenseField = isReverse && !inSpecific;
-
-  // Reset reverse inputs when new item or mode changes
-  const resetReverseInputs = () => {
-    setInfinitiveGuess('');
-    setPersonGuess('');
-    setMoodGuess('');
-    setTenseGuess('');
-  };
-  
-  useEffect(() => { 
-    if (isReverse) resetReverseInputs();
-  }, [currentItem?.id, isReverse]);
-
-  // Options for dropdowns
-  const personOptions = [
-    { v:'1s', l:'yo' },
-    { v:'2s_tu', l:'tú' },
-    { v:'2s_vos', l:'vos' },
-    { v:'3s', l:'él/ella/usted' },
-    { v:'1p', l:'nosotros' },
-    { v:'2p_vosotros', l:'vosotros' },
-    { v:'3p', l:'ellos/ustedes' }
-  ];
-
-  const moodOptions = [
-    { v:'indicative', l:'Indicativo' },
-    { v:'subjunctive', l:'Subjuntivo' },
-    { v:'imperative', l:'Imperativo' },
-    { v:'conditional', l:'Condicional' },
-    { v:'nonfinite', l:'No Finito' }
-  ];
-
-  const tenseOptionsByMood = {
-    indicative: ['pres','pretPerf','pretIndef','impf','plusc','fut','futPerf'],
-    subjunctive: ['subjPres','subjImpf','subjPerf','subjPlusc'],
-    imperative: ['impAff','impNeg','impMixed'],
-    conditional: ['cond','condPerf'],
-    nonfinite: ['ger','part','nonfiniteMixed']
-  };
+  // Reverse inputs and options moved to ReverseInputs component
 
 
   const handleSubmit = async () => {
@@ -274,62 +194,7 @@ export default function Drill({
     }
   };
 
-  // Reverse mode submit function
-  const reverseSubmit = async () => {
-    // Validate required fields
-    if (!infinitiveGuess.trim()) return;
-    if (showPersonField && !personGuess) return;
-    if (showMoodField && !moodGuess) return;
-    if (showTenseField && !tenseGuess) return;
-
-    // Check against currentItem
-    const expected = getCanonicalTarget();
-    const okInf = expected.lemma ? expected.lemma.toLowerCase() === infinitiveGuess.trim().toLowerCase() : false;
-    
-    // Accept syncretisms for identical forms (e.g., 1s/3s in subjunctive)
-    const key = `${expected.mood}|${expected.tense}`;
-    const EQUIV = {
-      'subjunctive|subjImpf': [['1s','3s']],
-      'subjunctive|subjPres': [['1s','3s']],
-      'subjunctive|subjPerf': [['1s','3s']],
-      'subjunctive|subjPlusc': [['1s','3s']],
-      'indicative|impf': [['1s','3s']],
-      'indicative|plusc': [['1s','3s']],
-      'conditional|cond': [['1s','3s']],
-      'conditional|condPerf': [['1s','3s']]
-    };
-    const groups = EQUIV[key] || [];
-    const sameGroup = groups.some(g => g.includes(expected.person) && g.includes(personGuess));
-    const okPerson = showPersonField ? (expected.person ? (expected.person === personGuess || sameGroup) : false) : true;
-    const okMood = showMoodField ? expected.mood === moodGuess : true;
-    const okTense = showTenseField ? expected.tense === tenseGuess : true;
-    const correct = okInf && okPerson && okMood && okTense;
-
-    const resultObj = {
-      correct,
-      isAccentError: false,
-      targets: [`${expected.lemma} · ${expected.mood}/${expected.tense} · ${expected.person}`]
-    };
-    setResult(resultObj);
-    
-    try {
-      await handleResult(resultObj);
-    } catch (error) {
-      console.error('Error tracking progress for reverse mode attempt:', error);
-    }
-  };
-
-  // Handle keyboard events for reverse mode
-  const handleReverseKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (!result) {
-        reverseSubmit();
-      } else {
-        handleContinue();
-      }
-    }
-  };
+  // Reverse mode UI and submission handled in ReverseInputs component
 
   const handleContinue = () => {
     onContinue();
@@ -339,10 +204,7 @@ export default function Drill({
   const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
   
   const insertChar = (char) => {
-    if (isReverse) {
-      // In reverse mode, insert into the infinitive input
-      setInfinitiveGuess(prev => prev + char);
-    } else if (isDouble) {
+    if (isDouble) {
       // In double mode, check which input is focused or default to first
       const activeElement = document.activeElement;
       if (activeElement === secondRef.current) {
@@ -455,93 +317,11 @@ export default function Drill({
     return PERSON_LABELS[person] || person;
   };
 
-  // Text-to-Speech: pronounce the correct form
-  const getSpeakText = () => {
-    if (!currentItem) return '';
-    // Reverse mode: pronounce the actual target form on screen
-    if (isReverse) {
-      return currentItem?.value || currentItem?.form?.value || '';
-    }
-    // Double mode: pronounce both targets if available
-    if (isDouble && result?.targets?.length) {
-      // Join with a short connector for clarity
-      return result.targets.filter(Boolean).join(' y ');
-    }
-    // Normal mode: prefer the computed correct answer, else the target form
-    if (result?.correctAnswer) return result.correctAnswer;
-    return currentItem?.form?.value || currentItem?.value || '';
-  };
-
-  const speak = (text) => {
-    try {
-      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
-      const synth = window.speechSynthesis;
-      const utter = new SpeechSynthesisUtterance(text);
-      const region = settings?.region || 'la_general';
-      utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
-      utter.rate = 0.95; // slightly slower for clarity
-
-      const pickPreferredSpanishVoice = (voices, targetLang) => {
-        const lower = (s) => (s || '').toLowerCase()
-        const spanish = voices.filter(v => lower(v.lang).startsWith('es'))
-        if (spanish.length === 0) return null
-        const prefNames = ['mónica','monica','paulina','luciana','helena','elvira','google español','google us español','google español de estados','microsoft sabina','microsoft helena']
-        const preferOrder = (region === 'rioplatense')
-          ? ['es-ar','es-419','es-mx','es-es']
-          : ['es-es','es-mx','es-419','es-us']
-        const byLangExact = spanish.find(v => lower(v.lang) === lower(targetLang))
-        if (byLangExact) return byLangExact
-        for (const lang of preferOrder) {
-          const femaleByName = spanish.find(v => lower(v.lang).startsWith(lang) && prefNames.some(n => lower(v.name).includes(n)))
-          if (femaleByName) return femaleByName
-          const anyByLang = spanish.find(v => lower(v.lang).startsWith(lang))
-          if (anyByLang) return anyByLang
-        }
-        // As last resort, any Spanish voice with preferred name
-        const anyFemale = spanish.find(v => prefNames.some(n => lower(v.name).includes(n)))
-        return anyFemale || spanish[0]
-      };
-
-      const pickAndSpeak = () => {
-        const voices = synth.getVoices ? synth.getVoices() : [];
-        const chosen = pickPreferredSpanishVoice(voices, utter.lang)
-        if (chosen) {
-          utter.voice = chosen
-          // sync utter.lang to chosen to avoid engine mismatches
-          utter.lang = chosen.lang || utter.lang
-        }
-        synth.cancel(); // ensure clean start
-        synth.speak(utter);
-      };
-
-      // Some browsers load voices asynchronously
-      if (synth.getVoices && synth.getVoices().length === 0) {
-        let hasSpoken = false;
-        const onVoices = () => {
-          if (!hasSpoken) {
-            hasSpoken = true;
-            pickAndSpeak();
-          }
-          synth.removeEventListener('voiceschanged', onVoices);
-        };
-        synth.addEventListener('voiceschanged', onVoices);
-        // Fallback speak after a short delay in case event doesn't fire
-        setTimeout(() => {
-          if (!hasSpoken) {
-            hasSpoken = true;
-            pickAndSpeak();
-          }
-        }, 500);
-      } else {
-        pickAndSpeak();
-      }
-    } catch (e) {
-      console.warn('TTS unavailable:', e);
-    }
-  };
+  // TTS extracted to hook
+  const { getSpeakText, speak } = useSpeech();
 
   const handleSpeak = () => {
-    const text = getSpeakText();
+    const text = getSpeakText({ currentItem, result, isReverse, isDouble });
     if (text) speak(text);
   };
 
@@ -619,88 +399,21 @@ export default function Drill({
 
       {/* Reverse mode interface */}
       {isReverse && (
-        <div className="reverse-container">
-          <div className="reverse-badge">Invertí la consigna</div>
-          <div className="reverse-subtle">
-            {inSpecific ? 'Decí el infinitivo y la persona' : 'Decí el infinitivo, la persona, el modo y el tiempo'}
-          </div>
-          <div className="reverse-divider" />
-
-          <div className="reverse-grid">
-            <div className="reverse-field">
-              <label className="reverse-label">Infinitivo</label>
-              <input 
-                className="reverse-input" 
-                value={infinitiveGuess} 
-                onChange={(e)=>setInfinitiveGuess(e.target.value)} 
-                onKeyDown={handleReverseKeyDown} 
-                placeholder="escribir, tener..." 
-                autoFocus
-              />
-            </div>
-
-            {showPersonField && (
-              <div className="reverse-field">
-                <label className="reverse-label">Persona</label>
-                <select 
-                  className="reverse-select" 
-                  value={personGuess} 
-                  onChange={(e)=>setPersonGuess(e.target.value)} 
-                  onKeyDown={handleReverseKeyDown}
-                >
-                  <option value="">Seleccioná persona...</option>
-                  {personOptions.map(p => <option key={p.v} value={p.v}>{p.l}</option>)}
-                </select>
-              </div>
-            )}
-
-            {showMoodField && (
-              <div className="reverse-field">
-                <label className="reverse-label">Modo</label>
-                <select 
-                  className="reverse-select" 
-                  value={moodGuess} 
-                  onChange={(e)=>{ setMoodGuess(e.target.value); setTenseGuess(''); }} 
-                  onKeyDown={handleReverseKeyDown}
-                >
-                  <option value="">Seleccioná modo...</option>
-                  {moodOptions.map(m => <option key={m.v} value={m.v}>{getMoodLabel(m.v)}</option>)}
-                </select>
-              </div>
-            )}
-
-            {showTenseField && (
-              <div className="reverse-field">
-                <label className="reverse-label">Tiempo</label>
-                <select 
-                  className="reverse-select" 
-                  value={tenseGuess} 
-                  onChange={(e)=>setTenseGuess(e.target.value)} 
-                  onKeyDown={handleReverseKeyDown} 
-                  disabled={!moodGuess}
-                >
-                  <option value="">Seleccioná tiempo...</option>
-                  {(tenseOptionsByMood[moodGuess]||[]).map(t => <option key={t} value={t}>{getTenseLabel(t)}</option>)}
-                </select>
-              </div>
-            )}
-          </div>
-          
-          {/* Accent keypad for reverse mode */}
-          {showAccentKeys && (
-            <div className="accent-keypad" style={{ marginTop: '1rem' }}>
-              {specialChars.map(ch => (
-                <button
-                  key={ch}
-                  type="button"
-                  className="accent-key"
-                  onClick={() => insertChar(ch)}
-                  tabIndex={-1}
-                >{ch}</button>
-              ))}
-            </div>
-          )}
-        </div>
+        <ReverseInputs
+          currentItem={currentItem}
+          inSpecific={inSpecific}
+          showAccentKeys={showAccentKeys}
+          result={result}
+          onContinue={handleContinue}
+          onSubmit={async (reverseResult) => {
+            setResult(reverseResult)
+            try {
+              await handleResult(reverseResult)
+            } catch (err) {
+              console.error('Error tracking progress for reverse mode attempt:', err)
+            }
+          }}
+        />
       )}
 
       {/* Double mode interface */}
@@ -784,21 +497,7 @@ export default function Drill({
               Continuar
             </button>
           )
-        ) : isReverse ? (
-          !result ? (
-            <button 
-              className="btn" 
-              onClick={reverseSubmit}
-              disabled={!(infinitiveGuess.trim() && (!showPersonField || personGuess) && (!showMoodField || moodGuess) && (!showTenseField || tenseGuess))}
-            >
-              Verificar
-            </button>
-          ) : (
-            <button className="btn" onClick={handleContinue}>
-              Continuar
-            </button>
-          )
-        ) : (
+        ) : isReverse ? null : (
           !result ? (
             <button 
               className="btn" 
@@ -846,48 +545,16 @@ export default function Drill({
         </div>
       )}
 
-      {/* Resistance HUD - Original timer implementation */}
+      {/* Resistance HUD */}
       {(settings.resistanceActive || showExplosion) && (
-        <div className="resistance-hud">
-          <div 
-            className={`digit-clock ${
-              settings.resistanceMsLeft <= 5000 ? 'urgent' : ''
-            } ${
-              showExplosion ? 'shake' : ''
-            } ${
-              clockClickFeedback ? 'click-feedback' : ''
-            } ${
-              urgentTick ? 'urgent-tick' : ''
-            }`}
-            onClick={() => {
-              // Solo permitir clicks si el modo está activo
-              if (settings.resistanceActive && settings.resistanceMsLeft > 0) {
-                // Add 5 seconds (5000ms) when clicking the clock
-                const currentMs = settings.resistanceMsLeft;
-                settings.set({ resistanceMsLeft: currentMs + 5000 });
-                
-                // Show visual feedback
-                setClockClickFeedback(true);
-                setTimeout(() => setClockClickFeedback(false), 300);
-              }
-            }}
-            style={{ cursor: settings.resistanceActive && settings.resistanceMsLeft > 0 ? 'pointer' : 'default' }}
-            title={settings.resistanceActive && settings.resistanceMsLeft > 0 ? "Click para agregar 5 segundos" : "¡Tiempo agotado!"}
-          >
-            {(() => {
-              const ms = Math.max(0, settings.resistanceMsLeft);
-              const s = Math.floor(ms/1000);
-              const d2 = (n) => String(n).padStart(2,'0');
-              const str = `${d2(Math.floor(s/60))}:${d2(s%60)}`;
-              return str.split('').map((ch, i) => (
-                <span key={i} className={`digit ${ch === ':' ? 'colon' : ''}`}>{ch}</span>
-              ));
-            })()}
-          </div>
-          <div className="resistance-caption">
-            {showExplosion ? '¡Tiempo agotado!' : 'Modo Supervivencia'}
-          </div>
-        </div>
+        <ResistanceHUD
+          isActive={settings.resistanceActive}
+          msLeft={settings.resistanceMsLeft}
+          showExplosion={showExplosion}
+          urgentTick={urgentTick}
+          clockClickFeedback={clockClickFeedback}
+          onClockClick={handleClockClick}
+        />
       )}
     </div>
   );
