@@ -1,11 +1,59 @@
 import { LEVELS } from '../data/levels.js';
 import gates from '../../data/curriculum.json';
 
+// Map curriculum mood keys (which may use Spanish labels) to the
+// canonical internal mood tokens used in forms and across the app.
+function canonicalizeMood(mood) {
+  const map = {
+    // Spanish → canonical (English)
+    'indicativo': 'indicative',
+    'subjuntivo': 'subjunctive',
+    'imperativo': 'imperative',
+    'condicional': 'conditional',
+    // Already canonical or special
+    'indicative': 'indicative',
+    'subjunctive': 'subjunctive',
+    'imperative': 'imperative',
+    'conditional': 'conditional',
+    'nonfinite': 'nonfinite'
+  };
+  return map[mood] || mood;
+}
+
+// Normalize tense keys from possible long/Spanish variants to canonical shorts
+function canonicalizeTense(tense) {
+  const map = {
+    // Indicative longs → shorts
+    'presente': 'pres',
+    'preterito_perfecto_simple': 'pretIndef',
+    'preterito_imperfecto': 'impf',
+    'preterito_perfecto_compuesto': 'pretPerf',
+    'preterito_pluscuamperfecto': 'plusc',
+    'futuro_simple': 'fut',
+    'futuro_compuesto': 'futPerf',
+    // Subjunctive longs → shorts
+    'presente_subjuntivo': 'subjPres',
+    'imperfecto_subjuntivo': 'subjImpf',
+    'preterito_perfecto_subjuntivo': 'subjPerf',
+    'pluscuamperfecto_subjuntivo': 'subjPlusc',
+    'futuro_subjuntivo': 'subjFut',
+    'futuro_perfecto_subjuntivo': 'subjFutPerf',
+    // Imperative longs → shorts
+    'imperativo_afirmativo': 'impAff',
+    'imperativo_negativo': 'impNeg',
+    // Nonfinite Spanish → shorts (defensive)
+    'gerundio': 'ger',
+    'participio': 'part'
+  };
+  return map[tense] || tense;
+}
+
 export function getAllowedCombosForLevel(level) {
   if (!level) return new Set();
-  // Use curriculum.json (canonical) for mood/tense keys
+  // Build list with canonicalized mood/tense to match forms dataset
+  const canonPairs = gates.map(g => `${canonicalizeMood(g.mood)}|${canonicalizeTense(g.tense)}`);
   if (level === 'ALL') {
-    return new Set(gates.map(g => `${g.mood}|${g.tense}`));
+    return new Set(canonPairs);
   }
   const order = ['A1','A2','B1','B2','C1','C2'];
   const maxIdx = order.indexOf(level);
@@ -13,7 +61,7 @@ export function getAllowedCombosForLevel(level) {
   const set = new Set(
     gates
       .filter(g => order.indexOf(g.level) <= maxIdx)
-      .map(g => `${g.mood}|${g.tense}`)
+      .map(g => `${canonicalizeMood(g.mood)}|${canonicalizeTense(g.tense)}`)
   );
   return set;
 }
