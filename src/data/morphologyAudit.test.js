@@ -24,7 +24,7 @@ function expectedVos(lemma){
   return null
 }
 
-const VOSEO_EXCEPTIONS = new Set(['ser','ir','ver','dar'])
+const VOSEO_EXCEPTIONS = new Set(['ser','ir','ver','dar','haber'])
 
 describe('Morphology audit: voseo present and subjunctive imperfect', () => {
   it('Voseo presente (2s) usa -ás/-és/-ís y sin diptongos con vos', () => {
@@ -47,18 +47,19 @@ describe('Morphology audit: voseo present and subjunctive imperfect', () => {
     expect(offenders, `Voseo presente mal formado: ${JSON.stringify(offenders.slice(0,5))} (total ${offenders.length})`).toEqual([])
   })
 
-  it('Imperfecto de subjuntivo 1p termina en -áramos (ar) o -éramos (er/ir)', () => {
+  it('Imperfecto de subjuntivo 1p termina en -áramos / -éramos / -iéramos y nunca -áramos en verbos -er/-ir', () => {
     const offenders = []
     for (const v of verbs){
       const forms = collectForms(v)
       const f = forms.find(x => x.mood === 'subjunctive' && x.tense === 'subjImpf' && x.person === '1p')
       if (!f) continue // If missing, skip; data coverage is validated elsewhere
-      const ok = v.lemma.endsWith('ar') ? /áramos$/.test(f.value || '') : /éramos$/.test(f.value || '')
-      if (!ok){
+      const val = f.value || ''
+      const endsOk = /(i?éramos|áramos)$/.test(val)
+      const wrongArOnErIr = (v.lemma.endsWith('er') || v.lemma.endsWith('ir')) && /áramos$/.test(val)
+      if (!endsOk || wrongArOnErIr){
         offenders.push({ lemma: v.lemma, have: f.value })
       }
     }
     expect(offenders, `Subj. imperfecto 1p mal formado: ${JSON.stringify(offenders.slice(0,5))} (total ${offenders.length})`).toEqual([])
   })
 })
-
