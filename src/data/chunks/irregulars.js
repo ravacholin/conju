@@ -92796,7 +92796,7 @@ export const verbs = [
             "tense": "pres",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "convienís",
+            "value": "convenís",
             "tags": [],
             "region": "es"
           },
@@ -92804,7 +92804,7 @@ export const verbs = [
             "tense": "pretIndef",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "convin",
+            "value": "conviniste",
             "tags": [],
             "region": "es"
           },
@@ -92812,7 +92812,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "2s_vos",
-            "value": "convenras",
+            "value": "convinieras",
             "tags": [],
             "region": "es"
           },
@@ -93556,7 +93556,7 @@ export const verbs = [
             "tense": "pres",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "previenís",
+            "value": "prevenís",
             "tags": [],
             "region": "es"
           },
@@ -93564,7 +93564,7 @@ export const verbs = [
             "tense": "pretIndef",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "previn",
+            "value": "previniste",
             "tags": [],
             "region": "es"
           },
@@ -93572,7 +93572,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "2s_vos",
-            "value": "prevenras",
+            "value": "previnieras",
             "tags": [],
             "region": "es"
           },
