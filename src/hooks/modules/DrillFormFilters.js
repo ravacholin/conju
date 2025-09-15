@@ -304,12 +304,40 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
       return t
     }
     if (verbType === 'irregular') return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular')
-    // verbType === 'regular' - CRITICAL FIX with debugging
-    const regularForms = forms.filter(f => {
-      const actualType = f.verbType || getLemmaType(f.lemma)
-      return actualType === 'regular'
-    })
-    return regularForms
+    // verbType === 'regular'
+    // Primary set: forms whose LEMMA is regular (pure regular verbs)
+    const pureRegularForms = forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'regular')
+
+    // Secondary set: forms that are morphologically regular even if the lemma is irregular
+    const isIrregularForm = (f) => {
+      if (!f || !f.value) return false
+      if (f.mood === 'nonfinite') {
+        return !isRegularNonfiniteForm(f.lemma, f.tense, f.value)
+      }
+      if (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc') {
+        return !isRegularNonfiniteForm(f.lemma, 'part', (f.value || '').split(/\s+/).pop()) && hasIrregularParticiple(f.lemma)
+      }
+      return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
+    }
+    const regularFormsOfIrregularLemmas = forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular' && !isIrregularForm(f))
+
+    // Bias: keep majority pure regulars; allow up to 25% spill-in from irregular lemmas
+    const spillRatio = 0.25
+    const quota = Math.max(0, Math.floor(pureRegularForms.length * spillRatio))
+    let spill = []
+    if (quota > 0 && regularFormsOfIrregularLemmas.length > 0) {
+      // Random sample without replacement up to quota
+      const pool = regularFormsOfIrregularLemmas.slice()
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp
+      }
+      spill = pool.slice(0, quota)
+    } else if (pureRegularForms.length === 0) {
+      // Fallback: if no pure regular lemmas available, at least allow regular-by-morphology forms
+      spill = regularFormsOfIrregularLemmas
+    }
+    return [...pureRegularForms, ...spill]
   }
   // mode === 'tense' (default): decide per-form by morphology/tense
   if (verbType === 'irregular') {
