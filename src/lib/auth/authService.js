@@ -52,6 +52,18 @@ class AuthService {
     } catch (error) {
       console.warn('Failed to clear auth storage:', error)
     }
+
+    // Clear sync configuration to prevent cross-user data leaks
+    try {
+      // Import dynamically to avoid circular dependency
+      import('../progress/userManager.js').then(({ clearSyncAuthToken }) => {
+        clearSyncAuthToken()
+      }).catch(() => {
+        // Silent fail if userManager is not available
+      })
+    } catch (error) {
+      console.warn('Could not clear sync token on logout:', error)
+    }
   }
 
   // Authentication methods

@@ -220,6 +220,32 @@ export function createAuthRoutes() {
     }
   })
 
+  // Multi-device data synchronization download
+  router.post('/sync/download', requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.auth
+      const accountData = mergeAccountData(accountId)
+
+      console.log(`📥 Sync download for account ${accountId}: ${JSON.stringify({
+        attempts: accountData.attempts?.length || 0,
+        mastery: accountData.mastery?.length || 0,
+        schedules: accountData.schedules?.length || 0
+      })}`)
+
+      res.json({
+        success: true,
+        data: accountData,
+        timestamp: Date.now()
+      })
+    } catch (error) {
+      console.error('Account sync download error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to download account data'
+      })
+    }
+  })
+
   return router
 }
 

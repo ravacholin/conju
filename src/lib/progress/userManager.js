@@ -1,13 +1,14 @@
 // Gestor de usuario y ajustes persistentes en el cliente
 
 import { getCurrentUserId as getIdFromProgress } from './index.js'
-import { 
+import {
   getAttemptsByUser,
   getMasteryByUser,
   updateInDB,
   getAllFromDB
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
+import authService from '../auth/authService.js'
 
 const LS_KEY = 'progress-user-settings'
 const USER_ID_STORAGE_KEY = 'progress-system-user-id'
@@ -65,13 +66,24 @@ export function setSyncAuthToken(token, { persist = false } = {}) {
 }
 
 export function getSyncAuthToken() {
+  // Priority 1: Use auth service token if user is authenticated
+  const authToken = authService.getToken()
+  if (authToken) {
+    return authToken
+  }
+
+  // Priority 2: Use manually set token
   if (SYNC_AUTH_TOKEN) return SYNC_AUTH_TOKEN
+
+  // Priority 3: Use stored token
   try {
     if (typeof window !== 'undefined') {
       const t = window.localStorage.getItem(SYNC_AUTH_TOKEN_KEY)
       if (t) return t
     }
   } catch {}
+
+  // Priority 4: Use environment token
   const envToken = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_TOKEN) ||
                    (typeof process !== 'undefined' && process?.env?.VITE_PROGRESS_SYNC_TOKEN) ||
                    null
@@ -318,6 +330,176 @@ async function wakeUpServer() {
 }
 
 /**
+ * Downloads and merges data from all devices of the authenticated account
+ */
+export async function syncAccountData() {
+  const isAuthenticated = authService.isLoggedIn()
+  if (!isAuthenticated) {
+    console.log('❌ Account sync failed: user not authenticated')
+    return { success: false, reason: 'not_authenticated' }
+  }
+
+  if (!isSyncEnabled()) {
+    console.log('❌ Account sync failed: not enabled. URL:', SYNC_BASE_URL)
+    return { success: false, reason: 'sync_disabled' }
+  }
+
+  if (!isBrowserOnline()) {
+    console.log('❌ Account sync failed: browser offline')
+    return { success: false, reason: 'offline' }
+  }
+
+  console.log('🔄 Iniciando sincronización de cuenta multi-dispositivo...')
+
+  // Wake up server first
+  await wakeUpServer()
+
+  try {
+    // Get merged data from all account devices
+    const response = await postJSON('/auth/sync/download', {})
+    const accountData = response.data || {}
+
+    console.log('📥 Datos recibidos de la cuenta:', {
+      attempts: accountData.attempts?.length || 0,
+      mastery: accountData.mastery?.length || 0,
+      schedules: accountData.schedules?.length || 0
+    })
+
+    // Merge with local data
+    const mergeResults = await mergeAccountDataLocally(accountData)
+
+    console.log('✅ Sincronización de cuenta completada:', mergeResults)
+    return { success: true, merged: mergeResults }
+  } catch (error) {
+    console.error('❌ Error en sincronización de cuenta:', error)
+    return { success: false, error: String(error) }
+  }
+}
+
+/**
+ * Merges account data with local data, resolving conflicts intelligently
+ */
+async function mergeAccountDataLocally(accountData) {
+  const results = { attempts: 0, mastery: 0, schedules: 0, conflicts: 0 }
+  const currentUserId = getCurrentUserId()
+
+  // Merge attempts
+  if (accountData.attempts) {
+    for (const remoteAttempt of accountData.attempts) {
+      try {
+        // Check if we already have this attempt
+        const existingAttempts = await getAttemptsByUser(currentUserId)
+        const existing = existingAttempts.find(a =>
+          a.verbId === remoteAttempt.verbId &&
+          a.mood === remoteAttempt.mood &&
+          a.tense === remoteAttempt.tense &&
+          Math.abs(new Date(a.createdAt).getTime() - new Date(remoteAttempt.createdAt).getTime()) < 5000
+        )
+
+        if (!existing) {
+          // Add new attempt with current user ID
+          const localAttempt = {
+            ...remoteAttempt,
+            userId: currentUserId,
+            id: `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            syncedAt: new Date()
+          }
+          await updateInDB(STORAGE_CONFIG.STORES.ATTEMPTS, localAttempt.id, localAttempt)
+          results.attempts++
+        }
+      } catch (error) {
+        console.warn('Error merging attempt:', error)
+        results.conflicts++
+      }
+    }
+  }
+
+  // Merge mastery (keep best scores)
+  if (accountData.mastery) {
+    for (const remoteMastery of accountData.mastery) {
+      try {
+        const existingMastery = await getMasteryByUser(currentUserId)
+        const existing = existingMastery.find(m =>
+          m.verbId === remoteMastery.verbId &&
+          m.mood === remoteMastery.mood &&
+          m.tense === remoteMastery.tense
+        )
+
+        if (!existing) {
+          // Add new mastery record
+          const localMastery = {
+            ...remoteMastery,
+            userId: currentUserId,
+            id: `mastery-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            syncedAt: new Date()
+          }
+          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, localMastery.id, localMastery)
+          results.mastery++
+        } else if (remoteMastery.score > existing.score) {
+          // Update with better score
+          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, existing.id, {
+            ...existing,
+            score: remoteMastery.score,
+            attempts: Math.max(existing.attempts || 0, remoteMastery.attempts || 0),
+            lastPracticed: new Date(Math.max(
+              new Date(existing.lastPracticed || 0).getTime(),
+              new Date(remoteMastery.lastPracticed || 0).getTime()
+            )),
+            syncedAt: new Date()
+          })
+          results.mastery++
+        }
+      } catch (error) {
+        console.warn('Error merging mastery:', error)
+        results.conflicts++
+      }
+    }
+  }
+
+  // Merge schedules (keep most recent)
+  if (accountData.schedules) {
+    const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
+    const userSchedules = allSchedules.filter(s => s.userId === currentUserId)
+
+    for (const remoteSchedule of accountData.schedules) {
+      try {
+        const existing = userSchedules.find(s =>
+          s.verbId === remoteSchedule.verbId &&
+          s.mood === remoteSchedule.mood &&
+          s.tense === remoteSchedule.tense
+        )
+
+        if (!existing) {
+          // Add new schedule
+          const localSchedule = {
+            ...remoteSchedule,
+            userId: currentUserId,
+            id: `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            syncedAt: new Date()
+          }
+          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, localSchedule.id, localSchedule)
+          results.schedules++
+        } else if (new Date(remoteSchedule.updatedAt || 0) > new Date(existing.updatedAt || 0)) {
+          // Update with more recent schedule
+          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, existing.id, {
+            ...existing,
+            ...remoteSchedule,
+            userId: currentUserId,
+            syncedAt: new Date()
+          })
+          results.schedules++
+        }
+      } catch (error) {
+        console.warn('Error merging schedule:', error)
+        results.conflicts++
+      }
+    }
+  }
+
+  return results
+}
+
+/**
  * Sincroniza intentos, mastery y schedules del usuario actual.
  * Envia solo registros sin syncedAt.
  */
@@ -344,6 +526,20 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   // Wake up server first (Render free tier issue)
   console.log('⏰ Despertando servidor antes de sincronizar...')
   await wakeUpServer()
+
+  // If user is authenticated, also perform account data sync
+  if (authService.isLoggedIn()) {
+    console.log('🔑 Usuario autenticado: realizando sincronización de cuenta multi-dispositivo')
+    try {
+      const accountSyncResult = await syncAccountData()
+      if (accountSyncResult.success) {
+        console.log('✅ Sincronización de cuenta completada:', accountSyncResult.merged)
+      }
+    } catch (error) {
+      console.warn('⚠️ Error en sincronización de cuenta:', error.message)
+      // Continue with regular sync even if account sync fails
+    }
+  }
 
   const results = {}
   try {
@@ -443,6 +639,7 @@ export default {
   getSyncEndpoint,
   isSyncEnabled,
   syncNow,
+  syncAccountData,
   flushSyncQueue,
   setSyncAuthToken,
   getSyncAuthToken,
