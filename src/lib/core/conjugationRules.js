@@ -278,7 +278,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
       if (tense === 'pres') {
         if (person === '1s' && normalizedValue === normalize(lemma.replace(/ir$/, 'o'))) return true
         if (person === '2s_tu' && normalizedValue === normalize(lemma.replace(/ir$/, 'es'))) return true
-        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'és'))) return true
+        if (person === '2s_vos' && normalizedValue === normalize(lemma.replace(/ir$/, 'ís'))) return true
         if (person === '3s' && normalizedValue === normalize(lemma.replace(/ir$/, 'e'))) return true
         if (person === '1p' && normalizedValue === normalize(lemma.replace(/ir$/, 'imos'))) return true
         if (person === '2p_vosotros' && normalizedValue === normalize(lemma.replace(/ir$/, 'ís'))) return true
