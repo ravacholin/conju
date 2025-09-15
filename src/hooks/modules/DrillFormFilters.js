@@ -268,8 +268,10 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
 export const filterByVerbType = (forms, verbType, settings = null) => {
   if (!verbType || verbType === 'all') return forms
   
-  // Default: lemma mode for 'regular' (prefer pure regular lemmas), tense mode for 'irregular'
-  const mode = settings?.irregularityFilterMode || (verbType === 'regular' ? 'lemma' : 'tense') // 'tense' | 'lemma'
+  // Enforce: when user asks for 'regular', we filter by lemma (pure regular verbs only),
+  // regardless of the global irregularityFilterMode. This matches user expectation.
+  // For 'irregular', respect per-form detection (tense mode) unless explicitly overridden.
+  const mode = verbType === 'regular' ? 'lemma' : (settings?.irregularityFilterMode || 'tense') // 'tense' | 'lemma'
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
