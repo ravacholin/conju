@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import authService from '../../lib/auth/authService.js'
 import './AuthModal.css'
 
@@ -12,6 +12,31 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     password: '',
     name: ''
   })
+
+  // Listen for Google auth events
+  useEffect(() => {
+    const handleGoogleSuccess = (event) => {
+      setLoading(false)
+      authService.emitLoginEvent()
+      onSuccess?.(event.detail)
+      onClose()
+      // Reset form
+      setFormData({ email: '', password: '', name: '' })
+    }
+
+    const handleGoogleError = (event) => {
+      setLoading(false)
+      setError(event.detail.error || 'Error con Google OAuth')
+    }
+
+    window.addEventListener('google-auth-success', handleGoogleSuccess)
+    window.addEventListener('google-auth-error', handleGoogleError)
+
+    return () => {
+      window.removeEventListener('google-auth-success', handleGoogleSuccess)
+      window.removeEventListener('google-auth-error', handleGoogleError)
+    }
+  }, [onSuccess, onClose])
 
   const handleInputChange = (e) => {
     setFormData({
@@ -55,8 +80,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   }
 
   const handleGoogleLogin = async () => {
-    setError('Google OAuth próximamente disponible')
-    // TODO: Implement Google OAuth
+    setError('')
+    setLoading(true)
+
+    try {
+      if (!authService.isGoogleAvailable()) {
+        setError('Google OAuth no está configurado. Contacte al administrador.')
+        return
+      }
+
+      await authService.triggerGoogleSignIn()
+      // The actual login will be handled by the event listeners in authService
+    } catch (error) {
+      setError(error.message || 'Error al iniciar sesión con Google')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const switchMode = () => {
@@ -147,9 +186,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             type="button"
             onClick={handleGoogleLogin}
             className="google-login-btn"
-            disabled={loading}
+            disabled={loading || !authService.isGoogleAvailable()}
+            title={!authService.isGoogleAvailable() ? 'Google OAuth no configurado' : ''}
           >
-            🌐 Continuar con Google
+            🌐 {authService.isGoogleAvailable() ? 'Continuar con Google' : 'Google OAuth (no configurado)'}
           </button>
 
           <div className="auth-switch">

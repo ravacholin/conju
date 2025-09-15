@@ -1,5 +1,12 @@
 // Authentication service for Spanish Conjugator
 
+import {
+  initializeGoogleAuth,
+  triggerGoogleSignIn,
+  isGoogleAuthConfigured,
+  getDeviceName
+} from './googleAuth.js'
+
 const API_BASE = import.meta.env.VITE_PROGRESS_SYNC_URL || 'https://conju.onrender.com/api'
 
 class AuthService {
@@ -8,6 +15,8 @@ class AuthService {
     this.user = null
     this.account = null
     this.loadFromStorage()
+    this.initializeGoogleAuth()
+    this.setupGoogleEventListeners()
   }
 
   // Storage management
@@ -300,6 +309,99 @@ class AuthService {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('auth-login'))
     }
+  }
+
+  // Google OAuth methods
+  async initializeGoogleAuth() {
+    if (typeof window === 'undefined') return
+
+    try {
+      await initializeGoogleAuth()
+      console.log('✅ Google OAuth initialized in AuthService')
+    } catch (error) {
+      console.warn('⚠️ Failed to initialize Google OAuth:', error.message)
+    }
+  }
+
+  setupGoogleEventListeners() {
+    if (typeof window === 'undefined') return
+
+    // Listen for Google auth success
+    window.addEventListener('google-auth-success', async (event) => {
+      const googleUser = event.detail
+      try {
+        await this.loginWithGoogle(googleUser)
+      } catch (error) {
+        console.error('Failed to process Google login:', error)
+      }
+    })
+
+    // Listen for Google auth errors
+    window.addEventListener('google-auth-error', (event) => {
+      const error = event.detail.error
+      console.error('Google auth error:', error)
+    })
+  }
+
+  async loginWithGoogle(googleUser) {
+    try {
+      const deviceName = getDeviceName()
+
+      const data = {
+        googleId: googleUser.googleId,
+        email: googleUser.email,
+        name: googleUser.name,
+        deviceName
+      }
+
+      const response = await fetch(`${API_BASE}/auth/google`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Google login failed')
+      }
+
+      // Store auth data
+      this.token = result.token
+      this.user = result.user
+      this.account = result.account
+      this.saveToStorage()
+
+      console.log('✅ Google login successful:', {
+        email: this.account.email,
+        name: this.account.name,
+        device: this.user.deviceName
+      })
+
+      return result
+    } catch (error) {
+      console.error('❌ Google login error:', error)
+      throw error
+    }
+  }
+
+  async triggerGoogleSignIn() {
+    try {
+      if (!isGoogleAuthConfigured()) {
+        throw new Error('Google OAuth no está configurado correctamente')
+      }
+
+      return await triggerGoogleSignIn()
+    } catch (error) {
+      console.error('Failed to trigger Google Sign-In:', error)
+      throw error
+    }
+  }
+
+  isGoogleAvailable() {
+    return isGoogleAuthConfigured()
   }
 }
 

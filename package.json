@@ -39,6 +39,7 @@
     "quality:fix": "npm run lint -- --fix"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "diff": "^8.0.2",
     "idb": "^8.0.3",
     "idb-keyval": "^6.2.2",
