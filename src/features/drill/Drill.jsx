@@ -7,8 +7,8 @@ import { useSettings } from '../../state/settings.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 import ReverseInputs from './ReverseInputs.jsx';
 import ResistanceHUD from './ResistanceHUD.jsx';
-import { useSpeech } from './useSpeech.ts';
-import { useResistanceTimer } from './useResistanceTimer.ts';
+import { useSpeech } from './useSpeech';
+import { useResistanceTimer } from './useResistanceTimer';
 
 export default function Drill({ 
   currentItem, 
