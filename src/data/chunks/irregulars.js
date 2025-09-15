@@ -110117,7 +110117,7 @@ export const verbs = [
             "tense": "fut",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "intervenirás",
+            "value": "intervendrás",
             "tags": [],
             "region": "es"
           },
@@ -110125,7 +110125,7 @@ export const verbs = [
             "tense": "cond",
             "mood": "conditional",
             "person": "2s_vos",
-            "value": "intervenirías",
+            "value": "intervendrías",
             "tags": [],
             "region": "es"
           },
@@ -110149,7 +110149,7 @@ export const verbs = [
             "tense": "pres",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "intervienís",
+            "value": "intervenís",
             "tags": [],
             "region": "es"
           },
@@ -110157,7 +110157,7 @@ export const verbs = [
             "tense": "pretIndef",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "intervin",
+            "value": "interviniste",
             "tags": [],
             "region": "es"
           },
@@ -110165,7 +110165,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1s",
-            "value": "intervinra",
+            "value": "interviniera",
             "tags": [],
             "region": "es"
           },
@@ -110173,7 +110173,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "2s_tu",
-            "value": "intervinras",
+            "value": "intervinieras",
             "tags": [],
             "region": "es"
           },
@@ -110181,7 +110181,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "2s_vos",
-            "value": "intervinras",
+            "value": "intervinieras",
             "tags": [],
             "region": "es"
           },
@@ -110189,7 +110189,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "3s",
-            "value": "intervinra",
+            "value": "interviniera",
             "tags": [],
             "region": "es"
           },
@@ -110197,7 +110197,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "intervínramos",
+            "value": "interviniéramos",
             "tags": [],
             "region": "es"
           },
@@ -110205,7 +110205,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "2p_vosotros",
-            "value": "intervinrais",
+            "value": "intervinierais",
             "tags": [],
             "region": "es"
           },
@@ -110213,7 +110213,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "3p",
-            "value": "intervinran",
+            "value": "intervinieran",
             "tags": [],
             "region": "es"
           },
