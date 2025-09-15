@@ -6,7 +6,7 @@ import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
 import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple as HAS_IRREGULAR_PARTICIPLE } from './conjugationRules.js'
 import { levelPrioritizer as LEVEL_PRIORITIZER, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
-import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
+import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel as GET_ALLOWED_COMBOS } from './curriculumGate.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
 import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePolicy.js'
 import {
@@ -33,23 +33,8 @@ const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITES
 
 // Fast lookups (ahora usando cache optimizado)
 const LEMMA_TO_VERB = VERB_LOOKUP_MAP
-const allowedCombosCache = new Map() // level -> Set("mood|tense")
-function getAllowedCombosForLevel(level) {
-  if (allowedCombosCache.has(level)) return allowedCombosCache.get(level)
-  if (level === 'ALL') {
-    const all = new Set(gates.map(g => `${g.mood}|${g.tense}`))
-    allowedCombosCache.set(level, all)
-    return all
-  }
-  const maxIdx = levelOrder(level)
-  const set = new Set(
-    gates
-      .filter(g => levelOrder(g.level) <= maxIdx)
-      .map(g => `${g.mood}|${g.tense}`)
-  )
-  allowedCombosCache.set(level, set)
-  return set
-}
+// Use canonical gate from curriculumGate (handles Spanish/English key normalization)
+const getAllowedCombosForLevel = (level) => GET_ALLOWED_COMBOS(level)
 
 const REGULAR_MOOD_MEMO = new Map() // key: lemma|mood|tense|person|value
 const REGULAR_NONFINITE_MEMO = new Map() // key: lemma|tense|value
@@ -521,6 +506,18 @@ export async function chooseNext({forms, history: _history, currentItem, session
   
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
+
+  // SAFETY GUARD: In mixed practice by level, ensure we don't get stuck
+  // serving only nonfinite forms (gerund/participle). If there are finite
+  // options available, prefer them by excluding nonfinite from the pool.
+  if ((practiceMode === 'mixed' || !practiceMode) && eligible && eligible.length > 0) {
+    try {
+      const finiteOnly = eligible.filter(f => f && f.mood !== 'nonfinite')
+      if (finiteOnly.length > 0) {
+        eligible = finiteOnly
+      }
+    } catch { /* keep existing eligible pool on any error */ }
+  }
 
   // ENHANCED: Strong preference for PURE regular lemmas when user selects 'regular'
   if (verbType === 'regular') {
