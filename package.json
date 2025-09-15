@@ -34,7 +34,8 @@
     "audit:duplicates": "node scripts/audit/audit-duplicates.js",
     "audit:regularity": "node scripts/audit/audit-regularity.js",
     "audit:irregular": "node scripts/audit/audit-irregular-consistency.js",
-    "audit:all": "node scripts/audit/run-audits.js",
+    "audit:morphology": "vitest run src/data/morphologyAudit.test.js && node scripts/audit-morphology.js",
+    "audit:all": "node scripts/audit/run-audits.js && npm run audit:morphology",
     "quality:check": "npm run lint && npm run test:run && npm run audit:all",
     "quality:fix": "npm run lint -- --fix"
   },
