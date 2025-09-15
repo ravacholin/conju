@@ -66,7 +66,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "llegaste",
             "accepts": {
-              "vos": "llegaste"
+              "vos": "llegás"
             }
           },
           {
@@ -203,7 +203,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has llegado",
+            "value": "llegás",
             "tags": [],
             "region": "es"
           },
@@ -1837,7 +1837,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "estuviste",
             "accepts": {
-              "vos": "estuviste"
+              "vos": "estás"
             }
           },
           {
@@ -1980,7 +1980,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has estado",
+            "value": "estás",
             "tags": [],
             "region": "es"
           },
@@ -2685,7 +2685,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "tuviste",
             "accepts": {
-              "vos": "tuviste"
+              "vos": "tenés"
             }
           },
           {
@@ -2839,7 +2839,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
-            "value": "tené"
+            "value": "tenés"
           },
           {
             "mood": "imperative",
@@ -3517,7 +3517,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "hiciste",
             "accepts": {
-              "vos": "hiciste"
+              "vos": "hacés"
             }
           },
           {
@@ -3671,7 +3671,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
-            "value": "hacé"
+            "value": "hacés"
           },
           {
             "mood": "imperative",
@@ -6097,7 +6097,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "ves",
             "accepts": {
-              "vos": "ves"
+              "vos": "decís"
             }
           },
           {
@@ -8796,7 +8796,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "quieres",
             "accepts": {
-              "vos": "querés"
+              "vos": "sabés"
             },
             "rules": [
               "STEM_E_IE"
@@ -9577,7 +9577,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "quisáramos",
+            "value": "quisiéramos",
             "tags": [],
             "region": "es"
           },
@@ -9752,7 +9752,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pones",
             "accepts": {
-              "vos": "ponés"
+              "vos": "querés"
             }
           },
           {
@@ -9791,7 +9791,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pusiste",
             "accepts": {
-              "vos": "pusiste"
+              "vos": "ponés"
             }
           },
           {
@@ -9945,7 +9945,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
-            "value": "poné"
+            "value": "ponés"
           },
           {
             "mood": "imperative",
@@ -10628,7 +10628,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "debiste",
             "accepts": {
-              "vos": "debiste"
+              "vos": "debés"
             }
           },
           {
@@ -10732,7 +10732,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has debido",
+            "value": "debés",
             "tags": [],
             "region": "es"
           },
@@ -11284,7 +11284,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "débramos",
+            "value": "debiéramos",
             "tags": [],
             "region": "es"
           },
@@ -11417,7 +11417,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "parezcas",
             "accepts": {
-              "vos": "parezcas"
+              "vos": "parecés"
             }
           },
           {
@@ -11482,7 +11482,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has parecido",
+            "value": "parecés",
             "tags": [],
             "region": "es"
           },
@@ -12082,7 +12082,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "parecáramos",
+            "value": "pareciéramos",
             "tags": [],
             "region": "es"
           },

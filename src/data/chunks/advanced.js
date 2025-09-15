@@ -3109,7 +3109,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "necesitas",
             "accepts": {
-              "vos": "necesitás"
+              "vos": "caminás"
             }
           },
           {
@@ -3861,7 +3861,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "ayudas",
             "accepts": {
-              "vos": "ayudás"
+              "vos": "necesitás"
             }
           },
           {
@@ -4613,7 +4613,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "bebes",
             "accepts": {
-              "vos": "bebés"
+              "vos": "ayudás"
             }
           },
           {

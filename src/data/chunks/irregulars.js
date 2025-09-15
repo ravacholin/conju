@@ -901,7 +901,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cantas",
             "accepts": {
-              "vos": "cantás"
+              "vos": "bailás"
             }
           },
           {
@@ -1775,7 +1775,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "escuchas",
             "accepts": {
-              "vos": "escuchás"
+              "vos": "cantás"
             }
           },
           {
@@ -2652,7 +2652,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "duermes",
             "accepts": {
-              "vos": "dormís"
+              "vos": "escuchás"
             },
             "rules": [
               "STEM_O_UE"
@@ -3505,7 +3505,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "juegas",
             "accepts": {
-              "vos": "jugás"
+              "vos": "dormís"
             },
             "rules": [
               "STEM_U_UE"
@@ -4391,7 +4391,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "compras",
             "accepts": {
-              "vos": "comprás"
+              "vos": "jugás"
             }
           },
           {
@@ -5164,7 +5164,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "puedes",
             "accepts": {
-              "vos": "podés"
+              "vos": "comprás"
             }
           },
           {
@@ -5203,7 +5203,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pudiste",
             "accepts": {
-              "vos": "pudiste"
+              "vos": "podés"
             }
           },
           {
@@ -5385,7 +5385,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has podido",
+            "value": "podés",
             "tags": [],
             "region": "es"
           },
@@ -6040,7 +6040,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "trajiste",
             "accepts": {
-              "vos": "trajiste"
+              "vos": "traés"
             }
           },
           {
@@ -6144,7 +6144,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has traido",
+            "value": "traés",
             "tags": [],
             "region": "es"
           },
@@ -6893,7 +6893,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "caíste",
             "accepts": {
-              "vos": "caíste"
+              "vos": "caés"
             }
           },
           {
@@ -6997,7 +6997,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has caido",
+            "value": "caés",
             "tags": [],
             "region": "es"
           },
@@ -8403,7 +8403,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "válramos",
+            "value": "valiéramos",
             "tags": [],
             "region": "es"
           },
@@ -8481,7 +8481,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "amas",
             "accepts": {
-              "vos": "amás"
+              "vos": "valés"
             }
           },
           {
@@ -10000,7 +10000,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "vendáramos",
+            "value": "vendiéramos",
             "tags": [],
             "region": "es"
           },
@@ -10081,7 +10081,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cabes",
             "accepts": {
-              "vos": "cabés"
+              "vos": "vendés"
             }
           },
           {
@@ -11675,7 +11675,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "respondáramos",
+            "value": "respondiéramos",
             "tags": [],
             "region": "es"
           },
@@ -12568,7 +12568,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "corráramos",
+            "value": "corriéramos",
             "tags": [],
             "region": "es"
           },
@@ -12649,7 +12649,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "lees",
             "accepts": {
-              "vos": "leés"
+              "vos": "corrés"
             }
           },
           {
@@ -12688,7 +12688,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "leíste",
             "accepts": {
-              "vos": "leíste"
+              "vos": "leés"
             }
           },
           {
@@ -12792,7 +12792,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has leido",
+            "value": "leés",
             "tags": [],
             "region": "es"
           },
@@ -13479,7 +13479,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "abras",
             "accepts": {
-              "vos": "abras"
+              "vos": "abrís"
             }
           },
           {
@@ -13577,7 +13577,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has abierto",
+            "value": "abrís",
             "tags": [],
             "region": "es"
           },
@@ -14302,7 +14302,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cubras",
             "accepts": {
-              "vos": "cubras"
+              "vos": "cubrís"
             }
           },
           {
@@ -14400,7 +14400,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has cubierto",
+            "value": "cubrís",
             "tags": [],
             "region": "es"
           },
@@ -14992,7 +14992,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "cubráramos",
+            "value": "cubriéramos",
             "tags": [],
             "region": "es"
           },
@@ -15898,7 +15898,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "descubráramos",
+            "value": "descubriéramos",
             "tags": [],
             "region": "es"
           },
@@ -16797,7 +16797,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "subáramos",
+            "value": "subiéramos",
             "tags": [],
             "region": "es"
           },
@@ -17691,7 +17691,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "decidáramos",
+            "value": "decidiéramos",
             "tags": [],
             "region": "es"
           },
@@ -18585,7 +18585,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "permitáramos",
+            "value": "permitiéramos",
             "tags": [],
             "region": "es"
           },
@@ -19479,7 +19479,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "sufráramos",
+            "value": "sufriéramos",
             "tags": [],
             "region": "es"
           },
@@ -20373,7 +20373,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "unáramos",
+            "value": "uniéramos",
             "tags": [],
             "region": "es"
           },
@@ -20455,7 +20455,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "naces",
             "accepts": {
-              "vos": "nacés"
+              "vos": "unís"
             }
           },
           {
@@ -20494,7 +20494,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "nazcas",
             "accepts": {
-              "vos": "nazcas"
+              "vos": "nacés"
             }
           },
           {
@@ -20559,7 +20559,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has nacido",
+            "value": "nacés",
             "tags": [],
             "region": "es"
           },
@@ -21159,7 +21159,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "nacáramos",
+            "value": "naciéramos",
             "tags": [],
             "region": "es"
           },
@@ -21402,7 +21402,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "crezcas",
             "accepts": {
-              "vos": "crezcas"
+              "vos": "crecés"
             }
           },
           {
@@ -21467,7 +21467,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has crecido",
+            "value": "crecés",
             "tags": [],
             "region": "es"
           },
@@ -22067,7 +22067,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "crecáramos",
+            "value": "creciéramos",
             "tags": [],
             "region": "es"
           },
@@ -23083,7 +23083,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "obedecáramos",
+            "value": "obedeciéramos",
             "tags": [],
             "region": "es"
           },
@@ -23977,7 +23977,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "merecáramos",
+            "value": "mereciéramos",
             "tags": [],
             "region": "es"
           },
@@ -24871,7 +24871,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "agradecáramos",
+            "value": "agradeciéramos",
             "tags": [],
             "region": "es"
           },
@@ -25765,7 +25765,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "establecáramos",
+            "value": "estableciéramos",
             "tags": [],
             "region": "es"
           },
@@ -26659,7 +26659,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "ofrecáramos",
+            "value": "ofreciéramos",
             "tags": [],
             "region": "es"
           },
@@ -27553,7 +27553,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "condujáramos",
+            "value": "condujéramos",
             "tags": [],
             "region": "es"
           },
@@ -28448,7 +28448,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "tradujáramos",
+            "value": "tradujéramos",
             "tags": [],
             "region": "es"
           },
@@ -29343,7 +29343,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "introducáramos",
+            "value": "introduciéramos",
             "tags": [],
             "region": "es"
           },
@@ -30237,7 +30237,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "redujáramos",
+            "value": "redujéramos",
             "tags": [],
             "region": "es"
           },
@@ -30320,7 +30320,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "construyes",
             "accepts": {
-              "vos": "construís"
+              "vos": "reducís"
             }
           },
           {
@@ -30359,7 +30359,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "construiste",
             "accepts": {
-              "vos": "construiste"
+              "vos": "construís"
             }
           },
           {
@@ -30463,7 +30463,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has construido",
+            "value": "construís",
             "tags": [],
             "region": "es"
           },
@@ -31212,7 +31212,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "destruiste",
             "accepts": {
-              "vos": "destruiste"
+              "vos": "destruís"
             }
           },
           {
@@ -31316,7 +31316,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has destruido",
+            "value": "destruís",
             "tags": [],
             "region": "es"
           },
@@ -32065,7 +32065,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "incluiste",
             "accepts": {
-              "vos": "incluiste"
+              "vos": "incluís"
             }
           },
           {
@@ -32169,7 +32169,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has incluido",
+            "value": "incluís",
             "tags": [],
             "region": "es"
           },
@@ -32918,7 +32918,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "concluiste",
             "accepts": {
-              "vos": "concluiste"
+              "vos": "concluís"
             }
           },
           {
@@ -33022,7 +33022,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has concluido",
+            "value": "concluís",
             "tags": [],
             "region": "es"
           },
@@ -33771,7 +33771,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "excluiste",
             "accepts": {
-              "vos": "excluiste"
+              "vos": "excluís"
             }
           },
           {
@@ -33875,7 +33875,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has excluido",
+            "value": "excluís",
             "tags": [],
             "region": "es"
           },
@@ -34427,7 +34427,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "exclúyramos",
+            "value": "excluyéramos",
             "tags": [],
             "region": "es"
           },
@@ -34565,7 +34565,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "huiste",
             "accepts": {
-              "vos": "huiste"
+              "vos": "huís"
             }
           },
           {
@@ -34669,7 +34669,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has huido",
+            "value": "huís",
             "tags": [],
             "region": "es"
           },
@@ -35418,7 +35418,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "contribuiste",
             "accepts": {
-              "vos": "contribuiste"
+              "vos": "contribuís"
             }
           },
           {
@@ -35522,7 +35522,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has contribuido",
+            "value": "contribuís",
             "tags": [],
             "region": "es"
           },
@@ -36271,7 +36271,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "distribuiste",
             "accepts": {
-              "vos": "distribuiste"
+              "vos": "distribuís"
             }
           },
           {
@@ -36375,7 +36375,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has distribuido",
+            "value": "distribuís",
             "tags": [],
             "region": "es"
           },
@@ -37124,7 +37124,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "atribuiste",
             "accepts": {
-              "vos": "atribuiste"
+              "vos": "atribuís"
             }
           },
           {
@@ -37228,7 +37228,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has atribuido",
+            "value": "atribuís",
             "tags": [],
             "region": "es"
           },
@@ -37780,7 +37780,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "atribúyramos",
+            "value": "atribuyéramos",
             "tags": [],
             "region": "es"
           },
@@ -38626,7 +38626,7 @@ export const verbs = [
               "STEM_E_I"
             ],
             "accepts": {
-              "vos": "servís"
+              "vos": "andás"
             }
           },
           {
@@ -39424,7 +39424,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "sírvramos",
+            "value": "sirviéramos",
             "tags": [],
             "region": "es"
           },
@@ -39508,7 +39508,7 @@ export const verbs = [
               "STEM_E_I"
             ],
             "accepts": {
-              "vos": "repetís"
+              "vos": "servís"
             }
           },
           {
@@ -40175,7 +40175,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "repítramos",
+            "value": "repitiéramos",
             "tags": [],
             "region": "es"
           },
@@ -40387,7 +40387,7 @@ export const verbs = [
               "DIPHT_O_UE"
             ],
             "accepts": {
-              "vos": "morís"
+              "vos": "repetís"
             }
           },
           {
@@ -41054,7 +41054,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "múrramos",
+            "value": "muriéramos",
             "tags": [],
             "region": "es"
           },
@@ -41265,7 +41265,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sacas",
             "accepts": {
-              "vos": "sacás"
+              "vos": "morís"
             }
           },
           {
@@ -41304,7 +41304,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sacaste",
             "accepts": {
-              "vos": "sacaste"
+              "vos": "sacás"
             }
           },
           {
@@ -41408,7 +41408,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has sacado",
+            "value": "sacás",
             "tags": [],
             "region": "es"
           },
@@ -42088,7 +42088,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "sácramos",
+            "value": "sacáramos",
             "tags": [],
             "region": "es"
           },
@@ -42204,7 +42204,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "protejas",
             "accepts": {
-              "vos": "protejas"
+              "vos": "protegés"
             }
           },
           {
@@ -42269,7 +42269,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has protegido",
+            "value": "protegés",
             "tags": [],
             "region": "es"
           },
@@ -42869,7 +42869,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "protegáramos",
+            "value": "protegiéramos",
             "tags": [],
             "region": "es"
           },
@@ -43169,7 +43169,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has cogido",
+            "value": "cogés",
             "tags": [],
             "region": "es"
           },
@@ -43769,7 +43769,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "cogáramos",
+            "value": "cogiéramos",
             "tags": [],
             "region": "es"
           },
@@ -43973,7 +43973,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cierras",
             "accepts": {
-              "vos": "cerrás"
+              "vos": "cogés"
             }
           },
           {
@@ -44012,7 +44012,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cierres",
             "accepts": {
-              "vos": "cierres"
+              "vos": "cerrás"
             }
           },
           {
@@ -44077,7 +44077,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has cerrado",
+            "value": "cerrás",
             "tags": [],
             "region": "es"
           },
@@ -44581,7 +44581,7 @@ export const verbs = [
             "tense": "pres",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "cierrás",
+            "value": "cerrás",
             "tags": [],
             "region": "es"
           },
@@ -44871,7 +44871,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "muestres",
             "accepts": {
-              "vos": "muestres"
+              "vos": "mostrás"
             }
           },
           {
@@ -44936,7 +44936,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has mostrado",
+            "value": "mostrás",
             "tags": [],
             "region": "es"
           },
@@ -45730,7 +45730,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "organizaste",
             "accepts": {
-              "vos": "organizaste"
+              "vos": "organizás"
             }
           },
           {
@@ -45834,7 +45834,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has organizado",
+            "value": "organizás",
             "tags": [],
             "region": "es"
           },
@@ -46466,7 +46466,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "organízramos",
+            "value": "organizáramos",
             "tags": [],
             "region": "es"
           },
@@ -46906,7 +46906,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "instruiste",
             "accepts": {
-              "vos": "instruiste"
+              "vos": "instruís"
             }
           },
           {
@@ -47010,7 +47010,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has instruido",
+            "value": "instruís",
             "tags": [],
             "region": "es"
           },
@@ -47562,7 +47562,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "instrúyramos",
+            "value": "instruyéramos",
             "tags": [],
             "region": "es"
           },
@@ -47700,7 +47700,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sustituiste",
             "accepts": {
-              "vos": "sustituiste"
+              "vos": "sustituís"
             }
           },
           {
@@ -47804,7 +47804,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has sustituido",
+            "value": "sustituís",
             "tags": [],
             "region": "es"
           },
@@ -48356,7 +48356,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "sustitúyramos",
+            "value": "sustituyéramos",
             "tags": [],
             "region": "es"
           },
@@ -48494,7 +48494,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "reñiste",
             "accepts": {
-              "vos": "reñiste"
+              "vos": "reñís"
             }
           },
           {
@@ -48598,7 +48598,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has reñido",
+            "value": "reñís",
             "tags": [],
             "region": "es"
           },
@@ -49150,7 +49150,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "réñramos",
+            "value": "riñéramos",
             "tags": [],
             "region": "es"
           },
@@ -49271,7 +49271,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "teñiste",
             "accepts": {
-              "vos": "teñiste"
+              "vos": "teñís"
             }
           },
           {
@@ -49375,7 +49375,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has teñido",
+            "value": "teñís",
             "tags": [],
             "region": "es"
           },
@@ -49927,7 +49927,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "téñramos",
+            "value": "tiñéramos",
             "tags": [],
             "region": "es"
           },
@@ -50048,7 +50048,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "ceñiste",
             "accepts": {
-              "vos": "ceñiste"
+              "vos": "ceñís"
             }
           },
           {
@@ -50152,7 +50152,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has ceñido",
+            "value": "ceñís",
             "tags": [],
             "region": "es"
           },
@@ -50704,7 +50704,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "céñramos",
+            "value": "ciñéramos",
             "tags": [],
             "region": "es"
           },
@@ -50825,7 +50825,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "bulliste",
             "accepts": {
-              "vos": "bulliste"
+              "vos": "bullís"
             }
           },
           {
@@ -50929,7 +50929,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has bullido",
+            "value": "bullís",
             "tags": [],
             "region": "es"
           },
@@ -51481,7 +51481,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "búllramos",
+            "value": "bulléramos",
             "tags": [],
             "region": "es"
           },
@@ -51601,7 +51601,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "engulliste",
             "accepts": {
-              "vos": "engulliste"
+              "vos": "engullís"
             }
           },
           {
@@ -51705,7 +51705,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has engullido",
+            "value": "engullís",
             "tags": [],
             "region": "es"
           },
@@ -52257,7 +52257,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "engúllramos",
+            "value": "engulléramos",
             "tags": [],
             "region": "es"
           },
@@ -52377,7 +52377,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "zambulliste",
             "accepts": {
-              "vos": "zambulliste"
+              "vos": "zambullís"
             }
           },
           {
@@ -52481,7 +52481,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has zambullido",
+            "value": "zambullís",
             "tags": [],
             "region": "es"
           },
@@ -53033,7 +53033,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "zambúllramos",
+            "value": "zambulléramos",
             "tags": [],
             "region": "es"
           },
@@ -53153,7 +53153,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "argüiste",
             "accepts": {
-              "vos": "argüiste"
+              "vos": "argüís"
             }
           },
           {
@@ -53257,7 +53257,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has argüido",
+            "value": "argüís",
             "tags": [],
             "region": "es"
           },
@@ -53809,7 +53809,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "árgüramos",
+            "value": "arguyéramos",
             "tags": [],
             "region": "es"
           },
@@ -53930,7 +53930,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "erguiste",
             "accepts": {
-              "vos": "erguiste"
+              "vos": "erguís"
             }
           },
           {
@@ -54034,7 +54034,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has erguido",
+            "value": "erguís",
             "tags": [],
             "region": "es"
           },
@@ -54586,7 +54586,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "ergúyramos",
+            "value": "irguiéramos",
             "tags": [],
             "region": "es"
           },
@@ -54707,7 +54707,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "apagaste",
             "accepts": {
-              "vos": "apagaste"
+              "vos": "apagás"
             }
           },
           {
@@ -54811,7 +54811,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has apagado",
+            "value": "apagás",
             "tags": [],
             "region": "es"
           },
@@ -55363,7 +55363,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "apágramos",
+            "value": "apagáramos",
             "tags": [],
             "region": "es"
           },
@@ -55482,7 +55482,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cargaste",
             "accepts": {
-              "vos": "cargaste"
+              "vos": "cargás"
             }
           },
           {
@@ -55586,7 +55586,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has cargado",
+            "value": "cargás",
             "tags": [],
             "region": "es"
           },
@@ -56138,7 +56138,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "cárgramos",
+            "value": "cargáramos",
             "tags": [],
             "region": "es"
           },
@@ -56257,7 +56257,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "navegaste",
             "accepts": {
-              "vos": "navegaste"
+              "vos": "navegás"
             }
           },
           {
@@ -56361,7 +56361,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has navegado",
+            "value": "navegás",
             "tags": [],
             "region": "es"
           },
@@ -56913,7 +56913,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "navégramos",
+            "value": "navegáramos",
             "tags": [],
             "region": "es"
           },
@@ -57032,7 +57032,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "obtuviste",
             "accepts": {
-              "vos": "obtuviste"
+              "vos": "obtenés"
             }
           },
           {
@@ -57175,7 +57175,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has obtenido",
+            "value": "obtenés",
             "tags": [],
             "region": "es"
           },
@@ -57679,7 +57679,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "obténramos",
+            "value": "obtuviéramos",
             "tags": [],
             "region": "es"
           },
@@ -57800,7 +57800,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "retuviste",
             "accepts": {
-              "vos": "retuviste"
+              "vos": "retenés"
             }
           },
           {
@@ -57943,7 +57943,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has retenido",
+            "value": "retenés",
             "tags": [],
             "region": "es"
           },
@@ -58447,7 +58447,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "reténramos",
+            "value": "retuviéramos",
             "tags": [],
             "region": "es"
           },
@@ -58568,7 +58568,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "detuviste",
             "accepts": {
-              "vos": "detuviste"
+              "vos": "detenés"
             }
           },
           {
@@ -58711,7 +58711,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has detenido",
+            "value": "detenés",
             "tags": [],
             "region": "es"
           },
@@ -59215,7 +59215,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "deténramos",
+            "value": "detuviéramos",
             "tags": [],
             "region": "es"
           },
@@ -59336,7 +59336,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "compusiste",
             "accepts": {
-              "vos": "compusiste"
+              "vos": "componés"
             }
           },
           {
@@ -59479,7 +59479,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has compuesto",
+            "value": "componés",
             "tags": [],
             "region": "es"
           },
@@ -59983,7 +59983,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "compónramos",
+            "value": "compusiéramos",
             "tags": [],
             "region": "es"
           },
@@ -60109,7 +60109,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "propusiste",
             "accepts": {
-              "vos": "propusiste"
+              "vos": "proponés"
             }
           },
           {
@@ -60252,7 +60252,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has propuesto",
+            "value": "proponés",
             "tags": [],
             "region": "es"
           },
@@ -60756,7 +60756,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "propónramos",
+            "value": "propusiéramos",
             "tags": [],
             "region": "es"
           },
@@ -60882,7 +60882,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "usaste",
             "accepts": {
-              "vos": "usaste"
+              "vos": "usás"
             }
           },
           {
@@ -60986,7 +60986,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has usado",
+            "value": "usás",
             "tags": [],
             "region": "es"
           },
@@ -61538,7 +61538,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "úsramos",
+            "value": "usáramos",
             "tags": [],
             "region": "es"
           },
@@ -61655,7 +61655,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "averiguaste",
             "accepts": {
-              "vos": "averiguaste"
+              "vos": "averiguás"
             }
           },
           {
@@ -61759,7 +61759,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has averiguado",
+            "value": "averiguás",
             "tags": [],
             "region": "es"
           },
@@ -62311,7 +62311,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "averigúramos",
+            "value": "averiguáramos",
             "tags": [],
             "region": "es"
           },
@@ -62428,7 +62428,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "apaciguaste",
             "accepts": {
-              "vos": "apaciguaste"
+              "vos": "apaciguás"
             }
           },
           {
@@ -62532,7 +62532,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has apaciguado",
+            "value": "apaciguás",
             "tags": [],
             "region": "es"
           },
@@ -63201,7 +63201,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "continuaste",
             "accepts": {
-              "vos": "continuaste"
+              "vos": "continuás"
             }
           },
           {
@@ -63305,7 +63305,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has continuado",
+            "value": "continuás",
             "tags": [],
             "region": "es"
           },
@@ -63974,7 +63974,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "actuaste",
             "accepts": {
-              "vos": "actuaste"
+              "vos": "actuás"
             }
           },
           {
@@ -64078,7 +64078,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has actuado",
+            "value": "actuás",
             "tags": [],
             "region": "es"
           },
@@ -64630,7 +64630,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "actúramos",
+            "value": "actuáramos",
             "tags": [],
             "region": "es"
           },
@@ -64747,7 +64747,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "evaluaste",
             "accepts": {
-              "vos": "evaluaste"
+              "vos": "evaluás"
             }
           },
           {
@@ -64851,7 +64851,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has evaluado",
+            "value": "evaluás",
             "tags": [],
             "region": "es"
           },
@@ -65403,7 +65403,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "evalúramos",
+            "value": "evaluáramos",
             "tags": [],
             "region": "es"
           },
@@ -65520,7 +65520,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "enviaste",
             "accepts": {
-              "vos": "enviaste"
+              "vos": "enviás"
             }
           },
           {
@@ -65624,7 +65624,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has enviado",
+            "value": "enviás",
             "tags": [],
             "region": "es"
           },
@@ -66176,7 +66176,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "envíramos",
+            "value": "enviáramos",
             "tags": [],
             "region": "es"
           },
@@ -66293,7 +66293,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "confiaste",
             "accepts": {
-              "vos": "confiaste"
+              "vos": "confiás"
             }
           },
           {
@@ -66397,7 +66397,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has confiado",
+            "value": "confiás",
             "tags": [],
             "region": "es"
           },
@@ -66949,7 +66949,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "confíramos",
+            "value": "confiáramos",
             "tags": [],
             "region": "es"
           },
@@ -67066,7 +67066,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "guiaste",
             "accepts": {
-              "vos": "guiaste"
+              "vos": "guiás"
             }
           },
           {
@@ -67170,7 +67170,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has guiado",
+            "value": "guiás",
             "tags": [],
             "region": "es"
           },
@@ -67722,7 +67722,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "guíramos",
+            "value": "guiáramos",
             "tags": [],
             "region": "es"
           },
@@ -67839,7 +67839,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "prohibiste",
             "accepts": {
-              "vos": "prohibiste"
+              "vos": "prohibís"
             }
           },
           {
@@ -67943,7 +67943,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has prohibido",
+            "value": "prohibís",
             "tags": [],
             "region": "es"
           },
@@ -68495,7 +68495,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "prohíbramos",
+            "value": "prohibiéramos",
             "tags": [],
             "region": "es"
           },
@@ -68613,7 +68613,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "reuniste",
             "accepts": {
-              "vos": "reuniste"
+              "vos": "reunís"
             }
           },
           {
@@ -68717,7 +68717,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has reunido",
+            "value": "reunís",
             "tags": [],
             "region": "es"
           },
@@ -69269,7 +69269,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "reúnramos",
+            "value": "reuniéramos",
             "tags": [],
             "region": "es"
           },
@@ -69387,7 +69387,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "aislaste",
             "accepts": {
-              "vos": "aislaste"
+              "vos": "aislás"
             }
           },
           {
@@ -69491,7 +69491,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has aislado",
+            "value": "aislás",
             "tags": [],
             "region": "es"
           },
@@ -70043,7 +70043,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "aíslramos",
+            "value": "aisláramos",
             "tags": [],
             "region": "es"
           },
@@ -70160,7 +70160,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "fraguaste",
             "accepts": {
-              "vos": "fraguaste"
+              "vos": "fraguás"
             }
           },
           {
@@ -70264,7 +70264,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has fraguado",
+            "value": "fraguás",
             "tags": [],
             "region": "es"
           },
@@ -70816,7 +70816,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "fragúramos",
+            "value": "fraguáramos",
             "tags": [],
             "region": "es"
           },
@@ -70934,7 +70934,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "menguaste",
             "accepts": {
-              "vos": "menguaste"
+              "vos": "menguás"
             }
           },
           {
@@ -71038,7 +71038,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has menguado",
+            "value": "menguás",
             "tags": [],
             "region": "es"
           },
@@ -71590,7 +71590,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "mengúramos",
+            "value": "menguáramos",
             "tags": [],
             "region": "es"
           },
@@ -71708,7 +71708,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "podriste",
             "accepts": {
-              "vos": "podriste"
+              "vos": "podrís"
             }
           },
           {
@@ -71812,7 +71812,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has podrido",
+            "value": "podrís",
             "tags": [],
             "region": "es"
           },
@@ -72364,7 +72364,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "pódrramos",
+            "value": "pudriéramos",
             "tags": [],
             "region": "es"
           },
@@ -72485,7 +72485,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "tocaste",
             "accepts": {
-              "vos": "tocaste"
+              "vos": "tocás"
             }
           },
           {
@@ -72589,7 +72589,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has tocado",
+            "value": "tocás",
             "tags": [],
             "region": "es"
           },
@@ -73141,7 +73141,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "tócramos",
+            "value": "tocáramos",
             "tags": [],
             "region": "es"
           },
@@ -73260,7 +73260,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "practicaste",
             "accepts": {
-              "vos": "practicaste"
+              "vos": "practicás"
             }
           },
           {
@@ -73364,7 +73364,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has practicado",
+            "value": "practicás",
             "tags": [],
             "region": "es"
           },
@@ -73916,7 +73916,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "practícramos",
+            "value": "practicáramos",
             "tags": [],
             "region": "es"
           },
@@ -74035,7 +74035,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "explicaste",
             "accepts": {
-              "vos": "explicaste"
+              "vos": "explicás"
             }
           },
           {
@@ -74139,7 +74139,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has explicado",
+            "value": "explicás",
             "tags": [],
             "region": "es"
           },
@@ -74691,7 +74691,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "explícramos",
+            "value": "explicáramos",
             "tags": [],
             "region": "es"
           },
@@ -75060,7 +75060,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "solías",
             "accepts": {
-              "vos": "solías"
+              "vos": "solés"
             }
           },
           {
@@ -75164,7 +75164,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has solido",
+            "value": "solés",
             "tags": [],
             "region": "es"
           },
@@ -75700,7 +75700,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "soláramos",
+            "value": "soliéramos",
             "tags": [],
             "region": "es"
           },
@@ -75813,7 +75813,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "imprimiste",
             "accepts": {
-              "vos": "imprimiste"
+              "vos": "imprimís"
             }
           },
           {
@@ -75923,7 +75923,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has imprimido",
+            "value": "imprimís",
             "tags": [],
             "region": "es"
           },
@@ -76592,7 +76592,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "proveíste",
             "accepts": {
-              "vos": "proveíste"
+              "vos": "proveés"
             }
           },
           {
@@ -76702,7 +76702,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has proveido",
+            "value": "proveés",
             "tags": [],
             "region": "es"
           },
@@ -77373,7 +77373,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "obligaste",
             "accepts": {
-              "vos": "obligaste"
+              "vos": "obligás"
             }
           },
           {
@@ -77477,7 +77477,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has obligado",
+            "value": "obligás",
             "tags": [],
             "region": "es"
           },
@@ -78029,7 +78029,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "oblígramos",
+            "value": "obligáramos",
             "tags": [],
             "region": "es"
           },
@@ -78148,7 +78148,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "desaguaste",
             "accepts": {
-              "vos": "desaguaste"
+              "vos": "desaguás"
             }
           },
           {
@@ -78252,7 +78252,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has desaguado",
+            "value": "desaguás",
             "tags": [],
             "region": "es"
           },
@@ -78804,7 +78804,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "desagúramos",
+            "value": "desaguáramos",
             "tags": [],
             "region": "es"
           },
@@ -78922,7 +78922,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "atestiguaste",
             "accepts": {
-              "vos": "atestiguaste"
+              "vos": "atestiguás"
             }
           },
           {
@@ -79026,7 +79026,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has atestiguado",
+            "value": "atestiguás",
             "tags": [],
             "region": "es"
           },
@@ -79578,7 +79578,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "atestigúramos",
+            "value": "atestiguáramos",
             "tags": [],
             "region": "es"
           },
@@ -79696,7 +79696,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "aguaste",
             "accepts": {
-              "vos": "aguaste"
+              "vos": "aguás"
             }
           },
           {
@@ -79800,7 +79800,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has aguado",
+            "value": "aguás",
             "tags": [],
             "region": "es"
           },
@@ -80352,7 +80352,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "agúramos",
+            "value": "aguáramos",
             "tags": [],
             "region": "es"
           },
@@ -80470,7 +80470,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "santiguaste",
             "accepts": {
-              "vos": "santiguaste"
+              "vos": "santiguás"
             }
           },
           {
@@ -80574,7 +80574,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has santiguado",
+            "value": "santiguás",
             "tags": [],
             "region": "es"
           },
@@ -81126,7 +81126,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "santigúramos",
+            "value": "santiguáramos",
             "tags": [],
             "region": "es"
           },
@@ -81244,7 +81244,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "gruñiste",
             "accepts": {
-              "vos": "gruñiste"
+              "vos": "gruñís"
             }
           },
           {
@@ -81348,7 +81348,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has gruñido",
+            "value": "gruñís",
             "tags": [],
             "region": "es"
           },
@@ -81900,7 +81900,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "grúñramos",
+            "value": "gruñéramos",
             "tags": [],
             "region": "es"
           },
@@ -82020,7 +82020,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "dirigiste",
             "accepts": {
-              "vos": "dirigiste"
+              "vos": "dirigís"
             }
           },
           {
@@ -82124,7 +82124,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has dirigido",
+            "value": "dirigís",
             "tags": [],
             "region": "es"
           },
@@ -82676,7 +82676,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "dirígramos",
+            "value": "dirigiéramos",
             "tags": [],
             "region": "es"
           },
@@ -82795,7 +82795,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "corregiste",
             "accepts": {
-              "vos": "corregiste"
+              "vos": "corregís"
             }
           },
           {
@@ -82899,7 +82899,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has corregido",
+            "value": "corregís",
             "tags": [],
             "region": "es"
           },
@@ -83451,7 +83451,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "currégramos",
+            "value": "corrigiéramos",
             "tags": [],
             "region": "es"
           },
@@ -83572,7 +83572,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "recogiste",
             "accepts": {
-              "vos": "recogiste"
+              "vos": "recogés"
             }
           },
           {
@@ -83676,7 +83676,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has recogido",
+            "value": "recogés",
             "tags": [],
             "region": "es"
           },
@@ -84228,7 +84228,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "recógramos",
+            "value": "recogiéramos",
             "tags": [],
             "region": "es"
           },
@@ -84347,7 +84347,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "escogiste",
             "accepts": {
-              "vos": "escogiste"
+              "vos": "escogés"
             }
           },
           {
@@ -84451,7 +84451,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has escogido",
+            "value": "escogés",
             "tags": [],
             "region": "es"
           },
@@ -85003,7 +85003,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "escógramos",
+            "value": "escogiéramos",
             "tags": [],
             "region": "es"
           },
@@ -85122,7 +85122,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "proseguiste",
             "accepts": {
-              "vos": "proseguiste"
+              "vos": "proseguís"
             }
           },
           {
@@ -85226,7 +85226,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has proseguido",
+            "value": "proseguís",
             "tags": [],
             "region": "es"
           },
@@ -85778,7 +85778,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "prosegúyramos",
+            "value": "prosiguiéramos",
             "tags": [],
             "region": "es"
           },
@@ -85899,7 +85899,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "atacaste",
             "accepts": {
-              "vos": "atacaste"
+              "vos": "atacás"
             }
           },
           {
@@ -86003,7 +86003,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has atacado",
+            "value": "atacás",
             "tags": [],
             "region": "es"
           },
@@ -86555,7 +86555,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "atácramos",
+            "value": "atacáramos",
             "tags": [],
             "region": "es"
           },
@@ -86674,7 +86674,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "aplicaste",
             "accepts": {
-              "vos": "aplicaste"
+              "vos": "aplicás"
             }
           },
           {
@@ -86778,7 +86778,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has aplicado",
+            "value": "aplicás",
             "tags": [],
             "region": "es"
           },
@@ -87330,7 +87330,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "aplícramos",
+            "value": "aplicáramos",
             "tags": [],
             "region": "es"
           },
@@ -87449,7 +87449,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "fabricaste",
             "accepts": {
-              "vos": "fabricaste"
+              "vos": "fabricás"
             }
           },
           {
@@ -87553,7 +87553,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has fabricado",
+            "value": "fabricás",
             "tags": [],
             "region": "es"
           },
@@ -88105,7 +88105,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "fabrícramos",
+            "value": "fabricáramos",
             "tags": [],
             "region": "es"
           },
@@ -88224,7 +88224,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "mantuviste",
             "accepts": {
-              "vos": "mantuviste"
+              "vos": "mantenés"
             }
           },
           {
@@ -88406,7 +88406,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has mantenido",
+            "value": "mantenés",
             "tags": [],
             "region": "es"
           },
@@ -88862,7 +88862,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "manténramos",
+            "value": "mantuviéramos",
             "tags": [],
             "region": "es"
           },
@@ -88984,7 +88984,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "contuviste",
             "accepts": {
-              "vos": "contuviste"
+              "vos": "contenés"
             }
           },
           {
@@ -89088,7 +89088,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has contenido",
+            "value": "contenés",
             "tags": [],
             "region": "es"
           },
@@ -89640,7 +89640,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "conténramos",
+            "value": "contuviéramos",
             "tags": [],
             "region": "es"
           },
@@ -89760,7 +89760,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "almorzaste",
             "accepts": {
-              "vos": "almorzaste"
+              "vos": "almorzás"
             }
           },
           {
@@ -89864,7 +89864,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has almorzado",
+            "value": "almorzás",
             "tags": [],
             "region": "es"
           },
@@ -90496,7 +90496,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "almórzramos",
+            "value": "almorzáramos",
             "tags": [],
             "region": "es"
           },
@@ -90612,7 +90612,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "utilizaste",
             "accepts": {
-              "vos": "utilizaste"
+              "vos": "utilizás"
             }
           },
           {
@@ -90716,7 +90716,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has utilizado",
+            "value": "utilizás",
             "tags": [],
             "region": "es"
           },
@@ -91268,7 +91268,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "utilízramos",
+            "value": "utilizáramos",
             "tags": [],
             "region": "es"
           },
@@ -91387,7 +91387,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sostuviste",
             "accepts": {
-              "vos": "sostuviste"
+              "vos": "sostenés"
             }
           },
           {
@@ -91641,7 +91641,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has sostenido",
+            "value": "sostenés",
             "tags": [],
             "region": "es"
           },
@@ -92158,7 +92158,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "conviniste",
             "accepts": {
-              "vos": "conviniste"
+              "vos": "convenís"
             }
           },
           {
@@ -92340,7 +92340,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has convenido",
+            "value": "convenís",
             "tags": [],
             "region": "es"
           },
@@ -92918,7 +92918,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "previniste",
             "accepts": {
-              "vos": "previniste"
+              "vos": "prevenís"
             }
           },
           {
@@ -93100,7 +93100,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has prevenido",
+            "value": "prevenís",
             "tags": [],
             "region": "es"
           },
@@ -93678,7 +93678,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "rehiciste",
             "accepts": {
-              "vos": "rehiciste"
+              "vos": "rehacés"
             }
           },
           {
@@ -93893,7 +93893,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has rehecho",
+            "value": "rehacés",
             "tags": [],
             "region": "es"
           },
@@ -94462,7 +94462,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "rompas",
             "accepts": {
-              "vos": "rompas"
+              "vos": "rompés"
             }
           },
           {
@@ -94560,7 +94560,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has roto",
+            "value": "rompés",
             "tags": [],
             "region": "es"
           },
@@ -95152,7 +95152,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "rompáramos",
+            "value": "rompiéramos",
             "tags": [],
             "region": "es"
           },
@@ -95303,7 +95303,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has agredido",
+            "value": "agredís",
             "tags": [],
             "region": "es"
           },
@@ -95927,7 +95927,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "agrídramos",
+            "value": "agrediéramos",
             "tags": [],
             "region": "es"
           },
@@ -96053,7 +96053,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has blandido",
+            "value": "blandís",
             "tags": [],
             "region": "es"
           },
@@ -96709,7 +96709,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "blandáramos",
+            "value": "blandiéramos",
             "tags": [],
             "region": "es"
           },
@@ -96785,7 +96785,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "prendes",
             "accepts": {
-              "vos": "prendés"
+              "vos": "blandís"
             }
           },
           {
@@ -96824,7 +96824,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "prendas",
             "accepts": {
-              "vos": "prendas"
+              "vos": "prendés"
             }
           },
           {
@@ -96889,7 +96889,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has prendido",
+            "value": "prendés",
             "tags": [],
             "region": "es"
           },
@@ -97489,7 +97489,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "prendáramos",
+            "value": "prendiéramos",
             "tags": [],
             "region": "es"
           },
@@ -97606,7 +97606,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "suspendas",
             "accepts": {
-              "vos": "suspendas"
+              "vos": "suspendés"
             }
           },
           {
@@ -97671,7 +97671,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has suspendido",
+            "value": "suspendés",
             "tags": [],
             "region": "es"
           },
@@ -98271,7 +98271,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "suspendáramos",
+            "value": "suspendiéramos",
             "tags": [],
             "region": "es"
           },
@@ -98388,7 +98388,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pagaste",
             "accepts": {
-              "vos": "pagaste"
+              "vos": "pagás"
             }
           },
           {
@@ -98525,7 +98525,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has pagado",
+            "value": "pagás",
             "tags": [],
             "region": "es"
           },
@@ -99125,7 +99125,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "págramos",
+            "value": "pagáramos",
             "tags": [],
             "region": "es"
           },
@@ -99240,7 +99240,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "entregaste",
             "accepts": {
-              "vos": "entregaste"
+              "vos": "entregás"
             }
           },
           {
@@ -99377,7 +99377,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has entregado",
+            "value": "entregás",
             "tags": [],
             "region": "es"
           },
@@ -99921,7 +99921,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "entrégramos",
+            "value": "entregáramos",
             "tags": [],
             "region": "es"
           },
@@ -100035,7 +100035,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "comenzaste",
             "accepts": {
-              "vos": "comenzaste"
+              "vos": "comenzás"
             }
           },
           {
@@ -100172,7 +100172,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has comenzado",
+            "value": "comenzás",
             "tags": [],
             "region": "es"
           },
@@ -100716,7 +100716,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "coménzramos",
+            "value": "comenzáramos",
             "tags": [],
             "region": "es"
           },
@@ -100831,7 +100831,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "realizaste",
             "accepts": {
-              "vos": "realizaste"
+              "vos": "realizás"
             }
           },
           {
@@ -100968,7 +100968,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has realizado",
+            "value": "realizás",
             "tags": [],
             "region": "es"
           },
@@ -101512,7 +101512,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "realízramos",
+            "value": "realizáramos",
             "tags": [],
             "region": "es"
           },
@@ -101626,7 +101626,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "amplíes",
             "accepts": {
-              "vos": "amplíes"
+              "vos": "ampliás"
             }
           },
           {
@@ -101724,7 +101724,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has ampliado",
+            "value": "ampliás",
             "tags": [],
             "region": "es"
           },
@@ -102425,7 +102425,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "copies",
             "accepts": {
-              "vos": "copies"
+              "vos": "copiás"
             }
           },
           {
@@ -102523,7 +102523,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has copiado",
+            "value": "copiás",
             "tags": [],
             "region": "es"
           },
@@ -103224,7 +103224,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "críes",
             "accepts": {
-              "vos": "críes"
+              "vos": "criás"
             }
           },
           {
@@ -103322,7 +103322,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has criado",
+            "value": "criás",
             "tags": [],
             "region": "es"
           },
@@ -104023,7 +104023,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "varíes",
             "accepts": {
-              "vos": "varíes"
+              "vos": "variás"
             }
           },
           {
@@ -104121,7 +104121,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has variado",
+            "value": "variás",
             "tags": [],
             "region": "es"
           },
@@ -104822,7 +104822,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "aúlles",
             "accepts": {
-              "vos": "aúlles"
+              "vos": "aullás"
             }
           },
           {
@@ -104920,7 +104920,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has aullado",
+            "value": "aullás",
             "tags": [],
             "region": "es"
           },
@@ -105621,7 +105621,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "maúlles",
             "accepts": {
-              "vos": "maúlles"
+              "vos": "maullás"
             }
           },
           {
@@ -105719,7 +105719,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has maullado",
+            "value": "maullás",
             "tags": [],
             "region": "es"
           },
@@ -106420,7 +106420,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "rehúses",
             "accepts": {
-              "vos": "rehúses"
+              "vos": "rehusás"
             }
           },
           {
@@ -106518,7 +106518,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has rehusado",
+            "value": "rehusás",
             "tags": [],
             "region": "es"
           },
@@ -107219,7 +107219,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "descafaínes",
             "accepts": {
-              "vos": "descafaínes"
+              "vos": "descafainás"
             }
           },
           {
@@ -107284,7 +107284,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has descafainado",
+            "value": "descafainás",
             "tags": [],
             "region": "es"
           },
@@ -107999,7 +107999,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "enraizaste",
             "accepts": {
-              "vos": "enraizaste"
+              "vos": "enraizás"
             }
           },
           {
@@ -108103,7 +108103,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has enraizado",
+            "value": "enraizás",
             "tags": [],
             "region": "es"
           },
@@ -108655,7 +108655,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "enraízramos",
+            "value": "enraizáramos",
             "tags": [],
             "region": "es"
           },
@@ -108774,7 +108774,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "deshiciste",
             "accepts": {
-              "vos": "deshiciste"
+              "vos": "deshacés"
             }
           },
           {
@@ -108989,7 +108989,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has deshecho",
+            "value": "deshacés",
             "tags": [],
             "region": "es"
           },
@@ -109437,7 +109437,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "deshácramos",
+            "value": "deshiciéramos",
             "tags": [],
             "region": "es"
           },
@@ -109559,7 +109559,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "interviniste",
             "accepts": {
-              "vos": "interviniste"
+              "vos": "intervenís"
             }
           },
           {
@@ -109741,7 +109741,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has intervenido",
+            "value": "intervenís",
             "tags": [],
             "region": "es"
           },
@@ -110320,7 +110320,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "elegiste",
             "accepts": {
-              "vos": "elegiste"
+              "vos": "elegís"
             }
           },
           {
@@ -110424,7 +110424,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has elegido",
+            "value": "elegís",
             "tags": [],
             "region": "es"
           },
@@ -111056,7 +111056,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "elégramos",
+            "value": "eligiéramos",
             "tags": [],
             "region": "es"
           },
@@ -111173,7 +111173,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "absorbiste",
             "accepts": {
-              "vos": "absorbiste"
+              "vos": "absorbés"
             }
           },
           {
@@ -111277,7 +111277,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has absorbido",
+            "value": "absorbés",
             "tags": [],
             "region": "es"
           },
@@ -111829,7 +111829,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "absórbramos",
+            "value": "absorbiéramos",
             "tags": [],
             "region": "es"
           },
@@ -111946,7 +111946,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "bendijiste",
             "accepts": {
-              "vos": "bendijiste"
+              "vos": "bendecís"
             }
           },
           {
@@ -112128,7 +112128,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has bendecido",
+            "value": "bendecís",
             "tags": [],
             "region": "es"
           },
@@ -112584,7 +112584,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "bendécramos",
+            "value": "bendijéramos",
             "tags": [],
             "region": "es"
           },
@@ -112705,7 +112705,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "comunicaste",
             "accepts": {
-              "vos": "comunicaste"
+              "vos": "comunicás"
             }
           },
           {
@@ -112809,7 +112809,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has comunicado",
+            "value": "comunicás",
             "tags": [],
             "region": "es"
           },
@@ -113361,7 +113361,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "comunícramos",
+            "value": "comunicáramos",
             "tags": [],
             "region": "es"
           },
@@ -113480,7 +113480,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "educaste",
             "accepts": {
-              "vos": "educaste"
+              "vos": "educás"
             }
           },
           {
@@ -113584,7 +113584,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has educado",
+            "value": "educás",
             "tags": [],
             "region": "es"
           },
@@ -114136,7 +114136,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "edúcramos",
+            "value": "educáramos",
             "tags": [],
             "region": "es"
           },
@@ -114255,7 +114255,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "publicaste",
             "accepts": {
-              "vos": "publicaste"
+              "vos": "publicás"
             }
           },
           {
@@ -114359,7 +114359,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has publicado",
+            "value": "publicás",
             "tags": [],
             "region": "es"
           },
@@ -114911,7 +114911,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "publícramos",
+            "value": "publicáramos",
             "tags": [],
             "region": "es"
           },
@@ -115030,7 +115030,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "provocaste",
             "accepts": {
-              "vos": "provocaste"
+              "vos": "provocás"
             }
           },
           {
@@ -115134,7 +115134,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has provocado",
+            "value": "provocás",
             "tags": [],
             "region": "es"
           },
@@ -115686,7 +115686,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "provócramos",
+            "value": "provocáramos",
             "tags": [],
             "region": "es"
           },
@@ -115805,7 +115805,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "colgaste",
             "accepts": {
-              "vos": "colgaste"
+              "vos": "colgás"
             }
           },
           {
@@ -115909,7 +115909,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has colgado",
+            "value": "colgás",
             "tags": [],
             "region": "es"
           },
@@ -116461,7 +116461,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "cólgramos",
+            "value": "colgáramos",
             "tags": [],
             "region": "es"
           },
@@ -116581,7 +116581,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "negaste",
             "accepts": {
-              "vos": "negaste"
+              "vos": "negás"
             }
           },
           {
@@ -116685,7 +116685,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has negado",
+            "value": "negás",
             "tags": [],
             "region": "es"
           },
@@ -117237,7 +117237,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "négramos",
+            "value": "negáramos",
             "tags": [],
             "region": "es"
           },
@@ -117357,7 +117357,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "rogaste",
             "accepts": {
-              "vos": "rogaste"
+              "vos": "rogás"
             }
           },
           {
@@ -117461,7 +117461,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has rogado",
+            "value": "rogás",
             "tags": [],
             "region": "es"
           },
@@ -118013,7 +118013,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "rógramos",
+            "value": "rogáramos",
             "tags": [],
             "region": "es"
           },
@@ -118133,7 +118133,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "castigaste",
             "accepts": {
-              "vos": "castigaste"
+              "vos": "castigás"
             }
           },
           {
@@ -118237,7 +118237,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has castigado",
+            "value": "castigás",
             "tags": [],
             "region": "es"
           },
@@ -118789,7 +118789,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "castígramos",
+            "value": "castigáramos",
             "tags": [],
             "region": "es"
           },
@@ -118908,7 +118908,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "dispusiste",
             "accepts": {
-              "vos": "dispusiste"
+              "vos": "disponés"
             }
           },
           {
@@ -119090,7 +119090,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has dispuesto",
+            "value": "disponés",
             "tags": [],
             "region": "es"
           },
@@ -119546,7 +119546,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "dispónramos",
+            "value": "dispusiéramos",
             "tags": [],
             "region": "es"
           },
@@ -119673,7 +119673,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "expusiste",
             "accepts": {
-              "vos": "expusiste"
+              "vos": "exponés"
             }
           },
           {
@@ -119855,7 +119855,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has expuesto",
+            "value": "exponés",
             "tags": [],
             "region": "es"
           },
@@ -120311,7 +120311,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "expónramos",
+            "value": "expusiéramos",
             "tags": [],
             "region": "es"
           },
@@ -120438,7 +120438,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "supusiste",
             "accepts": {
-              "vos": "supusiste"
+              "vos": "suponés"
             }
           },
           {
@@ -120620,7 +120620,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has supuesto",
+            "value": "suponés",
             "tags": [],
             "region": "es"
           },
@@ -121076,7 +121076,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "supónramos",
+            "value": "supusiéramos",
             "tags": [],
             "region": "es"
           },
@@ -121203,7 +121203,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "impusiste",
             "accepts": {
-              "vos": "impusiste"
+              "vos": "imponés"
             }
           },
           {
@@ -121385,7 +121385,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has impuesto",
+            "value": "imponés",
             "tags": [],
             "region": "es"
           },
@@ -121841,7 +121841,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "impónramos",
+            "value": "impusiéramos",
             "tags": [],
             "region": "es"
           },

@@ -2894,7 +2894,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "miras",
             "accepts": {
-              "vos": "mirás"
+              "vos": "trabajás"
             }
           },
           {
@@ -3771,7 +3771,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "piensas",
             "accepts": {
-              "vos": "pensás"
+              "vos": "mirás"
             },
             "rules": [
               "STEM_E_IE"
@@ -4659,7 +4659,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "empiezas",
             "accepts": {
-              "vos": "empezás"
+              "vos": "pensás"
             },
             "rules": [
               "STEM_E_IE"
@@ -5548,7 +5548,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pierdes",
             "accepts": {
-              "vos": "perdés"
+              "vos": "empezás"
             },
             "rules": [
               "STEM_E_IE"
@@ -6437,7 +6437,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "vuelves",
             "accepts": {
-              "vos": "volvés"
+              "vos": "perdés"
             },
             "rules": [
               "STEM_O_UE"
@@ -7151,7 +7151,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "volváramos",
+            "value": "volviéramos",
             "tags": [],
             "region": "es"
           },
@@ -7331,7 +7331,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "pides",
             "accepts": {
-              "vos": "pedís"
+              "vos": "volvés"
             },
             "rules": [
               "STEM_E_I"
@@ -8234,7 +8234,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sigues",
             "accepts": {
-              "vos": "seguís"
+              "vos": "pedís"
             },
             "rules": [
               "STEM_E_I"
@@ -8948,7 +8948,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "siguáramos",
+            "value": "siguiéramos",
             "tags": [],
             "region": "es"
           },
@@ -9122,7 +9122,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "buscas",
             "accepts": {
-              "vos": "buscás"
+              "vos": "seguís"
             }
           },
           {
@@ -9877,7 +9877,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "vienes",
             "accepts": {
-              "vos": "venís"
+              "vos": "buscás"
             }
           },
           {
@@ -9916,7 +9916,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "viniste",
             "accepts": {
-              "vos": "viniste"
+              "vos": "venís"
             }
           },
           {
@@ -9992,7 +9992,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
-            "value": "vení"
+            "value": "venís"
           },
           {
             "mood": "imperative",
@@ -11428,7 +11428,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "saláramos",
+            "value": "saliéramos",
             "tags": [],
             "region": "es"
           },
@@ -12509,7 +12509,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "crees",
             "accepts": {
-              "vos": "creés"
+              "vos": "escribís"
             }
           },
           {
@@ -12548,7 +12548,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "creíste",
             "accepts": {
-              "vos": "creíste"
+              "vos": "creés"
             }
           },
           {
@@ -12652,7 +12652,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has creído",
+            "value": "creés",
             "tags": [],
             "region": "es"
           },
@@ -15006,7 +15006,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "ocurráramos",
+            "value": "ocurriéramos",
             "tags": [],
             "region": "es"
           },
@@ -15088,7 +15088,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "conoces",
             "accepts": {
-              "vos": "conocés"
+              "vos": "ocurrís"
             }
           },
           {
@@ -15127,7 +15127,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "conozcas",
             "accepts": {
-              "vos": "conozcas"
+              "vos": "conocés"
             }
           },
           {
@@ -15192,7 +15192,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has conocido",
+            "value": "conocés",
             "tags": [],
             "region": "es"
           },
@@ -15792,7 +15792,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "conocáramos",
+            "value": "conociéramos",
             "tags": [],
             "region": "es"
           },
@@ -16808,7 +16808,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "produjáramos",
+            "value": "produjéramos",
             "tags": [],
             "region": "es"
           },
@@ -16891,7 +16891,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cuentas",
             "accepts": {
-              "vos": "contás"
+              "vos": "producís"
             }
           },
           {
@@ -16930,7 +16930,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "cuentes",
             "accepts": {
-              "vos": "cuentes"
+              "vos": "contás"
             }
           },
           {
@@ -16995,7 +16995,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has contado",
+            "value": "contás",
             "tags": [],
             "region": "es"
           },
@@ -17789,7 +17789,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "sientas",
             "accepts": {
-              "vos": "sientas"
+              "vos": "sentís"
             }
           },
           {
@@ -17893,7 +17893,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has sentido",
+            "value": "sentís",
             "tags": [],
             "region": "es"
           },
@@ -18525,7 +18525,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "séntramos",
+            "value": "sintiéramos",
             "tags": [],
             "region": "es"
           },
@@ -18642,7 +18642,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "entendiste",
             "accepts": {
-              "vos": "entendiste"
+              "vos": "entendés"
             }
           },
           {
@@ -18746,7 +18746,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has entendido",
+            "value": "entendés",
             "tags": [],
             "region": "es"
           },
@@ -19298,7 +19298,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "enténdramos",
+            "value": "entendiéramos",
             "tags": [],
             "region": "es"
           },
@@ -19434,7 +19434,7 @@ export const verbs = [
             "person": "2s_tu",
             "value": "encontraste",
             "accepts": {
-              "vos": "encontraste"
+              "vos": "encontrás"
             }
           },
           {
@@ -19571,7 +19571,7 @@ export const verbs = [
             "tense": "pretPerf",
             "mood": "indicative",
             "person": "2s_vos",
-            "value": "has encontrado",
+            "value": "encontrás",
             "tags": [],
             "region": "es"
           },
@@ -20115,7 +20115,7 @@ export const verbs = [
             "tense": "subjImpf",
             "mood": "subjunctive",
             "person": "1p",
-            "value": "encóntrramos",
+            "value": "encontráramos",
             "tags": [],
             "region": "es"
           },
