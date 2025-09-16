@@ -330,9 +330,19 @@ class AuthService {
     window.addEventListener('google-auth-success', async (event) => {
       const googleUser = event.detail
       try {
-        await this.loginWithGoogle(googleUser)
+        console.log('🔵 Processing Google auth success event:', googleUser)
+        const result = await this.processGoogleLogin(googleUser)
+
+        // Emit login event after successful processing
+        this.emitLoginEvent()
+
+        console.log('✅ Google authentication completed successfully')
       } catch (error) {
-        console.error('Failed to process Google login:', error)
+        console.error('❌ Failed to process Google login:', error)
+        // Emit error event
+        window.dispatchEvent(new CustomEvent('google-auth-error', {
+          detail: { error: error.message }
+        }))
       }
     })
 
@@ -343,9 +353,9 @@ class AuthService {
     })
   }
 
-  async loginWithGoogle(googleUser) {
+  async processGoogleLogin(googleUser) {
     try {
-      const deviceName = getDeviceName()
+      const deviceName = this.getDeviceName()
 
       const data = {
         googleId: googleUser.googleId,
@@ -353,6 +363,12 @@ class AuthService {
         name: googleUser.name,
         deviceName
       }
+
+      console.log('🔵 Sending Google login request to server:', {
+        email: data.email,
+        name: data.name,
+        deviceName: data.deviceName
+      })
 
       const response = await fetch(`${API_BASE}/auth/google`, {
         method: 'POST',
@@ -377,12 +393,13 @@ class AuthService {
       console.log('✅ Google login successful:', {
         email: this.account.email,
         name: this.account.name,
-        device: this.user.deviceName
+        device: this.user.deviceName,
+        token: this.token ? 'Present' : 'Missing'
       })
 
       return result
     } catch (error) {
-      console.error('❌ Google login error:', error)
+      console.error('❌ Google login processing error:', error)
       throw error
     }
   }

@@ -13,27 +13,28 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     name: ''
   })
 
-  // Listen for Google auth events
+  // Listen for auth events
   useEffect(() => {
-    const handleGoogleSuccess = (event) => {
+    const handleAuthLogin = (event) => {
+      console.log('🔵 AuthModal: Received auth-login event')
       setLoading(false)
-      authService.emitLoginEvent()
-      onSuccess?.(event.detail)
+      onSuccess?.()
       onClose()
       // Reset form
       setFormData({ email: '', password: '', name: '' })
     }
 
     const handleGoogleError = (event) => {
+      console.log('🔴 AuthModal: Received google-auth-error event:', event.detail)
       setLoading(false)
       setError(event.detail.error || 'Error con Google OAuth')
     }
 
-    window.addEventListener('google-auth-success', handleGoogleSuccess)
+    window.addEventListener('auth-login', handleAuthLogin)
     window.addEventListener('google-auth-error', handleGoogleError)
 
     return () => {
-      window.removeEventListener('google-auth-success', handleGoogleSuccess)
+      window.removeEventListener('auth-login', handleAuthLogin)
       window.removeEventListener('google-auth-error', handleGoogleError)
     }
   }, [onSuccess, onClose])
@@ -67,7 +68,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       }
 
       authService.emitLoginEvent()
-      onSuccess?.(result)
+      onSuccess?.()
       onClose()
 
       // Reset form
