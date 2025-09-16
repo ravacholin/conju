@@ -85,15 +85,26 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       if (!authService.isGoogleAvailable()) {
-        setError('Google OAuth no está configurado. Contacte al administrador.')
+        setError('Google OAuth no está configurado. Usa email y contraseña.')
+        setLoading(false)
         return
       }
 
-      await authService.triggerGoogleSignIn()
-      // The actual login will be handled by the event listeners in authService
+      console.log('🔵 Iniciando Google Sign-In...')
+      const result = await authService.triggerGoogleSignIn()
+
+      if (!result) {
+        setError('Google OAuth no está disponible. Prueba con email y contraseña.')
+        setLoading(false)
+        return
+      }
+
+      // Keep loading state, will be handled by event listeners
+      console.log('🔵 Google Sign-In triggered successfully')
+
     } catch (error) {
-      setError(error.message || 'Error al iniciar sesión con Google')
-    } finally {
+      console.error('🔴 Google login error:', error)
+      setError('Error con Google OAuth. Prueba con email y contraseña.')
       setLoading(false)
     }
   }

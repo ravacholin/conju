@@ -152,18 +152,36 @@ export async function triggerGoogleSignIn() {
       throw new Error('Google Identity Services not available')
     }
 
-    // Show the One Tap prompt
+    // Use popup method instead of One Tap - more reliable
     google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        console.log('Google One Tap was not displayed or was skipped')
-        // Fallback: show popup
-        google.accounts.id.disableAutoSelect()
+      if (notification.isNotDisplayed()) {
+        console.log('Google One Tap blocked, trying alternative method')
+        // Create invisible button and click it
+        const tempDiv = document.createElement('div')
+        tempDiv.style.display = 'none'
+        document.body.appendChild(tempDiv)
+
+        google.accounts.id.renderButton(tempDiv, {
+          theme: 'outline',
+          size: 'large'
+        })
+
+        // Trigger click programmatically
+        setTimeout(() => {
+          const button = tempDiv.querySelector('[role="button"]')
+          if (button) button.click()
+          document.body.removeChild(tempDiv)
+        }, 100)
       }
     })
 
     return true
   } catch (error) {
     console.error('❌ Failed to trigger Google Sign-In:', error)
+    // Don't throw error, just log it
+    window.dispatchEvent(new CustomEvent('google-auth-error', {
+      detail: { error: 'Google OAuth no está disponible en este momento. Prueba con email y contraseña.' }
+    }))
     return false
   }
 }
