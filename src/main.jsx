@@ -8,7 +8,7 @@ import './lib/progress/autoInit.js'
 // Initialize service worker update handling
 import './utils/swUpdateHandler.js'
 // Wire sync endpoint and auth from env (if provided)
-import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName } from './lib/progress/userManager.js'
+import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName, syncNow } from './lib/progress/userManager.js'
 import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
 
 // Read env-provided sync config and apply once on load
@@ -26,6 +26,21 @@ if (typeof window !== 'undefined') {
     const uid = getUID()
     if (uid) setSyncAuthToken(uid, { persist: false })
   }
+
+  // Setup automatic sync on login
+  window.addEventListener('auth-login', async () => {
+    console.log('🔄 Iniciando sincronización automática después del login...')
+    try {
+      const result = await syncNow()
+      if (result.success) {
+        console.log('✅ Sincronización automática completada:', result)
+      } else {
+        console.log('⚠️ Sincronización automática falló:', result.reason)
+      }
+    } catch (error) {
+      console.warn('❌ Error en sincronización automática:', error.message)
+    }
+  })
 }
 
 createRoot(document.getElementById('root')).render(

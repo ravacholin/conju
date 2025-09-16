@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react'
 import { exportProgressData, exportToCSV, downloadExportedData, generateProgressReport } from '../../lib/progress/dataExport.js'
 import { importFromFile, createBackup } from '../../lib/progress/dataRestore.js'
-import { enhancedCloudSync } from '../../lib/progress/enhancedCloudSync.js'
 import {
   setSyncEndpoint,
   getSyncEndpoint,
@@ -13,7 +12,8 @@ import {
   setSyncAuthToken,
   getSyncAuthToken,
   isSyncEnabled,
-  syncNow
+  syncNow,
+  syncAccountData
 } from '../../lib/progress/userManager.js'
 // import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
@@ -189,10 +189,26 @@ export default function DataManagementPanel({ onClose }) {
     setSyncStatus('syncing')
     setError('')
     try {
-      setStatus(`Sincronizando con estrategia ${syncOptions.strategy}...`)
-      const result = await enhancedCloudSync(syncOptions)
-      setStatus(`✅ Sincronización completada: ${result.status}`)
-      setSyncStatus('synced')
+      setStatus('Sincronizando datos del usuario...')
+      const result = await syncNow()
+
+      if (result.success) {
+        const uploadStats = []
+        if (result.attempts?.uploaded > 0) uploadStats.push(`${result.attempts.uploaded} intentos`)
+        if (result.mastery?.uploaded > 0) uploadStats.push(`${result.mastery.uploaded} puntuaciones`)
+        if (result.schedules?.uploaded > 0) uploadStats.push(`${result.schedules.uploaded} horarios`)
+
+        const statsText = uploadStats.length > 0 ? ` (${uploadStats.join(', ')})` : ''
+        setStatus(`✅ Sincronización completada exitosamente${statsText}`)
+        setSyncStatus('synced')
+      } else {
+        const reason = result.reason === 'not_authenticated' ? 'Usuario no autenticado' :
+                      result.reason === 'sync_disabled' ? 'Sync deshabilitado' :
+                      result.reason === 'offline' ? 'Sin conexión' :
+                      'Error desconocido'
+        setStatus(`⚠️ Sync no completado: ${reason}`)
+        setSyncStatus('ready')
+      }
     } catch (err) {
       setError(`Error en sincronización: ${err.message}`)
       setSyncStatus('error')
