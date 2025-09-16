@@ -104,19 +104,38 @@ export async function authenticateAccount(email, password) {
 export async function authenticateWithGoogle(data) {
   const { googleId, email, name, deviceName } = googleAuthSchema.parse(data)
 
+  // First, try to find by Google ID
   let account = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE google_id = ?').get(googleId)
 
   if (!account) {
-    // Create new account with Google
-    const accountId = uuidv4()
-    const now = Date.now()
+    // Try to find existing account by email (for linking)
+    const existingAccount = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE email = ?').get(email)
 
-    db.prepare(`
-      INSERT INTO accounts (id, email, google_id, name, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(accountId, email, googleId, name, now, now)
+    if (existingAccount) {
+      // Link Google to existing account
+      console.log(`🔗 Linking Google account to existing email: ${email}`)
+      const now = Date.now()
 
-    account = { id: accountId, email, name, created_at: now }
+      db.prepare(`
+        UPDATE accounts
+        SET google_id = ?, name = COALESCE(?, name), updated_at = ?
+        WHERE id = ?
+      `).run(googleId, name, now, existingAccount.id)
+
+      account = { ...existingAccount, name: name || existingAccount.name }
+    } else {
+      // Create new account with Google
+      console.log(`➕ Creating new Google account: ${email}`)
+      const accountId = uuidv4()
+      const now = Date.now()
+
+      db.prepare(`
+        INSERT INTO accounts (id, email, google_id, name, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(accountId, email, googleId, name, now, now)
+
+      account = { id: accountId, email, name, created_at: now }
+    }
   }
 
   return account
