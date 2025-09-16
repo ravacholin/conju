@@ -189,55 +189,43 @@ function getStandardEndings(group, tense) {
   return endings[tense]?.[group] || endings.pres[group] || [];
 }
 
-// Función para renderizar la deconstrucción especial de pretéritos fuertes con metamorfosis
-function renderStrongPreteriteDeconstruction(verbObj, index) {
-  const verb = verbObj.lemma;
-  const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-  const irregularStem = getIrregularStem(verb);
+// Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
+function renderStrongPreteriteDeconstruction(exampleVerbs) {
+  const strongVerbs = exampleVerbs.filter(verbObj =>
+    STRONG_PRETERITE_STEMS.hasOwnProperty(verbObj.lemma)
+  );
 
-  if (!irregularStem) return null;
+  if (strongVerbs.length === 0) return null;
 
   return (
-    <div key={`strong-${index}`} className="deconstruction-item strong-preterite">
-      <div className="verb-lemma">
-        <span className="lemma-stem">{verb.slice(0, -2)}</span>
-        <span className="group-label">{group}</span>
-      </div>
+    <div className="deconstruction-item strong-preterite-group">
+      <div className="strong-verbs-container">
+        {strongVerbs.map((verbObj, index) => {
+          const verb = verbObj.lemma;
+          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+          const irregularStem = getIrregularStem(verb);
 
-      <div className="metamorphosis-container">
-        <div className="metamorphosis-step">
-          <div className="infinitive-form">{verb}</div>
-        </div>
-
-        <div className="metamorphosis-arrow">
-          <span className="metamorphosis-symbol">✨</span>
-          <span className="metamorphosis-label">metamorfosis</span>
-          <span className="metamorphosis-symbol">✨</span>
-        </div>
-
-        <div className="metamorphosis-step">
-          <div className="magical-stem-container">
-            <span className="magical-stem">{irregularStem}-</span>
-            <span className="magical-label">raíz mágica</span>
-          </div>
-          <span className="plus-symbol">+</span>
-          <div className="strong-endings-container">
-            <span className="strong-endings-label">terminaciones fuertes</span>
-            <div className="strong-endings-carousel">
-              {STRONG_PRETERITE_ENDINGS.map((ending, idx) => (
-                <span key={`${verb}-${idx}-${ending}`} className="strong-ending-item">
-                  {ending}
-                </span>
-              ))}
+          return (
+            <div key={`strong-verb-${index}`} className="strong-verb-item">
+              <div className="verb-lemma">
+                <span className="lemma-stem">{verb.slice(0, -2)}</span>
+                <span className="group-label">{group}</span>
+              </div>
+              <div className="arrow">→</div>
+              <div className="irregular-stem">{irregularStem}-</div>
             </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
 
-      <div className="metamorphosis-explanation">
-        <span className="explanation-text">
-          Estos verbos transforman completamente su raíz y usan terminaciones especiales sin acentos
-        </span>
+      <div className="plus-symbol">+</div>
+
+      <div className="strong-endings-carousel">
+        {STRONG_PRETERITE_ENDINGS.map((ending, idx) => (
+          <span key={`ending-${idx}`} className="strong-ending-item">
+            {ending}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -506,22 +494,28 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
-                  {exampleVerbs && exampleVerbs.length > 0 && exampleVerbs.map((verbObj, index) => {
-                    const pronouns = pronounsForDialect();
-                    const verb = verbObj.lemma;
-                    const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-                    const lemmaStem = (v) => {
-                      if (typeof v !== 'string') return '';
-                      if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
-                        return v.slice(0, -2);
-                      }
-                      return v;
-                    };
-                    
-                    // Verificar si es un pretérito fuerte (muy irregular) para usar metamorfosis
-                    if (isStrongPreterite(verbObj, tense)) {
-                      return renderStrongPreteriteDeconstruction(verbObj, index);
+                  {(() => {
+                    // Verificar si tenemos pretéritos fuertes para renderizarlos agrupados
+                    const hasStrongPreterites = exampleVerbs && exampleVerbs.some(verbObj =>
+                      isStrongPreterite(verbObj, tense)
+                    );
+
+                    if (hasStrongPreterites) {
+                      return renderStrongPreteriteDeconstruction(exampleVerbs);
                     }
+
+                    // Si no hay pretéritos fuertes, usar la lógica normal
+                    return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs.map((verbObj, index) => {
+                      const pronouns = pronounsForDialect();
+                      const verb = verbObj.lemma;
+                      const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+                      const lemmaStem = (v) => {
+                        if (typeof v !== 'string') return '';
+                        if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
+                          return v.slice(0, -2);
+                        }
+                        return v;
+                      };
 
                     const isIrregular = verbObj.type === 'irregular';
                     const realForms = extractRealConjugatedForms(verbObj, tense.tense, tense.mood);
@@ -581,8 +575,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                           </span>
                         </div>
                       </div>
-                    );
-                  })}
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </>
