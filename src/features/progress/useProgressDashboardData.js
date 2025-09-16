@@ -3,6 +3,7 @@ import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getR
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
+import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
 
 export default function useProgressDashboardData() {
   const [heatMapData, setHeatMapData] = useState([])
@@ -11,6 +12,7 @@ export default function useProgressDashboardData() {
   const [weeklyGoals, setWeeklyGoals] = useState({})
   const [weeklyProgress, setWeeklyProgress] = useState({})
   const [recommendations, setRecommendations] = useState([])
+  const [dailyChallenges, setDailyChallenges] = useState({ date: null, metrics: {}, challenges: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -146,6 +148,23 @@ export default function useProgressDashboardData() {
             if (!signal.aborted) console.warn('Failed to load recommendations:', e)
             return []
           }
+        },
+
+        dailyChallenges: async (signal) => {
+          try {
+            const cacheKey = `${userId}:dailyChallenges`
+            const result = await progressDataCache.get(
+              cacheKey,
+              () => getDailyChallengeSnapshot(userId),
+              'dailyChallenges'
+            )
+            if (signal.aborted) throw new Error('Cancelled')
+            if (!result || typeof result !== 'object') return { date: null, metrics: {}, challenges: [] }
+            return result
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load daily challenges:', e)
+            return { date: null, metrics: {}, challenges: [] }
+          }
         }
       }
 
@@ -159,6 +178,7 @@ export default function useProgressDashboardData() {
       setWeeklyGoals(results.weeklyGoals || {})
       setWeeklyProgress(results.weeklyProgress || {})
       setRecommendations(results.recommendations || [])
+      setDailyChallenges(results.dailyChallenges || { date: null, metrics: {}, challenges: [] })
 
       setError(null)
       setLoading(false)
@@ -168,6 +188,36 @@ export default function useProgressDashboardData() {
       setError(err.message || 'Error desconocido al cargar datos')
       setLoading(false)
       setRefreshing(false)
+    }
+  }
+
+  const completeChallenge = async (challengeId) => {
+    try {
+      const userId = getCurrentUserId()
+      if (!userId) {
+        throw new Error('Usuario no inicializado')
+      }
+      const result = await markChallengeCompleted(userId, challengeId)
+      progressDataCache.invalidate(`${userId}:dailyChallenges`)
+      if (result?.challenges) {
+        setDailyChallenges(prev => {
+          if (!prev || !Array.isArray(prev.challenges)) {
+            return prev
+          }
+          const completed = result.challenges.find(c => c.id === challengeId)
+          const completedAt = completed?.completedAt || new Date().toISOString()
+          return {
+            ...prev,
+            challenges: prev.challenges.map(challenge =>
+              challenge.id === challengeId
+                ? { ...challenge, status: 'completed', completedAt }
+                : challenge
+            )
+          }
+        })
+      }
+    } catch (error) {
+      console.error('Error al marcar desafío diario como completado:', error)
     }
   }
 
@@ -279,12 +329,14 @@ export default function useProgressDashboardData() {
     weeklyGoals,
     weeklyProgress,
     recommendations,
+    dailyChallenges,
     loading,
     error,
     refreshing,
     systemReady,
     // actions
     loadData,
-    refresh
+    refresh,
+    completeChallenge
   }
 }

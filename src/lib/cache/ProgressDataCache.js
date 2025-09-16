@@ -19,7 +19,8 @@ class ProgressDataCache {
       weeklyGoals: 10 * 60 * 1000,   // 10 min - muy estático
       weeklyProgress: 1 * 60 * 1000, // 1 min - actualiza frecuentemente
       errorIntel: 5 * 60 * 1000,     // 5 min - análisis más pesado
-      recommendations: 3 * 60 * 1000  // 3 min - basado en datos cached
+      recommendations: 3 * 60 * 1000,  // 3 min - basado en datos cached
+      dailyChallenges: 60 * 1000       // 1 min - métricas diarias cambian rápido
     }
   }
   
@@ -229,6 +230,18 @@ if (typeof window !== 'undefined') {
         console.log('⚙️ Settings changed, invalidating recommendations cache')
       }
       progressDataCache.invalidate(/:recommendations$/)
+    }
+  })
+
+  window.addEventListener('progress:challengeCompleted', (event) => {
+    const userId = event.detail?.userId
+    if (import.meta.env?.DEV) {
+      console.log('🏅 Desafío diario completado, invalidando caché correspondiente', event.detail)
+    }
+    if (userId) {
+      progressDataCache.invalidate(`${userId}:dailyChallenges`)
+    } else {
+      progressDataCache.invalidate(/:dailyChallenges$/)
     }
   })
 }

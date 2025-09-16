@@ -107,9 +107,10 @@ src/features/drill/
 ### 🧩 Componentes de Progreso (UI) y Hook de Datos
 
 - `features/progress/ProgressDashboard.jsx`: Dashboard principal de progreso (composición de secciones).
-- `features/progress/useProgressDashboardData.js`: Hook que encapsula la carga de datos (heatmap, stats, metas, progreso semanal, recomendaciones, errorIntel), estados (`loading`, `error`, `refreshing`, `systemReady`) y acciones (`refresh`, `loadData`). Gestiona cancelaciones con `AsyncController`, warming de caché y refresh por evento `progress:dataUpdated`.
+- `features/progress/useProgressDashboardData.js`: Hook que encapsula la carga de datos (heatmap, stats, metas, progreso semanal, **retos diarios**, recomendaciones, errorIntel), estados (`loading`, `error`, `refreshing`, `systemReady`) y acciones (`refresh`, `loadData`, `completeChallenge`). Gestiona cancelaciones con `AsyncController`, warming de caché y refresh por evento `progress:dataUpdated`.
 - Subcomponentes extraídos del Dashboard:
   - `ProgressHeader.jsx`: Cabecera con navegación y botón de refresco
+  - `DailyChallengesPanel.jsx`: Panel de retos diarios con métricas recientes y evento `progress:challengeCompleted`
   - `WeeklyGoalsPanel.jsx`: Panel de objetivos semanales
   - `GeneralRecommendations.jsx`: Tarjetas de recomendaciones generales
 

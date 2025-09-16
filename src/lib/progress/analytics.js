@@ -442,6 +442,63 @@ export async function getProgressLineData(userId) {
 // Use real-time analytics for user statistics
 export const getUserStats = getRealUserStats
 
+/**
+ * Calcula métricas recientes (últimas 24h) para desafíos diarios
+ * @param {string} userId
+ * @returns {Promise<{ attemptsToday: number, correctToday: number, accuracyToday: number, bestStreakToday: number, focusMinutesToday: number }>}
+ */
+export async function getDailyChallengeMetrics(userId) {
+  try {
+    const attempts = await getAttemptsByUser(userId)
+    const startOfDay = new Date().setHours(0, 0, 0, 0)
+
+    let attemptsToday = 0
+    let correctToday = 0
+    let latencyTotal = 0
+    let bestStreakToday = 0
+    let streak = 0
+
+    const todaysAttempts = attempts
+      .filter(a => {
+        const created = new Date(a?.createdAt || 0).getTime()
+        return Number.isFinite(created) && created >= startOfDay
+      })
+      .sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
+
+    for (const attempt of todaysAttempts) {
+      attemptsToday += 1
+      if (attempt.correct) {
+        correctToday += 1
+        streak += 1
+        bestStreakToday = Math.max(bestStreakToday, streak)
+      } else {
+        streak = 0
+      }
+      latencyTotal += attempt.latencyMs || 0
+    }
+
+    const accuracyToday = attemptsToday > 0 ? (correctToday / attemptsToday) * 100 : 0
+    const focusMinutesToday = latencyTotal > 0 ? Math.round((latencyTotal / 60000) * 10) / 10 : 0
+
+    return {
+      attemptsToday,
+      correctToday,
+      accuracyToday,
+      bestStreakToday,
+      focusMinutesToday
+    }
+  } catch (error) {
+    console.warn('No se pudieron calcular métricas de desafíos diarios:', error)
+    return {
+      attemptsToday: 0,
+      correctToday: 0,
+      accuracyToday: 0,
+      bestStreakToday: 0,
+      focusMinutesToday: 0
+    }
+  }
+}
+
 // Re-export functions from goals.js for backward compatibility
 export { getWeeklyGoals, checkWeeklyProgress } from './goals.js'
 

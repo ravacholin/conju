@@ -220,7 +220,7 @@ export const ERROR_TAGS = {
 // Configuración de almacenamiento
 export const STORAGE_CONFIG = {
   DB_NAME: 'SpanishConjugatorProgress',
-  DB_VERSION: 2, // Increment version to add learning_sessions
+  DB_VERSION: 3, // Increment version when adding new stores like daily challenges
   STORES: {
     USERS: 'users',
     VERBS: 'verbs',
@@ -228,7 +228,8 @@ export const STORAGE_CONFIG = {
     ATTEMPTS: 'attempts',
     MASTERY: 'mastery',
     SCHEDULES: 'schedules',
-    LEARNING_SESSIONS: 'learning_sessions'
+    LEARNING_SESSIONS: 'learning_sessions',
+    CHALLENGES: 'daily_challenges'
   }
 }
 

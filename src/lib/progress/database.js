@@ -110,6 +110,13 @@ export async function initDB() {
           sessionStore.createIndex('adaptiveLevel', 'adaptiveLevel', { unique: false })
           console.log('✅ Tabla de learning sessions creada')
         }
+
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.CHALLENGES)) {
+          const challengeStore = db.createObjectStore(STORAGE_CONFIG.STORES.CHALLENGES, { keyPath: 'id' })
+          challengeStore.createIndex('userId', 'userId', { unique: false })
+          challengeStore.createIndex('date', 'date', { unique: false })
+          console.log('✅ Tabla de daily challenges creada')
+        }
         
         console.log('🔧 Estructura de base de datos actualizada')
       }

@@ -19,6 +19,7 @@ import useProgressDashboardData from './useProgressDashboardData.js'
 import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
 import DataManagementPanel from './DataManagementPanel.jsx'
 import Toast from '../../components/Toast.jsx'
+import DailyChallengesPanel from './DailyChallengesPanel.jsx'
 
 // Styles moved to ProgressHeader.jsx
 
@@ -34,11 +35,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     weeklyGoals,
     weeklyProgress,
     recommendations,
+    dailyChallenges,
     loading,
     error,
     refreshing,
     systemReady,
-    refresh
+    refresh,
+    completeChallenge
   } = useProgressDashboardData()
 
   const [syncing, setSyncing] = React.useState(false)
@@ -196,6 +199,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           <ErrorIntelligence data={errorIntel} compact={true} onNavigateToDrill={onNavigateToDrill} />
         </section>
       </SafeComponent>
+
+      <DailyChallengesPanel dailyChallenges={dailyChallenges} onCompleteChallenge={completeChallenge} />
 
       <WeeklyGoalsPanel weeklyGoals={weeklyGoals} weeklyProgress={weeklyProgress} userStats={userStats} />
 
