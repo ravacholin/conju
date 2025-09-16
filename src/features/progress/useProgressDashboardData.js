@@ -219,19 +219,36 @@ export default function useProgressDashboardData() {
 
   // Escuchar eventos de actualización de progreso para refrescar automáticamente
   useEffect(() => {
+    let refreshTimeoutId = null
+    let mounted = true
+
+    const scheduleRefresh = () => {
+      if (!mounted) return
+      if (refreshTimeoutId) {
+        clearTimeout(refreshTimeoutId)
+      }
+      refreshTimeoutId = setTimeout(() => {
+        if (!mounted) return
+        loadData(true)
+        refreshTimeoutId = null
+      }, 500)
+    }
+
     const handleProgressUpdate = (event) => {
       console.log('🔄 Datos de progreso actualizados, refrescando dashboard...', event.detail)
-      setTimeout(() => {
-        loadData(true)
-      }, 500)
+      scheduleRefresh()
     }
 
     window.addEventListener('progress:dataUpdated', handleProgressUpdate)
 
     return () => {
+      mounted = false
+      if (refreshTimeoutId) {
+        clearTimeout(refreshTimeoutId)
+      }
       window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
-  }, [personFilter])
+  }, [personFilter, loadData])
 
   // Cleanup async operations on component unmount
   useEffect(() => {

@@ -12,18 +12,18 @@ type SpeakArgs = {
 export function useSpeech() {
   const settings = useSettings()
 
-  const region = settings?.region || 'la_general'
-
   const speak = (text?: string) => {
     try {
       if (!text || typeof window === 'undefined' || !window.speechSynthesis) return
       const synth = window.speechSynthesis
       const utter = new SpeechSynthesisUtterance(text)
-      utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES'
+      // Use the same clear Rioplatense female voice for every region
+      const preferredLang = 'es-AR'
+      utter.lang = preferredLang
       utter.rate = 0.95
 
       const lower = (s?: string) => (s || '').toLowerCase()
-      const pickPreferredSpanishVoice = (voices: SpeechSynthesisVoice[], targetLang: string) => {
+      const pickPreferredSpanishVoice = (voices: SpeechSynthesisVoice[]) => {
         const spanish = voices.filter((v) => lower(v.lang).startsWith('es'))
         if (spanish.length === 0) return null
         const prefNames = [
@@ -39,8 +39,8 @@ export function useSpeech() {
           'microsoft sabina',
           'microsoft helena'
         ]
-        const preferOrder = region === 'rioplatense' ? ['es-ar', 'es-419', 'es-mx', 'es-es'] : ['es-es', 'es-mx', 'es-419', 'es-us']
-        const byLangExact = spanish.find((v) => lower(v.lang) === lower(targetLang))
+        const preferOrder = ['es-ar', 'es-419', 'es-mx', 'es-es', 'es-us']
+        const byLangExact = spanish.find((v) => lower(v.lang) === lower(preferredLang))
         if (byLangExact) return byLangExact
         for (const lang of preferOrder) {
           const femaleByName = spanish.find(
@@ -56,7 +56,7 @@ export function useSpeech() {
 
       const pickAndSpeak = () => {
         const voices = synth.getVoices ? synth.getVoices() : []
-        const chosen = pickPreferredSpanishVoice(voices as any, utter.lang)
+        const chosen = pickPreferredSpanishVoice(voices as any)
         if (chosen) {
           utter.voice = chosen
           utter.lang = chosen.lang || utter.lang
@@ -105,7 +105,6 @@ export function useSpeech() {
       getSpeakText
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [region]
+    [settings?.region]
   )
 }
-

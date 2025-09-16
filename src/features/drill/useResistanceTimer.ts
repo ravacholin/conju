@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSettings } from '../../state/settings.js'
 
 /**
@@ -10,14 +10,35 @@ export function useResistanceTimer() {
   const [showExplosion, setShowExplosion] = useState(false)
   const [urgentTick, setUrgentTick] = useState(false)
   const [clockClickFeedback, setClockClickFeedback] = useState(false)
+  const intervalRef = useRef<number | null>(null)
 
   // Countdown tick and end-of-time effects
   useEffect(() => {
-    if (!settings.resistanceActive) return
-    if (settings.resistanceMsLeft <= 0) return
+    const clearTimer = () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
 
-    const id = setInterval(() => {
-      const left = Math.max(0, (useSettings as any).getState().resistanceMsLeft - 100)
+    if (!settings.resistanceActive) {
+      clearTimer()
+      return
+    }
+
+    const currentState = (useSettings as any).getState()
+    if (currentState.resistanceMsLeft <= 0) {
+      clearTimer()
+      return
+    }
+
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    intervalRef.current = window.setInterval(() => {
+      const state = (useSettings as any).getState()
+      const left = Math.max(0, (state.resistanceMsLeft || 0) - 100)
       settings.set({ resistanceMsLeft: left })
 
       if (left <= 5000 && left > 0) {
@@ -26,12 +47,14 @@ export function useResistanceTimer() {
       }
 
       if (left === 0) {
+        clearTimer()
         setShowExplosion(true)
         setTimeout(() => {
           setShowExplosion(false)
-          const lvl = (useSettings as any).getState().level || 'A1'
-          const best = (useSettings as any).getState().resistanceBestMsByLevel || {}
-          const survived = Date.now() - ((useSettings as any).getState().resistanceStartTs || Date.now())
+          const latest = (useSettings as any).getState()
+          const lvl = latest.level || 'A1'
+          const best = latest.resistanceBestMsByLevel || {}
+          const survived = Date.now() - (latest.resistanceStartTs || Date.now())
           if (!best[lvl] || survived > best[lvl]) {
             best[lvl] = survived
             settings.set({ resistanceBestMsByLevel: { ...best } })
@@ -40,8 +63,11 @@ export function useResistanceTimer() {
         }, 2000)
       }
     }, 100)
-    return () => clearInterval(id)
-  }, [settings.resistanceActive, settings.resistanceMsLeft, settings])
+
+    return () => {
+      clearTimer()
+    }
+  }, [settings.resistanceActive])
 
   // On-clock click: add 5 seconds and feedback
   const handleClockClick = useCallback(() => {
@@ -59,4 +85,3 @@ export function useResistanceTimer() {
     handleClockClick
   }
 }
-

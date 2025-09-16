@@ -242,8 +242,50 @@ function AppRouter() {
 
 
   // Handler functions for drill mode settings changes
-  const handleDialectChange = (dialect) => {
-    onboardingFlow.selectDialect(dialect)
+  const handleDialectChange = (dialect, options = {}) => {
+    const { preserveFilters = false } = options
+
+    if (preserveFilters) {
+      const variantUpdates = {
+        rioplatense: {
+          useVoseo: true,
+          useTuteo: false,
+          useVosotros: false,
+          strict: true,
+          region: 'rioplatense',
+          practicePronoun: 'all'
+        },
+        la_general: {
+          useTuteo: true,
+          useVoseo: false,
+          useVosotros: false,
+          strict: true,
+          region: 'la_general',
+          practicePronoun: 'both'
+        },
+        peninsular: {
+          useTuteo: true,
+          useVoseo: false,
+          useVosotros: true,
+          strict: true,
+          region: 'peninsular',
+          practicePronoun: 'both'
+        },
+        both: {
+          useTuteo: true,
+          useVoseo: true,
+          useVosotros: true,
+          strict: false,
+          region: 'la_general',
+          practicePronoun: 'all'
+        }
+      }
+
+      settings.set(variantUpdates[dialect] || variantUpdates.la_general)
+    } else {
+      onboardingFlow.selectDialect(dialect)
+    }
+
     drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 

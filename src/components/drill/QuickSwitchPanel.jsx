@@ -17,64 +17,47 @@ function QuickSwitchPanel({
   }
 
   const applyDialectLocally = (dialect) => {
-    const baseUpdates = {
-      specificMood: null,
-      specificTense: null,
-      verbType: null,
-      selectedFamily: null
+    const variantUpdates = {
+      rioplatense: {
+        useVoseo: true,
+        useTuteo: false,
+        useVosotros: false,
+        strict: true,
+        region: 'rioplatense',
+        practicePronoun: 'all'
+      },
+      peninsular: {
+        useTuteo: true,
+        useVoseo: false,
+        useVosotros: true,
+        strict: true,
+        region: 'peninsular',
+        practicePronoun: 'both'
+      },
+      both: {
+        useTuteo: true,
+        useVoseo: true,
+        useVosotros: true,
+        strict: false,
+        region: 'la_general',
+        practicePronoun: 'all'
+      },
+      la_general: {
+        useTuteo: true,
+        useVoseo: false,
+        useVosotros: false,
+        strict: true,
+        region: 'la_general',
+        practicePronoun: 'both'
+      }
     }
 
-    switch (dialect) {
-      case 'rioplatense':
-        settings.set({
-          ...baseUpdates,
-          useVoseo: true,
-          useTuteo: false,
-          useVosotros: false,
-          strict: true,
-          region: 'rioplatense',
-          practicePronoun: 'all'
-        })
-        break
-      case 'peninsular':
-        settings.set({
-          ...baseUpdates,
-          useTuteo: true,
-          useVoseo: false,
-          useVosotros: true,
-          strict: true,
-          region: 'peninsular',
-          practicePronoun: 'both'
-        })
-        break
-      case 'both':
-        settings.set({
-          ...baseUpdates,
-          useTuteo: true,
-          useVoseo: true,
-          useVosotros: true,
-          strict: false,
-          region: 'la_general',
-          practicePronoun: 'all'
-        })
-        break
-      default:
-        settings.set({
-          ...baseUpdates,
-          useTuteo: true,
-          useVoseo: false,
-          useVosotros: false,
-          strict: true,
-          region: 'la_general',
-          practicePronoun: 'both'
-        })
-        break
-    }
+    settings.set(variantUpdates[dialect] || variantUpdates.la_general)
   }
 
   const handleDialectChange = (dialect) => {
     if (typeof onDialectChange === 'function') {
-      onDialectChange(dialect)
+      onDialectChange(dialect, { preserveFilters: true })
     } else {
       applyDialectLocally(dialect)
     }
