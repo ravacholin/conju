@@ -6,8 +6,80 @@ function QuickSwitchPanel({
   onApply, 
   onClose,
   getAvailableMoodsForLevel,
-  getAvailableTensesForLevelAndMood 
+  getAvailableTensesForLevelAndMood,
+  onDialectChange
 }) {
+  const getDialectValue = () => {
+    if (settings.region === 'rioplatense' && settings.useVoseo && !settings.useTuteo) return 'rioplatense'
+    if (settings.region === 'peninsular' && settings.useVosotros) return 'peninsular'
+    if (!settings.strict && settings.useTuteo && settings.useVoseo && settings.useVosotros) return 'both'
+    return 'la_general'
+  }
+
+  const applyDialectLocally = (dialect) => {
+    const baseUpdates = {
+      specificMood: null,
+      specificTense: null,
+      verbType: null,
+      selectedFamily: null
+    }
+
+    switch (dialect) {
+      case 'rioplatense':
+        settings.set({
+          ...baseUpdates,
+          useVoseo: true,
+          useTuteo: false,
+          useVosotros: false,
+          strict: true,
+          region: 'rioplatense',
+          practicePronoun: 'all'
+        })
+        break
+      case 'peninsular':
+        settings.set({
+          ...baseUpdates,
+          useTuteo: true,
+          useVoseo: false,
+          useVosotros: true,
+          strict: true,
+          region: 'peninsular',
+          practicePronoun: 'both'
+        })
+        break
+      case 'both':
+        settings.set({
+          ...baseUpdates,
+          useTuteo: true,
+          useVoseo: true,
+          useVosotros: true,
+          strict: false,
+          region: 'la_general',
+          practicePronoun: 'all'
+        })
+        break
+      default:
+        settings.set({
+          ...baseUpdates,
+          useTuteo: true,
+          useVoseo: false,
+          useVosotros: false,
+          strict: true,
+          region: 'la_general',
+          practicePronoun: 'both'
+        })
+        break
+    }
+  }
+
+  const handleDialectChange = (dialect) => {
+    if (typeof onDialectChange === 'function') {
+      onDialectChange(dialect)
+    } else {
+      applyDialectLocally(dialect)
+    }
+  }
+
   const handleMoodChange = (mood) => {
     settings.set({ specificMood: mood || null, specificTense: null })
   }
@@ -30,6 +102,20 @@ function QuickSwitchPanel({
 
   return (
     <div className="quick-switch-panel">
+      <div className="setting-group">
+        <label>Variantes:</label>
+        <select
+          className="setting-select"
+          value={getDialectValue()}
+          onChange={(e) => handleDialectChange(e.target.value)}
+        >
+          <option value="rioplatense">Con vos</option>
+          <option value="la_general">Con tú</option>
+          <option value="peninsular">Con tú y vosotros</option>
+          <option value="both">Con todos</option>
+        </select>
+      </div>
+
       <div className="setting-group">
         <label>Modo verbal:</label>
         <select

@@ -4,12 +4,10 @@ function DrillHeader({
   onToggleQuickSwitch, 
   onToggleAccentKeys, 
   onToggleGames, 
-  onToggleSettings,
   onNavigateToProgress,
   onHome,
   showQuickSwitch,
-  showGames,
-  showSettings
+  showGames
 }) {
   return (
     <header className="header">
@@ -28,20 +26,6 @@ function DrillHeader({
           <img src="/config.png" alt="Config" className="menu-icon" />
         </button>
         
-        <button
-          onClick={() => {
-            if (showSettings) {
-              onToggleSettings(false)
-            } else {
-              onToggleSettings(true)
-            }
-          }}
-          className="icon-btn"
-          title="Configuración avanzada"
-        >
-          <img src="/config.svg" alt="Configuración" className="menu-icon" />
-        </button>
-
         <button
           onClick={() => onToggleAccentKeys()}
           className="icon-btn"

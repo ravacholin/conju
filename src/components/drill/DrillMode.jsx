@@ -8,7 +8,7 @@
  * @description
  * Responsabilidades principales:
  * - Renderizado del componente Drill principal con gestión de estado de ítems
- * - Gestión de paneles overlay: QuickSwitch, Games, Settings (carga lazy)
+ * - Gestión de paneles overlay: QuickSwitch, Games (carga lazy)
  * - Integración con sistema de navegación desde ProgressDashboard
  * - Manejo de configuraciones rápidas y regeneración de ítems
  * - Safety net para regeneración automática cuando no hay ítem disponible
@@ -16,7 +16,6 @@
  * Paneles dinámicos:
  * - QuickSwitchPanel: Cambios rápidos de configuración sin perder progreso
  * - GamesPanel: Acceso a modos de juego alternativos
- * - SettingsPanel: Configuración completa de práctica específica
  * 
  * Eventos de navegación soportados:
  * - progress:navigate con mood/tense → práctica específica
@@ -45,10 +44,7 @@
  * @param {Function} props.onHome - Navegación al menú principal
  * @param {Function} props.onRegenerateItem - Forzar generación de nuevo ítem
  * @param {Function} props.onDialectChange - Cambiar dialecto regional
- * @param {Function} props.onLevelChange - Cambiar nivel CEFR
  * @param {Function} props.onPracticeModeChange - Cambiar modo de práctica (mixed/specific)
- * @param {Function} props.onPronounPracticeChange - Cambiar práctica de pronombres
- * @param {Function} props.onVerbTypeChange - Cambiar tipo de verbos (regular/irregular/familia)
  * @param {Function} props.onStartSpecificPractice - Iniciar práctica específica configurada
  * @param {Function} props.getAvailableMoodsForLevel - Obtener modos disponibles por nivel
  * @param {Function} props.getAvailableTensesForLevelAndMood - Obtener tiempos por nivel/modo
@@ -58,7 +54,6 @@
  * @requires DrillHeader - Header con botones de navegación y paneles
  * @requires QuickSwitchPanel - Panel de cambios rápidos (lazy)
  * @requires GamesPanel - Panel de modos de juego (lazy)
- * @requires SettingsPanel - Panel de configuración avanzada (lazy)
  * 
  * @see {@link ../../features/drill/Drill.jsx} - Componente core de práctica
  * @see {@link ./DrillHeader.jsx} - Header de navegación
@@ -69,7 +64,6 @@ import React, { useState, useEffect, Suspense, lazy } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
-const SettingsPanel = lazy(() => import('./SettingsPanel.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
 /**
@@ -86,10 +80,7 @@ function DrillMode({
   onHome,
   onRegenerateItem,
   onDialectChange,
-  onLevelChange,
   onPracticeModeChange,
-  onPronounPracticeChange,
-  onVerbTypeChange,
   onStartSpecificPractice,
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
@@ -98,12 +89,10 @@ function DrillMode({
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
     setShowGames(false)
-    setShowSettings(false)
   }
 
   const handleToggleQuickSwitch = (show = null) => {
@@ -123,14 +112,6 @@ function DrillMode({
       setShowGames(true)
     } else {
       setShowGames(false)
-    }
-  }
-
-  const handleToggleSettings = (show = null) => {
-    const newShow = show !== null ? show : !showSettings
-    closeAllPanels()
-    if (newShow) {
-      setShowSettings(true)
     }
   }
 
@@ -202,28 +183,11 @@ function DrillMode({
         onToggleQuickSwitch={handleToggleQuickSwitch}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
-        onToggleSettings={handleToggleSettings}
         onNavigateToProgress={onNavigateToProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
-        showSettings={showSettings}
       />
-
-      {showSettings && (
-        <Suspense fallback={<div className="loading">Cargando configuración...</div>}>
-          <SettingsPanel
-            settings={settings}
-            onClose={() => handleToggleSettings(false)}
-            onDialectChange={onDialectChange}
-            onLevelChange={onLevelChange}
-            onPracticeModeChange={onPracticeModeChange}
-            onPronounPracticeChange={onPronounPracticeChange}
-            onVerbTypeChange={onVerbTypeChange}
-            onStartSpecificPractice={onStartSpecificPractice}
-          />
-        </Suspense>
-      )}
 
       {showQuickSwitch && (
         <Suspense fallback={<div className="loading">Cargando opciones rápidas...</div>}>
@@ -233,6 +197,7 @@ function DrillMode({
             onClose={() => handleToggleQuickSwitch(false)}
             getAvailableMoodsForLevel={getAvailableMoodsForLevel}
             getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
+            onDialectChange={onDialectChange}
           />
         </Suspense>
       )}
