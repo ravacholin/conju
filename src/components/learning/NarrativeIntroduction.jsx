@@ -190,12 +190,31 @@ function getStandardEndings(group, tense) {
 }
 
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
-function renderStrongPreteriteDeconstruction(exampleVerbs) {
+function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
   const strongVerbs = exampleVerbs.filter(verbObj =>
     STRONG_PRETERITE_STEMS.hasOwnProperty(verbObj.lemma)
   );
 
   if (strongVerbs.length === 0) return null;
+
+  // Obtener terminaciones según dialecto
+  const getDialectEndings = () => {
+    const baseEndings = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
+
+    // Si usa voseo, no mostrar vosotros
+    if (settings?.useVoseo) {
+      return ['e', 'iste', 'o', 'imos', 'ieron']; // sin vosotros
+    }
+
+    // Si no usa vosotros, no mostrarlo
+    if (!settings?.useVosotros) {
+      return ['e', 'iste', 'o', 'imos', 'ieron']; // sin vosotros
+    }
+
+    return baseEndings; // mostrar todas incluyendo vosotros
+  };
+
+  const dialectEndings = getDialectEndings();
 
   return (
     <div className="deconstruction-item strong-preterite-group">
@@ -207,12 +226,12 @@ function renderStrongPreteriteDeconstruction(exampleVerbs) {
 
           return (
             <div key={`strong-verb-${index}`} className="strong-verb-item">
-              <div className="verb-lemma">
-                <span className="lemma-stem">{verb.slice(0, -2)}</span>
-                <span className="group-label">{group}</span>
+              <div className="verb-lemma-large">
+                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                <span className="group-label-large">{group}</span>
               </div>
               <div className="arrow">→</div>
-              <div className="irregular-stem">{irregularStem}-</div>
+              <div className="irregular-stem-large">{irregularStem}-</div>
             </div>
           );
         })}
@@ -221,7 +240,7 @@ function renderStrongPreteriteDeconstruction(exampleVerbs) {
       <div className="plus-symbol">+</div>
 
       <div className="strong-endings-carousel">
-        {STRONG_PRETERITE_ENDINGS.map((ending, idx) => (
+        {dialectEndings.map((ending, idx) => (
           <span key={`ending-${idx}`} className="strong-ending-item">
             {ending}
           </span>
@@ -501,7 +520,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     );
 
                     if (hasStrongPreterites) {
-                      return renderStrongPreteriteDeconstruction(exampleVerbs);
+                      return renderStrongPreteriteDeconstruction(exampleVerbs, settings);
                     }
 
                     // Si no hay pretéritos fuertes, usar la lógica normal
