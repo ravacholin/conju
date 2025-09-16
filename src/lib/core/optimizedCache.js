@@ -212,8 +212,46 @@ async function initializeCoreVerbs() {
   }
 }
 
-// Initialize core verbs immediately
-initializeCoreVerbs()
+// Initialize core verbs immediately with fallback
+let coreInitialized = false
+initializeCoreVerbs().then(() => {
+  coreInitialized = true
+}).catch(error => {
+  console.warn('Failed to initialize chunk system, using fallback:', error)
+  initializeFallbackLookups()
+})
+
+// Fallback: initialize lookup maps synchronously with main verbs data
+function initializeFallbackLookups() {
+  try {
+    // Dynamic import won't work in build, use require-style import
+    import('../../data/verbs.js').then(({ verbs }) => {
+      verbs.forEach(verb => {
+        VERB_LOOKUP_MAP.set(verb.lemma, verb)
+
+        // Populate form lookup map
+        verb.paradigms?.forEach(paradigm => {
+          paradigm.forms?.forEach(form => {
+            const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+            const enrichedForm = {
+              ...form,
+              lemma: verb.lemma,
+              id: key,
+              type: verb.type || 'regular'
+            }
+            FORM_LOOKUP_MAP.set(key, enrichedForm)
+          })
+        })
+      })
+
+      if (import.meta.env?.DEV && !import.meta.env?.VITEST) {
+        console.log(`🚀 Fallback verbs initialized: ${verbs.length} verbs, ${FORM_LOOKUP_MAP.size} forms`)
+      }
+    }).catch(console.error)
+  } catch (error) {
+    console.error('Failed to initialize fallback lookups:', error)
+  }
+}
 
 // Función para pre-calentar caches con datos frecuentes
 export async function warmupCaches() {

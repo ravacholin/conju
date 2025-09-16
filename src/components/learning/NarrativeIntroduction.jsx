@@ -8,12 +8,12 @@ import { useSettings } from '../../state/settings.js';
 // import { verbs } from '../../data/verbs.js';
 
 // Extraer formas conjugadas reales de la base de datos
-function extractRealConjugatedForms(verbObj, tense) {
+function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
   if (!verbObj || !verbObj.paradigms) return [];
-  
+
   // Buscar paradigma correcto
-  const paradigm = verbObj.paradigms.find(p => 
-    p.forms?.some(f => f.mood === 'indicative' && f.tense === tense)
+  const paradigm = verbObj.paradigms.find(p =>
+    p.forms?.some(f => f.mood === mood && f.tense === tense)
   );
   
   if (!paradigm || !paradigm.forms) return [];
@@ -23,8 +23,8 @@ function extractRealConjugatedForms(verbObj, tense) {
   const forms = [];
   
   persons.forEach(person => {
-    const form = paradigm.forms.find(f => 
-      f.mood === 'indicative' && f.tense === tense && f.person === person
+    const form = paradigm.forms.find(f =>
+      f.mood === mood && f.tense === tense && f.person === person
     );
     
     if (form && form.value) {
@@ -32,8 +32,8 @@ function extractRealConjugatedForms(verbObj, tense) {
     } else {
       // Fallback a forma alternativa si existe
       if (person === '2s_vos') {
-        const tuForm = paradigm.forms.find(f => 
-          f.mood === 'indicative' && f.tense === tense && f.person === '2s_tu'
+        const tuForm = paradigm.forms.find(f =>
+          f.mood === mood && f.tense === tense && f.person === '2s_tu'
         );
         if (tuForm && tuForm.accepts && tuForm.accepts.vos) {
           forms.push(tuForm.accepts.vos);
@@ -91,6 +91,11 @@ function getStandardEndings(group, tense) {
       ar: ['e', 'es', 'e', 'emos', 'éis', 'en'],
       er: ['a', 'as', 'a', 'amos', 'áis', 'an'],
       ir: ['a', 'as', 'a', 'amos', 'áis', 'an']
+    },
+    subjImpf: {
+      ar: ['ara', 'aras', 'ara', 'áramos', 'arais', 'aran'],
+      er: ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'],
+      ir: ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran']
     }
   };
   
@@ -373,7 +378,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     };
                     
                     const isIrregular = verbObj.type === 'irregular';
-                    const realForms = extractRealConjugatedForms(verbObj, tense.tense);
+                    const realForms = extractRealConjugatedForms(verbObj, tense.tense, tense.mood);
                     
                     if (isIrregular && realForms && realForms.length > 0) {
                       const expectedForms = expectedRegularForms(verbObj);
