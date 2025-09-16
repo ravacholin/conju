@@ -1,6 +1,6 @@
 // Componente para mostrar recomendaciones de práctica adaptativa
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AdaptivePracticeEngine } from '../../lib/progress/AdaptivePracticeEngine.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
@@ -21,13 +21,27 @@ export default function PracticeRecommendations({
   const [error, setError] = useState(null)
   const [selectedSession, setSelectedSession] = useState(null)
   const [focusMode, setFocusMode] = useState(initialFocusMode)
+  const requestStateRef = useRef({ cancelled: false })
 
   useEffect(() => {
-    loadRecommendations()
+    const requestState = { cancelled: false }
+    requestStateRef.current = requestState
+
+    const fetchRecommendations = async () => {
+      await loadRecommendations(requestState)
+    }
+
+    fetchRecommendations()
+
+    return () => {
+      requestState.cancelled = true
+    }
   }, [focusMode, maxRecommendations])
 
-  const loadRecommendations = async () => {
+  const loadRecommendations = async (requestState = requestStateRef.current) => {
     try {
+      if (requestState.cancelled) return
+
       setLoading(true)
       setError(null)
       
@@ -40,12 +54,18 @@ export default function PracticeRecommendations({
         includeNewContent: true
       })
       // Defensive: ensure array shape
+      if (requestState.cancelled) return
+
       setRecommendations(Array.isArray(recs) ? recs : [])
     } catch (err) {
       console.error('Error cargando recomendaciones:', err)
-      setError('Error al cargar recomendaciones de práctica')
+      if (!requestState.cancelled) {
+        setError('Error al cargar recomendaciones de práctica')
+      }
     } finally {
-      setLoading(false)
+      if (!requestState.cancelled) {
+        setLoading(false)
+      }
     }
   }
 
@@ -55,11 +75,13 @@ export default function PracticeRecommendations({
     }
   }
 
-  const loadPersonalizedSession = async (duration = 15) => {
+  const loadPersonalizedSession = async (duration = 15, requestState = requestStateRef.current) => {
     try {
       const userId = getCurrentUserId()
       const engine = new AdaptivePracticeEngine(userId)
       const session = await engine.getPersonalizedSession(duration)
+      if (requestState.cancelled) return
+
       setSelectedSession(session)
     } catch (err) {
       console.error('Error cargando sesión personalizada:', err)
