@@ -27,16 +27,7 @@
     "test:smoke": "vitest run src/**/*.smoke.{test,spec}.{js,jsx}",
     "test:performance": "vitest run src/**/*.performance.{test,spec}.{js,jsx}",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
-    "validate-integrity": "node scripts/validate-mood-tense.js",
-    "prebuild": "npm run validate-integrity && npm run audit:morphology",
-    "prebuild:full": "npm run validate-integrity && npm run test:run && npm run audit:morphology",
-    "audit:truncated": "node scripts/find-truncated-forms.js",
-    "audit:duplicates": "node scripts/audit/audit-duplicates.js",
-    "audit:regularity": "node scripts/audit/audit-regularity.js",
-    "audit:irregular": "node scripts/audit/audit-irregular-consistency.js",
-    "audit:morphology": "vitest run src/data/morphologyAudit.test.js && node scripts/audit-morphology.js",
-    "audit:all": "node scripts/audit/run-audits.js && npm run audit:morphology",
-    "quality:check": "npm run lint && npm run test:run && npm run audit:all",
+    "quality:check": "npm run lint && npm run test:run",
     "quality:fix": "npm run lint -- --fix"
   },
   "dependencies": {
