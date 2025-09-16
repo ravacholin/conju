@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "postinstall": "node -e \"console.log('Server dependencies installed successfully')\""
+    "postinstall": "npm rebuild better-sqlite3"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18.0.0 <25.0.0",
     "npm": ">=8.0.0"
   },
   "dependencies": {
