@@ -320,3 +320,305 @@
     font-size: 0.9rem;
   }
 }
+
+/* Estilos para la metamorfosis de pretéritos fuertes */
+.deconstruction-item.strong-preterite {
+  background: rgba(17, 17, 17, 0.8);
+  border: 2px solid rgba(142, 180, 227, 0.3);
+  border-radius: 20px;
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 32px rgba(142, 180, 227, 0.15);
+  animation: strongPreteriteAppear 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes strongPreteriteAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    border-color: rgba(142, 180, 227, 0.1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    border-color: rgba(142, 180, 227, 0.3);
+  }
+}
+
+.metamorphosis-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  margin: 1rem 0;
+}
+
+.metamorphosis-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.infinitive-form {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(245, 245, 245, 0.1);
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 245, 245, 0.2);
+  animation: infinitiveGlow 0.6s ease-in-out 0.2s both;
+}
+
+@keyframes infinitiveGlow {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+    box-shadow: 0 0 0 rgba(245, 245, 245, 0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(245, 245, 245, 0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(245, 245, 245, 0.15);
+  }
+}
+
+.metamorphosis-arrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: metamorphosisSparkle 0.8s ease-in-out 0.5s both;
+}
+
+@keyframes metamorphosisSparkle {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.metamorphosis-symbol {
+  font-size: 1.8rem;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(10deg); }
+  50% { transform: scale(1) rotate(0deg); }
+  75% { transform: scale(1.1) rotate(-10deg); }
+}
+
+.metamorphosis-label {
+  font-size: 0.9rem;
+  color: var(--accent-blue);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.magical-stem-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.magical-stem {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-green);
+  background: rgba(40, 167, 69, 0.15);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(40, 167, 69, 0.4);
+  font-family: 'Courier New', monospace;
+  animation: magicalStemPulse 0.8s ease-in-out 0.8s both;
+}
+
+@keyframes magicalStemPulse {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+    border-color: rgba(40, 167, 69, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    border-color: rgba(40, 167, 69, 0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    border-color: rgba(40, 167, 69, 0.4);
+  }
+}
+
+.magical-label {
+  font-size: 0.7rem;
+  color: var(--accent-green);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.plus-symbol {
+  font-size: 1.2rem;
+  color: var(--text);
+  font-weight: 600;
+  margin: 0 0.5rem;
+  animation: fadeIn 0.5s ease-in-out 1s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.strong-endings-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.strong-endings-label {
+  font-size: 0.7rem;
+  color: var(--accent-orange);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.strong-endings-carousel {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.strong-ending-item {
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.12);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(253, 126, 20, 0.25);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  animation: strongEndingBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+  transform: translateY(15px) scale(0.9);
+}
+
+.strong-ending-item:nth-child(1) { animation-delay: 1.2s; }
+.strong-ending-item:nth-child(2) { animation-delay: 1.3s; }
+.strong-ending-item:nth-child(3) { animation-delay: 1.4s; }
+.strong-ending-item:nth-child(4) { animation-delay: 1.5s; }
+.strong-ending-item:nth-child(5) { animation-delay: 1.6s; }
+.strong-ending-item:nth-child(6) { animation-delay: 1.7s; }
+
+@keyframes strongEndingBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(15px) scale(0.9);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translateY(-3px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.metamorphosis-explanation {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(142, 180, 227, 0.08);
+  border: 1px solid rgba(142, 180, 227, 0.2);
+  border-radius: 12px;
+  animation: explanationSlideIn 0.6s ease-in-out 1.8s both;
+}
+
+@keyframes explanationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.explanation-text {
+  font-size: 0.85rem;
+  color: var(--accent-blue);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+/* Responsividad para metamorfosis */
+@media (max-width: 768px) {
+  .metamorphosis-container {
+    gap: 1rem;
+  }
+
+  .metamorphosis-step {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .infinitive-form {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .magical-stem {
+    font-size: 1.3rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .metamorphosis-symbol {
+    font-size: 1.5rem;
+  }
+
+  .strong-ending-item {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .deconstruction-item.strong-preterite {
+    padding: 1rem 0.8rem;
+  }
+
+  .infinitive-form {
+    font-size: 1.1rem;
+  }
+
+  .magical-stem {
+    font-size: 1.2rem;
+  }
+
+  .strong-endings-carousel {
+    gap: 0.2rem;
+  }
+}

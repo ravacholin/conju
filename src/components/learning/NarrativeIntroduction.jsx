@@ -59,6 +59,93 @@ function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
   return forms;
 }
 
+// Mapeo de raíces irregulares para pretéritos fuertes (verbos muy irregulares)
+const STRONG_PRETERITE_STEMS = {
+  // Familia tuv-
+  'tener': 'tuv',
+  'obtener': 'obtuv',
+  'mantener': 'mantuv',
+  'contener': 'contuv',
+  'sostener': 'sostuv',
+  'retener': 'retuv',
+
+  // Familia estuv-
+  'estar': 'estuv',
+  'andar': 'anduv',
+
+  // Familia hic-/hiz-
+  'hacer': 'hic', // hice, hiciste, hizo (alternancia c/z)
+  'satisfacer': 'satisfic',
+  'deshacer': 'deshic',
+  'rehacer': 'rehic',
+
+  // Familia quis-
+  'querer': 'quis',
+
+  // Familia pud-
+  'poder': 'pud',
+
+  // Familia pus-
+  'poner': 'pus',
+  'componer': 'compus',
+  'proponer': 'propus',
+  'disponer': 'dispus',
+  'exponer': 'expus',
+  'suponer': 'supus',
+  'reponer': 'repus',
+
+  // Familia vin-
+  'venir': 'vin',
+  'prevenir': 'previn',
+  'convenir': 'convin',
+  'intervenir': 'intervin',
+
+  // Familia sup-
+  'saber': 'sup',
+
+  // Familia cup-
+  'caber': 'cup',
+
+  // Familia hub-
+  'haber': 'hub',
+
+  // Familia dij-
+  'decir': 'dij',
+  'predecir': 'predij',
+  'contradecir': 'contradij',
+
+  // Familia traj-
+  'traer': 'traj',
+  'atraer': 'atraj',
+  'contraer': 'contraj',
+  'distraer': 'distraj',
+
+  // Familia -duc- (verbos en -ducir)
+  'conducir': 'conduj',
+  'producir': 'produj',
+  'traducir': 'traduj',
+  'reducir': 'reduj',
+  'introducir': 'introduj',
+  'deducir': 'deduj',
+  'seducir': 'seduj',
+  'reproducir': 'reproduj'
+};
+
+// Terminaciones fuertes especiales (sin acentos)
+const STRONG_PRETERITE_ENDINGS = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
+
+// Función para detectar si un verbo es un pretérito fuerte (muy irregular)
+function isStrongPreterite(verbObj, tense) {
+  return tense.mood === 'indicativo' &&
+         tense.tense === 'pretIndef' &&
+         STRONG_PRETERITE_STEMS.hasOwnProperty(verbObj.lemma);
+}
+
+// Función para obtener la raíz irregular del pretérito fuerte
+function getIrregularStem(lemma) {
+  return STRONG_PRETERITE_STEMS[lemma] || null;
+}
+
 // Get standard endings for verb group and tense
 function getStandardEndings(group, tense) {
   const endings = {
@@ -100,6 +187,60 @@ function getStandardEndings(group, tense) {
   };
   
   return endings[tense]?.[group] || endings.pres[group] || [];
+}
+
+// Función para renderizar la deconstrucción especial de pretéritos fuertes con metamorfosis
+function renderStrongPreteriteDeconstruction(verbObj, index) {
+  const verb = verbObj.lemma;
+  const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+  const irregularStem = getIrregularStem(verb);
+
+  if (!irregularStem) return null;
+
+  return (
+    <div key={`strong-${index}`} className="deconstruction-item strong-preterite">
+      <div className="verb-lemma">
+        <span className="lemma-stem">{verb.slice(0, -2)}</span>
+        <span className="group-label">{group}</span>
+      </div>
+
+      <div className="metamorphosis-container">
+        <div className="metamorphosis-step">
+          <div className="infinitive-form">{verb}</div>
+        </div>
+
+        <div className="metamorphosis-arrow">
+          <span className="metamorphosis-symbol">✨</span>
+          <span className="metamorphosis-label">metamorfosis</span>
+          <span className="metamorphosis-symbol">✨</span>
+        </div>
+
+        <div className="metamorphosis-step">
+          <div className="magical-stem-container">
+            <span className="magical-stem">{irregularStem}-</span>
+            <span className="magical-label">raíz mágica</span>
+          </div>
+          <span className="plus-symbol">+</span>
+          <div className="strong-endings-container">
+            <span className="strong-endings-label">terminaciones fuertes</span>
+            <div className="strong-endings-carousel">
+              {STRONG_PRETERITE_ENDINGS.map((ending, idx) => (
+                <span key={`${verb}-${idx}-${ending}`} className="strong-ending-item">
+                  {ending}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="metamorphosis-explanation">
+        <span className="explanation-text">
+          Estos verbos transforman completamente su raíz y usan terminaciones especiales sin acentos
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue }) {
@@ -377,9 +518,14 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                       return v;
                     };
                     
+                    // Verificar si es un pretérito fuerte (muy irregular) para usar metamorfosis
+                    if (isStrongPreterite(verbObj, tense)) {
+                      return renderStrongPreteriteDeconstruction(verbObj, index);
+                    }
+
                     const isIrregular = verbObj.type === 'irregular';
                     const realForms = extractRealConjugatedForms(verbObj, tense.tense, tense.mood);
-                    
+
                     if (isIrregular && realForms && realForms.length > 0) {
                       const expectedForms = expectedRegularForms(verbObj);
                       return (
