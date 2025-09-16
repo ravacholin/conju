@@ -599,7 +599,19 @@ export class AdaptivePracticeEngine {
     try {
       // Get current user settings and forms
       const settings = useSettings.getState()
-      const allForms = buildFormsForRegion(settings.region)
+
+      let effectiveRegion = settings.region
+      let allForms = buildFormsForRegion(effectiveRegion)
+
+      if (!allForms.length) {
+        // Fall back to general Latin American forms when user hasn't picked a region yet
+        effectiveRegion = 'la_general'
+        allForms = buildFormsForRegion(effectiveRegion)
+      }
+
+      const effectiveSettings = effectiveRegion === settings.region
+        ? settings
+        : { ...settings, region: effectiveRegion }
       
       console.log(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
       
@@ -614,7 +626,7 @@ export class AdaptivePracticeEngine {
         }
         
         // Use the validation function from generator.js
-        const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
+        const isValid = validateMoodTenseAvailability(mood, tense, effectiveSettings, allForms)
         
         if (isValid) {
           validRecommendations.push(rec)
@@ -627,7 +639,7 @@ export class AdaptivePracticeEngine {
       // If we filtered out all recommendations, provide safe fallbacks
       if (validRecommendations.length === 0 && recommendations.length > 0) {
         console.log('⚠️  VALIDATION - All recommendations were invalid, adding fallbacks')
-        const fallbacks = await this.generateFallbackRecommendations(settings, allForms)
+        const fallbacks = await this.generateFallbackRecommendations(effectiveSettings, allForms)
         validRecommendations.push(...fallbacks)
       }
       

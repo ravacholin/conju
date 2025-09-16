@@ -29,8 +29,8 @@ export default function useProgressDashboardData() {
         setError(null)
       }
 
-      // Cancel any previous data loading operations
-      asyncController.current.cancel('loadDashboardData')
+      // Cancel every tracked dashboard request so prior keyed operations stop mutating state
+      asyncController.current.cancelAll()
 
       // Get current user ID
       const userId = getCurrentUserId()

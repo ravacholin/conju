@@ -126,6 +126,14 @@ function DrillMode({
     }
   }
 
+  const handleToggleSettings = (show = null) => {
+    const newShow = show !== null ? show : !showSettings
+    closeAllPanels()
+    if (newShow) {
+      setShowSettings(true)
+    }
+  }
+
   const handleToggleAccentKeys = () => {
     setShowAccentKeys(prev => !prev)
   }
@@ -194,17 +202,19 @@ function DrillMode({
         onToggleQuickSwitch={handleToggleQuickSwitch}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
+        onToggleSettings={handleToggleSettings}
         onNavigateToProgress={onNavigateToProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
+        showSettings={showSettings}
       />
 
       {showSettings && (
         <Suspense fallback={<div className="loading">Cargando configuración...</div>}>
           <SettingsPanel
             settings={settings}
-            onClose={() => setShowSettings(false)}
+            onClose={() => handleToggleSettings(false)}
             onDialectChange={onDialectChange}
             onLevelChange={onLevelChange}
             onPracticeModeChange={onPracticeModeChange}
@@ -220,7 +230,7 @@ function DrillMode({
           <QuickSwitchPanel
             settings={settings}
             onApply={handleQuickSwitchApply}
-            onClose={() => setShowQuickSwitch(false)}
+            onClose={() => handleToggleQuickSwitch(false)}
             getAvailableMoodsForLevel={getAvailableMoodsForLevel}
             getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
           />
@@ -231,7 +241,7 @@ function DrillMode({
         <Suspense fallback={<div className="loading">Cargando juegos...</div>}>
           <GamesPanel
             settings={settings}
-            onClose={() => setShowGames(false)}
+            onClose={() => handleToggleGames(false)}
             onRegenerateItem={onRegenerateItem}
           />
         </Suspense>
