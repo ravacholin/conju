@@ -5,6 +5,7 @@ import { storyData } from '../../data/narrativeStories.js';
 import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
+import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 // import { verbs } from '../../data/verbs.js';
 
 // Extraer formas conjugadas reales de la base de datos
@@ -187,6 +188,122 @@ function getStandardEndings(group, tense) {
   };
   
   return endings[tense]?.[group] || endings.pres[group] || [];
+}
+
+// Función para renderizar verbos irregulares solo en terceras personas
+function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
+  const thirdPersonIrregularVerbs = exampleVerbs.filter(verbObj => {
+    // Fallback directo para los verbos más comunes de 3ª persona irregular
+    const thirdPersonVerbs = ['pedir', 'dormir', 'leer', 'servir', 'sentir', 'morir', 'seguir', 'repetir', 'preferir', 'mentir', 'vestir', 'construir', 'destruir', 'incluir', 'concluir', 'influir', 'huir', 'creer', 'caer', 'traer', 'oír'];
+    return thirdPersonVerbs.includes(verbObj.lemma);
+  });
+
+  if (thirdPersonIrregularVerbs.length === 0) return null;
+
+  // Función para extraer el cambio de raíz en 3ª persona
+  const getStemChange = (verbObj) => {
+    const verb = verbObj.lemma;
+    const normalStem = verb.slice(0, -2);
+
+    const paradigm = verbObj.paradigms?.[0];
+    const pretForms = paradigm?.forms?.filter(f => f.mood === 'indicative' && f.tense === 'pretIndef') || [];
+    const thirdSing = pretForms.find(f => f.person === '3s')?.value || '';
+    const thirdPlur = pretForms.find(f => f.person === '3p')?.value || '';
+
+    // Determinar terminaciones esperadas
+    let expectedEnd3s, expectedEnd3p;
+    if (verb.endsWith('ar')) {
+      expectedEnd3s = 'ó'; expectedEnd3p = 'aron';
+    } else {
+      expectedEnd3s = 'ió'; expectedEnd3p = 'ieron';
+    }
+
+    // Extraer raíz irregular quitando la terminación
+    const irregularStem3s = thirdSing.replace(new RegExp(expectedEnd3s + '$'), '');
+    const irregularStem3p = thirdPlur.replace(new RegExp(expectedEnd3p + '$'), '');
+
+    return {
+      normalStem,
+      irregularStem: irregularStem3s, // usar 3s como referencia
+      thirdSing,
+      thirdPlur,
+      expectedEnd3s,
+      expectedEnd3p
+    };
+  };
+
+  // Obtener terminaciones regulares según dialecto (1s, 2s, 1p, [2p])
+  const getRegularEndings = () => {
+    const baseEndings = ['í', 'iste', 'imos'];
+    if (settings?.useVosotros && !settings?.useVoseo) {
+      return ['í', 'iste', 'imos', 'isteis'];
+    }
+    return baseEndings;
+  };
+
+  const regularEndings = getRegularEndings();
+
+  return (
+    <div className="deconstruction-item third-person-irregular-group">
+      <div className="third-person-verbs-container">
+        {thirdPersonIrregularVerbs.map((verbObj, index) => {
+          const verb = verbObj.lemma;
+          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+
+          return (
+            <div key={`third-${index}`} className="third-person-verb-item">
+              <div className="verb-lemma-large">
+                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                <span className="group-label-large">{group}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Sección de formas regulares - con raíz normal */}
+      <div className="regular-forms-section">
+        <div className="regular-forms-title">1ª y 2ª persona (raíz normal)</div>
+        <div className="regular-forms-display">
+          <div className="verb-stem">
+            <span className="stem-base">raíz</span>
+          </div>
+          <span className="plus-symbol">+</span>
+          <div className="ending-carousel">
+            {regularEndings.map((ending, index) => (
+              <div key={`regular-${index}`} className="regular-ending-item">
+                {ending}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Sección de formas irregulares - mostrando cambio de raíz en 3ª persona */}
+      <div className="irregular-forms-section">
+        <div className="irregular-forms-title">3ª persona (raíz cambia)</div>
+        <div className="irregular-forms-display">
+          {thirdPersonIrregularVerbs.slice(0, 3).map((verbObj, index) => {
+            const changes = getStemChange(verbObj);
+
+            return (
+              <div key={`irreg-${index}`} className="irregular-stem-comparison">
+                <div className="stem-change-display">
+                  <span className="normal-stem">{changes.normalStem}</span>
+                  <span className="arrow">→</span>
+                  <span className="irregular-stem-highlight">{changes.irregularStem}</span>
+                </div>
+                <div className="resulting-forms">
+                  <span className="irregular-form">{changes.thirdSing}</span>
+                  <span className="irregular-form">{changes.thirdPlur}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
@@ -523,7 +640,18 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                       return renderStrongPreteriteDeconstruction(exampleVerbs, settings);
                     }
 
-                    // Si no hay pretéritos fuertes, usar la lógica normal
+                    // Verificar si tenemos verbos irregulares solo en terceras personas
+                    const hasThirdPersonIrregulars = exampleVerbs && exampleVerbs.some(verbObj => {
+                      // Fallback directo para los verbos más comunes de 3ª persona irregular
+                      const thirdPersonVerbs = ['pedir', 'dormir', 'leer', 'servir', 'sentir', 'morir', 'seguir', 'repetir', 'preferir', 'mentir', 'vestir', 'construir', 'destruir', 'incluir', 'concluir', 'influir', 'huir', 'creer', 'caer', 'traer', 'oír'];
+                      return thirdPersonVerbs.includes(verbObj.lemma);
+                    });
+
+                    if (hasThirdPersonIrregulars && tense.tense === 'pretIndef') {
+                      return renderThirdPersonIrregularDeconstruction(exampleVerbs, settings);
+                    }
+
+                    // Si no hay pretéritos fuertes ni irregulares de terceras personas, usar la lógica normal
                     return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs.map((verbObj, index) => {
                       const pronouns = pronounsForDialect();
                       const verb = verbObj.lemma;
