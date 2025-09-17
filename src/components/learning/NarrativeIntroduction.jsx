@@ -559,7 +559,18 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     }
                     
                     const formMap = getFormMapForVerb(verbObj);
-                    const realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
+                    let realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
+
+                    // Para condicional y futuro regulares, usar el infinitivo completo en lugar de la raíz
+                    const isConditionalOrFutureRegular =
+                      (tense.tense === 'cond' || tense.tense === 'fut') &&
+                      tense.mood === 'indicativo' &&
+                      verbObj.type === 'regular';
+
+                    if (isConditionalOrFutureRegular) {
+                      realStem = verb; // Usar infinitivo completo (hablar, comer, vivir)
+                    }
+
                     const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
                     
                     const dialectEndings = pronouns.map(p => {
