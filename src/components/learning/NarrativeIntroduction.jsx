@@ -563,8 +563,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
                     // Para condicional y futuro regulares, usar el infinitivo completo en lugar de la raíz
                     const isConditionalOrFutureRegular =
-                      (tense.tense === 'cond' || tense.tense === 'fut') &&
-                      tense.mood === 'indicativo' &&
+                      ((tense.tense === 'cond' && tense.mood === 'condicional') ||
+                       (tense.tense === 'fut' && tense.mood === 'indicativo')) &&
                       verbObj.type === 'regular';
 
                     if (isConditionalOrFutureRegular) {
