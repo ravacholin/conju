@@ -14,8 +14,28 @@ class VerbChunkManager {
       chunksLoaded: 0,
       totalLoadTime: 0
     }
+    this.manifest = null
+    this.manifestPromise = null
+    this.manifestLoadedAt = 0
+    this.manifestTTL = 60 * 1000 // refresh manifest cada minuto para datos dinámicos
+    this.refreshTimer = null
+    this.fetchAvailable = typeof window !== 'undefined' && typeof window.fetch === 'function'
+    this.chunkBaseUrl = '/'
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
+        this.chunkBaseUrl = import.meta.env.BASE_URL
+      }
+    } catch (_error) {
+      // Ignorar si BASE_URL no está disponible (tests / SSR)
+    }
     
     this.initializeMetadata()
+    if (this.fetchAvailable) {
+      this.ensureManifest().catch(error => {
+        console.warn('No se pudo cargar manifest de chunks al iniciar:', error)
+      })
+      this.scheduleManifestRefresh()
+    }
   }
   
   initializeMetadata() {
@@ -27,7 +47,8 @@ class VerbChunkManager {
       ],
       priority: 1,
       size: 179000, // ~179KB
-      description: 'Verbos más frecuentes A1'
+      description: 'Verbos más frecuentes A1',
+      lastAccess: 0
     })
     
     this.chunkMetadata.set('common', {
@@ -38,21 +59,24 @@ class VerbChunkManager {
       ],
       priority: 2,
       size: 250000, // ~250KB
-      description: 'Verbos comunes frecuentes'
+      description: 'Verbos comunes frecuentes',
+      lastAccess: 0
     })
     
     this.chunkMetadata.set('irregulars', {
       verbs: [], // Se populará dinámicamente con verbos irregulares no incluidos arriba
       priority: 3,
       size: 1200000, // ~1.2MB
-      description: 'Verbos irregulares complejos'
+      description: 'Verbos irregulares complejos',
+      lastAccess: 0
     })
     
     this.chunkMetadata.set('advanced', {
       verbs: [], // Resto de verbos
       priority: 4,
       size: 600000, // ~600KB
-      description: 'Verbos avanzados y raros'
+      description: 'Verbos avanzados y raros',
+      lastAccess: 0
     })
     
     // Construir índice verbo -> chunk
@@ -65,6 +89,94 @@ class VerbChunkManager {
         this.verbIndex.set(verbLemma, chunkName)
       })
     })
+  }
+
+  scheduleManifestRefresh() {
+    if (!this.fetchAvailable) {
+      return
+    }
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer)
+    }
+    this.refreshTimer = setInterval(() => {
+      this.ensureManifest(true).catch(error => {
+        console.warn('Refresco automático del manifest de chunks falló:', error)
+      })
+    }, this.manifestTTL)
+  }
+
+  async ensureManifest(force = false) {
+    if (!this.fetchAvailable) {
+      return null
+    }
+    const now = Date.now()
+    if (!force && this.manifest && now - this.manifestLoadedAt < this.manifestTTL) {
+      return this.manifest
+    }
+    if (this.manifestPromise && !force) {
+      return this.manifestPromise
+    }
+
+    const versionBuster = Date.now()
+    const fetchManifest = async () => {
+      const manifestUrl = `${this.buildChunkUrl('manifest.json')}?v=${versionBuster}`
+      const response = await fetch(manifestUrl, {
+        cache: 'no-store'
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      const data = await response.json()
+      this.manifest = data
+      this.manifestLoadedAt = Date.now()
+      this.updateMetadataFromManifest(data)
+      return data
+    }
+
+    this.manifestPromise = fetchManifest()
+      .catch(error => {
+        this.manifestPromise = null
+        throw error
+      })
+      .finally(() => {
+        this.manifestPromise = null
+      })
+
+    return this.manifestPromise
+  }
+
+  updateMetadataFromManifest(manifest) {
+    if (!manifest || !Array.isArray(manifest.chunks)) {
+      return
+    }
+    manifest.chunks.forEach(chunk => {
+      const existing = this.chunkMetadata.get(chunk.name) || {}
+      const metadata = {
+        ...existing,
+        verbs: Array.isArray(chunk.lemmas) ? chunk.lemmas : existing.verbs || [],
+        priority: chunk.priority ?? existing.priority ?? 5,
+        description: existing.description || chunk.description || '',
+        revision: chunk.revision || existing.revision || manifest.version,
+        bytes: chunk.bytes ?? existing.bytes ?? 0,
+        hash: chunk.hash ?? existing.hash ?? null,
+        lastUpdated: manifest.generatedAt || new Date().toISOString(),
+        lastAccess: existing.lastAccess || 0
+      }
+      this.chunkMetadata.set(chunk.name, metadata)
+    })
+
+    // Mantener metadata existente pero limpiar índice para chunks actualizados
+    this.verbIndex.clear()
+    this.buildVerbIndex()
+  }
+
+  buildChunkUrl(resource) {
+    const base = this.chunkBaseUrl || '/'
+    if (base === '/' || base === './') {
+      return `/chunks/${resource}`
+    }
+    const normalized = base.endsWith('/') ? base.slice(0, -1) : base
+    return `${normalized}/chunks/${resource}`
   }
   
   async ensureVerbsLoaded(verbLemmas) {
@@ -94,24 +206,40 @@ class VerbChunkManager {
     // Si ya está cargado, retornar inmediatamente
     if (this.loadedChunks.has(chunkName)) {
       this.stats.cacheHits++
+      const metadata = this.chunkMetadata.get(chunkName)
+      if (metadata) {
+        metadata.lastAccess = Date.now()
+      }
       return this.loadedChunks.get(chunkName)
     }
-    
+
     // Si ya está cargándose, esperar la promesa existente
     if (this.loadingPromises.has(chunkName)) {
       return this.loadingPromises.get(chunkName)
     }
-    
+
+    if (this.fetchAvailable) {
+      try {
+        await this.ensureManifest()
+      } catch (error) {
+        console.warn('No se pudo actualizar manifest antes de cargar chunk:', error)
+      }
+    }
+
     this.stats.cacheMisses++
-    
+
     // Crear nueva promesa de carga
     const loadPromise = this.performChunkLoad(chunkName)
     this.loadingPromises.set(chunkName, loadPromise)
-    
+
     try {
       const verbs = await loadPromise
       this.loadedChunks.set(chunkName, verbs)
       this.stats.chunksLoaded++
+      const metadata = this.chunkMetadata.get(chunkName)
+      if (metadata) {
+        metadata.lastAccess = Date.now()
+      }
       return verbs
     } finally {
       this.loadingPromises.delete(chunkName)
@@ -119,12 +247,46 @@ class VerbChunkManager {
   }
   
   async performChunkLoad(chunkName) {
+    if (this.fetchAvailable) {
+      try {
+        const manifest = await this.ensureManifest()
+        const chunkInfo = manifest?.chunks?.find(entry => entry.name === chunkName)
+        if (!chunkInfo) {
+          console.warn(`Manifest no contiene información para el chunk ${chunkName}`)
+        } else {
+          const revision = encodeURIComponent(chunkInfo.revision || manifest.version || Date.now())
+          const chunkUrl = `${this.buildChunkUrl(`${chunkName}.json`)}?v=${revision}`
+          const response = await fetch(chunkUrl, {
+            cache: 'no-store'
+          })
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`)
+          }
+          const verbs = await response.json()
+          const metadata = this.chunkMetadata.get(chunkName) || {}
+          metadata.verbs = Array.isArray(chunkInfo.lemmas) ? chunkInfo.lemmas : metadata.verbs || []
+          metadata.priority = chunkInfo.priority ?? metadata.priority ?? 5
+          metadata.bytes = chunkInfo.bytes ?? metadata.bytes ?? 0
+          metadata.hash = chunkInfo.hash ?? metadata.hash ?? null
+          metadata.revision = chunkInfo.revision || metadata.revision || manifest.version
+          metadata.lastUpdated = manifest.generatedAt || new Date().toISOString()
+          metadata.lastAccess = Date.now()
+          this.chunkMetadata.set(chunkName, metadata)
+          this.buildVerbIndex()
+          return verbs
+        }
+      } catch (error) {
+        console.warn(`Carga dinámica de chunk ${chunkName} falló, usando fallback local:`, error)
+        this.handleChunkFailure(chunkName, error)
+      }
+    }
+
     try {
-      // Usar importación dinámica para cargar chunks
+      // Usar importación dinámica para cargar chunks legacy (cuando existen)
       const module = await import(`../../data/chunks/${chunkName}.js`)
       return module.verbs || module.default
     } catch (error) {
-      console.warn(`Failed to load chunk ${chunkName}:`, error)
+      console.warn(`Failed to load chunk ${chunkName} desde bundle legacy:`, error)
       // Fallback: cargar desde el archivo principal si el chunk no existe
       return this.loadFromMainFile(chunkName)
     }
@@ -238,6 +400,12 @@ class VerbChunkManager {
         ? (this.stats.totalLoadTime / this.stats.chunksLoaded).toFixed(2) 
         : 0
     }
+  }
+
+  handleChunkFailure(chunkName, error) {
+    console.warn(`Registrando fallo en chunk ${chunkName}:`, error?.message || error)
+    // Forzar nueva carga de manifest en el siguiente intento
+    this.manifestLoadedAt = 0
   }
   
   // Limpieza de memoria - descargar chunks menos usados
@@ -357,7 +525,9 @@ const verbChunkManager = new VerbChunkManager()
 // Inicialización con configuración por defecto
 verbChunkManager.preloadByUserSettings({ level: 'A1', verbType: 'mixed' })
 
-// Limpieza periódica
-setInterval(() => verbChunkManager.cleanup(), 5 * 60 * 1000) // cada 5 minutos
+// Limpieza periódica (solo en navegador)
+if (typeof window !== 'undefined') {
+  setInterval(() => verbChunkManager.cleanup(), 5 * 60 * 1000) // cada 5 minutos
+}
 
 export { verbChunkManager, VerbChunkManager }

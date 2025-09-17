@@ -98,12 +98,20 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
     
     // CRITICAL: Auto-disable chunks if they keep failing
     if (settings.enableChunks !== false) {
-      console.log('💥 AUTO-DISABLING CHUNKS DUE TO REPEATED FAILURES')
+      console.log('💥 Intentando recuperación automática del sistema de chunks tras fallo')
+      try {
+        await verbChunkManager.ensureManifest(true)
+      } catch (manifestError) {
+        console.warn('No se pudo refrescar el manifest de chunks durante la recuperación:', manifestError)
+      }
       try {
         const { useSettings } = await import('../../state/settings.js')
-        useSettings.getState().set({ enableChunks: false })
+        const store = useSettings.getState()
+        if (store.enableChunks === false) {
+          store.set({ enableChunks: true })
+        }
       } catch (settingsError) {
-        console.warn('Could not auto-disable chunks:', settingsError.message)
+        console.warn('No se pudo reactivar chunks en la configuración:', settingsError.message)
       }
     }
     

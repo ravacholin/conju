@@ -9,6 +9,7 @@
     "server:start": "node server/src/index.js",
     "dev:learning": "vite --open /?mode=learning",
     "build": "vite build",
+    "chunks:build": "node scripts/buildChunks.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "preview:learning": "vite preview --open /?mode=learning",

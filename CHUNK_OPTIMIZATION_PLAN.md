@@ -2,6 +2,8 @@
 
 ## Diagnóstico Actual
 
+> **Actualización (2025-09-17)**: Se reinstauró el sistema de chunks con generación dinámica a partir del dataset principal. Ahora existen archivos JSON en `public/chunks/` actualizables mediante `npm run chunks:build`, y el `verbChunkManager` refresca el manifest cada pocos minutos para reflejar cambios frecuentes.
+
 ### Problemas Identificados:
 1. **Chunk de datos masivo**: `data-CdDy0a40.js` (1.8MB) bloquea carga inicial
 2. **Imports mixtos**: `database.js` importado estática y dinámicamente
