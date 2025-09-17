@@ -104,34 +104,63 @@ export async function getVerbByLemma(lemma) {
   // Check cache first
   const cacheKey = `verb:${lemma}`
   let verb = verbLookupCache.get(cacheKey)
-  
+
   if (verb) {
     return verb
   }
-  
-  // Load from chunk manager
-  verb = await verbChunkManager.getVerbByLemma(lemma)
-  
+
+  // Try chunk manager first
+  try {
+    verb = await verbChunkManager.getVerbByLemma(lemma)
+  } catch (error) {
+    console.warn('Chunk manager failed, using direct verb lookup:', error)
+  }
+
+  // Fallback: direct lookup from main verbs data
+  if (!verb) {
+    try {
+      const { verbs } = await import('../../data/verbs.js')
+      verb = verbs.find(v => v.lemma === lemma)
+    } catch (error) {
+      console.error('Failed to load verbs directly:', error)
+      return null
+    }
+  }
+
   if (verb) {
     // Cache the result
     verbLookupCache.set(cacheKey, verb)
-    
+
     // Also update the lookup map for compatibility
     VERB_LOOKUP_MAP.set(lemma, verb)
-    
+
     // Handle priority suffixes
     if (verb.id && verb.id.endsWith('_priority') && !verb.lemma.endsWith('_priority')) {
       VERB_LOOKUP_MAP.set(verb.id, verb)
       const baseLemma = verb.id.replace('_priority', '')
       VERB_LOOKUP_MAP.set(baseLemma, verb)
     }
-    
+
     if (verb.lemma.endsWith('_priority')) {
       const baseLemma = verb.lemma.replace('_priority', '')
       VERB_LOOKUP_MAP.set(baseLemma, verb)
     }
+
+    // Build forms for this verb and add to FORM_LOOKUP_MAP
+    verb.paradigms?.forEach(paradigm => {
+      paradigm.forms?.forEach(form => {
+        const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+        const enrichedForm = {
+          ...form,
+          lemma: verb.lemma,
+          id: key,
+          type: verb.type || 'regular'
+        }
+        FORM_LOOKUP_MAP.set(key, enrichedForm)
+      })
+    })
   }
-  
+
   return verb
 }
 
@@ -139,7 +168,7 @@ export async function getVerbsByLemmas(lemmas) {
   // Check cache for already loaded verbs
   const uncachedLemmas = []
   const cachedVerbs = []
-  
+
   lemmas.forEach(lemma => {
     const cacheKey = `verb:${lemma}`
     const verb = verbLookupCache.get(cacheKey)
@@ -149,20 +178,47 @@ export async function getVerbsByLemmas(lemmas) {
       uncachedLemmas.push(lemma)
     }
   })
-  
+
   // Load uncached verbs
   let newVerbs = []
   if (uncachedLemmas.length > 0) {
-    newVerbs = await verbChunkManager.ensureVerbsLoaded(uncachedLemmas)
-    
-    // Cache the new verbs
+    try {
+      newVerbs = await verbChunkManager.ensureVerbsLoaded(uncachedLemmas)
+    } catch (error) {
+      console.warn('Chunk manager failed for bulk load, using direct lookup:', error)
+
+      // Fallback: load all verbs and filter
+      try {
+        const { verbs } = await import('../../data/verbs.js')
+        newVerbs = verbs.filter(v => uncachedLemmas.includes(v.lemma))
+      } catch (fallbackError) {
+        console.error('Failed to load verbs directly:', fallbackError)
+        return cachedVerbs
+      }
+    }
+
+    // Cache the new verbs and build form maps
     newVerbs.forEach(verb => {
       const cacheKey = `verb:${verb.lemma}`
       verbLookupCache.set(cacheKey, verb)
       VERB_LOOKUP_MAP.set(verb.lemma, verb)
+
+      // Build forms for this verb and add to FORM_LOOKUP_MAP
+      verb.paradigms?.forEach(paradigm => {
+        paradigm.forms?.forEach(form => {
+          const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+          const enrichedForm = {
+            ...form,
+            lemma: verb.lemma,
+            id: key,
+            type: verb.type || 'regular'
+          }
+          FORM_LOOKUP_MAP.set(key, enrichedForm)
+        })
+      })
     })
   }
-  
+
   return [...cachedVerbs, ...newVerbs]
 }
 
