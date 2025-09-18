@@ -333,7 +333,8 @@ function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
     return null
   }
 
-  const relevant = exampleVerbs.filter(verbObj => FUTURE_ROOT_MAP.has(verbObj.lemma))
+  const relevant = FUTURE_CONDITIONAL_ROOTS
+
   if (relevant.length === 0) return null
 
   const isConditional = tense.tense === 'cond'
@@ -348,29 +349,22 @@ function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
   ].filter(Boolean)
 
   const endingsList = pronounOrder.map(pronoun => endingsSource[pronoun] || '')
+  const samplePronoun = settings?.useVoseo ? '2s_vos' : '1s'
 
   return (
     <div className="deconstruction-item future-root-group">
       <div className="future-root-verbs">
-        {relevant.slice(0, 4).map((verbObj, index) => {
-          const root = FUTURE_ROOT_MAP.get(verbObj.lemma)
-          const displayPronouns = pronounOrder.slice(0, 3)
+        {relevant.map((item, index) => {
+          const { lemma, root } = item
           return (
             <div key={`future-root-${index}`} className="future-root-item">
-              <span className="lemma-stem-large">{verbObj.lemma}</span>
+              <span className="lemma-stem-large">{lemma}</span>
               <span className="arrow">→</span>
               <span className="future-root-highlight">{root}-</span>
-              <div className="future-root-forms">
-                {displayPronouns.map((pronoun) => {
-                  const form = buildFutureConditionalForm(root || verbObj.lemma, tense.tense, pronoun)
-                  return (
-                    <div key={`${verbObj.lemma}-${pronoun}`} className="future-root-form">
-                      <span className="pronoun-label">{getPronounLabel(pronoun, settings?.useVoseo)}</span>
-                      <span className="form-value">{form}</span>
-                    </div>
-                  )
-                })}
-              </div>
+              <span className="future-root-example">
+                {getPronounLabel(samplePronoun, settings?.useVoseo)}{' '}
+                {buildFutureConditionalForm(root || lemma, tense.tense, samplePronoun)}
+              </span>
             </div>
           )
         })}
@@ -394,7 +388,7 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
   }
 
   const map = tense.tense === 'ger' ? GERUND_MAP : PARTICIPLE_MAP
-  const relevant = exampleVerbs.filter(verbObj => map.has(verbObj.lemma))
+  const relevant = (tense.tense === 'ger' ? IRREGULAR_GERUNDS : IRREGULAR_PARTICIPLES)
   if (relevant.length === 0) return null
 
   const title = tense.tense === 'ger' ? 'Gerundios irregulares más usados' : 'Participios irregulares esenciales'
@@ -403,18 +397,18 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
     <div className="deconstruction-item nonfinite-irregular-group">
       <div className="nonfinite-title">{title}</div>
       <div className="nonfinite-grid">
-        {relevant.slice(0, 5).map((verbObj, index) => (
+        {relevant.map((item, index) => (
           <div key={`nonfinite-${index}`} className="nonfinite-item">
-            <span className="lemma-stem-large">{verbObj.lemma}</span>
+            <span className="lemma-stem-large">{item.lemma}</span>
             <span className="arrow">→</span>
             <div className="nonfinite-forms">
-              <span className="nonfinite-highlight">{map.get(verbObj.lemma)}</span>
+              <span className="nonfinite-highlight">{map.get(item.lemma)}</span>
               <div className="nonfinite-examples">
                 {(tense.tense === 'ger'
-                  ? ['Estoy', 'Estamos']
-                  : ['He', 'Hemos']
+                  ? ['Estoy', 'Sigues', 'Estamos']
+                  : ['He', 'Has', 'Hemos']
                 ).map((helper, idx) => (
-                  <span key={`${verbObj.lemma}-${idx}`} className="nonfinite-example">{`${helper} ${map.get(verbObj.lemma)}`}</span>
+                  <span key={`${item.lemma}-${idx}`} className="nonfinite-example">{`${helper} ${map.get(item.lemma)}`}</span>
                 ))}
               </div>
             </div>
