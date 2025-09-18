@@ -336,6 +336,111 @@
   gap: 1rem;
 }
 
+.deconstruction-item.future-root-group {
+  background: rgba(17, 17, 17, 0.78);
+  border: 1px solid rgba(110, 231, 183, 0.2);
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.future-root-verbs {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.future-root-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  background: rgba(40, 120, 170, 0.12);
+  border: 1px solid rgba(110, 231, 183, 0.22);
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  min-width: 140px;
+}
+
+.future-root-highlight {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-green, #6ee7b7);
+  letter-spacing: 0.08em;
+}
+
+.future-root-example {
+  font-size: 0.95rem;
+  color: rgba(245, 245, 245, 0.75);
+}
+
+.root-endings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.root-endings-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(245, 245, 245, 0.62);
+}
+
+.deconstruction-item.nonfinite-irregular-group {
+  background: rgba(17, 17, 17, 0.78);
+  border: 1px solid rgba(244, 114, 182, 0.2);
+  border-radius: 16px;
+  padding: 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.nonfinite-title {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(245, 245, 245, 0.68);
+  text-align: center;
+}
+
+.nonfinite-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.nonfinite-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(68, 51, 121, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+}
+
+.nonfinite-item .arrow {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.nonfinite-highlight {
+  font-weight: 700;
+  color: var(--accent-pink, #f472b6);
+}
+
 @keyframes strongPreteriteAppear {
   from {
     opacity: 0;

@@ -81,31 +81,29 @@ export const storyData = {
     },
   },
   fut: {
-    title: 'Planes para mañana',
+    title: 'Raíces irregulares del futuro',
     sentences: {
-        ar: 'Mañana __VERB__ con la directora.',
-        er: '__VERB__ en el café de siempre.',
-        ir: '__VERB__ a la nueva oficina.',
+        ar: 'Con TENER → tendr-, Yo __ROOT__é la decisión final.',
+        er: 'Con PODER → podr-, Tú __ROOT__ás trabajar desde casa.',
+        ir: 'Con DECIR → dir-, Ella __ROOT__á lo necesario sin rodeos.',
     },
     verbSpecific: {
-        // NARRATIVA COHERENTE - Reunión importante de trabajo
-        hablar: 'Mañana __VERB__ con la directora.',
-        comer: '__VERB__ en el café de siempre.',
-        vivir: '__VERB__ una experiencia única.',
+        tener: 'Con TENER → tendr-, Yo __ROOT__é la decisión final.',
+        poder: 'Con PODER → podr-, Tú __ROOT__ás trabajar desde casa.',
+        decir: 'Con DECIR → dir-, Ella __ROOT__á lo necesario sin rodeos.'
     },
   },
   cond: {
-    title: 'Situaciones hipotéticas',
+    title: 'Raíces irregulares del condicional',
     sentences: {
-        ar: 'En esa situación, __VERB__ con mucha calma.',
-        er: '__VERB__ mucho menos.',
-        ir: '__VERB__ de manera diferente.',
+        ar: 'Con PONER → pondr-, Yo __ROOT__ía el plan en marcha si fuera necesario.',
+        er: 'Con QUERER → querr-, Tú __ROOT__ías quedarte un poco más.',
+        ir: 'Con VENIR → vendr-, Nosotros __ROOT__íamos mañana sin dudarlo.',
     },
     verbSpecific: {
-        // NARRATIVA COHERENTE - Reflexión sobre comportamiento en crisis
-        hablar: 'En esa situación, __VERB__ con mucha calma.',
-        comer: '__VERB__ mucho menos por los nervios.',
-        vivir: '__VERB__ de manera completamente diferente.',
+        poner: 'Con PONER → pondr-, Yo __ROOT__ía el plan en marcha si fuera necesario.',
+        querer: 'Con QUERER → querr-, Tú __ROOT__ías quedarte un poco más.',
+        venir: 'Con VENIR → vendr-, Nosotros __ROOT__íamos mañana sin dudarlo.'
     },
   },
   subjPres: {
@@ -221,41 +219,29 @@ export const storyData = {
     },
   },
   ger: {
-    title: 'Actividades en progreso',
+    title: 'Gerundios irregulares en acción',
     sentences: {
-        ar: 'Juan está __VERB__ con mucha concentración.',
-        er: 'María está __VERB__ algo delicioso.',
-        ir: 'Pedro está __VERB__ nuevas experiencias.',
+        ar: 'Con IR → yendo, repite: "Estoy __IRREG__ a la reunión urgente".',
+        er: 'Con DECIR → diciendo, seguimos __IRREG__ la verdad en la retroalimentación.',
+        ir: 'Con DORMIR → durmiendo, los niños siguen __IRREG__ profundamente.',
     },
     verbSpecific: {
-        // NARRATIVA COHERENTE - Actividades simultáneas en el presente
-        hablar: 'Juan está __VERB__ por teléfono con un cliente.',
-        comer: 'María está __VERB__ una ensalada saludable.',
-        vivir: 'Pedro está __VERB__ momentos únicos en su nuevo trabajo.',
-        
-        // Verbos irregulares mantienen la misma coherencia narrativa
-        hacer: 'Ana está __VERB__ ejercicio en el gimnasio.',
-        poner: 'Carlos está __VERB__ música relajante.',
-        salir: 'Lucía está __VERB__ con sus amigos.',
+        ir: 'Con IR → yendo, repite: "Estoy __IRREG__ a la reunión urgente".',
+        decir: 'Con DECIR → diciendo, seguimos __IRREG__ la verdad en la retroalimentación.',
+        dormir: 'Con DORMIR → durmiendo, los niños siguen __IRREG__ profundamente.',
     },
   },
   part: {
-    title: 'Estados y resultados',
+    title: 'Participios irregulares memorables',
     sentences: {
-        ar: 'El trabajo ya está __VERB__.',
-        er: 'La comida ha sido __VERB__.',
-        ir: 'La experiencia ha __VERB__ increíble.',
+        ar: 'Con HACER → hecho, el proyecto queda __IRREG__ y entregado.',
+        er: 'Con VER → visto, dejo todo __IRREG__ antes de salir.',
+        ir: 'Con ESCRIBIR → escrito, el informe ya está __IRREG__ y firmado.',
     },
     verbSpecific: {
-        // NARRATIVA COHERENTE - Resultados de acciones completadas
-        hablar: 'Todo ha sido __VERB__ en la reunión.',
-        comer: 'El almuerzo ya ha sido __VERB__ por todos.',
-        vivir: 'Esta historia ha sido __VERB__ intensamente.',
-        
-        // Participios irregulares frecuentes
-        hacer: 'El proyecto está completamente __VERB__.',
-        abrir: 'La puerta permanece __VERB__ todo el día.',
-        escribir: 'La carta fue __VERB__ con mucho cariño.',
+        hacer: 'Con HACER → hecho, el proyecto queda __IRREG__ y entregado.',
+        ver: 'Con VER → visto, dejo todo __IRREG__ antes de salir.',
+        escribir: 'Con ESCRIBIR → escrito, el informe ya está __IRREG__ y firmado.',
     },
   },
   impAff: {

@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { diffChars } from 'diff';
 import { formatMoodTense, TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
+import {
+  FUTURE_CONDITIONAL_ROOTS,
+  IRREGULAR_GERUNDS,
+  IRREGULAR_PARTICIPLES,
+  FUTURE_ENDINGS,
+  CONDITIONAL_ENDINGS,
+  buildFutureConditionalForm
+} from '../../lib/data/irregularPatterns.js';
 import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
@@ -143,6 +151,10 @@ const STRONG_PRETERITE_STEMS = {
 
 // Terminaciones fuertes especiales (sin acentos)
 const STRONG_PRETERITE_ENDINGS = ['e', 'iste', 'o', 'imos', 'isteis', 'ieron'];
+
+const FUTURE_ROOT_MAP = new Map(FUTURE_CONDITIONAL_ROOTS.map(item => [item.lemma, item.root]));
+const GERUND_MAP = new Map(IRREGULAR_GERUNDS.map(item => [item.lemma, item.form]));
+const PARTICIPLE_MAP = new Map(IRREGULAR_PARTICIPLES.map(item => [item.lemma, item.form]));
 
 // Función para detectar si un verbo es un pretérito fuerte (muy irregular)
 function isStrongPreterite(verbObj, tense) {
@@ -313,6 +325,82 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
       </div>
     </div>
   );
+}
+
+function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
+  if (!tense || !['fut', 'cond'].includes(tense.tense)) {
+    return null
+  }
+
+  const relevant = exampleVerbs.filter(verbObj => FUTURE_ROOT_MAP.has(verbObj.lemma))
+  if (relevant.length === 0) return null
+
+  const isConditional = tense.tense === 'cond'
+  const endingsSource = isConditional ? CONDITIONAL_ENDINGS : FUTURE_ENDINGS
+  const pronounOrder = [
+    '1s',
+    settings?.useVoseo ? '2s_vos' : '2s_tu',
+    '3s',
+    '1p',
+    (!settings?.useVoseo && settings?.useVosotros) ? '2p_vosotros' : null,
+    '3p'
+  ].filter(Boolean)
+
+  const endingsList = pronounOrder.map(pronoun => endingsSource[pronoun] || '')
+
+  return (
+    <div className="deconstruction-item future-root-group">
+      <div className="future-root-verbs">
+        {relevant.slice(0, 4).map((verbObj, index) => {
+          const root = FUTURE_ROOT_MAP.get(verbObj.lemma)
+          return (
+            <div key={`future-root-${index}`} className="future-root-item">
+              <span className="lemma-stem-large">{verbObj.lemma}</span>
+              <span className="arrow">→</span>
+              <span className="future-root-highlight">{root}-</span>
+              <span className="future-root-example">{buildFutureConditionalForm(root || verbObj.lemma, tense.tense, '1s')}</span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="root-endings">
+        <div className="root-endings-title">Terminaciones regulares ({isConditional ? 'condicional' : 'futuro'})</div>
+        <div className="ending-carousel">
+          {endingsList.map((ending, idx) => (
+            <div key={`future-ending-${idx}`} className="regular-ending-item">{ending}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
+  if (!tense || !['ger', 'part'].includes(tense.tense)) {
+    return null
+  }
+
+  const map = tense.tense === 'ger' ? GERUND_MAP : PARTICIPLE_MAP
+  const relevant = exampleVerbs.filter(verbObj => map.has(verbObj.lemma))
+  if (relevant.length === 0) return null
+
+  const title = tense.tense === 'ger' ? 'Gerundios irregulares más usados' : 'Participios irregulares esenciales'
+
+  return (
+    <div className="deconstruction-item nonfinite-irregular-group">
+      <div className="nonfinite-title">{title}</div>
+      <div className="nonfinite-grid">
+        {relevant.slice(0, 5).map((verbObj, index) => (
+          <div key={`nonfinite-${index}`} className="nonfinite-item">
+            <span className="lemma-stem-large">{verbObj.lemma}</span>
+            <span className="arrow">→</span>
+            <span className="nonfinite-highlight">{map.get(verbObj.lemma)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
@@ -596,7 +684,25 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
         ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
         : conjugation;
-        
+
+      let replacementRoot = null
+      let replacementIrregular = null
+      if (tense?.tense === 'fut' || tense?.tense === 'cond') {
+        replacementRoot = FUTURE_ROOT_MAP.get(verbObj.lemma) || null
+        // Use the full conjugation as irregular form highlight
+        replacementIrregular = conjDisplay
+      } else if (tense?.tense === 'ger') {
+        replacementIrregular = GERUND_MAP.get(verbObj.lemma) || null
+      } else if (tense?.tense === 'part') {
+        replacementIrregular = PARTICIPLE_MAP.get(verbObj.lemma) || null
+      }
+
+      const replacements = {
+        verb: conjDisplay,
+        root: replacementRoot || (replacementIrregular ? replacementIrregular : conjDisplay),
+        irreg: replacementIrregular || replacementRoot || conjDisplay
+      }
+
       
       const isVisible = index <= visibleSentence;
       return (
@@ -608,7 +714,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         >
           <SafeTemplate 
             template={sentenceTemplate}
-            replacements={{ verb: conjDisplay }}
+            replacements={replacements}
             highlightClass="highlight"
           />
         </p>
@@ -640,6 +746,16 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
                   {(() => {
+                    const futureRootBlock = renderFutureRootDeconstruction(exampleVerbs, tense, settings)
+                    if (futureRootBlock) {
+                      return futureRootBlock
+                    }
+
+                    const nonFiniteBlock = renderNonFiniteIrregularDeconstruction(exampleVerbs, tense)
+                    if (nonFiniteBlock) {
+                      return nonFiniteBlock
+                    }
+
                     // Verificar si tenemos pretéritos fuertes para renderizarlos agrupados
                     const hasStrongPreterites = exampleVerbs && exampleVerbs.some(verbObj =>
                       isStrongPreterite(verbObj, tense)

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useSettings } from '../../state/settings.js'
 import {
   FUTURE_CONDITIONAL_ROOTS,
@@ -9,6 +9,7 @@ import {
 } from '../../lib/data/irregularPatterns.js'
 import { TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { normalize } from '../../lib/utils/accentUtils.js'
+import './LearningDrill.css'
 import './IrregularRootDrill.css'
 
 const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
@@ -60,6 +61,8 @@ function IrregularRootDrill({
 }) {
   const settings = useSettings()
   const useVoseo = settings.useVoseo === true
+  const containerRef = useRef(null)
+  const [entered, setEntered] = useState(false)
 
   const mode = useMemo(() => {
     if (selectedFamilies.includes(ROOT_FAMILY_ID) && (tense?.tense === 'fut' || tense?.tense === 'cond')) {
@@ -80,6 +83,11 @@ function IrregularRootDrill({
   const [status, setStatus] = useState('idle') // idle | correct | incorrect
   const [stats, setStats] = useState({ correct: 0, total: 0 })
   const [timeLeft, setTimeLeft] = useState(duration ? duration * 60 : null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setEntered(true), 10)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     let built = []
@@ -112,35 +120,48 @@ function IrregularRootDrill({
     return () => clearInterval(timer)
   }, [timeLeft])
 
-  if (mode === 'default') {
-    return (
-      <div className="irregular-root-drill">
-        <div className="root-card">
-          <h2>Selección inválida</h2>
-          <p>No se encontraron patrones irregulares específicos para este conjunto.</p>
-          <div className="root-actions">
-            <button onClick={onBack} className="secondary">Volver</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const currentQuestion = questions[index] || null
   const tenseLabel = tense ? TENSE_LABELS[tense.tense] || formatMoodTense(tense.mood, tense.tense) : ''
 
-  if (!currentQuestion) {
-    return (
-      <div className="irregular-root-drill">
-        <div className="root-card">
-          <h2>Material en preparación</h2>
-          <p>Todavía no tenemos ejemplos irregulares cargados para este conjunto.</p>
-          <div className="root-actions">
-            <button onClick={onBack} className="secondary">Volver</button>
+  const renderFallback = (title, body) => (
+    <div className="App">
+      <header className="header">
+        <div className="icon-row">
+          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
+            <img src="/back.png" alt="Volver" className="menu-icon" />
+          </button>
+          {onGoToProgress && (
+            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
+              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+            </button>
+          )}
+          {onHome && (
+            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
+            </button>
+          )}
+        </div>
+      </header>
+      <div className="main-content">
+        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
+          <div className="irregular-root empty">
+            <h2>{title}</h2>
+            <p>{body}</p>
+            <div className="action-buttons">
+              <button className="btn" onClick={onBack}>Volver</button>
+            </div>
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
+
+  if (mode === 'default') {
+    return renderFallback('Selección inválida', 'No se encontraron patrones irregulares específicos para este conjunto.')
+  }
+
+  if (!currentQuestion) {
+    return renderFallback('Material en preparación', 'Todavía no tenemos ejemplos irregulares cargados para este conjunto.')
   }
 
   function getExpectedAnswers(question) {
@@ -213,7 +234,10 @@ function IrregularRootDrill({
     const alternates = forms.slice(1)
     return (
       <div className="root-meta">
-        <p className="hint-note">Memoriza la forma irregular más frecuente para este verbo.</p>
+        <div className="root-line">
+          <span className="hint-label">Forma irregular</span>
+          <span className="nonfinite-highlight">{forms[0]}</span>
+        </div>
         {alternates.length > 0 && (
           <p className="hint-note alternate">También se acepta: {alternates.join(', ')}</p>
         )}
@@ -222,59 +246,76 @@ function IrregularRootDrill({
   }
 
   return (
-    <div className="irregular-root-drill">
-      <header className="root-header">
-        <div>
-          <h2>{tenseLabel} · enfoque en irregularidades</h2>
-          <p>Practica saltando entre raíces irregulares clave sin repetir todas las personas.</p>
-        </div>
-        <div className="header-actions">
-          {onHome && <button className="ghost" onClick={onHome}>Inicio</button>}
-          {onGoToProgress && <button className="ghost" onClick={onGoToProgress}>Progreso</button>}
+    <div className="App" ref={containerRef}>
+      <header className="header">
+        <div className="icon-row">
+          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
+            <img src="/back.png" alt="Volver" className="menu-icon" />
+          </button>
+          {onGoToProgress && (
+            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
+              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+            </button>
+          )}
+          {onHome && (
+            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
+            </button>
+          )}
         </div>
       </header>
 
-      {currentQuestion && (
-        <main className={`root-card status-${status}`}>
-          <div className="card-heading">
-            <span className="card-label">Verbo</span>
-            <h3>{currentQuestion.lemma}</h3>
-          </div>
-
-          {mode === 'future_cond' && renderFutureCondDetails(currentQuestion)}
-          {mode !== 'future_cond' && renderNonFiniteDetails(currentQuestion)}
-
-          <form className="root-form" onSubmit={handleSubmit}>
-            <label htmlFor="irregular-answer" className="sr-only">Tu respuesta</label>
-            <input
-              id="irregular-answer"
-              value={inputValue}
-              onChange={(event) => setInputValue(event.target.value)}
-              placeholder="Escribe la forma correcta"
-              autoFocus
-            />
-            <div className="root-actions">
-              <button type="submit">Validar</button>
-              {onBack && <button type="button" className="secondary" onClick={onBack}>Volver</button>}
+      <div className="main-content">
+        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
+          <div className="irregular-root-card">
+            <div className="drill-header">
+              <div>
+                <h2>{tenseLabel} · irregularidades clave</h2>
+                <p className="drill-subtitle">Practica saltando entre verbos irregulares para fijar las raíces especiales.</p>
+              </div>
+              {timeLeft != null && (
+                <div className="chrono-badge">{Math.max(timeLeft, 0)}s</div>
+              )}
             </div>
-          </form>
 
-          <div className={`feedback ${status}`}>
-            {status === 'correct' && '¡Bien! La raíz irregular está dominada.'}
-            {status === 'incorrect' && (
-              <span>Respuesta esperada: {getExpectedAnswers(currentQuestion)[0]}</span>
-            )}
+            <div className="irregular-verb">
+              <span className="verb-label">Verbo</span>
+              <span className="verb-lemma">{currentQuestion.lemma}</span>
+            </div>
+
+            {mode === 'future_cond' && renderFutureCondDetails(currentQuestion)}
+            {mode !== 'future_cond' && renderNonFiniteDetails(currentQuestion)}
+
+            <form className="root-form" onSubmit={handleSubmit}>
+              <label htmlFor="irregular-answer" className="sr-only">Tu respuesta</label>
+              <input
+                id="irregular-answer"
+                className={`conjugation-input ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}
+                value={inputValue}
+                onChange={(event) => setInputValue(event.target.value)}
+                placeholder="Escribe la forma correcta"
+                autoFocus
+              />
+              <div className="action-buttons">
+                <button type="submit" className="btn" disabled={!inputValue.trim()}>Validar</button>
+                {onBack && <button type="button" className="btn secondary" onClick={onBack}>Volver</button>}
+              </div>
+            </form>
+
+            <div className={`feedback ${status}`}>
+              {status === 'correct' && '¡Perfecto! La raíz irregular está dominada.'}
+              {status === 'incorrect' && (
+                <span>Respuesta esperada: {getExpectedAnswers(currentQuestion)[0]}</span>
+              )}
+            </div>
+
+            <footer className="root-footer">
+              <span>Progreso: {Math.min(index + 1, questions.length)} / {questions.length}</span>
+              <span>Aciertos: {stats.correct} de {stats.total}</span>
+            </footer>
           </div>
-
-          <footer className="root-footer">
-            <span>Progreso: {Math.min(index + 1, questions.length)} / {questions.length}</span>
-            <span>Aciertos: {stats.correct} de {stats.total}</span>
-            {timeLeft != null && (
-              <span>Tiempo restante: {Math.max(timeLeft, 0)}s</span>
-            )}
-          </footer>
-        </main>
-      )}
+        </div>
+      </div>
     </div>
   )
 }
