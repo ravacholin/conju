@@ -8,7 +8,8 @@ import {
   IRREGULAR_PARTICIPLES,
   FUTURE_ENDINGS,
   CONDITIONAL_ENDINGS,
-  buildFutureConditionalForm
+  buildFutureConditionalForm,
+  getPronounLabel
 } from '../../lib/data/irregularPatterns.js';
 import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
@@ -353,12 +354,23 @@ function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
       <div className="future-root-verbs">
         {relevant.slice(0, 4).map((verbObj, index) => {
           const root = FUTURE_ROOT_MAP.get(verbObj.lemma)
+          const displayPronouns = pronounOrder.slice(0, 3)
           return (
             <div key={`future-root-${index}`} className="future-root-item">
               <span className="lemma-stem-large">{verbObj.lemma}</span>
               <span className="arrow">→</span>
               <span className="future-root-highlight">{root}-</span>
-              <span className="future-root-example">{buildFutureConditionalForm(root || verbObj.lemma, tense.tense, '1s')}</span>
+              <div className="future-root-forms">
+                {displayPronouns.map((pronoun) => {
+                  const form = buildFutureConditionalForm(root || verbObj.lemma, tense.tense, pronoun)
+                  return (
+                    <div key={`${verbObj.lemma}-${pronoun}`} className="future-root-form">
+                      <span className="pronoun-label">{getPronounLabel(pronoun, settings?.useVoseo)}</span>
+                      <span className="form-value">{form}</span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )
         })}
@@ -395,7 +407,17 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
           <div key={`nonfinite-${index}`} className="nonfinite-item">
             <span className="lemma-stem-large">{verbObj.lemma}</span>
             <span className="arrow">→</span>
-            <span className="nonfinite-highlight">{map.get(verbObj.lemma)}</span>
+            <div className="nonfinite-forms">
+              <span className="nonfinite-highlight">{map.get(verbObj.lemma)}</span>
+              <div className="nonfinite-examples">
+                {(tense.tense === 'ger'
+                  ? ['Estoy', 'Estamos']
+                  : ['He', 'Hemos']
+                ).map((helper, idx) => (
+                  <span key={`${verbObj.lemma}-${idx}`} className="nonfinite-example">{`${helper} ${map.get(verbObj.lemma)}`}</span>
+                ))}
+              </div>
+            </div>
           </div>
         ))}
       </div>
