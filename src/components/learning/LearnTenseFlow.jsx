@@ -78,6 +78,7 @@ import LearningDrill from './LearningDrill.jsx';
 import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
 import PronunciationPractice from './PronunciationPractice.jsx';
+import IrregularRootDrill from './IrregularRootDrill.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import { createLogger } from '../../lib/utils/logger.js';
@@ -110,6 +111,10 @@ const logger = createLogger('LearnTenseFlow');
  * - Mantiene coherencia: nunca mezcla regulares e irregulares
  * - Garantiza exactamente 3 verbos para demos consistentes
  */
+const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
+const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
+const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
+
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
   let selectedVerbs = [];
@@ -304,6 +309,21 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
     return grouped;
   }, []);
 
+  const shouldUseRootDrill = useMemo(() => {
+    if (!selectedTense || verbType !== 'irregular') return false
+    const tenseKey = selectedTense.tense
+    if ((tenseKey === 'fut' || tenseKey === 'cond') && selectedFamilies.includes(ROOT_FAMILY_ID)) {
+      return true
+    }
+    if (tenseKey === 'ger' && selectedFamilies.includes(GERUND_FAMILY_ID)) {
+      return true
+    }
+    if (tenseKey === 'part' && selectedFamilies.includes(PARTICIPLE_FAMILY_ID)) {
+      return true
+    }
+    return false
+  }, [selectedTense, verbType, selectedFamilies]);
+
   const handleTenseSelection = (mood, tense) => {
     setSelectedTense({ mood, tense });
     setCurrentStep('type-selection');
@@ -400,6 +420,12 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
       return;
     }
 
+    if (shouldUseRootDrill && ['guided_drill_ar', 'guided_drill_er', 'guided_drill_ir'].includes(toStep)) {
+      logger.debug('Root drill activo: saltando fases guiadas hacia práctica directa.');
+      setTimeout(() => setCurrentStep('practice'), 0);
+      return;
+    }
+
     if (!adaptiveSettings) {
       setTimeout(() => setCurrentStep(toStep), 0);
       return;
@@ -438,6 +464,11 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   };
 
   const handleMechanicalPhaseComplete = () => {
+    if (shouldUseRootDrill) {
+      logger.debug('Root-focused drill complete, finalizando sesión.');
+      handleFinish();
+      return;
+    }
     logger.debug('Mechanical phase complete, moving to meaningful practice.');
     setCurrentStep('meaningful_practice');
   };
@@ -533,18 +564,31 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
   if (currentStep === 'practice') {
     return (
       <ErrorBoundary>
-        <LearningDrill 
-          tense={selectedTense}
-          verbType={verbType}
-          selectedFamilies={selectedFamilies}
-          duration={duration}
-          excludeLemmas={(exampleVerbs || []).map(v => v?.lemma).filter(Boolean)}
-          onBack={() => setCurrentStep('recap')} 
-          onFinish={handleFinish}
-          onPhaseComplete={handleMechanicalPhaseComplete}
-          onHome={onHome}
-          onGoToProgress={onGoToProgress}
-        />
+        {shouldUseRootDrill ? (
+          <IrregularRootDrill
+            tense={selectedTense}
+            selectedFamilies={selectedFamilies}
+            duration={duration}
+            onBack={() => setCurrentStep('introduction')}
+            onFinish={handleFinish}
+            onPhaseComplete={handleMechanicalPhaseComplete}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        ) : (
+          <LearningDrill 
+            tense={selectedTense}
+            verbType={verbType}
+            selectedFamilies={selectedFamilies}
+            duration={duration}
+            excludeLemmas={(exampleVerbs || []).map(v => v?.lemma).filter(Boolean)}
+            onBack={() => setCurrentStep('recap')} 
+            onFinish={handleFinish}
+            onPhaseComplete={handleMechanicalPhaseComplete}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        )}
       </ErrorBoundary>
     );
   }
@@ -741,6 +785,24 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
         name: 'Raíces irregulares',
         description: 'tendr-, dir-, podr-, sabr- comparten terminaciones regulares',
         families: availableFamilies.filter(f => f.id === 'LEARNING_FUT_COND_IRREGULAR')
+      };
+    }
+
+    // Gerundios irregulares: foco en terminaciones -yendo / cambios vocálicos
+    else if (selectedTense.tense === 'ger') {
+      irregularCategories['irregular_gerunds'] = {
+        name: 'Gerundios irregulares',
+        description: 'yendo, diciendo, durmiendo: práctica rápida de formas clave',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_IRREG_GERUNDS')
+      };
+    }
+
+    // Participios irregulares: memorización de formas frecuentes
+    else if (selectedTense.tense === 'part') {
+      irregularCategories['irregular_participles'] = {
+        name: 'Participios irregulares',
+        description: 'hecho, visto, puesto, vuelto… Memoriza los indispensables',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_IRREG_PARTICIPLES')
       };
     }
     

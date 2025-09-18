@@ -57,4 +57,11 @@ describe('learningIrregularFamilies helpers', () => {
     expect(futFamilies).toContain('LEARNING_FUT_COND_IRREGULAR')
     expect(condFamilies).toContain('LEARNING_FUT_COND_IRREGULAR')
   })
+
+  it('includes dedicated families for gerunds and participles', () => {
+    const ger = getLearningFamiliesForTense('ger').map(f => f.id)
+    const part = getLearningFamiliesForTense('part').map(f => f.id)
+    expect(ger).toContain('LEARNING_IRREG_GERUNDS')
+    expect(part).toContain('LEARNING_IRREG_PARTICIPLES')
+  })
 })
