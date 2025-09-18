@@ -437,28 +437,10 @@
   font-weight: 600;
 }
 
-.nonfinite-forms {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
 .nonfinite-highlight {
   font-weight: 700;
   color: var(--accent-pink, #f472b6);
   letter-spacing: 0.06em;
-}
-
-.nonfinite-examples {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.9rem;
-  color: rgba(245, 245, 245, 0.72);
-}
-
-.nonfinite-example {
-  font-style: italic;
 }
 
 @keyframes strongPreteriteAppear {

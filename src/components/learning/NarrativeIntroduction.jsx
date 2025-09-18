@@ -401,17 +401,7 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
           <div key={`nonfinite-${index}`} className="nonfinite-item">
             <span className="lemma-stem-large">{item.lemma}</span>
             <span className="arrow">→</span>
-            <div className="nonfinite-forms">
-              <span className="nonfinite-highlight">{map.get(item.lemma)}</span>
-              <div className="nonfinite-examples">
-                {(tense.tense === 'ger'
-                  ? ['Estoy', 'Sigues', 'Estamos']
-                  : ['He', 'Has', 'Hemos']
-                ).map((helper, idx) => (
-                  <span key={`${item.lemma}-${idx}`} className="nonfinite-example">{`${helper} ${map.get(item.lemma)}`}</span>
-                ))}
-              </div>
-            </div>
+            <span className="nonfinite-highlight">{map.get(item.lemma)}</span>
           </div>
         ))}
       </div>
