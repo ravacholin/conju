@@ -138,6 +138,20 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     level: 'A2',
     concept: 'imperfect_irregular',
     pedagogicalNote: 'Solo 3 verbos irregulares en imperfecto. Memorizar las formas completas.'
+  },
+
+  'LEARNING_FUT_COND_IRREGULAR': {
+    id: 'LEARNING_FUT_COND_IRREGULAR',
+    name: 'Raíces irregulares (futuro y condicional)',
+    description: 'tener→tendr-, decir→dir-, poder→podr-, saber→sabr-',
+    paradigmatic: 'tener',
+    examples: ['tener', 'salir', 'venir', 'poner', 'valer', 'poder', 'saber', 'haber', 'hacer', 'decir', 'querer', 'caber'],
+    priorityExamples: ['tener', 'decir', 'poder'],
+    pattern: 'tener: tendré, tendrás, tendrá / tendría, tendrías, tendría',
+    affectedTenses: ['fut', 'cond'],
+    level: 'B1',
+    concept: 'future_cond_irregular',
+    pedagogicalNote: 'Los 12 verbos de raíz irregular comparten las mismas terminaciones regulares pero con cambios en la raíz (tendr-, dir-, podr-, sabr-).' 
   }
 }
 
@@ -170,30 +184,30 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // ========================================
   // 1) IRREGULARES EN YO (presente con -g)
   // ========================================
-  'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'poner': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'hacer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'salir': ['LEARNING_YO_G_PRESENT'],
-  'venir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'valer': ['LEARNING_YO_G_PRESENT'],
+  'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'poner': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'hacer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'salir': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'venir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'valer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
   'caer': ['LEARNING_YO_G_PRESENT'],
   'traer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
   'oír': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
-  'decir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'decir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'seguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_DIPHTHONGS'],
   'conseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'], 
   'perseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
   'distinguir': ['LEARNING_YO_G_PRESENT'],
   // Verbos compuestos también tienen -g
-  'obtener': ['LEARNING_YO_G_PRESENT'],
-  'mantener': ['LEARNING_YO_G_PRESENT'],
-  'contener': ['LEARNING_YO_G_PRESENT'],
-  'sostener': ['LEARNING_YO_G_PRESENT'],
-  'componer': ['LEARNING_YO_G_PRESENT'],
-  'proponer': ['LEARNING_YO_G_PRESENT'],
-  'disponer': ['LEARNING_YO_G_PRESENT'],
-  'exponer': ['LEARNING_YO_G_PRESENT'],
-  'suponer': ['LEARNING_YO_G_PRESENT'],
+  'obtener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'mantener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'contener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'sostener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'componer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'proponer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'disponer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'exponer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
+  'suponer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
 
   // ========================================
   // 2) VERBOS QUE DIPTONGAN (e→ie, o→ue, e→i)
@@ -201,7 +215,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // e→ie
   'pensar': ['LEARNING_DIPHTHONGS'],
   'cerrar': ['LEARNING_DIPHTHONGS'],
-  'querer': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'querer': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'empezar': ['LEARNING_DIPHTHONGS'],
   'entender': ['LEARNING_DIPHTHONGS'],
   'perder': ['LEARNING_DIPHTHONGS'],
@@ -209,7 +223,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'preferir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   
   // o→ue  
-  'poder': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'poder': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'volver': ['LEARNING_DIPHTHONGS'],
   'contar': ['LEARNING_DIPHTHONGS'],
   'encontrar': ['LEARNING_DIPHTHONGS'],
@@ -263,9 +277,9 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
   'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'], 
   'dar': ['LEARNING_VERY_IRREGULAR'],
-  'saber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'caber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'haber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'saber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'caber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
+  'haber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
 
   // ========================================
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
@@ -334,7 +348,8 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'E_I_PRET': 'LEARNING_PRET_3AS_PERSONAS',
   'O_U_PRET': 'LEARNING_PRET_3AS_PERSONAS',
   'HIATUS_Y': 'LEARNING_PRET_3AS_PERSONAS',
-  'IMPERFECT_IRREG': 'LEARNING_IMPF_IRREGULAR'
+  'IMPERFECT_IRREG': 'LEARNING_IMPF_IRREGULAR',
+  'IRREG_CONDITIONAL': 'LEARNING_FUT_COND_IRREGULAR'
 }
 
 // MAPEO INVERSO: PEDAGÓGICAS A ANTIGUAS (para el generator)
@@ -350,7 +365,8 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
   'LEARNING_ORTH_GAR': 'ORTH_GAR', 
   'LEARNING_PRET_MUY_IRREGULARES': 'PRET_UV', // usar la más común como representante
   'LEARNING_PRET_3AS_PERSONAS': 'E_I_PRET', // usar la más común como representante
-  'LEARNING_IMPF_IRREGULAR': 'IMPERFECT_IRREG'
+  'LEARNING_IMPF_IRREGULAR': 'IMPERFECT_IRREG',
+  'LEARNING_FUT_COND_IRREGULAR': 'IRREG_CONDITIONAL'
 }
 
 // Función para categorizar un verbo usando el sistema pedagógico

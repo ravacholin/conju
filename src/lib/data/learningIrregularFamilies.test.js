@@ -50,5 +50,11 @@ describe('learningIrregularFamilies helpers', () => {
     expect(ids).toContain('LEARNING_DIPHTHONGS')
     expect(ids).toContain('LEARNING_YO_G_PRESENT')
   })
-})
 
+  it('includes future/conditional irregular family for fut and cond', () => {
+    const futFamilies = getLearningFamiliesForTense('fut').map(f => f.id)
+    const condFamilies = getLearningFamiliesForTense('cond').map(f => f.id)
+    expect(futFamilies).toContain('LEARNING_FUT_COND_IRREGULAR')
+    expect(condFamilies).toContain('LEARNING_FUT_COND_IRREGULAR')
+  })
+})

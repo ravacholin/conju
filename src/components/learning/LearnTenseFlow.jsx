@@ -734,6 +734,15 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
         families: availableFamilies.filter(f => f.id === 'LEARNING_IMPF_IRREGULAR')
       };
     }
+
+    // Futuro/Condicional comparten raíces irregulares
+    else if (selectedTense.tense === 'fut' || selectedTense.tense === 'cond') {
+      irregularCategories['future_cond_roots'] = {
+        name: 'Raíces irregulares',
+        description: 'tendr-, dir-, podr-, sabr- comparten terminaciones regulares',
+        families: availableFamilies.filter(f => f.id === 'LEARNING_FUT_COND_IRREGULAR')
+      };
+    }
     
     // Para otros tiempos: categorías tradicionales
     else {
