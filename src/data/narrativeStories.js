@@ -83,27 +83,27 @@ export const storyData = {
   fut: {
     title: 'Raíces irregulares del futuro',
     sentences: {
-        ar: 'Con TENER → tendr-, Yo __ROOT__é la decisión final.',
-        er: 'Con PODER → podr-, Tú __ROOT__ás trabajar desde casa.',
-        ir: 'Con DECIR → dir-, Ella __ROOT__á lo necesario sin rodeos.',
+        ar: 'Raíz __ROOT__ + terminación → yo __IRREG__ sin esfuerzo.',
+        er: 'Raíz __ROOT__ + terminación → tú __IRREG__ cuando haga falta.',
+        ir: 'Raíz __ROOT__ + terminación → ella __IRREG__ lo necesario.',
     },
     verbSpecific: {
-        tener: 'Con TENER → tendr-, Yo __ROOT__é la decisión final.',
-        poder: 'Con PODER → podr-, Tú __ROOT__ás trabajar desde casa.',
-        decir: 'Con DECIR → dir-, Ella __ROOT__á lo necesario sin rodeos.'
+        tener: 'Tener adopta la raíz tendr-: mañana yo __IRREG__ el informe final.',
+        poder: 'Poder usa podr-: desde ahora tú __IRREG__ viajar cuando quieras.',
+        decir: 'Decir pasa a dir-: en la reunión ella __IRREG__ lo necesario sin rodeos.'
     },
   },
   cond: {
     title: 'Raíces irregulares del condicional',
     sentences: {
-        ar: 'Con PONER → pondr-, Yo __ROOT__ía el plan en marcha si fuera necesario.',
-        er: 'Con QUERER → querr-, Tú __ROOT__ías quedarte un poco más.',
-        ir: 'Con VENIR → vendr-, Nosotros __ROOT__íamos mañana sin dudarlo.',
+        ar: 'Raíz __ROOT__ + terminación → yo __IRREG__ si hiciera falta.',
+        er: 'Raíz __ROOT__ + terminación → tú __IRREG__ encantado.',
+        ir: 'Raíz __ROOT__ + terminación → nosotros __IRREG__ sin dudarlo.',
     },
     verbSpecific: {
-        poner: 'Con PONER → pondr-, Yo __ROOT__ía el plan en marcha si fuera necesario.',
-        querer: 'Con QUERER → querr-, Tú __ROOT__ías quedarte un poco más.',
-        venir: 'Con VENIR → vendr-, Nosotros __ROOT__íamos mañana sin dudarlo.'
+        poner: 'Poner cambia a pondr-: con un día extra yo __IRREG__ el plan en marcha.',
+        querer: 'Querer toma querr-: en otra situación tú __IRREG__ quedarte un poco más.',
+        venir: 'Venir adopta vendr-: con mejor clima nosotros __IRREG__ mañana sin dudarlo.'
     },
   },
   subjPres: {
@@ -221,27 +221,32 @@ export const storyData = {
   ger: {
     title: 'Gerundios irregulares en acción',
     sentences: {
-        ar: 'Con IR → yendo, repite: "Estoy __IRREG__ a la reunión urgente".',
-        er: 'Con DECIR → diciendo, seguimos __IRREG__ la verdad en la retroalimentación.',
-        ir: 'Con DORMIR → durmiendo, los niños siguen __IRREG__ profundamente.',
+        ar: 'Forma clave: sigo __IRREG__ cada mañana.',
+        er: 'Forma clave: continúas __IRREG__ sin detenerte.',
+        ir: 'Forma clave: seguimos __IRREG__ hasta terminar.',
     },
     verbSpecific: {
-        ir: 'Con IR → yendo, repite: "Estoy __IRREG__ a la reunión urgente".',
-        decir: 'Con DECIR → diciendo, seguimos __IRREG__ la verdad en la retroalimentación.',
-        dormir: 'Con DORMIR → durmiendo, los niños siguen __IRREG__ profundamente.',
+        ir: 'Ir → yendo: sigo __IRREG__ al hospital cada semana.',
+        decir: 'Decir → diciendo: continúas __IRREG__ la verdad sin rodeos.',
+        dormir: 'Dormir → durmiendo: seguimos __IRREG__ profundamente pese al ruido.',
+        poder: 'Poder → pudiendo: hoy estamos __IRREG__ resolver más casos.',
+        traer: 'Traer → trayendo: el equipo viene __IRREG__ nuevas ideas.',
     },
   },
   part: {
     title: 'Participios irregulares memorables',
     sentences: {
-        ar: 'Con HACER → hecho, el proyecto queda __IRREG__ y entregado.',
-        er: 'Con VER → visto, dejo todo __IRREG__ antes de salir.',
-        ir: 'Con ESCRIBIR → escrito, el informe ya está __IRREG__ y firmado.',
+        ar: 'Resultado clave: el trabajo queda __IRREG__ al final del día.',
+        er: 'Resultado clave: los detalles permanecen __IRREG__ hasta la revisión.',
+        ir: 'Resultado clave: el informe sigue __IRREG__ en la carpeta.',
     },
     verbSpecific: {
-        hacer: 'Con HACER → hecho, el proyecto queda __IRREG__ y entregado.',
-        ver: 'Con VER → visto, dejo todo __IRREG__ antes de salir.',
-        escribir: 'Con ESCRIBIR → escrito, el informe ya está __IRREG__ y firmado.',
+        hacer: 'Hacer → hecho: el proyecto queda __IRREG__ y entregado.',
+        ver: 'Ver → visto: dejamos todo __IRREG__ antes de salir.',
+        escribir: 'Escribir → escrito: el informe ya está __IRREG__ y firmado.',
+        poner: 'Poner → puesto: cada sensor queda __IRREG__ en su lugar.',
+        cubrir: 'Cubrir → cubierto: los materiales quedan __IRREG__ para la lluvia.',
+        resolver: 'Resolver → resuelto: los casos quedan __IRREG__ antes de la reunión final.',
     },
   },
   impAff: {
