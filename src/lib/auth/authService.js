@@ -14,13 +14,18 @@ class AuthService {
     this.token = null
     this.user = null
     this.account = null
+    this.googleInitPromise = null
+    this.googleListenersAttached = false
     this.loadFromStorage()
-    this.initializeGoogleAuth()
     this.setupGoogleEventListeners()
   }
 
   // Storage management
   loadFromStorage() {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return
+    }
+
     try {
       const token = localStorage.getItem('auth_token')
       const user = localStorage.getItem('auth_user')
@@ -38,6 +43,10 @@ class AuthService {
   }
 
   saveToStorage() {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return
+    }
+
     try {
       if (this.token && this.user && this.account) {
         localStorage.setItem('auth_token', this.token)
@@ -53,6 +62,10 @@ class AuthService {
     this.token = null
     this.user = null
     this.account = null
+
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return
+    }
 
     try {
       localStorage.removeItem('auth_token')
@@ -313,18 +326,36 @@ class AuthService {
 
   // Google OAuth methods
   async initializeGoogleAuth() {
-    if (typeof window === 'undefined') return
-
-    try {
-      await initializeGoogleAuth()
-      console.log('✅ Google OAuth initialized in AuthService')
-    } catch (error) {
-      console.warn('⚠️ Failed to initialize Google OAuth:', error.message)
+    if (typeof window === 'undefined') {
+      return false
     }
+
+    this.setupGoogleEventListeners()
+
+    if (!this.googleInitPromise) {
+      this.googleInitPromise = (async () => {
+        const initialized = await initializeGoogleAuth()
+
+        if (!initialized) {
+          this.googleInitPromise = null
+          console.warn('⚠️ Google OAuth initialization was not successful')
+        } else {
+          console.log('✅ Google OAuth initialized in AuthService')
+        }
+
+        return initialized
+      })().catch((error) => {
+        this.googleInitPromise = null
+        console.warn('⚠️ Failed to initialize Google OAuth:', error?.message || error)
+        return false
+      })
+    }
+
+    return this.googleInitPromise
   }
 
   setupGoogleEventListeners() {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || this.googleListenersAttached) return
 
     // Listen for Google auth success
     window.addEventListener('google-auth-success', async (event) => {
@@ -351,6 +382,8 @@ class AuthService {
       const error = event.detail.error
       console.error('Google auth error:', error)
     })
+
+    this.googleListenersAttached = true
   }
 
   async processGoogleLogin(googleUser) {
@@ -408,6 +441,12 @@ class AuthService {
     try {
       if (!isGoogleAuthConfigured()) {
         throw new Error('Google OAuth no está configurado correctamente')
+      }
+
+      const initialized = await this.initializeGoogleAuth()
+
+      if (!initialized) {
+        throw new Error('Google OAuth no está disponible en este dispositivo')
       }
 
       return await triggerGoogleSignIn()

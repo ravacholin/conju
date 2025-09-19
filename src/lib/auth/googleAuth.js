@@ -8,6 +8,10 @@ let isGoogleLibLoaded = false
 let googleLibPromise = null
 
 function loadGoogleLibrary() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return Promise.reject(new Error('Google OAuth requires a browser environment'))
+  }
+
   if (googleLibPromise) return googleLibPromise
 
   googleLibPromise = new Promise((resolve, reject) => {
@@ -179,9 +183,11 @@ export async function triggerGoogleSignIn() {
   } catch (error) {
     console.error('❌ Failed to trigger Google Sign-In:', error)
     // Don't throw error, just log it
-    window.dispatchEvent(new CustomEvent('google-auth-error', {
-      detail: { error: 'Google OAuth no está disponible en este momento. Prueba con email y contraseña.' }
-    }))
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('google-auth-error', {
+        detail: { error: 'Google OAuth no está disponible en este momento. Prueba con email y contraseña.' }
+      }))
+    }
     return false
   }
 }

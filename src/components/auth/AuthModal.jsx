@@ -13,6 +13,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     name: ''
   })
 
+  useEffect(() => {
+    authService.initializeGoogleAuth()
+  }, [])
+
   // Listen for auth events
   useEffect(() => {
     const handleAuthLogin = (event) => {
