@@ -161,7 +161,7 @@ const PARTICIPLE_MAP = new Map(IRREGULAR_PARTICIPLES.map(item => [item.lemma, it
 function isStrongPreterite(verbObj, tense) {
   return tense.mood === 'indicativo' &&
          tense.tense === 'pretIndef' &&
-         STRONG_PRETERITE_STEMS.hasOwnProperty(verbObj.lemma);
+         Object.prototype.hasOwnProperty.call(STRONG_PRETERITE_STEMS, verbObj.lemma);
 }
 
 // Función para obtener la raíz irregular del pretérito fuerte
@@ -242,7 +242,6 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
 
     // Extraer raíz irregular quitando la terminación
     const irregularStem3s = thirdSing.replace(new RegExp(expectedEnd3s + '$'), '');
-    const irregularStem3p = thirdPlur.replace(new RegExp(expectedEnd3p + '$'), '');
 
     return {
       normalStem,
@@ -412,7 +411,7 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
 function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
   const strongVerbs = exampleVerbs.filter(verbObj =>
-    STRONG_PRETERITE_STEMS.hasOwnProperty(verbObj.lemma)
+    Object.prototype.hasOwnProperty.call(STRONG_PRETERITE_STEMS, verbObj.lemma)
   );
 
   if (strongVerbs.length === 0) return null;

@@ -105,7 +105,7 @@ function determineVerbFrequency(lemma) {
  * @param {string} lemma - Lema del verbo
  * @returns {Promise<boolean>} Si el verbo está inicializado
  */
-export async function isVerbInitialized(_lemma) { // eslint-disable-line no-unused-vars
+export async function isVerbInitialized(_lemma) {
   // En una implementación completa, esto verificaría en la base de datos
   // si el verbo ya está guardado
   
@@ -155,7 +155,7 @@ export async function addNewVerb(verb) {
  * @param {Object} updates - Actualizaciones
  * @returns {Promise<void>}
  */
-export async function updateVerb(verbId, _updates) { // eslint-disable-line no-unused-vars
+export async function updateVerb(verbId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el verbo existente
     

@@ -102,7 +102,7 @@ export async function authenticateAccount(email, password) {
 }
 
 export async function authenticateWithGoogle(data) {
-  const { googleId, email, name, deviceName } = googleAuthSchema.parse(data)
+  const { googleId, email, name } = googleAuthSchema.parse(data)
 
   // First, try to find by Google ID
   let account = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE google_id = ?').get(googleId)
@@ -191,7 +191,7 @@ export function generateJWT(payload) {
 export function verifyJWT(token) {
   try {
     return jwt.verify(token, JWT_SECRET)
-  } catch (error) {
+  } catch {
     throw new Error('Invalid or expired token')
   }
 }

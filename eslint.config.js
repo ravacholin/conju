@@ -16,7 +16,10 @@ export default [
     },
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        process: 'readonly'
+      },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
@@ -25,7 +28,8 @@ export default [
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+      'no-empty': ['error', { allowEmptyCatch: true }],
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/rules-of-hooks': 'off',
       'react-refresh/only-export-components': [
@@ -61,8 +65,8 @@ export default [
   },
   // Node.js scripts at repo root, scripts/, and src/lib/utils (exclude src/ and public/ except utils)
   {
-    files: ['*.js', 'scripts/**/*.js', 'src/lib/utils/*.js', 'src/validate-data.js'],
-    ignores: ['src/**/*', 'public/**/*', 'node_modules/**/*', 'dist/**/*', '!src/lib/utils/*.js', '!src/validate-data.js'],
+    files: ['*.js', '*.mjs', 'scripts/**/*.{js,mjs}', 'src/lib/utils/*.js', 'src/validate-data.js'],
+    ignores: ['src/**/*', 'public/**/*', 'node_modules/**/*', 'dist/**/*', '!src/lib/utils/*.js', '!src/validate-data.js', '!scripts/**/*.{js,mjs}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,

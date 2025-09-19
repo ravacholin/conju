@@ -119,25 +119,25 @@ function OnboardingFlow({
 
   // Wrap handlers to add toasts
   const handleSelectDialect = (d) => {
-    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch (e) { /* ignore errors */ }
+    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch { /* ignore errors */ }
   }
   const handleSelectLevel = (lvl) => {
-    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch (e) { /* ignore errors */ }
+    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch { /* ignore errors */ }
   }
   const handleSelectPracticeMode = (mode) => {
-    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch (e) { /* ignore errors */ }
+    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch { /* ignore errors */ }
   }
   const handleSelectMood = (mood) => {
-    try { selectMood(mood); showToast(`Modo seleccionado`) } catch (e) { /* ignore errors */ }
+    try { selectMood(mood); showToast(`Modo seleccionado`) } catch { /* ignore errors */ }
   }
   const handleSelectTense = (tense) => {
-    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch (e) { /* ignore errors */ }
+    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch { /* ignore errors */ }
   }
   const handleSelectVerbType = (verbType, onStart) => {
-    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch (e) { /* ignore errors */ }
+    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch { /* ignore errors */ }
   }
   const handleSelectFamily = (familyId, onStart) => {
-    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch (e) { /* ignore errors */ }
+    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch { /* ignore errors */ }
   }
   // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {

@@ -269,10 +269,7 @@ async function initializeCoreVerbs() {
 }
 
 // Initialize core verbs immediately with fallback
-let coreInitialized = false
-initializeCoreVerbs().then(() => {
-  coreInitialized = true
-}).catch(error => {
+initializeCoreVerbs().catch(error => {
   console.warn('Failed to initialize chunk system, using fallback:', error)
   initializeFallbackLookups()
 })

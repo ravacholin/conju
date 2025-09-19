@@ -215,7 +215,7 @@ export function getDeviceName() {
     } else {
       return 'Unknown Device'
     }
-  } catch (error) {
+  } catch {
     return 'Unknown Device'
   }
 }

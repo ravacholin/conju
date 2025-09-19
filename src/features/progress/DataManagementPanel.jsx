@@ -13,8 +13,7 @@ import {
   getSyncAuthToken,
   isSyncEnabled,
   isLocalSyncMode,
-  syncNow,
-  syncAccountData
+  syncNow
 } from '../../lib/progress/userManager.js'
 // import { getCurrentUserId } from '../../lib/progress/userManager.js'
 

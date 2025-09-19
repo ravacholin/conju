@@ -19,7 +19,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
   // Listen for auth events
   useEffect(() => {
-    const handleAuthLogin = (event) => {
+    const handleAuthLogin = () => {
       console.log('🔵 AuthModal: Received auth-login event')
       setLoading(false)
       onSuccess?.()
@@ -57,15 +57,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     setError('')
 
     try {
-      let result
       if (mode === 'register') {
-        result = await authService.register(
+        await authService.register(
           formData.email,
           formData.password,
           formData.name || null
         )
       } else {
-        result = await authService.login(
+        await authService.login(
           formData.email,
           formData.password
         )

@@ -5,7 +5,7 @@ const formatDateLabel = (isoDate) => {
   try {
     const date = new Date(isoDate)
     return date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })
-  } catch (_error) {
+  } catch {
     return 'Hoy'
   }
 }

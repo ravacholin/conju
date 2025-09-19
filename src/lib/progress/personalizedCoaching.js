@@ -140,7 +140,7 @@ export class PersonalizedCoach {
   /**
    * Analyze learning patterns from recent attempts
    */
-  analyzeLearningPatterns(recentAttempts, masteryRecords) {
+  analyzeLearningPatterns(recentAttempts, _masteryRecords) {
     if (!recentAttempts || recentAttempts.length < 10) {
       return {
         sessionLength: 'insufficient_data',
@@ -577,7 +577,7 @@ export class PersonalizedCoach {
     return 'long'
   }
 
-  identifyOverallStrength(moodAnalysis, tenseAnalysis) {
+  identifyOverallStrength(moodAnalysis, _tenseAnalysis) {
     const strengths = Object.entries(moodAnalysis)
       .filter(([_, data]) => data.average >= 75)
       .map(([mood, data]) => ({ mood, score: data.average }))

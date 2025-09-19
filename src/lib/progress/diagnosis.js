@@ -263,15 +263,9 @@ export async function saveDiagnosisResults(_userId, diagnosis) {
  * @returns {Promise<Array>} Historial de diagnósticos
  */
 export async function getDiagnosisHistory(_userId) {
-  try {
-    // En una implementación completa, esto obtendría el historial
-    // de diagnósticos del usuario
-    
-    return []
-  } catch (error) {
-    console.error('Error al obtener historial de diagnósticos:', error)
-    return []
-  }
+  // En una implementación completa, esto obtendría el historial
+  // de diagnósticos del usuario
+  return []
 }
 
 /**

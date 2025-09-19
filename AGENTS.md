@@ -1,46 +1,19 @@
 # Repository Guidelines
 
-This guide summarizes how to work in this repo: structure, commands, style, tests, and contribution flow.
-
 ## Project Structure & Module Organization
-- `src/`: React + Vite app code.
-  - `src/lib/progress/`: SRS/progress logic, analytics, orchestrators (see `README.md`).
-  - `src/features/`: feature-level UI (dashboards, tracking wrappers).
-  - `src/components/`, `src/hooks/`, `src/state/`, `src/lib/utils/`.
-- Tests: co-located under `src/**/*.{test,spec}.js` (e.g., `src/lib/progress/progress.test.js`).
-- `public/`: static assets. `dist/`: build output. `scripts/`: helper scripts.
+The app lives under `src/`, organized by responsibility: shared UI in `src/components/`, hooks in `src/hooks/`, and state helpers in `src/state/`. Feature entry points reside in `src/features/`, while SRS and progress logic sit in `src/lib/progress/` (see the co-located README for orchestration details). Utility helpers stay in `src/lib/utils/`. Static assets belong in `public/`; production builds compile into `dist/`. Place tests beside their subjects as `*.test.js` or `*.spec.js` files.
 
 ## Build, Test, and Development Commands
-- `npm run dev`: start Vite dev server.
-- `npm run build`: production build to `dist/`.
-- `npm run preview`: preview the production build locally.
-- `npm run lint`: run ESLint (`eslint.config.js`).
-- `npm test`: run Vitest (jsdom, globals).
-- Single test file: `npx vitest run src/lib/progress/progress.test.js`.
-- Example data check: `node src/validate-data.js`.
+Use `npm run dev` for the Vite development server with hot reload. Ship-ready builds come from `npm run build`, and `npm run preview` serves the built assets locally. Run ESLint with `npm run lint` to enforce code quality, and execute `npm test` for the Vitest suite. Target a single suite via `npx vitest run <relative-test-path>`.
 
 ## Coding Style & Naming Conventions
-- JavaScript (ESM) + React functional components; 2-space indentation.
-- Components: `PascalCase.jsx`; utilities/tests: `camelCase.js`; tests: `*.test.js` / `*.spec.js`.
-- Follow React Hooks rules; keep components small and pure.
-- Use ESLint for issues and Prettier for bulk formatting (`npx prettier -w .`).
+Code is modern ESM JavaScript with React functional components and 2-space indentation. Components and providers follow `PascalCase.jsx`; utilities and hooks use `camelCase.js`. Keep modules focused and follow React Hooks rules. Format with Prettier (`npx prettier -w .`) and let ESLint surface rule violations.
 
 ## Testing Guidelines
-- Framework: Vitest with jsdom; global setup in `test-setup.js` (IndexedDB, localStorage, matchMedia mocks).
-- Focus on progress tracking, mastery, SRS, and orchestrator flows.
-- Keep tests co-located, isolated, fast, and clearly named.
+Vitest (jsdom environment) handles unit and integration coverage. Tests must stay deterministic, fast, and colocated with implementation. Name suites after the module under test and prefer high-value cases around progress tracking, SRS workflows, and orchestrator behavior. Run `npm test` locally before opening a PR.
 
 ## Commit & Pull Request Guidelines
-- Commits: `feat:`, `fix(scope):`, `docs:`, `chore:`, `ui:`, `theme(scope):`.
-- Branches: `feature/<short-desc>` or `fix/<short-desc>`.
-- PRs: explain scope/rationale, link issues, add UI screenshots, and pass `npm run lint` and `npm test`.
-- Update adjacent docs when behavior changes (e.g., `src/lib/progress/README.md`, `README.md`).
+Write conventional commit messages such as `feat:`, `fix(scope):`, `docs:`, or `chore:`. Branch names follow `feature/<short-desc>` or `fix/<short-desc>`. Pull requests should summarize the change, link issues, include UI screenshots when visuals shift, and confirm `npm run lint` plus `npm test` both pass. Update related docs (e.g., `src/lib/progress/README.md`) when behavior changes.
 
-## Architecture & Data Notes
-- Read `ARCHITECTURE.md` and `src/lib/progress/README.md` before modifying progress/SRS.
-- IndexedDB is the local store; coordinate schema via `src/lib/progress/database.js` and related config. Avoid breaking schema.
-
-## Security & Configuration
-- Do not commit secrets. Keep `.env` local and excluded.
-- Prefer documented configuration files over ad-hoc env usage in code.
-
+## Security & Configuration Tips
+Never commit secrets or `.env` files. IndexedDB schema lives in `src/lib/progress/database.js`; coordinate updates carefully to avoid data loss. Prefer documented config files over ad-hoc environment variables.

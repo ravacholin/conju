@@ -148,7 +148,7 @@ export function getCurrentUserId() {
   try {
     const id = getIdFromProgress()
     if (id && typeof id === 'string') return id
-  } catch (_e) {
+  } catch {
     // Continuar con fallbacks sin interrumpir flujo
   }
 
@@ -162,7 +162,7 @@ export function getCurrentUserId() {
       }
       return userId
     }
-  } catch (_e) {
+  } catch {
     // Si localStorage falla (modo privado, permisos, etc.), continuar al fallback temporal
   }
 
@@ -639,9 +639,6 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   } catch (error) {
     console.warn('Fallo de sincronización, encolando para más tarde:', error?.message)
     // Encolar lotes para reintentar
-    Object.entries(results).forEach(([type, info]) => {
-      if (info?.uploaded > 0) return
-    })
     return { success: false, error: String(error) }
   }
 }
@@ -657,7 +654,7 @@ export async function flushSyncQueue() {
     try {
       await postJSON(`/progress/${entry.type}`, entry.payload)
       ok++
-    } catch (e) {
+    } catch {
       // Re-encolar si vuelve a fallar
       enqueue(entry.type, entry.payload)
     }

@@ -1,4 +1,3 @@
-import gates from '../../data/curriculum.json'
 import { useSettings } from '../../state/settings.js'
 import { verbs } from '../../data/verbs.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
@@ -996,7 +995,6 @@ function ACC(f, history){
   return (h.correct + 1) / (h.seen + 2)
 }
 function key(f){ return `${f.mood}:${f.tense}:${f.person}:${f.value}` }
-function levelOrder(L){ return ['A1','A2','B1','B2','C1','C2'].indexOf(L) }
 
 /**
  * PROGRESS SYSTEM INTEGRATION: Validates if a mood/tense combination has available forms

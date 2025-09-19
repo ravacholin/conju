@@ -270,7 +270,7 @@ describe('Generator - Comprehensive Tests', () => {
               currentItem: null
             })
             if (result) results.push(result)
-          } catch (error) {
+          } catch {
             // Some levels might not have valid forms, which is okay
             break
           }
@@ -305,7 +305,7 @@ describe('Generator - Comprehensive Tests', () => {
           if (result) {
             expectValidGeneratorOutput(result)
           }
-        } catch (error) {
+        } catch {
           // Some practice modes might not work with our mock data
           console.log(`Practice mode ${practiceMode} not supported with mock data`)
         }
@@ -329,7 +329,7 @@ describe('Generator - Comprehensive Tests', () => {
             currentItem: null
           })
           if (result) results.push(result)
-        } catch (error) {
+        } catch {
           // Expected for some iterations
           break
         }

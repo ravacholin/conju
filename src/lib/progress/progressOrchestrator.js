@@ -33,7 +33,7 @@ function dispatchUpdate() {
       const ev = new CustomEvent('progress-emo-update', { detail: { ...lastState } })
       window.dispatchEvent(ev)
     }
-  } catch (_) {
+  } catch {
     /* ignore */
   }
 }
@@ -94,7 +94,7 @@ export function processAttempt(attemptCtx) {
       interruptions: 0,
       sessionType: 'mixed'
     })
-  } catch (_) {
+  } catch {
     /* ignore */
   }
 
@@ -131,13 +131,13 @@ export function getOrchestratorState() {
 }
 
 export function resetOrchestrator() {
-  try { flowDetector.reset() } catch (_) {
+  try { flowDetector.reset() } catch {
     // Ignore reset errors
   }
-  try { momentum.reset() } catch (_) {
+  try { momentum.reset() } catch {
     // Ignore reset errors
   }
-  try { confidenceEngine.reset && confidenceEngine.reset() } catch (_) {
+  try { confidenceEngine.reset && confidenceEngine.reset() } catch {
     // Ignore reset errors
   }
 }

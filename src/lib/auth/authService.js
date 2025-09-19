@@ -3,8 +3,7 @@
 import {
   initializeGoogleAuth,
   triggerGoogleSignIn,
-  isGoogleAuthConfigured,
-  getDeviceName
+  isGoogleAuthConfigured
 } from './googleAuth.js'
 
 const API_BASE = import.meta.env.VITE_PROGRESS_SYNC_URL || 'https://conju.onrender.com/api'
@@ -488,7 +487,7 @@ class AuthService {
       const googleUser = event.detail
       try {
         console.log('🔵 Processing Google auth success event:', googleUser)
-        const result = await this.processGoogleLogin(googleUser)
+        await this.processGoogleLogin(googleUser)
 
         // Emit login event after successful processing
         this.emitLoginEvent()

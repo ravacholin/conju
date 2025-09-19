@@ -25,7 +25,7 @@ class VerbChunkManager {
       if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
         this.chunkBaseUrl = import.meta.env.BASE_URL
       }
-    } catch (_error) {
+    } catch {
       // Ignorar si BASE_URL no está disponible (tests / SSR)
     }
     

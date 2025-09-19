@@ -1,17 +1,10 @@
 // Pruebas de internacionalización para el sistema de progreso y analíticas
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { 
-  initProgressSystem,
-  isProgressSystemInitialized,
-  getCurrentUserId,
   calculateRecencyWeight,
   getVerbDifficulty,
-  calculateHintPenalty,
-  calculateMasteryForItem,
-  calculateMasteryForCell,
-  getConfidenceLevel,
-  classifyMasteryLevel
+  calculateHintPenalty
 } from './all.js'
 
 // Mock de IndexedDB para pruebas

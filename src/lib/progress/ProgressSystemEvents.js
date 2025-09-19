@@ -174,7 +174,7 @@ try {
   const react = await import('react')
   useState = react.useState
   useEffect = react.useEffect
-} catch (_error) {
+} catch {
   // En entornos no-React, proveer stubs
   useState = () => [false, () => {}]
   useEffect = () => {}

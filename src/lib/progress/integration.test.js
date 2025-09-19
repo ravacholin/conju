@@ -13,8 +13,7 @@ import {
   calculateMasteryForItem,
   calculateMasteryForCell,
   getConfidenceLevel,
-  classifyMasteryLevel,
-  resetProgressSystem
+  classifyMasteryLevel
 } from './all.js'
 
 // Mock de IndexedDB para pruebas
@@ -180,7 +179,7 @@ describe('Pruebas de Integración del Sistema de Progreso', () => {
 
   it('debería integrar correctamente todas las funciones en conjunto', async () => {
     // Inicializar el sistema
-    const userId = await initProgressSystem()
+    await initProgressSystem()
     
     // Crear un verbo de prueba
     const testVerb = {

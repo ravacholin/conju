@@ -89,7 +89,7 @@ export async function initProgressSystem(userId = null) {
         if (typeof dbModule.initDB === 'function') {
           maybeInitDB = dbModule.initDB
         }
-      } catch (_e) {
+      } catch {
         /* En entorno de pruebas, algunos mocks pueden omitir initDB; continuar sin DB */
       }
       await maybeInitDB()

@@ -61,7 +61,6 @@ export default function ReverseInputs({
     nonfinite: ['ger', 'part', 'nonfiniteMixed']
   }
 
-  const getMoodLabel = (mood) => getSafeMoodTenseLabels(mood, 'dummy').moodLabel
   const getTenseLabel = (tense) => getSafeMoodTenseLabels('dummy', tense).tenseLabel
 
   const handleReverseKeyDown = (e) => {

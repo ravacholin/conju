@@ -2,9 +2,6 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { 
-  initProgressSystem,
-  isProgressSystemInitialized,
-  getCurrentUserId,
   calculateRecencyWeight,
   getVerbDifficulty,
   calculateHintPenalty,
