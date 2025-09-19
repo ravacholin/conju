@@ -5,7 +5,10 @@ import {
   getAttemptsByUser,
   getMasteryByUser,
   updateInDB,
-  getAllFromDB
+  getAllFromDB,
+  saveAttempt,
+  saveMastery,
+  saveSchedule
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
@@ -18,6 +21,7 @@ const SYNC_AUTH_TOKEN_KEY = 'progress-sync-auth-token'
 const SYNC_AUTH_HEADER_NAME_KEY = 'progress-sync-auth-header-name'
 
 // Resolve sync base URL from env or localStorage override
+// Returns null if no real endpoint is configured (instead of falling back to localhost)
 function resolveSyncBaseUrl() {
   try {
     if (typeof window !== 'undefined') {
@@ -29,8 +33,8 @@ function resolveSyncBaseUrl() {
   const envUrl = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_URL) ||
                  (typeof process !== 'undefined' && process?.env?.VITE_PROGRESS_SYNC_URL) ||
                  null
-  // Fallback por defecto a servidor local
-  return envUrl || 'http://localhost:8787/api'
+  // Return null if no real endpoint configured (no fallback to localhost)
+  return envUrl
 }
 
 let SYNC_BASE_URL = resolveSyncBaseUrl()
@@ -51,8 +55,22 @@ export function getSyncEndpoint() {
   return SYNC_BASE_URL
 }
 
+// Helper to detect if a URL is a local development placeholder
+function isLocalPlaceholderUrl(url) {
+  if (!url) return false
+  return url.includes('localhost:') || url.includes('127.0.0.1:') || url.includes('0.0.0.0:')
+}
+
 export function isSyncEnabled() {
-  return !!SYNC_BASE_URL
+  // Sync is disabled if:
+  // 1. No URL configured at all
+  // 2. URL is a local placeholder (development server)
+  return !!SYNC_BASE_URL && !isLocalPlaceholderUrl(SYNC_BASE_URL)
+}
+
+// Helper function to check if we're in development mode with local server
+export function isLocalSyncMode() {
+  return !!SYNC_BASE_URL && isLocalPlaceholderUrl(SYNC_BASE_URL)
 }
 
 export function setSyncAuthToken(token, { persist = false } = {}) {
@@ -378,23 +396,54 @@ export async function syncAccountData() {
 
 /**
  * Merges account data with local data, resolving conflicts intelligently
+ *
+ * Optimized merge strategy to avoid O(n²) complexity:
+ * - Pre-loads all local collections once
+ * - Builds maps with composite keys for O(1) lookups
+ * - Updates in-memory structures during merge to maintain consistency
+ * - Maintains linear O(n) complexity for large sync operations
  */
 async function mergeAccountDataLocally(accountData) {
   const results = { attempts: 0, mastery: 0, schedules: 0, conflicts: 0 }
   const currentUserId = getCurrentUserId()
 
-  // Merge attempts
+  // Pre-load all local collections once to avoid repeated queries
+  const existingAttempts = await getAttemptsByUser(currentUserId)
+  const existingMastery = await getMasteryByUser(currentUserId)
+  const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
+  const existingSchedules = allSchedules.filter(s => s.userId === currentUserId)
+
+  // Build lookup maps for O(1) access using composite keys
+  const attemptMap = new Map()
+  const masteryMap = new Map()
+  const scheduleMap = new Map()
+
+  // Populate attempt map: key = "verbId|mood|tense|truncatedCreatedAt"
+  existingAttempts.forEach(attempt => {
+    const createdTime = Math.floor(new Date(attempt.createdAt).getTime() / 5000) * 5000 // 5s truncation
+    const key = `${attempt.verbId}|${attempt.mood}|${attempt.tense}|${createdTime}`
+    attemptMap.set(key, attempt)
+  })
+
+  // Populate mastery map: key = "verbId|mood|tense"
+  existingMastery.forEach(mastery => {
+    const key = `${mastery.verbId}|${mastery.mood}|${mastery.tense}`
+    masteryMap.set(key, mastery)
+  })
+
+  // Populate schedule map: key = "verbId|mood|tense"
+  existingSchedules.forEach(schedule => {
+    const key = `${schedule.verbId}|${schedule.mood}|${schedule.tense}`
+    scheduleMap.set(key, schedule)
+  })
+
+  // Merge attempts using map lookups
   if (accountData.attempts) {
     for (const remoteAttempt of accountData.attempts) {
       try {
-        // Check if we already have this attempt
-        const existingAttempts = await getAttemptsByUser(currentUserId)
-        const existing = existingAttempts.find(a =>
-          a.verbId === remoteAttempt.verbId &&
-          a.mood === remoteAttempt.mood &&
-          a.tense === remoteAttempt.tense &&
-          Math.abs(new Date(a.createdAt).getTime() - new Date(remoteAttempt.createdAt).getTime()) < 5000
-        )
+        const createdTime = Math.floor(new Date(remoteAttempt.createdAt).getTime() / 5000) * 5000
+        const key = `${remoteAttempt.verbId}|${remoteAttempt.mood}|${remoteAttempt.tense}|${createdTime}`
+        const existing = attemptMap.get(key)
 
         if (!existing) {
           // Add new attempt with current user ID
@@ -404,7 +453,9 @@ async function mergeAccountDataLocally(accountData) {
             id: `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await updateInDB(STORAGE_CONFIG.STORES.ATTEMPTS, localAttempt.id, localAttempt)
+          await saveAttempt(localAttempt)
+          // Update in-memory map to maintain consistency
+          attemptMap.set(key, localAttempt)
           results.attempts++
         }
       } catch (error) {
@@ -414,16 +465,12 @@ async function mergeAccountDataLocally(accountData) {
     }
   }
 
-  // Merge mastery (keep best scores)
+  // Merge mastery using map lookups (keep best scores)
   if (accountData.mastery) {
     for (const remoteMastery of accountData.mastery) {
       try {
-        const existingMastery = await getMasteryByUser(currentUserId)
-        const existing = existingMastery.find(m =>
-          m.verbId === remoteMastery.verbId &&
-          m.mood === remoteMastery.mood &&
-          m.tense === remoteMastery.tense
-        )
+        const key = `${remoteMastery.verbId}|${remoteMastery.mood}|${remoteMastery.tense}`
+        const existing = masteryMap.get(key)
 
         if (!existing) {
           // Add new mastery record
@@ -433,11 +480,13 @@ async function mergeAccountDataLocally(accountData) {
             id: `mastery-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, localMastery.id, localMastery)
+          await saveMastery(localMastery)
+          // Update in-memory map to maintain consistency
+          masteryMap.set(key, localMastery)
           results.mastery++
         } else if (remoteMastery.score > existing.score) {
           // Update with better score
-          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, existing.id, {
+          const updatedMastery = {
             ...existing,
             score: remoteMastery.score,
             attempts: Math.max(existing.attempts || 0, remoteMastery.attempts || 0),
@@ -446,7 +495,10 @@ async function mergeAccountDataLocally(accountData) {
               new Date(remoteMastery.lastPracticed || 0).getTime()
             )),
             syncedAt: new Date()
-          })
+          }
+          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, existing.id, updatedMastery)
+          // Update in-memory map to maintain consistency
+          masteryMap.set(key, updatedMastery)
           results.mastery++
         }
       } catch (error) {
@@ -456,18 +508,12 @@ async function mergeAccountDataLocally(accountData) {
     }
   }
 
-  // Merge schedules (keep most recent)
+  // Merge schedules using map lookups (keep most recent)
   if (accountData.schedules) {
-    const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
-    const userSchedules = allSchedules.filter(s => s.userId === currentUserId)
-
     for (const remoteSchedule of accountData.schedules) {
       try {
-        const existing = userSchedules.find(s =>
-          s.verbId === remoteSchedule.verbId &&
-          s.mood === remoteSchedule.mood &&
-          s.tense === remoteSchedule.tense
-        )
+        const key = `${remoteSchedule.verbId}|${remoteSchedule.mood}|${remoteSchedule.tense}`
+        const existing = scheduleMap.get(key)
 
         if (!existing) {
           // Add new schedule
@@ -477,16 +523,21 @@ async function mergeAccountDataLocally(accountData) {
             id: `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, localSchedule.id, localSchedule)
+          await saveSchedule(localSchedule)
+          // Update in-memory map to maintain consistency
+          scheduleMap.set(key, localSchedule)
           results.schedules++
         } else if (new Date(remoteSchedule.updatedAt || 0) > new Date(existing.updatedAt || 0)) {
           // Update with more recent schedule
-          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, existing.id, {
+          const updatedSchedule = {
             ...existing,
             ...remoteSchedule,
             userId: currentUserId,
             syncedAt: new Date()
-          })
+          }
+          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, existing.id, updatedSchedule)
+          // Update in-memory map to maintain consistency
+          scheduleMap.set(key, updatedSchedule)
           results.schedules++
         }
       } catch (error) {
@@ -638,6 +689,7 @@ export default {
   setSyncEndpoint,
   getSyncEndpoint,
   isSyncEnabled,
+  isLocalSyncMode,
   syncNow,
   syncAccountData,
   flushSyncQueue,

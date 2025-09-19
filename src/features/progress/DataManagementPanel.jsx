@@ -12,6 +12,7 @@ import {
   setSyncAuthToken,
   getSyncAuthToken,
   isSyncEnabled,
+  isLocalSyncMode,
   syncNow,
   syncAccountData
 } from '../../lib/progress/userManager.js'
@@ -44,6 +45,10 @@ export default function DataManagementPanel({ onClose }) {
     header: '',
     token: ''
   })
+
+  // Check sync availability
+  const syncEnabled = isSyncEnabled()
+  const localMode = isLocalSyncMode()
 
   useEffect(() => {
     // Verificar estado de sincronización al cargar
@@ -246,11 +251,12 @@ export default function DataManagementPanel({ onClose }) {
         >
           📥 Importar
         </button>
-        <button 
-          className={activeTab === 'sync' ? 'active' : ''} 
+        <button
+          className={activeTab === 'sync' ? 'active' : ''}
           onClick={() => setActiveTab('sync')}
+          title={!syncEnabled ? 'Sincronización no disponible - configura una URL de servidor' : ''}
         >
-          ☁️ Sincronizar
+          ☁️ Sincronizar {!syncEnabled && '(Deshabilitado)'}
         </button>
         <button 
           className={activeTab === 'config' ? 'active' : ''} 
@@ -363,9 +369,21 @@ export default function DataManagementPanel({ onClose }) {
                   <option value="remote">☁️ Remoto gana</option>
                 </select>
               </div>
-              <button onClick={handleSync} disabled={loading}>
+              <button
+                onClick={handleSync}
+                disabled={loading || !syncEnabled}
+                title={!syncEnabled ? 'Configura una URL de servidor válida para habilitar la sincronización' : ''}
+              >
                 ☁️ Sincronizar Ahora
               </button>
+              {!syncEnabled && (
+                <p className="sync-notice">
+                  {localMode
+                    ? '⚠️ Usando servidor local - Solo para desarrollo'
+                    : 'ℹ️ Configura una URL de servidor para habilitar la sincronización'
+                  }
+                </p>
+              )}
             </div>
             <div className="sync-status">
               <p>Estado: {syncStatus}</p>
