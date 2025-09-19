@@ -6,7 +6,7 @@ import { useSettings } from '../../state/settings.js'
 const f = (mood, tense, person, lemma='hablar', value='x') => ({ mood, tense, person, lemma, value })
 
 describe('Smoke: selección respeta Gate (A2/rioplatense)', () => {
-  it('gate function filters forms correctly', () => {
+  it('gate function filters forms correctly', async () => {
     // Arrange settings
     useSettings.setState({
       level: 'A2',
@@ -35,9 +35,8 @@ describe('Smoke: selección respeta Gate (A2/rioplatense)', () => {
     
     // If there are valid forms, test that chooseNext works
     if (gated.length > 0) {
-      const next = chooseNext({ forms: gated, history: {}, currentItem: null })
+      const next = await chooseNext({ forms: gated, history: {}, currentItem: null })
       expect(next).toBeTruthy()
     }
   })
 })
-

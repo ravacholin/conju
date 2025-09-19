@@ -31,7 +31,18 @@ describe('Regresión por Niveles y Dialectos (CurriculumGate)', () => {
         const allowedPersons = getAllowedPersonsForRegion(region)
         for (const f of out) {
           // Curriculum combos
-          expect(allowedCombos.has(`${f.mood}|${f.tense}`)).toBe(true)
+          const comboKey = `${f.mood}|${f.tense}`
+          if (!allowedCombos.has(comboKey)) {
+            const isImperativeMix = f.mood === 'imperative' && ['impAff','impNeg'].includes(f.tense)
+            const isNonfiniteMix = f.mood === 'nonfinite' && ['ger','part'].includes(f.tense)
+            if (isImperativeMix) {
+              expect(allowedCombos.has('imperative|impMixed')).toBe(true)
+            } else if (isNonfiniteMix) {
+              expect(allowedCombos.has('nonfinite|nonfiniteMixed')).toBe(true)
+            } else {
+              expect(allowedCombos.has(comboKey)).toBe(true)
+            }
+          }
           // Dialecto personas (skip nonfinite)
           if (f.mood !== 'nonfinite') {
             expect(allowedPersons.has(f.person)).toBe(true)
@@ -82,4 +93,3 @@ describe('Regresión por Niveles y Dialectos (CurriculumGate)', () => {
     }
   })
 })
-

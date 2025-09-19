@@ -53,6 +53,146 @@ const createMockForms = () => {
           ]
         }
       ]
+    },
+    {
+      lemma: 'trabajar',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'trabajo' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'trabajas' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'trabaja' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'leer',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'leo' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'lees' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'lee' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'escribir',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'escribo' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'escribes' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'escribe' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'correr',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'corro' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'corres' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'corre' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'abrir',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'abro' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'abres' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'abre' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'cerrar',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'cierro' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'cierras' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'cierra' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'estudiar',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'estudio' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'estudias' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'estudia' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'caminar',
+      type: 'regular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'camino' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'caminas' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'camina' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'jugar',
+      type: 'irregular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'juego' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'juegas' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'juega' }
+          ]
+        }
+      ]
+    },
+    {
+      lemma: 'pensar',
+      type: 'irregular',
+      paradigms: [
+        {
+          regionTags: ['rioplatense', 'la_general', 'peninsular'],
+          forms: [
+            { mood: 'indicative', tense: 'pres', person: '1s', value: 'pienso' },
+            { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'piensas' },
+            { mood: 'indicative', tense: 'pres', person: '3s', value: 'piensa' }
+          ]
+        }
+      ]
     }
   ]
 

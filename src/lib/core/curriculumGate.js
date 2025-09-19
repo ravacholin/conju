@@ -86,6 +86,10 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
   const enforceCurriculumLevel = !(practiceMode === 'specific' && cameFromTema === true) && practiceMode !== 'theme';
   const allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null;
   const enforceSelection = practiceMode === 'specific' && cameFromTema !== true;
+  const MIXED_COMBO_MAP = new Map([
+    ['imperative|impMixed', new Set(['impAff','impNeg'])],
+    ['nonfinite|nonfiniteMixed', new Set(['ger','part'])]
+  ]);
 
   return forms.filter(f => {
     // Filter by allowed persons for region
@@ -93,7 +97,14 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
     
     // Filter by curriculum level
     if (enforceCurriculumLevel) {
-      if (!allowedCombos || !allowedCombos.has(`${f.mood}|${f.tense}`)) return false;
+      if (!allowedCombos) return false;
+      const directKey = `${f.mood}|${f.tense}`;
+      if (!allowedCombos.has(directKey)) {
+        const mixedEntry = [...MIXED_COMBO_MAP.entries()].find(([combo]) => allowedCombos.has(combo) && combo.startsWith(`${f.mood}|`));
+        if (!mixedEntry) return false;
+        const [, allowedTenses] = mixedEntry;
+        if (!allowedTenses.has(f.tense)) return false;
+      }
     }
 
     // For specific practice (not from theme), respect the chosen mood/tense

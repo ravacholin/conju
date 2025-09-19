@@ -39,6 +39,11 @@ const getAllowedCombosForLevel = (level) => GET_ALLOWED_COMBOS(level)
 const REGULAR_MOOD_MEMO = new Map() // key: lemma|mood|tense|person|value
 const REGULAR_NONFINITE_MEMO = new Map() // key: lemma|tense|value
 
+const VALID_LEVELS = new Set(['A1','A2','B1','B2','C1','C2','ALL'])
+const VALID_PRACTICE_MODES = new Set(['mixed','specific','theme','all'])
+const VALID_VERB_TYPES = new Set(['all','regular','irregular','mixed'])
+const VALID_REGIONS = new Set(['rioplatense','la_general','peninsular'])
+
 // MCER Level verb type restrictions
 const levelVerbRestrictions = {
   'A1': { regular: true, irregular: true },
@@ -80,13 +85,18 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()
   const {
-    level, useVoseo, useTuteo, useVosotros,
-    practiceMode, specificMood, specificTense, practicePronoun, verbType,
-    currentBlock, selectedFamily, region, enableFuturoSubjProd, allowedLemmas,
+    level: rawLevel, useVoseo, useTuteo, useVosotros,
+    practiceMode: rawPracticeMode, specificMood, specificTense, practicePronoun, verbType: rawVerbType,
+    currentBlock, selectedFamily, region: rawRegion, enableFuturoSubjProd, allowedLemmas,
     cameFromTema,
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson,
     nextSecondPerson, cliticsPercent, enableProgressIntegration
   } = allSettings
+
+  const level = VALID_LEVELS.has(rawLevel) ? rawLevel : 'B1'
+  const practiceMode = VALID_PRACTICE_MODES.has(rawPracticeMode) ? rawPracticeMode : 'mixed'
+  const verbType = VALID_VERB_TYPES.has(rawVerbType) ? rawVerbType : 'all'
+  const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
   
   dbg('🔍 chooseNext called with settings:', {
     level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length
@@ -348,7 +358,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
       const tenseText = specificTense || 'any tense'
       throw new Error(`No valid exercises found for ${moodText} / ${tenseText}`)
     }
-    throw new Error('No eligible forms available for current settings')
+    eligible = eligible || []
   }
   
   // Exclude the exact same item from the list of candidates, if possible

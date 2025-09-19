@@ -28,7 +28,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     })
   })
 
-  it('CRITICAL: should never return conditional when imperfect is selected', () => {
+  it('CRITICAL: should never return conditional when imperfect is selected', async () => {
     // Simulate user selection: "indicativo, pretérito imperfecto, verbos irregulares"
     const testSettings = {
       level: 'B2',
@@ -51,7 +51,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     
     // Generate 100 exercises to catch the bug
     for (let i = 0; i < 100; i++) {
-      const result = chooseNext({ 
+      const result = await chooseNext({ 
         forms, 
         history: {}, 
         currentItem: null 
@@ -67,7 +67,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     }
   })
 
-  it('EDGE CASE: should handle componer verb correctly in imperfect', () => {
+  it('EDGE CASE: should handle componer verb correctly in imperfect', async () => {
     // Specific test for "componer" verb mentioned in bug report
     const testSettings = {
       level: 'B2',
@@ -96,7 +96,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     if (componerImperfectForms.length > 0) {
       // Test multiple times to ensure consistency
       for (let i = 0; i < 20; i++) {
-        const result = chooseNext({ 
+        const result = await chooseNext({ 
           forms: componerImperfectForms, 
           history: {}, 
           currentItem: null 
@@ -111,7 +111,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     }
   })
 
-  it('VALIDATION: should throw error if no valid forms available', () => {
+  it('VALIDATION: should throw error if no valid forms available', async () => {
     // Test with impossible combination to ensure validation works
     const testSettings = {
       level: 'A1',
@@ -125,12 +125,10 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     useSettings.setState(testSettings)
     const forms = buildFormsForRegion('la_general')
     
-    expect(() => {
-      chooseNext({ forms, history: {}, currentItem: null })
-    }).toThrow()
+    await expect(chooseNext({ forms, history: {}, currentItem: null })).rejects.toThrow()
   })
 
-  it('CONSISTENCY: all specific practice should respect mood/tense settings', () => {
+  it('CONSISTENCY: all specific practice should respect mood/tense settings', async () => {
     const testCases = [
       { mood: 'indicative', tense: 'pres' },
       { mood: 'indicative', tense: 'pretIndef' },
@@ -153,7 +151,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
       
       // Test 10 exercises for each combination
       for (let i = 0; i < 10; i++) {
-        const result = chooseNext({ forms, history: {}, currentItem: null })
+        const result = await chooseNext({ forms, history: {}, currentItem: null })
         
         expect(result.mood, `${mood}/${tense} test ${i+1}: Wrong mood!`).toBe(mood)
         expect(result.tense, `${mood}/${tense} test ${i+1}: Wrong tense!`).toBe(tense)

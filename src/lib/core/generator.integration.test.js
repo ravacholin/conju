@@ -4,9 +4,9 @@ import { chooseNext } from './generator.js'
 
 // Mock forms for testing
 const mockForms = [
-  { lemma: 'hablar', mood: 'indicativo', tense: 'pres', person: '1s', value: 'hablo' },
-  { lemma: 'comer', mood: 'indicativo', tense: 'pres', person: '1s', value: 'como' },
-  { lemma: 'vivir', mood: 'indicativo', tense: 'pres', person: '1s', value: 'vivo' }
+  { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
+  { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '1s', value: 'como' },
+  { lemma: 'vivir', mood: 'indicative', tense: 'pres', person: '1s', value: 'vivo' }
 ]
 
 describe('Generator Progress Integration', () => {
@@ -48,8 +48,8 @@ describe('Generator Progress Integration', () => {
     vi.doMock('../../lib/progress/all.js', async () => ({
       getCurrentUserId: () => 'test-user-123',
       getMasteryByUser: async (_userId) => [
-        { mood: 'indicativo', tense: 'pres', score: 85 },
-        { mood: 'indicativo', tense: 'pretIndef', score: 60 }
+        { mood: 'indicative', tense: 'pres', score: 85 },
+        { mood: 'indicative', tense: 'pretIndef', score: 60 }
       ]
     }))
 
