@@ -82,6 +82,7 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
 
 
 
@@ -232,6 +233,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
   const settings = useSettings();
+
+  // Generate eligible forms for SRS integration
+  const eligibleForms = useMemo(() => {
+    if (!selectedTense?.tense || !selectedTense?.mood) return [];
+
+    const basePool = buildFormsForRegion(settings.region || 'la_general');
+
+    // Create settings object for the selected tense
+    const learningSettings = {
+      ...settings,
+      practiceMode: 'specific',
+      specificMood: selectedTense.mood,
+      specificTense: selectedTense.tense,
+      verbType: verbType || 'all',
+      selectedFamilies,
+      allowedLemmas: verbType === 'irregular' && selectedFamilies.length > 0
+        ? undefined // Let family filtering take precedence
+        : exampleVerbs?.map(v => v?.lemma).filter(Boolean) // Use example verbs if available
+    };
+
+    return getEligibleFormsForSettings(basePool, learningSettings);
+  }, [selectedTense, settings, verbType, selectedFamilies, exampleVerbs]);
 
   // Calculate adaptive settings when tense and type are selected
   useEffect(() => {
@@ -605,10 +628,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'meaningful_practice') {
     return (
       <ErrorBoundary>
-        <MeaningfulPractice 
+        <MeaningfulPractice
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('practice')}
           onPhaseComplete={handleMeaningfulPhaseComplete}
         />
@@ -631,10 +655,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'communicative_practice') {
     return (
       <ErrorBoundary>
-        <CommunicativePractice 
+        <CommunicativePractice
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('pronunciation_practice')}
           onFinish={handleFinish}
         />

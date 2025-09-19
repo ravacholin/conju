@@ -23,6 +23,10 @@ npm run preview:learning
 # Run linting with ESLint
 npm run lint
 
+# Quality checks and fixes
+npm run quality:check      # Run lint + tests
+npm run quality:fix        # Auto-fix linting issues
+
 # Run tests with Vitest
 npm test
 
@@ -34,6 +38,19 @@ npx vitest run src/path/to/test.js
 
 # Run tests in watch mode
 npx vitest
+
+# Run different test suites
+npm run test:unit          # Unit tests only
+npm run test:integration   # Integration tests only
+npm run test:e2e          # End-to-end tests with Playwright
+npm run test:smoke        # Smoke tests
+npm run test:performance  # Performance tests
+npm run test:all          # Run all test suites
+
+# Test UI and debugging
+npm run test:ui           # Run tests with Vitest UI
+npm run test:e2e:ui       # Run e2e tests with Playwright UI
+npm run test:e2e:debug    # Debug e2e tests
 
 # Data validation (critical - run before commits)
 node src/validate-data.js
@@ -117,6 +134,32 @@ import { useProgressTracking } from './features/drill/useProgressTracking.js'
 
 // In drill components
 const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
+```
+
+### SRS Integration in Learning Components
+Learning components (`MeaningfulPractice`, `CommunicativePractice`) require `eligibleForms` prop for SRS integration:
+
+```javascript
+// In LearnTenseFlow.jsx - generate eligible forms for SRS integration
+const eligibleForms = useMemo(() => {
+  if (!selectedTense?.tense || !selectedTense?.mood) return [];
+
+  const basePool = buildFormsForRegion(settings.region || 'la_general');
+  const learningSettings = {
+    ...settings,
+    practiceMode: 'specific',
+    specificMood: selectedTense.mood,
+    specificTense: selectedTense.tense,
+    verbType: verbType || 'all',
+    selectedFamilies
+  };
+
+  return getEligibleFormsForSettings(basePool, learningSettings);
+}, [selectedTense, settings, verbType, selectedFamilies]);
+
+// Pass to learning components
+<MeaningfulPractice eligibleForms={eligibleForms} ... />
+<CommunicativePractice eligibleForms={eligibleForms} ... />
 ```
 
 ### Cache Debugging
