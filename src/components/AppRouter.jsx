@@ -35,7 +35,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
-import LearnTenseFlow from './learning/LearnTenseFlow.jsx';
+import LearnTenseFlowContainer from './learning/LearnTenseFlow.jsx';
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
 
@@ -401,7 +401,7 @@ function AppRouter() {
 
   if (currentMode === 'learning') {
     return (
-      <LearnTenseFlow 
+      <LearnTenseFlowContainer 
         onHome={handleHome}
         onGoToProgress={handleGoToProgress}
       />
