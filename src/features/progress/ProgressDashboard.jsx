@@ -1,5 +1,5 @@
 // Componente principal del dashboard de progreso
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
@@ -48,6 +48,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [toast, setToast] = React.useState(null)
   const [showDataPanel, setShowDataPanel] = React.useState(false)
   const syncAvailable = isSyncEnabled()
+
+  // Memoize regional forms to avoid expensive recalculation on every recommendation click
+  // This optimization prevents rebuilding the entire verb dataset each time a user clicks a recommendation
+  const regionalForms = useMemo(() => {
+    console.log(`🔄 Building regional forms for region: ${settings.region}`)
+    return buildFormsForRegion(settings.region)
+  }, [settings.region])
 
   const handleSync = async () => {
     try {
@@ -246,8 +253,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
                 const mood = recommendation?.targetCombination?.mood
                 const tense = recommendation?.targetCombination?.tense
                 if (!mood || !tense) return
-                const allForms = buildFormsForRegion(settings.region)
-                const isValid = validateMoodTenseAvailability(mood, tense, settings, allForms)
+                // Use memoized regional forms instead of recalculating
+                const isValid = validateMoodTenseAvailability(mood, tense, settings, regionalForms)
                 if (!isValid) return
                 settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
                 if (onNavigateToDrill) onNavigateToDrill()

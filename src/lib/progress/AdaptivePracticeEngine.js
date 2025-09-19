@@ -105,16 +105,22 @@ export class AdaptivePracticeEngine {
 
   /**
    * Genera recomendaciones de repaso basadas en SRS
+   * Fixed to map mastery using mood|tense|person instead of item.itemId
    */
   async getReviewRecommendations(dueItems, masteryRecords) {
-    const masteryMap = new Map(masteryRecords.map(r => [r.id, r]))
-    
+    // Build mastery map using mood|tense|person keys to match SRS item structure
+    const masteryMap = new Map(
+      masteryRecords.map(r => [`${r.mood}|${r.tense}|${r.person || ''}`, r])
+    )
+
     return dueItems
       .slice(0, 5)
       .map((item, index) => {
-        const mastery = masteryMap.get(item.itemId) || { score: 50 }
+        // Create lookup key from SRS item fields
+        const masteryKey = `${item.mood}|${item.tense}|${item.person || ''}`
+        const mastery = masteryMap.get(masteryKey) || { score: 50 }
         const urgency = this.calculateUrgency(item.nextDue)
-        
+
         return {
           type: 'spaced_review',
           priority: 80 - (index * 5) + urgency,
@@ -123,6 +129,7 @@ export class AdaptivePracticeEngine {
           targetCombination: {
             mood: item.mood,
             tense: item.tense,
+            person: item.person, // Include person field for proper identification
             itemId: item.itemId
           },
           estimatedDuration: '5-8 min',
