@@ -820,7 +820,7 @@ function LearnTenseFlow({ onHome, onGoToProgress }) {
         name: 'Pretéritos fuertes',
         description: 'Cambios especiales en pretérito: tuve, estuve',
         families: availableFamilies.filter(f => 
-          f.id === 'LEARNING_PRET_FUERTE'
+          f.id === 'LEARNING_PRET_MUY_IRREGULARES'
         )
       };
     }

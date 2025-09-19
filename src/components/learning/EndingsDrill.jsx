@@ -286,7 +286,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
           'LEARNING_E_I': 'Cambio e→i',
           'LEARNING_ORTH_CAR': 'Ortográfico -car→-qu',
           'LEARNING_ORTH_GAR': 'Ortográfico -gar→-gu',
-          'LEARNING_PRET_FUERTE': 'Pretérito fuerte',
+          'LEARNING_PRET_MUY_IRREGULARES': 'Pretérito fuerte',
           'LEARNING_SER_IR': 'Muy irregular (ser/ir)'
         };
         return familyMap[family] || family;

@@ -101,6 +101,19 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }
 
+  // Listen for trigger-sync events from AccountButton
+  React.useEffect(() => {
+    const handleTriggerSync = () => {
+      handleSync()
+    }
+
+    window.addEventListener('trigger-sync', handleTriggerSync)
+
+    return () => {
+      window.removeEventListener('trigger-sync', handleTriggerSync)
+    }
+  }, [handleSync])
+
   // Keep only component-specific effects (none at this moment)
 
   if (loading) {

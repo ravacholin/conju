@@ -411,9 +411,9 @@ function AppRouter() {
   if (currentMode === 'progress') {
     return (
       <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
-        <ProgressDashboard 
-          onNavigateHome={handleProgressMenu} 
-          onNavigateToDrill={() => setCurrentMode('drill')} 
+        <ProgressDashboard
+          onNavigateHome={handleProgressMenu}
+          onNavigateToDrill={() => router.navigate({ mode: 'drill' })}
         />
       </React.Suspense>
     )
