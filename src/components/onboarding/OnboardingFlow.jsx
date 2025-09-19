@@ -119,25 +119,25 @@ function OnboardingFlow({
 
   // Wrap handlers to add toasts
   const handleSelectDialect = (d) => {
-    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch {}
+    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectLevel = (lvl) => {
-    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch {}
+    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectPracticeMode = (mode) => {
-    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch {}
+    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectMood = (mood) => {
-    try { selectMood(mood); showToast(`Modo seleccionado`) } catch {}
+    try { selectMood(mood); showToast(`Modo seleccionado`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectTense = (tense) => {
-    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch {}
+    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectVerbType = (verbType, onStart) => {
-    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch {}
+    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch (e) { /* ignore errors */ }
   }
   const handleSelectFamily = (familyId, onStart) => {
-    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch {}
+    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch (e) { /* ignore errors */ }
   }
   // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {
