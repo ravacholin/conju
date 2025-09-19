@@ -520,12 +520,12 @@ export async function getSRSStats(userId, now = new Date()) {
   try {
     const { getDueSchedules } = await import('./database.js')
     const allDue = await getDueSchedules(userId, now)
-    // dueToday: items con nextDue hasta fin del día
-    const endOfDay = new Date(now)
-    endOfDay.setHours(23,59,59,999)
     const dueToday = allDue.length
-    // For simplicity, consider dueNow same as dueToday (no time granularity in UI yet)
-    return { dueNow: allDue.length, dueToday }
+
+    const nextHour = new Date(now.getTime() + 60 * 60 * 1000)
+    const dueNow = allDue.filter(item => new Date(item.nextDue) <= nextHour).length
+
+    return { dueNow, dueToday }
   } catch (error) {
     console.warn('SRS stats unavailable:', error)
     return { dueNow: 0, dueToday: 0 }

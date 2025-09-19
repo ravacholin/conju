@@ -207,6 +207,74 @@ export function getAccountDevices(accountId) {
   `).all(accountId)
 }
 
+export function updateAccountProfile(accountId, updates = {}) {
+  const allowedFields = ['name']
+  const fields = Object.keys(updates).filter((key) => allowedFields.includes(key) && updates[key] !== undefined && updates[key] !== null)
+
+  if (fields.length === 0) {
+    return db.prepare('SELECT id, email, name, created_at, updated_at FROM accounts WHERE id = ?').get(accountId)
+  }
+
+  const now = Date.now()
+  const setClause = fields.map((field) => `${field} = ?`).join(', ')
+  const values = fields.map((field) => updates[field])
+
+  db.prepare(`
+    UPDATE accounts
+    SET ${setClause}, updated_at = ?
+    WHERE id = ?
+  `).run(...values, now, accountId)
+
+  return db.prepare('SELECT id, email, name, created_at, updated_at FROM accounts WHERE id = ?').get(accountId)
+}
+
+export function renameDevice(accountId, deviceId, deviceName) {
+  const trimmedName = (deviceName || '').trim()
+  if (!trimmedName) {
+    throw new Error('Device name is required')
+  }
+
+  const result = db.prepare(`
+    UPDATE user_devices
+    SET device_name = ?
+    WHERE id = ? AND account_id = ?
+  `).run(trimmedName, deviceId, accountId)
+
+  if (result.changes === 0) {
+    throw new Error('Device not found')
+  }
+
+  db.prepare(`
+    UPDATE users
+    SET device_name = ?
+    WHERE device_id = ?
+  `).run(trimmedName, deviceId)
+
+  return db.prepare(`
+    SELECT ud.id, ud.device_name, ud.last_sync_at, ud.created_at,
+           u.id as user_id, u.last_seen_at
+    FROM user_devices ud
+    LEFT JOIN users u ON u.device_id = ud.id
+    WHERE ud.id = ? AND ud.account_id = ?
+  `).get(deviceId, accountId)
+}
+
+export function revokeDevice(accountId, deviceId) {
+  const device = db.prepare(`
+    SELECT id
+    FROM user_devices
+    WHERE id = ? AND account_id = ?
+  `).get(deviceId, accountId)
+
+  if (!device) {
+    throw new Error('Device not found')
+  }
+
+  db.prepare('DELETE FROM user_devices WHERE id = ? AND account_id = ?').run(deviceId, accountId)
+  // Associated users will have device_id set to NULL via foreign key constraint
+  return true
+}
+
 export function mergeAccountData(accountId) {
   // Get all users for this account
   const users = db.prepare('SELECT id FROM users WHERE account_id = ?').all(accountId)

@@ -161,8 +161,14 @@ function DrillMode({
           console.log('Micro-drill navigation:', detail.micro)
           onRegenerateItem()
         } else if (detail && detail.focus === 'review') {
-          // Handle SRS review navigation
-          console.log('SRS review navigation')
+          console.log('SRS review navigation', detail.filter)
+          if (typeof onPracticeModeChange === 'function') {
+            onPracticeModeChange('review', detail.filter)
+          }
+          settings.set({
+            practiceMode: 'review',
+            reviewSessionFilter: detail.filter || { urgency: 'all' }
+          })
           onRegenerateItem()
         } else {
           // Fallback: just regenerate

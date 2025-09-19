@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import authService from '../../lib/auth/authService.js'
 import AuthModal from './AuthModal.jsx'
+import AccountManagementModal from './AccountManagementModal.jsx'
+import DeviceManagerModal from './DeviceManagerModal.jsx'
 import './AccountButton.css'
 
 export default function AccountButton() {
@@ -9,6 +11,8 @@ export default function AccountButton() {
   const [account, setAccount] = useState(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showAccountModal, setShowAccountModal] = useState(false)
+  const [showDeviceModal, setShowDeviceModal] = useState(false)
 
   useEffect(() => {
     // Initial state
@@ -23,7 +27,17 @@ export default function AccountButton() {
       setAccount(authService.getAccount())
     })
 
-    return cleanup
+    const handleAccountUpdated = () => {
+      setAccount(authService.getAccount())
+      setUser(authService.getUser())
+    }
+
+    window.addEventListener('account-updated', handleAccountUpdated)
+
+    return () => {
+      cleanup?.()
+      window.removeEventListener('account-updated', handleAccountUpdated)
+    }
   }, [])
 
   const handleLogin = () => {
@@ -123,8 +137,8 @@ export default function AccountButton() {
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  // TODO: Show account management
                   setShowDropdown(false)
+                  setShowAccountModal(true)
                 }}
               >
                 👤 Gestionar cuenta
@@ -132,8 +146,8 @@ export default function AccountButton() {
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  // TODO: Show devices
                   setShowDropdown(false)
+                  setShowDeviceModal(true)
                 }}
               >
                 📱 Mis dispositivos
@@ -164,6 +178,15 @@ export default function AccountButton() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleAuthSuccess}
+      />
+      <AccountManagementModal
+        isOpen={showAccountModal}
+        onClose={() => setShowAccountModal(false)}
+      />
+      <DeviceManagerModal
+        isOpen={showDeviceModal}
+        onClose={() => setShowDeviceModal(false)}
+        currentDeviceId={user?.deviceId}
       />
     </>
   )

@@ -206,7 +206,127 @@ class AuthService {
       throw new Error(data.error || 'Failed to get account info')
     }
 
+    if (data?.account) {
+      this.account = data.account
+      this.saveToStorage()
+      this.emitAccountUpdated()
+    }
+
     return data
+  }
+
+  async updateAccountProfile(updates = {}) {
+    if (!this.token) {
+      throw new Error('Not authenticated')
+    }
+
+    const response = await fetch(`${API_BASE}/auth/account`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: JSON.stringify(updates)
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to update account')
+    }
+
+    if (data?.account) {
+      this.account = data.account
+      this.saveToStorage()
+      this.emitAccountUpdated()
+    }
+
+    return data.account
+  }
+
+  async listDevices() {
+    if (!this.token) {
+      throw new Error('Not authenticated')
+    }
+
+    const response = await fetch(`${API_BASE}/auth/devices`, {
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to load devices')
+    }
+
+    return data.devices || []
+  }
+
+  async renameDevice(deviceId, deviceName) {
+    if (!this.token) {
+      throw new Error('Not authenticated')
+    }
+
+    const response = await fetch(`${API_BASE}/auth/devices/${deviceId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: JSON.stringify({ deviceName })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to rename device')
+    }
+
+    if (Array.isArray(data.devices)) {
+      if (this.user?.deviceId === deviceId && data.device) {
+        this.user = {
+          ...this.user,
+          deviceName: data.device.device_name || deviceName
+        }
+        this.saveToStorage()
+      }
+      this.emitAccountUpdated()
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('trigger-sync'))
+    }
+
+    return data.devices || []
+  }
+
+  async revokeDevice(deviceId) {
+    if (!this.token) {
+      throw new Error('Not authenticated')
+    }
+
+    const response = await fetch(`${API_BASE}/auth/devices/${deviceId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to revoke device')
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('trigger-sync'))
+    }
+
+    this.emitAccountUpdated()
+
+    return data.devices || []
   }
 
   async getMergedData() {
@@ -321,6 +441,12 @@ class AuthService {
   emitLoginEvent() {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('auth-login'))
+    }
+  }
+
+  emitAccountUpdated() {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('account-updated'))
     }
   }
 

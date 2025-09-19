@@ -1,0 +1,178 @@
+.device-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.device-modal {
+  width: min(520px, 92%);
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.device-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.device-modal__header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.device-modal__close {
+  background: transparent;
+  border: none;
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+
+.device-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.device-modal__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.device-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.device-card--current {
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.device-card__info h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.device-card__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.device-card__badge {
+  font-size: 0.75rem;
+  background: #2563eb;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.device-card__meta {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.device-card__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.device-card__button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.device-card__button.primary {
+  background: #0c6efd;
+  color: #fff;
+}
+
+.device-card__button.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.device-card__button.danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.device-card__button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.device-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.device-card__input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+}
+
+.device-card__input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.device-card__form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.device-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.device-modal__button {
+  border: none;
+  background: #e5e7eb;
+  color: #111827;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.device-modal__error {
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.device-modal__status {
+  text-align: center;
+  color: #4b5563;
+  font-size: 0.95rem;
+}

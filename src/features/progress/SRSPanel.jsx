@@ -1,88 +1,44 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { getSRSStats } from '../../lib/progress/analytics.js'
-import { getDueSchedules, getMasteryByUser } from '../../lib/progress/database.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
+import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { useSRSQueue } from '../../hooks/useSRSQueue.js'
+import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import './srs-panel.css'
-import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 
 /**
  * Formatea mood/tense a nombres amigables
  */
-// Use centralized formatter for consistent display
-const formatMoodTenseLocal = (mood, tense) => formatMoodTense(mood, tense)
 
 export default function SRSPanel({ onNavigateToDrill }) {
   const [stats, setStats] = useState({ dueNow: 0, dueToday: 0 })
-  const [loading, setLoading] = useState(true)
-  const [dueItems, setDueItems] = useState([])
   const [showDetails, setShowDetails] = useState(false)
-  const [reviewStats, setReviewStats] = useState({
-    urgent: 0,
-    scheduled: 0,
-    overdue: 0
-  })
+  const [showQueueModal, setShowQueueModal] = useState(false)
   const settings = useSettings()
+  const { queue, loading, stats: queueStats } = useSRSQueue()
 
   useEffect(() => {
     loadSRSData()
+    const openHandler = () => setShowQueueModal(true)
+    window.addEventListener('progress:open-review-queue', openHandler)
+    return () => {
+      window.removeEventListener('progress:open-review-queue', openHandler)
+    }
   }, [])
 
   const loadSRSData = async () => {
     try {
-      setLoading(true)
-      const uid = getCurrentUserId()
       const now = new Date()
-      
-      // Cargar datos básicos y detallados en paralelo
-      const [basicStats, dueSchedules, masteryData] = await Promise.all([
-        getSRSStats(uid, now),
-        getDueSchedules(uid, now),
-        getMasteryByUser(uid)
-      ])
-      
+      const uid = getCurrentUserId()
+      if (!uid) {
+        setStats({ dueNow: 0, dueToday: 0 })
+        return
+      }
+      const basicStats = await getSRSStats(uid, now)
       setStats(basicStats)
-      
-      // Enriquecer schedules con datos de mastery
-      const masteryMap = new Map(masteryData.map(m => [`${m.mood}|${m.tense}|${m.person}`, m]))
-      
-      const enrichedItems = dueSchedules.map(schedule => {
-        const key = `${schedule.mood}|${schedule.tense}|${schedule.person}`
-        const mastery = masteryMap.get(key) || { score: 0 }
-        return {
-          ...schedule,
-          masteryScore: mastery.score,
-          formattedName: formatMoodTenseLocal(schedule.mood, schedule.tense),
-          urgency: getUrgency(schedule.nextDue, now)
-        }
-      }).sort((a, b) => {
-        // Ordenar por urgencia, luego por mastery score (menor primero)
-        if (a.urgency !== b.urgency) return b.urgency - a.urgency
-        return a.masteryScore - b.masteryScore
-      })
-      
-      setDueItems(enrichedItems)
-      
-      // Calcular estadísticas detalladas
-      const urgent = enrichedItems.filter(item => item.urgency > 2).length
-      const overdue = enrichedItems.filter(item => new Date(item.nextDue) < now).length
-      const scheduled = enrichedItems.length - overdue
-      
-      setReviewStats({ urgent, scheduled, overdue })
-      
     } catch (error) {
       console.error('Error loading SRS data:', error)
-    } finally {
-      setLoading(false)
     }
-  }
-
-  const getUrgency = (nextDue, now) => {
-    const diffHours = (new Date(nextDue) - now) / (1000 * 60 * 60)
-    if (diffHours < 0) return 4 // Vencido
-    if (diffHours < 6) return 3  // Muy urgente
-    if (diffHours < 24) return 2 // Urgente
-    return 1 // Normal
   }
 
   const getUrgencyColor = (urgency) => {
@@ -105,19 +61,32 @@ export default function SRSPanel({ onNavigateToDrill }) {
 
   const startReviewSession = (sessionType = 'all') => {
     try {
-      // Configurar modo de práctica específico para repaso
+      let filter
+      switch (sessionType) {
+        case 'urgent':
+          filter = { urgency: 'urgent' }
+          break
+        case 'light':
+          filter = { limit: 'light', urgency: 'urgent' }
+          break
+        case 'today':
+          filter = { urgency: 'all' }
+          break
+        default:
+          filter = { urgency: 'all' }
+      }
+
       settings.set({ 
         practiceMode: 'review',
-        reviewSessionType: sessionType
+        reviewSessionType: sessionType,
+        reviewSessionFilter: filter
       })
       
-      // Navigate to drill mode
       if (onNavigateToDrill) {
         onNavigateToDrill()
       } else {
-        // Fallback: dispatch event for when accessed from drill
         window.dispatchEvent(new CustomEvent('progress:navigate', { 
-          detail: { focus: 'review', sessionType } 
+          detail: { focus: 'review', sessionType, filter } 
         }))
       }
     } catch (error) {
@@ -130,6 +99,12 @@ export default function SRSPanel({ onNavigateToDrill }) {
     if (score >= 60) return 'mastery-medium'
     return 'mastery-low'
   }
+
+  const reviewStats = useMemo(() => ({
+    urgent: queueStats.urgent,
+    overdue: queueStats.overdue,
+    scheduled: queueStats.scheduled
+  }), [queueStats])
 
   if (loading) {
     return (
@@ -154,7 +129,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
             El sistema te muestra exactamente qué repasar y cuándo, 
             basado en tu curva de olvido personal para maximizar la retención.
           </p>
-          <div className="srs-how-it-works">
+         <div className="srs-how-it-works">
             <span className="how-icon"><img src="/icons/brain.png" alt="Cómo funciona" className="inline-icon lg" /></span>
             <span className="how-text">Cuanto mejor domines algo, menos frecuentemente lo verás</span>
           </div>
@@ -164,6 +139,9 @@ export default function SRSPanel({ onNavigateToDrill }) {
           onClick={() => setShowDetails(!showDetails)}
         >
           {showDetails ? 'Resumen' : 'Detalles'}
+        </button>
+        <button className="toggle-details-btn secondary" onClick={() => setShowQueueModal(true)}>
+          Revisar ahora
         </button>
       </div>
 
@@ -246,7 +224,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
         </div>
       </div>
 
-      {showDetails && dueItems.length > 0 && (
+      {showDetails && queue.length > 0 && (
         <div className="srs-details">
           <div className="srs-details-header">
             <h4>
@@ -267,7 +245,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
           </div>
           
           <div className="srs-items-list">
-            {dueItems.slice(0, 8).map((item, index) => {
+            {queue.slice(0, 8).map((item, index) => {
               const timeLeft = new Date(item.nextDue) - new Date()
               const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60))
               const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24))
@@ -309,10 +287,10 @@ export default function SRSPanel({ onNavigateToDrill }) {
               )
             })}
             
-            {dueItems.length > 8 && (
+            {queue.length > 8 && (
               <div className="srs-more-items">
                 <span className="more-icon">⋯</span>
-                <span>Y {dueItems.length - 8} elementos más en la cola</span>
+                <span>Y {queue.length - 8} elementos más en la cola</span>
               </div>
             )}
           </div>
@@ -333,6 +311,14 @@ export default function SRSPanel({ onNavigateToDrill }) {
           </div>
         </div>
       )}
+
+      <SRSReviewQueueModal
+        isOpen={showQueueModal}
+        onClose={() => setShowQueueModal(false)}
+        onStartSession={(filter) => {
+          settings.set({ practiceMode: 'review', reviewSessionFilter: filter })
+        }}
+      />
     </div>
   )
 }

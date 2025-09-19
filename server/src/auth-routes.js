@@ -7,7 +7,10 @@ import {
   generateJWT,
   verifyJWT,
   getAccountDevices,
-  mergeAccountData
+  mergeAccountData,
+  updateAccountProfile,
+  renameDevice,
+  revokeDevice
 } from './auth-service.js'
 
 export function createAuthRoutes() {
@@ -143,10 +146,11 @@ export function createAuthRoutes() {
 
       const devices = getAccountDevices(accountId)
       const mergedData = mergeAccountData(accountId)
+      const account = updateAccountProfile(accountId, {})
 
       res.json({
         success: true,
-        account: req.account,
+        account,
         devices,
         data: mergedData
       })
@@ -155,6 +159,95 @@ export function createAuthRoutes() {
       res.status(500).json({
         success: false,
         error: 'Failed to get account info'
+      })
+    }
+  })
+
+  router.patch('/account', requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.auth
+      const account = updateAccountProfile(accountId, req.body || {})
+
+      res.json({
+        success: true,
+        account
+      })
+    } catch (error) {
+      console.error('Update account error:', error)
+      res.status(400).json({
+        success: false,
+        error: error.message || 'Failed to update account'
+      })
+    }
+  })
+
+  router.get('/devices', requireAuth, async (req, res) => {
+    try {
+      const { accountId } = req.auth
+      const devices = getAccountDevices(accountId)
+
+      res.json({
+        success: true,
+        devices
+      })
+    } catch (error) {
+      console.error('List devices error:', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to list devices'
+      })
+    }
+  })
+
+  router.patch('/devices/:deviceId', requireAuth, async (req, res) => {
+    try {
+      const { accountId, deviceId: currentDeviceId } = req.auth
+      const { deviceId } = req.params
+      const { deviceName } = req.body || {}
+
+      const updatedDevice = renameDevice(accountId, deviceId, deviceName)
+
+      if (deviceId === currentDeviceId && updatedDevice) {
+        req.auth.deviceName = updatedDevice.device_name
+      }
+
+      res.json({
+        success: true,
+        device: updatedDevice,
+        devices: getAccountDevices(accountId)
+      })
+    } catch (error) {
+      console.error('Rename device error:', error)
+      res.status(400).json({
+        success: false,
+        error: error.message || 'Failed to rename device'
+      })
+    }
+  })
+
+  router.delete('/devices/:deviceId', requireAuth, async (req, res) => {
+    try {
+      const { accountId, deviceId: currentDeviceId } = req.auth
+      const { deviceId } = req.params
+
+      if (deviceId === currentDeviceId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Cannot revoke the device currently in use'
+        })
+      }
+
+      revokeDevice(accountId, deviceId)
+
+      res.json({
+        success: true,
+        devices: getAccountDevices(accountId)
+      })
+    } catch (error) {
+      console.error('Revoke device error:', error)
+      res.status(400).json({
+        success: false,
+        error: error.message || 'Failed to revoke device'
       })
     }
   })

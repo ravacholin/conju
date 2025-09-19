@@ -1,0 +1,123 @@
+.account-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.account-modal {
+  width: min(420px, 90%);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.account-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.account-modal__header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.account-modal__close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.account-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.account-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.account-modal__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.account-modal__input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.account-modal__input:focus {
+  border-color: #0c6efd;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(12, 110, 253, 0.15);
+}
+
+.account-modal__input--readonly {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.account-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.account-modal__button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-modal__button.primary {
+  background: #0c6efd;
+  color: #fff;
+}
+
+.account-modal__button.primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.account-modal__button.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.account-modal__error {
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.account-modal__success {
+  color: #047857;
+  font-weight: 500;
+}
+
+.account-modal__status {
+  text-align: center;
+  color: #4b5563;
+}
