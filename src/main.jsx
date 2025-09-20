@@ -13,7 +13,7 @@ import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
 
 // Read env-provided sync config and apply once on load
 if (typeof window !== 'undefined') {
-  const DEFAULT_SYNC_URL = 'https://verbos-progress-sync.loca.lt/api'
+  const DEFAULT_SYNC_URL = 'https://conju.onrender.com/api'
   const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL || DEFAULT_SYNC_URL
   const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN || null
   const isLocalSync = /(?:^|\/\/)(?:localhost|127\.0\.0\.1|0\.0\.0\.0)/.test(syncUrl)
