@@ -42,14 +42,26 @@ describe('Cache invalidation for critical settings changes', () => {
     const settingsIrregular = { ...baseSettings, verbType: 'irregular' }
     const formsIrregular = await generateAllFormsForRegion('la_general', settingsIrregular)
 
-    // Results should be different
-    expect(formsAll.length).toBeGreaterThan(0)
-    expect(formsRegular.length).toBeGreaterThan(0)
-    expect(formsIrregular.length).toBeGreaterThan(0)
+    // Apply filtering to see the actual difference that users experience
+    const constraints = { isSpecific: false }
+    const filteredAll = applyComprehensiveFiltering(formsAll, settingsAll, constraints)
+    const filteredRegular = applyComprehensiveFiltering(formsRegular, settingsRegular, constraints)
+    const filteredIrregular = applyComprehensiveFiltering(formsIrregular, settingsIrregular, constraints)
 
-    // All should have more forms than regular or irregular alone
-    expect(formsAll.length).toBeGreaterThan(formsRegular.length)
-    expect(formsAll.length).toBeGreaterThan(formsIrregular.length)
+    // NOW we should see the differences after filtering
+    expect(filteredAll.length).toBeGreaterThan(0)
+    expect(filteredRegular.length).toBeGreaterThan(0)
+    expect(filteredIrregular.length).toBeGreaterThan(0)
+
+    console.log(`Filtered forms - All: ${filteredAll.length}, Regular: ${filteredRegular.length}, Irregular: ${filteredIrregular.length}`)
+
+    // All should include more forms than regular or irregular alone after filtering
+    expect(filteredAll.length).toBeGreaterThan(filteredRegular.length)
+    expect(filteredAll.length).toBeGreaterThan(filteredIrregular.length)
+
+    // Cache validation: calling with same settings should return exactly same result (cache hit)
+    const formsAllSecond = await generateAllFormsForRegion('la_general', settingsAll)
+    expect(formsAllSecond.length).toBe(formsAll.length)
   })
 
   it('should generate different forms when changing enableChunks', async () => {

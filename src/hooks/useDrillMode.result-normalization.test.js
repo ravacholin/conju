@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useDrillMode } from './useDrillMode.js'
 
 // Mock the settings store
@@ -92,7 +92,9 @@ describe('useDrillMode result normalization', () => {
     }
 
     // Set current item using the hook's method
-    result.current.setCurrentItem(mockItem)
+    act(() => {
+      result.current.setCurrentItem(mockItem)
+    })
 
     // Test with grader result format (result.correct)
     const graderResult = {
@@ -103,8 +105,10 @@ describe('useDrillMode result normalization', () => {
       responseTime: 1500
     }
 
-    // Call handleDrillResult
-    await result.current.handleDrillResult(graderResult)
+    // Call handleDrillResult wrapped in act
+    await act(async () => {
+      await result.current.handleDrillResult(graderResult)
+    })
 
     // Verify that handleResponse was called with normalized result
     expect(mockHandleResponse).toHaveBeenCalledWith(
@@ -133,7 +137,9 @@ describe('useDrillMode result normalization', () => {
       value: 'es'
     }
 
-    result.current.setCurrentItem(mockItem)
+    act(() => {
+      result.current.setCurrentItem(mockItem)
+    })
 
     // Test with result that already has isCorrect
     const alreadyNormalizedResult = {
@@ -144,7 +150,9 @@ describe('useDrillMode result normalization', () => {
       expected: 'es'
     }
 
-    await result.current.handleDrillResult(alreadyNormalizedResult)
+    await act(async () => {
+      await result.current.handleDrillResult(alreadyNormalizedResult)
+    })
 
     // Verify that isCorrect is preserved (false), not overwritten by correct (true)
     expect(mockHandleResponse).toHaveBeenCalledWith(
@@ -172,7 +180,9 @@ describe('useDrillMode result normalization', () => {
       value: 'tienes'
     }
 
-    result.current.setCurrentItem(mockItem)
+    act(() => {
+      result.current.setCurrentItem(mockItem)
+    })
 
     // Test with result that has neither property
     const incompleteResult = {
@@ -181,7 +191,9 @@ describe('useDrillMode result normalization', () => {
       expected: 'tienes'
     }
 
-    await result.current.handleDrillResult(incompleteResult)
+    await act(async () => {
+      await result.current.handleDrillResult(incompleteResult)
+    })
 
     // Verify that isCorrect is undefined when neither property exists
     expect(mockHandleResponse).toHaveBeenCalledWith(
@@ -208,11 +220,15 @@ describe('useDrillMode result normalization', () => {
       value: 'hago'
     }
 
-    result.current.setCurrentItem(mockItem)
+    act(() => {
+      result.current.setCurrentItem(mockItem)
+    })
 
     // Test correct answer
     const correctResult = { correct: true }
-    await result.current.handleDrillResult(correctResult)
+    await act(async () => {
+      await result.current.handleDrillResult(correctResult)
+    })
 
     // Check history was updated with accuracy: 1
     const history = result.current.history
@@ -227,7 +243,9 @@ describe('useDrillMode result normalization', () => {
 
     // Test incorrect answer
     const incorrectResult = { correct: false }
-    await result.current.handleDrillResult(incorrectResult)
+    await act(async () => {
+      await result.current.handleDrillResult(incorrectResult)
+    })
 
     // Check history was updated with accuracy: 0
     const updatedHistory = result.current.history

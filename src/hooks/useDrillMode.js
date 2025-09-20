@@ -125,9 +125,10 @@ export function useDrillMode() {
     }
 
     // Normalize result format: grader produces result.correct, but progress system expects result.isCorrect
+    // Priority: preserve existing isCorrect if present, otherwise use correct
     const normalizedResult = {
       ...result,
-      isCorrect: result.correct !== undefined ? result.correct : result.isCorrect
+      isCorrect: result.isCorrect !== undefined ? result.isCorrect : result.correct
     }
 
     logger.debug('handleDrillResult', 'Processing drill result', {
