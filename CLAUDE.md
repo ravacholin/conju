@@ -11,8 +11,11 @@ npm run dev
 # Development server with learning mode pre-opened
 npm run dev:learning
 
-# Build for production (includes prebuild validation)
+# Build for production
 npm run build
+
+# Build code chunks separately
+npm run chunks:build
 
 # Preview production build
 npm run preview
@@ -36,7 +39,10 @@ npm test -- --coverage
 # Run a single test file
 npx vitest run src/path/to/test.js
 
-# Run tests in watch mode
+# Run tests with watch mode
+npm run test:watch
+
+# Run tests in watch mode (alternative)
 npx vitest
 
 # Run different test suites
@@ -49,17 +55,19 @@ npm run test:all          # Run all test suites
 
 # Test UI and debugging
 npm run test:ui           # Run tests with Vitest UI
+npm run test:coverage:ui  # Run tests with coverage UI
 npm run test:e2e:ui       # Run e2e tests with Playwright UI
 npm run test:e2e:debug    # Debug e2e tests
+npm run test:visual       # Run visual regression tests
 
 # Data validation (critical - run before commits)
-node src/validate-data.js
+npm run validate-integrity
 
 # Audit dataset consistency and linguistic data validation
 npm run audit:all
 
-# Validate mood/tense mapping integrity (prevents "Undefined - undefined" bugs)
-npm run validate-integrity
+# Audit with strict validation (fails on warnings)
+npm run audit:strict
 ```
 
 ## Architecture Overview
@@ -171,7 +179,7 @@ clearAllCaches()   // Clear all caches for testing
 
 ## Data Validation Requirements
 
-**Critical:** Always run `node src/validate-data.js` and `npm run validate-integrity` before committing. This detects:
+**Critical:** Always run `npm run validate-integrity` before committing. This detects:
 - Duplicate verbs
 - Missing verb forms
 - Broken references in irregular families

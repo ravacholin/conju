@@ -124,11 +124,17 @@ export function useDrillMode() {
       return
     }
 
+    // Normalize result format: grader produces result.correct, but progress system expects result.isCorrect
+    const normalizedResult = {
+      ...result,
+      isCorrect: result.correct !== undefined ? result.correct : result.isCorrect
+    }
+
     logger.debug('handleDrillResult', 'Processing drill result', {
       itemId: currentItem.id,
       lemma: currentItem.lemma,
-      isCorrect: result.isCorrect,
-      hasHints: !!result.hintsUsed
+      isCorrect: normalizedResult.isCorrect,
+      hasHints: !!normalizedResult.hintsUsed
     })
 
     // Update history for variety tracking
@@ -138,12 +144,12 @@ export function useDrillMode() {
       [key]: {
         count: (prev[key]?.count || 0) + 1,
         lastSeen: Date.now(),
-        accuracy: result.isCorrect ? 1 : 0
+        accuracy: normalizedResult.isCorrect ? 1 : 0
       }
     }))
 
-    // Use the specialized progress handler
-    await handleResponse(currentItem, result, (processedResult) => {
+    // Use the specialized progress handler with normalized result
+    await handleResponse(currentItem, normalizedResult, (processedResult) => {
       logger.debug('handleDrillResult', 'Progress processing completed', processedResult)
     })
   }

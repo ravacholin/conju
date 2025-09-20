@@ -32,7 +32,7 @@ const formsCache = new Map()
  * @returns {Array} - Array de formas enriquecidas con lemma
  */
 export async function generateAllFormsForRegion(region = 'la_general', settings = {}) {
-  const cacheKey = `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}`
+  const cacheKey = `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}:${settings.verbType || 'all'}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
   
   // Check cache first
   if (formsCache.has(cacheKey)) {
@@ -186,17 +186,40 @@ const getAllowedCombosForLevel = (level) => gateCombos(level)
  * @returns {boolean} - Whether the person is allowed
  */
 export const allowsPerson = (person, settings) => {
-  const { region, practicePronoun } = settings
-  
-  // Always enforce dialectal constraints regardless of pronounMode
-  if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
-  if (region === 'la_general') return person !== '2s_vos' && person !== '2p_vosotros'
-  if (region === 'peninsular') return person !== '2s_vos'
-  
-  // If region not set, optionally apply pronoun filters
+  const { region, practicePronoun, useVoseo, useVosotros } = settings
+
+  // Check for hybrid/combined pronoun mode first
+  if (practicePronoun === 'all' || useVoseo || useVosotros) {
+    // Allow all combinations when explicitly requested
+    if (useVoseo && person === '2s_vos') return true
+    if (useVosotros && person === '2p_vosotros') return true
+    // Allow standard forms too
+    if (person !== '2s_vos' && person !== '2p_vosotros') return true
+    if (person === '2s_vos' && useVoseo) return true
+    if (person === '2p_vosotros' && useVosotros) return true
+  }
+
+  // Regional constraints (only apply if not in hybrid mode)
+  if (!practicePronoun || practicePronoun === 'mixed') {
+    if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
+    if (region === 'la_general') {
+      // Allow vos/vosotros if explicitly enabled, even in la_general
+      if (person === '2s_vos' && useVoseo) return true
+      if (person === '2p_vosotros' && useVosotros) return true
+      return person !== '2s_vos' && person !== '2p_vosotros'
+    }
+    if (region === 'peninsular') {
+      // Allow vosotros in peninsular, but only vos if explicitly enabled
+      if (person === '2s_vos' && useVoseo) return true
+      if (person === '2p_vosotros') return true
+      return person !== '2s_vos'
+    }
+  }
+
+  // Specific pronoun filters
   if (practicePronoun === 'tu_only') return person === '2s_tu'
   if (practicePronoun === 'vos_only') return person === '2s_vos'
-  
+
   return true
 }
 

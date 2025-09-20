@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
 import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
+import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
 
 export default function useProgressDashboardData() {
   const [heatMapData, setHeatMapData] = useState([])
@@ -22,7 +23,7 @@ export default function useProgressDashboardData() {
   // AsyncController for managing cancellable operations
   const asyncController = useRef(new AsyncController())
 
-  const loadData = async (isRefresh = false) => {
+  const loadData = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) {
         setRefreshing(true)
@@ -189,7 +190,7 @@ export default function useProgressDashboardData() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [personFilter]) // Only depend on personFilter since other state setters are stable
 
   const completeChallenge = async (challengeId) => {
     try {
@@ -231,35 +232,32 @@ export default function useProgressDashboardData() {
 
   // Check if progress system is ready
   useEffect(() => {
-    const checkSystemReady = async () => {
-      try {
-        // Wait for user ID to be available
-        let attempts = 0
-        const maxAttempts = 50 // 5 seconds max
-
-        while (attempts < maxAttempts) {
-          const userId = getCurrentUserId()
-          if (userId) {
-            setSystemReady(true)
-            loadData()
-            return
-          }
-          await new Promise(resolve => setTimeout(resolve, 100))
-          attempts++
-        }
-
-        // If we get here, system didn't initialize properly
-        setError('Sistema de progreso no inicializado. Refresca la página.')
-        setLoading(false)
-      } catch (err) {
-        console.error('Error checking system readiness:', err)
-        setError('Error al verificar sistema de progreso')
-        setLoading(false)
+    // Check immediately if system is already ready
+    if (isProgressSystemReady()) {
+      const userId = getCurrentUserId()
+      if (userId) {
+        setSystemReady(true)
+        loadData()
+        return
       }
     }
 
-    checkSystemReady()
-  }, [])
+    // Listen for progress system ready event
+    const unsubscribe = onProgressSystemReady((ready) => {
+      if (ready) {
+        const userId = getCurrentUserId()
+        if (userId) {
+          setSystemReady(true)
+          loadData()
+        } else {
+          setError('Sistema de progreso inicializado pero usuario no disponible.')
+          setLoading(false)
+        }
+      }
+    })
+
+    return unsubscribe
+  }, [loadData])
 
   useEffect(() => {
     if (systemReady) {

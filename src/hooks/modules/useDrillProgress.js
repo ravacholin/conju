@@ -20,7 +20,7 @@ let processUserResponse, flowDetector, momentumTracker, confidenceEngine, dynami
 let recordAttempt, updateMastery, scheduleNextReview
 
 try {
-  const progressModule = await import('../../features/drill/useProgressTracking.js')
+  const progressModule = await import('../../lib/progress/flowStateDetection.js')
   processUserResponse = progressModule.processUserResponse
 } catch (error) {
   console.warn('Progress tracking module not available:', error)
