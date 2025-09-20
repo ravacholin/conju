@@ -29,7 +29,10 @@
     "test:performance": "vitest run src/**/*.performance.{test,spec}.{js,jsx}",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "quality:check": "npm run lint && npm run test:run",
-    "quality:fix": "npm run lint -- --fix"
+    "quality:fix": "npm run lint -- --fix",
+    "validate-integrity": "node ./scripts/validateIntegrity.mjs",
+    "audit:all": "node ./scripts/auditAll.mjs",
+    "audit:strict": "node ./scripts/auditAll.mjs --fail-on-findings"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -68,8 +68,11 @@ export default [
     files: ['*.js', '*.mjs', 'scripts/**/*.{js,mjs}', 'src/lib/utils/*.js', 'src/validate-data.js'],
     ignores: ['src/**/*', 'public/**/*', 'node_modules/**/*', 'dist/**/*', '!src/lib/utils/*.js', '!src/validate-data.js', '!scripts/**/*.{js,mjs}'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 'latest',
       globals: globals.node,
+      parserOptions: {
+        sourceType: 'module'
+      }
     },
     rules: {
       'no-undef': 'off',
@@ -80,8 +83,11 @@ export default [
   {
     files: ['server/**/*.js'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 'latest',
       globals: globals.node,
+      parserOptions: {
+        sourceType: 'module'
+      }
     },
     rules: {
       'no-undef': 'off',
