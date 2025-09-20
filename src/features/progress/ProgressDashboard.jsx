@@ -77,6 +77,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         if (mergedTotal && mergedTotal !== downloadedTotal) detailParts.push(`${mergedTotal} registros aplicados`)
         const detail = detailParts.length ? ` (${detailParts.join(', ')})` : ''
         setToast({ message: `Sincronización completa${detail}`, type: 'success' })
+        // Refrescar dashboard inmediatamente para reflejar los datos descargados
+        refresh()
       } else {
         const failureReason = res?.accountSync?.reason || res?.reason || res?.accountSync?.error
         let hint = 'Reintentá en unos segundos.'
