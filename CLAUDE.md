@@ -5,74 +5,70 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 ```bash
-# Development server (starts on port 5173, opens in learning mode)
-npm run dev
+# Frontend Development
+npm run dev                 # Development server (starts on port 5173)
+npm run dev:learning        # Development server with learning mode pre-opened
+npm run build               # Build for production
+npm run chunks:build        # Build code chunks separately
+npm run preview             # Preview production build
+npm run preview:learning    # Preview with learning mode pre-opened
 
-# Development server with learning mode pre-opened
-npm run dev:learning
+# Backend Development
+npm run server:start        # Start backend server (port 8787)
 
-# Build for production
-npm run build
+# For full-stack development, run both:
+# Terminal 1: npm run server:start
+# Terminal 2: npm run dev
 
-# Build code chunks separately
-npm run chunks:build
+# Quality & Testing
+npm run lint                # Run ESLint
+npm run quality:check       # Run lint + tests
+npm run quality:fix         # Auto-fix linting issues
 
-# Preview production build
-npm run preview
+npm test                    # Run tests with Vitest
+npm run test:run           # Run tests once (no watch)
+npm run test:watch         # Run tests in watch mode
+npm run test:coverage      # Run tests with coverage
+npm run test:ui            # Run tests with Vitest UI
+npm run test:coverage:ui   # Run tests with coverage UI
 
-# Preview with learning mode pre-opened
-npm run preview:learning
-
-# Run linting with ESLint
-npm run lint
-
-# Quality checks and fixes
-npm run quality:check      # Run lint + tests
-npm run quality:fix        # Auto-fix linting issues
-
-# Run tests with Vitest
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run a single test file
-npx vitest run src/path/to/test.js
-
-# Run tests with watch mode
-npm run test:watch
-
-# Run tests in watch mode (alternative)
-npx vitest
-
-# Run different test suites
+# Test Suites
 npm run test:unit          # Unit tests only
 npm run test:integration   # Integration tests only
 npm run test:e2e          # End-to-end tests with Playwright
+npm run test:e2e:ui       # Run e2e tests with Playwright UI
+npm run test:e2e:debug    # Debug e2e tests
+npm run test:visual       # Run visual regression tests
 npm run test:smoke        # Smoke tests
 npm run test:performance  # Performance tests
 npm run test:all          # Run all test suites
 
-# Test UI and debugging
-npm run test:ui           # Run tests with Vitest UI
-npm run test:coverage:ui  # Run tests with coverage UI
-npm run test:e2e:ui       # Run e2e tests with Playwright UI
-npm run test:e2e:debug    # Debug e2e tests
-npm run test:visual       # Run visual regression tests
+# Run a single test file
+npx vitest run src/path/to/test.js
 
-# Data validation (critical - run before commits)
-npm run validate-integrity
-
-# Audit dataset consistency and linguistic data validation
-npm run audit:all
-
-# Audit with strict validation (fails on warnings)
-npm run audit:strict
+# Data Validation (critical - run before commits)
+npm run validate-integrity  # Detects data inconsistencies
+npm run audit:all           # Comprehensive dataset auditing
+npm run audit:strict        # Audit with strict validation (fails on warnings)
 ```
 
 ## Architecture Overview
 
-Spanish Conjugator is a React-based Spanish verb conjugation learning app with a sophisticated progress tracking system. The app teaches verb conjugations through interactive practice with adaptive algorithms.
+Spanish Conjugator is a full-stack application with a React frontend and Node.js/Express backend for progress synchronization.
+
+### Frontend (React SPA)
+- React-based Spanish verb conjugation learning app
+- Sophisticated progress tracking system with local-first data storage
+- Interactive practice with adaptive algorithms and SRS (Spaced Repetition System)
+- PWA support with offline capabilities
+
+### Backend (Node.js/Express)
+- **Location**: `server/` directory
+- **Purpose**: Progress synchronization across devices
+- **Port**: 8787 (configurable via PORT env var)
+- **Database**: SQLite with migrations
+- **Authentication**: Google OAuth integration
+- **CORS**: Configured for multiple origins (localhost + production)
 
 ### Core Directories
 
@@ -226,8 +222,31 @@ The app uses IndexedDB for local storage with these stores:
 - **Vitest**: Test configuration with jsdom environment, 20s timeout, coverage reporting
 - **PWA**: Auto-registration, workbox caching, 5MB file size limit, offline support
 
+## Sync Troubleshooting
+
+### Common Sync Issues
+The most frequent issue is progress not syncing between devices even with the same Google account.
+
+**Problem**: User logs in on new device, clicks "Sync ahora" in progress module, but progress from other device doesn't appear.
+
+**Root Cause**: The current sync implementation in `src/lib/progress/cloudSync.js` is mostly stubbed out with placeholder functions. Real sync logic needs to be implemented.
+
+**Key Files to Check**:
+- `src/lib/progress/cloudSync.js` - Frontend sync logic (currently stubbed)
+- `server/src/routes.js` - Backend sync endpoints
+- `server/src/auth.js` - Authentication middleware
+- `server/src/db.js` - Database operations
+
+**Debug Steps**:
+1. Verify backend is running: `npm run server:start`
+2. Check browser network tab for failed API calls to localhost:8787
+3. Verify Google OAuth token is valid in browser storage
+4. Check server logs for authentication/database errors
+5. Ensure CORS_ORIGIN includes your frontend URL
+
 ## Known Issues & Limitations
 
+- **Sync functionality partially implemented** - cloudSync.js contains placeholder functions
 - 186 validation errors in verb database (ongoing cleanup)
 - Only 32% coverage of high-frequency Spanish verbs
 - Some regional restrictions (e.g., "coger" only in Spain)
