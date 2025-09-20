@@ -6,7 +6,7 @@ import {
   isGoogleAuthConfigured
 } from './googleAuth.js'
 
-const API_BASE = import.meta.env.VITE_PROGRESS_SYNC_URL || 'https://conju.onrender.com/api'
+const API_BASE = import.meta.env.VITE_PROGRESS_SYNC_URL || 'https://verbos-progress-sync.loca.lt/api'
 
 class AuthService {
   constructor() {
