@@ -13,16 +13,21 @@ import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
 
 // Read env-provided sync config and apply once on load
 if (typeof window !== 'undefined') {
-  const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL || 'http://localhost:8787/api'
+  const DEFAULT_SYNC_URL = 'https://conju.onrender.com/api'
+  const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL || DEFAULT_SYNC_URL
   const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN || null
-  const syncHeader = import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME || null
+  const isLocalSync = /(?:^|\/\/)(?:localhost|127\.0\.0\.1|0\.0\.0\.0)/.test(syncUrl)
+  const syncHeader =
+    import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME ||
+    (isLocalSync ? 'X-User-Id' : 'Authorization')
+
   if (syncUrl) setSyncEndpoint(syncUrl)
   if (syncHeader) setSyncAuthHeaderName(syncHeader)
+
   if (syncToken) {
     setSyncAuthToken(syncToken, { persist: false })
-  } else {
-    // Fallback: usar userId local como token y cabecera X-User-Id
-    setSyncAuthHeaderName('X-User-Id')
+  } else if (syncHeader.toLowerCase() !== 'authorization') {
+    // For purely local/dev sync we fall back to user-scoped tokens
     const uid = getUID()
     if (uid) setSyncAuthToken(uid, { persist: false })
   }
