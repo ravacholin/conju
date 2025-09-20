@@ -68,9 +68,26 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       setSyncing(true)
       const res = await syncNow()
       if (res?.success) {
-        setToast({ message: 'Sincronización completa', type: 'success' })
+        const merged = res.accountSync?.merged || {}
+        const downloaded = res.accountSync?.downloaded || {}
+        const mergedTotal = (merged.attempts || 0) + (merged.mastery || 0) + (merged.schedules || 0)
+        const downloadedTotal = (downloaded.attempts || 0) + (downloaded.mastery || 0) + (downloaded.schedules || 0)
+        const detailParts = []
+        if (downloadedTotal) detailParts.push(`${downloadedTotal} registros descargados`)
+        if (mergedTotal && mergedTotal !== downloadedTotal) detailParts.push(`${mergedTotal} registros aplicados`)
+        const detail = detailParts.length ? ` (${detailParts.join(', ')})` : ''
+        setToast({ message: `Sincronización completa${detail}`, type: 'success' })
       } else {
-        setToast({ message: 'No se pudo sincronizar (offline o deshabilitado)', type: 'info' })
+        const failureReason = res?.accountSync?.reason || res?.reason || res?.accountSync?.error
+        let hint = 'Reintentá en unos segundos.'
+        if (failureReason === 'offline' || failureReason === 'offline_or_disabled') {
+          hint = 'Sin conexión. Verificá tu internet.'
+        } else if (failureReason === 'sync_disabled') {
+          hint = 'Configurá la URL del servidor de sincronización.'
+        } else if (failureReason === 'not_authenticated') {
+          hint = 'La sesión expiró. Iniciá sesión nuevamente.'
+        }
+        setToast({ message: `No se pudo sincronizar. ${hint}`, type: 'error' })
       }
     } catch (e) {
       console.error('Error en sincronización:', e)

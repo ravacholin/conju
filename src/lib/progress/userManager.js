@@ -12,6 +12,7 @@ import {
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
+import { progressDataCache } from '../cache/ProgressDataCache.js'
 
 const LS_KEY = 'progress-user-settings'
 const USER_ID_STORAGE_KEY = 'progress-system-user-id'
@@ -386,8 +387,32 @@ export async function syncAccountData() {
     // Merge with local data
     const mergeResults = await mergeAccountDataLocally(accountData)
 
+    // Invalidate cached dashboard data so UI reflects freshly merged records
+    try {
+      if (mergeResults.userId) {
+        progressDataCache.invalidateUser(mergeResults.userId)
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(
+            new CustomEvent('progress:dataUpdated', {
+              detail: { userId: mergeResults.userId, type: 'sync' }
+            })
+          )
+        }
+      }
+    } catch (cacheError) {
+      console.warn('No se pudo invalidar el caché tras la sync:', cacheError?.message || cacheError)
+    }
+
     console.log('✅ Sincronización de cuenta completada:', mergeResults)
-    return { success: true, merged: mergeResults }
+    return {
+      success: true,
+      merged: mergeResults,
+      downloaded: {
+        attempts: accountData.attempts?.length || 0,
+        mastery: accountData.mastery?.length || 0,
+        schedules: accountData.schedules?.length || 0
+      }
+    }
   } catch (error) {
     console.error('❌ Error en sincronización de cuenta:', error)
     return { success: false, error: String(error) }
@@ -547,7 +572,7 @@ async function mergeAccountDataLocally(accountData) {
     }
   }
 
-  return results
+  return { ...results, userId: currentUserId }
 }
 
 /**
@@ -578,16 +603,20 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   console.log('⏰ Despertando servidor antes de sincronizar...')
   await wakeUpServer()
 
+  let accountSyncResult = null
   // If user is authenticated, also perform account data sync
   if (authService.isLoggedIn()) {
     console.log('🔑 Usuario autenticado: realizando sincronización de cuenta multi-dispositivo')
     try {
-      const accountSyncResult = await syncAccountData()
+      accountSyncResult = await syncAccountData()
       if (accountSyncResult.success) {
         console.log('✅ Sincronización de cuenta completada:', accountSyncResult.merged)
+      } else {
+        console.warn('⚠️ Sincronización de cuenta sin éxito:', accountSyncResult.reason || accountSyncResult.error)
       }
     } catch (error) {
       console.warn('⚠️ Error en sincronización de cuenta:', error.message)
+      accountSyncResult = { success: false, error: error.message }
       // Continue with regular sync even if account sync fails
     }
   }
@@ -635,7 +664,14 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
     // Procesar cola offline (si hubiera)
     await flushSyncQueue()
 
-    return { success: true, ...results }
+    const response = { success: true, ...results }
+    if (accountSyncResult) {
+      response.accountSync = accountSyncResult
+      if (accountSyncResult.success === false) {
+        response.success = false
+      }
+    }
+    return response
   } catch (error) {
     console.warn('Fallo de sincronización, encolando para más tarde:', error?.message)
     // Encolar lotes para reintentar
