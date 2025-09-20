@@ -432,18 +432,143 @@ class VerbChunkManager {
   
   // API de conveniencia para compatibilidad con código existente
   async getAllVerbs() {
-    // Cargar todos los chunks si es necesario (fallback)
-    const allChunkNames = Array.from(this.chunkMetadata.keys())
-    await Promise.all(allChunkNames.map(name => this.loadChunk(name)))
-    
-    const allVerbs = []
-    this.loadedChunks.forEach(verbs => {
-      allVerbs.push(...verbs)
-    })
-    
-    return allVerbs
+    try {
+      // Cargar todos los chunks si es necesario (fallback)
+      const allChunkNames = Array.from(this.chunkMetadata.keys())
+      await Promise.all(allChunkNames.map(name => this.loadChunk(name)))
+
+      const allVerbs = []
+      this.loadedChunks.forEach(verbs => {
+        allVerbs.push(...verbs)
+      })
+
+      if (allVerbs.length > 0) {
+        return allVerbs
+      }
+    } catch (error) {
+      console.warn('getAllVerbs: Chunk loading failed, using main file fallback:', error)
+    }
+
+    // FAILSAFE: If chunks completely fail, load from main verbs file
+    try {
+      const { verbs: allVerbs } = await import('../../data/verbs.js')
+      console.log('🚨 getAllVerbs: Successfully loaded from main verbs file as fallback')
+      return allVerbs
+    } catch (fallbackError) {
+      console.error('💀 CRITICAL: getAllVerbs main file fallback also failed:', fallbackError)
+      throw new Error('CRITICAL: All verb loading methods failed in getAllVerbs')
+    }
   }
-  
+
+  /**
+   * Robust failsafe method that guarantees verb loading
+   * Uses multiple fallback strategies with timeout protection
+   * @param {Array} preferredChunks - Chunks to try loading first
+   * @param {number} maxAttempts - Maximum retry attempts per strategy
+   * @param {number} timeoutMs - Timeout for each strategy
+   * @returns {Array} - Array of verbs (guaranteed to have content)
+   */
+  async getVerbsWithRobustFailsafe(preferredChunks = ['core'], maxAttempts = 2, timeoutMs = 3000) {
+    const strategies = [
+      // Strategy 1: Try preferred chunks
+      async () => {
+        console.log('🔄 Strategy 1: Loading preferred chunks:', preferredChunks)
+        const verbs = []
+        for (const chunkName of preferredChunks) {
+          try {
+            await this.loadChunk(chunkName)
+            const chunkVerbs = this.loadedChunks.get(chunkName) || []
+            verbs.push(...chunkVerbs)
+          } catch (error) {
+            console.warn(`Failed to load preferred chunk ${chunkName}:`, error)
+          }
+        }
+        return verbs
+      },
+
+      // Strategy 2: Try all chunks
+      async () => {
+        console.log('🔄 Strategy 2: Loading all available chunks')
+        return await this.getAllVerbs()
+      },
+
+      // Strategy 3: Emergency fallback to main file
+      async () => {
+        console.log('🚨 Strategy 3: Emergency fallback to main verbs file')
+        const { verbs: allVerbs } = await import('../../data/verbs.js')
+        return allVerbs
+      },
+
+      // Strategy 4: Minimal essential verbs (absolute last resort)
+      async () => {
+        console.log('💀 Strategy 4: Loading minimal essential verbs')
+        const essentialLemmas = ['ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber']
+        try {
+          const { verbs: allVerbs } = await import('../../data/verbs.js')
+          return allVerbs.filter(verb => essentialLemmas.includes(verb.lemma))
+        } catch {
+          // Absolute fallback: hardcoded minimal verb structure
+          return essentialLemmas.map(lemma => ({
+            lemma,
+            paradigms: [{
+              regionTags: ['la_general', 'rioplatense', 'peninsular'],
+              forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: lemma === 'ser' ? 'soy' : lemma }]
+            }]
+          }))
+        }
+      }
+    ]
+
+    for (let strategyIndex = 0; strategyIndex < strategies.length; strategyIndex++) {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          console.log(`🎯 Trying strategy ${strategyIndex + 1}, attempt ${attempt}`)
+
+          // Wrap strategy execution with timeout
+          const strategyPromise = strategies[strategyIndex]()
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Strategy timeout')), timeoutMs)
+          )
+
+          const verbs = await Promise.race([strategyPromise, timeoutPromise])
+
+          if (verbs && verbs.length > 0) {
+            console.log(`✅ Strategy ${strategyIndex + 1} succeeded with ${verbs.length} verbs`)
+            return verbs
+          }
+        } catch (error) {
+          console.warn(`Strategy ${strategyIndex + 1}, attempt ${attempt} failed:`, error.message)
+
+          // If it's the last attempt of the last strategy, prepare for critical failure
+          if (strategyIndex === strategies.length - 1 && attempt === maxAttempts) {
+            console.error('💀 CRITICAL: All failsafe strategies exhausted')
+
+            // Auto-disable chunks if they keep failing
+            try {
+              const { useSettings } = await import('../../state/settings.js')
+              const store = useSettings.getState()
+              if (store.enableChunks) {
+                console.log('🔧 Auto-disabling chunks due to repeated failures')
+                store.set({
+                  enableChunks: false,
+                  chunksFailsafeActivated: true,
+                  chunksFailsafeCount: (store.chunksFailsafeCount || 0) + 1
+                })
+              }
+            } catch {
+              // Settings update failed, but continue
+            }
+
+            throw new Error('CRITICAL: All verb loading strategies failed - application cannot continue')
+          }
+
+          // Small delay before retry
+          await new Promise(resolve => setTimeout(resolve, 100 * attempt))
+        }
+      }
+    }
+  }
+
   // Para práctica por tema: cargar verbos basado en familias irregulares o temas específicos
   async getVerbsByTheme(theme, irregularFamilies = []) {
     const relevantChunks = new Set(['core']) // Siempre incluir core

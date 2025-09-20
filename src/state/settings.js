@@ -68,6 +68,8 @@ const useSettings = create(
       
       // Sistema de chunks - toggle para fallback de emergencia
       enableChunks: true, // Puede deshabilitarse si hay problemas
+      chunksFailsafeActivated: false, // Track if failsafe was activated
+      chunksFailsafeCount: 0, // Count of failsafe activations
 
       // Sistema de progreso - toggle para la integración con mastery data
       enableProgressIntegration: true, // Puede deshabilitarse si hay problemas

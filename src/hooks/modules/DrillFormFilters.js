@@ -50,82 +50,90 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
       const { verbs: allVerbs } = await import('../../data/verbs.js')
       verbs = allVerbs
     } else {
-      // Sistema de chunks normal
+      // Sistema de chunks normal con failsafe robusto
+      let preferredChunks = ['core']
+
       if (settings.practiceMode === 'theme' || settings.selectedFamily) {
-        // Para práctica por tema, usar getVerbsByTheme
-        const theme = settings.selectedFamily || 'mixed'
-        const families = settings.selectedFamily ? [settings.selectedFamily] : []
-        verbs = await verbChunkManager.getVerbsByTheme(theme, families)
-      } else if (settings.level && ['A1', 'A2'].includes(settings.level)) {
-        // Para niveles básicos, cargar core + common
-        await verbChunkManager.loadChunk('core')
-        await verbChunkManager.loadChunk('common')
-        
-        const coreVerbs = verbChunkManager.loadedChunks.get('core') || []
-        const commonVerbs = verbChunkManager.loadedChunks.get('common') || []
-        verbs = [...coreVerbs, ...commonVerbs]
-      } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
-        // Para verbos irregulares o niveles avanzados, incluir chunk de irregulares
-        await verbChunkManager.loadChunk('core')
-        await verbChunkManager.loadChunk('common')
-        await verbChunkManager.loadChunk('irregulars')
-        
-        const loadedChunks = ['core', 'common', 'irregulars']
-        verbs = []
-        loadedChunks.forEach(chunkName => {
-          const chunk = verbChunkManager.loadedChunks.get(chunkName)
-          if (chunk) verbs.push(...chunk)
-        })
-      } else {
-        // Fallback: cargar todos los verbos disponibles en chunks actuales
-        // Si no hay suficientes, usar fallback rápido
-        const currentVerbs = []
-        verbChunkManager.loadedChunks.forEach(chunk => {
-          currentVerbs.push(...chunk)
-        })
-        
-        if (currentVerbs.length < 50) { // Threshold mínimo
-          console.log('⚠️ Pocos verbos en chunks, usando fallback completo')
-          verbs = await verbChunkManager.getAllVerbs()
-        } else {
-          verbs = currentVerbs
+        // Para práctica por tema, usar getVerbsByTheme con failsafe
+        try {
+          const theme = settings.selectedFamily || 'mixed'
+          const families = settings.selectedFamily ? [settings.selectedFamily] : []
+          verbs = await verbChunkManager.getVerbsByTheme(theme, families)
+
+          if (!verbs || verbs.length === 0) {
+            throw new Error('Theme-based loading returned no verbs')
+          }
+        } catch (themeError) {
+          console.warn('Theme loading failed, using robust failsafe:', themeError.message)
+          verbs = await verbChunkManager.getVerbsWithRobustFailsafe(['core', 'irregulars'])
         }
+      } else {
+        // Determinar chunks preferidos basado en configuración
+        if (settings.level && ['A1', 'A2'].includes(settings.level)) {
+          preferredChunks = ['core', 'common']
+        } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
+          preferredChunks = ['core', 'common', 'irregulars']
+        } else {
+          preferredChunks = ['core', 'common']
+        }
+
+        // Usar el sistema de failsafe robusto
+        verbs = await verbChunkManager.getVerbsWithRobustFailsafe(preferredChunks)
       }
     }
   } catch (error) {
-    console.error('Error loading verbs for forms generation:', error)
-    console.log('🚨 CHUNKS FAILED - Using emergency fallback to main verbs file')
-    
-    // CRITICAL: Auto-disable chunks if they keep failing
-    if (settings.enableChunks !== false) {
-      console.log('💥 Intentando recuperación automática del sistema de chunks tras fallo')
-      try {
-        await verbChunkManager.ensureManifest(true)
-      } catch (manifestError) {
-        console.warn('No se pudo refrescar el manifest de chunks durante la recuperación:', manifestError)
-      }
-      try {
-        const { useSettings } = await import('../../state/settings.js')
-        const store = useSettings.getState()
-        if (store.enableChunks === false) {
-          store.set({ enableChunks: true })
-        }
-      } catch (settingsError) {
-        console.warn('No se pudo reactivar chunks en la configuración:', settingsError.message)
-      }
-    }
-    
+    console.error('🚨 PRIMARY LOADING FAILED - Activating emergency protocols:', error)
+
+    // EMERGENCY PROTOCOL: Multi-layered failsafe
     try {
-      // Emergency fallback: cargar directamente desde archivo principal
+      console.log('🔄 Emergency Protocol 1: Direct main file load')
       const { verbs: allVerbs } = await import('../../data/verbs.js')
       verbs = allVerbs
-    } catch (fallbackError) {
-      console.error('💀 CRITICAL: Emergency fallback also failed:', fallbackError)
-      // Last resort: usar verbChunkManager con timeout muy corto
-      verbs = await verbChunkManager.getVerbsWithFallback(['ser', 'estar', 'haber', 'tener'], 500)
-      
-      if (!verbs || verbs.length === 0) {
-        throw new Error('CRITICAL: All verb loading methods failed - system cannot continue')
+
+      // Auto-disable chunks if they keep failing
+      if (settings.enableChunks !== false) {
+        console.log('🔧 Auto-disabling chunks due to repeated failures')
+        try {
+          const { useSettings } = await import('../../state/settings.js')
+          const store = useSettings.getState()
+          store.set({
+            enableChunks: false,
+            chunksFailsafeActivated: true,
+            chunksFailsafeCount: (store.chunksFailsafeCount || 0) + 1
+          })
+        } catch (settingsError) {
+          console.warn('Could not disable chunks in settings:', settingsError.message)
+        }
+      }
+    } catch (mainFileError) {
+      console.error('💀 Emergency Protocol 1 failed:', mainFileError)
+
+      try {
+        console.log('🆘 Emergency Protocol 2: Robust failsafe with minimal verbs')
+        verbs = await verbChunkManager.getVerbsWithRobustFailsafe(['core'], 1, 1000)
+      } catch (robustFailsafeError) {
+        console.error('💀 Emergency Protocol 2 failed:', robustFailsafeError)
+
+        // ABSOLUTE LAST RESORT: Hardcoded essential verbs
+        console.log('☢️ LAST RESORT: Using hardcoded essential verbs')
+        const essentialLemmas = ['ser', 'estar', 'haber', 'tener', 'hacer']
+        verbs = essentialLemmas.map(lemma => ({
+          lemma,
+          id: lemma,
+          type: 'irregular',
+          paradigms: [{
+            regionTags: ['la_general', 'rioplatense', 'peninsular'],
+            forms: [
+              { mood: 'indicative', tense: 'pres', person: '1s', value: lemma === 'ser' ? 'soy' : (lemma === 'estar' ? 'estoy' : (lemma === 'haber' ? 'he' : (lemma === 'tener' ? 'tengo' : 'hago'))) },
+              { mood: 'indicative', tense: 'pres', person: '2s', value: lemma === 'ser' ? 'eres' : (lemma === 'estar' ? 'estás' : (lemma === 'haber' ? 'has' : (lemma === 'tener' ? 'tienes' : 'haces'))) },
+              { mood: 'indicative', tense: 'pres', person: '3s', value: lemma === 'ser' ? 'es' : (lemma === 'estar' ? 'está' : (lemma === 'haber' ? 'ha' : (lemma === 'tener' ? 'tiene' : 'hace'))) }
+            ]
+          }]
+        }))
+
+        if (verbs.length === 0) {
+          throw new Error('CATASTROPHIC FAILURE: Even hardcoded verbs failed to load')
+        }
       }
     }
   }
