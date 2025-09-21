@@ -144,7 +144,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
   verbs.forEach(verb => {
     verb.paradigms?.forEach(paradigm => {
       // Filtrar por región si está especificada
-      if (region !== 'ALL' && !paradigm.regionTags?.includes(region)) {
+      if (region !== 'ALL' && region !== 'global' && !paradigm.regionTags?.includes(region)) {
         return
       }
       
