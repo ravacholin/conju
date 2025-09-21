@@ -8,13 +8,13 @@ import {
   setSyncEndpoint,
   getSyncEndpoint,
   setSyncAuthHeaderName,
-  getSyncAuthHeaderName,
   setSyncAuthToken,
   getSyncAuthToken,
   isSyncEnabled,
   isLocalSyncMode,
   syncNow
 } from '../../lib/progress/userManager.js'
+import { getSyncAuthHeaderName } from '../../lib/config/syncConfig.js'
 // import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
