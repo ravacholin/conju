@@ -282,7 +282,7 @@ export function useOnboardingFlow() {
           useVoseo: true,
           useVosotros: true,
           strict: false,
-          region: 'la_general',
+          region: 'global',
           practicePronoun: 'all'
         })
         break

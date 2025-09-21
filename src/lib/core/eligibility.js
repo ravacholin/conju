@@ -49,6 +49,23 @@ export function getAllowedTensesForMood(settings, mood) {
 // Build canonical pool of forms for a given region, including synthesized nonfinite forms
 export function buildFormsForRegion(region) {
   if (!region) return []
+
+  if (region === 'global') {
+    const rioplatenseForms = buildFormsForRegion('rioplatense');
+    const peninsularForms = buildFormsForRegion('peninsular');
+    const allForms = [...rioplatenseForms, ...peninsularForms];
+    const seen = new Set();
+    const out = [];
+    for (const f of allForms) {
+      const person = f.mood === 'nonfinite' ? '' : (f.person || '');
+      const key = `${f.lemma}|${f.mood}|${f.tense}|${person}|${f.value}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(f);
+    }
+    return out;
+  }
+
   const regionForms = []
   const lemmas = new Set()
   for (const verb of verbs) {
