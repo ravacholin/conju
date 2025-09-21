@@ -702,6 +702,10 @@ async function mergeAccountDataLocally(accountData) {
  */
 export async function syncNow({ include = ['attempts','mastery','schedules'] } = {}) {
   const userId = getCurrentUserId()
+
+  console.log('🔍 DEBUG syncNow: Iniciando proceso de sincronización...')
+  console.log('🔍 DEBUG syncNow: getCurrentUserId() retornó:', userId)
+
   if (!userId) {
     console.log('❌ Sync failed: no user ID')
     return { success: false, reason: 'no_user' }
@@ -717,8 +721,9 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
     return { success: false, reason: 'offline' }
   }
 
-  console.log('🔄 Iniciando sincronización para usuario:', userId)
-  console.log('🌐 URL del servidor:', SYNC_BASE_URL)
+  console.log(`🔄 Iniciando sincronización para usuario: ${userId}`)
+  console.log(`🌐 URL del servidor: ${SYNC_BASE_URL}`)
+  console.log(`📊 Colecciones a sincronizar: ${include.join(', ')}`)
 
   // Wake up server first (Render free tier issue)
   console.log('⏰ Despertando servidor antes de sincronizar...')
@@ -772,37 +777,64 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
 
   try {
     if (include.includes('attempts')) {
+      console.log(`🔍 DEBUG: Obteniendo attempts para userId: ${userId}`)
       const all = await getAttemptsByUser(userId)
+      console.log(`🔍 DEBUG: Encontrados ${all.length} attempts totales para userId: ${userId}`)
+
       const unsynced = all.filter(a => !a.syncedAt)
-      if (unsynced.length) {
+      console.log(`🔍 DEBUG: Attempts sin sincronizar: ${unsynced.length}`)
+
+      if (unsynced.length > 0) {
+        console.log(`📤 Subiendo ${unsynced.length} attempts al servidor...`)
         legacyUploadsPerformed = true
         const res = await tryBulk('attempts', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced.map(a => a.id))
         results.attempts = { uploaded: unsynced.length, server: res }
+        console.log(`✅ Attempts subidos exitosamente: ${unsynced.length}`)
+      } else {
+        console.log(`ℹ️ No hay attempts sin sincronizar para userId: ${userId}`)
       }
     }
 
     if (include.includes('mastery')) {
+      console.log(`🔍 DEBUG: Obteniendo mastery para userId: ${userId}`)
       const all = await getMasteryByUser(userId)
+      console.log(`🔍 DEBUG: Encontrados ${all.length} mastery totales para userId: ${userId}`)
+
       const unsynced = all.filter(m => !m.syncedAt)
-      if (unsynced.length) {
+      console.log(`🔍 DEBUG: Mastery sin sincronizar: ${unsynced.length}`)
+
+      if (unsynced.length > 0) {
+        console.log(`📤 Subiendo ${unsynced.length} mastery al servidor...`)
         legacyUploadsPerformed = true
         const res = await tryBulk('mastery', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced.map(m => m.id))
         results.mastery = { uploaded: unsynced.length, server: res }
+        console.log(`✅ Mastery subidos exitosamente: ${unsynced.length}`)
+      } else {
+        console.log(`ℹ️ No hay mastery sin sincronizar para userId: ${userId}`)
       }
     }
 
     if (include.includes('schedules')) {
+      console.log(`🔍 DEBUG: Obteniendo schedules para userId: ${userId}`)
       // Without a direct getter by user for all schedules, fetch all and filter
       const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
       const userSchedules = allSchedules.filter(s => s.userId === userId)
+      console.log(`🔍 DEBUG: Encontrados ${userSchedules.length} schedules totales para userId: ${userId}`)
+
       const unsynced = userSchedules.filter(s => !s.syncedAt)
-      if (unsynced.length) {
+      console.log(`🔍 DEBUG: Schedules sin sincronizar: ${unsynced.length}`)
+
+      if (unsynced.length > 0) {
+        console.log(`📤 Subiendo ${unsynced.length} schedules al servidor...`)
         legacyUploadsPerformed = true
         const res = await tryBulk('schedules', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced.map(s => s.id))
         results.schedules = { uploaded: unsynced.length, server: res }
+        console.log(`✅ Schedules subidos exitosamente: ${unsynced.length}`)
+      } else {
+        console.log(`ℹ️ No hay schedules sin sincronizar para userId: ${userId}`)
       }
     }
 

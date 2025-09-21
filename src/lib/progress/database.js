@@ -690,3 +690,226 @@ export async function deleteDB() {
     throw error
   }
 }
+
+/**
+ * Migra todos los datos de un userId anónimo al userId autenticado
+ * CRÍTICO: Esta función resuelve el problema de sync multi-dispositivo
+ * @param {string} oldUserId - Usuario ID anónimo (ej: user-123456-abc)
+ * @param {string} newUserId - Usuario ID autenticado (ej: uuid-server-456)
+ * @returns {Promise<Object>} Estadísticas de la migración
+ */
+export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
+  if (!oldUserId || !newUserId) {
+    throw new Error('migrateUserIdInLocalDB: oldUserId y newUserId son requeridos')
+  }
+
+  if (oldUserId === newUserId) {
+    console.log('🔄 No se requiere migración, userIds son idénticos')
+    return { migrated: 0, skipped: 'same_user_id' }
+  }
+
+  console.log(`🔄 Iniciando migración de userId: ${oldUserId} → ${newUserId}`)
+
+  const stats = {
+    attempts: 0,
+    mastery: 0,
+    schedules: 0,
+    users: 0,
+    errors: []
+  }
+
+  try {
+    const db = await initDB()
+
+    // Verificar que el nuevo userId no tenga datos existentes
+    const existingAttempts = await getAttemptsByUser(newUserId)
+    const existingMastery = await getMasteryByUser(newUserId)
+    const existingSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', newUserId)
+
+    if (existingAttempts.length > 0 || existingMastery.length > 0 || existingSchedules.length > 0) {
+      console.warn(`⚠️ El nuevo userId ${newUserId} ya tiene datos existentes. Continuando con migración...`)
+    }
+
+    // 1. Migrar tabla ATTEMPTS
+    try {
+      const oldAttempts = await getAttemptsByUser(oldUserId)
+      console.log(`📊 Migrando ${oldAttempts.length} intentos...`)
+
+      for (const attempt of oldAttempts) {
+        const migratedAttempt = { ...attempt, userId: newUserId, updatedAt: new Date() }
+        await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, migratedAttempt)
+        stats.attempts++
+      }
+
+      // Eliminar registros antiguos
+      for (const attempt of oldAttempts) {
+        await deleteFromDB(STORAGE_CONFIG.STORES.ATTEMPTS, attempt.id)
+      }
+    } catch (error) {
+      console.error('❌ Error migrando attempts:', error)
+      stats.errors.push(`attempts: ${error.message}`)
+    }
+
+    // 2. Migrar tabla MASTERY
+    try {
+      const oldMastery = await getMasteryByUser(oldUserId)
+      console.log(`📈 Migrando ${oldMastery.length} registros de mastery...`)
+
+      for (const mastery of oldMastery) {
+        const migratedMastery = { ...mastery, userId: newUserId, updatedAt: new Date() }
+        await saveToDB(STORAGE_CONFIG.STORES.MASTERY, migratedMastery)
+        stats.mastery++
+      }
+
+      // Eliminar registros antiguos
+      for (const mastery of oldMastery) {
+        await deleteFromDB(STORAGE_CONFIG.STORES.MASTERY, mastery.id)
+      }
+    } catch (error) {
+      console.error('❌ Error migrando mastery:', error)
+      stats.errors.push(`mastery: ${error.message}`)
+    }
+
+    // 3. Migrar tabla SCHEDULES
+    try {
+      const oldSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
+      console.log(`⏰ Migrando ${oldSchedules.length} schedules SRS...`)
+
+      for (const schedule of oldSchedules) {
+        const migratedSchedule = { ...schedule, userId: newUserId, updatedAt: new Date() }
+        await saveToDB(STORAGE_CONFIG.STORES.SCHEDULES, migratedSchedule)
+        stats.schedules++
+      }
+
+      // Eliminar registros antiguos
+      for (const schedule of oldSchedules) {
+        await deleteFromDB(STORAGE_CONFIG.STORES.SCHEDULES, schedule.id)
+      }
+    } catch (error) {
+      console.error('❌ Error migrando schedules:', error)
+      stats.errors.push(`schedules: ${error.message}`)
+    }
+
+    // 4. Migrar tabla USERS (si existe usuario anónimo)
+    try {
+      const oldUser = await getUser(oldUserId)
+      if (oldUser) {
+        console.log(`👤 Migrando usuario ${oldUserId}...`)
+        const migratedUser = { ...oldUser, id: newUserId, updatedAt: new Date() }
+        await saveUser(migratedUser)
+        await deleteFromDB(STORAGE_CONFIG.STORES.USERS, oldUserId)
+        stats.users++
+      }
+    } catch (error) {
+      console.error('❌ Error migrando usuario:', error)
+      stats.errors.push(`users: ${error.message}`)
+    }
+
+    const totalMigrated = stats.attempts + stats.mastery + stats.schedules + stats.users
+
+    console.log(`✅ Migración completada: ${totalMigrated} registros migrados`, stats)
+
+    if (stats.errors.length > 0) {
+      console.warn('⚠️ Algunos errores durante la migración:', stats.errors)
+    }
+
+    return {
+      ...stats,
+      migrated: totalMigrated,
+      oldUserId,
+      newUserId,
+      timestamp: new Date().toISOString()
+    }
+
+  } catch (error) {
+    console.error('❌ Error crítico durante migración userId:', error)
+    throw error
+  }
+}
+
+/**
+ * Valida que la migración de userId fue exitosa
+ * @param {string} oldUserId - Usuario ID anónimo original
+ * @param {string} newUserId - Usuario ID autenticado
+ * @returns {Promise<Object>} Resultado de la validación
+ */
+export async function validateUserIdMigration(oldUserId, newUserId) {
+  if (!oldUserId || !newUserId) {
+    return { valid: false, reason: 'missing_user_ids' }
+  }
+
+  console.log(`🔍 Validando migración: ${oldUserId} → ${newUserId}`)
+
+  try {
+    // Verificar que no queden datos bajo el userId anterior
+    const remainingAttempts = await getAttemptsByUser(oldUserId)
+    const remainingMastery = await getMasteryByUser(oldUserId)
+    const remainingSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
+    const remainingUser = await getUser(oldUserId)
+
+    // Verificar que existan datos bajo el nuevo userId
+    const newAttempts = await getAttemptsByUser(newUserId)
+    const newMastery = await getMasteryByUser(newUserId)
+    const newSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', newUserId)
+    const newUser = await getUser(newUserId)
+
+    const remainingData = {
+      attempts: remainingAttempts.length,
+      mastery: remainingMastery.length,
+      schedules: remainingSchedules.length,
+      user: remainingUser ? 1 : 0
+    }
+
+    const newData = {
+      attempts: newAttempts.length,
+      mastery: newMastery.length,
+      schedules: newSchedules.length,
+      user: newUser ? 1 : 0
+    }
+
+    const totalRemaining = remainingData.attempts + remainingData.mastery + remainingData.schedules + remainingData.user
+    const totalNew = newData.attempts + newData.mastery + newData.schedules + newData.user
+
+    const isValid = totalRemaining === 0 && totalNew > 0
+
+    console.log(`🔍 Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
+
+    return {
+      valid: isValid,
+      remainingData,
+      newData,
+      totalRemaining,
+      totalNew,
+      oldUserId,
+      newUserId
+    }
+
+  } catch (error) {
+    console.error('❌ Error validando migración:', error)
+    return { valid: false, error: error.message }
+  }
+}
+
+/**
+ * Revierte una migración de userId en caso de error
+ * @param {string} newUserId - Usuario ID autenticado
+ * @param {string} oldUserId - Usuario ID anónimo original
+ * @returns {Promise<Object>} Resultado de la reversión
+ */
+export async function revertUserIdMigration(newUserId, oldUserId) {
+  if (!newUserId || !oldUserId) {
+    throw new Error('revertUserIdMigration: newUserId y oldUserId son requeridos')
+  }
+
+  console.log(`🔄 Revirtiendo migración: ${newUserId} → ${oldUserId}`)
+
+  try {
+    // Básicamente es la misma operación pero en reversa
+    const result = await migrateUserIdInLocalDB(newUserId, oldUserId)
+    console.log('✅ Migración revertida exitosamente:', result)
+    return result
+  } catch (error) {
+    console.error('❌ Error crítico revirtiendo migración:', error)
+    throw error
+  }
+}

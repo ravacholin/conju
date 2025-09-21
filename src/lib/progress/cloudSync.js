@@ -70,6 +70,8 @@ function recordSyncOutcome(result) {
 export async function syncWithCloud(options = {}) {
   const { include, bypassIncognito = false } = options
 
+  console.log('🔍 DEBUG cloudSync: Iniciando syncWithCloud con opciones:', { include, bypassIncognito })
+
   if (isIncognitoMode && !bypassIncognito) {
     console.log('🔒 Modo incógnito activo, omitiendo sincronización')
     recordSyncOutcome({ success: true, skipped: 'incognito' })
@@ -86,6 +88,8 @@ export async function syncWithCloud(options = {}) {
     console.log('🔄 Sincronización ya en progreso, reutilizando estado actual')
     return false
   }
+
+  console.log('🔍 DEBUG cloudSync: getCurrentUserId al inicio:', getCurrentUserId())
 
   isSyncing = true
   syncError = null
@@ -146,13 +150,17 @@ export function setIncognitoMode(enabled) {
  */
 export async function hasPendingSyncData() {
   if (!isSyncEnabled()) {
+    console.log('🔍 DEBUG hasPendingSyncData: Sync no habilitado')
     return false
   }
 
   const userId = getCurrentUserId()
   if (!userId) {
+    console.log('🔍 DEBUG hasPendingSyncData: No hay userId')
     return false
   }
+
+  console.log(`🔍 DEBUG hasPendingSyncData: Verificando datos pendientes para userId: ${userId}`)
 
   try {
     const [attempts, mastery, schedulesStore] = await Promise.all([
@@ -163,15 +171,25 @@ export async function hasPendingSyncData() {
 
     const schedules = schedulesStore.filter((item) => item.userId === userId)
 
-    const pending = attempts.some((a) => !a.syncedAt) ||
-      mastery.some((m) => !m.syncedAt) ||
-      schedules.some((s) => !s.syncedAt)
+    console.log(`🔍 DEBUG hasPendingSyncData: Datos encontrados - attempts: ${attempts.length}, mastery: ${mastery.length}, schedules: ${schedules.length}`)
+
+    const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
+    const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
+    const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
+
+    console.log(`🔍 DEBUG hasPendingSyncData: Sin sincronizar - attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}`)
+
+    const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0
 
     if (pending) {
+      console.log('🔍 DEBUG hasPendingSyncData: HAY datos pendientes de sincronización')
       return true
     }
 
-    return hasQueuedBatches()
+    const queuedBatches = hasQueuedBatches()
+    console.log('🔍 DEBUG hasPendingSyncData: Batches en cola:', queuedBatches)
+
+    return queuedBatches
   } catch (error) {
     console.warn('⚠️ No se pudo verificar datos pendientes de sincronización:', error)
     return false

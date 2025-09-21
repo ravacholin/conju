@@ -639,6 +639,7 @@ class AuthService {
           return null
         }
 
+        // 1. Migrar en el servidor (vincula usuario anónimo a la cuenta)
         const migrationResult = await this.migrateAnonymousAccount(anonymousUserId)
 
         if (migrationResult?.status === 404) {
@@ -646,20 +647,105 @@ class AuthService {
             anonymousUserId
           })
         } else if (migrationResult) {
-          console.log('✅ Anonymous progress linked to authenticated account', {
+          console.log('✅ Anonymous progress linked to authenticated account on server', {
             anonymousUserId
           })
+        }
+
+        // 2. CRÍTICO: Migrar datos locales en IndexedDB del userId anónimo al autenticado
+        let localMigrationResult = null
+        let validationResult = null
+        try {
+          console.log('🔄 Iniciando migración local de IndexedDB...')
+          const databaseModule = await import('../progress/database.js')
+          const { migrateUserIdInLocalDB, validateUserIdMigration, revertUserIdMigration } = databaseModule
+
+          if (typeof migrateUserIdInLocalDB === 'function') {
+            // Ejecutar migración
+            localMigrationResult = await migrateUserIdInLocalDB(anonymousUserId, authenticatedUserId)
+            console.log('✅ Migración local de IndexedDB completada:', localMigrationResult)
+
+            // Validar que la migración fue exitosa
+            if (typeof validateUserIdMigration === 'function') {
+              validationResult = await validateUserIdMigration(anonymousUserId, authenticatedUserId)
+              console.log('🔍 Resultado de validación:', validationResult)
+
+              if (!validationResult.valid) {
+                console.error('❌ Validación de migración falló. Intentando revertir...')
+
+                // Intentar revertir la migración
+                if (typeof revertUserIdMigration === 'function') {
+                  try {
+                    await revertUserIdMigration(authenticatedUserId, anonymousUserId)
+                    console.log('✅ Migración revertida exitosamente')
+                    localMigrationResult = {
+                      error: 'migration_validation_failed',
+                      reverted: true,
+                      validationResult
+                    }
+                  } catch (revertError) {
+                    console.error('❌ Error crítico: no se pudo revertir migración:', revertError)
+                    localMigrationResult = {
+                      error: 'migration_validation_failed_and_revert_failed',
+                      validationResult,
+                      revertError: revertError.message
+                    }
+                  }
+                }
+              } else {
+                console.log('✅ Migración validada exitosamente')
+                localMigrationResult = { ...localMigrationResult, validated: true, validationResult }
+              }
+            }
+          } else {
+            console.warn('⚠️ Función migrateUserIdInLocalDB no encontrada')
+          }
+        } catch (localError) {
+          console.error('❌ Error en migración local de IndexedDB:', localError)
+          localMigrationResult = { error: localError.message }
+        }
+
+        // 3. Actualizar el sistema de progreso para usar el nuevo userId (solo si migración fue exitosa)
+        if (localMigrationResult && !localMigrationResult.error && validationResult?.valid) {
+          try {
+            console.log('🔄 Actualizando sistema de progreso con nuevo userId...')
+            const progressModule = await import('../progress/index.js')
+            const { setCurrentUserId } = progressModule
+
+            if (typeof setCurrentUserId === 'function') {
+              const updateSuccess = setCurrentUserId(authenticatedUserId)
+              if (updateSuccess) {
+                console.log('✅ Sistema de progreso actualizado con nuevo userId')
+              } else {
+                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso')
+              }
+            }
+          } catch (progressError) {
+            console.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
+          }
+        } else {
+          console.warn('⚠️ Saltando actualización de sistema de progreso - migración no exitosa')
         }
 
         this.lastMigratedAnonymousId = anonymousUserId
 
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('progress:migration-complete', {
-            detail: { anonymousUserId }
+            detail: {
+              anonymousUserId,
+              authenticatedUserId,
+              serverMigration: migrationResult,
+              localMigration: localMigrationResult
+            }
           }))
         }
 
-        return migrationResult
+        return {
+          serverMigration: migrationResult,
+          localMigration: localMigrationResult,
+          anonymousUserId,
+          authenticatedUserId
+        }
       } catch (error) {
         console.warn('⚠️ Failed to migrate anonymous progress:', error?.message || error)
         return null

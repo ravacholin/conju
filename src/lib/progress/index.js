@@ -163,13 +163,13 @@ export function getCurrentUserId() {
   if (currentUserId) {
     return currentUserId
   }
-  
+
   // Si no, intentar recuperar el userId persistente
   try {
     const persistentUserId = typeof window !== 'undefined'
       ? window.localStorage.getItem(USER_ID_STORAGE_KEY)
       : null
-    
+
     if (persistentUserId) {
       currentUserId = persistentUserId
       return currentUserId
@@ -177,8 +177,49 @@ export function getCurrentUserId() {
   } catch (error) {
     console.warn('Error recuperando userId persistente:', error)
   }
-  
+
   return null
+}
+
+/**
+ * Establece el ID del usuario actual y lo persiste
+ * CRÍTICO: Usado durante la migración de cuenta anónima a autenticada
+ * @param {string} newUserId - Nuevo ID del usuario
+ * @returns {boolean} Si la operación fue exitosa
+ */
+export function setCurrentUserId(newUserId) {
+  if (!newUserId || typeof newUserId !== 'string') {
+    console.error('setCurrentUserId: newUserId debe ser una string válida')
+    return false
+  }
+
+  const oldUserId = currentUserId
+
+  try {
+    // Actualizar userId en memoria
+    currentUserId = newUserId
+
+    // Persistir en localStorage
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(USER_ID_STORAGE_KEY, newUserId)
+    }
+
+    console.log(`🔄 UserId del sistema de progreso actualizado: ${oldUserId} → ${newUserId}`)
+
+    // Emitir evento para notificar el cambio
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('progress:user-id-changed', {
+        detail: { oldUserId, newUserId }
+      }))
+    }
+
+    return true
+  } catch (error) {
+    console.error('Error estableciendo nuevo userId:', error)
+    // Revertir en caso de error
+    currentUserId = oldUserId
+    return false
+  }
 }
 
 /**
@@ -234,6 +275,7 @@ export default {
   initProgressSystem,
   isProgressSystemInitialized,
   getCurrentUserId,
+  setCurrentUserId,
   endCurrentSession,
   resetProgressSystem,
   // Exportación por defecto mínima y segura para evitar referencias no definidas
