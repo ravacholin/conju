@@ -483,8 +483,17 @@ export function initializeFlowDetection() {
   return flowDetector
 }
 
-export function processUserResponse(response) {
-  return flowDetector.processResponse(response)
+export function processUserResponse(item, response, metadata = {}) {
+  // Create enriched response object with all necessary data
+  const enrichedResponse = {
+    ...response,
+    item,  // Include item data for complexity analysis
+    metadata,  // Include metadata like userId, timestamp, sessionContext
+    timestamp: metadata.timestamp || new Date(),
+    userId: metadata.userId
+  }
+
+  return flowDetector.processResponse(enrichedResponse)
 }
 
 export function getCurrentFlowState() {

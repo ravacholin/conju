@@ -20,14 +20,8 @@ let processUserResponse, flowDetector, momentumTracker, confidenceEngine, dynami
 let recordAttempt, updateMastery, scheduleNextReview
 
 try {
-  const progressModule = await import('../../lib/progress/flowStateDetection.js')
-  processUserResponse = progressModule.processUserResponse
-} catch (error) {
-  console.warn('Progress tracking module not available:', error)
-}
-
-try {
   const flowModule = await import('../../lib/progress/flowStateDetection.js')
+  processUserResponse = flowModule.processUserResponse
   flowDetector = flowModule.flowDetector
 } catch (error) {
   console.warn('Flow detection module not available:', error)
@@ -135,6 +129,19 @@ export const useDrillProgress = () => {
         hasHints: !!response.hintsUsed
       })
 
+      // Create enriched response object with item data for all modules
+      const enrichedResponse = {
+        ...response,
+        // Include item data that modules expect
+        verb: item.lemma,
+        mood: item.mood,
+        tense: item.tense,
+        person: item.person,
+        item,
+        timestamp: new Date(),
+        userId
+      }
+
       // Process with main progress tracking system
       let progressResult = null
       if (progressSystemAvailable && processUserResponse) {
@@ -199,7 +206,7 @@ export const useDrillProgress = () => {
       // Process flow state
       if (progressSystemAvailable && flowDetector) {
         try {
-          const newFlowState = await flowDetector.processResponse(response, {
+          const newFlowState = await flowDetector.processResponse(enrichedResponse, {
             item,
             userId,
             timestamp: new Date()
@@ -213,7 +220,7 @@ export const useDrillProgress = () => {
       // Process momentum
       if (progressSystemAvailable && momentumTracker) {
         try {
-          const newMomentum = await momentumTracker.processResponse(response, {
+          const newMomentum = await momentumTracker.processResponse(enrichedResponse, {
             item,
             userId,
             timestamp: new Date()
@@ -227,7 +234,7 @@ export const useDrillProgress = () => {
       // Process confidence
       if (progressSystemAvailable && confidenceEngine) {
         try {
-          const newConfidence = await confidenceEngine.processResponse(response, {
+          const newConfidence = await confidenceEngine.processResponse(enrichedResponse, {
             item,
             userId,
             timestamp: new Date()
@@ -241,7 +248,7 @@ export const useDrillProgress = () => {
       // Process dynamic goals
       if (progressSystemAvailable && dynamicGoalsSystem) {
         try {
-          await dynamicGoalsSystem.processResponse(response, {
+          await dynamicGoalsSystem.processResponse(enrichedResponse, {
             item,
             userId,
             timestamp: new Date()

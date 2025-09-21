@@ -75,7 +75,7 @@ const useSettings = create(
       enableProgressIntegration: true, // Puede deshabilitarse si hay problemas
       
       // Métodos para actualizar configuración
-      set: (newSettings) => set({ ...get(), ...newSettings }),
+      set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
       setLevel: (level) => set({ level }),
       toggleVoseo: () => set((state) => ({ useVoseo: !state.useVoseo })),
       toggleTuteo: () => set((state) => ({ useTuteo: !state.useTuteo })),
