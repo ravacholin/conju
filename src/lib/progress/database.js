@@ -719,7 +719,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   }
 
   try {
-    const db = await initDB()
+    await initDB()
 
     // Verificar que el nuevo userId no tenga datos existentes
     const existingAttempts = await getAttemptsByUser(newUserId)
