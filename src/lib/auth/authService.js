@@ -617,6 +617,14 @@ class AuthService {
 
     this.postLoginMigrationPromise = (async () => {
       try {
+        // Wait for progress system to be ready
+        try {
+          const { waitForProgressSystem } = await import('../progress/ProgressSystemEvents.js')
+          await waitForProgressSystem(5000) // 5 second timeout
+        } catch (timeoutError) {
+          console.warn('⚠️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
+        }
+
         const module = await import('../progress/userManager.js')
         const getProgressUserId = module?.getCurrentUserId
 
@@ -624,8 +632,19 @@ class AuthService {
           return null
         }
 
-        const anonymousUserId = getProgressUserId()
+        let anonymousUserId = getProgressUserId()
+
+        // Fallback: try to get userId from localStorage if progress system isn't ready
         if (!anonymousUserId) {
+          try {
+            anonymousUserId = localStorage.getItem('progress-system-user-id')
+          } catch (storageError) {
+            console.warn('⚠️ Could not access localStorage for userId fallback:', storageError.message)
+          }
+        }
+
+        if (!anonymousUserId) {
+          console.warn('⚠️ No anonymous userId found in progress system or localStorage')
           return null
         }
 

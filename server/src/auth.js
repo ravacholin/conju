@@ -9,11 +9,8 @@ export async function authMiddleware(req, res, next) {
     token = auth.slice(7).trim()
   }
 
-  if (!userId && apiKey) {
-    userId = apiKey.trim()
-  }
-
-  if (!userId && token) {
+  // Always validate JWT when present to populate req.accountId
+  if (token) {
     try {
       const { verifyJWT } = await import('./auth-service.js')
       const decoded = await verifyJWT(token)
@@ -21,13 +18,22 @@ export async function authMiddleware(req, res, next) {
         console.log('⚠️ JWT verification succeeded but userId is missing in payload')
         return res.status(401).json({ error: 'Invalid auth token' })
       }
+
+      // If X-User-Id header is present, verify it matches the JWT userId
+      if (userId && userId !== decoded.userId) {
+        console.log(`⚠️ X-User-Id header (${userId}) doesn't match JWT userId (${decoded.userId})`)
+        return res.status(401).json({ error: 'User ID mismatch between header and token' })
+      }
+
       userId = decoded.userId
       req.accountId = decoded.accountId
-      console.log(`🔵 Extracted userId from JWT: ${userId}`)
+      console.log(`🔵 Extracted userId from JWT: ${userId}, accountId: ${decoded.accountId}`)
     } catch (error) {
       console.log(`⚠️ JWT verification failed: ${error.message}`)
       return res.status(401).json({ error: 'Invalid auth token' })
     }
+  } else if (!userId && apiKey) {
+    userId = apiKey.trim()
   }
 
   if (!userId) {

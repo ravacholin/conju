@@ -88,7 +88,9 @@ export function upsertUser(userId, accountId = null) {
   const stmt = db.prepare(`
     INSERT INTO users (id, account_id, created_at, last_seen_at)
     VALUES (?, ?, ?, ?)
-    ON CONFLICT(id) DO UPDATE SET last_seen_at=excluded.last_seen_at
+    ON CONFLICT(id) DO UPDATE SET
+      account_id=excluded.account_id,
+      last_seen_at=excluded.last_seen_at
   `)
   stmt.run(userId, accountId, now, now)
 }
