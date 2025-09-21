@@ -339,7 +339,6 @@ export function revokeDevice(accountId, deviceId) {
 }
 
 export function mergeAccountData(accountId) {
-  // Get all users for this account
   const users = db.prepare('SELECT id FROM users WHERE account_id = ?').all(accountId)
   const userIds = users.map(u => u.id)
 
@@ -347,28 +346,37 @@ export function mergeAccountData(accountId) {
 
   const placeholders = userIds.map(() => '?').join(',')
 
-  // Merge all data from all devices
   const attempts = db.prepare(`
-    SELECT * FROM attempts
-    WHERE user_id IN (${placeholders})
-    ORDER BY created_at DESC
-  `).all(...userIds)
+    SELECT payload FROM attempts WHERE user_id IN (${placeholders})
+  `).all(...userIds).map(r => JSON.parse(r.payload))
 
   const mastery = db.prepare(`
-    SELECT * FROM mastery
-    WHERE user_id IN (${placeholders})
-    ORDER BY updated_at DESC
-  `).all(...userIds)
+    SELECT payload FROM mastery WHERE user_id IN (${placeholders})
+  `).all(...userIds).map(r => JSON.parse(r.payload))
 
   const schedules = db.prepare(`
-    SELECT * FROM schedules
-    WHERE user_id IN (${placeholders})
-    ORDER BY next_due ASC
-  `).all(...userIds)
+    SELECT payload FROM schedules WHERE user_id IN (${placeholders})
+  `).all(...userIds).map(r => JSON.parse(r.payload))
+
+  const mergedMastery = new Map()
+  mastery.forEach(m => {
+    const key = `${m.verbId}|${m.mood}|${m.tense}|${m.person}`
+    if (!mergedMastery.has(key) || new Date(m.updatedAt) > new Date(mergedMastery.get(key).updatedAt)) {
+      mergedMastery.set(key, m)
+    }
+  })
+
+  const mergedSchedules = new Map()
+  schedules.forEach(s => {
+    const key = `${s.verbId}|${s.mood}|${s.tense}|${s.person}`
+    if (!mergedSchedules.has(key) || new Date(s.updatedAt) > new Date(mergedSchedules.get(key).updatedAt)) {
+      mergedSchedules.set(key, s)
+    }
+  })
 
   return {
-    attempts: attempts.map(a => JSON.parse(a.payload)),
-    mastery: mastery.map(m => JSON.parse(m.payload)),
-    schedules: schedules.map(s => JSON.parse(s.payload))
+    attempts,
+    mastery: Array.from(mergedMastery.values()),
+    schedules: Array.from(mergedSchedules.values())
   }
 }

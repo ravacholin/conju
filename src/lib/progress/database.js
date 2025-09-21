@@ -721,121 +721,41 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   try {
     await initDB()
 
-    // Verificar que el nuevo userId no tenga datos existentes
-    const existingAttempts = await getAttemptsByUser(newUserId)
-    const existingMastery = await getMasteryByUser(newUserId)
-    const existingSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', newUserId)
-
-    if (existingAttempts.length > 0 || existingMastery.length > 0 || existingSchedules.length > 0) {
-      console.warn(`⚠️ El nuevo userId ${newUserId} ya tiene datos existentes. Continuando con migración...`)
+    // Helper function to update a record
+    const updateUser = async (storeName, record, statName) => {
+      try {
+        await updateInDB(storeName, record.id, {
+          userId: newUserId,
+          syncedAt: null, // Force sync
+          migratedAt: new Date(),
+          syncPriority: true
+        })
+        stats[statName]++
+      } catch (error) {
+        console.error(`❌ Error migrando ${statName} (ID: ${record.id}):`, error)
+        stats.errors.push(`${statName}: ${error.message}`)
+      }
     }
 
     // 1. Migrar tabla ATTEMPTS
-    try {
-      const oldAttempts = await getAttemptsByUser(oldUserId)
-      console.log(`📊 Migrando ${oldAttempts.length} intentos...`)
-
-      for (const attempt of oldAttempts) {
-        // Actualizar en su lugar (mantener id), pero limpiar syncedAt para forzar subida
-        const migratedAttempt = { ...attempt, userId: newUserId }
-        delete migratedAttempt.syncedAt
-        migratedAttempt.updatedAt = new Date()
-        migratedAttempt.syncPriority = true
-        migratedAttempt.migratedAt = new Date()
-        await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, migratedAttempt)
-        stats.attempts++
-      }
-    } catch (error) {
-      console.error('❌ Error migrando attempts:', error)
-      stats.errors.push(`attempts: ${error.message}`)
+    const oldAttempts = await getAttemptsByUser(oldUserId)
+    console.log(`📊 Migrando ${oldAttempts.length} intentos...`)
+    for (const attempt of oldAttempts) {
+      await updateUser(STORAGE_CONFIG.STORES.ATTEMPTS, attempt, 'attempts')
     }
 
     // 2. Migrar tabla MASTERY
-    try {
-      const oldMastery = await getMasteryByUser(oldUserId)
-      console.log(`📈 Migrando ${oldMastery.length} registros de mastery...`)
-
-      for (const mastery of oldMastery) {
-        // Para mastery, el id suele codificar userId|mood|tense|person: generar uno nuevo
-        const newId = `${newUserId}|${mastery.mood}|${mastery.tense}|${mastery.person}`
-        let migratedMastery = { ...mastery, id: newId, userId: newUserId }
-        delete migratedMastery.syncedAt
-        migratedMastery.updatedAt = new Date()
-        migratedMastery.syncPriority = true
-        migratedMastery.migratedAt = new Date()
-
-        // Si ya existe un registro para ese newId, combinar conservando el mejor score y timestamps más recientes
-        try {
-          const existingNew = await getFromDB(STORAGE_CONFIG.STORES.MASTERY, newId)
-          if (existingNew) {
-            migratedMastery = {
-              ...existingNew,
-              score: Math.max(existingNew.score || 0, mastery.score || 0),
-              attempts: Math.max(existingNew.attempts || 0, mastery.attempts || 0),
-              lastPracticed: new Date(Math.max(
-                new Date(existingNew.lastPracticed || 0).getTime(),
-                new Date(mastery.lastPracticed || 0).getTime()
-              )),
-              updatedAt: new Date()
-            }
-            delete migratedMastery.syncedAt
-            migratedMastery.syncPriority = true
-            migratedMastery.migratedAt = new Date()
-          }
-        } catch {/* merge best-effort */}
-
-        await saveToDB(STORAGE_CONFIG.STORES.MASTERY, migratedMastery)
-        // Borrar el registro antiguo (id previo) para evitar duplicados
-        try { await deleteFromDB(STORAGE_CONFIG.STORES.MASTERY, mastery.id) } catch {}
-        stats.mastery++
-      }
-    } catch (error) {
-      console.error('❌ Error migrando mastery:', error)
-      stats.errors.push(`mastery: ${error.message}`)
+    const oldMastery = await getMasteryByUser(oldUserId)
+    console.log(`📈 Migrando ${oldMastery.length} registros de mastery...`)
+    for (const mastery of oldMastery) {
+      await updateUser(STORAGE_CONFIG.STORES.MASTERY, mastery, 'mastery')
     }
 
     // 3. Migrar tabla SCHEDULES
-    try {
-      const oldSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
-      console.log(`⏰ Migrando ${oldSchedules.length} schedules SRS...`)
-
-      for (const schedule of oldSchedules) {
-        // Para schedules, el id suele codificar userId|mood|tense|person: generar uno nuevo
-        const newId = `${newUserId}|${schedule.mood}|${schedule.tense}|${schedule.person}`
-        let migratedSchedule = { ...schedule, id: newId, userId: newUserId }
-        delete migratedSchedule.syncedAt
-        migratedSchedule.updatedAt = new Date()
-        migratedSchedule.syncPriority = true
-        migratedSchedule.migratedAt = new Date()
-
-        // Si ya existía un schedule para ese id, conservar el más reciente por updatedAt
-        try {
-          const existingNew = await getFromDB(STORAGE_CONFIG.STORES.SCHEDULES, newId)
-          if (existingNew) {
-            const newer = new Date(schedule.updatedAt || 0) > new Date(existingNew.updatedAt || 0)
-            migratedSchedule = {
-              ...(newer ? schedule : existingNew),
-              id: newId,
-              userId: newUserId,
-              updatedAt: new Date(Math.max(
-                new Date(schedule.updatedAt || 0).getTime(),
-                new Date(existingNew.updatedAt || 0).getTime()
-              ))
-            }
-            delete migratedSchedule.syncedAt
-            migratedSchedule.syncPriority = true
-            migratedSchedule.migratedAt = new Date()
-          }
-        } catch {/* best-effort */}
-
-        await saveToDB(STORAGE_CONFIG.STORES.SCHEDULES, migratedSchedule)
-        // Borrar el registro antiguo (id previo) para evitar duplicados
-        try { await deleteFromDB(STORAGE_CONFIG.STORES.SCHEDULES, schedule.id) } catch {}
-        stats.schedules++
-      }
-    } catch (error) {
-      console.error('❌ Error migrando schedules:', error)
-      stats.errors.push(`schedules: ${error.message}`)
+    const oldSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
+    console.log(`⏰ Migrando ${oldSchedules.length} schedules SRS...`)
+    for (const schedule of oldSchedules) {
+      await updateUser(STORAGE_CONFIG.STORES.SCHEDULES, schedule, 'schedules')
     }
 
     // 4. Migrar tabla USERS (si existe usuario anónimo)
@@ -843,6 +763,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
       const oldUser = await getUser(oldUserId)
       if (oldUser) {
         console.log(`👤 Migrando usuario ${oldUserId}...`)
+        // Create new user record and delete old one
         const migratedUser = { ...oldUser, id: newUserId, updatedAt: new Date() }
         await saveUser(migratedUser)
         await deleteFromDB(STORAGE_CONFIG.STORES.USERS, oldUserId)

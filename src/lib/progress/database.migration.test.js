@@ -98,11 +98,11 @@ describe('migrateUserIdInLocalDB', () => {
     // Attempts should be unsynced to allow upload
     expect(newAttempts.every(a => !a.syncedAt)).toBe(true)
 
-    // Mastery and schedules should reflect new userId and proper ids
+    // Mastery and schedules should reflect new userId and the original id
     expect(newMastery[0].userId).toBe(newUserId)
-    expect(newMastery[0].id.startsWith(`${newUserId}|`)).toBe(true)
+    expect(newMastery[0].id).toBe(`${oldUserId}|indicative|present|yo`)
     expect(newSchedules[0].userId).toBe(newUserId)
-    expect(newSchedules[0].id.startsWith(`${newUserId}|`)).toBe(true)
+    expect(newSchedules[0].id).toBe(`${oldUserId}|indicative|present|yo`)
 
     // Validation helper should pass
     const validation = await validateUserIdMigration(oldUserId, newUserId)

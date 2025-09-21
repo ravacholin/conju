@@ -605,32 +605,31 @@ async function mergeAccountDataLocally(accountData) {
   const currentUserId = getCurrentUserId()
 
   // Pre-load all local collections once to avoid repeated queries
-  const existingAttempts = await getAttemptsByUser(currentUserId)
-  const existingMastery = await getMasteryByUser(currentUserId)
+  const allAttempts = await getAllFromDB(STORAGE_CONFIG.STORES.ATTEMPTS)
+  const allMastery = await getAllFromDB(STORAGE_CONFIG.STORES.MASTERY)
   const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
-  const existingSchedules = allSchedules.filter(s => s.userId === currentUserId)
 
   // Build lookup maps for O(1) access using composite keys
   const attemptMap = new Map()
   const masteryMap = new Map()
   const scheduleMap = new Map()
 
-  // Populate attempt map: key = "verbId|mood|tense|truncatedCreatedAt"
-  existingAttempts.forEach(attempt => {
+  // Populate attempt map: key = "verbId|mood|tense|person|truncatedCreatedAt"
+  allAttempts.forEach(attempt => {
     const createdTime = Math.floor(new Date(attempt.createdAt).getTime() / 5000) * 5000 // 5s truncation
-    const key = `${attempt.verbId}|${attempt.mood}|${attempt.tense}|${createdTime}`
+    const key = `${attempt.verbId}|${attempt.mood}|${attempt.tense}|${attempt.person}|${createdTime}`
     attemptMap.set(key, attempt)
   })
 
-  // Populate mastery map: key = "verbId|mood|tense"
-  existingMastery.forEach(mastery => {
-    const key = `${mastery.verbId}|${mastery.mood}|${mastery.tense}`
+  // Populate mastery map: key = "verbId|mood|tense|person"
+  allMastery.forEach(mastery => {
+    const key = `${mastery.verbId}|${mastery.mood}|${mastery.tense}|${mastery.person}`
     masteryMap.set(key, mastery)
   })
 
-  // Populate schedule map: key = "verbId|mood|tense"
-  existingSchedules.forEach(schedule => {
-    const key = `${schedule.verbId}|${schedule.mood}|${schedule.tense}`
+  // Populate schedule map: key = "verbId|mood|tense|person"
+  allSchedules.forEach(schedule => {
+    const key = `${schedule.verbId}|${schedule.mood}|${schedule.tense}|${schedule.person}`
     scheduleMap.set(key, schedule)
   })
 
@@ -639,7 +638,7 @@ async function mergeAccountDataLocally(accountData) {
     for (const remoteAttempt of accountData.attempts) {
       try {
         const createdTime = Math.floor(new Date(remoteAttempt.createdAt).getTime() / 5000) * 5000
-        const key = `${remoteAttempt.verbId}|${remoteAttempt.mood}|${remoteAttempt.tense}|${createdTime}`
+        const key = `${remoteAttempt.verbId}|${remoteAttempt.mood}|${remoteAttempt.tense}|${remoteAttempt.person}|${createdTime}`
         const existing = attemptMap.get(key)
 
         if (!existing) {
@@ -647,7 +646,7 @@ async function mergeAccountDataLocally(accountData) {
           const localAttempt = {
             ...remoteAttempt,
             userId: currentUserId,
-            id: `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            id: remoteAttempt.id || `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
           await saveAttempt(localAttempt)
@@ -666,7 +665,7 @@ async function mergeAccountDataLocally(accountData) {
   if (accountData.mastery) {
     for (const remoteMastery of accountData.mastery) {
       try {
-        const key = `${remoteMastery.verbId}|${remoteMastery.mood}|${remoteMastery.tense}`
+        const key = `${remoteMastery.verbId}|${remoteMastery.mood}|${remoteMastery.tense}|${remoteMastery.person}`
         const existing = masteryMap.get(key)
 
         if (!existing) {
@@ -674,23 +673,19 @@ async function mergeAccountDataLocally(accountData) {
           const localMastery = {
             ...remoteMastery,
             userId: currentUserId,
-            id: `mastery-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            id: remoteMastery.id || `mastery-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
           await saveMastery(localMastery)
           // Update in-memory map to maintain consistency
           masteryMap.set(key, localMastery)
           results.mastery++
-        } else if (remoteMastery.score > existing.score) {
-          // Update with better score
+        } else if (new Date(remoteMastery.updatedAt) > new Date(existing.updatedAt)) {
+          // Update with more recent score
           const updatedMastery = {
             ...existing,
-            score: remoteMastery.score,
-            attempts: Math.max(existing.attempts || 0, remoteMastery.attempts || 0),
-            lastPracticed: new Date(Math.max(
-              new Date(existing.lastPracticed || 0).getTime(),
-              new Date(remoteMastery.lastPracticed || 0).getTime()
-            )),
+            ...remoteMastery,
+            userId: currentUserId,
             syncedAt: new Date()
           }
           await updateInDB(STORAGE_CONFIG.STORES.MASTERY, existing.id, updatedMastery)
@@ -709,7 +704,7 @@ async function mergeAccountDataLocally(accountData) {
   if (accountData.schedules) {
     for (const remoteSchedule of accountData.schedules) {
       try {
-        const key = `${remoteSchedule.verbId}|${remoteSchedule.mood}|${remoteSchedule.tense}`
+        const key = `${remoteSchedule.verbId}|${remoteSchedule.mood}|${remoteSchedule.tense}|${remoteSchedule.person}`
         const existing = scheduleMap.get(key)
 
         if (!existing) {
@@ -717,14 +712,14 @@ async function mergeAccountDataLocally(accountData) {
           const localSchedule = {
             ...remoteSchedule,
             userId: currentUserId,
-            id: `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+            id: remoteSchedule.id || `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
           await saveSchedule(localSchedule)
           // Update in-memory map to maintain consistency
           scheduleMap.set(key, localSchedule)
           results.schedules++
-        } else if (new Date(remoteSchedule.updatedAt || 0) > new Date(existing.updatedAt || 0)) {
+        } else if (new Date(remoteSchedule.updatedAt) > new Date(existing.updatedAt)) {
           // Update with more recent schedule
           const updatedSchedule = {
             ...existing,
