@@ -4,6 +4,26 @@
  * Determines the correct sync API base URL based on the environment
  * @returns {string} The API base URL
  */
+function getSafeLocation() {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    const { location } = window || {}
+    if (!location) return null
+    const hostname = typeof location.hostname === 'string' ? location.hostname : ''
+    const protocol = typeof location.protocol === 'string' ? location.protocol : ''
+    const origin = typeof location.origin === 'string' ? location.origin : ''
+    const port = typeof location.port === 'string' ? location.port : ''
+
+    return { hostname, protocol, origin, port }
+  } catch (error) {
+    console.warn('⚠️ Unable to access window.location:', error?.message || error)
+    return null
+  }
+}
+
 function getSyncApiBase() {
   // 1. First, check for explicit environment variable override
   const envUrl = import.meta.env.VITE_PROGRESS_SYNC_URL
@@ -13,9 +33,10 @@ function getSyncApiBase() {
   }
 
   // 2. Auto-detect environment based on window.location
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname
+  const location = getSafeLocation()
+  const hostname = location?.hostname || ''
 
+  if (hostname) {
     // Development environment detection
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       const devUrl = 'http://localhost:8787/api'
@@ -50,11 +71,10 @@ function getSyncAuthHeaderName() {
  * @returns {boolean} True if in development
  */
 function isDevelopmentMode() {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname
-    return hostname === 'localhost' || hostname === '127.0.0.1'
-  }
-  return false
+  const location = getSafeLocation()
+  const hostname = location?.hostname || ''
+  if (!hostname) return false
+  return hostname === 'localhost' || hostname === '127.0.0.1'
 }
 
 /**
@@ -62,11 +82,10 @@ function isDevelopmentMode() {
  * @returns {boolean} True if in production
  */
 function isProductionMode() {
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname
-    return hostname === 'verb-os.vercel.app' || hostname.includes('vercel.app')
-  }
-  return false
+  const location = getSafeLocation()
+  const hostname = location?.hostname || ''
+  if (!hostname) return false
+  return hostname === 'verb-os.vercel.app' || hostname.includes('vercel.app')
 }
 
 /**
@@ -74,15 +93,17 @@ function isProductionMode() {
  * @returns {object} Configuration debug info
  */
 function getSyncConfigDebug() {
+  const location = getSafeLocation()
+
   return {
     apiBase: getSyncApiBase(),
     authHeader: getSyncAuthHeaderName(),
     isDev: isDevelopmentMode(),
     isProd: isProductionMode(),
-    hostname: typeof window !== 'undefined' ? window.location.hostname : 'N/A',
-    protocol: typeof window !== 'undefined' ? window.location.protocol : 'N/A',
-    port: typeof window !== 'undefined' ? window.location.port : 'N/A',
-    origin: typeof window !== 'undefined' ? window.location.origin : 'N/A',
+    hostname: location?.hostname || 'N/A',
+    protocol: location?.protocol || 'N/A',
+    port: location?.port || 'N/A',
+    origin: location?.origin || 'N/A',
     envOverride: import.meta.env.VITE_PROGRESS_SYNC_URL || null,
     timestamp: new Date().toISOString()
   }

@@ -259,6 +259,10 @@ function getSyncSuccessMessage(strategy, results, accountSyncResult) {
     (accountSyncResult.merged.schedules || 0) : 0
 
   switch (strategy) {
+    case 'account+legacy': {
+      const uploadsSummary = `${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs`
+      return `✅ Sincronización completa (descargados: ${accountSyncResult?.downloaded?.attempts || 0} intentos, ${accountSyncResult?.downloaded?.mastery || 0} mastery, ${accountSyncResult?.downloaded?.schedules || 0} srs | subidos: ${uploadsSummary}). Datos alineados entre todos tus dispositivos.`
+    }
     case 'account':
       if (accountDownloaded > 0) {
         return `✅ Sincronización completa (descargados: ${accountSyncResult.downloaded.attempts} intentos, ${accountSyncResult.downloaded.mastery} mastery, ${accountSyncResult.downloaded.schedules} srs | aplicados: ${accountMerged} nuevos registros). Datos sincronizados desde tu cuenta Google.`
@@ -729,6 +733,8 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
 
   let accountSyncResult = null
   let syncStrategy = 'legacy'
+  let usedAccountSync = false
+  let legacyUploadsPerformed = false
 
   // Try account sync first if user is authenticated
   if (authService.isLoggedIn()) {
@@ -738,25 +744,16 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
     try {
       accountSyncResult = await syncAccountData()
 
-      if (accountSyncResult.success && accountSyncResult.downloaded) {
-        const totalDownloaded = accountSyncResult.downloaded.attempts +
-                                accountSyncResult.downloaded.mastery +
-                                accountSyncResult.downloaded.schedules
-
+      if (accountSyncResult.success) {
+        usedAccountSync = true
+        const downloadedCounts = accountSyncResult.downloaded || {}
+        const totalDownloaded = (downloadedCounts.attempts || 0) +
+                                (downloadedCounts.mastery || 0) +
+                                (downloadedCounts.schedules || 0)
         if (totalDownloaded > 0) {
           console.log('✅ Account sync exitoso con datos:', accountSyncResult.downloaded)
-          // Account sync successful with data, skip legacy sync
-          const response = {
-            success: true,
-            ...results,
-            strategy: 'account',
-            message: getSyncSuccessMessage('account', results, accountSyncResult),
-            accountSync: accountSyncResult
-          }
-          console.log('🔍 DEBUG: Respuesta final de syncNow (account only):', response)
-          return response
         } else {
-          console.log('ℹ️ Account sync exitoso pero sin datos nuevos, continuando con legacy sync')
+          console.log('ℹ️ Account sync exitoso pero sin datos nuevos. Continuando para subir cambios locales.')
         }
       } else {
         console.warn('⚠️ Account sync falló:', accountSyncResult.reason || accountSyncResult.error)
@@ -778,6 +775,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const all = await getAttemptsByUser(userId)
       const unsynced = all.filter(a => !a.syncedAt)
       if (unsynced.length) {
+        legacyUploadsPerformed = true
         const res = await tryBulk('attempts', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced.map(a => a.id))
         results.attempts = { uploaded: unsynced.length, server: res }
@@ -788,6 +786,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const all = await getMasteryByUser(userId)
       const unsynced = all.filter(m => !m.syncedAt)
       if (unsynced.length) {
+        legacyUploadsPerformed = true
         const res = await tryBulk('mastery', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced.map(m => m.id))
         results.mastery = { uploaded: unsynced.length, server: res }
@@ -800,6 +799,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const userSchedules = allSchedules.filter(s => s.userId === userId)
       const unsynced = userSchedules.filter(s => !s.syncedAt)
       if (unsynced.length) {
+        legacyUploadsPerformed = true
         const res = await tryBulk('schedules', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced.map(s => s.id))
         results.schedules = { uploaded: unsynced.length, server: res }
@@ -808,6 +808,12 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
 
     // Procesar cola offline (si hubiera)
     await flushSyncQueue()
+
+    if (usedAccountSync && legacyUploadsPerformed && syncStrategy !== 'legacy-fallback') {
+      syncStrategy = 'account+legacy'
+    } else if (usedAccountSync && syncStrategy !== 'legacy-fallback') {
+      syncStrategy = 'account'
+    }
 
     console.log(`🎯 Sync completado usando estrategia: ${syncStrategy}`)
 
