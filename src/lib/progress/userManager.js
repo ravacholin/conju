@@ -488,8 +488,29 @@ export async function syncAccountData() {
   try {
     console.log('🔍 DEBUG: Llamando a /auth/sync/download...')
 
-    // Get merged data from all account devices
-    const response = await postJSON('/auth/sync/download', {})
+    // Get merged data from all account devices (POST preferred, fallback to GET)
+    let response = null
+    try {
+      response = await postJSON('/auth/sync/download', {})
+    } catch (err) {
+      console.warn('⚠️ POST /auth/sync/download falló, intentando GET...', err?.message || err)
+      try {
+        const headers = { 'Accept': 'application/json' }
+        const authToken = authService.getToken?.()
+        const resolvedUserId = (authService.getUser?.()?.id) || getCurrentUserId()
+        if (authToken) headers.Authorization = `Bearer ${authToken}`
+        if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
+        const res = await fetch(`${SYNC_BASE_URL}/auth/sync/download`, { method: 'GET', headers })
+        if (!res.ok) {
+          const text = await res.text().catch(() => '')
+          throw new Error(`HTTP ${res.status}: ${text}`)
+        }
+        response = await res.json().catch(() => ({}))
+      } catch (fallbackErr) {
+        console.error('❌ Fallback GET /auth/sync/download también falló:', fallbackErr?.message || fallbackErr)
+        throw fallbackErr
+      }
+    }
 
     console.log('🔍 DEBUG: Respuesta del servidor:', {
       success: response?.success || false,
