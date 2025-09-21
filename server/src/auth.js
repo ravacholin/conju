@@ -1,30 +1,31 @@
 export async function authMiddleware(req, res, next) {
-  // Accept Authorization: Bearer <token>, X-API-Key, or X-User-Id (dev)
-  let token = null
+  // Accept Authorization: Bearer <token>, or explicit dev headers (X-API-Key / X-User-Id)
   const auth = req.get('authorization') || req.get('Authorization')
+  const apiKey = req.get('x-api-key') || req.get('X-API-Key') || null
+  let userId = (req.get('x-user-id') || req.get('X-User-Id') || '').trim() || null
+
+  let token = null
   if (auth && auth.toLowerCase().startsWith('bearer ')) {
     token = auth.slice(7).trim()
   }
-  if (!token) token = req.get('x-api-key') || req.get('X-API-Key') || null
-  let userId = req.get('x-user-id') || req.get('X-User-Id') || null
 
-  // If we have a JWT token, try to extract userId from it
+  if (!userId && apiKey) {
+    userId = apiKey.trim()
+  }
+
   if (!userId && token) {
     try {
-      // Import JWT verification from auth service
       const { verifyJWT } = await import('./auth-service.js')
-      const decoded = verifyJWT(token)
-      if (decoded && decoded.userId) {
-        userId = decoded.userId
-        console.log(`🔵 Extracted userId from JWT: ${userId}`)
-      } else {
-        // Fallback: treat token as userId for legacy compatibility
-        userId = token
+      const decoded = await verifyJWT(token)
+      if (!decoded || !decoded.userId) {
+        console.log('⚠️ JWT verification succeeded but userId is missing in payload')
+        return res.status(401).json({ error: 'Invalid auth token' })
       }
+      userId = decoded.userId
+      console.log(`🔵 Extracted userId from JWT: ${userId}`)
     } catch (error) {
-      console.log(`⚠️ JWT verification failed, treating as legacy token: ${error.message}`)
-      // Fallback: treat token as userId for legacy compatibility
-      userId = token
+      console.log(`⚠️ JWT verification failed: ${error.message}`)
+      return res.status(401).json({ error: 'Invalid auth token' })
     }
   }
 
@@ -38,4 +39,3 @@ export async function authMiddleware(req, res, next) {
   req.userId = userId
   next()
 }
-
