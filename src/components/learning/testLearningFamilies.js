@@ -1,11 +1,13 @@
 // Prueba del nuevo sistema pedagógico de familias irregulares
-import { 
+import {
   LEARNING_IRREGULAR_FAMILIES,
   categorizeLearningVerb,
   getLearningFamiliesForTense,
-  getLearningFamiliesByLevel
+  getLearningFamiliesByLevel,
+  convertLearningFamilyToOld
 } from '../../lib/data/learningIrregularFamilies.js';
 import { verbs } from '../../data/verbs.js';
+import { chooseNext } from '../../lib/core/generator.js';
 
 // Función de prueba
 function testLearningFamilies() {
@@ -67,7 +69,53 @@ function testLearningFamilies() {
     console.log('');
   });
 
-  console.log('🎉 PRUEBA COMPLETADA - Sistema pedagógico funcionando');
+  // 6. Verificar que LEARNING_PRET_3AS_PERSONAS genera verbos
+  console.log('6️⃣ VERIFICACIÓN CRÍTICA - LEARNING_PRET_3AS_PERSONAS GENERA VERBOS:');
+
+  try {
+    // Configurar settings para pretérito con familia específica
+    const testSettings = {
+      region: 'la_general',
+      practiceMode: 'specific',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: convertLearningFamilyToOld('LEARNING_PRET_3AS_PERSONAS')
+    };
+
+    console.log(`   Convertido a: ${testSettings.selectedFamily}`);
+
+    // Intentar generar ejercicios
+    let generatedCount = 0;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    while (generatedCount < 5 && attempts < maxAttempts) {
+      try {
+        const form = chooseNext(testSettings);
+        if (form) {
+          generatedCount++;
+          console.log(`   ✓ Generado ${generatedCount}: ${form.lemma} (${form.tense}, ${form.person})`);
+        }
+        attempts++;
+      } catch (error) {
+        console.log(`   ✗ Error en intento ${attempts + 1}: ${error.message}`);
+        attempts++;
+      }
+    }
+
+    if (generatedCount > 0) {
+      console.log(`   🎉 ¡ÉXITO! Se generaron ${generatedCount} verbos para LEARNING_PRET_3AS_PERSONAS`);
+    } else {
+      console.log(`   🚨 ¡FALLO! No se pudo generar ningún verbo para LEARNING_PRET_3AS_PERSONAS`);
+      console.log(`   Familia convertida: ${testSettings.selectedFamily}`);
+    }
+
+  } catch (error) {
+    console.log(`   🚨 ERROR CRÍTICO: ${error.message}`);
+  }
+
+  console.log('\n🎉 PRUEBA COMPLETADA - Sistema pedagógico funcionando');
 }
 
 // Exportar para uso en desarrollo

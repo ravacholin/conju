@@ -361,16 +361,16 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'DIPHT_E_IE': 'LEARNING_DIPHTHONGS',
   'DIPHT_O_UE': 'LEARNING_DIPHTHONGS',
   'E_I_IR': 'LEARNING_DIPHTHONGS',
-  
+
   // YO irregular → nueva familia de YO con -g
   'G_VERBS': 'LEARNING_YO_G_PRESENT',
-  
+
   // Muy irregulares → nueva familia para ser/estar/ir/dar
   'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, estar, dar
-  
+
   // Casos especiales mantenidos
   'DIPHT_U_UE': 'LEARNING_DIPHTHONGS', // jugar incluido en diptongos
-  
+
   // Familias para otros tiempos (mantenidas)
   'ORTH_CAR': 'LEARNING_ORTH_CAR',
   'ORTH_GAR': 'LEARNING_ORTH_GAR',
@@ -378,9 +378,10 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'PRET_U': 'LEARNING_PRET_MUY_IRREGULARES',
   'PRET_I': 'LEARNING_PRET_MUY_IRREGULARES',
   'PRET_J': 'LEARNING_PRET_MUY_IRREGULARES',
-  'E_I_PRET': 'LEARNING_PRET_3AS_PERSONAS',
-  'O_U_PRET': 'LEARNING_PRET_3AS_PERSONAS',
-  'HIATUS_Y': 'LEARNING_PRET_3AS_PERSONAS',
+  // Mapear familias reales que afectan 3ª persona a LEARNING_PRET_3AS_PERSONAS
+  'E_I_IR': 'LEARNING_PRET_3AS_PERSONAS',     // pedir, servir (también 3ª persona en pretérito)
+  'O_U_GER_IR': 'LEARNING_PRET_3AS_PERSONAS', // dormir, morir
+  'HIATUS_Y': 'LEARNING_PRET_3AS_PERSONAS',   // leer, caer, oír
   'IMPERFECT_IRREG': 'LEARNING_IMPF_IRREGULAR',
   'IRREG_CONDITIONAL': 'LEARNING_FUT_COND_IRREGULAR',
   'IRREG_GERUNDS': 'LEARNING_IRREG_GERUNDS',
@@ -393,13 +394,13 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
   'LEARNING_YO_G_PRESENT': 'G_VERBS',
   'LEARNING_DIPHTHONGS': 'DIPHT_E_IE', // Usar la más común como representante
   'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',
-  
-  
+
+
   // Familias para otros tiempos (mantenidas)
   'LEARNING_ORTH_CAR': 'ORTH_CAR',
-  'LEARNING_ORTH_GAR': 'ORTH_GAR', 
+  'LEARNING_ORTH_GAR': 'ORTH_GAR',
   'LEARNING_PRET_MUY_IRREGULARES': 'PRET_UV', // usar la más común como representante
-  'LEARNING_PRET_3AS_PERSONAS': 'E_I_PRET', // usar la más común como representante
+  'LEARNING_PRET_3AS_PERSONAS': 'PRETERITE_THIRD_PERSON', // usar grupo simplificado
   'LEARNING_IMPF_IRREGULAR': 'IMPERFECT_IRREG',
   'LEARNING_FUT_COND_IRREGULAR': 'IRREG_CONDITIONAL',
   'LEARNING_IRREG_GERUNDS': 'IRREG_GERUNDS',
@@ -425,7 +426,15 @@ export function categorizeLearningVerb(lemma, verbData) {
 
 // Función para convertir familia pedagógica a antigua (para el generator)
 export function convertLearningFamilyToOld(learningFamilyId) {
-  return LEARNING_TO_OLD_FAMILY_MAP[learningFamilyId] || null
+  const result = LEARNING_TO_OLD_FAMILY_MAP[learningFamilyId] || null
+
+  // Si el resultado es un grupo simplificado (como 'PRETERITE_THIRD_PERSON'),
+  // retornarlo tal como está - el generator ya sabe cómo expandirlo
+  if (result && result.startsWith('PRETERITE_') || result && result.startsWith('STEM_') || result && result.startsWith('FIRST_PERSON_')) {
+    return result // Grupo simplificado - será expandido por el generator
+  }
+
+  return result // Familia individual normal
 }
 
 // Función para obtener familias para un tiempo específico
