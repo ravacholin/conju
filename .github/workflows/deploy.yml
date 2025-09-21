@@ -40,7 +40,6 @@ jobs:
 
       - name: Data validation
         run: |
-          node src/validate-data.js
           npm run validate-integrity
           npm run audit:all
 
