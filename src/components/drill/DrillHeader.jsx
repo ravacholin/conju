@@ -9,12 +9,6 @@ function DrillHeader({
   showQuickSwitch,
   showGames
 }) {
-  const handleOpenReviewQueue = () => {
-    if (typeof onNavigateToProgress === 'function') {
-      onNavigateToProgress()
-    }
-    window.dispatchEvent(new CustomEvent('progress:open-review-queue'))
-  }
 
   return (
     <header className="header">
@@ -62,15 +56,6 @@ function DrillHeader({
         >
           <img src="/icons/chart.png" alt="Progreso" className="menu-icon" />
         </button>
-
-        <button
-          onClick={handleOpenReviewQueue}
-          className="icon-btn"
-          title="Cola de repaso SRS"
-        >
-          <img src="/icons/bolt.png" alt="Revisar ahora" className="menu-icon" />
-        </button>
-        
         <button 
           onClick={onHome}
           className="icon-btn"
