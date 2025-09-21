@@ -22,6 +22,7 @@ export async function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'Invalid auth token' })
       }
       userId = decoded.userId
+      req.accountId = decoded.accountId
       console.log(`🔵 Extracted userId from JWT: ${userId}`)
     } catch (error) {
       console.log(`⚠️ JWT verification failed: ${error.message}`)

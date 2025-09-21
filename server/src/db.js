@@ -83,9 +83,13 @@ export function migrate() {
   `)
 }
 
-export function upsertUser(userId) {
+export function upsertUser(userId, accountId = null) {
   const now = Date.now()
-  const stmt = db.prepare('INSERT INTO users (id, created_at, last_seen_at) VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET last_seen_at=excluded.last_seen_at')
-  stmt.run(userId, now, now)
+  const stmt = db.prepare(`
+    INSERT INTO users (id, account_id, created_at, last_seen_at)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET last_seen_at=excluded.last_seen_at
+  `)
+  stmt.run(userId, accountId, now, now)
 }
 

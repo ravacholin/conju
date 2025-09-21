@@ -12,7 +12,7 @@ export function createRoutes() {
   const handleBulk = (table) => (req, res) => {
     try {
       const userId = req.userId
-      upsertUser(userId)
+      upsertUser(userId, req.accountId)
       const records = Array.isArray(req.body?.records) ? req.body.records : []
       if (!records.length) return res.json({ uploaded: 0 })
 
