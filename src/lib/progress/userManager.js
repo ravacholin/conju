@@ -302,21 +302,45 @@ async function postJSON(path, body, timeoutMs = 30000) {
     const headers = { 'Content-Type': 'application/json' }
     const token = getSyncAuthToken()
     const headerName = getSyncAuthHeaderName()
+    const authToken = typeof authService?.getToken === 'function' ? authService.getToken() : null
+    const isJwt = typeof authToken === 'string' && authToken.split('.').length === 3
+    const resolvedUserId =
+      (typeof authService?.getUser === 'function' && authService.getUser()?.id) ||
+      getCurrentUserId()
 
     console.log(`🔍 DEBUG postJSON: Configurando headers para ${path}`, {
       hasToken: !!token,
       tokenLength: token ? token.length : 0,
       headerName,
-      tokenPreview: token ? `${token.slice(0, 15)}...` : 'NO_TOKEN'
+      tokenPreview: token ? `${token.slice(0, 15)}...` : 'NO_TOKEN',
+      hasJwt: isJwt,
+      userIdPreview: resolvedUserId ? `${resolvedUserId}` : 'NO_USER_ID'
     })
 
-    if (token && headerName) {
-      headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${token}` : token
-    } else {
-      // Sin token configurado: enviar userId local como X-User-Id
-      const uid = getCurrentUserId()
-      if (uid) headers['X-User-Id'] = uid
-      console.log(`🔍 DEBUG postJSON: Sin token, usando X-User-Id: ${uid}`)
+    if (isJwt) {
+      headers.Authorization = `Bearer ${authToken}`
+
+      if (headerName && headerName.toLowerCase() !== 'authorization') {
+        if (headerName.toLowerCase() === 'x-user-id' && resolvedUserId) {
+          headers[headerName] = resolvedUserId
+        } else if (token) {
+          headers[headerName] = token
+        }
+      }
+
+      if (!headers['X-User-Id'] && resolvedUserId) {
+        headers['X-User-Id'] = resolvedUserId
+      }
+    } else if (token && headerName) {
+      const normalizedHeader = headerName.toLowerCase()
+      headers[headerName] = normalizedHeader === 'authorization' ? `Bearer ${token}` : token
+
+      if (!headers['X-User-Id'] && normalizedHeader !== 'x-user-id' && resolvedUserId) {
+        headers['X-User-Id'] = resolvedUserId
+      }
+    } else if (resolvedUserId) {
+      headers['X-User-Id'] = resolvedUserId
+      console.log(`🔍 DEBUG postJSON: Sin token, usando X-User-Id: ${resolvedUserId}`)
     }
 
     console.log(`📡 Enviando ${path} con timeout ${timeoutMs}ms`)

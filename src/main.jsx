@@ -37,6 +37,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('auth-login', async () => {
     console.log('🔄 Iniciando sincronización automática después del login...')
     try {
+      setSyncAuthHeaderName('Authorization')
       if (typeof authService.ensureAnonymousProgressMigration === 'function') {
         await authService.ensureAnonymousProgressMigration()
       }
