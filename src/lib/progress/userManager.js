@@ -63,10 +63,8 @@ function isLocalPlaceholderUrl(url) {
 }
 
 export function isSyncEnabled() {
-  // Sync is disabled if:
-  // 1. No URL configured at all
-  // 2. URL is a local placeholder (development server)
-  return !!SYNC_BASE_URL && !isLocalPlaceholderUrl(SYNC_BASE_URL)
+  // Sync is enabled if there's a URL configured
+  return !!SYNC_BASE_URL
 }
 
 // Helper function to check if we're in development mode with local server
