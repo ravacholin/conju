@@ -729,6 +729,13 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   console.log('⏰ Despertando servidor antes de sincronizar...')
   await wakeUpServer()
 
+  // Track what we actually push to la nube; defaults remain en cero hasta que haya cambios
+  const results = {
+    attempts: { uploaded: 0 },
+    mastery: { uploaded: 0 },
+    schedules: { uploaded: 0 }
+  }
+
   let accountSyncResult = null
   let syncStrategy = 'legacy'
 
@@ -748,8 +755,14 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
         if (totalDownloaded > 0) {
           console.log('✅ Account sync exitoso con datos:', accountSyncResult.downloaded)
           // Account sync successful with data, skip legacy sync
-          const response = { success: true, ...results, strategy: 'account' }
-          response.accountSync = accountSyncResult
+          const response = {
+            success: true,
+            ...results,
+            strategy: 'account',
+            message: getSyncSuccessMessage('account', results, accountSyncResult),
+            accountSync: accountSyncResult
+          }
+          console.log('🔍 DEBUG: Respuesta final de syncNow (account only):', response)
           return response
         } else {
           console.log('ℹ️ Account sync exitoso pero sin datos nuevos, continuando con legacy sync')
@@ -769,7 +782,6 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
     console.log('🔓 Usuario no autenticado: usando legacy sync')
   }
 
-  const results = {}
   try {
     if (include.includes('attempts')) {
       const all = await getAttemptsByUser(userId)
@@ -778,8 +790,6 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
         const res = await tryBulk('attempts', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced.map(a => a.id))
         results.attempts = { uploaded: unsynced.length, server: res }
-      } else {
-        results.attempts = { uploaded: 0 }
       }
     }
 
@@ -790,8 +800,6 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
         const res = await tryBulk('mastery', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced.map(m => m.id))
         results.mastery = { uploaded: unsynced.length, server: res }
-      } else {
-        results.mastery = { uploaded: 0 }
       }
     }
 
@@ -804,8 +812,6 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
         const res = await tryBulk('schedules', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced.map(s => s.id))
         results.schedules = { uploaded: unsynced.length, server: res }
-      } else {
-        results.schedules = { uploaded: 0 }
       }
     }
 
