@@ -33,8 +33,8 @@ vi.mock('../../lib/progress/userManager.js', () => ({
 // Mock del validador de drill items
 vi.mock('./DrillItemGenerator.js', () => ({
   validateDrillItemStructure: vi.fn((item) => ({
-    valid: !!item?.id,
-    errors: item?.id ? [] : ['Missing item ID']
+    valid: !!item?.lemma, // More lenient - just check for lemma instead of id
+    errors: item?.lemma ? [] : ['Missing lemma']
   }))
 }))
 
@@ -270,8 +270,8 @@ describe('useDrillProgress Hook', () => {
       const { result } = renderHook(() => useDrillProgress())
       
       const invalidItem = {
-        // Missing id field
-        lemma: 'hablar',
+        // Missing lemma field - this will make validation fail
+        id: 'test-item',
         mood: 'indicative',
         tense: 'pres',
         person: '1s'
@@ -286,7 +286,7 @@ describe('useDrillProgress Hook', () => {
         const response = await result.current.handleResponse(invalidItem, testResponse)
         expect(response.success).toBe(false)
         expect(response.reason).toBe('Invalid item structure')
-        expect(response.errors).toContain('Missing item ID')
+        expect(response.errors).toContain('Missing lemma')
       })
     })
 
@@ -580,7 +580,7 @@ describe('useDrillProgress Hook', () => {
       // Test con 1 intento correcto
       await act(async () => {
         await result.current.handleResponse(
-          { id: 'test-item' }, 
+          { id: 'test-item', lemma: 'hablar' },
           { isCorrect: true }
         )
       })
@@ -591,11 +591,11 @@ describe('useDrillProgress Hook', () => {
       // Test con redondeo
       await act(async () => {
         await result.current.handleResponse(
-          { id: 'test-item' }, 
+          { id: 'test-item', lemma: 'hablar' },
           { isCorrect: false }
         )
         await result.current.handleResponse(
-          { id: 'test-item' }, 
+          { id: 'test-item', lemma: 'hablar' },
           { isCorrect: false }
         )
       })
