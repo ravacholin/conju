@@ -104,10 +104,10 @@ function QuickSwitchPanel({
           value={getDialectValue()}
           onChange={(e) => handleDialectChange(e.target.value)}
         >
-          <option value="rioplatense">Con vos</option>
-          <option value="la_general">Con tú</option>
-          <option value="peninsular">Con tú y vosotros</option>
-          <option value="both">Con todos</option>
+          <option value="rioplatense">Vos</option>
+          <option value="la_general">Tú</option>
+          <option value="peninsular">Tú y vosotros</option>
+          <option value="both">Todos</option>
         </select>
       </div>
 
