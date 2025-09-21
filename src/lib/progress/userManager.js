@@ -266,15 +266,26 @@ async function postJSON(path, body, timeoutMs = 30000) {
     const headers = { 'Content-Type': 'application/json' }
     const token = getSyncAuthToken()
     const headerName = getSyncAuthHeaderName()
+
+    console.log(`🔍 DEBUG postJSON: Configurando headers para ${path}`, {
+      hasToken: !!token,
+      tokenLength: token ? token.length : 0,
+      headerName,
+      tokenPreview: token ? `${token.slice(0, 15)}...` : 'NO_TOKEN'
+    })
+
     if (token && headerName) {
       headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${token}` : token
     } else {
       // Sin token configurado: enviar userId local como X-User-Id
       const uid = getCurrentUserId()
       if (uid) headers['X-User-Id'] = uid
+      console.log(`🔍 DEBUG postJSON: Sin token, usando X-User-Id: ${uid}`)
     }
 
     console.log(`📡 Enviando ${path} con timeout ${timeoutMs}ms`)
+    console.log(`🔍 DEBUG postJSON: Headers finales:`, Object.keys(headers))
+
     const startTime = Date.now()
 
     const res = await fetch(`${SYNC_BASE_URL}${path}`, {
@@ -285,15 +296,31 @@ async function postJSON(path, body, timeoutMs = 30000) {
     })
 
     const elapsed = Date.now() - startTime
-    console.log(`✅ ${path} completado en ${elapsed}ms`)
+    console.log(`✅ ${path} completado en ${elapsed}ms con status ${res.status}`)
 
     if (!res.ok) {
       const text = await res.text().catch(() => '')
+      console.log(`🔍 DEBUG postJSON: Error response:`, {
+        status: res.status,
+        statusText: res.statusText,
+        responseText: text,
+        url: `${SYNC_BASE_URL}${path}`
+      })
       throw new Error(`HTTP ${res.status}: ${text}`)
     }
-    return await res.json().catch(() => ({}))
+
+    const jsonResponse = await res.json().catch(() => ({}))
+    console.log(`🔍 DEBUG postJSON: Success response keys:`, Object.keys(jsonResponse))
+
+    return jsonResponse
   } catch (error) {
     console.error(`❌ Error en ${path}:`, error.message)
+    console.log(`🔍 DEBUG postJSON: Error detalles:`, {
+      url: `${SYNC_BASE_URL}${path}`,
+      errorName: error?.name,
+      errorMessage: error?.message,
+      errorStack: error?.stack?.split('\n')?.[0]
+    })
     throw error
   } finally {
     if (t) clearTimeout(t)
@@ -350,9 +377,26 @@ async function wakeUpServer() {
  * Downloads and merges data from all devices of the authenticated account
  */
 export async function syncAccountData() {
+  console.log('🔍 DEBUG: Iniciando syncAccountData()')
+
+  // Debug authentication state
   const isAuthenticated = authService.isLoggedIn()
+  const token = authService.getToken()
+  const user = authService.getUser()
+  const account = authService.getAccount()
+
+  console.log('🔍 DEBUG: Estado de autenticación:', {
+    isAuthenticated,
+    hasToken: !!token,
+    tokenLength: token ? token.length : 0,
+    hasUser: !!user,
+    hasAccount: !!account,
+    userEmail: account?.email || 'N/A'
+  })
+
   if (!isAuthenticated) {
     console.log('❌ Account sync failed: user not authenticated')
+    console.log('🔍 DEBUG: Detalles de auth fallida:', { token: !!token, user: !!user, account: !!account })
     return { success: false, reason: 'not_authenticated' }
   }
 
@@ -367,19 +411,39 @@ export async function syncAccountData() {
   }
 
   console.log('🔄 Iniciando sincronización de cuenta multi-dispositivo...')
+  console.log('🔍 DEBUG: Configuración sync:', {
+    syncUrl: SYNC_BASE_URL,
+    tokenPreview: token ? `${token.slice(0, 20)}...` : 'NO_TOKEN'
+  })
 
   // Wake up server first
   await wakeUpServer()
 
   try {
+    console.log('🔍 DEBUG: Llamando a /auth/sync/download...')
+
     // Get merged data from all account devices
     const response = await postJSON('/auth/sync/download', {})
+
+    console.log('🔍 DEBUG: Respuesta del servidor:', {
+      success: response?.success || false,
+      hasData: !!response?.data,
+      responseKeys: Object.keys(response || {})
+    })
+
     const accountData = response.data || {}
 
     console.log('📥 Datos recibidos de la cuenta:', {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
       schedules: accountData.schedules?.length || 0
+    })
+
+    console.log('🔍 DEBUG: Estructura de accountData:', {
+      hasAttempts: Array.isArray(accountData.attempts),
+      hasMastery: Array.isArray(accountData.mastery),
+      hasSchedules: Array.isArray(accountData.schedules),
+      totalObjects: Object.keys(accountData).length
     })
 
     // Merge with local data
@@ -402,7 +466,8 @@ export async function syncAccountData() {
     }
 
     console.log('✅ Sincronización de cuenta completada:', mergeResults)
-    return {
+
+    const finalResult = {
       success: true,
       merged: mergeResults,
       downloaded: {
@@ -411,8 +476,24 @@ export async function syncAccountData() {
         schedules: accountData.schedules?.length || 0
       }
     }
+
+    console.log('🔍 DEBUG: Resultado final de sync:', finalResult)
+    return finalResult
   } catch (error) {
     console.error('❌ Error en sincronización de cuenta:', error)
+    console.log('🔍 DEBUG: Error detalles:', {
+      message: error?.message || 'No message',
+      stack: error?.stack || 'No stack',
+      name: error?.name || 'No name',
+      status: error?.status || 'No status'
+    })
+
+    // Si es error de autenticación, limpiar auth state
+    if (error?.status === 401 || error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
+      console.log('🔍 DEBUG: Error 401 detectado, limpiando auth state...')
+      authService.clearAuth()
+    }
+
     return { success: false, error: String(error) }
   }
 }
