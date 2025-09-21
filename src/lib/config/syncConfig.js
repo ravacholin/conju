@@ -15,7 +15,6 @@ function getSyncApiBase() {
   // 2. Auto-detect environment based on window.location
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
-    const protocol = window.location.protocol
 
     // Development environment detection
     if (hostname === 'localhost' || hostname === '127.0.0.1') {

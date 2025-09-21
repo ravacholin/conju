@@ -125,15 +125,6 @@ export function setSyncAuthHeaderName(name) {
   } catch {}
 }
 
-export function getSyncAuthHeaderName() {
-  try {
-    if (typeof window !== 'undefined') {
-      const saved = window.localStorage.getItem(SYNC_AUTH_HEADER_NAME_KEY)
-      if (saved) return saved
-    }
-  } catch {}
-  return SYNC_AUTH_HEADER_NAME
-}
 
 /**
  * Obtiene un ID de usuario robusto para usar en tracking/analytics.
@@ -894,6 +885,5 @@ export default {
   setSyncAuthToken,
   getSyncAuthToken,
   clearSyncAuthToken,
-  setSyncAuthHeaderName,
-  getSyncAuthHeaderName
+  setSyncAuthHeaderName
 }
