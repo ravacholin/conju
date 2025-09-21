@@ -208,13 +208,57 @@ export default function Drill({
       // In double mode, check which input is focused or default to first
       const activeElement = document.activeElement;
       if (activeElement === secondRef.current) {
-        setSecondInput(prev => prev + char);
+        const input = secondRef.current;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        setSecondInput(prev => {
+          const newValue = prev.slice(0, start) + char + prev.slice(end);
+          // Restore cursor position after state update
+          setTimeout(() => {
+            const newPosition = start + char.length;
+            input.setSelectionRange(newPosition, newPosition);
+            input.focus();
+          }, 0);
+          return newValue;
+        });
       } else {
-        setInput(prev => prev + char);
+        const input = firstRef.current;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        setInput(prev => {
+          const newValue = prev.slice(0, start) + char + prev.slice(end);
+          // Restore cursor position after state update
+          setTimeout(() => {
+            const newPosition = start + char.length;
+            input.setSelectionRange(newPosition, newPosition);
+            input.focus();
+          }, 0);
+          return newValue;
+        });
       }
     } else {
-      // Normal mode
-      setInput(prev => prev + char);
+      // Normal mode - use inputRef for cursor position
+      const input = inputRef.current;
+      if (input) {
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        setInput(prev => {
+          const newValue = prev.slice(0, start) + char + prev.slice(end);
+          // Restore cursor position after state update
+          setTimeout(() => {
+            const newPosition = start + char.length;
+            input.setSelectionRange(newPosition, newPosition);
+            input.focus();
+          }, 0);
+          return newValue;
+        });
+      } else {
+        // Fallback if ref is not available
+        setInput(prev => prev + char);
+      }
     }
   };
 
