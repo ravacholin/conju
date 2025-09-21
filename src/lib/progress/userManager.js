@@ -251,6 +251,46 @@ function enqueue(type, payload) {
   setQueue(q)
 }
 
+function getSyncSuccessMessage(strategy, results, accountSyncResult) {
+  const legacyUploaded = (results.attempts?.uploaded || 0) +
+                        (results.mastery?.uploaded || 0) +
+                        (results.schedules?.uploaded || 0)
+
+  const accountDownloaded = accountSyncResult?.downloaded ?
+    (accountSyncResult.downloaded.attempts || 0) +
+    (accountSyncResult.downloaded.mastery || 0) +
+    (accountSyncResult.downloaded.schedules || 0) : 0
+
+  const accountMerged = accountSyncResult?.merged ?
+    (accountSyncResult.merged.attempts || 0) +
+    (accountSyncResult.merged.mastery || 0) +
+    (accountSyncResult.merged.schedules || 0) : 0
+
+  switch (strategy) {
+    case 'account':
+      if (accountDownloaded > 0) {
+        return `✅ Sincronización completa (descargados: ${accountSyncResult.downloaded.attempts} intentos, ${accountSyncResult.downloaded.mastery} mastery, ${accountSyncResult.downloaded.schedules} srs | aplicados: ${accountMerged} nuevos registros). Datos sincronizados desde tu cuenta Google.`
+      } else {
+        return `ℹ️ Sincronización completa (descargados: 0 intentos, 0 mastery, 0 srs). No hay datos nuevos en tu cuenta Google. Asegúrate de haber practicado en otros dispositivos.`
+      }
+
+    case 'legacy-fallback':
+      if (legacyUploaded > 0) {
+        return `⚠️ Account sync falló, pero legacy sync exitoso (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs). Datos locales enviados al servidor.`
+      } else {
+        return `⚠️ Account sync falló y no hay datos locales para subir. Intenta practicar algo primero o verifica tu conexión.`
+      }
+
+    case 'legacy':
+    default:
+      if (legacyUploaded > 0) {
+        return `✅ Sincronización legacy completa (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs). Para sincronización entre dispositivos, haz login con Google.`
+      } else {
+        return `ℹ️ Sincronización legacy completa (subidos: 0). No hay datos locales nuevos para enviar. Para sincronización entre dispositivos, haz login con Google.`
+      }
+  }
+}
+
 async function postJSON(path, body, timeoutMs = 30000) {
   if (!SYNC_BASE_URL || typeof fetch === 'undefined') {
     throw new Error('Sync endpoint not configured')
@@ -683,21 +723,43 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   await wakeUpServer()
 
   let accountSyncResult = null
-  // If user is authenticated, also perform account data sync
+  let syncStrategy = 'legacy'
+
+  // Try account sync first if user is authenticated
   if (authService.isLoggedIn()) {
-    console.log('🔑 Usuario autenticado: realizando sincronización de cuenta multi-dispositivo')
+    console.log('🔑 Usuario autenticado: intentando sincronización de cuenta multi-dispositivo')
+    syncStrategy = 'account'
+
     try {
       accountSyncResult = await syncAccountData()
-      if (accountSyncResult.success) {
-        console.log('✅ Sincronización de cuenta completada:', accountSyncResult.merged)
+
+      if (accountSyncResult.success && accountSyncResult.downloaded) {
+        const totalDownloaded = accountSyncResult.downloaded.attempts +
+                                accountSyncResult.downloaded.mastery +
+                                accountSyncResult.downloaded.schedules
+
+        if (totalDownloaded > 0) {
+          console.log('✅ Account sync exitoso con datos:', accountSyncResult.downloaded)
+          // Account sync successful with data, skip legacy sync
+          const response = { success: true, ...results, strategy: 'account' }
+          response.accountSync = accountSyncResult
+          return response
+        } else {
+          console.log('ℹ️ Account sync exitoso pero sin datos nuevos, continuando con legacy sync')
+        }
       } else {
-        console.warn('⚠️ Sincronización de cuenta sin éxito:', accountSyncResult.reason || accountSyncResult.error)
+        console.warn('⚠️ Account sync falló:', accountSyncResult.reason || accountSyncResult.error)
+        console.log('🔄 Fallback: intentando legacy sync...')
+        syncStrategy = 'legacy-fallback'
       }
     } catch (error) {
-      console.warn('⚠️ Error en sincronización de cuenta:', error.message)
+      console.warn('⚠️ Error en account sync:', error.message)
+      console.log('🔄 Fallback: intentando legacy sync...')
       accountSyncResult = { success: false, error: error.message }
-      // Continue with regular sync even if account sync fails
+      syncStrategy = 'legacy-fallback'
     }
+  } else {
+    console.log('🔓 Usuario no autenticado: usando legacy sync')
   }
 
   const results = {}
@@ -743,13 +805,24 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
     // Procesar cola offline (si hubiera)
     await flushSyncQueue()
 
-    const response = { success: true, ...results }
+    console.log(`🎯 Sync completado usando estrategia: ${syncStrategy}`)
+
+    const response = {
+      success: true,
+      ...results,
+      strategy: syncStrategy,
+      message: getSyncSuccessMessage(syncStrategy, results, accountSyncResult)
+    }
+
     if (accountSyncResult) {
       response.accountSync = accountSyncResult
-      if (accountSyncResult.success === false) {
+      // Don't mark as failed if legacy sync worked
+      if (accountSyncResult.success === false && syncStrategy === 'account') {
         response.success = false
       }
     }
+
+    console.log('🔍 DEBUG: Respuesta final de syncNow:', response)
     return response
   } catch (error) {
     console.warn('Fallo de sincronización, encolando para más tarde:', error?.message)
