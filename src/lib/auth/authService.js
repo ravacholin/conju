@@ -15,6 +15,8 @@ class AuthService {
     this.account = null
     this.googleInitPromise = null
     this.googleListenersAttached = false
+    this.postLoginMigrationPromise = null
+    this.lastMigratedAnonymousId = null
     this.loadFromStorage()
     this.setupGoogleEventListeners()
   }
@@ -61,6 +63,8 @@ class AuthService {
     this.token = null
     this.user = null
     this.account = null
+    this.postLoginMigrationPromise = null
+    this.lastMigratedAnonymousId = null
 
     if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
       return
@@ -115,6 +119,8 @@ class AuthService {
     this.account = data.account
     this.saveToStorage()
 
+    await this.ensureAnonymousProgressMigration()
+
     return data
   }
 
@@ -144,11 +150,17 @@ class AuthService {
     this.account = data.account
     this.saveToStorage()
 
+    await this.ensureAnonymousProgressMigration()
+
     return data
   }
 
   async loginWithGoogle(googleData) {
     const deviceName = this.getDeviceName()
+
+    if (!googleData?.credential) {
+      throw new Error('Google credential required')
+    }
 
     const response = await fetch(`${API_BASE}/auth/google`, {
       method: 'POST',
@@ -156,8 +168,9 @@ class AuthService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        ...googleData,
-        deviceName
+        credential: googleData.credential,
+        deviceName,
+        profile: googleData.profile || null
       })
     })
 
@@ -171,6 +184,8 @@ class AuthService {
     this.user = data.user
     this.account = data.account
     this.saveToStorage()
+
+    await this.ensureAnonymousProgressMigration()
 
     return data
   }
@@ -367,7 +382,20 @@ class AuthService {
       })
     })
 
-    const data = await response.json()
+    let data = {}
+    try {
+      data = await response.json()
+    } catch {
+      data = {}
+    }
+
+    if (response.status === 404) {
+      return {
+        success: false,
+        status: 404,
+        error: data.error || 'Anonymous user not found or already linked'
+      }
+    }
 
     if (!response.ok) {
       throw new Error(data.error || 'Migration failed')
@@ -515,17 +543,26 @@ class AuthService {
     try {
       const deviceName = this.getDeviceName()
 
+      if (!googleUser?.credential) {
+        throw new Error('Google ID token missing from response')
+      }
+
       const data = {
-        googleId: googleUser.googleId,
-        email: googleUser.email,
-        name: googleUser.name,
-        deviceName
+        credential: googleUser.credential,
+        deviceName,
+        profile: {
+          googleId: googleUser.googleId,
+          email: googleUser.email,
+          name: googleUser.name,
+          emailVerified: googleUser.emailVerified === true
+        }
       }
 
       console.log('🔵 Sending Google login request to server:', {
-        email: data.email,
-        name: data.name,
-        deviceName: data.deviceName
+        email: googleUser.email,
+        name: googleUser.name,
+        deviceName: data.deviceName,
+        emailVerified: googleUser.emailVerified
       })
 
       const response = await fetch(`${API_BASE}/auth/google`, {
@@ -548,6 +585,8 @@ class AuthService {
       this.account = result.account
       this.saveToStorage()
 
+      await this.ensureAnonymousProgressMigration()
+
       console.log('✅ Google login successful:', {
         email: this.account.email,
         name: this.account.name,
@@ -560,6 +599,71 @@ class AuthService {
       console.error('❌ Google login processing error:', error)
       throw error
     }
+  }
+
+  async ensureAnonymousProgressMigration() {
+    if (!this.token) {
+      return null
+    }
+
+    if (this.postLoginMigrationPromise) {
+      return this.postLoginMigrationPromise
+    }
+
+    this.postLoginMigrationPromise = (async () => {
+      try {
+        const module = await import('../progress/userManager.js')
+        const getProgressUserId = module?.getCurrentUserId
+
+        if (typeof getProgressUserId !== 'function') {
+          return null
+        }
+
+        const anonymousUserId = getProgressUserId()
+        if (!anonymousUserId) {
+          return null
+        }
+
+        if (this.lastMigratedAnonymousId === anonymousUserId) {
+          return null
+        }
+
+        const authenticatedUserId = this.user?.id || null
+        if (anonymousUserId === authenticatedUserId) {
+          this.lastMigratedAnonymousId = anonymousUserId
+          return null
+        }
+
+        const migrationResult = await this.migrateAnonymousAccount(anonymousUserId)
+
+        if (migrationResult?.status === 404) {
+          console.info('Anonymous progress already linked to an account or not found', {
+            anonymousUserId
+          })
+        } else if (migrationResult) {
+          console.log('✅ Anonymous progress linked to authenticated account', {
+            anonymousUserId
+          })
+        }
+
+        this.lastMigratedAnonymousId = anonymousUserId
+
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('progress:migration-complete', {
+            detail: { anonymousUserId }
+          }))
+        }
+
+        return migrationResult
+      } catch (error) {
+        console.warn('⚠️ Failed to migrate anonymous progress:', error?.message || error)
+        return null
+      } finally {
+        this.postLoginMigrationPromise = null
+      }
+    })()
+
+    return this.postLoginMigrationPromise
   }
 
   async triggerGoogleSignIn() {

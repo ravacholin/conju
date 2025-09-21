@@ -19,7 +19,8 @@ Servidor de sincronización de progreso para Spanish Conjugator, construido con 
    NODE_ENV=production
    PORT=8787
    CORS_ORIGIN=https://verb-os.vercel.app,http://localhost:5173
-   ```
+    GOOGLE_CLIENT_IDS=<tu-client-id>.apps.googleusercontent.com
+    ```
 
 3. **Deploy automático:**
    - Railway detecta automáticamente Node.js
@@ -53,7 +54,8 @@ railway up    # Deploy desde directorio server/
    NODE_ENV=production
    PORT=10000
    CORS_ORIGIN=https://verb-os.vercel.app
-   ```
+    GOOGLE_CLIENT_IDS=<tu-client-id>.apps.googleusercontent.com
+    ```
 
 ## 📦 Deployment con Docker
 
@@ -77,6 +79,12 @@ Después del deployment, actualizar `.env.local` en el proyecto principal:
 VITE_PROGRESS_SYNC_URL=https://tu-proyecto.railway.app/api
 VITE_PROGRESS_SYNC_AUTH_HEADER_NAME=Authorization
 ```
+
+## 🔐 Variables sensibles
+
+- Copiá `server/.env.example` a `.env` o configurá las variables en tu plataforma (Railway/Render).
+- `GOOGLE_CLIENT_IDS` debe contener el/los Client ID autorizados en Google Cloud separados por comas.
+- Nunca subas `.env` con valores reales al repositorio.
 
 ## ✅ Verificación
 

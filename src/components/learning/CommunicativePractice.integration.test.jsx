@@ -6,17 +6,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import CommunicativePractice from './CommunicativePractice.jsx';
 import * as srs from '../../lib/progress/srs.js';
 import * as userManager from '../../lib/progress/userManager.js';
+
+const mockUseProgressTracking = vi.hoisted(() => vi.fn());
 
 // Mock the SRS and user manager modules
 vi.mock('../../lib/progress/srs.js');
 vi.mock('../../lib/progress/userManager.js');
-vi.mock('../../features/drill/useProgressTracking.js');
+vi.mock('../../features/drill/useProgressTracking.js', () => ({
+  useProgressTracking: (...args) => mockUseProgressTracking(...args)
+}));
 
 // Mock CSS imports
 vi.mock('./CommunicativePractice.css', () => ({}));
+
+import CommunicativePractice from './CommunicativePractice.jsx';
 
 describe('CommunicativePractice SRS Integration', () => {
   const mockTense = { mood: 'indicativo', tense: 'pres' };
@@ -33,6 +38,7 @@ describe('CommunicativePractice SRS Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseProgressTracking.mockReset();
 
     // Mock user manager
     vi.mocked(userManager.getCurrentUserId).mockReturnValue(mockUserId);
@@ -40,17 +46,15 @@ describe('CommunicativePractice SRS Integration', () => {
     // Mock SRS updateSchedule
     vi.mocked(srs.updateSchedule).mockResolvedValue(undefined);
 
-    // Mock useProgressTracking
-    const mockUseProgressTracking = vi.fn(() => ({
+    // Mock useProgressTracking returned object
+    mockUseProgressTracking.mockReturnValue({
       handleResult: vi.fn().mockResolvedValue(undefined)
-    }));
-    vi.doMock('../../features/drill/useProgressTracking.js', () => ({
-      useProgressTracking: mockUseProgressTracking
-    }));
+    });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    mockUseProgressTracking.mockReset();
   });
 
   it('should update SRS schedule when correct keyword is found in chat response', async () => {
@@ -69,7 +73,7 @@ describe('CommunicativePractice SRS Integration', () => {
     });
 
     // Find the input field and enter a response with a correct keyword
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     const userResponse = 'Normalmente trabajo en la oficina y como en casa.';
 
     fireEvent.change(input, { target: { value: userResponse } });
@@ -113,7 +117,7 @@ describe('CommunicativePractice SRS Integration', () => {
       expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     const userResponse = 'Normalmente trabajo en la oficina.';
 
     fireEvent.change(input, { target: { value: userResponse } });
@@ -145,7 +149,7 @@ describe('CommunicativePractice SRS Integration', () => {
       expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     // Use a keyword that's not in the limited eligible forms
     const userResponse = 'Normalmente trabajo en la oficina.';
 
@@ -174,7 +178,7 @@ describe('CommunicativePractice SRS Integration', () => {
       expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     // Provide a response that doesn't match expected keywords
     const incorrectResponse = 'Me gusta el chocolate.';
 
@@ -213,7 +217,7 @@ describe('CommunicativePractice SRS Integration', () => {
       expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     const userResponse = 'Normalmente trabajo en casa.';
 
     fireEvent.change(input, { target: { value: userResponse } });
@@ -237,7 +241,7 @@ describe('CommunicativePractice SRS Integration', () => {
   it('should normalize keywords to match eligibleForms values', async () => {
     // Test with accented characters to ensure normalization works
     const eligibleFormsWithAccents = [
-      { lemma: 'trabajar', value: 'trabaja', mood: 'indicativo', tense: 'pres', person: '3s' },
+      { lemma: 'trabajar', value: 'trabajo', mood: 'indicativo', tense: 'pres', person: '1s' },
     ];
 
     render(
@@ -253,9 +257,9 @@ describe('CommunicativePractice SRS Integration', () => {
       expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe aquí tu respuesta...');
+    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
     // Use a response that might have different accent normalization
-    const userResponse = 'Él trabaja mucho.';
+    const userResponse = 'Yo trabajo mucho.';
 
     fireEvent.change(input, { target: { value: userResponse } });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -269,7 +273,7 @@ describe('CommunicativePractice SRS Integration', () => {
         mockUserId,
         expect.objectContaining({
           lemma: 'trabajar',
-          value: 'trabaja'
+          value: 'trabajo'
         }),
         true,
         0

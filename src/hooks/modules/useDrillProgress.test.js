@@ -147,8 +147,8 @@ describe('useDrillProgress Hook', () => {
         callback(true)
       })
       
-      // Verificar que el estado se actualiza (parcialmente, sin processUserResponse aún)
-      expect(result.current.isSystemReady).toBe(false) // Aún false porque processUserResponse es null
+      // Verificar que el estado refleja el readiness reportado por el sistema de progreso
+      expect(result.current.isSystemReady).toBe(true)
     })
   })
 

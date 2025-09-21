@@ -10,7 +10,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 // Mock the verbs.js import to test different failure scenarios
 const mockVerbsImport = vi.fn()
 vi.mock('../../data/verbs.js', () => ({
-  verbs: mockVerbsImport
+  get verbs() {
+    return mockVerbsImport()
+  }
 }))
 
 // Mock the settings store
@@ -32,8 +34,7 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    chunkManager = new VerbChunkManager()
-    mockVerbsImport.mockReturnValue([
+    mockVerbsImport.mockImplementation(() => ([
       {
         lemma: 'ser',
         id: 'ser',
@@ -52,11 +53,13 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
           forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'estoy' }]
         }]
       }
-    ])
+    ]))
+    chunkManager = new VerbChunkManager()
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
+    mockVerbsImport.mockReset()
   })
 
   it('should successfully use Strategy 1 when preferred chunks work', async () => {
@@ -92,7 +95,8 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
 
     const verbs = await chunkManager.getVerbsWithRobustFailsafe(['core'])
 
-    expect(verbs).toHaveLength(2) // From mocked verbs.js
+    expect(Array.isArray(verbs)).toBe(true)
+    expect(verbs).toHaveLength(2)
     expect(verbs.map(v => v.lemma)).toEqual(['ser', 'estar'])
   })
 
@@ -115,6 +119,9 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
     // Mock everything failing including dynamic import
     vi.spyOn(chunkManager, 'loadChunk').mockRejectedValue(new Error('Chunk failed'))
     vi.spyOn(chunkManager, 'getAllVerbs').mockRejectedValue(new Error('All chunks failed'))
+    mockVerbsImport.mockImplementation(() => {
+      throw new Error('Dynamic import failed')
+    })
 
     // Mock dynamic import to fail
     const originalImport = global.__vite_ssr_import__ || global.import

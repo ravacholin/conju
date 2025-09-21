@@ -70,13 +70,30 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       if (res?.success) {
         const merged = res.accountSync?.merged || {}
         const downloaded = res.accountSync?.downloaded || {}
-        const mergedTotal = (merged.attempts || 0) + (merged.mastery || 0) + (merged.schedules || 0)
-        const downloadedTotal = (downloaded.attempts || 0) + (downloaded.mastery || 0) + (downloaded.schedules || 0)
+        const mergedAttempts = merged.attempts || 0
+        const mergedMastery = merged.mastery || 0
+        const mergedSchedules = merged.schedules || 0
+        const downloadedAttempts = downloaded.attempts || 0
+        const downloadedMastery = downloaded.mastery || 0
+        const downloadedSchedules = downloaded.schedules || 0
+        const mergedTotal = mergedAttempts + mergedMastery + mergedSchedules
+        const downloadedTotal = downloadedAttempts + downloadedMastery + downloadedSchedules
+
         const detailParts = []
-        if (downloadedTotal) detailParts.push(`${downloadedTotal} registros descargados`)
-        if (mergedTotal && mergedTotal !== downloadedTotal) detailParts.push(`${mergedTotal} registros aplicados`)
-        const detail = detailParts.length ? ` (${detailParts.join(', ')})` : ''
-        setToast({ message: `Sincronización completa${detail}`, type: 'success' })
+        if (res.accountSync?.success) {
+          detailParts.push(`descargados: ${downloadedAttempts} intentos, ${downloadedMastery} mastery, ${downloadedSchedules} srs`)
+          detailParts.push(`aplicados: ${mergedAttempts} intentos, ${mergedMastery} mastery, ${mergedSchedules} srs`)
+        } else if (!res.accountSync) {
+          detailParts.push('sin cuenta autenticada (solo backup local)')
+        }
+
+        const detail = detailParts.length ? ` (${detailParts.join(' | ')})` : ''
+        const hint = downloadedTotal || mergedTotal
+          ? ''
+          : ' No se detectaron cambios nuevos. Asegurate de sincronizar primero el otro dispositivo.'
+
+        setToast({ message: `Sincronización completa${detail}.${hint}`, type: 'success' })
+
         // Refrescar dashboard inmediatamente para reflejar los datos descargados
         refresh()
       } else {

@@ -6,24 +6,36 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
-import MeaningfulPractice from './MeaningfulPractice.jsx';
 import * as srs from '../../lib/progress/srs.js';
 import * as userManager from '../../lib/progress/userManager.js';
+
+const mockUseProgressTracking = vi.hoisted(() => vi.fn());
 
 // Mock the SRS and user manager modules
 vi.mock('../../lib/progress/srs.js');
 vi.mock('../../lib/progress/userManager.js');
-vi.mock('../../features/drill/useProgressTracking.js');
+vi.mock('../../features/drill/useProgressTracking.js', () => ({
+  useProgressTracking: (...args) => mockUseProgressTracking(...args)
+}));
 
 // Mock CSS imports
 vi.mock('./MeaningfulPractice.css', () => ({}));
 
+import MeaningfulPractice from './MeaningfulPractice.jsx';
+
 describe('MeaningfulPractice SRS Integration', () => {
   const mockTense = { mood: 'indicativo', tense: 'pres' };
   const mockEligibleForms = [
-    { lemma: 'hablar', value: 'habla', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'despertarse', value: 'despierta', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'levantarse', value: 'levanta', mood: 'indicativo', tense: 'pres', person: '3s' },
     { lemma: 'comer', value: 'come', mood: 'indicativo', tense: 'pres', person: '3s' },
-    { lemma: 'vivir', value: 'vive', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'beber', value: 'bebe', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'trabajar', value: 'trabaja', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'escribir', value: 'escribe', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'cocinar', value: 'cocina', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'ver', value: 've', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'leer', value: 'lee', mood: 'indicativo', tense: 'pres', person: '3s' },
+    { lemma: 'dormir', value: 'duerme', mood: 'indicativo', tense: 'pres', person: '3s' }
   ];
   const mockUserId = 'test-user-123';
 
@@ -32,6 +44,7 @@ describe('MeaningfulPractice SRS Integration', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseProgressTracking.mockReset();
 
     // Mock user manager
     vi.mocked(userManager.getCurrentUserId).mockReturnValue(mockUserId);
@@ -40,16 +53,17 @@ describe('MeaningfulPractice SRS Integration', () => {
     vi.mocked(srs.updateSchedule).mockResolvedValue(undefined);
 
     // Mock useProgressTracking
-    const mockUseProgressTracking = vi.fn(() => ({
+    mockUseProgressTracking.mockReturnValue({
       handleResult: vi.fn().mockResolvedValue(undefined)
-    }));
-    vi.doMock('../../features/drill/useProgressTracking.js', () => ({
-      useProgressTracking: mockUseProgressTracking
-    }));
+    });
+
+    // Deterministic exercise selection
+    vi.spyOn(Math, 'random').mockReturnValue(0);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    mockUseProgressTracking.mockReset();
   });
 
   it('should update SRS schedule when correct verbs are found in meaningful practice', async () => {
@@ -64,7 +78,7 @@ describe('MeaningfulPractice SRS Integration', () => {
 
     // Find the textarea and input a correct response
     const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
-    const correctStory = 'Carlos habla español. Come pizza todos los días. Vive en Madrid.';
+    const correctStory = 'Carlos se despierta temprano y se levanta contento. Luego come pan y bebe café. En la oficina trabaja con sus colegas y escribe informes. Al volver a casa cocina la cena, ve una serie, lee un libro y duerme feliz.';
 
     fireEvent.change(textarea, { target: { value: correctStory } });
 
@@ -77,30 +91,14 @@ describe('MeaningfulPractice SRS Integration', () => {
       expect(screen.getByText(/¡Excelente!/)).toBeInTheDocument();
     });
 
-    // Verify that updateSchedule was called for each found verb form
-    expect(srs.updateSchedule).toHaveBeenCalledTimes(3);
+    // Verify that updateSchedule was called for the verbs detected in the routine prompts
+    const expectedUpdatedForms = ['despierta', 'come', 'trabaja', 'cocina', 'lee'];
+    expect(srs.updateSchedule).toHaveBeenCalledTimes(expectedUpdatedForms.length);
 
-    // Verify specific calls
-    expect(srs.updateSchedule).toHaveBeenCalledWith(
-      mockUserId,
-      expect.objectContaining({ lemma: 'hablar', value: 'habla' }),
-      true, // correct answer
-      0     // hints used
-    );
-
-    expect(srs.updateSchedule).toHaveBeenCalledWith(
-      mockUserId,
-      expect.objectContaining({ lemma: 'comer', value: 'come' }),
-      true,
-      0
-    );
-
-    expect(srs.updateSchedule).toHaveBeenCalledWith(
-      mockUserId,
-      expect.objectContaining({ lemma: 'vivir', value: 'vive' }),
-      true,
-      0
-    );
+    const calledForms = srs.updateSchedule.mock.calls.map(call => call[1].value);
+    expectedUpdatedForms.forEach((form) => {
+      expect(calledForms).toContain(form);
+    });
   });
 
   it('should not update SRS schedule when eligibleForms is not provided', async () => {
@@ -114,7 +112,7 @@ describe('MeaningfulPractice SRS Integration', () => {
     );
 
     const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
-    const correctStory = 'Carlos habla español. Come pizza todos los días.';
+    const correctStory = 'Carlos se despierta temprano y se levanta contento. Luego come pan y bebe café. En la oficina trabaja con sus colegas y escribe informes. Al volver a casa cocina la cena, ve una serie, lee un libro y duerme feliz.';
 
     fireEvent.change(textarea, { target: { value: correctStory } });
 
@@ -144,19 +142,20 @@ describe('MeaningfulPractice SRS Integration', () => {
     );
 
     const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
-    // Use verbs that are not in the limited eligible forms
-    const storyWithUnknownVerbs = 'Carlos habla español. Come pizza todos los días.';
+    // Story missing several expected verbs
+    const storyWithMissingVerbs = 'Carlos come pizza y ve televisión, pero no hace mucho más.';
 
-    fireEvent.change(textarea, { target: { value: storyWithUnknownVerbs } });
+    fireEvent.change(textarea, { target: { value: storyWithMissingVerbs } });
 
     const checkButton = screen.getByText('Revisar Historia');
     fireEvent.click(checkButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/¡Excelente!/)).toBeInTheDocument();
+      expect(screen.queryByText(/¡Excelente!/)).not.toBeInTheDocument();
+      expect(screen.getByText(/Faltan/)).toBeInTheDocument();
     });
 
-    // Verify that updateSchedule was NOT called since verbs were not in eligible forms
+    // Verify that updateSchedule was NOT called since verbs were not all present
     expect(srs.updateSchedule).not.toHaveBeenCalled();
   });
 
@@ -176,7 +175,7 @@ describe('MeaningfulPractice SRS Integration', () => {
     );
 
     const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
-    const correctStory = 'Carlos habla español.';
+    const correctStory = 'Carlos se despierta temprano y se levanta contento. Luego come pan y bebe café. En la oficina trabaja con sus colegas y escribe informes. Al volver a casa cocina la cena, ve una serie, lee un libro y duerme feliz.';
 
     fireEvent.change(textarea, { target: { value: correctStory } });
 

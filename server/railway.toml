@@ -13,4 +13,5 @@ restartPolicyMaxRetries = 10
 PORT = 8787
 NODE_ENV = "production"
 API_PREFIX = "/api"
+# Define GOOGLE_CLIENT_IDS en Railway (Dashboard > Variables > GOOGLE_CLIENT_IDS)
 # CORS_ORIGIN se configura automáticamente desde las variables de Railway

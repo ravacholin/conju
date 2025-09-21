@@ -2,10 +2,18 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
+import { OAuth2Client } from 'google-auth-library'
 import { db } from './db.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'spanish-conjugator-secret-key-2025'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
+
+const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || '')
+  .split(',')
+  .map((id) => id.trim())
+  .filter(Boolean)
+
+const googleOAuthClient = GOOGLE_CLIENT_IDS.length ? new OAuth2Client() : null
 
 // Validation schemas
 const registerSchema = z.object({
@@ -21,11 +29,43 @@ const loginSchema = z.object({
 })
 
 const googleAuthSchema = z.object({
-  googleId: z.string(),
-  email: z.string().email(),
-  name: z.string(),
-  deviceName: z.string().optional()
+  credential: z.string().min(10, 'Google credential is required'),
+  deviceName: z.string().optional(),
+  googleId: z.string().optional(),
+  email: z.string().email().optional(),
+  name: z.string().optional(),
+  profile: z.object({
+    googleId: z.string().optional(),
+    email: z.string().email().optional(),
+    name: z.string().optional(),
+    emailVerified: z.boolean().optional()
+  }).optional()
 })
+
+const googleAudience = GOOGLE_CLIENT_IDS.length > 1 ? GOOGLE_CLIENT_IDS : GOOGLE_CLIENT_IDS[0]
+
+async function verifyGoogleCredential(credential) {
+  if (!googleOAuthClient || !GOOGLE_CLIENT_IDS.length) {
+    throw new Error('Google OAuth client ID is not configured on the server')
+  }
+
+  try {
+    const ticket = await googleOAuthClient.verifyIdToken({
+      idToken: credential,
+      audience: googleAudience
+    })
+
+    const payload = ticket.getPayload()
+    if (!payload?.sub) {
+      throw new Error('Google token payload missing subject')
+    }
+
+    return payload
+  } catch (error) {
+    console.error('Google token verification failed:', error)
+    throw new Error('Invalid Google credential')
+  }
+}
 
 // Account management
 export async function createAccount(data) {
@@ -102,14 +142,37 @@ export async function authenticateAccount(email, password) {
 }
 
 export async function authenticateWithGoogle(data) {
-  const { googleId, email, name } = googleAuthSchema.parse(data)
+  const parsed = googleAuthSchema.parse(data)
+  const payload = await verifyGoogleCredential(parsed.credential)
+
+  const googleId = payload.sub
+  const payloadEmail = typeof payload.email === 'string' ? payload.email.toLowerCase() : null
+  const fallbackEmail = parsed.profile?.email || parsed.email || null
+  const email = (payloadEmail || fallbackEmail || '').toLowerCase()
+
+  if (!email) {
+    throw new Error('Google account did not provide an email address')
+  }
+
+  if (payload.email_verified === false || parsed.profile?.emailVerified === false) {
+    throw new Error('Google account email must be verified')
+  }
+
+  const name = parsed.name || parsed.profile?.name || payload.name || null
+
+  console.log('🔐 Google credential verified', {
+    email,
+    googleId,
+    name,
+    audience: payload.aud
+  })
 
   // First, try to find by Google ID
   let account = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE google_id = ?').get(googleId)
 
   if (!account) {
     // Try to find existing account by email (for linking)
-    const existingAccount = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE email = ?').get(email)
+    const existingAccount = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE LOWER(email) = ?').get(email)
 
     if (existingAccount) {
       // Link Google to existing account

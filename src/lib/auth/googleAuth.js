@@ -68,6 +68,10 @@ export async function initializeGoogleAuth() {
 // Handle Google OAuth response
 function handleGoogleResponse(response) {
   try {
+    if (!response?.credential) {
+      throw new Error('Missing Google credential in response')
+    }
+
     // Decode the JWT token from Google
     const payload = parseJWT(response.credential)
 
@@ -77,17 +81,23 @@ function handleGoogleResponse(response) {
 
     // Extract user information
     const googleUser = {
+      credential: response.credential,
       googleId: payload.sub,
       email: payload.email,
       name: payload.name,
       picture: payload.picture,
-      emailVerified: payload.email_verified
+      emailVerified: payload.email_verified,
+      audience: payload.aud,
+      issuedAt: payload.iat,
+      expiresAt: payload.exp,
+      issuer: payload.iss
     }
 
     console.log('📥 Google user data received:', {
       email: googleUser.email,
       name: googleUser.name,
-      verified: googleUser.emailVerified
+      verified: googleUser.emailVerified,
+      audience: googleUser.audience
     })
 
     // Dispatch custom event with user data

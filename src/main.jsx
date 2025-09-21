@@ -10,6 +10,7 @@ import './utils/swUpdateHandler.js'
 // Wire sync endpoint and auth from env (if provided)
 import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName, syncNow } from './lib/progress/userManager.js'
 import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
+import authService from './lib/auth/authService.js'
 
 // Read env-provided sync config and apply once on load
 if (typeof window !== 'undefined') {
@@ -35,6 +36,14 @@ if (typeof window !== 'undefined') {
   // Setup automatic sync on login
   window.addEventListener('auth-login', async () => {
     console.log('🔄 Iniciando sincronización automática después del login...')
+    try {
+      if (typeof authService.ensureAnonymousProgressMigration === 'function') {
+        await authService.ensureAnonymousProgressMigration()
+      }
+    } catch (migrationError) {
+      console.warn('⚠️ Falló la migración de progreso anónimo previa al sync:', migrationError?.message || migrationError)
+    }
+
     try {
       const result = await syncNow()
       if (result.success) {

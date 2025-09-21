@@ -17,6 +17,7 @@
     "better-sqlite3": "^9.4.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "google-auth-library": "^10.3.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "uuid": "^9.0.1",
