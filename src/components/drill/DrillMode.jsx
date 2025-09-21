@@ -162,9 +162,8 @@ function DrillMode({
           onRegenerateItem()
         } else if (detail && detail.focus === 'review') {
           console.log('SRS review navigation', detail.filter)
-          if (typeof onPracticeModeChange === 'function') {
-            onPracticeModeChange('review', detail.filter)
-          }
+          // Don't pass filter object to onPracticeModeChange - it expects strings
+          // Instead, handle review mode setup directly
           settings.set({
             practiceMode: 'review',
             reviewSessionFilter: detail.filter || { urgency: 'all' }

@@ -52,7 +52,9 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   // Memoize regional forms to avoid expensive recalculation on every recommendation click
   // This optimization prevents rebuilding the entire verb dataset each time a user clicks a recommendation
   const regionalForms = useMemo(() => {
-    console.log(`🔄 Building regional forms for region: ${settings.region}`)
+    if (import.meta.env.DEV) {
+      console.log(`🔄 Building regional forms for region: ${settings.region}`)
+    }
     return buildFormsForRegion(settings.region)
   }, [settings.region])
 

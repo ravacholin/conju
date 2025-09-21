@@ -64,11 +64,20 @@ function QuickSwitchPanel({
   }
 
   const handleMoodChange = (mood) => {
-    settings.set({ specificMood: mood || null, specificTense: null })
+    // Reset tense when mood changes, and ensure practice mode goes back to mixed
+    settings.set({
+      specificMood: mood || null,
+      specificTense: null,
+      practiceMode: 'mixed' // Reset to mixed mode until both mood and tense are selected
+    })
   }
 
   const handleTenseChange = (tense) => {
-    settings.set({ specificTense: tense || null })
+    settings.set({
+      specificTense: tense || null,
+      // Reset to mixed mode if tense is cleared
+      practiceMode: (settings.specificMood && tense) ? 'specific' : 'mixed'
+    })
   }
 
   const handleVerbTypeChange = (verbType) => {
@@ -76,9 +85,12 @@ function QuickSwitchPanel({
   }
 
   const handleApply = () => {
-    // Set practice mode to specific when using quick switch
-    if (settings.specificMood || settings.specificTense) {
+    // Only set practice mode to specific when BOTH mood and tense are selected
+    if (settings.specificMood && settings.specificTense) {
       settings.set({ practiceMode: 'specific' })
+    } else {
+      // Ensure we stay in mixed mode if selection is incomplete
+      settings.set({ practiceMode: 'mixed' })
     }
     onApply()
   }
@@ -146,6 +158,11 @@ function QuickSwitchPanel({
       </div>
 
       <div className="setting-group">
+        {settings.specificMood && !settings.specificTense && (
+          <div className="validation-message">
+            Seleccioná un tiempo verbal para practicar modo específico
+          </div>
+        )}
         <button className="btn" onClick={handleApply}>
           Aplicar
         </button>
