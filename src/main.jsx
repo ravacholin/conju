@@ -9,6 +9,7 @@ import './lib/progress/autoInit.js'
 import './utils/swUpdateHandler.js'
 // Wire sync endpoint and auth from env (if provided)
 import { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName, syncNow } from './lib/progress/userManager.js'
+import { scheduleAutoSync } from './lib/progress/cloudSync.js'
 import { getCurrentUserId as getUID } from './lib/progress/userManager.js'
 import authService from './lib/auth/authService.js'
 
@@ -55,6 +56,18 @@ if (typeof window !== 'undefined') {
     } catch (error) {
       console.warn('❌ Error en sincronización automática:', error.message)
     }
+  })
+
+  // Schedule periodic auto-sync every 5 minutes
+  try {
+    scheduleAutoSync(5 * 60 * 1000)
+  } catch (e) {
+    console.warn('No se pudo programar auto-sync:', e?.message || e)
+  }
+
+  // Trigger a sync when app regains focus
+  window.addEventListener('focus', () => {
+    setTimeout(() => { syncNow().catch(() => {}) }, 600)
   })
 }
 
