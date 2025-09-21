@@ -111,7 +111,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Irregulares en 3ª persona',
     description: 'Verbos que cambian solo en 3ª persona: e→i (pidió), o→u (durmió), i→y (leyó)',
     paradigmatic: 'pedir',
-    examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír', 'repetir', 'competir', 'impedir', 'medir', 'seguir', 'conseguir', 'perseguir', 'vestir', 'mentir', 'sentir', 'convertir', 'divertir', 'advertir', 'sugerir', 'referir', 'construir', 'destruir', 'instruir', 'sustituir', 'distribuir', 'contribuir', 'huir', 'incluir', 'concluir', 'excluir', 'influir', 'creer', 'poseer', 'proveer', 'caer', 'traer'], // Muchos más verbos e→i, o→u, i→y para mayor variedad
+    examples: ['pedir', 'preferir', 'dormir', 'leer', 'servir', 'morir', 'oír', 'repetir', 'competir', 'impedir', 'medir', 'seguir', 'conseguir', 'perseguir', 'vestir', 'mentir', 'sentir', 'convertir', 'divertir', 'advertir', 'sugerir', 'referir', 'construir', 'destruir', 'instruir', 'sustituir', 'distribuir', 'contribuir', 'huir', 'incluir', 'concluir', 'excluir', 'influir', 'creer', 'poseer', 'proveer', 'caer'], // Verbos e→i, o→u, i→y que cambian solo en 3ª persona
     priorityExamples: ['pedir', 'dormir', 'leer'], // Tres patrones más claros: e→i, o→u, i→y
     pattern: 'pedir: pedí, pediste, pidió, pedimos, pedisteis, pidieron (solo 3ª persona cambia)',
     affectedTenses: ['pretIndef', 'ger'],
