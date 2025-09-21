@@ -156,6 +156,90 @@ const heatMapData = await getHeatMapData()
 const radarData = await getCompetencyRadarData()
 ```
 
+## Manejo de Errores y Reintentos
+
+### Comportamiento de Inicialización
+
+El sistema de progreso implementa un robusto manejo de errores durante la inicialización que permite reintentos tras fallos:
+
+```javascript
+import { initProgressSystem } from './lib/progress/index.js'
+
+try {
+  // Inicializar con ID de usuario específico o generar uno
+  const userId = await initProgressSystem('user-123')
+  console.log('Sistema inicializado exitosamente:', userId)
+} catch (error) {
+  console.error('Fallo en la inicialización:', error)
+
+  // El sistema puede reintentarse - el estado queda limpio tras errores
+  try {
+    const userId = await initProgressSystem('user-123')
+    console.log('Segundo intento exitoso:', userId)
+  } catch (retryError) {
+    console.error('Reintentos también fallaron:', retryError)
+  }
+}
+```
+
+### Garantías de Reintentos
+
+1. **Limpieza automática**: Si `initProgressSystem` falla, el sistema resetea automáticamente el flag de inicialización, permitiendo reintentos inmediatos.
+
+2. **Sin estado bloqueado**: Los fallos no dejan el sistema en un estado inconsistente que impida futuras inicializaciones.
+
+3. **Fallos comunes manejados**:
+   - Errores de IndexedDB (permisos, cuota excedida)
+   - Fallos de importación de módulos
+   - Problemas de conectividad durante inicialización
+   - Errores de tracking o sincronización
+
+### Casos de Uso Comunes
+
+```javascript
+// Patrón recomendado con reintentos automáticos
+async function initializeWithRetries(maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const userId = await initProgressSystem()
+      return userId
+    } catch (error) {
+      console.warn(`Intento ${attempt} falló:`, error.message)
+
+      if (attempt === maxRetries) {
+        throw new Error(`Inicialización falló tras ${maxRetries} intentos`)
+      }
+
+      // Esperar antes del siguiente intento (backoff exponencial)
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+    }
+  }
+}
+
+// Uso en la aplicación
+try {
+  const userId = await initializeWithRetries()
+  console.log('Sistema listo:', userId)
+} catch (error) {
+  // Fallback a modo sin progreso
+  console.error('No se pudo inicializar el sistema de progreso:', error)
+}
+```
+
+### Testing de Reintentos
+
+El sistema incluye tests específicos que verifican el comportamiento de reintentos:
+
+```bash
+# Test que simula fallo de initDB y confirma que reintentos funcionan
+npm test src/lib/progress/integration.test.js -- -t "reintentos"
+```
+
+Este test confirma que:
+- El primer intento falla correctamente cuando initDB lanza una excepción
+- El segundo intento ejecuta la inicialización completa sin problemas
+- No hay estado residual que impida reintentos
+
 ## Pruebas
 
 El sistema incluye pruebas unitarias completas:

@@ -46,6 +46,54 @@ describe('Pruebas de Integración del Sistema de Progreso', () => {
     console.log('✅ Integración básica completada')
   })
 
+  it('debería permitir reintentos tras fallo de initDB', async () => {
+    // Importar funciones específicas necesarias para el test
+    const { resetProgressSystem } = await import('./index.js')
+
+    // Resetear estado del sistema antes del test
+    await resetProgressSystem()
+
+    // Mock que simula fallo de initDB en el primer intento
+    let callCount = 0
+    vi.doMock('./database.js', () => ({
+      initDB: vi.fn().mockImplementation(async () => {
+        callCount++
+        if (callCount === 1) {
+          throw new Error('Simulated initDB failure')
+        }
+        // Éxito en el segundo intento
+        return true
+      }),
+      // Otros mocks necesarios para que funcione
+      saveUser: vi.fn(),
+      getUser: vi.fn(),
+      saveVerb: vi.fn(),
+      getVerb: vi.fn()
+    }))
+
+    // Primer intento - debería fallar
+    let firstAttemptFailed = false
+    try {
+      await initProgressSystem('test-user-retry')
+    } catch (error) {
+      firstAttemptFailed = true
+      expect(error.message).toContain('Simulated initDB failure')
+    }
+    expect(firstAttemptFailed).toBe(true)
+
+    // Verificar que el sistema no está inicializado tras el fallo
+    expect(isProgressSystemInitialized()).toBe(false)
+
+    // Segundo intento - debería tener éxito
+    const userId = await initProgressSystem('test-user-retry')
+    expect(userId).toBeDefined()
+    expect(typeof userId).toBe('string')
+    expect(isProgressSystemInitialized()).toBe(true)
+    expect(getCurrentUserId()).toBe(userId)
+
+    console.log(`✅ Test de reintentos completado: primer intento falló, segundo intento exitoso`)
+  })
+
   it('debería integrar correctamente el cálculo de mastery para un ítem', async () => {
     const testVerb = {
       id: 'verb-integration-test',
