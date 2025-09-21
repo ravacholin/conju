@@ -740,6 +740,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
         const migratedAttempt = { ...attempt, userId: newUserId }
         delete migratedAttempt.syncedAt
         migratedAttempt.updatedAt = new Date()
+        migratedAttempt.syncPriority = true
+        migratedAttempt.migratedAt = new Date()
         await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, migratedAttempt)
         stats.attempts++
       }
@@ -759,6 +761,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
         let migratedMastery = { ...mastery, id: newId, userId: newUserId }
         delete migratedMastery.syncedAt
         migratedMastery.updatedAt = new Date()
+        migratedMastery.syncPriority = true
+        migratedMastery.migratedAt = new Date()
 
         // Si ya existe un registro para ese newId, combinar conservando el mejor score y timestamps más recientes
         try {
@@ -775,6 +779,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
               updatedAt: new Date()
             }
             delete migratedMastery.syncedAt
+            migratedMastery.syncPriority = true
+            migratedMastery.migratedAt = new Date()
           }
         } catch {/* merge best-effort */}
 
@@ -799,6 +805,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
         let migratedSchedule = { ...schedule, id: newId, userId: newUserId }
         delete migratedSchedule.syncedAt
         migratedSchedule.updatedAt = new Date()
+        migratedSchedule.syncPriority = true
+        migratedSchedule.migratedAt = new Date()
 
         // Si ya existía un schedule para ese id, conservar el más reciente por updatedAt
         try {
@@ -815,6 +823,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
               ))
             }
             delete migratedSchedule.syncedAt
+            migratedSchedule.syncPriority = true
+            migratedSchedule.migratedAt = new Date()
           }
         } catch {/* best-effort */}
 

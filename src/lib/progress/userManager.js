@@ -390,7 +390,13 @@ async function postJSON(path, body, timeoutMs = 30000) {
 async function tryBulk(type, records) {
   if (!records || records.length === 0) return { success: true, count: 0 }
   const path = `/progress/${type}/bulk`
-  const body = { records }
+  // Strip local-only fields before upload
+  const sanitize = (obj) => {
+    if (!obj || typeof obj !== 'object') return obj
+    const { syncPriority: _SYNC_PRIORITY, migratedAt: _MIGRATED_AT, ...rest } = obj
+    return rest
+  }
+  const body = { records: records.map(sanitize) }
   const res = await postJSON(path, body)
   return { success: true, ...res }
 }
@@ -826,7 +832,9 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const all = await getAttemptsByUser(userId)
       console.log(`🔍 DEBUG: Encontrados ${all.length} attempts totales para userId: ${userId}`)
 
-      const unsynced = all.filter(a => !a.syncedAt)
+      let unsynced = all.filter(a => !a.syncedAt)
+      // Prioritize migrated records
+      unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       console.log(`🔍 DEBUG: Attempts sin sincronizar: ${unsynced.length}`)
 
       if (unsynced.length > 0) {
@@ -846,7 +854,8 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const all = await getMasteryByUser(userId)
       console.log(`🔍 DEBUG: Encontrados ${all.length} mastery totales para userId: ${userId}`)
 
-      const unsynced = all.filter(m => !m.syncedAt)
+      let unsynced = all.filter(m => !m.syncedAt)
+      unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       console.log(`🔍 DEBUG: Mastery sin sincronizar: ${unsynced.length}`)
 
       if (unsynced.length > 0) {
@@ -868,7 +877,8 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
       const userSchedules = allSchedules.filter(s => s.userId === userId)
       console.log(`🔍 DEBUG: Encontrados ${userSchedules.length} schedules totales para userId: ${userId}`)
 
-      const unsynced = userSchedules.filter(s => !s.syncedAt)
+      let unsynced = userSchedules.filter(s => !s.syncedAt)
+      unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       console.log(`🔍 DEBUG: Schedules sin sincronizar: ${unsynced.length}`)
 
       if (unsynced.length > 0) {
