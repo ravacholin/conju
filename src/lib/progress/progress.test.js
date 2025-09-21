@@ -133,20 +133,80 @@ describe('Sistema de Progreso', () => {
     const levelInsufficient = classifyMasteryLevel(70, 5, 3000)
     expect(levelInsufficient.level).toBe('insuficiente')
     expect(levelInsufficient.confidence.sufficient).toBe(false)
-    
+
     // Con suficientes intentos y buen score
     const levelAchieved = classifyMasteryLevel(85, 10, 2000)
     expect(levelAchieved.level).toBe('logrado')
     expect(levelAchieved.confidence.sufficient).toBe(true)
-    
+
     // Con suficientes intentos y score medio
     const levelAttention = classifyMasteryLevel(70, 10, 4000)
     expect(levelAttention.level).toBe('atención')
     expect(levelAttention.confidence.sufficient).toBe(true)
-    
+
     // Con suficientes intentos y score bajo
     const levelCritical = classifyMasteryLevel(40, 10, 3000)
     expect(levelCritical.level).toBe('crítico')
     expect(levelCritical.confidence.sufficient).toBe(true)
   })
+
+  it('debería resolver initProgressSystem antes de completar todos los lotes', async () => {
+    // Importar funciones específicas del sistema de eventos para monitorear progreso
+    const { onBatchProgress, getBatchInitializationProgress, resetProgressSystemState } = await import('./ProgressSystemEvents.js')
+
+    // Resetear estado del sistema para prueba limpia
+    resetProgressSystemState()
+
+    let batchUpdatesReceived = 0
+    let systemResolvedBeforeCompletion = false
+
+    // Monitorear progreso de lotes
+    const unsubscribe = onBatchProgress((progress) => {
+      batchUpdatesReceived++
+      console.log(`📊 Test: Lote ${progress.completedBatches}/${progress.totalBatches} completado`)
+
+      // Si el sistema ya está inicializado pero los lotes siguen en proceso
+      if (isProgressSystemInitialized() && progress.isRunning) {
+        systemResolvedBeforeCompletion = true
+      }
+    })
+
+    // Tiempo antes de inicialización
+    const startTime = Date.now()
+
+    // Inicializar sistema (debería resolver rápidamente)
+    const userId = await initProgressSystem()
+
+    // Tiempo después de que initProgressSystem resuelva
+    const systemResolvedTime = Date.now()
+
+    // Verificar que el sistema está inicializado
+    expect(userId).toBeDefined()
+    expect(isProgressSystemInitialized()).toBe(true)
+    expect(getCurrentUserId()).toBe(userId)
+
+    // Dar tiempo para que los lotes se procesen en background
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Obtener estado final de progreso por lotes
+    const finalProgress = getBatchInitializationProgress()
+
+    // Limpiar suscripción
+    unsubscribe()
+
+    // Verificaciones de comportamiento asincrónico
+    console.log(`⏱️ Test: Sistema resuelto en ${systemResolvedTime - startTime}ms`)
+    console.log(`📈 Test: ${batchUpdatesReceived} actualizaciones de progreso recibidas`)
+    console.log(`🏁 Test: Estado final - batches: ${finalProgress.completedBatches}, creados: ${finalProgress.totalCreated}`)
+
+    // El sistema debería resolver rápidamente (< 50ms típicamente)
+    expect(systemResolvedTime - startTime).toBeLessThan(500) // Tolerancia amplia para CI
+
+    // Si hubo procesamiento por lotes, debería haber recibido actualizaciones
+    if (finalProgress.totalBatches > 0) {
+      expect(batchUpdatesReceived).toBeGreaterThan(0)
+      // El sistema debería haberse resuelto antes de completar todos los lotes
+      expect(systemResolvedBeforeCompletion).toBe(true)
+    }
+  }, 10000) // Timeout de 10s para permitir procesamiento por lotes
 })

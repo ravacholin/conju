@@ -4,8 +4,7 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { logger, logFlow } from './logger.js'
 import { memoryManager } from './memoryManager.js'
-import { verbs } from '../../data/verbs.js'
-import { isIrregularInTense } from '../utils/irregularityUtils.js'
+import { verbMetadataProvider } from './verbMetadataProvider.js'
 
 /**
  * Estados posibles de flow del usuario
@@ -126,30 +125,32 @@ export class FlowStateDetector {
   }
 
   /**
-   * Estimar complejidad del elemento
+   * Estimar complejidad del elemento (sincrónico con fallback)
    */
   estimateComplexity(response) {
     const item = response.item
     if (!item) return 0.5
-    
+
     let complexity = 0.3 // Base complexity
-    
+
     // Mood complexity
     if (item.mood === 'subjunctive') complexity += 0.3
     else if (item.mood === 'conditional') complexity += 0.2
     else if (item.mood === 'imperative') complexity += 0.2
-    
-    // Tense complexity  
+
+    // Tense complexity
     if (item.tense && (item.tense.includes('Perf') || item.tense.includes('Plusc'))) complexity += 0.2
     if (item.tense === 'subjImpf' || item.tense === 'subjPlusc') complexity += 0.3
-    
-    // Verb irregularity - check per-tense for more accurate complexity assessment
-    const verb = verbs.find(v => v.lemma === item.lemma)
-    const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
-    if (response.verbType === 'irregular' || isIrregularForTense) {
+
+    // Verb irregularity - usar verbType como fallback rápido para análisis de flow
+    // El análisis de flow necesita ser rápido, así que usamos verbType si está disponible
+    if (response.verbType === 'irregular') {
       complexity += 0.2
+    } else if (item.lemma) {
+      // Complejidad mínima adicional para verbos desconocidos
+      complexity += 0.1
     }
-    
+
     return Math.min(1.0, complexity)
   }
 

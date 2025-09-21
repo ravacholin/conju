@@ -10,6 +10,7 @@ import { PROGRESS_CONFIG } from './config.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
 import { updateSchedule } from './srs.js'
+import { notifyNewAttempt } from './incrementalMastery.js'
 
 // Estado del tracking
 let currentSession = null
@@ -167,7 +168,10 @@ export async function trackAttemptSubmitted(attemptId, result) {
     
     // Guardar intento en la base de datos
     await saveAttempt(attempt)
-    
+
+    // Invalidar cache de mastery para el ítem actualizado
+    notifyNewAttempt(canonicalItemId)
+
     console.log(`✅ Intento registrado: ${attemptId}`, attempt)
 
     // Notificar que se actualizaron los datos de progreso

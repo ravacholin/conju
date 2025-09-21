@@ -2,8 +2,7 @@
 // Rastrea las rachas emocionales del usuario más allá de simple acierto/error
 
 import { logger } from './logger.js'
-import { verbs } from '../../data/verbs.js'
-import { isIrregularInTense } from '../utils/irregularityUtils.js'
+import { verbMetadataProvider } from './verbMetadataProvider.js'
 
 /**
  * Tipos de momentum emocional
@@ -220,10 +219,10 @@ export class MomentumTracker {
       const item = response.item
       if (item.mood === 'subjunctive') difficulty += 0.2
       if (item.tense && item.tense.includes('Perf')) difficulty += 0.1
-      // Check per-tense irregularity for more accurate difficulty assessment
-      const verb = verbs.find(v => v.lemma === item.lemma)
-      const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
-      if (response.verbType === 'irregular' || isIrregularForTense) {
+
+      // Usar verbType como fallback rápido para momentum tracking
+      // El tracking de momentum necesita ser eficiente, priorizamos velocidad sobre precisión
+      if (response.verbType === 'irregular') {
         difficulty += 0.1
       }
     }

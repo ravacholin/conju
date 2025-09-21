@@ -179,3 +179,93 @@ try {
   useState = () => [false, () => {}]
   useEffect = () => {}
 }
+
+// ===== EVENTOS DE PROGRESO PARA INICIALIZACIÓN POR LOTES =====
+
+// Estado del progreso de inicialización por lotes
+let batchInitializationProgress = {
+  isRunning: false,
+  totalBatches: 0,
+  completedBatches: 0,
+  totalCreated: 0,
+  totalSkipped: 0
+}
+
+// Callbacks para progreso de lotes
+const batchProgressCallbacks = new Set()
+
+/**
+ * Notifica el progreso de la inicialización por lotes
+ * @param {Object} progress - Información del progreso
+ * @param {number} progress.batchCount - Número de lotes completados
+ * @param {number} progress.totalCreated - Total de ítems creados
+ * @param {number} progress.totalSkipped - Total de ítems omitidos
+ * @param {number} progress.currentBatchSize - Tamaño del lote actual
+ */
+export function notifyBatchProgress(progress) {
+  batchInitializationProgress = {
+    isRunning: true,
+    totalBatches: progress.batchCount,
+    completedBatches: progress.batchCount,
+    totalCreated: progress.totalCreated,
+    totalSkipped: progress.totalSkipped
+  }
+
+  // Notificar a todos los callbacks
+  batchProgressCallbacks.forEach(callback => {
+    try {
+      callback(batchInitializationProgress)
+    } catch (error) {
+      logger.warn('Error en callback de progreso de lotes:', error)
+    }
+  })
+}
+
+/**
+ * Marca la inicialización por lotes como completada
+ * @param {Object} finalStats - Estadísticas finales
+ */
+export function markBatchInitializationComplete(finalStats) {
+  batchInitializationProgress = {
+    ...batchInitializationProgress,
+    isRunning: false,
+    ...finalStats
+  }
+
+  // Notificar finalización
+  batchProgressCallbacks.forEach(callback => {
+    try {
+      callback(batchInitializationProgress)
+    } catch (error) {
+      logger.warn('Error en callback de finalización de lotes:', error)
+    }
+  })
+
+  logger.debug('Inicialización por lotes completada')
+}
+
+/**
+ * Registra un callback para recibir actualizaciones de progreso
+ * @param {Function} callback - Función a llamar con el progreso
+ * @returns {Function} Función para cancelar la suscripción
+ */
+export function onBatchProgress(callback) {
+  if (typeof callback !== 'function') {
+    throw new Error('Callback must be a function')
+  }
+
+  batchProgressCallbacks.add(callback)
+
+  // Devolver función de unsubscribe
+  return () => {
+    batchProgressCallbacks.delete(callback)
+  }
+}
+
+/**
+ * Obtiene el estado actual del progreso de inicialización por lotes
+ * @returns {Object} Estado actual del progreso
+ */
+export function getBatchInitializationProgress() {
+  return { ...batchInitializationProgress }
+}

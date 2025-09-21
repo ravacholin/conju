@@ -51,15 +51,23 @@ export {
   getCacheStats
 } from './database.js'
 
-// Mastery
+// Mastery (optimized with incremental caching)
 export {
   getVerbDifficulty,
-  calculateMasteryForItem,
-  calculateMasteryForCell,
   calculateMasteryForTimeOrMood,
   getConfidenceLevel,
   classifyMasteryLevel
 } from './mastery.js'
+
+// Optimized mastery functions with incremental caching
+export {
+  calculateMasteryForItem,
+  calculateMasteryForCell,
+  notifyNewAttempt,
+  getMasteryCacheStats,
+  clearMasteryCache,
+  cleanupMasteryCache
+} from './incrementalMastery.js'
 
 // Penalties
 export {

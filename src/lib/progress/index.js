@@ -4,9 +4,11 @@
 // moquean './database.js' sin ese export sigan funcionando. Lo cargamos de forma
 // perezosa y con fallback a no-op.
 import { initTracking } from './tracking.js'
-import { initializeItems } from './itemManagement.js'
+import { initializeItems, initializeItemsBatched } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 import { markProgressSystemReady } from './ProgressSystemEvents.js'
+import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
+import { cleanupMasteryCache } from './incrementalMastery.js'
 
 // Estado del sistema
 let isInitialized = false
@@ -47,6 +49,29 @@ function getOrCreatePersistentUserId() {
     // Fallback a ID temporal si hay problemas con localStorage
     return `user-temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
+}
+
+/**
+ * Programa la inicialización de ítems por lotes para evitar bloquear la UI
+ * @returns {Promise<void>}
+ */
+async function scheduleItemsInitializationBatched() {
+  // Usar requestIdleCallback si está disponible, sino setTimeout
+  const scheduler = typeof window !== 'undefined' && window.requestIdleCallback
+    ? window.requestIdleCallback
+    : (callback) => setTimeout(callback, 0)
+
+  return new Promise((resolve) => {
+    scheduler(async () => {
+      try {
+        await initializeItemsBatched()
+        resolve()
+      } catch (error) {
+        console.warn('Error en inicialización por lotes:', error)
+        resolve() // No fallar, es proceso en background
+      }
+    })
+  })
 }
 
 /**
@@ -103,13 +128,22 @@ export async function initProgressSystem(userId = null) {
       // Inicializar tracking
       await initTracking(userId)
       console.log('✅ Tracking inicializado')
-      
+
+      // Inyectar verbos en el metadata provider para motores emocionales
+      try {
+        const { verbs } = await import('../../data/verbs.js')
+        injectVerbsIntoProvider(verbs)
+        console.log('✅ Metadata provider inicializado con dataset de verbos')
+      } catch (error) {
+        console.warn('No se pudo inyectar verbos en metadata provider:', error)
+      }
+
       // Inicializar ítems canónicos para analíticas (no bloqueante)
       try {
         if (!(import.meta && import.meta.vitest)) {
-          // En ejecución normal, dispara inicialización en background sin bloquear
-          initializeItems().catch(e => {
-            console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', e)
+          // En ejecución normal, dispara inicialización por lotes sin bloquear UI
+          scheduleItemsInitializationBatched().catch(e => {
+            console.warn('Inicialización de ítems por lotes omitida o fallida (no bloqueante):', e)
           })
         }
         // En entorno de pruebas, saltar para evitar timeouts por E/S pesada
@@ -120,10 +154,20 @@ export async function initProgressSystem(userId = null) {
       // Marcar como inicializado
       isInitialized = true
       currentUserId = userId
-      
+
+      // Programar limpieza periódica del cache de mastery (cada 30 minutos)
+      if (typeof window !== 'undefined') {
+        setInterval(() => {
+          const cleaned = cleanupMasteryCache()
+          if (cleaned.cleanedItems > 0 || cleaned.cleanedCells > 0) {
+            console.log(`🧹 Cache de mastery limpiado: ${cleaned.cleanedItems} ítems, ${cleaned.cleanedCells} celdas`)
+          }
+        }, 30 * 60 * 1000) // 30 minutos
+      }
+
       // Notificar a través del sistema de eventos que el sistema está listo
       markProgressSystemReady()
-      
+
       console.log(`🎉 Sistema de progreso completamente inicializado para usuario ${userId}`)
       return userId
     })()

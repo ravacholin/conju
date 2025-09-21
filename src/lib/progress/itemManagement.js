@@ -3,6 +3,16 @@
 import { verbs } from '../../data/verbs.js'
 
 /**
+ * Tamaño del lote para procesamiento no bloqueante
+ */
+const BATCH_SIZE = 50
+
+/**
+ * Retraso entre lotes para permitir que la UI responda
+ */
+const BATCH_DELAY = 5
+
+/**
  * Inicializa los ítems de práctica en el sistema de progreso
  * @returns {Promise<void>}
  */
@@ -132,9 +142,164 @@ export async function getItemsByCell(_mood, _tense, _person) {
 export async function getItemsByVerb(_verbId) {
   // En una implementación completa, esto buscaría en la base de datos
   // todos los ítems asociados a un verbo específico
-  
+
   // Por ahora, devolvemos un array vacío
   return []
+}
+
+/**
+ * Crea un lote de ítems desde un array de datos de formas
+ * @param {Array} formsData - Array de datos de formas: [{verb, paradigm, form}, ...]
+ * @param {Function} saveItem - Función para guardar ítem
+ * @param {Function} getItemByProperties - Función para verificar ítem existente
+ * @returns {Promise<{created: number, skipped: number}>}
+ */
+async function processBatch(formsData, saveItem, getItemByProperties) {
+  let created = 0
+  let skipped = 0
+
+  for (const {verb, form} of formsData) {
+    try {
+      // Verificar si el ítem ya existe
+      const existingItem = await getItemByProperties(
+        verb.id || `verb-${verb.lemma}`,
+        form.mood,
+        form.tense,
+        form.person
+      )
+
+      // Si no existe, crearlo
+      if (!existingItem) {
+        const item = {
+          id: `item-${verb.lemma}-${form.mood}-${form.tense}-${form.person}`,
+          verbId: verb.id || `verb-${verb.lemma}`,
+          mood: form.mood,
+          tense: form.tense,
+          person: form.person
+        }
+
+        await saveItem(item)
+        created++
+      } else {
+        skipped++
+      }
+    } catch (error) {
+      console.error(`❌ Error procesando ítem ${verb.lemma} ${form.mood}/${form.tense}/${form.person}:`, error)
+    }
+  }
+
+  return { created, skipped }
+}
+
+/**
+ * Crea un generador que produce datos de formas en lotes
+ * @param {Array} verbs - Array de verbos
+ * @param {number} batchSize - Tamaño del lote
+ */
+function* createFormsBatchGenerator(verbs, batchSize) {
+  let batch = []
+
+  for (const verb of verbs) {
+    for (const paradigm of verb.paradigms || []) {
+      for (const form of paradigm.forms || []) {
+        batch.push({ verb, paradigm, form })
+
+        if (batch.length >= batchSize) {
+          yield batch
+          batch = []
+        }
+      }
+    }
+  }
+
+  // Yield remaining items if any
+  if (batch.length > 0) {
+    yield batch
+  }
+}
+
+/**
+ * Inicializa los ítems de práctica por lotes para evitar bloquear la UI
+ * @param {Object} options - Opciones de configuración
+ * @param {number} options.batchSize - Tamaño del lote (default: BATCH_SIZE)
+ * @param {number} options.batchDelay - Retraso entre lotes en ms (default: BATCH_DELAY)
+ * @param {Function} options.onProgress - Callback para reportar progreso (opcional)
+ * @returns {Promise<void>}
+ */
+export async function initializeItemsBatched(options = {}) {
+  const {
+    batchSize = BATCH_SIZE,
+    batchDelay = BATCH_DELAY,
+    onProgress
+  } = options
+
+  console.log('🔄 Inicializando ítems por lotes (no bloqueante)...')
+
+  try {
+    // Importar funciones de eventos de progreso
+    const { notifyBatchProgress, markBatchInitializationComplete } = await import('./ProgressSystemEvents.js')
+
+    // Cargar funciones de BD de forma perezosa
+    let saveItem = async () => {}
+    let getItemByProperties = async () => null
+    try {
+      const dbModule = await import('./database.js')
+      if (typeof dbModule.saveItem === 'function') saveItem = dbModule.saveItem
+      if (typeof dbModule.getItemByProperties === 'function') getItemByProperties = dbModule.getItemByProperties
+    } catch {
+      /* ignore */
+    }
+
+    let totalCreated = 0
+    let totalSkipped = 0
+    let batchCount = 0
+
+    // Crear generador de lotes
+    const batchGenerator = createFormsBatchGenerator(verbs, batchSize)
+
+    // Procesar cada lote
+    for (const batch of batchGenerator) {
+      const { created, skipped } = await processBatch(batch, saveItem, getItemByProperties)
+
+      totalCreated += created
+      totalSkipped += skipped
+      batchCount++
+
+      const progressData = {
+        batchCount,
+        totalCreated,
+        totalSkipped,
+        currentBatchSize: batch.length
+      }
+
+      // Notificar progreso a través del sistema de eventos
+      notifyBatchProgress(progressData)
+
+      // Reportar progreso si se proporciona callback (compatibilidad)
+      if (onProgress) {
+        onProgress(progressData)
+      }
+
+      // Yield control back to event loop to avoid blocking UI
+      if (batchDelay > 0) {
+        await new Promise(resolve => setTimeout(resolve, batchDelay))
+      }
+    }
+
+    // Marcar finalización del proceso por lotes
+    const finalStats = {
+      totalBatches: batchCount,
+      completedBatches: batchCount,
+      totalCreated,
+      totalSkipped
+    }
+    markBatchInitializationComplete(finalStats)
+
+    console.log(`✅ Inicialización por lotes completada: ${totalCreated} creados, ${totalSkipped} ya existentes en ${batchCount} lotes`)
+  } catch (error) {
+    console.error('❌ Error en inicialización por lotes:', error)
+    throw error
+  }
 }
 
 /**
