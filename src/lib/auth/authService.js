@@ -705,7 +705,8 @@ class AuthService {
           localMigrationResult = { error: localError.message }
         }
 
-        // 3. Actualizar el sistema de progreso para usar el nuevo userId (solo si migración fue exitosa)
+        // 3. Actualizar el sistema de progreso para usar el nuevo userId 
+        // Fix: Treat "no rows migrated" case as success - still call setCurrentUserId
         if (localMigrationResult && !localMigrationResult.error && validationResult?.valid) {
           try {
             console.log('🔄 Actualizando sistema de progreso con nuevo userId...')
@@ -722,6 +723,28 @@ class AuthService {
             }
           } catch (progressError) {
             console.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
+          }
+        } else if (localMigrationResult && !localMigrationResult.error && 
+                   validationResult && 
+                   validationResult.totalRemaining === 0 && 
+                   validationResult.totalNew === 0) {
+          // Special case: no rows to migrate (fresh device)
+          // Treat as success and still update the progress system
+          try {
+            console.log('🔄 Actualizando sistema de progreso con nuevo userId (no data to migrate)...')
+            const progressModule = await import('../progress/index.js')
+            const { setCurrentUserId } = progressModule
+
+            if (typeof setCurrentUserId === 'function') {
+              const updateSuccess = setCurrentUserId(authenticatedUserId)
+              if (updateSuccess) {
+                console.log('✅ Sistema de progreso actualizado con nuevo userId (no data case)')
+              } else {
+                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso (no data case)')
+              }
+            }
+          } catch (progressError) {
+            console.warn('⚠️ Error actualizando sistema de progreso (no data case):', progressError.message)
           }
         } else {
           console.warn('⚠️ Saltando actualización de sistema de progreso - migración no exitosa')

@@ -796,12 +796,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   }
 }
 
-/**
- * Valida que la migración de userId fue exitosa
- * @param {string} oldUserId - Usuario ID anónimo original
- * @param {string} newUserId - Usuario ID autenticado
- * @returns {Promise<Object>} Resultado de la validación
- */
+/**\n * Valida que la migración de userId fue exitosa\n * @param {string} oldUserId - Usuario ID anónimo original\n * @param {string} newUserId - Usuario ID autenticado\n * @returns {Promise<Object>} Resultado de la validación\n */
 export async function validateUserIdMigration(oldUserId, newUserId) {
   if (!oldUserId || !newUserId) {
     return { valid: false, reason: 'missing_user_ids' }
@@ -839,7 +834,9 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     const totalRemaining = remainingData.attempts + remainingData.mastery + remainingData.schedules + remainingData.user
     const totalNew = newData.attempts + newData.mastery + newData.schedules + newData.user
 
-    const isValid = totalRemaining === 0 && totalNew > 0
+    // Fix: Migrations with zero records (both totalRemaining and totalNew equal 0) are considered valid
+    // This handles the case where a new device has no local data to migrate
+    const isValid = totalRemaining === 0 && (totalNew > 0 || (totalNew === 0 && totalRemaining === 0))
 
     console.log(`🔍 Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
 
