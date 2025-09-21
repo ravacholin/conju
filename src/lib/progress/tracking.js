@@ -41,6 +41,38 @@ export async function initTracking(userId) {
   }
 }
 
+// Mantener el tracking alineado cuando cambia el userId (p. ej., tras login/migración)
+if (typeof window !== 'undefined') {
+  try {
+    window.addEventListener('progress:user-id-changed', (e) => {
+      try {
+        const newUserId = e?.detail?.newUserId
+        if (!newUserId || typeof newUserId !== 'string') return
+
+        // Finalizar sesión actual (si existiera) y abrir una nueva con el nuevo userId
+        if (currentSession && !currentSession.endedAt) {
+          currentSession.endedAt = new Date()
+        }
+
+        currentSession = {
+          id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          userId: newUserId,
+          startedAt: new Date(),
+          endedAt: null
+        }
+        currentUserId = newUserId
+
+        console.log('🔄 Tracking actualizado tras cambio de userId:', {
+          newUserId: currentUserId,
+          sessionId: currentSession.id
+        })
+      } catch (innerErr) {
+        console.warn('⚠️ No se pudo actualizar tracking tras cambio de userId:', innerErr?.message || innerErr)
+      }
+    })
+  } catch {/* ignore listener wiring errors */}
+}
+
 /**
  * Registra el inicio de un intento
  * @param {Object} item - Ítem que se va a practicar
