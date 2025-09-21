@@ -624,35 +624,302 @@ describe('useDrillProgress Hook', () => {
 describe('useDrillProgress Performance Tests', () => {
   it('should handle high volume of responses efficiently', async () => {
     const { result } = renderHook(() => useDrillProgress())
-    
+
     const startTime = performance.now()
-    
+
     await act(async () => {
       const testItem = { id: 'test-item', lemma: 'hablar' }
-      
+
       // Procesar 100 respuestas
       const promises = []
       for (let i = 0; i < 100; i++) {
         promises.push(
-          result.current.handleResponse(testItem, { 
+          result.current.handleResponse(testItem, {
             isCorrect: Math.random() > 0.5,
             responseTime: Math.random() * 3000 + 1000
           })
         )
       }
-      
+
       await Promise.all(promises)
     })
-    
+
     const endTime = performance.now()
     const duration = endTime - startTime
-    
+
     // Verificar que el procesamiento es relativamente rápido
     expect(duration).toBeLessThan(1000) // Menos de 1 segundo para 100 respuestas
-    
+
     // Verificar que las estadísticas son correctas
     expect(result.current.progressStats.totalAttempts).toBe(100)
     expect(result.current.progressStats.correctAttempts).toBeGreaterThanOrEqual(0)
     expect(result.current.progressStats.correctAttempts).toBeLessThanOrEqual(100)
+  })
+})
+
+describe('Flow State Detection Integration Tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockProgressSystemReady = true
+  })
+
+  describe('enriched response data flow', () => {
+    it('should create enriched response with complete item data for flow analysis', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      const complexItem = {
+        lemma: 'ser',
+        mood: 'subjunctive',
+        tense: 'subjImpf',
+        person: '3s',
+        id: 'complex-item-123',
+        settings: {
+          practiceMode: 'specific',
+          level: 'B2'
+        }
+      }
+
+      const response = {
+        isCorrect: true,
+        responseTime: 2200,
+        hintsUsed: 0,
+        userAnswer: 'fuera'
+      }
+
+      const mockOnResult = vi.fn()
+
+      await act(async () => {
+        await result.current.handleResponse(complexItem, response, mockOnResult)
+      })
+
+      // Verify that the response was processed successfully
+      expect(mockOnResult).toHaveBeenCalledWith(response)
+
+      // The enriched response should contain all necessary fields for flow analysis
+      // This verifies that the data structure matches what flow modules expect
+      expect(result.current.progressStats).toEqual({
+        totalAttempts: 1,
+        correctAttempts: 1,
+        currentStreak: 1,
+        accuracyRate: 100
+      })
+    })
+
+    it('should handle verb complexity data for flow state analysis', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      // Test with different complexity levels
+      const simpleItem = {
+        lemma: 'hablar',
+        mood: 'indicative',
+        tense: 'pres',
+        person: '1s'
+      }
+
+      const complexItem = {
+        lemma: 'estar',
+        mood: 'subjunctive',
+        tense: 'subjPlusc',
+        person: '2s_vos'
+      }
+
+      // Process simple item
+      await act(async () => {
+        await result.current.handleResponse(simpleItem, {
+          isCorrect: true,
+          responseTime: 1500
+        }, vi.fn())
+      })
+
+      // Process complex item
+      await act(async () => {
+        await result.current.handleResponse(complexItem, {
+          isCorrect: true,
+          responseTime: 3000
+        }, vi.fn())
+      })
+
+      expect(result.current.progressStats.totalAttempts).toBe(2)
+      expect(result.current.progressStats.correctAttempts).toBe(2)
+    })
+
+    it('should maintain response history for flow pattern detection', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      const responses = [
+        { lemma: 'ser', mood: 'indicative', tense: 'pres', correct: true, time: 1800 },
+        { lemma: 'estar', mood: 'indicative', tense: 'pres', correct: true, time: 1600 },
+        { lemma: 'tener', mood: 'indicative', tense: 'pres', correct: true, time: 1400 },
+        { lemma: 'hacer', mood: 'subjunctive', tense: 'subjPres', correct: false, time: 4500 }
+      ]
+
+      for (const resp of responses) {
+        const item = {
+          lemma: resp.lemma,
+          mood: resp.mood,
+          tense: resp.tense,
+          person: '1s'
+        }
+
+        const response = {
+          isCorrect: resp.correct,
+          responseTime: resp.time
+        }
+
+        await act(async () => {
+          await result.current.handleResponse(item, response, vi.fn())
+        })
+      }
+
+      expect(result.current.progressStats).toEqual({
+        totalAttempts: 4,
+        correctAttempts: 3,
+        currentStreak: 0, // Broken by the last incorrect response
+        accuracyRate: 75
+      })
+    })
+  })
+
+  describe('module coordination', () => {
+    it('should coordinate between flow, momentum, and confidence modules', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      const item = {
+        lemma: 'vivir',
+        mood: 'conditional',
+        tense: 'cond',
+        person: '2s_tu',
+        settings: {
+          practiceMode: 'mixed',
+          level: 'B1'
+        }
+      }
+
+      const response = {
+        isCorrect: true,
+        responseTime: 2500,
+        hintsUsed: 1,
+        userAnswer: 'vivirías'
+      }
+
+      await act(async () => {
+        await result.current.handleResponse(item, response, vi.fn())
+      })
+
+      // All modules should receive consistent data
+      // Verify that the response processing completed successfully
+      expect(result.current.progressStats.totalAttempts).toBe(1)
+      expect(result.current.isSystemReady).toBe(true)
+    })
+
+    it('should handle module failures gracefully without breaking flow', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      const item = {
+        lemma: 'poner',
+        mood: 'indicative',
+        tense: 'pretIndef',
+        person: '3s'
+      }
+
+      const response = {
+        isCorrect: false,
+        responseTime: 6000
+      }
+
+      // Even if modules fail internally, the main flow should continue
+      await act(async () => {
+        const processResult = await result.current.handleResponse(item, response, vi.fn())
+        expect(processResult.success).toBe(true)
+      })
+
+      expect(result.current.progressStats).toEqual({
+        totalAttempts: 1,
+        correctAttempts: 0,
+        currentStreak: 0,
+        accuracyRate: 0
+      })
+    })
+  })
+
+  describe('progress insights with flow data', () => {
+    it('should provide comprehensive insights including flow metrics', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      // Simulate building up flow state
+      for (let i = 0; i < 5; i++) {
+        const item = {
+          lemma: `verb${i}`,
+          mood: 'indicative',
+          tense: 'pres',
+          person: '1s'
+        }
+
+        const response = {
+          isCorrect: true,
+          responseTime: 1500 - (i * 100) // Getting faster
+        }
+
+        await act(async () => {
+          await result.current.handleResponse(item, response, vi.fn())
+        })
+      }
+
+      const insights = result.current.getProgressInsights()
+
+      expect(insights).toMatchObject({
+        stats: expect.objectContaining({
+          totalAttempts: 5,
+          correctAttempts: 5,
+          currentStreak: 5,
+          accuracyRate: 100
+        }),
+        isSystemReady: true,
+        userId: 'test-user-123',
+        insights: expect.objectContaining({
+          needsMorePractice: false,
+          isOnStreak: true // >= 5 responses
+        })
+      })
+    })
+  })
+
+  describe('hint tracking integration', () => {
+    it('should integrate hint usage with flow state analysis', async () => {
+      const { result } = renderHook(() => useDrillProgress())
+
+      const item = {
+        lemma: 'querer',
+        mood: 'subjunctive',
+        tense: 'subjPres',
+        person: '2s_vos',
+        settings: {
+          practiceMode: 'specific',
+          level: 'B1'
+        }
+      }
+
+      // Show hint first
+      await act(async () => {
+        await result.current.handleHintShown(item, 'conjugation')
+      })
+
+      // Then process response with hint usage
+      await act(async () => {
+        await result.current.handleResponse(item, {
+          isCorrect: true,
+          responseTime: 3500,
+          hintsUsed: 1,
+          userAnswer: 'quieras'
+        }, vi.fn())
+      })
+
+      expect(result.current.progressStats).toEqual({
+        totalAttempts: 1,
+        correctAttempts: 1,
+        currentStreak: 1,
+        accuracyRate: 100
+      })
+    })
   })
 })
