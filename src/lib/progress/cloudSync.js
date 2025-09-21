@@ -291,7 +291,7 @@ export function cancelScheduledSync() {
   autoSyncTimerId = null
 }
 
-export default {
+const cloudSyncModule = {
   syncWithCloud,
   getSyncStatus,
   setIncognitoMode,
@@ -304,3 +304,10 @@ export default {
   scheduleAutoSync,
   cancelScheduledSync
 }
+
+// Expose cloudSync globally for debugging
+if (typeof window !== 'undefined') {
+  window.cloudSync = cloudSyncModule
+}
+
+export default cloudSyncModule

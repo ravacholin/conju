@@ -166,6 +166,14 @@ const eligibleForms = useMemo(() => {
 <CommunicativePractice eligibleForms={eligibleForms} ... />
 ```
 
+### Sync Debugging
+```javascript
+// In browser console
+window.debugSync()           // Complete sync diagnostics
+window.authService.getToken() // Check auth token
+window.cloudSync.getSyncStatus() // Get sync status
+```
+
 ### Cache Debugging
 ```javascript
 // In browser console
@@ -224,29 +232,47 @@ The app uses IndexedDB for local storage with these stores:
 
 ## Sync Troubleshooting
 
-### Common Sync Issues
-The most frequent issue is progress not syncing between devices even with the same Google account.
+### Sync System Architecture (Updated 2025-09-21)
 
-**Problem**: User logs in on new device, clicks "Sync ahora" in progress module, but progress from other device doesn't appear.
+The sync system is **fully implemented** and uses intelligent environment detection for seamless operation across development and production.
 
-**Root Cause**: The current sync implementation in `src/lib/progress/cloudSync.js` is mostly stubbed out with placeholder functions. Real sync logic needs to be implemented.
+**Architecture**:
+- `src/lib/config/syncConfig.js` - Intelligent environment detection and URL configuration
+- `src/lib/progress/cloudSync.js` - Complete frontend sync client (NOT stubbed)
+- `src/lib/progress/userManager.js` - Full sync orchestration with account-based sync
+- `server/src/auth-routes.js` - Complete auth and sync endpoints
+- `server/src/auth-service.js` - Account management and data merging
 
-**Key Files to Check**:
-- `src/lib/progress/cloudSync.js` - Frontend sync logic (currently stubbed)
-- `server/src/routes.js` - Backend sync endpoints
-- `server/src/auth.js` - Authentication middleware
-- `server/src/db.js` - Database operations
+**Environment Detection**:
+- **Development**: Auto-detects `localhost` → uses `http://localhost:8787/api`
+- **Production**: Auto-detects `verb-os.vercel.app` → uses `https://conju.onrender.com/api`
+- **Override**: Manual configuration via `VITE_PROGRESS_SYNC_URL` environment variable
 
-**Debug Steps**:
-1. Verify backend is running: `npm run server:start`
-2. Check browser network tab for failed API calls to localhost:8787
-3. Verify Google OAuth token is valid in browser storage
-4. Check server logs for authentication/database errors
-5. Ensure CORS_ORIGIN includes your frontend URL
+**Debug Tools**:
+- Run `window.debugSync()` in browser console for detailed sync diagnostics
+- Both `authService` and `cloudSync` are exposed globally for debugging
+- Comprehensive logging throughout sync flow
+
+**Common Sync Issues & Solutions**:
+
+1. **Environment Mismatch**:
+   - **Symptom**: Sync works in one environment but not another
+   - **Solution**: Check `window.debugSync()` output for correct URL detection
+
+2. **Authentication Failures**:
+   - **Symptom**: Google login works but sync fails with 401 errors
+   - **Solution**: Verify token validity with `window.authService.getToken()`
+
+3. **Server Connectivity**:
+   - **Development**: Ensure backend is running with `npm run server:start`
+   - **Production**: Verify `https://conju.onrender.com` is accessible
+
+4. **CORS Issues**:
+   - Check browser network tab for CORS errors
+   - Verify server CORS configuration includes frontend origin
 
 ## Known Issues & Limitations
 
-- **Sync functionality partially implemented** - cloudSync.js contains placeholder functions
 - 186 validation errors in verb database (ongoing cleanup)
 - Only 32% coverage of high-frequency Spanish verbs
 - Some regional restrictions (e.g., "coger" only in Spain)

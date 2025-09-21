@@ -5,8 +5,10 @@ import {
   triggerGoogleSignIn,
   isGoogleAuthConfigured
 } from './googleAuth.js'
+import { getSyncApiBase, getSyncConfigDebug } from '../config/syncConfig.js'
 
-const API_BASE = import.meta.env.VITE_PROGRESS_SYNC_URL || 'https://conju.onrender.com/api'
+// Use intelligent environment detection for sync URL
+const API_BASE = getSyncApiBase()
 
 class AuthService {
   constructor() {
@@ -19,6 +21,9 @@ class AuthService {
     this.lastMigratedAnonymousId = null
     this.loadFromStorage()
     this.setupGoogleEventListeners()
+
+    // Debug sync configuration on initialization
+    console.log('🔧 AuthService initialized with sync config:', getSyncConfigDebug())
   }
 
   // Storage management
@@ -696,4 +701,10 @@ class AuthService {
 
 // Export singleton instance
 export const authService = new AuthService()
+
+// Expose authService globally for debugging
+if (typeof window !== 'undefined') {
+  window.authService = authService
+}
+
 export default authService

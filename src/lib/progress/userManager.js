@@ -13,6 +13,7 @@ import {
 import { STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
 import { progressDataCache } from '../cache/ProgressDataCache.js'
+import { getSyncApiBase, getSyncAuthHeaderName, getSyncConfigDebug } from '../config/syncConfig.js'
 
 const LS_KEY = 'progress-user-settings'
 const USER_ID_STORAGE_KEY = 'progress-system-user-id'
@@ -21,26 +22,26 @@ const SYNC_ENDPOINT_KEY = 'progress-sync-endpoint'
 const SYNC_AUTH_TOKEN_KEY = 'progress-sync-auth-token'
 const SYNC_AUTH_HEADER_NAME_KEY = 'progress-sync-auth-header-name'
 
-// Resolve sync base URL from env or localStorage override
-// Returns null if no real endpoint is configured (instead of falling back to localhost)
+// Resolve sync base URL using intelligent environment detection
 function resolveSyncBaseUrl() {
   try {
+    // Check for localStorage override first
     if (typeof window !== 'undefined') {
       const override = window.localStorage.getItem(SYNC_ENDPOINT_KEY)
-      if (override) return override
+      if (override) {
+        console.log('🔧 Using sync URL override from localStorage:', override)
+        return override
+      }
     }
   } catch {}
-  // Vite-style env or generic
-  const envUrl = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_URL) ||
-                 (typeof process !== 'undefined' && process?.env?.VITE_PROGRESS_SYNC_URL) ||
-                 null
-  // Return null if no real endpoint configured (no fallback to localhost)
-  return envUrl
+
+  // Use the intelligent environment detection
+  return getSyncApiBase()
 }
 
 let SYNC_BASE_URL = resolveSyncBaseUrl()
 let SYNC_AUTH_TOKEN = null
-let SYNC_AUTH_HEADER_NAME = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME) || 'Authorization'
+let SYNC_AUTH_HEADER_NAME = getSyncAuthHeaderName()
 
 export function setSyncEndpoint(url) {
   SYNC_BASE_URL = url || null
@@ -419,6 +420,10 @@ async function wakeUpServer() {
 export async function syncAccountData() {
   console.log('🔍 DEBUG: Iniciando syncAccountData()')
 
+  // Debug sync configuration
+  const syncConfig = getSyncConfigDebug()
+  console.log('🔍 DEBUG: Configuración de sync:', syncConfig)
+
   // Debug authentication state
   const isAuthenticated = authService.isLoggedIn()
   const token = authService.getToken()
@@ -431,7 +436,9 @@ export async function syncAccountData() {
     tokenLength: token ? token.length : 0,
     hasUser: !!user,
     hasAccount: !!account,
-    userEmail: account?.email || 'N/A'
+    userEmail: account?.email || 'N/A',
+    syncApiBase: syncConfig.apiBase,
+    environment: syncConfig.isDev ? 'development' : (syncConfig.isProd ? 'production' : 'unknown')
   })
 
   if (!isAuthenticated) {
