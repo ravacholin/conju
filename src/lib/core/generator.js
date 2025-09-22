@@ -280,7 +280,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
         const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
         const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
 
+        // DEBUG LOG
+        console.log(`🔍 FILTRO PEDAGÓGICO: ${f.lemma} (${f.person}) - Familias: ${verbFamilies.join(', ')} - Relevante: ${isPedagogicallyRelevant}`)
+
         if (!isPedagogicallyRelevant) {
+          console.log(`❌ EXCLUIDO por no pedagógico: ${f.lemma}`)
           return false
         }
 
@@ -289,8 +293,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
         const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
         const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
         if (hasStrongPreteriteIrregularities) {
+          console.log(`❌ EXCLUIDO por muy irregular: ${f.lemma} - ${verbFamilies.filter(fam => strongPreteriteIrregularities.includes(fam)).join(', ')}`)
           return false // Exclude verbs like saber, querer, haber, etc.
         }
+
+        console.log(`✅ PERMITIDO: ${f.lemma}`)
       }
 
       // Standard family filtering - skip if coming from theme practice (but pedagogical filtering above still applies)

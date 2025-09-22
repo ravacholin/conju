@@ -20,6 +20,7 @@ import {
 } from '../../lib/core/conjugationRules.js'
 import { LEVELS } from '../../lib/data/levels.js'
 import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
+import { categorizeVerb } from '../../lib/data/irregularFamilies.js'
 
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
@@ -398,19 +399,22 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
  */
 export const applyComprehensiveFiltering = (forms, settings, specificConstraints = {}) => {
   let filtered = forms
-  
+
   // 1. Filter for specific practice if applicable
   filtered = filterForSpecificPractice(filtered, specificConstraints)
-  
+
   // 2. Filter by verb type
   filtered = filterByVerbType(filtered, settings.verbType, settings)
-  
-  // 3. Filter by person/pronoun constraints
+
+  // 3. Apply pedagogical filtering for third-person irregular pretérito
+  filtered = applyPedagogicalFiltering(filtered, settings)
+
+  // 4. Filter by person/pronoun constraints
   filtered = filtered.filter(form => allowsPerson(form.person, settings))
-  
-  // 4. Filter by level constraints
+
+  // 5. Filter by level constraints
   filtered = filtered.filter(form => allowsLevel(form, settings))
-  
+
   return filtered
 }
 
@@ -479,6 +483,42 @@ export const getFilteringStats = (originalForms, filteredForms, settings) => {
       practiceMode: settings.practiceMode
     }
   }
+}
+
+/**
+ * Apply pedagogical filtering for third-person irregular pretérito
+ * This ensures only appropriate verbs appear in third-person irregular practice
+ * @param {Array} forms - Forms to filter
+ * @param {Object} settings - User settings
+ * @returns {Array} - Filtered forms
+ */
+const applyPedagogicalFiltering = (forms, settings) => {
+  return forms.filter(f => {
+    // Only apply pedagogical filtering for third person irregular pretérito practice
+    if (f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && settings.verbType === 'irregular') {
+      // Find the verb in the dataset to get its complete definition
+      const verb = FULL_VERB_DATASET.find(v => v.lemma === f.lemma)
+      if (!verb) return true // If verb not found, allow it through (defensive)
+
+      const verbFamilies = categorizeVerb(f.lemma, verb)
+      const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
+      const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
+
+      if (!isPedagogicallyRelevant) {
+        return false
+      }
+
+      // Additional filter: exclude verbs with strong pretérito irregularities
+      // These are verbs that are irregular throughout, not just in 3rd person
+      const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
+      const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
+      if (hasStrongPreteriteIrregularities) {
+        return false // Exclude verbs like saber, querer, haber, etc.
+      }
+    }
+
+    return true // Allow all other forms through
+  })
 }
 
 // Export the helper function for use by other modules
