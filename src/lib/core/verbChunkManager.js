@@ -312,23 +312,60 @@ class VerbChunkManager {
 
       if (chunkName === 'irregulars') {
         // For irregulars chunk: identify irregular verbs using categorizeVerb
+        // BUT prioritize common/frequent irregulars for theme practice
+
+        // Get core and common verb lists for frequency filtering
+        const coreVerbs = new Set(this.chunkMetadata.get('core')?.verbs || [])
+        const commonVerbs = new Set(this.chunkMetadata.get('common')?.verbs || [])
+
+        // Common irregular verbs for theme practice (B1 level appropriate)
+        const commonIrregularVerbs = new Set([
+          // From core/common chunks that are irregular
+          'ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber',
+          'querer', 'poner', 'parecer', 'creer', 'seguir', 'venir', 'pensar', 'salir', 'volver',
+          'conocer', 'vivir', 'sentir', 'empezar',
+          // Common irregular verbs for third-person families
+          'dormir', 'morir', 'pedir', 'servir', 'repetir', 'preferir', 'mentir', 'competir',
+          'leer', 'construir', 'destruir', 'huir', 'incluir', 'concluir',
+          // Orthographic changes (common)
+          'buscar', 'sacar', 'tocar', 'llegar', 'pagar', 'jugar', 'almorzar', 'organizar'
+        ])
+
+        // Load priority verbs for extended coverage
+        let priorityVerbLemmas = new Set()
+        try {
+          const { priorityVerbs } = await import('../../data/priorityVerbs.js')
+          priorityVerbLemmas = new Set(priorityVerbs.map(v => v.lemma))
+        } catch (error) {
+          console.warn('Could not load priorityVerbs for frequency filtering:', error)
+        }
+
         const irregularVerbs = verbs.filter(verb => {
           // First check if verb has explicit type marking
+          let isIrregular = false
           if (verb.type === 'irregular') {
-            return true
+            isIrregular = true
+          } else {
+            // If no explicit type, use categorizeVerb to detect irregularity
+            try {
+              const families = categorizeVerb(verb.lemma, verb)
+              isIrregular = families.length > 0 // Has irregular families
+            } catch (error) {
+              console.warn(`Failed to categorize verb ${verb.lemma}:`, error)
+              return false
+            }
           }
 
-          // If no explicit type, use categorizeVerb to detect irregularity
-          try {
-            const families = categorizeVerb(verb.lemma, verb)
-            return families.length > 0 // Has irregular families
-          } catch (error) {
-            console.warn(`Failed to categorize verb ${verb.lemma}:`, error)
-            return false
-          }
+          if (!isIrregular) return false
+
+          // Priority filtering for theme practice (B1 level)
+          return commonIrregularVerbs.has(verb.lemma) ||    // High-frequency irregulars
+                 coreVerbs.has(verb.lemma) ||              // Core verbs
+                 commonVerbs.has(verb.lemma) ||            // Common verbs
+                 priorityVerbLemmas.has(verb.lemma)        // Priority verbs
         })
 
-        console.log(`📊 Derived ${irregularVerbs.length} irregular verbs dynamically`)
+        console.log(`📊 Derived ${irregularVerbs.length} irregular verbs dynamically (prioritizing frequency)`)
         return irregularVerbs
       }
 

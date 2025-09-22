@@ -217,6 +217,7 @@ describe('Chunk fallback for third-person preterite irregulars', () => {
       }
 
       console.log(`✅ Chunk fallback test passed: Found ${lemmas.length} verbs including irregular verbs beyond common chunk`);
+      console.log(`📝 Sample verbs found: ${lemmas.slice(0, 10).join(', ')}...`);
 
     } finally {
       // Restore original metadata
