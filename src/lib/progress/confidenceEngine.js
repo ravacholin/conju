@@ -306,6 +306,9 @@ export class ConfidenceEngine {
     const recent = this.responsePatterns.slice(-10)
     const older = this.responsePatterns.slice(-20, -10)
 
+    // CRÍTICO: Proteger contra división por cero cuando older está vacío (exactamente 10 respuestas)
+    if (older.length === 0) return 0.5
+
     const recentAccuracy = recent.reduce((sum, r) => sum + (r.isCorrect ? 1 : 0), 0) / recent.length
     const olderAccuracy = older.reduce((sum, r) => sum + (r.isCorrect ? 1 : 0), 0) / older.length
 
@@ -318,10 +321,10 @@ export class ConfidenceEngine {
    * Determina nivel de confianza categórico
    */
   getConfidenceLevel(confidence) {
-    if (confidence >= this.confidenceThresholds.overconfident) return 'overconfident'
-    if (confidence >= this.confidenceThresholds.confident) return 'confident'
-    if (confidence >= this.confidenceThresholds.uncertain) return 'uncertain'
-    if (confidence >= this.confidenceThresholds.hesitant) return 'hesitant'
+    if (confidence >= this.confidenceThresholds.OVERCONFIDENT) return 'overconfident'
+    if (confidence >= this.confidenceThresholds.CONFIDENT) return 'confident'
+    if (confidence >= this.confidenceThresholds.UNCERTAIN) return 'uncertain'
+    if (confidence >= this.confidenceThresholds.HESITANT) return 'hesitant'
     return 'struggling'
   }
 

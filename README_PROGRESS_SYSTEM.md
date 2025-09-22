@@ -117,6 +117,35 @@ Hooks y wrappers para:
 - Clasificación de errores en tiempo real
 - Registro de pistas y rachas
 
+### 10. Motor de Confianza (`confidenceEngine.js`)
+Sistema de inteligencia emocional que analiza patrones de confianza del usuario:
+
+**Funcionalidades principales:**
+- Detección de niveles de confianza: struggling, hesitant, uncertain, confident, overconfident
+- Análisis de tendencias de sesión con protección contra división por cero
+- Tracking de consistencia y calibración de respuestas
+- Recomendaciones adaptativas basadas en patrones emocionales
+
+**Umbrales de confianza configurables:**
+- HESITANT: 0.3 - Usuario vacilante con respuestas lentas
+- UNCERTAIN: 0.5 - Incertidumbre moderada
+- CONFIDENT: 0.7 - Confianza sólida con buena precisión
+- OVERCONFIDENT: 0.9 - Posible exceso de confianza
+
+**Correcciones críticas implementadas (2025-09-21):**
+- **División por cero en `calculateSessionTrend`**: Protección cuando exactly 10 respuestas causan array `older` vacío
+- **Umbrales de confianza**: Corrección de keys minúsculas a mayúsculas (OVERCONFIDENT vs overconfident)
+- **Pruebas comprensivas**: Suite completa de tests para ambas correcciones y casos límite
+
+**Integración con el progreso:**
+```javascript
+import { ConfidenceEngine } from './lib/progress/confidenceEngine.js'
+
+const engine = new ConfidenceEngine()
+const confidenceState = engine.getCurrentConfidenceState()
+console.log(`Nivel actual: ${confidenceState.level}`) // 'confident', 'struggling', etc.
+```
+
 ## Uso del Sistema
 
 ### Inicialización
