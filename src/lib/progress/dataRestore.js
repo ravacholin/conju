@@ -222,22 +222,31 @@ export async function createBackup(userId = null) {
   try {
     const actualUserId = userId || getCurrentUserId()
     console.log(`💾 Creando respaldo automático para usuario ${actualUserId}...`)
-    
+
     // Usar el sistema de exportación existente
     const { exportProgressData } = await import('./dataExport.js')
     const backupData = await exportProgressData(actualUserId)
-    
+
     // Agregar metadatos de respaldo
     backupData.metadata.backupType = 'automatic'
     backupData.metadata.backupId = `backup_${Date.now()}`
-    
-    // Guardar en localStorage como respaldo de emergencia
-    const backupKey = `progress_backup_${actualUserId}`
-    localStorage.setItem(backupKey, JSON.stringify(backupData))
-    
+
+    // Intentar guardar en localStorage como respaldo de emergencia (si está disponible)
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const backupKey = `progress_backup_${actualUserId}`
+        localStorage.setItem(backupKey, JSON.stringify(backupData))
+        console.log(`💾 Respaldo guardado en localStorage con clave: ${backupKey}`)
+      } else {
+        console.warn('⚠️ localStorage no disponible - respaldo no persistido localmente')
+      }
+    } catch (localStorageError) {
+      console.warn('⚠️ No se pudo guardar el respaldo en localStorage:', localStorageError.message)
+    }
+
     console.log(`✅ Respaldo creado con ID: ${backupData.metadata.backupId}`)
     return backupData
-    
+
   } catch (error) {
     console.error('❌ Error al crear respaldo:', error)
     throw error

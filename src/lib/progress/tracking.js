@@ -1,6 +1,6 @@
 // Sistema de tracking de eventos para el sistema de progreso
 
-import { saveAttempt, saveMastery, getByIndex } from './database.js'
+import { saveAttempt, saveMastery, getByIndex, getAttemptsByUser, getMasteryByUser, saveEvent } from './database.js'
 // import { getMasteryByCell } from './database.js'
 import { classifyError } from './errorClassification.js'
 import { getOrCreateItem } from './itemManagement.js'
@@ -204,7 +204,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     // Recalcular y guardar mastery de la celda basada en intentos reales del usuario
     try {
       // Obtener intentos del usuario y filtrar por celda actual
-      const allUserAttempts = await getByIndex('attempts', 'userId', currentSession.userId)
+      const allUserAttempts = await getByIndex('attempts', 'userId', currentSession.userId) || []
       const _windowMs = 90 * 24 * 60 * 60 * 1000 // 90 días de ventana para recencia
       const now = Date.now()
       let weightedCorrect = 0
@@ -274,28 +274,67 @@ export async function trackSessionEnded(sessionData = {}) {
 
 /**
  * Registra que se mostró una pista
+ * @param {Object} context - Contexto del hint (opcional)
  * @returns {Promise<void>}
  */
-export async function trackHintShown() {
+export async function trackHintShown(context = {}) {
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
+  }
+
   try {
-    // En una implementación completa, esto guardaría el evento
-    console.log('💡 Pista mostrada')
+    const hintEvent = {
+      id: `hint-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'hint_shown',
+      userId: currentSession.userId,
+      sessionId: currentSession.id,
+      itemId: context.itemId || null,
+      verbId: context.verbId || null,
+      mood: context.mood || null,
+      tense: context.tense || null,
+      person: context.person || null,
+      hintType: context.hintType || 'general',
+      createdAt: new Date()
+    }
+
+    await saveEvent(hintEvent)
+    console.log(`💡 Pista mostrada y registrada: ${hintEvent.id}`)
   } catch (error) {
-    console.error('❌ Error al mostrar pista:', error)
+    console.error('❌ Error al registrar pista mostrada:', error)
     throw error
   }
 }
 
 /**
  * Registra que se incrementó una racha
+ * @param {Object} context - Contexto de la racha
  * @returns {Promise<void>}
  */
-export async function trackStreakIncremented() {
+export async function trackStreakIncremented(context = {}) {
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
+  }
+
   try {
-    // En una implementación completa, esto guardaría el evento
-    console.log('🔥 Racha incrementada')
+    const streakEvent = {
+      id: `streak-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'streak_incremented',
+      userId: currentSession.userId,
+      sessionId: currentSession.id,
+      streakType: context.streakType || 'general',
+      streakLength: context.streakLength || 1,
+      itemId: context.itemId || null,
+      verbId: context.verbId || null,
+      mood: context.mood || null,
+      tense: context.tense || null,
+      person: context.person || null,
+      createdAt: new Date()
+    }
+
+    await saveEvent(streakEvent)
+    console.log(`🔥 Racha incrementada y registrada: ${streakEvent.id} (longitud: ${streakEvent.streakLength})`)
   } catch (error) {
-    console.error('❌ Error al incrementar racha:', error)
+    console.error('❌ Error al registrar incremento de racha:', error)
     throw error
   }
 }
@@ -303,14 +342,32 @@ export async function trackStreakIncremented() {
 /**
  * Registra el inicio de un drill de tiempo
  * @param {string} tense - Tiempo que se practica
+ * @param {Object} context - Contexto adicional del drill
  * @returns {Promise<void>}
  */
-export async function trackTenseDrillStarted(tense) {
+export async function trackTenseDrillStarted(tense, context = {}) {
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
+  }
+
   try {
-    // En una implementación completa, esto guardaría el evento
-    console.log(`🔁 Drill de tiempo ${tense} iniciado`)
+    const drillEvent = {
+      id: `drill-start-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'tense_drill_started',
+      userId: currentSession.userId,
+      sessionId: currentSession.id,
+      tense: tense,
+      mood: context.mood || null,
+      verbType: context.verbType || null,
+      targetCount: context.targetCount || null,
+      difficulty: context.difficulty || null,
+      createdAt: new Date()
+    }
+
+    await saveEvent(drillEvent)
+    console.log(`🔁 Drill de tiempo ${tense} iniciado y registrado: ${drillEvent.id}`)
   } catch (error) {
-    console.error('❌ Error al iniciar drill de tiempo:', error)
+    console.error('❌ Error al registrar inicio de drill de tiempo:', error)
     throw error
   }
 }
@@ -318,14 +375,35 @@ export async function trackTenseDrillStarted(tense) {
 /**
  * Registra el final de un drill de tiempo
  * @param {string} tense - Tiempo que se practicaba
+ * @param {Object} results - Resultados del drill
  * @returns {Promise<void>}
  */
-export async function trackTenseDrillEnded(tense) {
+export async function trackTenseDrillEnded(tense, results = {}) {
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
+  }
+
   try {
-    // En una implementación completa, esto guardaría el evento
-    console.log(`✅ Drill de tiempo ${tense} finalizado`)
+    const drillEvent = {
+      id: `drill-end-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'tense_drill_ended',
+      userId: currentSession.userId,
+      sessionId: currentSession.id,
+      tense: tense,
+      mood: results.mood || null,
+      totalAttempts: results.totalAttempts || 0,
+      correctAttempts: results.correctAttempts || 0,
+      accuracy: results.accuracy || 0,
+      averageLatency: results.averageLatency || null,
+      duration: results.duration || null,
+      completed: results.completed || false,
+      createdAt: new Date()
+    }
+
+    await saveEvent(drillEvent)
+    console.log(`✅ Drill de tiempo ${tense} finalizado y registrado: ${drillEvent.id} (${drillEvent.correctAttempts}/${drillEvent.totalAttempts})`)
   } catch (error) {
-    console.error('❌ Error al finalizar drill de tiempo:', error)
+    console.error('❌ Error al registrar finalización de drill de tiempo:', error)
     throw error
   }
 }
@@ -338,18 +416,87 @@ export async function getUserStats() {
   if (!currentUserId) {
     throw new Error('Sistema de tracking no inicializado')
   }
-  
+
   try {
-    // En una implementación completa, esto calcularía estadísticas reales
-    // basadas en los datos de la base de datos
-    
+    // Obtener intentos del usuario ordenados por fecha
+    const allAttempts = await getAttemptsByUser(currentUserId) || []
+    const sortedAttempts = allAttempts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+
+    // Calcular totales básicos
+    const totalAttempts = sortedAttempts.length
+    const correctAttempts = sortedAttempts.filter(a => a.correct).length
+    const correctPercentage = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0
+
+    // Calcular última actividad
+    let lastActive = null
+    if (sortedAttempts.length > 0) {
+      lastActive = new Date(sortedAttempts[sortedAttempts.length - 1].createdAt)
+    }
+
+    // Calcular rachas
+    let currentStreak = 0
+    let longestStreak = 0
+    let currentStreakCount = 0
+    let maxStreakCount = 0
+
+    // Recorrer intentos desde el más reciente hacia atrás para racha actual
+    for (let i = sortedAttempts.length - 1; i >= 0; i--) {
+      if (sortedAttempts[i].correct) {
+        currentStreakCount++
+      } else {
+        break // La racha actual se rompió
+      }
+    }
+    currentStreak = currentStreakCount
+
+    // Recorrer todos los intentos para encontrar la racha más larga
+    let tempStreak = 0
+    for (const attempt of sortedAttempts) {
+      if (attempt.correct) {
+        tempStreak++
+        maxStreakCount = Math.max(maxStreakCount, tempStreak)
+      } else {
+        tempStreak = 0
+      }
+    }
+    longestStreak = maxStreakCount
+
+    // Obtener datos de mastery para estadísticas adicionales
+    const masteryData = await getMasteryByUser(currentUserId)
+    const averageMastery = masteryData.length > 0
+      ? Math.round(masteryData.reduce((sum, m) => sum + m.score, 0) / masteryData.length)
+      : 0
+
+    // Calcular días de práctica únicos
+    const uniqueDays = new Set(
+      sortedAttempts.map(a => new Date(a.createdAt).toDateString())
+    ).size
+
+    // Estadísticas de sesiones (basadas en gaps de tiempo > 30 min)
+    let sessionCount = 0
+    let lastSessionEnd = null
+    const SESSION_GAP_MS = 30 * 60 * 1000 // 30 minutos
+
+    for (const attempt of sortedAttempts) {
+      const attemptTime = new Date(attempt.createdAt)
+      if (!lastSessionEnd || attemptTime - lastSessionEnd > SESSION_GAP_MS) {
+        sessionCount++
+      }
+      lastSessionEnd = attemptTime
+    }
+
     return {
       userId: currentUserId,
-      totalAttempts: 0,
-      correctAttempts: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      lastActive: new Date()
+      totalAttempts,
+      correctAttempts,
+      correctPercentage,
+      currentStreak,
+      longestStreak,
+      lastActive,
+      averageMastery,
+      uniquePracticeDays: uniqueDays,
+      totalSessions: sessionCount,
+      averageAttemptsPerSession: sessionCount > 0 ? Math.round(totalAttempts / sessionCount) : 0
     }
   } catch (error) {
     console.error('❌ Error al obtener estadísticas del usuario:', error)

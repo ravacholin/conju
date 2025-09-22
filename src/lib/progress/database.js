@@ -117,7 +117,17 @@ export async function initDB() {
           challengeStore.createIndex('date', 'date', { unique: false })
           console.log('✅ Tabla de daily challenges creada')
         }
-        
+
+        // Crear tabla de eventos auxiliares
+        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.EVENTS)) {
+          const eventStore = db.createObjectStore(STORAGE_CONFIG.STORES.EVENTS, { keyPath: 'id' })
+          eventStore.createIndex('userId', 'userId', { unique: false })
+          eventStore.createIndex('type', 'type', { unique: false })
+          eventStore.createIndex('createdAt', 'createdAt', { unique: false })
+          eventStore.createIndex('sessionId', 'sessionId', { unique: false })
+          console.log('✅ Tabla de eventos auxiliares creada')
+        }
+
         console.log('🔧 Estructura de base de datos actualizada')
       }
     })
@@ -642,19 +652,94 @@ export async function getDueSchedules(userId, beforeDate) {
 }
 
 /**
+ * Guarda un evento
+ * @param {Object} event - Datos del evento
+ * @returns {Promise<void>}
+ */
+export async function saveEvent(event) {
+  await saveToDB(STORAGE_CONFIG.STORES.EVENTS, event)
+}
+
+/**
+ * Obtiene un evento por ID
+ * @param {string} eventId - ID del evento
+ * @returns {Promise<Object|null>}
+ */
+export async function getEvent(eventId) {
+  return await getFromDB(STORAGE_CONFIG.STORES.EVENTS, eventId)
+}
+
+/**
+ * Obtiene eventos por usuario
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object[]>}
+ */
+export async function getEventsByUser(userId) {
+  return await getByIndex(STORAGE_CONFIG.STORES.EVENTS, 'userId', userId)
+}
+
+/**
+ * Obtiene eventos por tipo
+ * @param {string} type - Tipo de evento
+ * @returns {Promise<Object[]>}
+ */
+export async function getEventsByType(type) {
+  return await getByIndex(STORAGE_CONFIG.STORES.EVENTS, 'type', type)
+}
+
+/**
+ * Obtiene eventos por sesión
+ * @param {string} sessionId - ID de la sesión
+ * @returns {Promise<Object[]>}
+ */
+export async function getEventsBySession(sessionId) {
+  return await getByIndex(STORAGE_CONFIG.STORES.EVENTS, 'sessionId', sessionId)
+}
+
+/**
+ * Obtiene eventos recientes por usuario
+ * @param {string} userId - ID del usuario
+ * @param {number} limit - Número máximo de eventos
+ * @returns {Promise<Object[]>}
+ */
+export async function getRecentEvents(userId, limit = 100) {
+  try {
+    const db = await initDB()
+    const tx = db.transaction(STORAGE_CONFIG.STORES.EVENTS, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.EVENTS)
+    const index = store.index('createdAt')
+
+    // Obtener todos los eventos ordenados por fecha
+    const allEvents = await index.getAll()
+
+    // Filtrar por usuario y ordenar por fecha descendente
+    const userEvents = allEvents
+      .filter(e => e.userId === userId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, limit)
+
+    await tx.done
+    return userEvents
+  } catch (error) {
+    console.error('❌ Error al obtener eventos recientes:', error)
+    return []
+  }
+}
+
+/**
  * Inicializa completamente la base de datos
  * @returns {Promise<void>}
  */
 export async function initializeFullDB() {
   console.log('🚀 Inicializando completamente la base de datos...')
-  
+
   try {
     // Inicializar base de datos
     await initDB()
-    
+
     // En una implementación completa, aquí se inicializarían
     // las tablas con datos predeterminados si es necesario
-    
+
     console.log('✅ Base de datos completamente inicializada')
   } catch (error) {
     console.error('❌ Error al inicializar completamente la base de datos:', error)

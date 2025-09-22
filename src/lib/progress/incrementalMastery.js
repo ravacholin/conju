@@ -11,7 +11,7 @@ import { PROGRESS_CONFIG } from './config.js'
  */
 class IncrementalMasteryCache {
   constructor() {
-    this.itemMasteryCache = new Map() // itemId -> { score, n, weightedAttempts, lastUpdated }
+    this.itemMasteryCache = new Map() // itemId -> { score, n, weightedAttempts, weightedCorrectSum, weightedTotalSum, hintPenalty, lastUpdated }
     this.cellMasteryCache = new Map() // cellKey -> { score, n, weightedN, items, lastUpdated }
     this.attemptCounts = new Map()    // itemId -> número de intentos conocidos
     this.cacheHits = 0
@@ -58,18 +58,88 @@ class IncrementalMasteryCache {
 
     // Cache miss o refresh forzado - calcular desde cero
     this.cacheMisses++
-    const result = await calculateMasteryForItemOriginal(itemId, verb)
+    const fullResult = await this.calculateMasteryWithDetails(itemId, verb)
 
-    // Actualizar cache
+    // Actualizar cache con detalles completos
     this.itemMasteryCache.set(itemId, {
-      ...result,
+      score: fullResult.score,
+      n: fullResult.n,
+      weightedAttempts: fullResult.weightedAttempts,
+      weightedCorrectSum: fullResult.weightedCorrectSum,
+      weightedTotalSum: fullResult.weightedTotalSum,
+      hintPenalty: fullResult.hintPenalty,
       lastUpdated: Date.now()
     })
 
     const attemptCount = await this.getAttemptCount(itemId)
     this.attemptCounts.set(itemId, attemptCount)
 
-    return result
+    return {
+      score: fullResult.score,
+      n: fullResult.n,
+      weightedAttempts: fullResult.weightedAttempts
+    }
+  }
+
+  /**
+   * Calcular mastery con detalles internos para caching
+   * @param {string} itemId - ID del ítem
+   * @param {Object} verb - Objeto verbo asociado
+   * @returns {Promise<{score: number, n: number, weightedAttempts: number, weightedCorrectSum: number, weightedTotalSum: number, hintPenalty: number}>}
+   */
+  async calculateMasteryWithDetails(itemId, verb) {
+    const attempts = await getAttemptsByItem(itemId) || []
+
+    if (attempts.length === 0) {
+      return {
+        score: 50,
+        n: 0,
+        weightedAttempts: 0,
+        weightedCorrectSum: 0,
+        weightedTotalSum: 0,
+        hintPenalty: 0
+      }
+    }
+
+    const difficulty = getVerbDifficulty(verb)
+    let weightedCorrectSum = 0
+    let weightedTotalSum = 0
+    let totalHintPenalty = 0
+    let weightedAttempts = 0
+
+    for (const attempt of attempts) {
+      const weight = calculateRecencyWeight(new Date(attempt.createdAt))
+      const weightedValue = weight * difficulty
+
+      weightedTotalSum += weightedValue
+      weightedCorrectSum += weightedValue * (attempt.correct ? 1 : 0)
+      weightedAttempts += weight
+
+      if (attempt.correct) {
+        const hintPenalty = Math.min(
+          PROGRESS_CONFIG.MAX_HINT_PENALTY,
+          (attempt.hintsUsed || 0) * PROGRESS_CONFIG.HINT_PENALTY
+        )
+        totalHintPenalty += hintPenalty
+      }
+    }
+
+    let baseScore = 100
+    if (weightedTotalSum > 0) {
+      baseScore = 100 * (weightedCorrectSum / weightedTotalSum)
+    }
+
+    const finalScore = Math.max(0, baseScore - totalHintPenalty)
+    const roundedScore = Math.round(finalScore * 100) / 100
+
+    return {
+      score: roundedScore,
+      n: attempts.length,
+      weightedAttempts: Math.round(weightedAttempts * 100) / 100,
+      weightedCorrectSum: Math.round(weightedCorrectSum * 100) / 100,
+      weightedTotalSum: Math.round(weightedTotalSum * 100) / 100,
+      hintPenalty: Math.round(totalHintPenalty * 100) / 100
+    }
   }
 
   /**
@@ -96,13 +166,13 @@ class IncrementalMasteryCache {
         }
       }
 
-      // Reconstruir totales previos basados en cache
-      const difficulty = getVerbDifficulty(verb)
-      let oldWeightedCorrectSum = (cachedResult.score / 100) * cachedResult.weightedAttempts * difficulty
-      let oldWeightedTotalSum = cachedResult.weightedAttempts * difficulty
-      let oldTotalHintPenalty = 0 // Aproximación - el penalty exacto se recalculará
+      // Usar totales previos guardados en cache (NO reconstruir desde score)
+      let oldWeightedCorrectSum = cachedResult.weightedCorrectSum || 0
+      let oldWeightedTotalSum = cachedResult.weightedTotalSum || 0
+      let oldTotalHintPenalty = cachedResult.hintPenalty || 0
 
       // Procesar solo nuevos intentos
+      const difficulty = getVerbDifficulty(verb)
       let newWeightedCorrectSum = 0
       let newWeightedTotalSum = 0
       let newTotalHintPenalty = 0
@@ -129,10 +199,7 @@ class IncrementalMasteryCache {
       const totalWeightedCorrectSum = oldWeightedCorrectSum + newWeightedCorrectSum
       const totalWeightedTotalSum = oldWeightedTotalSum + newWeightedTotalSum
       const totalWeightedAttempts = cachedResult.weightedAttempts + newWeightedAttempts
-
-      // Para hint penalty, necesitamos recalcular desde los intentos correctos
-      // Como optimización, asumimos que la penalty se distribuye proporcionalmente
-      const estimatedTotalHintPenalty = oldTotalHintPenalty + newTotalHintPenalty
+      const totalHintPenalty = oldTotalHintPenalty + newTotalHintPenalty
 
       // Calcular nuevo mastery score
       let baseScore = 100
@@ -140,7 +207,7 @@ class IncrementalMasteryCache {
         baseScore = 100 * (totalWeightedCorrectSum / totalWeightedTotalSum)
       }
 
-      const finalScore = Math.max(0, baseScore - estimatedTotalHintPenalty)
+      const finalScore = Math.max(0, baseScore - totalHintPenalty)
       const roundedScore = Math.round(finalScore * 100) / 100
 
       const updatedResult = {
@@ -149,9 +216,14 @@ class IncrementalMasteryCache {
         weightedAttempts: Math.round(totalWeightedAttempts * 100) / 100
       }
 
-      // Actualizar cache
+      // Actualizar cache con los nuevos totales
       this.itemMasteryCache.set(itemId, {
-        ...updatedResult,
+        score: roundedScore,
+        n: newAttemptCount,
+        weightedAttempts: updatedResult.weightedAttempts,
+        weightedCorrectSum: Math.round(totalWeightedCorrectSum * 100) / 100,
+        weightedTotalSum: Math.round(totalWeightedTotalSum * 100) / 100,
+        hintPenalty: Math.round(totalHintPenalty * 100) / 100,
         lastUpdated: Date.now()
       })
 
@@ -163,7 +235,12 @@ class IncrementalMasteryCache {
     } catch (error) {
       console.warn(`Error en actualización incremental para ${itemId}:`, error)
       // Fallback a cálculo completo
-      return await calculateMasteryForItemOriginal(itemId, verb)
+      const fullResult = await this.calculateMasteryWithDetails(itemId, verb)
+      return {
+        score: fullResult.score,
+        n: fullResult.n,
+        weightedAttempts: fullResult.weightedAttempts
+      }
     }
   }
 
