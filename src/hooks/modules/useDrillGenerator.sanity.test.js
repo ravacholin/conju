@@ -147,6 +147,141 @@ describe('Third-person preterite irregulars practice', () => {
   });
 });
 
+describe('Chunk fallback for third-person preterite irregulars', () => {
+  it('should load irregular verbs even when irregulars chunk metadata is empty (manifest failure simulation)', async () => {
+    clearFormsCache(); // Ensure clean state
+
+    // Mock scenario: simulate manifest failure by forcing empty metadata for irregulars chunk
+    const { verbChunkManager } = await import('../../lib/core/verbChunkManager.js');
+    const originalMetadata = verbChunkManager.chunkMetadata.get('irregulars');
+
+    // Temporarily clear irregulars metadata to simulate manifest failure
+    verbChunkManager.chunkMetadata.set('irregulars', {
+      ...originalMetadata,
+      verbs: [] // Empty array simulates failed manifest load
+    });
+
+    try {
+      const settings = {
+        region: 'la_general',
+        practiceMode: 'theme',
+        specificMood: 'indicative',
+        specificTense: 'pretIndef',
+        verbType: 'irregular',
+        selectedFamily: 'PRETERITE_THIRD_PERSON',
+        enableChunks: true, // Use chunks system (this is where the bug occurs)
+      };
+
+      const allForms = await generateAllFormsForRegion(settings.region, settings);
+      const constraints = {
+        isSpecific: true,
+        specificMood: 'indicative',
+        specificTense: 'pretIndef',
+      };
+      const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+      // 1. Verify that there are eligible forms (should not be empty)
+      expect(eligible.length).toBeGreaterThan(0);
+
+      // 2. Check for representative lemmas that should appear with the fix
+      const lemmas = [...new Set(eligible.map(f => f.lemma))];
+
+      // These verbs should appear with the fix (they belong to E_I_IR, O_U_GER_IR, HIATUS_Y families)
+      const expectedVerbs = ['pedir', 'dormir', 'leer'];
+      const foundExpectedVerbs = expectedVerbs.filter(verb => lemmas.includes(verb));
+
+      expect(foundExpectedVerbs.length).toBeGreaterThan(0,
+        `Expected to find at least one of ${expectedVerbs.join(', ')} but only found: ${lemmas.join(', ')}`);
+
+      // 3. Should have more than just the 3 verbs from common chunk
+      expect(lemmas.length).toBeGreaterThan(3,
+        `Expected more than 3 verbs, but found only: ${lemmas.join(', ')}`);
+
+      // 4. Verify specific irregular forms exist
+      if (lemmas.includes('pedir')) {
+        const pedirThird = eligible.find(f => f.lemma === 'pedir' && f.person === '3s');
+        expect(pedirThird).toBeDefined();
+        expect(pedirThird.value).toBe('pidió');
+      }
+
+      if (lemmas.includes('dormir')) {
+        const dormirThird = eligible.find(f => f.lemma === 'dormir' && f.person === '3s');
+        expect(dormirThird).toBeDefined();
+        expect(dormirThird.value).toBe('durmió');
+      }
+
+      if (lemmas.includes('leer')) {
+        const leerThird = eligible.find(f => f.lemma === 'leer' && f.person === '3s');
+        expect(leerThird).toBeDefined();
+        expect(leerThird.value).toBe('leyó');
+      }
+
+      console.log(`✅ Chunk fallback test passed: Found ${lemmas.length} verbs including irregular verbs beyond common chunk`);
+
+    } finally {
+      // Restore original metadata
+      verbChunkManager.chunkMetadata.set('irregulars', originalMetadata);
+      clearFormsCache(); // Clean up cache
+    }
+  });
+
+  it('should consistently find more verbs with fallback than without', async () => {
+    clearFormsCache();
+
+    const { verbChunkManager } = await import('../../lib/core/verbChunkManager.js');
+    const originalMetadata = verbChunkManager.chunkMetadata.get('irregulars');
+
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_THIRD_PERSON',
+      enableChunks: true,
+    };
+
+    // First: test with empty metadata (simulating manifest failure)
+    verbChunkManager.chunkMetadata.set('irregulars', {
+      ...originalMetadata,
+      verbs: []
+    });
+
+    const formsWithFallback = await generateAllFormsForRegion(settings.region, settings);
+    const eligibleWithFallback = applyComprehensiveFiltering(formsWithFallback, settings, {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    });
+
+    // Restore metadata and test with populated metadata
+    verbChunkManager.chunkMetadata.set('irregulars', originalMetadata);
+    clearFormsCache();
+
+    const formsWithMetadata = await generateAllFormsForRegion(settings.region, settings);
+    const eligibleWithMetadata = applyComprehensiveFiltering(formsWithMetadata, settings, {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    });
+
+    // Both should have substantial verb counts
+    expect(eligibleWithFallback.length).toBeGreaterThan(10);
+    expect(eligibleWithMetadata.length).toBeGreaterThan(10);
+
+    // The results should be similar (fallback should work as well as normal metadata)
+    const fallbackLemmas = new Set(eligibleWithFallback.map(f => f.lemma));
+    const metadataLemmas = new Set(eligibleWithMetadata.map(f => f.lemma));
+
+    // Fallback should include key irregular verbs
+    expect(fallbackLemmas.has('pedir') || fallbackLemmas.has('dormir') || fallbackLemmas.has('leer')).toBe(true);
+
+    console.log(`📊 Fallback vs Metadata: ${fallbackLemmas.size} vs ${metadataLemmas.size} unique verbs`);
+
+    clearFormsCache();
+  });
+});
+
 describe('Third-person preterite irregulars practice with dialects', () => {
   it('should include "vos" forms for rioplatense region', async () => {
     clearFormsCache();

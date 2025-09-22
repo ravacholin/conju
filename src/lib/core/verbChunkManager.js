@@ -1,6 +1,9 @@
 // Sistema de gestión de chunks de verbos con carga dinámica
 // Optimiza el bundle inicial cargando verbos bajo demanda
 
+// Import for irregular verb categorization when metadata is missing
+import { categorizeVerb } from '../data/irregularFamilies.js'
+
 class VerbChunkManager {
   constructor() {
     this.loadedChunks = new Map() // chunkName -> verbs array
@@ -296,17 +299,71 @@ class VerbChunkManager {
     // Fallback: cargar todos los verbos y filtrar
     const { verbs } = await import('../../data/verbs.js')
     const metadata = this.chunkMetadata.get(chunkName)
-    
+
     if (!metadata) {
       console.warn(`No metadata found for chunk ${chunkName}`)
       return []
     }
-    
-    // Filtrar verbos por los lemmas definidos en metadata
-    const chunkVerbs = verbs.filter(verb => 
+
+    // Enhanced fallback: if metadata.verbs is empty (common when manifest fails),
+    // derive verbs dynamically based on chunk type
+    if (metadata.verbs.length === 0) {
+      console.log(`🔄 Empty metadata for chunk ${chunkName}, deriving verbs dynamically`)
+
+      if (chunkName === 'irregulars') {
+        // For irregulars chunk: identify irregular verbs using categorizeVerb
+        const irregularVerbs = verbs.filter(verb => {
+          // First check if verb has explicit type marking
+          if (verb.type === 'irregular') {
+            return true
+          }
+
+          // If no explicit type, use categorizeVerb to detect irregularity
+          try {
+            const families = categorizeVerb(verb.lemma, verb)
+            return families.length > 0 // Has irregular families
+          } catch (error) {
+            console.warn(`Failed to categorize verb ${verb.lemma}:`, error)
+            return false
+          }
+        })
+
+        console.log(`📊 Derived ${irregularVerbs.length} irregular verbs dynamically`)
+        return irregularVerbs
+      }
+
+      if (chunkName === 'advanced') {
+        // For advanced chunk: include remaining verbs not in core/common/irregulars
+        const coreVerbs = new Set(this.chunkMetadata.get('core')?.verbs || [])
+        const commonVerbs = new Set(this.chunkMetadata.get('common')?.verbs || [])
+
+        const advancedVerbs = verbs.filter(verb => {
+          if (coreVerbs.has(verb.lemma) || commonVerbs.has(verb.lemma)) {
+            return false
+          }
+          // Don't include obvious irregulars in advanced (they should be in irregulars)
+          try {
+            const families = categorizeVerb(verb.lemma, verb)
+            return families.length === 0 // Regular verbs or minor irregularities
+          } catch (error) {
+            return true // Include by default if categorization fails
+          }
+        })
+
+        console.log(`📊 Derived ${advancedVerbs.length} advanced verbs dynamically`)
+        return advancedVerbs
+      }
+
+      // For other chunks with empty metadata, return empty array
+      console.warn(`Cannot derive verbs for unknown chunk type: ${chunkName}`)
+      return []
+    }
+
+    // Standard path: filter by predefined lemmas in metadata
+    const chunkVerbs = verbs.filter(verb =>
       metadata.verbs.includes(verb.lemma)
     )
-    
+
     return chunkVerbs
   }
   
@@ -572,12 +629,12 @@ class VerbChunkManager {
   // Para práctica por tema: cargar verbos basado en familias irregulares o temas específicos
   async getVerbsByTheme(theme, irregularFamilies = []) {
     const relevantChunks = new Set(['core']) // Siempre incluir core
-    
+
     // Si se especificaron familias irregulares, incluir chunk de irregulares
     if (irregularFamilies.length > 0) {
       relevantChunks.add('irregulars')
     }
-    
+
     // Para temas específicos, incluir chunks relevantes
     switch (theme) {
       case 'basic':
@@ -589,16 +646,17 @@ class VerbChunkManager {
         relevantChunks.add('advanced')
         break
       case 'irregular':
+      case 'PRETERITE_THIRD_PERSON': // Explicit support for third-person irregular theme
         relevantChunks.add('irregulars')
         break
       default:
         // Para temas desconocidos, cargar common como fallback
         relevantChunks.add('common')
     }
-    
+
     // Cargar chunks relevantes
     await Promise.all(Array.from(relevantChunks).map(chunk => this.loadChunk(chunk)))
-    
+
     const themeVerbs = []
     relevantChunks.forEach(chunkName => {
       const chunk = this.loadedChunks.get(chunkName)
@@ -606,7 +664,20 @@ class VerbChunkManager {
         themeVerbs.push(...chunk)
       }
     })
-    
+
+    // Enhanced fallback: if no verbs found, try robust failsafe
+    if (themeVerbs.length === 0) {
+      console.warn(`🚨 getVerbsByTheme returned 0 verbs for theme "${theme}", activating failsafe`)
+      try {
+        const failsafeVerbs = await this.getVerbsWithRobustFailsafe(Array.from(relevantChunks))
+        console.log(`📊 Failsafe recovered ${failsafeVerbs.length} verbs for theme "${theme}"`)
+        return failsafeVerbs
+      } catch (error) {
+        console.error(`💀 Theme failsafe also failed for "${theme}":`, error)
+        return []
+      }
+    }
+
     return themeVerbs
   }
   
