@@ -92,3 +92,118 @@ describe('Cache invalidation for critical settings changes', () => {
   })
 })
 
+describe('Third-person preterite irregulars practice', () => {
+  it('should include all persons for verbs in PRETERITE_THIRD_PERSON family', async () => {
+    clearFormsCache(); // Ensure we are not using stale data
+
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_THIRD_PERSON',
+      enableChunks: false, // Use fallback for consistent results
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    // 1. Verify that there are eligible forms
+    expect(eligible.length).toBeGreaterThan(0);
+
+    // 2. Check for representative lemmas
+    const lemmas = [...new Set(eligible.map(f => f.lemma))];
+    expect(lemmas).toContain('pedir');
+    expect(lemmas).toContain('dormir');
+    expect(lemmas).toContain('leer');
+    expect(lemmas.length).toBeGreaterThan(3);
+
+    // 3. Check for presence of persons other than 3rd person
+    const persons = [...new Set(eligible.map(f => f.person))];
+    expect(persons).toContain('1s'); // yo
+    expect(persons).toContain('2s_tu'); // tú
+    expect(persons).toContain('3s'); // él/ella/usted
+    expect(persons).toContain('1p'); // nosotros
+    expect(persons).toContain('3p'); // ellos/ellas/ustedes
+
+    // 4. Verify that non-3rd-person forms exist for key verbs
+    const pedir1s = eligible.find(f => f.lemma === 'pedir' && f.person === '1s');
+    expect(pedir1s).toBeDefined();
+    expect(pedir1s.value).toBe('pedí');
+
+    const dormir1s = eligible.find(f => f.lemma === 'dormir' && f.person === '1s');
+    expect(dormir1s).toBeDefined();
+    expect(dormir1s.value).toBe('dormí');
+
+    const leer3s = eligible.find(f => f.lemma === 'leer' && f.person === '3s');
+    expect(leer3s).toBeDefined();
+    expect(leer3s.value).toBe('leyó'); // The irregular one
+  });
+});
+
+describe('Third-person preterite irregulars practice with dialects', () => {
+  it('should include "vos" forms for rioplatense region', async () => {
+    clearFormsCache();
+
+    const settings = {
+      region: 'rioplatense',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_THIRD_PERSON',
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    const persons = [...new Set(eligible.map(f => f.person))];
+    expect(persons).toContain('2s_vos');
+    expect(persons).not.toContain('2s_tu');
+
+    const sentirVos = eligible.find(f => f.lemma === 'sentir' && f.person === '2s_vos');
+    expect(sentirVos).toBeDefined();
+    expect(sentirVos.value).toBe('sentiste'); // In preterite, vos and tu are often the same, but the person tag is what matters.
+  });
+
+  it('should include "vosotros" forms for peninsular region', async () => {
+    clearFormsCache();
+
+    const settings = {
+      region: 'peninsular',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_THIRD_PERSON',
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    const persons = [...new Set(eligible.map(f => f.person))];
+    expect(persons).toContain('2p_vosotros');
+
+    const pedirVosotros = eligible.find(f => f.lemma === 'pedir' && f.person === '2p_vosotros');
+    expect(pedirVosotros).toBeDefined();
+    expect(pedirVosotros.value).toBe('pedisteis');
+  });
+});

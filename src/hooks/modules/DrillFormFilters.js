@@ -311,7 +311,12 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
   // Enforce: when user asks for 'regular', we filter by lemma (pure regular verbs only),
   // regardless of the global irregularityFilterMode. This matches user expectation.
   // For 'irregular', respect per-form detection (tense mode) unless explicitly overridden.
-  const mode = verbType === 'regular' ? 'lemma' : (settings?.irregularityFilterMode || 'tense') // 'tense' | 'lemma'
+  let mode = verbType === 'regular' ? 'lemma' : (settings?.irregularityFilterMode || 'tense') // 'tense' | 'lemma'
+
+  // Override: For third-person preterite irregulars, force lemma mode to keep all persons
+  if (settings?.selectedFamily === 'PRETERITE_THIRD_PERSON' && verbType === 'irregular') {
+    mode = 'lemma'
+  }
 
   const isIrregularForm = (f) => {
     if (!f || !f.value) return false
