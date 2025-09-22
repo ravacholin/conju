@@ -272,8 +272,27 @@ export async function chooseNext({forms, history: _history, currentItem, session
         return false
       }
       
-      // Family filtering for irregular verbs - BUT skip if coming from theme practice (cameFromTema)
-      // to allow full variety of irregulars
+      // Family filtering for irregular verbs
+      // Special case: For theme practice with third person irregular pretérito, apply pedagogical filtering
+      if (cameFromTema && f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && verbType === 'irregular') {
+        const verbFamilies = categorizeVerb(f.lemma, verb)
+        const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
+        const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
+
+        if (!isPedagogicallyRelevant) {
+          return false
+        }
+
+        // Additional filter: exclude verbs with strong pretérito irregularities
+        // These are verbs that are irregular throughout, not just in 3rd person
+        const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
+        const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
+        if (hasStrongPreteriteIrregularities) {
+          return false // Exclude verbs like saber, querer, haber, etc.
+        }
+      }
+
+      // Standard family filtering - skip if coming from theme practice (but pedagogical filtering above still applies)
       if (selectedFamily && !cameFromTema) {
         const verbFamilies = categorizeVerb(f.lemma, verb)
 
