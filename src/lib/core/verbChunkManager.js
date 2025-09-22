@@ -628,6 +628,14 @@ class VerbChunkManager {
 
           if (verbs && verbs.length > 0) {
             console.log(`✅ Strategy ${strategyIndex + 1} succeeded with ${verbs.length} verbs`)
+
+            // Apply frequency filtering if irregulars are included in preferredChunks
+            if (preferredChunks.includes('irregulars')) {
+              const filteredVerbs = await this.applyFrequencyFilteringToIrregulars(verbs)
+              console.log(`📊 Applied failsafe frequency filtering: ${verbs.length} → ${filteredVerbs.length} verbs`)
+              return filteredVerbs
+            }
+
             return verbs
           }
         } catch (error) {
@@ -715,9 +723,74 @@ class VerbChunkManager {
       }
     }
 
+    // Apply frequency filtering for ALL irregular verb loading to avoid rare verbs
+    // This ensures theme practice always shows B1-appropriate verbs
+    if (relevantChunks.has('irregulars')) {
+      return this.applyFrequencyFilteringToIrregulars(themeVerbs)
+    }
+
     return themeVerbs
   }
-  
+
+  // Apply frequency filtering to irregular verbs for theme practice
+  async applyFrequencyFilteringToIrregulars(verbs) {
+    // Get core and common verb lists for frequency filtering
+    const coreVerbs = new Set(this.chunkMetadata.get('core')?.verbs || [])
+    const commonVerbs = new Set(this.chunkMetadata.get('common')?.verbs || [])
+
+    // Common irregular verbs for theme practice (B1 level appropriate)
+    const commonIrregularVerbs = new Set([
+      // From core/common chunks that are irregular
+      'ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber',
+      'querer', 'poner', 'parecer', 'creer', 'seguir', 'venir', 'pensar', 'salir', 'volver',
+      'conocer', 'vivir', 'sentir', 'empezar',
+      // Common irregular verbs for third-person families
+      'dormir', 'morir', 'pedir', 'servir', 'repetir', 'preferir', 'mentir', 'competir',
+      'leer', 'construir', 'destruir', 'huir', 'incluir', 'concluir',
+      // Orthographic changes (common)
+      'buscar', 'sacar', 'tocar', 'llegar', 'pagar', 'jugar', 'almorzar', 'organizar'
+    ])
+
+    // Load priority verbs for extended coverage
+    let priorityVerbLemmas = new Set()
+    try {
+      const { priorityVerbs } = await import('../../data/priorityVerbs.js')
+      priorityVerbLemmas = new Set(priorityVerbs.map(v => v.lemma))
+    } catch (error) {
+      console.warn('Could not load priorityVerbs for frequency filtering:', error)
+    }
+
+    const filteredVerbs = verbs.filter(verb => {
+      // First check if verb is irregular
+      let isIrregular = false
+      if (verb.type === 'irregular') {
+        isIrregular = true
+      } else {
+        // If no explicit type, use categorizeVerb to detect irregularity
+        try {
+          const families = categorizeVerb(verb.lemma, verb)
+          isIrregular = families.length > 0 // Has irregular families
+        } catch (error) {
+          console.warn(`Failed to categorize verb ${verb.lemma}:`, error)
+          return false
+        }
+      }
+
+      if (!isIrregular) return false
+
+      // Priority filtering for theme practice (B1 level)
+      // For theme practice, be more restrictive - only use truly common verbs
+      return commonIrregularVerbs.has(verb.lemma) ||    // High-frequency irregulars
+             coreVerbs.has(verb.lemma) ||              // Core verbs (A1)
+             commonVerbs.has(verb.lemma)               // Common verbs (A2-B1)
+             // NOTE: Intentionally exclude priorityVerbLemmas for theme practice
+             // as it includes advanced C1/C2 verbs like "proseguir", "argüir"
+    })
+
+    console.log(`📊 Applied frequency filtering: ${verbs.length} → ${filteredVerbs.length} irregular verbs`)
+    return filteredVerbs
+  }
+
   // Fallback rápido: si no encuentra verbos específicos, cargar desde archivo principal
   async getVerbsWithFallback(lemmas, maxWaitTime = 2000) {
     try {
