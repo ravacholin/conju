@@ -273,8 +273,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
       }
       
       // Family filtering for irregular verbs
-      // Special case: For theme practice with third person irregular pretérito, apply pedagogical filtering
-      if (cameFromTema && f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && verbType === 'irregular') {
+      // Special case: For third person irregular pretérito practice, apply pedagogical filtering
+      // This applies when practicing irregular verbs in 3rd person pretérito, regardless of cameFromTema
+      if (f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && verbType === 'irregular') {
         const verbFamilies = categorizeVerb(f.lemma, verb)
         const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
         const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
