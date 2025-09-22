@@ -3,7 +3,7 @@ import { categorizeVerb } from './src/lib/data/irregularFamilies.js'
 import { verbs } from './src/data/verbs.js'
 
 console.log('=== VERBOS QUE APARECEN (NO DEBERÍAN) ===');
-['hacer', 'venir', 'ser', 'saber', 'querer', 'haber', 'traducir'].forEach(lemma => {
+['hacer', 'venir', 'ser', 'saber', 'querer', 'haber', 'traducir', 'educar', 'comunicar'].forEach(lemma => {
   const verb = verbs.find(v => v.lemma === lemma);
   if (verb) {
     const families = categorizeVerb(lemma, verb);

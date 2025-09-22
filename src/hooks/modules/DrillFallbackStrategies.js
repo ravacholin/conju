@@ -31,8 +31,8 @@ const logger = createLogger('DrillFallback')
  */
 const applyPedagogicalFiltering = (forms, settings) => {
   return forms.filter(f => {
-    // Only apply pedagogical filtering for third person irregular pretérito practice
-    if (f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && settings.verbType === 'irregular') {
+    // Only apply pedagogical filtering for "Irregulares en 3ª persona" drill (all persons)
+    if (f.tense === 'pretIndef' && settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
       // Find the verb in the dataset to get its complete definition
       const verb = verbs.find(v => v.lemma === f.lemma)
       if (!verb) return true // If verb not found, allow it through (defensive)

@@ -197,9 +197,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
     // Always enforce MCER level-based verb allowances (regular and irregular)
     // Apply before any later branching so A1/A2 never see advanced lemmas
+    // EXCEPT for pedagogical drills like "Irregulares en 3ª persona"
     try {
       const verbFamilies = categorizeVerb(f.lemma, verb)
-      if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+      const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
+      if (!isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
         return false
       }
     } catch {
@@ -273,9 +275,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
       }
       
       // Family filtering for irregular verbs
-      // Special case: For third person irregular pretérito practice, apply pedagogical filtering
-      // This applies when practicing irregular verbs in 3rd person pretérito, regardless of cameFromTema
-      if (f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && verbType === 'irregular') {
+      // Special case: For "Irregulares en 3ª persona" drill, apply pedagogical filtering to ALL persons
+      // This applies when practicing this specific drill, regardless of cameFromTema
+      if (f.tense === 'pretIndef' && verbType === 'irregular' && selectedFamily === 'PRETERITE_THIRD_PERSON') {
         const verbFamilies = categorizeVerb(f.lemma, verb)
         const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
         const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
@@ -320,15 +322,17 @@ export async function chooseNext({forms, history: _history, currentItem, session
         }
 
         // Level-based filtering for specific verb types
-        // Skip level filtering for theme practice to allow full variety
-        if (!cameFromTema && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        // Skip level filtering for theme practice and pedagogical drills to allow full variety
+        const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
+        if (!cameFromTema && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
-        // Skip level filtering for theme practice to allow full variety
+        // Skip level filtering for theme practice and pedagogical drills to allow full variety
         const verbFamilies = categorizeVerb(f.lemma, verb)
-        if (!cameFromTema && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
+        if (!cameFromTema && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       }
