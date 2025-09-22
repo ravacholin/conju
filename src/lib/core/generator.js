@@ -272,8 +272,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
         return false
       }
       
-      // Family filtering for irregular verbs
-      if (selectedFamily) {
+      // Family filtering for irregular verbs - BUT skip if coming from theme practice (cameFromTema)
+      // to allow full variety of irregulars
+      if (selectedFamily && !cameFromTema) {
         const verbFamilies = categorizeVerb(f.lemma, verb)
 
         // Check if it's a simplified group that needs expansion
@@ -290,17 +291,17 @@ export async function chooseNext({forms, history: _history, currentItem, session
             return false
           }
         }
-        
+
         // Level-based filtering for specific verb types
-        // ALWAYS apply level filtering, including for specific topic practice
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        // Skip level filtering for theme practice to allow full variety
+        if (!cameFromTema && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
-        // ALWAYS apply this filtering, including for specific topic practice
+        // Skip level filtering for theme practice to allow full variety
         const verbFamilies = categorizeVerb(f.lemma, verb)
-        if (shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        if (!cameFromTema && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       }
@@ -575,8 +576,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
         ? conmutacionSeq
         : ['2s_vos','3p','3s']
       const effectiveSeq = rawSeq.filter(p => allowedPersons.has(p))
-      // Fallback robusto
-      const seq = effectiveSeq.length > 0 ? effectiveSeq : ['3s','3p']
+      // Fallback robusto: usar TODAS las personas permitidas por región, no solo 3s/3p
+      const seq = effectiveSeq.length > 0 ? effectiveSeq : [...allowedPersons]
 
       // Elegir índice seguro (evitar || 0 por si es 0 válido)
       const currentIdx = Number.isInteger(conmutacionIdx) ? conmutacionIdx : 0
