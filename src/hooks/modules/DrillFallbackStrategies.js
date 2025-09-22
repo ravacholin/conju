@@ -11,16 +11,52 @@
 
 import { gateFormsByCurriculumAndDialect } from '../../lib/core/curriculumGate.js'
 import { verbs } from '../../data/verbs.js'
-import { 
-  matchesSpecific, 
-  allowsPerson, 
-  allowsLevel, 
-  getAllowedCombosForLevel 
+import {
+  matchesSpecific,
+  allowsPerson,
+  allowsLevel,
+  getAllowedCombosForLevel
 } from './DrillFormFilters.js'
+import { categorizeVerb } from '../../lib/data/irregularFamilies.js'
 import { getSimilarTenses } from './DrillValidationSystem.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('DrillFallback')
+
+/**
+ * Apply pedagogical filtering for third-person irregular pretérito
+ * @param {Array} forms - Forms to filter
+ * @param {Object} settings - User settings
+ * @returns {Array} - Filtered forms
+ */
+const applyPedagogicalFiltering = (forms, settings) => {
+  return forms.filter(f => {
+    // Only apply pedagogical filtering for third person irregular pretérito practice
+    if (f.tense === 'pretIndef' && ['3s', '3p'].includes(f.person) && settings.verbType === 'irregular') {
+      // Find the verb in the dataset to get its complete definition
+      const verb = verbs.find(v => v.lemma === f.lemma)
+      if (!verb) return true // If verb not found, allow it through (defensive)
+
+      const verbFamilies = categorizeVerb(f.lemma, verb)
+      const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
+      const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
+
+      if (!isPedagogicallyRelevant) {
+        return false
+      }
+
+      // Additional filter: exclude verbs with strong pretérito irregularities
+      // These are verbs that are irregular throughout, not just in 3rd person
+      const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
+      const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
+      if (hasStrongPreteriteIrregularities) {
+        return false // Exclude verbs like saber, querer, haber, etc.
+      }
+    }
+
+    return true // Allow all other forms through
+  })
+}
 
 /**
  * Apply verb type filter to forms
@@ -170,7 +206,11 @@ export const fallbackToMixedPractice = (allForms, settings) => {
   try {
     // Try to get any valid form for the user's level
     const gated = gateFormsByCurriculumAndDialect(allForms, fallbackSettings)
-    const levelValid = gated.filter(f => {
+
+    // Apply pedagogical filtering even in fallback
+    const pedagogicallyFiltered = applyPedagogicalFiltering(gated, settings)
+
+    const levelValid = pedagogicallyFiltered.filter(f => {
       const userLevel = settings.level || 'B1'
       const allowed = getAllowedCombosForLevel(userLevel)
       return allowed.has(`${f.mood}|${f.tense}`)
