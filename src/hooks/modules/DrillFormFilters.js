@@ -21,6 +21,7 @@ import {
 import { LEVELS } from '../../lib/data/levels.js'
 import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
 import { categorizeVerb } from '../../lib/data/irregularFamilies.js'
+import { expandSimplifiedGroup } from '../../lib/data/simplifiedFamilyGroups.js'
 
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
@@ -414,10 +415,13 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
   // 3. Apply pedagogical filtering for third-person irregular pretérito
   filtered = applyPedagogicalFiltering(filtered, settings)
 
-  // 4. Filter by person/pronoun constraints
+  // 4. Filter by irregular family if specified (for theme practice)
+  filtered = applyFamilyFiltering(filtered, settings)
+
+  // 5. Filter by person/pronoun constraints
   filtered = filtered.filter(form => allowsPerson(form.person, settings))
 
-  // 5. Filter by level constraints
+  // 6. Filter by level constraints
   filtered = filtered.filter(form => allowsLevel(form, settings))
 
   return filtered
@@ -523,6 +527,42 @@ const applyPedagogicalFiltering = (forms, settings) => {
     }
 
     return true // Allow all other forms through
+  })
+}
+
+/**
+ * Apply irregular family filtering for theme practice
+ * @param {Array} forms - Forms to filter
+ * @param {Object} settings - User settings
+ * @returns {Array} - Filtered forms
+ */
+const applyFamilyFiltering = (forms, settings) => {
+  // Only apply family filtering when specifically requested (theme practice with selectedFamily)
+  if (!settings.selectedFamily || settings.practiceMode !== 'theme') {
+    return forms // No family filtering needed
+  }
+
+  return forms.filter(form => {
+    try {
+      // Find the verb in the dataset to get its complete definition
+      const verb = FULL_VERB_DATASET.find(v => v.lemma === form.lemma)
+      if (!verb) return true // If verb not found, allow it through (defensive)
+
+      const verbFamilies = categorizeVerb(form.lemma, verb)
+
+      // Check if it's a simplified group that needs expansion
+      const expandedFamilies = expandSimplifiedGroup(settings.selectedFamily)
+      if (expandedFamilies.length > 0) {
+        // It's a simplified group - check if the verb belongs to ANY of the included families
+        return verbFamilies.some(vf => expandedFamilies.includes(vf))
+      } else {
+        // It's a regular family - check direct match
+        return verbFamilies.includes(settings.selectedFamily)
+      }
+    } catch (error) {
+      console.warn(`Failed to categorize verb ${form.lemma} for family filtering:`, error)
+      return false // Exclude verbs that can't be categorized
+    }
   })
 }
 

@@ -3,6 +3,7 @@
 
 // Import for irregular verb categorization when metadata is missing
 import { categorizeVerb } from '../data/irregularFamilies.js'
+import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 
 class VerbChunkManager {
   constructor() {
@@ -710,8 +711,37 @@ class VerbChunkManager {
       }
     })
 
+    // Filter by specific irregular families if requested
+    let filteredVerbs = themeVerbs
+    if (irregularFamilies.length > 0) {
+      console.log(`🔍 Filtering ${themeVerbs.length} verbs by irregular families: ${irregularFamilies.join(', ')}`)
+
+      filteredVerbs = themeVerbs.filter(verb => {
+        try {
+          const verbFamilies = categorizeVerb(verb.lemma, verb)
+
+          return irregularFamilies.some(selectedFamily => {
+            // Check if it's a simplified group that needs expansion
+            const expandedFamilies = expandSimplifiedGroup(selectedFamily)
+            if (expandedFamilies.length > 0) {
+              // It's a simplified group - check if the verb belongs to ANY of the included families
+              return verbFamilies.some(vf => expandedFamilies.includes(vf))
+            } else {
+              // It's a regular family - check direct match
+              return verbFamilies.includes(selectedFamily)
+            }
+          })
+        } catch (error) {
+          console.warn(`Failed to categorize verb ${verb.lemma} for family filtering:`, error)
+          return false // Exclude verbs that can't be categorized
+        }
+      })
+
+      console.log(`📊 Family filtering: ${themeVerbs.length} → ${filteredVerbs.length} verbs`)
+    }
+
     // Enhanced fallback: if no verbs found, try robust failsafe
-    if (themeVerbs.length === 0) {
+    if (filteredVerbs.length === 0) {
       console.warn(`🚨 getVerbsByTheme returned 0 verbs for theme "${theme}", activating failsafe`)
       try {
         const failsafeVerbs = await this.getVerbsWithRobustFailsafe(Array.from(relevantChunks))
@@ -726,10 +756,10 @@ class VerbChunkManager {
     // Apply frequency filtering for ALL irregular verb loading to avoid rare verbs
     // This ensures theme practice always shows B1-appropriate verbs
     if (relevantChunks.has('irregulars')) {
-      return this.applyFrequencyFilteringToIrregulars(themeVerbs)
+      return this.applyFrequencyFilteringToIrregulars(filteredVerbs)
     }
 
-    return themeVerbs
+    return filteredVerbs
   }
 
   // Apply frequency filtering to irregular verbs for theme practice

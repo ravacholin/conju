@@ -301,6 +301,177 @@ describe('Chunk fallback for third-person preterite irregulars', () => {
   });
 });
 
+describe('Theme practice irregular family filtering', () => {
+  it('should only return verbs from selected family in theme practice', async () => {
+    clearFormsCache();
+
+    // Test with PRETERITE_STRONG_STEM - should only include strong preterite verbs
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_STRONG_STEM',
+      enableChunks: false, // Use fallback for consistent results
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    // 1. Verify that there are eligible forms
+    expect(eligible.length).toBeGreaterThan(0);
+
+    // 2. Check that only strong preterite verbs are included
+    const lemmas = [...new Set(eligible.map(f => f.lemma))];
+
+    // These should be included (strong preterite irregulars)
+    const expectedStrongVerbs = ['estar', 'tener', 'hacer', 'decir', 'poner', 'venir', 'querer', 'saber'];
+    const foundStrongVerbs = expectedStrongVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundStrongVerbs.length).toBeGreaterThan(0,
+      `Expected to find strong preterite verbs like ${expectedStrongVerbs.join(', ')}, but found: ${lemmas.join(', ')}`);
+
+    // 3. These should NOT be included (they are not strong preterite)
+    const excludedVerbs = ['dormir', 'pedir', 'repetir', 'empezar', 'leer', 'construir'];
+    const foundExcludedVerbs = excludedVerbs.filter(verb => lemmas.includes(verb));
+
+    expect(foundExcludedVerbs.length).toBe(0,
+      `Found verbs that should be excluded: ${foundExcludedVerbs.join(', ')}. All found verbs: ${lemmas.join(', ')}`);
+
+    console.log(`✅ Strong preterite filtering test: Found ${lemmas.length} verbs, including: ${foundStrongVerbs.join(', ')}`);
+  });
+
+  it('should filter by stem-changing families in theme practice', async () => {
+    clearFormsCache();
+
+    // Test with DIPHT_E_IE stem-changing verbs
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pres', // Present tense where stem changes are more visible
+      verbType: 'irregular',
+      selectedFamily: 'DIPHT_E_IE',
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pres',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const lemmas = [...new Set(eligible.map(f => f.lemma))];
+
+    // DIPHT_E_IE verbs that should be included
+    const expectedEIEVerbs = ['pensar', 'cerrar', 'empezar', 'comenzar', 'despertar', 'sentir'];
+    const foundEIEVerbs = expectedEIEVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundEIEVerbs.length).toBeGreaterThan(0,
+      `Expected to find DIPHT_E_IE verbs like ${expectedEIEVerbs.join(', ')}, but found: ${lemmas.join(', ')}`);
+
+    // DIPHT_O_UE verbs should NOT be included
+    const excludedOUEVerbs = ['volver', 'poder', 'contar', 'mostrar', 'dormir', 'morir'];
+    const foundExcludedOUE = excludedOUEVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundExcludedOUE.length).toBe(0,
+      `Found DIPHT_O_UE verbs that should be excluded: ${foundExcludedOUE.join(', ')}`);
+
+    console.log(`✅ DIPHT_E_IE filtering test: Found ${foundEIEVerbs.join(', ')} among ${lemmas.length} total verbs`);
+  });
+
+  it('should handle simplified group expansion correctly', async () => {
+    clearFormsCache();
+
+    // Test with STEM_CHANGES group for present tense (where it's relevant)
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pres', // Present tense where STEM_CHANGES is relevant
+      verbType: 'irregular',
+      selectedFamily: 'STEM_CHANGES', // This should expand to multiple stem-changing families
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pres',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const lemmas = [...new Set(eligible.map(f => f.lemma))];
+
+    // Should include stem-changing verbs from different families
+    const expectedStemChangingVerbs = ['pensar', 'volver', 'jugar', 'pedir']; // Examples from STEM_CHANGES group
+    const foundStemChangingVerbs = expectedStemChangingVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundStemChangingVerbs.length).toBeGreaterThan(1,
+      `Expected to find multiple stem-changing verbs from ${expectedStemChangingVerbs.join(', ')}, but found: ${foundStemChangingVerbs.join(', ')}`);
+
+    // Should NOT include purely irregular verbs (not stem-changing)
+    const excludedNonStemChanging = ['estar', 'ser', 'ir', 'haber', 'dar'];
+    const foundExcluded = excludedNonStemChanging.filter(verb => lemmas.includes(verb));
+
+    expect(foundExcluded.length).toBe(0,
+      `Found purely irregular verbs that should be excluded: ${foundExcluded.join(', ')}`);
+
+    console.log(`✅ Simplified group expansion test: Found ${foundStemChangingVerbs.join(', ')} among ${lemmas.length} total verbs`);
+  });
+
+  it('should respect family filtering even when coming from tema', async () => {
+    clearFormsCache();
+
+    // Test with cameFromTema=true to ensure filtering still works
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'theme',
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+      verbType: 'irregular',
+      selectedFamily: 'PRETERITE_STRONG_STEM',
+      cameFromTema: true, // This used to bypass family filtering
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pretIndef',
+    };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const lemmas = [...new Set(eligible.map(f => f.lemma))];
+
+    // Should still filter by family even with cameFromTema=true
+    const expectedStrongVerbs = ['estar', 'tener', 'hacer', 'decir'];
+    const foundStrongVerbs = expectedStrongVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundStrongVerbs.length).toBeGreaterThan(0,
+      `Even with cameFromTema=true, should filter by family. Expected ${expectedStrongVerbs.join(', ')}, found: ${lemmas.join(', ')}`);
+
+    // Should NOT include non-strong verbs
+    const excludedVerbs = ['dormir', 'pedir', 'empezar'];
+    const foundExcluded = excludedVerbs.filter(verb => lemmas.includes(verb));
+    expect(foundExcluded.length).toBe(0,
+      `Found excluded verbs even with family filtering: ${foundExcluded.join(', ')}`);
+
+    console.log(`✅ cameFromTema family filtering test: Still properly filtered to ${foundStrongVerbs.join(', ')}`);
+  });
+});
+
 describe('Third-person preterite irregulars practice with dialects', () => {
   it('should include "vos" forms for rioplatense region', async () => {
     clearFormsCache();

@@ -302,8 +302,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
         console.log(`✅ PERMITIDO: ${f.lemma}`)
       }
 
-      // Standard family filtering - skip if coming from theme practice (but pedagogical filtering above still applies)
-      if (selectedFamily && !cameFromTema) {
+      // Standard family filtering - apply for theme practice too, except for pedagogical drills
+      if (selectedFamily && (practiceMode === 'theme' || !cameFromTema)) {
         const verbFamilies = categorizeVerb(f.lemma, verb)
 
         // Check if it's a simplified group that needs expansion
@@ -322,17 +322,19 @@ export async function chooseNext({forms, history: _history, currentItem, session
         }
 
         // Level-based filtering for specific verb types
-        // Skip level filtering for theme practice and pedagogical drills to allow full variety
+        // Apply level filtering when family is specifically selected, even in theme practice
         const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-        if (!cameFromTema && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const shouldApplyLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
+        if (shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       } else {
         // Even without family selection, apply level-based filtering for irregulars
-        // Skip level filtering for theme practice and pedagogical drills to allow full variety
+        // Apply level filtering when family is specifically selected, even in theme practice
         const verbFamilies = categorizeVerb(f.lemma, verb)
         const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-        if (!cameFromTema && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const shouldApplyLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
+        if (shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
           return false
         }
       }
