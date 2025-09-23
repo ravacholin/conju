@@ -100,11 +100,26 @@ export default function SRSPanel({ onNavigateToDrill }) {
     return 'mastery-low'
   }
 
-  const reviewStats = useMemo(() => ({
-    urgent: queueStats.urgent,
-    overdue: queueStats.overdue,
-    scheduled: queueStats.scheduled
-  }), [queueStats])
+  const reviewStats = useMemo(() => {
+    const total = queueStats.total || 0
+    const urgent = queueStats.urgent || 0
+    const overdue = queueStats.overdue || 0
+    const scheduled = queueStats.scheduled || 0
+
+    return {
+      urgent,
+      overdue,
+      scheduled,
+      total,
+      // Calculate percentages for visual indicators
+      urgentPct: total ? Math.round((urgent / total) * 100) : 0,
+      overduePct: total ? Math.round((overdue / total) * 100) : 0,
+      scheduledPct: total ? Math.round((scheduled / total) * 100) : 0,
+      // Estimate session time (1.5 minutes per item)
+      urgentTime: Math.ceil(urgent * 1.5),
+      totalTime: Math.ceil(total * 1.5)
+    }
+  }, [queueStats])
 
   if (loading) {
     return (
@@ -150,29 +165,53 @@ export default function SRSPanel({ onNavigateToDrill }) {
           <div className="srs-stat-card urgent">
             <div className="stat-indicator urgent-indicator"></div>
             <div className="stat-content">
-              <div className="stat-number">{reviewStats.overdue}</div>
+              <div className="stat-header">
+                <div className="stat-number">{reviewStats.overdue}</div>
+                <div className="stat-progress">
+                  <div className="progress-ring" style={{'--progress': reviewStats.overduePct}}>
+                    <span className="progress-text">{reviewStats.overduePct}%</span>
+                  </div>
+                </div>
+              </div>
               <div className="stat-label">Se te están olvidando</div>
               <div className="stat-sublabel">¡Repásalos antes de perderlos!</div>
+              <div className="stat-time">~{Math.ceil(reviewStats.overdue * 1.5)} min</div>
             </div>
           </div>
         )}
-        
+
         <div className="srs-stat-card ready">
           <div className="stat-indicator ready-indicator"></div>
           <div className="stat-content">
-            <div className="stat-number">{stats.dueNow}</div>
+            <div className="stat-header">
+              <div className="stat-number">{stats.dueNow}</div>
+              <div className="stat-progress">
+                <div className="progress-ring" style={{'--progress': reviewStats.urgentPct}}>
+                  <span className="progress-text">{reviewStats.urgentPct}%</span>
+                </div>
+              </div>
+            </div>
             <div className="stat-label">{stats.dueNow === 1 ? 'Listo para repasar' : 'Listos para repasar'}</div>
             <div className="stat-sublabel">Momento perfecto para reforzar</div>
+            <div className="stat-time">~{reviewStats.urgentTime} min</div>
           </div>
         </div>
-        
+
         {stats.dueToday > stats.dueNow && (
           <div className="srs-stat-card scheduled">
             <div className="stat-indicator scheduled-indicator"></div>
             <div className="stat-content">
-              <div className="stat-number">{stats.dueToday - stats.dueNow}</div>
+              <div className="stat-header">
+                <div className="stat-number">{stats.dueToday - stats.dueNow}</div>
+                <div className="stat-progress">
+                  <div className="progress-ring" style={{'--progress': reviewStats.scheduledPct}}>
+                    <span className="progress-text">{reviewStats.scheduledPct}%</span>
+                  </div>
+                </div>
+              </div>
               <div className="stat-label">Más tarde hoy</div>
               <div className="stat-sublabel">Programados para después</div>
+              <div className="stat-time">~{Math.ceil((stats.dueToday - stats.dueNow) * 1.5)} min</div>
             </div>
           </div>
         )}

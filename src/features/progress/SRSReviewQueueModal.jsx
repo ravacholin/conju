@@ -49,27 +49,29 @@ export default function SRSReviewQueueModal({ isOpen, onClose, onStartSession })
     <div className="srs-queue-overlay" onClick={onClose}>
       <div className="srs-queue-modal" onClick={(event) => event.stopPropagation()}>
         <header className="srs-queue__header">
-          <div>
-            <h2>Revisar ahora</h2>
-            <p>Control total sobre tu cola de repaso SRS</p>
+          <div className="srs-queue__hero">
+            <div className="hero-content">
+              <h2>Revisar ahora</h2>
+              <p>Control total sobre tu cola de repaso SRS</p>
+            </div>
+            <button className="srs-queue__close" onClick={onClose} aria-label="Cerrar">✕</button>
           </div>
-          <button className="srs-queue__close" onClick={onClose} aria-label="Cerrar">✕</button>
-        </header>
 
-        <section className="srs-queue__stats">
-          <div className="stat-card">
-            <span className="stat-value">{stats.total}</span>
-            <span className="stat-label">En cola</span>
+          <div className="srs-queue__stats">
+            <div className="stat-card">
+              <span className="stat-value">{stats.total}</span>
+              <span className="stat-label">En cola</span>
+            </div>
+            <div className="stat-card urgent">
+              <span className="stat-value">{stats.overdue}</span>
+              <span className="stat-label">Se están olvidando</span>
+            </div>
+            <div className="stat-card soon">
+              <span className="stat-value">{stats.urgent}</span>
+              <span className="stat-label">Muy urgentes</span>
+            </div>
           </div>
-          <div className="stat-card urgent">
-            <span className="stat-value">{stats.overdue}</span>
-            <span className="stat-label">Se están olvidando</span>
-          </div>
-          <div className="stat-card soon">
-            <span className="stat-value">{stats.urgent}</span>
-            <span className="stat-label">Muy urgentes</span>
-          </div>
-        </section>
+        </header>
 
         <section className="srs-queue__filters">
           <div className="filter-group">

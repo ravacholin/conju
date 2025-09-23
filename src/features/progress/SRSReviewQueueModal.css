@@ -1,7 +1,9 @@
 .srs-queue-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,39 +13,67 @@
 .srs-queue-modal {
   width: min(640px, 94%);
   max-height: 92vh;
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25);
-  padding: 24px;
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 24px;
+  box-shadow:
+    0 16px 64px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
 }
 
 .srs-queue__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.srs-queue__hero {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
 }
 
+.hero-content {
+  flex: 1;
+}
+
 .srs-queue__header h2 {
   margin: 0;
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -0.015em;
 }
 
 .srs-queue__header p {
   margin: 4px 0 0 0;
-  color: #4b5563;
+  color: var(--muted);
   font-size: 0.95rem;
+  font-weight: 350;
 }
 
 .srs-queue__close {
   background: transparent;
-  border: none;
-  font-size: 1.4rem;
+  border: 1px solid rgba(245, 245, 245, 0.15);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.2rem;
+  color: var(--muted);
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.srs-queue__close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(245, 245, 245, 0.25);
+  color: var(--text);
 }
 
 .srs-queue__stats {
@@ -53,30 +83,46 @@
 }
 
 .stat-card {
-  background: #f3f4f6;
-  border-radius: 14px;
-  padding: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(245, 245, 245, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .stat-card.urgent {
-  background: rgba(220, 38, 38, 0.1);
+  border-left: 3px solid var(--accent-red, #dc3545);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), rgba(255, 255, 255, 0.03));
 }
 
 .stat-card.soon {
-  background: rgba(250, 204, 21, 0.18);
+  border-left: 3px solid var(--warning, #ffc107);
+  background: linear-gradient(90deg, rgba(255, 193, 7, 0.05), rgba(255, 255, 255, 0.03));
 }
 
 .stat-value {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 200;
+  color: var(--text);
+  letter-spacing: -0.02em;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: #4b5563;
+  color: var(--text);
+  font-weight: 500;
 }
 
 .srs-queue__filters {
@@ -92,21 +138,55 @@
   gap: 6px;
 }
 
+.filter-group label {
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 .filter-group select {
-  border: 1px solid #d1d5db;
-  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 245, 245, 0.15);
+  padding: 8px 12px;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: rgba(245, 245, 245, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-group select option {
+  background: #1a1a1a;
+  color: var(--text);
 }
 
 .srs-queue__refresh {
-  border: none;
+  background: transparent;
+  border: 1px solid rgba(245, 245, 245, 0.15);
   border-radius: 8px;
-  padding: 9px 14px;
-  background: #0c6efd;
-  color: #fff;
-  font-weight: 600;
+  padding: 8px 14px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.srs-queue__refresh:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(245, 245, 245, 0.25);
+  transform: translateY(-1px);
+}
+
+.srs-queue__refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .srs-queue__actions {
@@ -117,33 +197,52 @@
 .srs-queue__actions .btn {
   flex: 1;
   padding: 12px 16px;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: 500;
   cursor: pointer;
-  border: none;
+  border: 1px solid;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .srs-queue__actions .btn-primary {
-  background: #2563eb;
-  color: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  border-color: rgba(245, 245, 245, 0.15);
+  color: var(--text);
+}
+
+.srs-queue__actions .btn-primary:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  border-color: rgba(245, 245, 245, 0.25);
+  transform: translateY(-1px);
 }
 
 .srs-queue__actions .btn-secondary {
-  background: #e5e7eb;
-  color: #1f2937;
+  background: transparent;
+  border-color: rgba(245, 245, 245, 0.15);
+  color: var(--muted);
+}
+
+.srs-queue__actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(245, 245, 245, 0.25);
+  color: var(--text);
+  transform: translateY(-1px);
 }
 
 .srs-queue__actions .btn:disabled {
-  background: #d1d5db;
-  color: #6b7280;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(245, 245, 245, 0.05);
+  color: var(--muted);
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .srs-queue__list {
   flex: 1;
   overflow-y: auto;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 12px;
+  border-top: 1px solid rgba(245, 245, 245, 0.08);
+  padding-top: 1rem;
 }
 
 .srs-queue__list ul {
@@ -156,64 +255,90 @@
 }
 
 .srs-queue__item {
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(245, 245, 245, 0.08);
   border-radius: 12px;
-  padding: 12px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+}
+
+.srs-queue__item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(245, 245, 245, 0.15);
 }
 
 .srs-queue__item.urgency-4 {
-  border-color: #dc2626;
-  background: rgba(220, 38, 38, 0.06);
+  border-left: 4px solid var(--accent-red, #dc2626);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-queue__item.urgency-3 {
-  border-color: #f97316;
-  background: rgba(249, 115, 22, 0.07);
+  border-left: 4px solid var(--warning, #f97316);
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-queue__item.urgency-2 {
-  border-color: #f59e0b;
-  background: rgba(245, 158, 11, 0.07);
+  border-left: 4px solid var(--accent-green, #28a745);
+  background: linear-gradient(90deg, rgba(40, 167, 69, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-queue__item.urgency-1 {
-  border-color: #60a5fa;
-  background: rgba(96, 165, 250, 0.08);
+  border-left: 4px solid var(--accent-blue, #007bff);
+  background: linear-gradient(90deg, rgba(0, 123, 255, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .item-main {
   display: flex;
   justify-content: space-between;
-  font-weight: 600;
+  font-weight: 500;
+}
+
+.item-name {
+  color: var(--text);
+  font-size: 1rem;
 }
 
 .item-person {
-  color: #4b5563;
-  font-size: 0.9rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 300;
 }
 
 .item-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  font-size: 0.85rem;
-  color: #4b5563;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.item-mastery {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.item-due, .item-urgency {
+  color: var(--muted);
 }
 
 .srs-queue__status {
   text-align: center;
-  color: #4b5563;
-  padding: 20px 0;
+  color: var(--muted);
+  padding: 2rem 0;
+  font-weight: 300;
 }
 
 .srs-queue__error {
   text-align: center;
-  color: #b91c1c;
-  padding: 16px 0;
-  font-weight: 600;
+  color: var(--accent-red, #dc3545);
+  padding: 1rem 0;
+  font-weight: 500;
 }
 
 @media (max-width: 600px) {
