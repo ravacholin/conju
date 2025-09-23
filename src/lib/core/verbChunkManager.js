@@ -406,34 +406,38 @@ class VerbChunkManager {
         if (existingLemmas.has(verb.lemma)) return false
 
         switch (chunkName) {
-          case 'core':
+          case 'core': {
             // Add high-frequency regular verbs
             const frequency = determineVerbFrequency ? determineVerbFrequency(verb.lemma) : 'medium'
             const isIrregular = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
             return frequency === 'high' && !isIrregular
+          }
 
-          case 'common':
+          case 'common': {
             // Add medium-frequency regular verbs
             const medFreq = determineVerbFrequency ? determineVerbFrequency(verb.lemma) : 'medium'
             const isIrregularCommon = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
             return medFreq === 'medium' && !isIrregularCommon
+          }
 
-          case 'irregulars':
+          case 'irregulars': {
             // Add irregular verbs that weren't included
             if (categorizeVerb) {
               try {
                 const families = categorizeVerb(verb.lemma, verb)
                 return families.length > 0
-              } catch (error) {
+              } catch {
                 return verb.type === 'irregular'
               }
             }
             return verb.type === 'irregular'
+          }
 
-          case 'advanced':
+          case 'advanced': {
             // Add any remaining regular verbs
             const isIrregularAdv = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
             return !isIrregularAdv
+          }
 
           default:
             return true
@@ -592,7 +596,7 @@ class VerbChunkManager {
           try {
             const families = categorizeVerb(verb.lemma, verb)
             return families.length === 0 // Regular verbs or minor irregularities
-          } catch (error) {
+          } catch {
             return true // Include by default if categorization fails
           }
         })
@@ -1000,14 +1004,14 @@ class VerbChunkManager {
       'buscar', 'sacar', 'tocar', 'llegar', 'pagar', 'jugar', 'almorzar', 'organizar'
     ])
 
-    // Load priority verbs for extended coverage
-    let priorityVerbLemmas = new Set()
-    try {
-      const { priorityVerbs } = await import('../../data/priorityVerbs.js')
-      priorityVerbLemmas = new Set(priorityVerbs.map(v => v.lemma))
-    } catch (error) {
-      console.warn('Could not load priorityVerbs for frequency filtering:', error)
-    }
+    // Load priority verbs for extended coverage (currently unused for theme practice)
+    // let priorityVerbLemmas = new Set()
+    // try {
+    //   const { priorityVerbs } = await import('../../data/priorityVerbs.js')
+    //   priorityVerbLemmas = new Set(priorityVerbs.map(v => v.lemma))
+    // } catch {
+    //   console.warn('Could not load priorityVerbs for frequency filtering')
+    // }
 
     const filteredVerbs = verbs.filter(verb => {
       // First check if verb is irregular

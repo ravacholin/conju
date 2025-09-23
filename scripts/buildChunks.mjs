@@ -2,10 +2,6 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import crypto from 'node:crypto'
-import { createRequire } from 'node:module'
-
-// Import for CEFR classification and frequency analysis
-const require = createRequire(import.meta.url)
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = path.resolve(__dirname, '..')
@@ -207,7 +203,6 @@ async function buildChunks() {
   const commonVerbs = verbs.filter(verb => {
     const frequency = verbFrequencies.get(verb.lemma)
     const cefrLevel = verbCEFRLevels.get(verb.lemma)
-    const irregular = verbIrregularFamilies.get(verb.lemma)
 
     if (assignments.has(verb.lemma)) return false
 
@@ -217,11 +212,6 @@ async function buildChunks() {
 
   const sortedCommonVerbs = commonVerbs
     .sort((a, b) => {
-      const aFreq = verbFrequencies.get(a.lemma)
-      const bFreq = verbFrequencies.get(b.lemma)
-      const aCefr = verbCEFRLevels.get(a.lemma)
-      const bCefr = verbCEFRLevels.get(b.lemma)
-
       // A2 first, then B1, then medium frequency
       const priorityScore = (verb) => {
         const freq = verbFrequencies.get(verb.lemma)

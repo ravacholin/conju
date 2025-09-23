@@ -10,8 +10,6 @@ async function testBuildChunks() {
   console.log('🧪 Testing buildChunks script...')
 
   try {
-    // Import the build chunks module
-    const buildChunksPath = path.join(__dirname, 'buildChunks.mjs')
     console.log('📄 Loading buildChunks script...')
 
     // For testing, we need to run the build process
@@ -77,7 +75,6 @@ async function testBuildChunks() {
 
     // Test distribution improvements
     const coreChunk = manifest.chunks.find(c => c.name === 'core')
-    const commonChunk = manifest.chunks.find(c => c.name === 'common')
     const irregularsChunk = manifest.chunks.find(c => c.name === 'irregulars')
     const advancedChunk = manifest.chunks.find(c => c.name === 'advanced')
 
