@@ -171,6 +171,35 @@ export async function getDueItems(userId, currentDate = new Date()) {
 }
 
 /**
+ * Extrae lemmas únicos de los horarios SRS para preloading de chunks
+ * @param {string} userId - ID del usuario
+ * @param {Date} currentDate - Fecha actual
+ * @param {number} hoursAhead - Horas hacia adelante para incluir items próximos
+ * @returns {Promise<Array<string>>} Lista de lemmas únicos
+ */
+export async function extractDueLemmas(userId, currentDate = new Date(), hoursAhead = 24) {
+  try {
+    const extendedDate = new Date(currentDate.getTime() + hoursAhead * 60 * 60 * 1000)
+    const schedules = await getDueSchedules(userId, extendedDate)
+
+    // Extraer lemmas únicos de los schedules
+    const lemmas = new Set()
+    schedules.forEach(schedule => {
+      if (schedule.lemma) {
+        lemmas.add(schedule.lemma)
+      }
+    })
+
+    const uniqueLemmas = Array.from(lemmas)
+    console.log(`📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
+    return uniqueLemmas
+  } catch (error) {
+    console.error('Error extracting due lemmas from SRS:', error)
+    return []
+  }
+}
+
+/**
  * Determina si un ítem necesita ser revisado según el SRS
  * @param {Object} schedule - Schedule del ítem
  * @param {Date} currentDate - Fecha actual

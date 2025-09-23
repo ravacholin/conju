@@ -18,6 +18,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { chooseNext } from '../../lib/core/generator.js'
 import { varietyEngine } from '../../lib/core/advancedVarietyEngine.js'
 import { getNextRecommendedItem } from '../../lib/progress/AdaptivePracticeEngine.js'
+import { verbChunkManager } from '../../lib/core/verbChunkManager.js'
 import {
   filterForSpecificPractice as FILTER_FOR_SPECIFIC_PRACTICE,
   filterByVerbType,
@@ -88,14 +89,23 @@ export const useDrillGenerator = () => {
         doubleActive: settings.doubleActive
       })
       
+      // Trigger smart preloading before form generation for better performance
+      const userId = getCurrentUserId()
+      if (userId) {
+        // Run smart preloading in background (non-blocking)
+        verbChunkManager.smartPreload(settings, userId).catch(error => {
+          logger.warn('generateNextItem', 'Smart preloading failed (non-critical)', error)
+        })
+      }
+
       // Generar formas dinámicamente basado en configuración del usuario
       const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
-      
+
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         logger.error('generateNextItem', 'No forms available for region', settings.region)
         return null
       }
-      
+
       logger.debug('generateNextItem', `Generated ${allFormsForRegion.length} forms for processing`)
 
       // Check if double mode is requested and viable

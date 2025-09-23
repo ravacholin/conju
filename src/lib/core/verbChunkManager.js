@@ -665,7 +665,7 @@ class VerbChunkManager {
   // Pre-carga inteligente basada en configuración de usuario
   async preloadByUserSettings(settings) {
     const chunksToPreload = ['core'] // Siempre precargar core
-    
+
     // Basado en nivel del usuario
     if (settings.level) {
       if (['A1', 'A2'].includes(settings.level)) {
@@ -675,15 +675,233 @@ class VerbChunkManager {
         chunksToPreload.push('irregulars')
       }
     }
-    
+
     // Basado en tipo de práctica preferido
     if (settings.verbType === 'irregular') {
       chunksToPreload.push('irregulars')
     }
-    
+
     // Precargar en background
     this.preloadQueue = chunksToPreload
     this.performBackgroundPreload()
+  }
+
+  /**
+   * Precarga verbos basados en SRS - items debidos y próximos
+   * @param {string} userId - ID del usuario
+   * @param {Date} currentDate - Fecha actual
+   * @param {number} hoursAhead - Horas hacia adelante para incluir
+   * @returns {Promise<void>}
+   */
+  async preloadDueVerbs(userId, currentDate = new Date(), hoursAhead = 24) {
+    if (!userId) {
+      console.warn('⚠️  preloadDueVerbs: No userId provided, skipping SRS preload')
+      return
+    }
+
+    try {
+      // Import SRS module dynamically to avoid circular dependencies
+      const { extractDueLemmas } = await import('../progress/srs.js')
+
+      const dueLemmas = await extractDueLemmas(userId, currentDate, hoursAhead)
+
+      if (dueLemmas.length === 0) {
+        console.log('📊 SRS: No due lemmas found, skipping preload')
+        return
+      }
+
+      console.log(`🔄 SRS: Preloading ${dueLemmas.length} due verbs into chunks`)
+      const startTime = performance.now()
+
+      // Preload all due verbs - this will trigger chunk loading if needed
+      await this.ensureVerbsLoaded(dueLemmas)
+
+      const loadTime = performance.now() - startTime
+      console.log(`✅ SRS: Preloaded due verbs in ${loadTime.toFixed(2)}ms`)
+
+      // Update stats
+      this.stats.srsPreloadCount = (this.stats.srsPreloadCount || 0) + 1
+      this.stats.lastSrsPreloadTime = Date.now()
+      this.stats.lastSrsPreloadDuration = loadTime
+
+    } catch (error) {
+      console.error('❌ SRS: Failed to preload due verbs:', error)
+    }
+  }
+
+  /**
+   * Error-driven preloading basado en analytics de errores
+   * @param {string} userId - ID del usuario
+   * @param {number} limitVerbs - Límite de verbos a precargar
+   * @returns {Promise<number>} Número de verbos precargados
+   */
+  async preloadErrorProneVerbs(userId, limitVerbs = 15) {
+    if (!userId) {
+      console.warn('⚠️  preloadErrorProneVerbs: No userId provided, skipping error-driven preload')
+      return 0
+    }
+
+    try {
+      // Import analytics dynamically to avoid circular dependencies
+      const { getErrorIntelligence } = await import('../progress/analytics.js')
+      const errorData = await getErrorIntelligence(userId)
+
+      // Extraer verbos de las combinaciones más problemáticas
+      const errorProneVerbs = new Set()
+
+      for (const tag of errorData.tags.slice(0, 3)) { // Top 3 error tags
+        for (const combo of tag.topCombos) {
+          // Buscar verbos que coincidan con mood/tense problemático
+          const verbsForCombo = await this.getVerbsForMoodTense(combo.mood, combo.tense)
+          verbsForCombo.slice(0, 5).forEach(verb => errorProneVerbs.add(verb))
+        }
+      }
+
+      // Preload error-prone verbs
+      const verbList = Array.from(errorProneVerbs).slice(0, limitVerbs)
+      if (verbList.length > 0) {
+        console.log(`⚠️ Chunk: Preloading ${verbList.length} error-prone verbs`)
+        await this.ensureVerbsLoaded(verbList)
+      }
+
+      return verbList.length
+    } catch (error) {
+      console.warn('Error-driven preloading failed:', error)
+      return 0
+    }
+  }
+
+  /**
+   * Mastery-aware preloading para verbos con bajo dominio
+   * @param {string} userId - ID del usuario
+   * @param {number} threshold - Umbral de mastery (0-100)
+   * @param {number} limitVerbs - Límite de verbos a precargar
+   * @returns {Promise<number>} Número de verbos precargados
+   */
+  async preloadLowMasteryVerbs(userId, threshold = 60, limitVerbs = 10) {
+    if (!userId) {
+      console.warn('⚠️  preloadLowMasteryVerbs: No userId provided, skipping mastery-aware preload')
+      return 0
+    }
+
+    try {
+      // Import mastery calculation
+      const { getMasteryByUser } = await import('../progress/database.js')
+      const masteryRecords = await getMasteryByUser(userId)
+
+      // Encontrar verbos con bajo mastery
+      const lowMasteryVerbs = masteryRecords
+        .filter(record => record.score < threshold)
+        .sort((a, b) => a.score - b.score) // Menor score primero
+        .slice(0, limitVerbs)
+        .map(record => record.lemma)
+        .filter(lemma => lemma) // Remove undefined
+
+      if (lowMasteryVerbs.length > 0) {
+        console.log(`📈 Chunk: Preloading ${lowMasteryVerbs.length} low-mastery verbs`)
+        await this.ensureVerbsLoaded(lowMasteryVerbs)
+      }
+
+      return lowMasteryVerbs.length
+    } catch (error) {
+      console.warn('Mastery-aware preloading failed:', error)
+      return 0
+    }
+  }
+
+  /**
+   * Precarga inteligente que combina configuración del usuario, SRS, errores y mastery
+   * @param {Object} settings - Configuración del usuario
+   * @param {string} userId - ID del usuario (opcional)
+   * @returns {Promise<Object>} Estadísticas de precarga
+   */
+  async smartPreload(settings, userId = null) {
+    const results = {
+      settingsDriven: 0,
+      srsDriven: 0,
+      errorDriven: 0,
+      masteryDriven: 0,
+      totalTime: 0
+    }
+
+    const startTime = performance.now()
+
+    try {
+      const tasks = []
+
+      // Settings-driven preloading (baja prioridad)
+      tasks.push(
+        this.preloadByUserSettings(settings).then(() => {
+          results.settingsDriven = 1
+        })
+      )
+
+      if (userId) {
+        // SRS-driven preloading (alta prioridad)
+        tasks.push(
+          this.preloadDueVerbs(userId).then(() => {
+            results.srsDriven = 1
+          })
+        )
+
+        // Error-driven preloading (media prioridad)
+        tasks.push(
+          this.preloadErrorProneVerbs(userId, 10).then(count => {
+            results.errorDriven = count
+          })
+        )
+
+        // Mastery-aware preloading (media prioridad)
+        tasks.push(
+          this.preloadLowMasteryVerbs(userId, 50, 8).then(count => {
+            results.masteryDriven = count
+          })
+        )
+      }
+
+      // Execute all preloading tasks in parallel
+      await Promise.allSettled(tasks)
+
+      results.totalTime = performance.now() - startTime
+      console.log(`🎯 Smart preloading completed in ${results.totalTime.toFixed(2)}ms:`, results)
+
+      return results
+    } catch (error) {
+      console.warn('Smart preloading failed:', error)
+      results.totalTime = performance.now() - startTime
+      return results
+    }
+  }
+
+  /**
+   * Helper: Obtener verbos para una combinación mood/tense específica
+   * @param {string} mood - Mood del verbo
+   * @param {string} tense - Tense del verbo
+   * @returns {Promise<Array<string>>} Lista de lemmas
+   */
+  async getVerbsForMoodTense(mood, tense) {
+    try {
+      // Esta es una implementación simplificada
+      // En un sistema completo, esto consultaría la base de datos de verbos
+      // filtrada por disponibilidad en mood/tense específico
+
+      // Por ahora, devolvemos algunos verbos comunes que suelen tener esa forma
+      const commonVerbs = ['ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber', 'querer']
+
+      // Filtros específicos por mood/tense problemáticos
+      if (mood === 'subjunctive') {
+        return ['ser', 'estar', 'haber', 'dar', 'ir', 'saber', 'ver']
+      }
+
+      if (tense === 'pretIndef') {
+        return ['ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'dar', 'poder', 'querer', 'venir']
+      }
+
+      return commonVerbs
+    } catch (error) {
+      console.warn('Error getting verbs for mood/tense:', error)
+      return []
+    }
   }
   
   async performBackgroundPreload() {

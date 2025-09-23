@@ -86,14 +86,17 @@ class IntelligentCache {
   }
 }
 
-// Caches especializados
+// Caches especializados con mastery awareness
 export const verbCategorizationCache = new IntelligentCache(500, 10 * 60 * 1000) // 10 min para categorización
 export const formFilterCache = new IntelligentCache(1000, 3 * 60 * 1000) // 3 min para filtrado
 export const combinationCache = new IntelligentCache(200, 15 * 60 * 1000) // 15 min para combinaciones
 
 // Cache para chunks dinámicos
 export const chunkCache = new IntelligentCache(100, 30 * 60 * 1000) // 30 min para chunks
-export const verbLookupCache = new IntelligentCache(2000, 15 * 60 * 1000) // 15 min para lookups
+export const verbLookupCache = new IntelligentCache(2000, 15 * 60 * 1000, true) // 15 min para lookups + mastery-aware
+
+// Mastery-aware predictive cache
+export const predictiveCache = new IntelligentCache(500, 20 * 60 * 1000, true) // 20 min + mastery-aware
 
 // Mapas de lookup que se construyen dinámicamente con chunks
 export const VERB_LOOKUP_MAP = new Map()
@@ -438,8 +441,112 @@ export function getCacheStats() {
   }
 }
 
+// Predictive loading basado en patrones de uso y mastery
+export async function initiatePredictiveLoading(userId, userSettings = {}) {
+  if (!userId) return
+
+  try {
+    // Import analytics to predict next likely verbs
+    const { getErrorIntelligence, getUserStats } = await import('../progress/analytics.js')
+    const { getMasteryByUser } = await import('../progress/database.js')
+
+    const [errorData, userStats, masteryRecords] = await Promise.all([
+      getErrorIntelligence(userId),
+      getUserStats(userId),
+      getMasteryByUser(userId)
+    ])
+
+    // Create mastery lookup map
+    const masteryMap = new Map()
+    masteryRecords.forEach(record => {
+      if (record.lemma) {
+        masteryMap.set(record.lemma, record.score)
+      }
+    })
+
+    // Predict verbs that might be needed based on error patterns
+    const predictedVerbs = new Set()
+
+    // Add frequently missed verbs (higher priority for low mastery)
+    for (const tag of errorData.tags.slice(0, 2)) {
+      for (const combo of tag.topCombos.slice(0, 2)) {
+        const verbsForCombo = getVerbsForMoodTense(combo.mood, combo.tense)
+        verbsForCombo.slice(0, 3).forEach(verb => {
+          predictedVerbs.add(verb)
+          // Cache with mastery score for intelligent eviction
+          const masteryScore = masteryMap.get(verb) || 30 // Default low for error-prone verbs
+          const cacheKey = `predicted:${verb}`
+          predictiveCache.set(cacheKey, { lemma: verb, predicted: true }, masteryScore)
+        })
+      }
+    }
+
+    // Add low-mastery verbs for review
+    const lowMasteryVerbs = masteryRecords
+      .filter(record => record.score < 40)
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 5)
+      .map(record => record.lemma)
+      .filter(lemma => lemma)
+
+    lowMasteryVerbs.forEach(verb => {
+      predictedVerbs.add(verb)
+      const masteryScore = masteryMap.get(verb) || 20
+      const cacheKey = `lowmastery:${verb}`
+      predictiveCache.set(cacheKey, { lemma: verb, lowMastery: true }, masteryScore)
+    })
+
+    // Predictively cache these verbs
+    if (predictedVerbs.size > 0) {
+      console.log(`🔮 Predictive cache: Loading ${predictedVerbs.size} predicted verbs`)
+      await verbChunkManager.ensureVerbsLoaded(Array.from(predictedVerbs))
+
+      // Update cache stats
+      predictiveCache.predictions += predictedVerbs.size
+    }
+
+  } catch (error) {
+    console.warn('Predictive loading failed:', error)
+  }
+}
+
+// Helper function to get verbs for mood/tense combinations
+function getVerbsForMoodTense(mood, tense) {
+  // Simplified implementation - returns common verbs for the mood/tense
+  const commonVerbs = ['ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar']
+
+  // Mood-specific filtering
+  if (mood === 'subjunctive') {
+    return ['ser', 'estar', 'haber', 'dar', 'ir', 'saber', 'ver']
+  }
+
+  if (tense === 'pretIndef') {
+    return ['ser', 'estar', 'tener', 'hacer', 'decir', 'ir', 'dar', 'poder']
+  }
+
+  return commonVerbs
+}
+
+// Enhanced cache statistics with predictive metrics
+export function getEnhancedCacheStats() {
+  return {
+    verbCategorization: verbCategorizationCache.getStats(),
+    formFilter: formFilterCache.getStats(),
+    combination: combinationCache.getStats(),
+    chunkCache: chunkCache.getStats(),
+    verbLookupCache: verbLookupCache.getStats(),
+    predictiveCache: predictiveCache.getStats(),
+    verbLookup: { size: VERB_LOOKUP_MAP.size },
+    formLookup: { size: FORM_LOOKUP_MAP.size },
+    chunkManager: verbChunkManager.getStats(),
+    predictiveLoadingEnabled: true
+  }
+}
+
 // Make cache management functions available globally for debugging
 if (typeof window !== 'undefined') {
   window.clearAllCaches = clearAllCaches
   window.getCacheStats = getCacheStats
+  window.getEnhancedCacheStats = getEnhancedCacheStats
+  window.initiatePredictiveLoading = initiatePredictiveLoading
 }
