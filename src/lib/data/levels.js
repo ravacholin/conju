@@ -87,7 +87,7 @@ const INVENTORY = {
 };
 
 // Expanded verb packs with existing verbs only
-const PACKS = {
+export const PACKS = {
   A1_CORE: { 
     id:"A1_CORE", 
     lemmas:[

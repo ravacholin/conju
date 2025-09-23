@@ -186,7 +186,7 @@ class VerbChunkManager {
   async ensureVerbsLoaded(verbLemmas) {
     const startTime = performance.now()
     const requiredChunks = new Set()
-    
+
     // Determinar qué chunks necesitamos
     verbLemmas.forEach(lemma => {
       const chunkName = this.getChunkForVerb(lemma)
@@ -194,16 +194,55 @@ class VerbChunkManager {
         requiredChunks.add(chunkName)
       }
     })
-    
+
     // Cargar chunks necesarios en paralelo
-    const loadPromises = Array.from(requiredChunks).map(chunkName => 
+    const loadPromises = Array.from(requiredChunks).map(chunkName =>
       this.loadChunk(chunkName)
     )
-    
+
     await Promise.all(loadPromises)
-    
+
+    // Get verbs from loaded chunks
+    const verbs = this.getVerbsFromLemmas(verbLemmas)
+
+    // Check for missing lemmas and apply fallback
+    const foundLemmas = new Set(verbs.map(verb => verb.lemma))
+    const missingLemmas = verbLemmas.filter(lemma => !foundLemmas.has(lemma))
+
+    if (missingLemmas.length > 0) {
+      console.log(`🔄 Chunk fallback: ${missingLemmas.length} missing lemmas [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
+
+      try {
+        const fallbackVerbs = await this.loadMissingLemmasFromMainStore(missingLemmas)
+        verbs.push(...fallbackVerbs)
+
+        // Update chunks and index with fallback verbs
+        fallbackVerbs.forEach(verb => {
+          const chunkName = this.getChunkForVerb(verb.lemma)
+          let chunk = this.loadedChunks.get(chunkName)
+          if (!chunk) {
+            chunk = []
+            this.loadedChunks.set(chunkName, chunk)
+          }
+
+          // Add to chunk with fallback marker
+          const existingIndex = chunk.findIndex(v => v.lemma === verb.lemma)
+          if (existingIndex === -1) {
+            chunk.push({ ...verb, _source: 'fallback' })
+          }
+
+          // Update index
+          this.verbIndex.set(verb.lemma, chunkName)
+        })
+
+        console.log(`✅ Recovered ${fallbackVerbs.length} verbs from main store`)
+      } catch (error) {
+        console.warn(`❌ Fallback failed for missing lemmas:`, error)
+      }
+    }
+
     this.stats.totalLoadTime += performance.now() - startTime
-    return this.getVerbsFromLemmas(verbLemmas)
+    return verbs
   }
   
   async loadChunk(chunkName) {
@@ -277,7 +316,10 @@ class VerbChunkManager {
           metadata.lastAccess = Date.now()
           this.chunkMetadata.set(chunkName, metadata)
           this.buildVerbIndex()
-          return verbs
+
+          // Check if chunk is undersized and supplement if needed
+          const supplementedVerbs = await this.checkAndSupplementChunk(chunkName, verbs, metadata)
+          return supplementedVerbs
         }
       } catch (error) {
         console.warn(`Carga dinámica de chunk ${chunkName} falló, usando fallback local:`, error)
@@ -296,6 +338,173 @@ class VerbChunkManager {
     }
   }
   
+  async checkAndSupplementChunk(chunkName, currentVerbs, metadata) {
+    const expectedCount = metadata.expectedCount
+    const actualCount = currentVerbs.length
+
+    if (!expectedCount || actualCount >= expectedCount) {
+      return currentVerbs // Chunk is adequately sized
+    }
+
+    const shortage = expectedCount - actualCount
+    console.log(`📊 Chunk ${chunkName} is undersized: ${actualCount}/${expectedCount} verbs (${shortage} short)`)
+
+    try {
+      const supplementVerbs = await this.supplementChunkFromMainStore(chunkName, shortage, currentVerbs)
+      if (supplementVerbs.length > 0) {
+        console.log(`✅ Supplemented ${chunkName} with ${supplementVerbs.length} additional verbs`)
+
+        // Update the chunk data
+        const combinedVerbs = [...currentVerbs, ...supplementVerbs]
+        this.loadedChunks.set(chunkName, combinedVerbs)
+
+        // Update metadata
+        metadata.verbs = [...(metadata.verbs || []), ...supplementVerbs.map(v => v.lemma)]
+        metadata.supplementedAt = new Date().toISOString()
+        metadata.supplementCount = supplementVerbs.length
+        this.chunkMetadata.set(chunkName, metadata)
+
+        // Rebuild index to include new verbs
+        this.buildVerbIndex()
+
+        return combinedVerbs
+      }
+    } catch (error) {
+      console.warn(`Failed to supplement chunk ${chunkName}:`, error)
+    }
+
+    return currentVerbs
+  }
+
+  async supplementChunkFromMainStore(chunkName, targetCount, existingVerbs) {
+    try {
+      const { verbs } = await import('../../data/verbs.js')
+
+      // Get existing lemmas to avoid duplicates
+      const existingLemmas = new Set(existingVerbs.map(v => v.lemma))
+
+      // Load categorization function for intelligent supplementation
+      let categorizeVerb
+      try {
+        const irregularModule = await import('../data/irregularFamilies.js')
+        categorizeVerb = irregularModule.categorizeVerb
+      } catch (error) {
+        console.warn('Could not load categorizeVerb for supplementation:', error)
+      }
+
+      // Load frequency function
+      let determineVerbFrequency
+      try {
+        const verbInitModule = await import('../progress/verbInitialization.js')
+        determineVerbFrequency = verbInitModule.determineVerbFrequency
+      } catch (error) {
+        console.warn('Could not load determineVerbFrequency for supplementation:', error)
+      }
+
+      // Filter candidates based on chunk type
+      const candidates = verbs.filter(verb => {
+        if (existingLemmas.has(verb.lemma)) return false
+
+        switch (chunkName) {
+          case 'core':
+            // Add high-frequency regular verbs
+            const frequency = determineVerbFrequency ? determineVerbFrequency(verb.lemma) : 'medium'
+            const isIrregular = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
+            return frequency === 'high' && !isIrregular
+
+          case 'common':
+            // Add medium-frequency regular verbs
+            const medFreq = determineVerbFrequency ? determineVerbFrequency(verb.lemma) : 'medium'
+            const isIrregularCommon = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
+            return medFreq === 'medium' && !isIrregularCommon
+
+          case 'irregulars':
+            // Add irregular verbs that weren't included
+            if (categorizeVerb) {
+              try {
+                const families = categorizeVerb(verb.lemma, verb)
+                return families.length > 0
+              } catch (error) {
+                return verb.type === 'irregular'
+              }
+            }
+            return verb.type === 'irregular'
+
+          case 'advanced':
+            // Add any remaining regular verbs
+            const isIrregularAdv = categorizeVerb ? (categorizeVerb(verb.lemma, verb)?.length > 0) : false
+            return !isIrregularAdv
+
+          default:
+            return true
+        }
+      })
+
+      // Sort candidates by priority (frequency, length, alphabetical)
+      const sortedCandidates = candidates.sort((a, b) => {
+        if (determineVerbFrequency) {
+          const aFreq = determineVerbFrequency(a.lemma)
+          const bFreq = determineVerbFrequency(b.lemma)
+          const freqOrder = { high: 1, medium: 2, low: 3 }
+          const aOrder = freqOrder[aFreq] || 3
+          const bOrder = freqOrder[bFreq] || 3
+          if (aOrder !== bOrder) return aOrder - bOrder
+        }
+
+        // Prefer shorter verbs (often more common)
+        if (a.lemma.length !== b.lemma.length) {
+          return a.lemma.length - b.lemma.length
+        }
+
+        return a.lemma.localeCompare(b.lemma)
+      })
+
+      // Take up to targetCount verbs
+      const supplementVerbs = sortedCandidates.slice(0, targetCount).map(verb => ({
+        ...verb,
+        _source: 'supplement',
+        _supplementedAt: new Date().toISOString()
+      }))
+
+      console.log(`📈 Selected ${supplementVerbs.length} supplement verbs for ${chunkName}: [${supplementVerbs.slice(0, 3).map(v => v.lemma).join(', ')}${supplementVerbs.length > 3 ? '...' : ''}]`)
+
+      return supplementVerbs
+
+    } catch (error) {
+      console.error(`Failed to supplement chunk ${chunkName} from main store:`, error)
+      return []
+    }
+  }
+
+  async loadMissingLemmasFromMainStore(missingLemmas) {
+    try {
+      const { verbs } = await import('../../data/verbs.js')
+      const foundVerbs = verbs.filter(verb => missingLemmas.includes(verb.lemma))
+
+      // If we didn't find all verbs, try priority verbs
+      const stillMissing = missingLemmas.filter(lemma =>
+        !foundVerbs.some(verb => verb.lemma === lemma)
+      )
+
+      if (stillMissing.length > 0) {
+        try {
+          const { priorityVerbs } = await import('../../data/priorityVerbs.js')
+          const priorityFound = priorityVerbs.filter(verb =>
+            stillMissing.includes(verb.lemma)
+          )
+          foundVerbs.push(...priorityFound)
+        } catch (error) {
+          console.warn('Could not load priority verbs for fallback:', error)
+        }
+      }
+
+      return foundVerbs
+    } catch (error) {
+      console.error('Critical: Failed to load verbs from main store:', error)
+      return []
+    }
+  }
+
   async loadFromMainFile(chunkName) {
     // Fallback: cargar todos los verbos y filtrar
     const { verbs } = await import('../../data/verbs.js')
@@ -423,19 +632,29 @@ class VerbChunkManager {
   
   getVerbsFromLemmas(lemmas) {
     const result = []
-    
+    const notFound = []
+
     lemmas.forEach(lemma => {
       const chunkName = this.getChunkForVerb(lemma)
       const chunk = this.loadedChunks.get(chunkName)
-      
+
       if (chunk) {
         const verb = chunk.find(v => v.lemma === lemma)
         if (verb) {
           result.push(verb)
+        } else {
+          notFound.push(lemma)
         }
+      } else {
+        notFound.push(lemma)
       }
     })
-    
+
+    // Log missing verbs for debugging
+    if (notFound.length > 0) {
+      console.warn(`⚠️  getVerbsFromLemmas: ${notFound.length} verbs not found in loaded chunks: [${notFound.slice(0, 3).join(', ')}${notFound.length > 3 ? '...' : ''}]`)
+    }
+
     return result
   }
   

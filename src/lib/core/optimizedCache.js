@@ -219,7 +219,61 @@ export async function getVerbsByLemmas(lemmas) {
     })
   }
 
-  return [...cachedVerbs, ...newVerbs]
+  const allVerbs = [...cachedVerbs, ...newVerbs]
+
+  // COMPLETENESS CHECK: Verify all requested lemmas were found
+  const foundLemmas = new Set(allVerbs.map(verb => verb.lemma))
+  const missingLemmas = lemmas.filter(lemma => !foundLemmas.has(lemma))
+
+  if (missingLemmas.length > 0) {
+    console.warn(`🔍 optimizedCache: ${missingLemmas.length} verbs still missing after chunk loading: [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
+
+    // Final fallback: direct main store lookup for missing verbs
+    try {
+      const { verbs } = await import('../../data/verbs.js')
+      const fallbackVerbs = verbs.filter(v => missingLemmas.includes(v.lemma))
+
+      if (fallbackVerbs.length > 0) {
+        console.log(`✅ optimizedCache: Recovered ${fallbackVerbs.length} verbs via direct fallback`)
+
+        // Cache and index the fallback verbs
+        fallbackVerbs.forEach(verb => {
+          const cacheKey = `verb:${verb.lemma}`
+          verbLookupCache.set(cacheKey, verb)
+          VERB_LOOKUP_MAP.set(verb.lemma, verb)
+
+          // Build forms for fallback verbs
+          verb.paradigms?.forEach(paradigm => {
+            paradigm.forms?.forEach(form => {
+              const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
+              const enrichedForm = {
+                ...form,
+                lemma: verb.lemma,
+                id: key,
+                type: verb.type || 'regular'
+              }
+              FORM_LOOKUP_MAP.set(key, enrichedForm)
+            })
+          })
+        })
+
+        allVerbs.push(...fallbackVerbs)
+      }
+
+      // Check if any verbs are still missing
+      const finalFoundLemmas = new Set(allVerbs.map(verb => verb.lemma))
+      const finalMissingLemmas = lemmas.filter(lemma => !finalFoundLemmas.has(lemma))
+
+      if (finalMissingLemmas.length > 0) {
+        console.error(`❌ optimizedCache: CRITICAL - ${finalMissingLemmas.length} verbs not found anywhere: [${finalMissingLemmas.join(', ')}]`)
+      }
+
+    } catch (error) {
+      console.error('Critical: Direct fallback also failed in optimizedCache:', error)
+    }
+  }
+
+  return allVerbs
 }
 
 // Backward compatibility: initialize with core chunk

@@ -71,7 +71,7 @@ export async function initializeVerbs() {
  * @param {string} lemma - Lema del verbo
  * @returns {'high'|'medium'|'low'} Frecuencia
  */
-function determineVerbFrequency(lemma) {
+export function determineVerbFrequency(lemma) {
   // Lista de verbos de alta frecuencia (simplificada)
   const highFrequencyVerbs = [
     'ser', 'estar', 'haber', 'tener', 'hacer', 'ir', 'venir', 'decir',
