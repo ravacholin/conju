@@ -5,10 +5,15 @@ import {
   getAttemptsByUser,
   getMasteryByUser,
   updateInDB,
+  getFromDB,
   getAllFromDB,
+  initDB,
   saveAttempt,
   saveMastery,
-  saveSchedule
+  saveSchedule,
+  saveLearningSession,
+  updateLearningSession,
+  getLearningSessionsByUser
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
@@ -246,33 +251,36 @@ function enqueue(type, payload) {
 function getSyncSuccessMessage(strategy, results, accountSyncResult) {
   const legacyUploaded = (results.attempts?.uploaded || 0) +
                         (results.mastery?.uploaded || 0) +
-                        (results.schedules?.uploaded || 0)
+                        (results.schedules?.uploaded || 0) +
+                        (results.sessions?.uploaded || 0)
 
   const accountDownloaded = accountSyncResult?.downloaded ?
     (accountSyncResult.downloaded.attempts || 0) +
     (accountSyncResult.downloaded.mastery || 0) +
-    (accountSyncResult.downloaded.schedules || 0) : 0
+    (accountSyncResult.downloaded.schedules || 0) +
+    (accountSyncResult.downloaded.sessions || 0) : 0
 
   const accountMerged = accountSyncResult?.merged ?
     (accountSyncResult.merged.attempts || 0) +
     (accountSyncResult.merged.mastery || 0) +
-    (accountSyncResult.merged.schedules || 0) : 0
+    (accountSyncResult.merged.schedules || 0) +
+    (accountSyncResult.merged.sessions || 0) : 0
 
   switch (strategy) {
     case 'account+legacy': {
-      const uploadsSummary = `${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs`
-      return `✅ Sincronización completa (descargados: ${accountSyncResult?.downloaded?.attempts || 0} intentos, ${accountSyncResult?.downloaded?.mastery || 0} mastery, ${accountSyncResult?.downloaded?.schedules || 0} srs | subidos: ${uploadsSummary}). Datos alineados entre todos tus dispositivos.`
+      const uploadsSummary = `${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones`
+      return `✅ Sincronización completa (descargados: ${accountSyncResult?.downloaded?.attempts || 0} intentos, ${accountSyncResult?.downloaded?.mastery || 0} mastery, ${accountSyncResult?.downloaded?.schedules || 0} srs, ${accountSyncResult?.downloaded?.sessions || 0} sesiones | subidos: ${uploadsSummary}). Datos alineados entre todos tus dispositivos.`
     }
     case 'account':
       if (accountDownloaded > 0) {
-        return `✅ Sincronización completa (descargados: ${accountSyncResult.downloaded.attempts} intentos, ${accountSyncResult.downloaded.mastery} mastery, ${accountSyncResult.downloaded.schedules} srs | aplicados: ${accountMerged} nuevos registros). Datos sincronizados desde tu cuenta Google.`
+        return `✅ Sincronización completa (descargados: ${accountSyncResult.downloaded.attempts} intentos, ${accountSyncResult.downloaded.mastery} mastery, ${accountSyncResult.downloaded.schedules} srs, ${accountSyncResult.downloaded.sessions || 0} sesiones | aplicados: ${accountMerged} nuevos registros). Datos sincronizados desde tu cuenta Google.`
       } else {
-        return `ℹ️ Sincronización completa (descargados: 0 intentos, 0 mastery, 0 srs). No hay datos nuevos en tu cuenta Google. Asegúrate de haber practicado en otros dispositivos.`
+        return `ℹ️ Sincronización completa (descargados: 0 intentos, 0 mastery, 0 srs, 0 sesiones). No hay datos nuevos en tu cuenta Google. Asegúrate de haber practicado en otros dispositivos.`
       }
 
     case 'legacy-fallback':
       if (legacyUploaded > 0) {
-        return `⚠️ Account sync falló, pero legacy sync exitoso (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs). Datos locales enviados al servidor.`
+        return `⚠️ Account sync falló, pero legacy sync exitoso (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones). Datos locales enviados al servidor.`
       } else {
         return `⚠️ Account sync falló y no hay datos locales para subir. Intenta practicar algo primero o verifica tu conexión.`
       }
@@ -280,7 +288,7 @@ function getSyncSuccessMessage(strategy, results, accountSyncResult) {
     case 'legacy':
     default:
       if (legacyUploaded > 0) {
-        return `✅ Sincronización legacy completa (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs). Para sincronización entre dispositivos, haz login con Google.`
+        return `✅ Sincronización legacy completa (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones). Para sincronización entre dispositivos, haz login con Google.`
       } else {
         return `ℹ️ Sincronización legacy completa (subidos: 0). No hay datos locales nuevos para enviar. Para sincronización entre dispositivos, haz login con Google.`
       }
@@ -404,7 +412,15 @@ async function tryBulk(type, records) {
 async function markSynced(storeName, ids) {
   try {
     for (const id of ids) {
-      await updateInDB(storeName, id, { syncedAt: new Date() })
+      if (!id) continue
+      const existing = await getFromDB(storeName, id)
+      if (!existing) continue
+      const updated = { ...existing, syncedAt: new Date() }
+      const db = await initDB()
+      const tx = db.transaction(storeName, 'readwrite')
+      const store = tx.objectStore(storeName)
+      await store.put(updated)
+      await tx.done
     }
   } catch (e) {
     console.warn('No se pudo marcar como sincronizado:', e)
@@ -529,7 +545,8 @@ export async function syncAccountData() {
     console.log('📥 Datos recibidos de la cuenta:', {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
-      schedules: accountData.schedules?.length || 0
+      schedules: accountData.schedules?.length || 0,
+      sessions: accountData.sessions?.length || 0
     })
 
     console.log('🔍 DEBUG: Estructura de accountData:', {
@@ -566,7 +583,8 @@ export async function syncAccountData() {
       downloaded: {
         attempts: accountData.attempts?.length || 0,
         mastery: accountData.mastery?.length || 0,
-        schedules: accountData.schedules?.length || 0
+        schedules: accountData.schedules?.length || 0,
+        sessions: accountData.sessions?.length || 0
       }
     }
 
@@ -601,18 +619,20 @@ export async function syncAccountData() {
  * - Maintains linear O(n) complexity for large sync operations
  */
 async function mergeAccountDataLocally(accountData) {
-  const results = { attempts: 0, mastery: 0, schedules: 0, conflicts: 0 }
+  const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, conflicts: 0 }
   const currentUserId = getCurrentUserId()
 
   // Pre-load all local collections once to avoid repeated queries
   const allAttempts = await getAllFromDB(STORAGE_CONFIG.STORES.ATTEMPTS)
   const allMastery = await getAllFromDB(STORAGE_CONFIG.STORES.MASTERY)
   const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
+  const allSessions = await getAllFromDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
 
   // Build lookup maps for O(1) access using composite keys
   const attemptMap = new Map()
   const masteryMap = new Map()
   const scheduleMap = new Map()
+  const sessionMap = new Map()
 
   // Populate attempt map: key = "verbId|mood|tense|person|truncatedCreatedAt"
   allAttempts.forEach(attempt => {
@@ -631,6 +651,12 @@ async function mergeAccountDataLocally(accountData) {
   allSchedules.forEach(schedule => {
     const key = `${schedule.verbId}|${schedule.mood}|${schedule.tense}|${schedule.person}`
     scheduleMap.set(key, schedule)
+  })
+
+  allSessions.forEach(session => {
+    if (!session || !session.sessionId) return
+    const key = session.sessionId
+    sessionMap.set(key, session)
   })
 
   // Merge attempts using map lookups
@@ -656,6 +682,44 @@ async function mergeAccountDataLocally(accountData) {
         }
       } catch (error) {
         console.warn('Error merging attempt:', error)
+        results.conflicts++
+      }
+    }
+  }
+
+  // Merge learning sessions by sessionId (keep most recent updatedAt)
+  if (Array.isArray(accountData.sessions)) {
+    for (const remoteSession of accountData.sessions) {
+      try {
+        const key = remoteSession.sessionId || remoteSession.id
+        if (!key) continue
+        const existing = sessionMap.get(key)
+
+        if (!existing) {
+          const localSession = {
+            ...remoteSession,
+            sessionId: key,
+            userId: currentUserId,
+            updatedAt: remoteSession.updatedAt || new Date().toISOString(),
+            syncedAt: new Date()
+          }
+          await saveLearningSession(localSession)
+          sessionMap.set(key, localSession)
+          results.sessions++
+        } else if (remoteSession.updatedAt && new Date(remoteSession.updatedAt) > new Date(existing.updatedAt || 0)) {
+          const updatedSession = {
+            ...existing,
+            ...remoteSession,
+            sessionId: key,
+            userId: currentUserId,
+            syncedAt: new Date()
+          }
+          await updateLearningSession(existing.sessionId || key, updatedSession)
+          sessionMap.set(key, updatedSession)
+          results.sessions++
+        }
+      } catch (error) {
+        console.warn('Error merging session:', error)
         results.conflicts++
       }
     }
@@ -746,7 +810,7 @@ async function mergeAccountDataLocally(accountData) {
  * Sincroniza intentos, mastery y schedules del usuario actual.
  * Envia solo registros sin syncedAt.
  */
-export async function syncNow({ include = ['attempts','mastery','schedules'] } = {}) {
+export async function syncNow({ include = ['attempts','mastery','schedules','sessions'] } = {}) {
   const userId = getCurrentUserId()
 
   console.log('🔍 DEBUG syncNow: Iniciando proceso de sincronización...')
@@ -779,7 +843,8 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
   const results = {
     attempts: { uploaded: 0 },
     mastery: { uploaded: 0 },
-    schedules: { uploaded: 0 }
+    schedules: { uploaded: 0 },
+    sessions: { uploaded: 0 }
   }
 
   let accountSyncResult = null
@@ -885,6 +950,30 @@ export async function syncNow({ include = ['attempts','mastery','schedules'] } =
         console.log(`✅ Schedules subidos exitosamente: ${unsynced.length}`)
       } else {
         console.log(`ℹ️ No hay schedules sin sincronizar para userId: ${userId}`)
+      }
+    }
+
+    if (include.includes('sessions')) {
+      console.log(`🔍 DEBUG: Obteniendo sesiones para userId: ${userId}`)
+      const allSessions = await getLearningSessionsByUser(userId)
+      console.log(`🔍 DEBUG: Encontradas ${allSessions.length} sesiones totales para userId: ${userId}`)
+
+      let unsynced = allSessions.filter((s) => !s.syncedAt)
+      unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
+      console.log(`🔍 DEBUG: Sesiones sin sincronizar: ${unsynced.length}`)
+
+      if (unsynced.length > 0) {
+        console.log(`📤 Subiendo ${unsynced.length} sesiones al servidor...`)
+        legacyUploadsPerformed = true
+        const res = await tryBulk('sessions', unsynced)
+        await markSynced(
+          STORAGE_CONFIG.STORES.LEARNING_SESSIONS,
+          unsynced.map((s) => s.sessionId || s.id)
+        )
+        results.sessions = { uploaded: unsynced.length, server: res }
+        console.log(`✅ Sesiones subidas exitosamente: ${unsynced.length}`)
+      } else {
+        console.log(`ℹ️ No hay sesiones sin sincronizar para userId: ${userId}`)
       }
     }
 

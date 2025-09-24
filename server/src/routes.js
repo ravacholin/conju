@@ -20,8 +20,10 @@ export function createRoutes() {
       let uploaded = 0, updated = 0
       db.transaction(() => {
         for (const rec of records) {
-          if (!rec || !rec.id) continue
-          const id = String(rec.id)
+          if (!rec) continue
+          const key = table === 'sessions' ? (rec.id || rec.sessionId) : rec.id
+          if (!key) continue
+          const id = String(key)
           // Force server-side user id
           const payload = JSON.stringify({ ...rec, userId })
           switch (table) {
@@ -48,6 +50,15 @@ export function createRoutes() {
               else updated++
               break
             }
+            case 'sessions': {
+              const updatedAt = rec.updatedAt ? new Date(rec.updatedAt).getTime() : now
+              const timestamp = rec.timestamp ? new Date(rec.timestamp).getTime() : updatedAt
+              const stmt = db.prepare('INSERT INTO sessions (id, user_id, updated_at, timestamp, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, timestamp=excluded.timestamp, payload=excluded.payload')
+              const info = stmt.run(id, userId, updatedAt, timestamp, payload)
+              if (info.changes === 1) uploaded++
+              else updated++
+              break
+            }
           }
         }
       })()
@@ -63,6 +74,7 @@ export function createRoutes() {
   r.post('/progress/attempts/bulk', handleBulk('attempts'))
   r.post('/progress/mastery/bulk', handleBulk('mastery'))
   r.post('/progress/schedules/bulk', handleBulk('schedules'))
+  r.post('/progress/sessions/bulk', handleBulk('sessions'))
 
   // Export endpoints (per user)
   r.get('/progress/export', (req, res) => {
@@ -71,7 +83,8 @@ export function createRoutes() {
       const attempts = db.prepare('SELECT payload FROM attempts WHERE user_id=? ORDER BY created_at ASC').all(userId).map(r => JSON.parse(r.payload))
       const mastery = db.prepare('SELECT payload FROM mastery WHERE user_id=? ORDER BY updated_at DESC').all(userId).map(r => JSON.parse(r.payload))
       const schedules = db.prepare('SELECT payload FROM schedules WHERE user_id=? ORDER BY next_due ASC').all(userId).map(r => JSON.parse(r.payload))
-      res.json({ userId, attempts, mastery, schedules })
+      const sessions = db.prepare('SELECT payload FROM sessions WHERE user_id=? ORDER BY updated_at DESC').all(userId).map(r => JSON.parse(r.payload))
+      res.json({ userId, attempts, mastery, schedules, sessions })
     } catch (e) {
       console.error('Export error', e)
       res.status(500).json({ error: 'export_failed' })
@@ -80,4 +93,3 @@ export function createRoutes() {
 
   return r
 }
-

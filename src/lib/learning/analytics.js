@@ -3,7 +3,7 @@
  * Captures detailed metrics, generates heat maps, and tracks learning curves
  */
 
-import { initDB, saveToDB, getAllFromDB, saveAttempt } from '../progress/database.js';
+import { initDB, saveLearningSession, getAllFromDB, saveAttempt } from '../progress/database.js';
 
 /**
  * Records detailed learning session metrics
@@ -17,6 +17,8 @@ export async function recordLearningSession(userId, sessionData) {
       timestamp: Date.now(),
       sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       ...sessionData,
+      updatedAt: new Date().toISOString(),
+      syncedAt: null,
       // Additional computed metrics
       efficiencyScore: calculateEfficiencyScore(sessionData),
       difficultyProgression: calculateDifficultyProgression(sessionData),
@@ -27,7 +29,7 @@ export async function recordLearningSession(userId, sessionData) {
     // Store in IndexedDB using the standard database API
     try {
       await initDB();
-      await saveToDB('learning_sessions', sessionMetrics);
+      await saveLearningSession(sessionMetrics);
       console.log('📊 Learning session recorded:', sessionMetrics.sessionId);
     } catch (error) {
       console.error('Error storing learning session:', error);

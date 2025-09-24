@@ -106,8 +106,8 @@ export async function initDB() {
           const sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
           sessionStore.createIndex('userId', 'userId', { unique: false })
           sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
-          sessionStore.createIndex('tense', 'tense', { unique: false })
-          sessionStore.createIndex('adaptiveLevel', 'adaptiveLevel', { unique: false })
+          sessionStore.createIndex('updatedAt', 'updatedAt', { unique: false })
+          sessionStore.createIndex('mode-tense', ['mode', 'tense'], { unique: false })
           console.log('✅ Tabla de learning sessions creada')
         }
 
@@ -649,6 +649,65 @@ export async function getDueSchedules(userId, beforeDate) {
     console.error('❌ Error al obtener schedules pendientes:', error)
     return []
   }
+}
+
+/**
+ * Guarda una sesión de aprendizaje
+ * @param {Object} session - Datos de la sesión
+ * @returns {Promise<void>}
+ */
+export async function saveLearningSession(session) {
+  try {
+    const db = await initDB()
+    const tx = db.transaction(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, 'readwrite')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
+
+    const sessionId = session.sessionId || session.id || `session_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+    const payload = {
+      createdAt: session.createdAt || new Date().toISOString(),
+      updatedAt: session.updatedAt || new Date().toISOString(),
+      ...session,
+      sessionId
+    }
+
+    await store.put(payload)
+    await tx.done
+  } catch (error) {
+    console.error('❌ Error al guardar learning session:', error)
+    throw error
+  }
+}
+
+/**
+ * Actualiza una sesión de aprendizaje existente
+ * @param {string} sessionId - ID de la sesión
+ * @param {Object} updates - Campos a actualizar
+ * @returns {Promise<void>}
+ */
+export async function updateLearningSession(sessionId, updates) {
+  try {
+    const existing = await getFromDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, sessionId)
+    if (!existing) throw new Error(`Learning session ${sessionId} not found`)
+    const merged = {
+      ...existing,
+      ...updates,
+      sessionId,
+      updatedAt: updates?.updatedAt || new Date().toISOString()
+    }
+    await saveToDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, merged)
+  } catch (error) {
+    console.error('❌ Error al actualizar learning session:', error)
+    throw error
+  }
+}
+
+/**
+ * Obtiene sesiones de aprendizaje por usuario
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object[]>}
+ */
+export async function getLearningSessionsByUser(userId) {
+  return await getByIndex(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, 'userId', userId)
 }
 
 /**

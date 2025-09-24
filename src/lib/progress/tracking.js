@@ -138,7 +138,8 @@ export async function trackAttemptSubmitted(attemptId, result) {
       errorTags,
       userAnswer: result.userAnswer ?? null,
       correctAnswer: result.correctAnswer ?? null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      syncedAt: null
     }
 
     // Ejecutar orquestador emocional y adjuntar al intento antes de guardar
@@ -236,11 +237,12 @@ export async function trackAttemptSubmitted(attemptId, result) {
         mood,
         tense,
         person,
-        score: Math.round(score * 100) / 100,
-        n: Math.round(_weightedN),
-        errorCounts,
-        updatedAt: new Date()
-      }
+      score: Math.round(score * 100) / 100,
+      n: Math.round(_weightedN),
+      errorCounts,
+      updatedAt: new Date(),
+      syncedAt: null
+    }
       await saveMastery(masteryRecord)
     } catch (error) {
       console.warn('No se pudo actualizar mastery de la celda:', error)

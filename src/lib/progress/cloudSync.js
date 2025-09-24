@@ -3,7 +3,8 @@
 import {
   getAttemptsByUser,
   getMasteryByUser,
-  getAllFromDB
+  getAllFromDB,
+  getLearningSessionsByUser
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import {
@@ -69,8 +70,11 @@ function recordSyncOutcome(result) {
  */
 export async function syncWithCloud(options = {}) {
   const { include, bypassIncognito = false } = options
+  const collections = Array.isArray(include) && include.length > 0
+    ? include
+    : ['attempts', 'mastery', 'schedules', 'sessions']
 
-  console.log('🔍 DEBUG cloudSync: Iniciando syncWithCloud con opciones:', { include, bypassIncognito })
+  console.log('🔍 DEBUG cloudSync: Iniciando syncWithCloud con opciones:', { include: collections, bypassIncognito })
 
   if (isIncognitoMode && !bypassIncognito) {
     console.log('🔒 Modo incógnito activo, omitiendo sincronización')
@@ -95,7 +99,7 @@ export async function syncWithCloud(options = {}) {
   syncError = null
 
   try {
-    const result = await syncNow({ include })
+    const result = await syncNow({ include: collections })
     recordSyncOutcome(result)
 
     if (!result?.success) {
@@ -163,23 +167,25 @@ export async function hasPendingSyncData() {
   console.log(`🔍 DEBUG hasPendingSyncData: Verificando datos pendientes para userId: ${userId}`)
 
   try {
-    const [attempts, mastery, schedulesStore] = await Promise.all([
+    const [attempts, mastery, schedulesStore, sessions] = await Promise.all([
       getAttemptsByUser(userId),
       getMasteryByUser(userId),
-      getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
+      getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES),
+      getLearningSessionsByUser(userId)
     ])
 
     const schedules = schedulesStore.filter((item) => item.userId === userId)
 
-    console.log(`🔍 DEBUG hasPendingSyncData: Datos encontrados - attempts: ${attempts.length}, mastery: ${mastery.length}, schedules: ${schedules.length}`)
+    console.log(`🔍 DEBUG hasPendingSyncData: Datos encontrados - attempts: ${attempts.length}, mastery: ${mastery.length}, schedules: ${schedules.length}, sessions: ${sessions.length}`)
 
     const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
     const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
     const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
+    const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
 
-    console.log(`🔍 DEBUG hasPendingSyncData: Sin sincronizar - attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}`)
+    console.log(`🔍 DEBUG hasPendingSyncData: Sin sincronizar - attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}`)
 
-    const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0
+    const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0 || unsyncedSessions.length > 0
 
     if (pending) {
       console.log('🔍 DEBUG hasPendingSyncData: HAY datos pendientes de sincronización')

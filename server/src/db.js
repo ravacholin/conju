@@ -80,6 +80,17 @@ export function migrate() {
     );
     CREATE INDEX IF NOT EXISTS idx_schedules_user ON schedules(user_id);
     CREATE INDEX IF NOT EXISTS idx_schedules_nextdue ON schedules(next_due);
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      updated_at INTEGER,
+      timestamp INTEGER,
+      payload TEXT NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sessions_updated ON sessions(updated_at);
   `)
 }
 
@@ -94,4 +105,3 @@ export function upsertUser(userId, accountId = null) {
   `)
   stmt.run(userId, accountId, now, now)
 }
-

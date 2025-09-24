@@ -136,7 +136,8 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       lapses: 0,
       leech: false,
       nextDue: new Date(),
-      createdAt: new Date()
+      createdAt: new Date(),
+      syncedAt: null
     }
   }
   
@@ -144,11 +145,24 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
   const updatedSchedule = {
     ...schedule,
     ...calculateNextInterval(schedule, correct, hintsUsed, meta),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    syncedAt: null
   }
   
   // Guardar en la base de datos
   await saveSchedule(updatedSchedule)
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('progress:srs-updated', {
+      detail: {
+        userId,
+        mood: cell.mood,
+        tense: cell.tense,
+        person: cell.person,
+        schedule: updatedSchedule
+      }
+    }))
+  }
 }
 
 /**
