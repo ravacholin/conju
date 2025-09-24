@@ -1,5 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { generateAllFormsForRegion, applyComprehensiveFiltering, clearFormsCache } from './DrillFormFilters.js'
+import { renderHook } from '@testing-library/react'
+import { useSettings } from '../../state/settings.js'
 
 describe('Sanity: eligible forms for Vos + A1 + specific indicativo/presente + regulares', () => {
   it('should have eligible forms', async () => {
@@ -686,4 +688,312 @@ describe('Third-person preterite irregulars practice with dialects', () => {
     expect(pedirVosotros).toBeDefined();
     expect(pedirVosotros.value).toBe('pedisteis');
   });
+});
+
+describe('useDrillGenerator - Level validation and adaptive engine integration', () => {
+  beforeEach(() => {
+    // Clear caches and reset mocks
+    clearFormsCache()
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('should pass correct level to getNextRecommendedItem when no SRS items are due', async () => {
+    // Mock the getNextRecommendedItem function to track calls
+    const getNextRecommendedItemSpy = vi.fn().mockResolvedValue({
+      type: 'adaptive_recommendation',
+      mood: 'indicative',
+      tense: 'pres',
+      priority: 80,
+      title: 'Test Recommendation',
+      reason: 'test'
+    })
+
+    vi.doMock('../../lib/progress/AdaptivePracticeEngine.js', () => ({
+      getNextRecommendedItem: getNextRecommendedItemSpy,
+      AdaptivePracticeEngine: class {
+        constructor() {
+          this.userId = 'test-user'
+        }
+        async getPracticeRecommendations() {
+          return []
+        }
+      }
+    }))
+
+    // Mock SRS functions to return empty (no due items)
+    vi.doMock('../../lib/progress/srs.js', () => ({
+      getDueItems: vi.fn().mockResolvedValue([])
+    }))
+
+    vi.doMock('../../lib/core/curriculumGate.js', () => ({
+      gateDueItemsByCurriculum: vi.fn().mockReturnValue([])
+    }))
+
+    vi.doMock('../../lib/progress/userManager.js', () => ({
+      getCurrentUserId: vi.fn().mockReturnValue('test-user')
+    }))
+
+    // Set up test settings for A1 level
+    const testSettings = {
+      level: 'A1',
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    }
+
+    // Mock useSettings to return our test settings
+    useSettings.setState(testSettings)
+
+    // Import the hook after mocking
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+
+    // Render the hook
+    const { result } = renderHook(() => useDrillGenerator())
+
+    // Generate an item (should trigger adaptive engine since no SRS due items)
+    await result.current.generateNextItem(null, () => ['indicative'], () => ['pres'], {})
+
+    // Verify getNextRecommendedItem was called with A1 level
+    expect(getNextRecommendedItemSpy).toHaveBeenCalledWith('A1')
+  })
+
+  it('should use B1 as fallback when settings.level is null or undefined', async () => {
+    // Mock the getNextRecommendedItem function to track calls
+    const getNextRecommendedItemSpy = vi.fn().mockResolvedValue({
+      type: 'adaptive_recommendation',
+      mood: 'indicative',
+      tense: 'pres',
+      priority: 80,
+      title: 'Test Recommendation',
+      reason: 'test'
+    })
+
+    vi.doMock('../../lib/progress/AdaptivePracticeEngine.js', () => ({
+      getNextRecommendedItem: getNextRecommendedItemSpy,
+      AdaptivePracticeEngine: class {
+        constructor() {
+          this.userId = 'test-user'
+        }
+        async getPracticeRecommendations() {
+          return []
+        }
+      }
+    }))
+
+    // Mock SRS functions to return empty (no due items)
+    vi.doMock('../../lib/progress/srs.js', () => ({
+      getDueItems: vi.fn().mockResolvedValue([])
+    }))
+
+    vi.doMock('../../lib/core/curriculumGate.js', () => ({
+      gateDueItemsByCurriculum: vi.fn().mockReturnValue([])
+    }))
+
+    vi.doMock('../../lib/progress/userManager.js', () => ({
+      getCurrentUserId: vi.fn().mockReturnValue('test-user')
+    }))
+
+    // Set up test settings with no level
+    const testSettings = {
+      level: null, // No level set
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    }
+
+    useSettings.setState(testSettings)
+
+    // Import the hook after mocking
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+
+    // Render the hook
+    const { result } = renderHook(() => useDrillGenerator())
+
+    // Generate an item
+    await result.current.generateNextItem(null, () => ['indicative'], () => ['pres'], {})
+
+    // Verify getNextRecommendedItem was called with B1 fallback
+    expect(getNextRecommendedItemSpy).toHaveBeenCalledWith('B1')
+  })
+
+  it('should pass different levels correctly to adaptive engine', async () => {
+    const getNextRecommendedItemSpy = vi.fn().mockResolvedValue({
+      type: 'adaptive_recommendation',
+      mood: 'subjunctive',
+      tense: 'subjImpf',
+      priority: 85,
+      title: 'Advanced Recommendation',
+      reason: 'test'
+    })
+
+    vi.doMock('../../lib/progress/AdaptivePracticeEngine.js', () => ({
+      getNextRecommendedItem: getNextRecommendedItemSpy,
+      AdaptivePracticeEngine: class {
+        constructor() {
+          this.userId = 'test-user'
+        }
+        async getPracticeRecommendations() {
+          return []
+        }
+      }
+    }))
+
+    vi.doMock('../../lib/progress/srs.js', () => ({
+      getDueItems: vi.fn().mockResolvedValue([])
+    }))
+
+    vi.doMock('../../lib/core/curriculumGate.js', () => ({
+      gateDueItemsByCurriculum: vi.fn().mockReturnValue([])
+    }))
+
+    vi.doMock('../../lib/progress/userManager.js', () => ({
+      getCurrentUserId: vi.fn().mockReturnValue('test-user')
+    }))
+
+    // Test C1 level
+    const c1Settings = {
+      level: 'C1',
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    }
+
+    useSettings.setState(c1Settings)
+
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+    const { result } = renderHook(() => useDrillGenerator())
+
+    await result.current.generateNextItem(null, () => ['subjunctive'], () => ['subjImpf'], {})
+
+    // Verify C1 level was passed
+    expect(getNextRecommendedItemSpy).toHaveBeenCalledWith('C1')
+
+    // Clear and test A2 level
+    getNextRecommendedItemSpy.mockClear()
+
+    const a2Settings = {
+      level: 'A2',
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    }
+
+    useSettings.setState(a2Settings)
+
+    await result.current.generateNextItem(null, () => ['indicative'], () => ['pretIndef'], {})
+
+    // Verify A2 level was passed
+    expect(getNextRecommendedItemSpy).toHaveBeenCalledWith('A2')
+  })
+
+  it('should generate level-appropriate recommendations when no SRS items available', async () => {
+    // Test that when SRS is empty, the drill generator relies on adaptive engine
+    // and the adaptive engine receives the correct level for appropriate recommendations
+
+    clearFormsCache()
+
+    // Mock dependencies
+    vi.doMock('../../lib/progress/srs.js', () => ({
+      getDueItems: vi.fn().mockResolvedValue([]) // No SRS items
+    }))
+
+    vi.doMock('../../lib/core/curriculumGate.js', () => ({
+      gateDueItemsByCurriculum: vi.fn().mockReturnValue([])
+    }))
+
+    vi.doMock('../../lib/progress/userManager.js', () => ({
+      getCurrentUserId: vi.fn().mockReturnValue('test-user')
+    }))
+
+    // Mock adaptive engine to return level-appropriate recommendation
+    let capturedLevel = null
+    const getNextRecommendedItemSpy = vi.fn().mockImplementation((level) => {
+      capturedLevel = level
+      // Return different recommendations based on level
+      if (level === 'A1') {
+        return Promise.resolve({
+          type: 'adaptive_recommendation',
+          mood: 'indicative',
+          tense: 'pres', // Beginner-appropriate
+          priority: 90,
+          title: 'A1 Practice',
+          reason: 'level_appropriate'
+        })
+      } else if (level === 'C1') {
+        return Promise.resolve({
+          type: 'adaptive_recommendation',
+          mood: 'subjunctive',
+          tense: 'subjImpf', // Advanced-appropriate
+          priority: 85,
+          title: 'C1 Practice',
+          reason: 'level_appropriate'
+        })
+      }
+      return Promise.resolve(null)
+    })
+
+    vi.doMock('../../lib/progress/AdaptivePracticeEngine.js', () => ({
+      getNextRecommendedItem: getNextRecommendedItemSpy
+    }))
+
+    // Test A1 level
+    useSettings.setState({
+      level: 'A1',
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    })
+
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+    const { result } = renderHook(() => useDrillGenerator())
+
+    const a1Item = await result.current.generateNextItem(
+      null,
+      () => ['indicative'],
+      () => ['pres'],
+      {}
+    )
+
+    // Verify A1 level was passed and appropriate recommendation received
+    expect(capturedLevel).toBe('A1')
+    expect(a1Item).toBeDefined()
+    expect(a1Item.mood).toBe('indicative')
+    expect(a1Item.tense).toBe('pres')
+
+    // Test C1 level
+    useSettings.setState({
+      level: 'C1',
+      region: 'la_general',
+      practiceMode: 'mixed',
+      verbType: 'all',
+      enableChunks: false
+    })
+
+    capturedLevel = null // Reset
+    getNextRecommendedItemSpy.mockClear()
+
+    const c1Item = await result.current.generateNextItem(
+      null,
+      () => ['subjunctive'],
+      () => ['subjImpf'],
+      {}
+    )
+
+    // Verify C1 level was passed and appropriate recommendation received
+    expect(capturedLevel).toBe('C1')
+    expect(c1Item).toBeDefined()
+    expect(c1Item.mood).toBe('subjunctive')
+    expect(c1Item.tense).toBe('subjImpf')
+
+    console.log(`✅ Level validation test: A1→${a1Item?.tense}, C1→${c1Item?.tense}`)
+  })
 });

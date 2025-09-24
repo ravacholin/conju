@@ -28,6 +28,14 @@ export class AdaptivePracticeEngine {
   /**
    * Obtiene recomendaciones de práctica priorizadas
    * @param {Object} options - Opciones de configuración
+   * @param {number} options.maxRecommendations - Número máximo de recomendaciones (por defecto: 5)
+   * @param {boolean} options.includeNewContent - Si incluir contenido nuevo (por defecto: true)
+   * @param {string} options.focusMode - Modo de enfoque: 'balanced', 'weak_areas', 'review', 'new'
+   *   - 'balanced': Mezcla balanceada adaptada al nivel del usuario (RECOMENDADO)
+   *   - 'weak_areas': Enfocado en áreas con puntuación baja
+   *   - 'review': Enfocado en elementos pendientes de repaso SRS
+   *   - 'new': Enfocado en contenido nuevo apropiado para el nivel
+   * @param {string} options.userLevel - Nivel CEFR del usuario (A1-C2) - CRÍTICO para modo 'balanced'
    * @returns {Promise<Array>} Lista de recomendaciones ordenadas por prioridad
    */
   async getPracticeRecommendations(options = {}) {
@@ -36,7 +44,7 @@ export class AdaptivePracticeEngine {
         maxRecommendations = 5,
         includeNewContent = true,
         focusMode = 'balanced', // 'balanced', 'weak_areas', 'review', 'new'
-        userLevel = 'B1' // Default to B1 if no level specified
+        userLevel = 'B1' // Default to B1 if no level specified - IMPORTANTE: siempre proporcionar el nivel real
       } = options
 
       // Obtener datos del usuario
@@ -61,7 +69,7 @@ export class AdaptivePracticeEngine {
           break
         default: // 'balanced'
           recommendations.push(
-            ...await this.getBalancedRecommendations(masteryRecords, dueItems, userStats, includeNewContent)
+            ...await this.getBalancedRecommendations(masteryRecords, dueItems, userStats, includeNewContent, userLevel)
           )
       }
 
@@ -663,7 +671,6 @@ export class AdaptivePracticeEngine {
    * Generates safe fallback recommendations when all original recommendations are invalid
    */
   async generateFallbackRecommendations(settings, allForms) {
-    const _level = settings.level || 'B1'
     const fallbacks = []
     
     // Try common safe combinations for the user's level
@@ -733,16 +740,51 @@ export async function needsMorePractice(mood, tense) {
 
 /**
  * Obtiene el próximo elemento recomendado para práctica
+ * @param {string} userLevel - Nivel CEFR del usuario (A1, A2, B1, B2, C1, C2) - REQUERIDO
  * @returns {Promise<Object|null>} Elemento recomendado o null
  */
 export async function getNextRecommendedItem(userLevel = null) {
   try {
+    // Validar y normalizar el nivel del usuario
+    const normalizedLevel = validateAndNormalizeLevel(userLevel)
+
+    if (!normalizedLevel) {
+      console.warn('getNextRecommendedItem: No se proporcionó un nivel válido, usando B1 como fallback')
+      console.warn('getNextRecommendedItem: userLevel recibido:', userLevel)
+    }
+
     const engine = new AdaptivePracticeEngine()
-    const recommendations = await engine.getPracticeRecommendations({ maxRecommendations: 1, userLevel })
-    
+    const recommendations = await engine.getPracticeRecommendations({
+      maxRecommendations: 1,
+      userLevel: normalizedLevel || 'B1'
+    })
+
     return recommendations.length > 0 ? recommendations[0] : null
   } catch (error) {
     console.error('Error obteniendo próximo elemento recomendado:', error)
     return null
   }
+}
+
+/**
+ * Valida y normaliza un nivel de usuario al formato CEFR
+ * @param {string} level - Nivel proporcionado por el usuario
+ * @returns {string|null} Nivel normalizado o null si es inválido
+ */
+function validateAndNormalizeLevel(level) {
+  if (typeof level !== 'string') return null
+
+  // Mapear niveles legacy a CEFR
+  const levelMapping = {
+    'beginner': 'A2',
+    'intermediate': 'B1',
+    'advanced': 'B2'
+  }
+
+  // Lista de niveles CEFR válidos
+  const validCefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+
+  const normalizedLevel = levelMapping[level.toLowerCase()] || level.toUpperCase()
+
+  return validCefrLevels.includes(normalizedLevel) ? normalizedLevel : null
 }

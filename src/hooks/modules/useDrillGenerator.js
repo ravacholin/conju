@@ -237,7 +237,7 @@ export const useDrillGenerator = () => {
       // Tier 2: Adaptive recommendations
       if (!nextForm) {
         try {
-          const recommendation = await getNextRecommendedItem(userId, settings)
+          const recommendation = await getNextRecommendedItem(settings.level || 'B1')
           if (recommendation) {
             const { mood, tense, verbId } = recommendation
             
