@@ -1,12 +1,220 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
 
-import { PROGRESS_CONFIG } from './config.js'
+import { PROGRESS_CONFIG, VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 import { ERROR_TAGS } from './dataModels.js'
-import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
+import { saveSchedule, getScheduleByCell, getDueSchedules, getMasteryByCell } from './database.js'
+import { getVerbMetadata } from './verbMetadataProvider.js'
 
 // Helpers
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
 const randomInRange = (min, max) => min + Math.random() * (max - min)
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000
+
+const CEFR_MODIFIERS = {
+  A1: 0.85,
+  A2: 0.9,
+  B1: 0.95,
+  B2: 1,
+  C1: 1.08,
+  C2: 1.12
+}
+
+const BASE_DIFFICULTY_MULTIPLIER = VERB_DIFFICULTY?.REGULAR || 1
+
+function normalizeCEFR(value) {
+  if (!value) return null
+  const normalized = String(value).trim().toUpperCase()
+  const match = normalized.match(/[ABC][12]/)
+  return match ? match[0] : null
+}
+
+function normalizeFrequency(value) {
+  if (!value) return null
+  const normalized = String(value).trim().toLowerCase()
+  if (normalized.startsWith('low') || normalized.startsWith('baja')) return 'low'
+  if (normalized.startsWith('high') || normalized.startsWith('alta')) return 'high'
+  if (normalized.startsWith('med')) return 'medium'
+  if (normalized === '1' || normalized === '2') return 'low'
+  if (normalized === '4' || normalized === '5') return 'high'
+  return 'medium'
+}
+
+function inferDifficultyMultiplierFromVerbType(type) {
+  if (!type) return BASE_DIFFICULTY_MULTIPLIER
+  const normalized = String(type).toLowerCase()
+  if (normalized.includes('highly') || normalized.includes('irregular')) {
+    return VERB_DIFFICULTY?.HIGHLY_IRREGULAR || 1.2
+  }
+  if (normalized.includes('orthographic') || normalized.includes('ortográfico')) {
+    return VERB_DIFFICULTY?.ORTHOGRAPHIC_CHANGE || 1.15
+  }
+  if (normalized.includes('stem') || normalized.includes('diphth') || normalized.includes('cambio')) {
+    return VERB_DIFFICULTY?.DIPHTHONG || 1.1
+  }
+  return BASE_DIFFICULTY_MULTIPLIER
+}
+
+function inferDifficultyLevel(meta) {
+  if (!meta) return 'medium'
+
+  if (typeof meta.difficultyLevel === 'string') {
+    const normalized = meta.difficultyLevel.toLowerCase()
+    if (normalized.includes('fac')) return 'easy'
+    if (normalized.includes('dif') || normalized.includes('hard')) return 'hard'
+    if (normalized.includes('medium') || normalized.includes('normal')) return 'medium'
+  }
+
+  if (typeof meta.difficultyRating === 'string') {
+    const normalized = meta.difficultyRating.toLowerCase()
+    if (normalized.includes('hard') || normalized.includes('dif')) return 'hard'
+    if (normalized.includes('easy') || normalized.includes('fac')) return 'easy'
+  }
+
+  if (typeof meta.difficultyRating === 'number') {
+    const rating = meta.difficultyRating > 1 ? meta.difficultyRating / 100 : meta.difficultyRating
+    if (rating >= 0.7) return 'hard'
+    if (rating <= 0.35) return 'easy'
+  }
+
+  if (typeof meta.difficultyMultiplier === 'number') {
+    if (meta.difficultyMultiplier >= 1.15) return 'hard'
+    if (meta.difficultyMultiplier <= 0.9) return 'easy'
+  }
+
+  if (typeof meta.verbType === 'string') {
+    const normalized = meta.verbType.toLowerCase()
+    if (normalized.includes('irregular') || normalized.includes('cambio') || normalized.includes('stem')) {
+      return 'hard'
+    }
+  }
+
+  return 'medium'
+}
+
+function applyComponentFactor(components, key, factor) {
+  if (!key || typeof factor !== 'number' || Number.isNaN(factor)) return
+  const current = components[key] ?? 1
+  components[key] = Number((current * factor).toFixed(3))
+}
+
+function computePersonalization(meta = {}, context = {}) {
+  let modifier = 1
+  const components = {}
+
+  if (typeof meta.masteryScore === 'number') {
+    if (meta.masteryScore >= 85) {
+      const factor = 1.13
+      modifier *= factor
+      applyComponentFactor(components, 'mastery', factor)
+    } else if (meta.masteryScore < 50) {
+      const factor = 0.78
+      modifier *= factor
+      applyComponentFactor(components, 'mastery', factor)
+    } else if (meta.masteryScore < 70) {
+      const factor = 0.92
+      modifier *= factor
+      applyComponentFactor(components, 'mastery', factor)
+    }
+  }
+
+  const frequency = normalizeFrequency(meta.lexicalFrequency)
+  if (frequency === 'low') {
+    const penalty = 1 - (FREQUENCY_DIFFICULTY_BONUS?.LOW ?? 0.05)
+    modifier *= penalty
+    applyComponentFactor(components, 'frequency', penalty)
+  } else if (frequency === 'high') {
+    const bonus = 1 + (FREQUENCY_DIFFICULTY_BONUS?.HIGH ?? 0.02)
+    modifier *= bonus
+    applyComponentFactor(components, 'frequency', bonus)
+  }
+
+  const cefr = normalizeCEFR(meta.cefrLevel)
+  if (cefr && CEFR_MODIFIERS[cefr]) {
+    const cefrFactor = CEFR_MODIFIERS[cefr]
+    modifier *= cefrFactor
+    applyComponentFactor(components, 'cefr', cefrFactor)
+  }
+
+  const difficultyLevel = inferDifficultyLevel(meta)
+  if (difficultyLevel === 'hard') {
+    const factor = 0.88
+    modifier *= factor
+    applyComponentFactor(components, 'difficulty', factor)
+  } else if (difficultyLevel === 'easy') {
+    const factor = 1.08
+    modifier *= factor
+    applyComponentFactor(components, 'difficulty', factor)
+  }
+
+  if (typeof meta.momentumScore === 'number') {
+    if (meta.momentumScore >= 0.85) {
+      const factor = 1.12
+      modifier *= factor
+      applyComponentFactor(components, 'momentum', factor)
+    } else if (meta.momentumScore <= 0.35) {
+      const factor = 0.88
+      modifier *= factor
+      applyComponentFactor(components, 'momentum', factor)
+    }
+  }
+
+  if (typeof meta.confidenceCategory === 'string') {
+    const normalized = meta.confidenceCategory.toLowerCase()
+    if (normalized.includes('confident')) {
+      const factor = 1.06
+      modifier *= factor
+      applyComponentFactor(components, 'confidence', factor)
+    } else if (normalized.includes('hesitant') || normalized.includes('uncertain')) {
+      const factor = 0.9
+      modifier *= factor
+      applyComponentFactor(components, 'confidence', factor)
+    }
+  }
+
+  if (typeof meta.flowState === 'string') {
+    const normalized = meta.flowState.toLowerCase()
+    if (normalized.includes('struggle')) {
+      const factor = 0.87
+      modifier *= factor
+      applyComponentFactor(components, 'flow', factor)
+    } else if (normalized.includes('flow')) {
+      const factor = 1.05
+      modifier *= factor
+      applyComponentFactor(components, 'flow', factor)
+    }
+  }
+
+  if (typeof meta.streakLength === 'number' && meta.streakLength > 0) {
+    const capped = Math.min(meta.streakLength, 6)
+    const factor = 1 + capped * 0.02
+    modifier *= factor
+    applyComponentFactor(components, 'streak', factor)
+  }
+
+  if (Array.isArray(meta.skillTags) && meta.skillTags.length > 0) {
+    const tags = meta.skillTags.map(tag => String(tag).toLowerCase())
+    if (tags.some(tag => tag.includes('subjunt'))) {
+      const factor = 0.93
+      modifier *= factor
+      applyComponentFactor(components, 'tags', factor)
+    }
+    if (tags.some(tag => tag.includes('imperativo'))) {
+      const factor = 0.95
+      modifier *= factor
+      applyComponentFactor(components, 'tags', factor)
+    }
+  }
+
+  const clamped = clamp(modifier, 0.55, 1.55)
+  const finalModifier = context.correct === false ? Math.min(1, clamped) : clamped
+
+  return {
+    modifier: Number(finalModifier.toFixed(3)),
+    components,
+    rawModifier: modifier
+  }
+}
 
 /**
  * Calcula el próximo intervalo basado en el desempeño
@@ -40,7 +248,6 @@ export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
       q = Math.max(3, q - 1)
     }
   } else {
-    // Detectar error leve: solo acentuación
     const onlyAccent = Array.isArray(meta.errorTags) && meta.errorTags.length > 0 &&
       meta.errorTags.every(t => t === ERROR_TAGS.ACCENT)
     q = onlyAccent ? 3 : 2
@@ -54,60 +261,95 @@ export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
     ADV.EASE_MAX ?? 3.2
   )
 
-  // Calcular siguiente intervalo y reps
+  let computedInterval = interval
+
   if (q < 3) {
-    // Lapse: reforzar pronto
     lapses = (lapses || 0) + 1
-    reps = 0 // reiniciar aprendizaje
+    reps = 0
     const rl = ADV.RELEARN_STEPS || [0.25, 1]
-    interval = rl[0] // 6 horas por defecto
-    // Leech handling (no suspendemos, pero avisamos con intervalos cortos y ease penalizado)
+    computedInterval = rl[0]
     if (lapses >= (ADV.LEECH_THRESHOLD || 8)) {
       leech = true
       ease = Math.max(ADV.EASE_MIN ?? 1.3, ease - (ADV.LEECH_EASE_PENALTY || 0.4))
     }
   } else {
-    // Correcto (Q>=3)
     if (hintsUsed > 0) {
-      // Correcto con pistas: progresar sin subir reps (mid-point hacia el siguiente intervalo)
       const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1))
       const currentInterval = reps > 0 ? intervals[currentIdx] : (ADV.FIRST_STEPS?.[0] || 1)
       const nextIdx = Math.min(Math.max(reps, 0), intervals.length - 1)
       const nextInterval = intervals[nextIdx]
-      interval = Math.max(ADV.FIRST_STEPS?.[0] || 1, Math.round((currentInterval + nextInterval) / 2))
+      computedInterval = Math.max(ADV.FIRST_STEPS?.[0] || 1, Math.round((currentInterval + nextInterval) / 2))
     } else {
-      // Correcto sin pistas: subir nivel
       if (reps === 0) {
-        interval = (ADV.FIRST_STEPS?.[0] || 1)
+        computedInterval = (ADV.FIRST_STEPS?.[0] || 1)
         reps = 1
       } else if (reps === 1) {
-        interval = (ADV.FIRST_STEPS?.[1] || 3)
+        computedInterval = (ADV.FIRST_STEPS?.[1] || 3)
         reps = 2
       } else {
-        // Crecimiento multiplicativo por ease (estilo SM-2)
-        interval = Math.max(1, Math.round((interval || intervals[reps - 1] || 1) * ease))
+        computedInterval = Math.max(1, Math.round((interval || intervals[reps - 1] || 1) * ease))
         reps += 1
       }
-      // Afinar por calidad
-      if (q === 3) interval = Math.max(1, Math.round(interval * 0.8))
-      if (q === 5) interval = Math.max(1, Math.round(interval * 1.1))
+
+      if (q === 3) computedInterval = Math.max(1, Math.round(computedInterval * 0.8))
+      if (q === 5) computedInterval = Math.max(1, Math.round(computedInterval * 1.1))
     }
   }
 
-  // Añadir fuzz para evitar concentraciones
-  // Para respuestas con pistas, mantener el punto medio exacto (sin fuzz) para estabilidad
-  let randomized = interval
-  if (!(hintsUsed > 0)) {
-    const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval
-    const randomizedRaw = randomInRange(Math.max(0, interval - fuzz), interval + fuzz)
-    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw
+  let personalizationSnapshot = null
+  let intervalAfterPersonalization = computedInterval
+
+  if (typeof computedInterval === 'number' && Number.isFinite(computedInterval) && computedInterval > 0) {
+    const personalization = computePersonalization(meta, { correct, baseInterval: computedInterval, schedule })
+    const effectiveModifier = Number.isFinite(personalization.modifier) ? personalization.modifier : 1
+    intervalAfterPersonalization = Math.max(0.05, computedInterval * effectiveModifier)
+    const decimals = intervalAfterPersonalization >= 1 ? 1 : 2
+    intervalAfterPersonalization = Number(intervalAfterPersonalization.toFixed(decimals))
+
+    personalizationSnapshot = {
+      modifier: personalization.modifier,
+      components: personalization.components,
+      baseInterval: computedInterval,
+      intervalAfterPersonalization,
+      metaSummary: {
+        lexicalFrequency: normalizeFrequency(meta.lexicalFrequency),
+        cefrLevel: normalizeCEFR(meta.cefrLevel),
+        difficultyLevel: inferDifficultyLevel(meta),
+        masteryScore: typeof meta.masteryScore === 'number' ? meta.masteryScore : null
+      }
+    }
   }
 
-  // Calcular próxima fecha de revisión
-  const now = new Date()
-  const nextDue = new Date(now.getTime() + randomized * 24 * 60 * 60 * 1000)
+  let randomized = intervalAfterPersonalization
+  if (!(hintsUsed > 0)) {
+    const fuzzRatio = ADV.FUZZ_RATIO ?? 0.1
+    const fuzz = fuzzRatio * intervalAfterPersonalization
+    const randomizedRaw = randomInRange(Math.max(0, intervalAfterPersonalization - fuzz), intervalAfterPersonalization + fuzz)
+    randomized = intervalAfterPersonalization >= 1
+      ? Math.max(1, randomizedRaw)
+      : Math.max(0.05, randomizedRaw)
+  }
 
-  return { interval: randomized, ease, reps, lapses, leech, nextDue, lastAnswerCorrect: !!correct, lastLatencyMs: meta.latencyMs }
+  const now = new Date()
+  const intervalRounded = Number(randomized.toFixed(randomized >= 1 ? 1 : 2))
+  const nextDue = new Date(now.getTime() + intervalRounded * DAY_IN_MS)
+
+  if (personalizationSnapshot) {
+    personalizationSnapshot.randomizedInterval = intervalRounded
+    personalizationSnapshot.appliedAt = now.toISOString()
+  }
+
+  return {
+    interval: intervalRounded,
+    ease,
+    reps,
+    lapses,
+    leech,
+    nextDue,
+    lastAnswerCorrect: !!correct,
+    lastLatencyMs: meta.latencyMs,
+    personalization: personalizationSnapshot
+  }
 }
 
 /**
@@ -139,15 +381,93 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       createdAt: new Date()
     }
   }
-  
-  // Calcular nuevo intervalo
-  const updatedSchedule = {
-    ...schedule,
-    ...calculateNextInterval(schedule, correct, hintsUsed, meta),
+
+  const [masteryRecord, verbMetadata] = await Promise.all([
+    getMasteryByCell(userId, cell.mood, cell.tense, cell.person),
+    meta?.lemma ? getVerbMetadata(meta.lemma).catch(() => null) : Promise.resolve(null)
+  ])
+
+  const lexicalFrequency = normalizeFrequency(meta.lexicalFrequency ?? verbMetadata?.frequency)
+  const cefrLevel = normalizeCEFR(meta.cefrLevel ?? meta.cefr ?? meta.cefrLevel)
+
+  let difficultyMultiplier = typeof meta.difficultyMultiplier === 'number' ? meta.difficultyMultiplier : null
+  if (difficultyMultiplier === null && typeof meta.difficultyRating === 'number' && !Number.isNaN(meta.difficultyRating)) {
+    const rating = meta.difficultyRating > 10 ? meta.difficultyRating / 100 : meta.difficultyRating
+    const normalized = clamp(rating, 0, 1)
+    difficultyMultiplier = 0.8 + normalized * 0.6 // Escala suave entre 0.8 y 1.4
+  }
+  if (difficultyMultiplier === null && typeof meta.difficultyRating === 'string') {
+    const normalized = meta.difficultyRating.toLowerCase()
+    if (normalized.includes('hard') || normalized.includes('dif')) difficultyMultiplier = 1.2
+    else if (normalized.includes('easy') || normalized.includes('fac')) difficultyMultiplier = 0.9
+  }
+  if (difficultyMultiplier === null) {
+    difficultyMultiplier = inferDifficultyMultiplierFromVerbType(verbMetadata?.type)
+  }
+
+  if (typeof difficultyMultiplier === 'number' && Number.isFinite(difficultyMultiplier)) {
+    difficultyMultiplier = clamp(difficultyMultiplier, 0.6, 1.6)
+  }
+
+  const personalizedMeta = {
+    ...meta,
+    verbType: verbMetadata?.type || meta.verbType
+  }
+
+  if (lexicalFrequency) personalizedMeta.lexicalFrequency = lexicalFrequency
+  if (cefrLevel) personalizedMeta.cefrLevel = cefrLevel
+  if (typeof difficultyMultiplier === 'number' && Number.isFinite(difficultyMultiplier)) {
+    personalizedMeta.difficultyMultiplier = Number(difficultyMultiplier.toFixed(2))
+  }
+  if (typeof meta.difficultyLevel !== 'string') {
+    personalizedMeta.difficultyLevel = inferDifficultyLevel({
+      ...personalizedMeta,
+      difficultyMultiplier
+    })
+  }
+  if (typeof masteryRecord?.score === 'number') {
+    personalizedMeta.masteryScore = masteryRecord.score
+  }
+  if (typeof masteryRecord?.n === 'number') {
+    personalizedMeta.masterySamples = masteryRecord.n
+  }
+
+  const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, personalizedMeta)
+
+  const adaptationProfile = {
+    ...(schedule?.adaptationProfile || {}),
+    lexicalFrequency: lexicalFrequency ?? schedule?.adaptationProfile?.lexicalFrequency ?? null,
+    difficultyLevel: personalizedMeta.difficultyLevel || schedule?.adaptationProfile?.difficultyLevel || null,
+    difficultyMultiplier: typeof personalizedMeta.difficultyMultiplier === 'number'
+      ? personalizedMeta.difficultyMultiplier
+      : schedule?.adaptationProfile?.difficultyMultiplier ?? null,
+    verbType: verbMetadata?.type || schedule?.adaptationProfile?.verbType || personalizedMeta.verbType || null,
+    masteryScore: typeof masteryRecord?.score === 'number'
+      ? masteryRecord.score
+      : schedule?.adaptationProfile?.masteryScore ?? null,
+    masterySamples: typeof masteryRecord?.n === 'number'
+      ? masteryRecord.n
+      : schedule?.adaptationProfile?.masterySamples ?? 0,
+    cefrLevel: cefrLevel || schedule?.adaptationProfile?.cefrLevel || null,
+    lastModifier: intervalResult.personalization?.modifier ?? schedule?.adaptationProfile?.lastModifier ?? 1,
+    lastComponents: intervalResult.personalization?.components || schedule?.adaptationProfile?.lastComponents || {},
     updatedAt: new Date()
   }
-  
-  // Guardar en la base de datos
+
+  const updatedSchedule = {
+    ...schedule,
+    ...intervalResult,
+    updatedAt: new Date(),
+    adaptationProfile,
+    lastReviewContext: {
+      ...(schedule?.lastReviewContext || {}),
+      practiceMode: personalizedMeta.practiceMode || schedule?.lastReviewContext?.practiceMode || null,
+      recommendedBy: personalizedMeta.recommendedBy || schedule?.lastReviewContext?.recommendedBy || null,
+      mixNewWithDue: personalizedMeta.mixNewWithDue ?? schedule?.lastReviewContext?.mixNewWithDue ?? false,
+      sessionId: personalizedMeta.sessionId || schedule?.lastReviewContext?.sessionId || null
+    }
+  }
+
   await saveSchedule(updatedSchedule)
 }
 

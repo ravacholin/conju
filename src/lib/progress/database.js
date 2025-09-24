@@ -651,6 +651,39 @@ export async function getDueSchedules(userId, beforeDate) {
   }
 }
 
+export async function getUpcomingSchedules(userId, afterDate = new Date(), limit = 50) {
+  try {
+    const db = await initDB()
+    const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+    const index = store.index('nextDue')
+
+    const allSchedules = await index.getAll()
+    const filtered = []
+    for (const schedule of allSchedules) {
+      if (schedule.userId !== userId) continue
+      if (new Date(schedule.nextDue) < afterDate) continue
+      filtered.push(schedule)
+      if (filtered.length >= limit) break
+    }
+
+    await tx.done
+    return filtered
+  } catch (error) {
+    console.error('❌ Error al obtener próximos schedules:', error)
+    return []
+  }
+}
+
+export async function getSchedulesByUser(userId) {
+  try {
+    return await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', userId)
+  } catch (error) {
+    console.error('❌ Error al obtener schedules por usuario:', error)
+    return []
+  }
+}
+
 /**
  * Guarda un evento
  * @param {Object} event - Datos del evento

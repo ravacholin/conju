@@ -165,7 +165,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
       confidenceOverall: orchestrated?.confidenceOverall,
       confidenceCategory: orchestrated?.confidenceCategory
     }
-    
+
     // Guardar intento en la base de datos
     await saveAttempt(attempt)
 
@@ -190,12 +190,45 @@ export async function trackAttemptSubmitted(attemptId, result) {
 
     // Actualizar SRS para la celda practicada (pasar metadatos para adaptación)
     try {
+      const cefrLevel = result.item?.cefrLevel || result.item?.cefrRange || result.item?.cefr || null
+      const lexicalFrequency = result.item?.frequency || result.item?.lexicalFrequency || result.item?.frequencyBand || null
+      const difficultyRating = result.item?.difficulty || result.item?.difficultyScore || result.item?.difficultyRating || null
+      const skillTags = Array.isArray(result.item?.tags)
+        ? result.item.tags
+        : Array.isArray(result.item?.form?.tags)
+          ? result.item.form.tags
+          : undefined
+
+      const srsMetaRaw = {
+        latencyMs: attempt.latencyMs,
+        errorTags,
+        lemma,
+        cefrLevel,
+        lexicalFrequency,
+        difficultyRating,
+        flowState: attempt.flowState,
+        momentumScore: attempt.momentumScore,
+        confidenceCategory: attempt.confidenceCategory,
+        hintsUsed: attempt.hintsUsed,
+        skillTags,
+        sessionId: currentSession.id,
+        practiceMode: result.practiceMode || null,
+        recommendedBy: result.recommendedBy || null,
+        mixNewWithDue: Boolean(result.mixNewWithDue),
+        streakLength: typeof result.streakLength === 'number' ? result.streakLength : null,
+        accuracyStreak: typeof result.accuracyStreak === 'number' ? result.accuracyStreak : null
+      }
+
+      const srsMeta = Object.fromEntries(
+        Object.entries(srsMetaRaw).filter(([, value]) => value !== undefined && value !== null)
+      )
+
       await updateSchedule(
         currentSession.userId,
         { mood, tense, person },
         attempt.correct,
         attempt.hintsUsed,
-        { latencyMs: attempt.latencyMs, errorTags }
+        srsMeta
       )
     } catch (error) {
       console.warn('No se pudo actualizar SRS:', error)
