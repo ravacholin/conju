@@ -21,10 +21,11 @@ function presetRank(id) {
 }
 
 function orderPresets(builtIn = {}, custom = []) {
-  const builtInArray = Object.values(builtIn)
-    .filter(Boolean)
+  const safeBuiltIn = builtIn && typeof builtIn === 'object' && !Array.isArray(builtIn) ? builtIn : {}
+  const builtInArray = Object.values(safeBuiltIn)
+    .filter((preset) => preset && typeof preset === 'object')
     .sort((a, b) => presetRank(a.id) - presetRank(b.id))
-  const customArray = Array.isArray(custom) ? custom.filter(Boolean) : []
+  const customArray = Array.isArray(custom) ? custom.filter((preset) => preset && typeof preset === 'object') : []
   return [...builtInArray, ...customArray]
 }
 
@@ -135,7 +136,13 @@ export default function SRSPanel({ onNavigateToDrill }) {
     set: state.set
   }))
 
-  const { queue, loading, stats: queueStats, insights } = useSRSQueue()
+  const {
+    queue,
+    loading,
+    stats: queueStatsRaw,
+    insights
+  } = useSRSQueue()
+  const queueStats = queueStatsRaw || { total: 0, urgent: 0, overdue: 0, scheduled: 0, dueNow: 0 }
 
   useEffect(() => {
     const openHandler = () => setShowQueueModal(true)
