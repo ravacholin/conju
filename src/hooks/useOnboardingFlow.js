@@ -247,8 +247,8 @@ export function useOnboardingFlow() {
           useVosotros: false,
           strict: true,
           region: 'rioplatense',
-          // For rioplatense: include all pronouns within the dialect (including vos!)
-          practicePronoun: 'all'
+          // For rioplatense: respect regional dialect constraints
+          practicePronoun: 'mixed'
         })
         break
       case 'la_general':
@@ -259,8 +259,8 @@ export function useOnboardingFlow() {
           useVosotros: false,
           strict: true,
           region: 'la_general',
-          // Ensure regional restrictions are honored (no global override)
-          practicePronoun: 'both'
+          // Ensure strict regional restrictions are honored
+          practicePronoun: 'mixed'
         })
         break
       case 'peninsular':
@@ -271,8 +271,8 @@ export function useOnboardingFlow() {
           useVosotros: true,
           strict: true,
           region: 'peninsular',
-          // Ensure regional restrictions are honored (no global override)
-          practicePronoun: 'both'
+          // Ensure strict regional restrictions are honored
+          practicePronoun: 'mixed'
         })
         break
       case 'both':

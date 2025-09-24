@@ -472,6 +472,155 @@ describe('Theme practice irregular family filtering', () => {
   });
 });
 
+describe('Strict dialect form filtering', () => {
+  it('should enforce strict rioplatense filtering (only vos)', async () => {
+    clearFormsCache();
+
+    const settings = {
+      region: 'rioplatense',
+      practiceMode: 'mixed',
+      useVoseo: true,
+      useTuteo: false,
+      useVosotros: false,
+      practicePronoun: 'mixed',
+      enableChunks: false, // Use fallback for consistent results
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = { isSpecific: false };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const persons = [...new Set(eligible.map(f => f.person))];
+
+    // Should include: 1s, 2s_vos, 3s, 1p, 3p
+    expect(persons).toContain('1s');
+    expect(persons).toContain('2s_vos');
+    expect(persons).toContain('3s');
+    expect(persons).toContain('1p');
+    expect(persons).toContain('3p');
+
+    // Should NOT include: 2s_tu, 2p_vosotros
+    expect(persons).not.toContain('2s_tu');
+    expect(persons).not.toContain('2p_vosotros');
+
+    console.log(`✅ Rioplatense strict filtering: ${persons.join(', ')}`);
+  });
+
+  it('should enforce strict la_general filtering (only tú)', async () => {
+    clearFormsCache();
+
+    const settings = {
+      region: 'la_general',
+      practiceMode: 'mixed',
+      useVoseo: false,
+      useTuteo: true,
+      useVosotros: false,
+      practicePronoun: 'mixed',
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = { isSpecific: false };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const persons = [...new Set(eligible.map(f => f.person))];
+
+    // Should include: 1s, 2s_tu, 3s, 1p, 3p
+    expect(persons).toContain('1s');
+    expect(persons).toContain('2s_tu');
+    expect(persons).toContain('3s');
+    expect(persons).toContain('1p');
+    expect(persons).toContain('3p');
+
+    // Should NOT include: 2s_vos, 2p_vosotros
+    expect(persons).not.toContain('2s_vos');
+    expect(persons).not.toContain('2p_vosotros');
+
+    console.log(`✅ La_general strict filtering: ${persons.join(', ')}`);
+  });
+
+  it('should enforce strict peninsular filtering (tú + vosotros)', async () => {
+    clearFormsCache();
+
+    const settings = {
+      region: 'peninsular',
+      practiceMode: 'mixed',
+      useVoseo: false,
+      useTuteo: true,
+      useVosotros: true,
+      practicePronoun: 'mixed',
+      enableChunks: false,
+    };
+
+    const allForms = await generateAllFormsForRegion(settings.region, settings);
+    const constraints = { isSpecific: false };
+    const eligible = applyComprehensiveFiltering(allForms, settings, constraints);
+
+    expect(eligible.length).toBeGreaterThan(0);
+
+    const persons = [...new Set(eligible.map(f => f.person))];
+
+    // Should include: 1s, 2s_tu, 3s, 1p, 2p_vosotros, 3p
+    expect(persons).toContain('1s');
+    expect(persons).toContain('2s_tu');
+    expect(persons).toContain('3s');
+    expect(persons).toContain('1p');
+    expect(persons).toContain('2p_vosotros');
+    expect(persons).toContain('3p');
+
+    // Should NOT include: 2s_vos
+    expect(persons).not.toContain('2s_vos');
+
+    console.log(`✅ Peninsular strict filtering: ${persons.join(', ')}`);
+  });
+
+  it('should allow explicit dialect overrides only when useFlags are set', async () => {
+    clearFormsCache();
+
+    // Test explicit vos override in la_general
+    const laGeneralWithVos = {
+      region: 'la_general',
+      practiceMode: 'mixed',
+      useVoseo: true, // Explicit override
+      useTuteo: true,
+      useVosotros: false,
+      practicePronoun: 'mixed',
+      enableChunks: false,
+    };
+
+    const allForms1 = await generateAllFormsForRegion(laGeneralWithVos.region, laGeneralWithVos);
+    const eligible1 = applyComprehensiveFiltering(allForms1, laGeneralWithVos, { isSpecific: false });
+
+    const persons1 = [...new Set(eligible1.map(f => f.person))];
+    expect(persons1).toContain('2s_vos'); // Should be allowed due to explicit useVoseo: true
+    expect(persons1).toContain('2s_tu'); // Should still be allowed
+
+    // Test explicit vosotros override in rioplatense
+    const rioplatenseWithVosotros = {
+      region: 'rioplatense',
+      practiceMode: 'mixed',
+      useVoseo: true,
+      useTuteo: false,
+      useVosotros: true, // Explicit override
+      practicePronoun: 'mixed',
+      enableChunks: false,
+    };
+
+    const allForms2 = await generateAllFormsForRegion(rioplatenseWithVosotros.region, rioplatenseWithVosotros);
+    const eligible2 = applyComprehensiveFiltering(allForms2, rioplatenseWithVosotros, { isSpecific: false });
+
+    const persons2 = [...new Set(eligible2.map(f => f.person))];
+    expect(persons2).toContain('2p_vosotros'); // Should be allowed due to explicit useVosotros: true
+    expect(persons2).toContain('2s_vos'); // Should still be allowed
+
+    console.log(`✅ Explicit overrides work: la_general+vos=${persons1.includes('2s_vos')}, rioplatense+vosotros=${persons2.includes('2p_vosotros')}`);
+  });
+});
+
 describe('Third-person preterite irregulars practice with dialects', () => {
   it('should include "vos" forms for rioplatense region', async () => {
     clearFormsCache();
@@ -484,6 +633,9 @@ describe('Third-person preterite irregulars practice with dialects', () => {
       verbType: 'irregular',
       selectedFamily: 'PRETERITE_THIRD_PERSON',
       enableChunks: false,
+      useVoseo: true,
+      useTuteo: false,
+      useVosotros: false,
     };
 
     const allForms = await generateAllFormsForRegion(settings.region, settings);
@@ -514,6 +666,9 @@ describe('Third-person preterite irregulars practice with dialects', () => {
       verbType: 'irregular',
       selectedFamily: 'PRETERITE_THIRD_PERSON',
       enableChunks: false,
+      useTuteo: true,
+      useVoseo: false,
+      useVosotros: true,
     };
 
     const allForms = await generateAllFormsForRegion(settings.region, settings);

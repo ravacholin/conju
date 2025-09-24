@@ -198,30 +198,32 @@ const getAllowedCombosForLevel = (level) => gateCombos(level)
 export const allowsPerson = (person, settings) => {
   const { region, practicePronoun, useVoseo, useVosotros } = settings
 
-  // Check for hybrid/combined pronoun mode first
-  if (practicePronoun === 'all' || useVoseo || useVosotros) {
-    // Allow all combinations when explicitly requested
-    if (useVoseo && person === '2s_vos') return true
-    if (useVosotros && person === '2p_vosotros') return true
-    // Allow standard forms too
-    if (person !== '2s_vos' && person !== '2p_vosotros') return true
-    if (person === '2s_vos' && useVoseo) return true
-    if (person === '2p_vosotros' && useVosotros) return true
+  // Handle explicit pronoun selection overrides first
+  if (practicePronoun === 'all') {
+    // 'all' explicitly requests all pronouns regardless of region
+    return true
   }
 
-  // Regional constraints (only apply if not in hybrid mode)
+  // Handle specific dialect forms - only allow if explicitly enabled
+  if (person === '2s_vos' && !useVoseo) return false
+  if (person === '2p_vosotros' && !useVosotros) return false
+
+  // If explicitly enabled, allow the specific dialect forms
+  if (person === '2s_vos' && useVoseo) return true
+  if (person === '2p_vosotros' && useVosotros) return true
+
+  // Strict regional constraints (only apply if not in hybrid mode)
   if (!practicePronoun || practicePronoun === 'mixed') {
-    if (region === 'rioplatense') return person !== '2s_tu' && person !== '2p_vosotros'
+    if (region === 'rioplatense') {
+      // Rioplatense: only 2s_vos, no tu, no vosotros
+      return person !== '2s_tu' && person !== '2p_vosotros'
+    }
     if (region === 'la_general') {
-      // Allow vos/vosotros if explicitly enabled, even in la_general
-      if (person === '2s_vos' && useVoseo) return true
-      if (person === '2p_vosotros' && useVosotros) return true
+      // La General: only 2s_tu, no vos, no vosotros
       return person !== '2s_vos' && person !== '2p_vosotros'
     }
     if (region === 'peninsular') {
-      // Allow vosotros in peninsular, but only vos if explicitly enabled
-      if (person === '2s_vos' && useVoseo) return true
-      if (person === '2p_vosotros') return true
+      // Peninsular: 2s_tu and 2p_vosotros, no vos
       return person !== '2s_vos'
     }
   }
