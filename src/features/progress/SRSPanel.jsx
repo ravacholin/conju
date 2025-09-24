@@ -12,12 +12,6 @@ const VIEW_MODES = {
 }
 
 const PRESET_PRIORITY = ['urgent', 'balanced', 'light', 'today']
-const DEFAULT_PRESETS = [
-  { id: 'urgent', label: 'Recuperar olvidados', limit: 15, urgency: 'urgent', includeNew: false, mixRatio: 0 },
-  { id: 'balanced', label: 'Balanceado', limit: 12, urgency: 'mixed', includeNew: true, mixRatio: 0.3 },
-  { id: 'light', label: 'Repaso rápido', limit: 6, urgency: 'urgent', includeNew: false, mixRatio: 0 },
-  { id: 'today', label: 'Todo el día', limit: null, urgency: 'all', includeNew: false, mixRatio: 0 }
-]
 const MINUTES_PER_ITEM = 1.5
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -97,7 +91,7 @@ function getMemoryTier(item) {
 }
 
 function filterQueue(queue, filter) {
-  if (!Array.isArray(queue) || !filter) return Array.isArray(queue) ? queue : []
+  if (!filter) return queue
   return queue.filter((item) => {
     if (filter.mood && item.mood !== filter.mood) return false
     if (filter.tense && item.tense !== filter.tense) return false
@@ -149,9 +143,6 @@ export default function SRSPanel({ onNavigateToDrill }) {
     insights
   } = useSRSQueue()
   const queueStats = queueStatsRaw || { total: 0, urgent: 0, overdue: 0, scheduled: 0, dueNow: 0 }
-  const insightsSafe = insights && typeof insights === 'object'
-    ? insights
-    : { upcomingBuckets: [], breakdown: { byMood: [], byTense: [], byPerson: [] } }
 
   useEffect(() => {
     const openHandler = () => setShowQueueModal(true)
@@ -173,14 +164,14 @@ export default function SRSPanel({ onNavigateToDrill }) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const allPresets = useMemo(() => {
-    const ordered = orderPresets(reviewSessionPresets, customReviewPresets)
-    return ordered.length > 0 ? ordered : DEFAULT_PRESETS
-  }, [reviewSessionPresets, customReviewPresets])
+  const allPresets = useMemo(
+    () => orderPresets(reviewSessionPresets, customReviewPresets),
+    [reviewSessionPresets, customReviewPresets]
+  )
 
   const highlightTenses = useMemo(
-    () => (Array.isArray(insightsSafe?.breakdown?.byTense) ? insightsSafe.breakdown.byTense : []).slice(0, 4),
-    [insightsSafe]
+    () => (insights?.breakdown?.byTense || []).slice(0, 4),
+    [insights]
   )
 
   const filteredQueue = useMemo(
@@ -189,14 +180,11 @@ export default function SRSPanel({ onNavigateToDrill }) {
   )
 
   const queuePreview = useMemo(() => {
-    const source = Array.isArray(filteredQueue) ? filteredQueue : []
     const limit = viewMode === VIEW_MODES.CARDS ? 4 : 10
-    return source.slice(0, limit)
+    return filteredQueue.slice(0, limit)
   }, [filteredQueue, viewMode])
 
-  const todayBucketCount = Array.isArray(insightsSafe?.upcomingBuckets)
-    ? insightsSafe.upcomingBuckets[0]?.count ?? 0
-    : 0
+  const todayBucketCount = insights?.upcomingBuckets?.[0]?.count ?? 0
   const dueNowCount = Math.max(queueStats.urgent - queueStats.overdue, 0)
   const dueLaterToday = Math.max(todayBucketCount, 0)
 
@@ -286,7 +274,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
   }
 
   const activeFilterLabel = activeFilter ? formatMoodTense(activeFilter.mood, activeFilter.tense) : null
-  const sparklineSummary = summarizeSparkline(insightsSafe?.upcomingBuckets)
+  const sparklineSummary = summarizeSparkline(insights?.upcomingBuckets)
 
   if (loading) {
     return (
@@ -350,13 +338,9 @@ export default function SRSPanel({ onNavigateToDrill }) {
             <strong>Próximos 7 días</strong>
             <p className="srs-panel__sparkline-subtitle">{sparklineSummary}</p>
           </div>
-            <span className="srs-panel__sparkline-total">Total programado: {
-              Array.isArray(insightsSafe?.upcomingBuckets)
-                ? insightsSafe.upcomingBuckets.reduce((sum, bucket) => sum + (bucket?.count || 0), 0)
-                : 0
-            }</span>
+          <span className="srs-panel__sparkline-total">Total programado: {insights?.upcomingBuckets?.reduce((sum, bucket) => sum + bucket.count, 0) || 0}</span>
         </div>
-        <SRSSparkline buckets={insightsSafe?.upcomingBuckets} />
+        <SRSSparkline buckets={insights?.upcomingBuckets} />
       </section>
 
       <section className="srs-panel__sessions" aria-label="Sesiones sugeridas">

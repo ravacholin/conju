@@ -20,12 +20,6 @@ export default function SRSReviewQueueModal({
   activeFilter
 }) {
   const { queue, loading, error, stats, reload, insights } = useSRSQueue()
-  const insightsSafe = insights && typeof insights === 'object'
-    ? insights
-    : { breakdown: { byTense: [] } }
-  const statsSafe = stats && typeof stats === 'object'
-    ? stats
-    : { total: 0, urgent: 0, overdue: 0 }
 
   const [selectedUrgency, setSelectedUrgency] = useState('all')
   const [selectedPerson, setSelectedPerson] = useState('all')
@@ -34,12 +28,11 @@ export default function SRSReviewQueueModal({
   const [selectedTenseKey, setSelectedTenseKey] = useState(null)
 
   const thematicTenses = useMemo(
-    () => (Array.isArray(insightsSafe?.breakdown?.byTense) ? insightsSafe.breakdown.byTense : []).slice(0, 6),
-    [insightsSafe]
+    () => (insights?.breakdown?.byTense || []).slice(0, 6),
+    [insights]
   )
 
   const filteredQueue = useMemo(() => {
-    if (!Array.isArray(queue)) return []
     return queue.filter((item) => {
       const matchesUrgency = selectedUrgency === 'all' || Number(selectedUrgency) === item.urgency
       const matchesPerson = selectedPerson === 'all' || selectedPerson === item.person
@@ -94,15 +87,15 @@ export default function SRSReviewQueueModal({
 
           <div className="srs-queue__stats" aria-live="polite">
             <div className="stat-card">
-              <span className="stat-value">{statsSafe.total}</span>
+              <span className="stat-value">{stats.total}</span>
               <span className="stat-label">En cola</span>
             </div>
             <div className="stat-card urgent">
-              <span className="stat-value">{statsSafe.overdue}</span>
+              <span className="stat-value">{stats.overdue}</span>
               <span className="stat-label">Se olvidan</span>
             </div>
             <div className="stat-card soon">
-              <span className="stat-value">{statsSafe.urgent}</span>
+              <span className="stat-value">{stats.urgent}</span>
               <span className="stat-label">Muy urgentes</span>
             </div>
           </div>
@@ -122,8 +115,8 @@ export default function SRSReviewQueueModal({
             <label htmlFor="filter-person">Persona</label>
             <select id="filter-person" value={selectedPerson} onChange={(event) => setSelectedPerson(event.target.value)}>
               <option value="all">Todas</option>
-              {Array.from(new Set((Array.isArray(queue) ? queue : []).map((item) => item.person))).map((person) => (
-                <option key={person} value={person}>{(Array.isArray(queue) ? queue : []).find((item) => item.person === person)?.personLabel || person}</option>
+              {Array.from(new Set(queue.map((item) => item.person))).map((person) => (
+                <option key={person} value={person}>{queue.find((item) => item.person === person)?.personLabel || person}</option>
               ))}
             </select>
           </div>
@@ -165,16 +158,16 @@ export default function SRSReviewQueueModal({
 
         <section className="srs-queue__actions" aria-label="Iniciar sesión">
           <div className="action-buttons">
-            <button className="btn btn-primary" onClick={() => onStartPreset?.('urgent')} disabled={statsSafe.urgent === 0}>
-              Repasar urgentes ({statsSafe.urgent})
+            <button className="btn btn-primary" onClick={() => onStartPreset?.('urgent')} disabled={stats.urgent === 0}>
+              Repasar urgentes ({stats.urgent})
             </button>
             <button className="btn btn-secondary" onClick={() => onStartPreset?.('balanced', { mixNewWithDue: true })}>
               Mezcla adaptativa
             </button>
-            <button className="btn" onClick={() => onStartPreset?.('today')} disabled={statsSafe.total === 0}>
-              Sesión completa ({statsSafe.total})
+            <button className="btn" onClick={() => onStartPreset?.('today')} disabled={stats.total === 0}>
+              Sesión completa ({stats.total})
             </button>
-         </div>
+          </div>
 
           <div className="custom-session">
             <div className="custom-session__row">

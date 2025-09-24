@@ -27,14 +27,6 @@ function getPersonLabel(person) {
 }
 
 function summarizeQueue(items, now = new Date()) {
-  if (!Array.isArray(items)) {
-    return {
-      total: 0,
-      urgent: 0,
-      overdue: 0,
-      scheduled: 0
-    }
-  }
   const urgent = items.filter((item) => item.urgency >= 3).length
   const overdue = items.filter((item) => new Date(item.nextDue) < now).length
   return {
@@ -75,10 +67,6 @@ function bucketUpcomingSchedules(schedules, now = new Date(), days = 7) {
     }
   })
 
-  if (!Array.isArray(schedules)) {
-    return buckets
-  }
-
   schedules.forEach((schedule) => {
     const due = new Date(schedule.nextDue)
     const diffDays = Math.floor((startOfDay(due) - base) / DAY_MS)
@@ -94,14 +82,6 @@ function buildBreakdowns(queue) {
   const byMood = new Map()
   const byTense = new Map()
   const byPerson = new Map()
-
-  if (!Array.isArray(queue)) {
-    return {
-      byMood: [],
-      byTense: [],
-      byPerson: []
-    }
-  }
 
   queue.forEach((item) => {
     const moodEntry = byMood.get(item.mood) || {
@@ -188,8 +168,7 @@ export function useSRSQueue() {
         record
       ]))
 
-      const enrichedList = Array.isArray(dueSchedules) ? dueSchedules : []
-      const enriched = enrichedList.map((schedule) => {
+      const enriched = (dueSchedules || []).map((schedule) => {
         const key = `${schedule.mood}|${schedule.tense}|${schedule.person}`
         const mastery = masteryMap.get(key) || { score: 0 }
         return {
@@ -204,7 +183,7 @@ export function useSRSQueue() {
         return a.masteryScore - b.masteryScore
       })
 
-      setQueue(Array.isArray(enriched) ? enriched : [])
+      setQueue(enriched)
       const summary = summarizeQueue(enriched, now)
       if (srsNotificationsEnabled) {
         maybeNotifySRSReview(
