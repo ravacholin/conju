@@ -35,16 +35,6 @@ const useSettings = create(
       irregularityFilterMode: 'tense',
       verbType: 'all', // 'all', 'regular', 'irregular'
       selectedFamily: null,
-
-      // Presets de sesiones de repaso (dinámicas)
-      reviewSessionPresets: {
-        urgent: { id: 'urgent', label: 'Recuperar olvidados', limit: 15, urgency: 'urgent', includeNew: false, mixRatio: 0 },
-        light: { id: 'light', label: 'Repaso rápido', limit: 6, urgency: 'urgent', includeNew: false, mixRatio: 0 },
-        today: { id: 'today', label: 'Todo el día', limit: null, urgency: 'all', includeNew: false, mixRatio: 0 },
-        balanced: { id: 'balanced', label: 'Balanceado', limit: 12, urgency: 'mixed', includeNew: true, mixRatio: 0.3 }
-      },
-      customReviewPresets: [],
-      activeReviewPreset: 'urgent',
       
       // Verbos permitidos (por nivel/packs)
       allowedLemmas: null,
@@ -83,12 +73,6 @@ const useSettings = create(
 
       // Sistema de progreso - toggle para la integración con mastery data
       enableProgressIntegration: true, // Puede deshabilitarse si hay problemas
-
-      // Notificaciones proactivas de SRS
-      srsNotificationsEnabled: true,
-      srsNotificationUrgentThreshold: 6,
-      srsNotificationOverdueThreshold: 2,
-      srsNotificationCooldownMinutes: 45,
       
       // Métodos para actualizar configuración
       set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
@@ -104,24 +88,6 @@ const useSettings = create(
       setIrregularityFilterMode: (mode) => set({ irregularityFilterMode: mode === 'lemma' ? 'lemma' : 'tense' }),
       setVerbType: (type) => set({ verbType: type }),
       setSelectedFamily: (family) => set({ selectedFamily: family }),
-      setActiveReviewPreset: (presetId) => set({ activeReviewPreset: presetId }),
-      upsertReviewPreset: (preset) => set((state) => {
-        if (!preset?.id) return {}
-        if (state.reviewSessionPresets[preset.id]) {
-          return {
-            reviewSessionPresets: {
-              ...state.reviewSessionPresets,
-              [preset.id]: { ...state.reviewSessionPresets[preset.id], ...preset }
-            }
-          }
-        }
-        const existing = state.customReviewPresets.filter((p) => p.id !== preset.id)
-        return { customReviewPresets: [...existing, { ...preset }] }
-      }),
-      deleteReviewPreset: (presetId) => set((state) => ({
-        customReviewPresets: state.customReviewPresets.filter((preset) => preset.id !== presetId)
-      })),
-
       setAllowedLemmas: (lemmas) => set({ allowedLemmas: lemmas }),
       toggleResistance: () => set((state) => ({ 
         resistanceActive: !state.resistanceActive,
@@ -136,12 +102,6 @@ const useSettings = create(
       setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
       toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
       toggleProgressIntegration: () => set((state) => ({ enableProgressIntegration: !state.enableProgressIntegration })),
-      enableSRSNotifications: (enabled) => set({ srsNotificationsEnabled: !!enabled }),
-      setSRSNotificationThresholds: ({ urgent, overdue, cooldown }) => set((state) => ({
-        srsNotificationUrgentThreshold: typeof urgent === 'number' && urgent >= 0 ? urgent : state.srsNotificationUrgentThreshold,
-        srsNotificationOverdueThreshold: typeof overdue === 'number' && overdue >= 0 ? overdue : state.srsNotificationOverdueThreshold,
-        srsNotificationCooldownMinutes: typeof cooldown === 'number' && cooldown >= 5 ? cooldown : state.srsNotificationCooldownMinutes
-      })),
       
       // Métodos para debugging
       getCacheStats: () => {
@@ -172,9 +132,6 @@ const useSettings = create(
         irregularityFilterMode: state.irregularityFilterMode,
         verbType: state.verbType,
         selectedFamily: state.selectedFamily,
-        reviewSessionPresets: state.reviewSessionPresets,
-        customReviewPresets: state.customReviewPresets,
-        activeReviewPreset: state.activeReviewPreset,
         // Persistir conmutación C2 para asegurar continuidad y variedad
         enableC2Conmutacion: state.enableC2Conmutacion,
         conmutacionSeq: state.conmutacionSeq,
@@ -184,11 +141,7 @@ const useSettings = create(
         enableFuturoSubjProd: state.enableFuturoSubjProd,
         enableFuturoSubjRead: state.enableFuturoSubjRead,
         cliticsPercent: state.cliticsPercent,
-        resistanceBestMsByLevel: state.resistanceBestMsByLevel,
-        srsNotificationsEnabled: state.srsNotificationsEnabled,
-        srsNotificationUrgentThreshold: state.srsNotificationUrgentThreshold,
-        srsNotificationOverdueThreshold: state.srsNotificationOverdueThreshold,
-        srsNotificationCooldownMinutes: state.srsNotificationCooldownMinutes
+        resistanceBestMsByLevel: state.resistanceBestMsByLevel
       })
     }
   )

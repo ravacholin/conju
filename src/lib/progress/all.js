@@ -44,8 +44,6 @@ export {
   getSchedule,
   getScheduleByCell,
   getDueSchedules,
-  getUpcomingSchedules,
-  getSchedulesByUser,
   initializeFullDB,
   closeDB,
   deleteDB,
