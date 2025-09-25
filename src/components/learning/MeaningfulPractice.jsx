@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
+import { updateSchedule } from '../../lib/progress/srs.js';
+import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
-import { trackAttemptStarted, trackAttemptSubmitted } from '../../features/drill/tracking.js';
 import { grade } from '../../lib/core/grader.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
@@ -32,11 +33,11 @@ const timelineData = {
     title: 'La rutina diaria de Carlos',
     description: 'Describe un día típico de Carlos usando los verbos indicados en presente.',
     prompts: [
-      { icon: '•', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
-      { icon: '•', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
-      { icon: '•', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
-      { icon: '•', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
-      { icon: '•', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
+      { icon: '⏰', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
+      { icon: '🍳', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
+      { icon: '💼', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
+      { icon: '🏠', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
+      { icon: '🌙', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
     ],
     // Ejercicios alternativos para mayor variedad
     alternativeExercises: [
@@ -45,11 +46,11 @@ const timelineData = {
         title: 'Un día en la oficina',
         description: 'Completa las frases sobre lo que pasa en una oficina típica.',
         prompts: [
-          { icon: '•', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
-          { icon: '•', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
-          { icon: '•', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
-          { icon: '•', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
-          { icon: '•', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
+          { icon: '💻', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
+          { icon: '📧', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
+          { icon: '📊', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
+          { icon: '☕', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
+          { icon: '🏃‍♂️', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
         ]
       },
       {
@@ -57,11 +58,11 @@ const timelineData = {
         title: 'La vida familiar',
         description: 'Describe las actividades de una familia típica.',
         prompts: [
-          { icon: '•', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
-          { icon: '•', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
-          { icon: '•', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
-          { icon: '•', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
-          { icon: '•', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
+          { icon: '👶', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
+          { icon: '👨‍🍳', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
+          { icon: '🎯', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
+          { icon: '📺', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
+          { icon: '🐕', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
         ]
       }
     ]
@@ -70,10 +71,10 @@ const timelineData = {
     type: 'timeline',
     title: 'El día de ayer de María',
     events: [
-      { time: '7:00', icon: '•', prompt: 'tomar café' },
-      { time: '12:00', icon: '•', prompt: 'comer' },
-      { time: '18:00', icon: '•', prompt: 'ir al gimnasio' },
-      { time: '22:00', icon: '•', prompt: 'acostarse' },
+      { time: '7:00', icon: '☕️', prompt: 'tomar café' },
+      { time: '12:00', icon: '🍽️', prompt: 'comer' },
+      { time: '18:00', icon: '🏋️', prompt: 'ir al gimnasio' },
+      { time: '22:00', icon: '🛏️', prompt: 'acostarse' },
     ],
     expectedVerbs: ['tomó', 'comió', 'fue', 'se acostó'],
     // Ejercicios alternativos más diversos
@@ -83,11 +84,11 @@ const timelineData = {
         title: 'Las vacaciones de verano',
         description: 'Completa la historia del viaje de Luis a Barcelona.',
         prompts: [
-          { icon: '•', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
-          { icon: '•', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
-          { icon: '•', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
-          { icon: '•', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
-          { icon: '•', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
+          { icon: '✈️', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
+          { icon: '🏨', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
+          { icon: '🏛️', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
+          { icon: '🥘', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
+          { icon: '📸', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
         ]
       },
       {
@@ -95,11 +96,11 @@ const timelineData = {
         title: 'La fiesta de anoche',
         description: 'Cuenta lo que pasó en la fiesta de cumpleaños de Ana.',
         prompts: [
-          { icon: '•', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
-          { icon: '•', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
-          { icon: '•', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
-          { icon: '•', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
-          { icon: '•', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
+          { icon: '🎉', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
+          { icon: '👥', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
+          { icon: '🍰', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
+          { icon: '💃', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
+          { icon: '🏠', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
         ]
       },
       {
@@ -107,11 +108,11 @@ const timelineData = {
         title: 'El misterio del libro perdido',
         description: 'Resuelve el misterio completando lo que pasó.',
         prompts: [
-          { icon: '•', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
-          { icon: '•', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
-          { icon: '•', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
-          { icon: '•', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
-          { icon: '•', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
+          { icon: '📚', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
+          { icon: '🔍', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
+          { icon: '👮‍♂️', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
+          { icon: '💡', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
+          { icon: '😅', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
         ]
       }
     ]
@@ -130,11 +131,11 @@ const timelineData = {
     title: 'Los recuerdos de la infancia',
     description: 'Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.',
     prompts: [
-      { icon: '•', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
-      { icon: '•', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
-      { icon: '•', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
-      { icon: '•', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
-      { icon: '•', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
+      { icon: '🏠', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
+      { icon: '🎮', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
+      { icon: '📚', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
+      { icon: '👨‍👩‍👧‍👦', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
+      { icon: '🌞', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
     ],
   },
   fut: {
@@ -152,11 +153,11 @@ const timelineData = {
         title: 'Predicciones para el año 2030',
         description: 'Haz predicciones sobre el futuro usando el futuro simple.',
         prompts: [
-          { icon: '•', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
-          { icon: '•', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
-          { icon: '•', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
-          { icon: '•', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
-          { icon: '•', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
+          { icon: '🚗', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
+          { icon: '🌍', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
+          { icon: '🏠', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
+          { icon: '💻', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
+          { icon: '🎮', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
         ]
       },
       {
@@ -164,11 +165,11 @@ const timelineData = {
         title: 'Mis metas personales',
         description: 'Completa tus planes y metas para el futuro.',
         prompts: [
-          { icon: '•', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
-          { icon: '•', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
-          { icon: '•', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
-          { icon: '•', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
-          { icon: '•', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
+          { icon: '🏆', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
+          { icon: '❤️', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
+          { icon: '🏡', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
+          { icon: '🌎', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
+          { icon: '👨‍👩‍👧‍👦', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
         ]
       }
     ]
@@ -177,10 +178,10 @@ const timelineData = {
     type: 'timeline',
     title: 'Lo que he hecho hoy',
     events: [
-      { time: '8:00', icon: '•', prompt: 'levantarse temprano' },
-      { time: '10:00', icon: '•', prompt: 'desayunar bien' },
-      { time: '14:00', icon: '•', prompt: 'trabajar en el proyecto' },
-      { time: '19:00', icon: '•', prompt: 'quedar con amigos' },
+      { time: '8:00', icon: '🌅', prompt: 'levantarse temprano' },
+      { time: '10:00', icon: '☕️', prompt: 'desayunar bien' },
+      { time: '14:00', icon: '💻', prompt: 'trabajar en el proyecto' },
+      { time: '19:00', icon: '👥', prompt: 'quedar con amigos' },
     ],
     expectedVerbs: ['me he levantado', 'he desayunado', 'he trabajado', 'he quedado'],
   },
@@ -256,28 +257,11 @@ const timelineData = {
   },
 };
 
-const normalizeText = (text = '') => text
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .toLowerCase();
-
 function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [story, setStory] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState(null);
-
-  const normalizedFormLookup = useMemo(() => {
-    const map = new Map();
-    (eligibleForms || []).forEach((form) => {
-      if (!form?.value) return;
-      const key = normalizeText(form.value);
-      if (!map.has(key)) {
-        map.set(key, form);
-      }
-    });
-    return map;
-  }, [eligibleForms]);
   
   // Create a dummy currentItem for progress tracking
   const currentItem = {
@@ -287,7 +271,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     mood: tense?.mood
   };
   
-  const { handleResult, progressSystemReady } = useProgressTracking(currentItem, (result) => {
+  const { handleResult } = useProgressTracking(currentItem, (result) => {
     console.log('Meaningful practice progress tracking result:', result);
   });
 
@@ -313,160 +297,147 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     setIsProcessing(true);
     setFeedback(null);
     
-    const normalizedStory = normalizeText(story);
-
-    const evaluationResults = [];
+    const userText = story.toLowerCase();
+    
     let missing = [];
     let foundVerbs = [];
 
     if (exercise.type === 'timeline') {
-      exercise.expectedVerbs.forEach((verb) => {
-        const normalizedVerb = normalizeText(verb);
-        const matched = normalizedStory.includes(normalizedVerb);
-        if (matched) {
-          foundVerbs.push(verb);
-        } else {
-          missing.push(verb);
-        }
-        evaluationResults.push({
-          options: [verb],
-          matchedOption: matched ? verb : null
+        exercise.expectedVerbs.forEach(verb => {
+            // Normalize both texts to handle accents properly
+            const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            const normalizedUser = normalizeText(userText);
+            const normalizedVerb = normalizeText(verb);
+            
+            // Use word boundaries with normalized text
+            const regex = new RegExp(`\\b${normalizedVerb.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(normalizedUser)) {
+                foundVerbs.push(verb);
+            } else {
+                missing.push(verb);
+            }
         });
-      });
     } else if (exercise.type === 'prompts') {
-      exercise.prompts.forEach((p) => {
-        let bestMatch = null;
-        let bestScore = 0;
-
-        for (const expectedVerb of p.expected) {
-          const normalizedExpected = normalizeText(expectedVerb);
-          if (normalizedStory.includes(normalizedExpected)) {
-            bestMatch = expectedVerb;
-            bestScore = 1;
-            break;
-          }
-
-          const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, story);
-          if (gradeResult.correct || gradeResult.score > bestScore) {
-            bestMatch = expectedVerb;
-            bestScore = gradeResult.correct ? 1 : gradeResult.score;
-          }
-        }
-
-        if (bestMatch && bestScore > 0.7) {
-          foundVerbs.push(bestMatch);
-        } else {
-          missing.push(p.expected.join(' o '));
-          bestMatch = null;
-        }
-
-        evaluationResults.push({
-          options: p.expected,
-          matchedOption: bestMatch,
-          score: bestScore
+        exercise.prompts.forEach(p => {
+            let bestMatch = null;
+            let bestScore = 0;
+            
+            // Try to find the best match using the grader system
+            for (const expectedVerb of p.expected) {
+                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\b`, 'i');
+                if (regex.test(userText)) {
+                    bestMatch = expectedVerb;
+                    bestScore = 1;
+                    break;
+                }
+                
+                // Also try fuzzy matching using grader for partial credit
+                const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, userText);
+                if (gradeResult.correct || gradeResult.score > bestScore) {
+                    bestMatch = expectedVerb;
+                    bestScore = gradeResult.score;
+                }
+            }
+            
+            if (bestMatch && bestScore > 0.7) {
+                foundVerbs.push(bestMatch);
+            } else {
+                missing.push(p.expected.join(' o '));
+            }
         });
-      });
     } else if (exercise.type === 'daily_routine') {
-      exercise.prompts.forEach((p) => {
-        const matchedVerb = p.expected.find((verb) => {
-          const normalizedVerb = normalizeText(verb);
-          return normalizedStory.includes(normalizedVerb);
+        exercise.prompts.forEach(p => {
+            const found = p.expected.some(verb => {
+                // Use includes for simpler matching - check if verb appears as whole word
+                const regex = new RegExp(`\\b${verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+                if (regex.test(userText)) {
+                    foundVerbs.push(verb);
+                    return true;
+                }
+                return false;
+            });
+            if (!found) {
+                missing.push(p.expected.join(' o '));
+            }
         });
-
-        if (matchedVerb) {
-          foundVerbs.push(matchedVerb);
-        } else {
-          missing.push(p.expected.join(' o '));
-        }
-
-        evaluationResults.push({
-          options: p.expected,
-          matchedOption: matchedVerb || null
-        });
-      });
     }
 
-    const isCorrect = evaluationResults.every((entry) => entry.matchedOption);
-
-    let attemptErrorTags = [];
-
+    const isCorrect = missing.length === 0;
+    
     if (isCorrect) {
       setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
+      
+      // Use official progress tracking system
+      await handleResult({
+        correct: true,
+        userAnswer: story,
+        correctAnswer: foundVerbs.join(', '),
+        hintsUsed: 0,
+        errorTags: [],
+        latencyMs: 0, // Not applicable for this type of exercise
+        isIrregular: false,
+        itemId: currentItem.id
+      });
+      
+      // Keep SRS scheduling for found verbs
+      try {
+        const userId = getCurrentUserId();
+        if (userId) {
+          console.log('Analytics: Updating schedule for meaningful practice...');
+          for (const verbStr of foundVerbs) {
+            const formObject = eligibleForms?.find(f => f.value === verbStr);
+            if (formObject) {
+              await updateSchedule(userId, formObject, true, 0);
+              console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update SRS schedule:", error);
+      }
     } else {
-      attemptErrorTags = ['missing_verbs'];
+      // Enhanced error analysis for better feedback
+      const errorTags = ['missing_verbs'];
       let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
-
+      
+      // Try to provide more specific feedback
       if (missing.length === 1) {
         detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
-        attemptErrorTags.push('conjugation_error');
+        errorTags.push('conjugation_error');
       } else if (missing.length > 1) {
         detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
-        attemptErrorTags.push('multiple_missing');
+        errorTags.push('multiple_missing');
       }
-
+      
+      // Check if user wrote any verbs in wrong tense
       const currentTense = tense?.tense;
       if (currentTense) {
         const wrongTenseHints = {
-          pres: 'Recuerda usar el presente: yo hablo, tú comes, él vive',
-          pretIndef: 'Usa el pretérito: yo hablé, tú comiste, él vivió',
-          impf: 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
-          fut: 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
-          pretPerf: 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
+          'pres': 'Recuerda usar el presente: yo hablo, tú comes, él vive',
+          'pretIndef': 'Usa el pretérito: yo hablé, tú comiste, él vivió',
+          'impf': 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
+          'fut': 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
+          'pretPerf': 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
         };
-
+        
         if (wrongTenseHints[currentTense]) {
           detailedFeedback += ` ${wrongTenseHints[currentTense]}.`;
-          attemptErrorTags.push('tense_mismatch');
         }
       }
-
+      
       setFeedback({ type: 'incorrect', message: detailedFeedback });
-    }
-
-    const canonicalAnswers = evaluationResults.map((entry) => entry.options?.[0]).filter(Boolean);
-
-    await handleResult({
-      correct: isCorrect,
-      userAnswer: story,
-      correctAnswer: isCorrect ? foundVerbs.join(', ') : canonicalAnswers.join(', '),
-      hintsUsed: 0,
-      errorTags: attemptErrorTags,
-      latencyMs: 0,
-      isIrregular: false,
-      itemId: currentItem.id
-    });
-
-    if (progressSystemReady) {
-      try {
-        for (const entry of evaluationResults) {
-          const canonical = entry.matchedOption || entry.options?.[0];
-          if (!canonical) continue;
-
-          const formObject = normalizedFormLookup.get(normalizeText(canonical));
-          if (!formObject) {
-            console.warn('MeaningfulPractice: no eligible form matched', canonical);
-            continue;
-          }
-
-          const resolvedForm = {
-            ...formObject,
-            id: formObject.id || `${formObject.lemma}|${formObject.mood}|${formObject.tense}|${formObject.person}`
-          };
-
-          const attemptId = trackAttemptStarted(resolvedForm);
-          await trackAttemptSubmitted(attemptId, {
-            correct: Boolean(entry.matchedOption),
-            latencyMs: 0,
-            hintsUsed: 0,
-            errorTags: entry.matchedOption ? [] : ['missing_verbs'],
-            userAnswer: story,
-            correctAnswer: canonical,
-            item: resolvedForm
-          });
-        }
-      } catch (error) {
-        console.error('Failed to record contextual attempts:', error);
-      }
+      
+      // Track incorrect attempt with enhanced error classification
+      await handleResult({
+        correct: false,
+        userAnswer: story,
+        correctAnswer: missing.join(', '),
+        hintsUsed: 0,
+        errorTags,
+        latencyMs: 0,
+        isIrregular: false,
+        itemId: currentItem.id
+      });
     }
     
     setIsProcessing(false);
@@ -495,7 +466,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="timeline-container">
               <h3>{exercise.title}</h3>
               {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
               )}
               <div className="timeline">
                 {exercise.events.map(event => (
@@ -513,7 +484,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="prompts-container">
                 <h3>{exercise.title}</h3>
                 {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
                 )}
                 <ul>
                     {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
@@ -525,7 +496,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="daily-routine-container">
                 <h3>{exercise.title}</h3>
                 {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
                 )}
                 <p className="description">{exercise.description}</p>
                 <div className="routine-prompts">
