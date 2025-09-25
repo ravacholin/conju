@@ -167,12 +167,12 @@
 }
 
 .state-recommendation {
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.2);
   border-radius: 10px;
   padding: 16px;
   font-size: 15px;
-  color: #333;
+  color: #ffc107;
   font-style: italic;
 }
 
@@ -245,7 +245,7 @@
 }
 
 .insight-card.secondary::before {
-  background: #333;
+  background: #ffc107;
 }
 
 .insight-card.tertiary::before {
@@ -258,8 +258,8 @@
 }
 
 .insight-card.high {
-  border-color: #333;
-  background: #333;
+  border-color: rgba(255, 193, 7, 0.3);
+  background: rgba(255, 193, 7, 0.05);
 }
 
 .insight-card:hover {
@@ -311,8 +311,8 @@
 }
 
 .urgency-badge.high {
-  background: #333;
-  color: #333;
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
 }
 
 .urgency-badge.medium {
@@ -925,8 +925,8 @@
 }
 
 .severity-level.medium {
-  background: #333;
-  color: #333;
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
 }
 
 .cause-chain {
@@ -1010,8 +1010,8 @@
 }
 
 .phase-duration {
-  background: #333;
-  color: #333;
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 11px;

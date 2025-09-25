@@ -21,7 +21,7 @@ describe('Pruebas de Seguridad del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log(' Configurando entorno de pruebas de seguridad...')
+    console.log('🔧 Configurando entorno de pruebas de seguridad...')
   })
 
   it('debería proteger contra inyección de datos maliciosos', () => {

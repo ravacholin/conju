@@ -113,7 +113,7 @@ export default function SessionInsights() {
       <div className="insights-content">
         {insights.inFlow && (
           <div className="flow-indicator">
-            <span className="flow-icon"></span>
+            <span className="flow-icon">🔥</span>
             <span className="flow-text">En racha</span>
           </div>
         )}

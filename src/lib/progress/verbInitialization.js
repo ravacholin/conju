@@ -8,7 +8,7 @@ import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
  * @returns {Promise<void>}
  */
 export async function initializeVerbs() {
-  console.log(' Inicializando verbos en el sistema de progreso...')
+  console.log('🔄 Inicializando verbos en el sistema de progreso...')
   
   try {
     // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales

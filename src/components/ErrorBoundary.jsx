@@ -18,11 +18,11 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div >
+        <div style={{ padding: '2rem', color: '#e11d48' }}>
           <h2>Se produjo un error en la UI</h2>
           <p>Por favor recarga la página. Si persiste, revisa la consola.</p>
           {import.meta.env.DEV && this.state.error && (
-            <pre >
+            <pre style={{ whiteSpace: 'pre-wrap', background: '#111827', color: '#e5e7eb', padding: '1rem', borderRadius: 8 }}>
               {String(this.state.error?.message || this.state.error)}
             </pre>
           )}

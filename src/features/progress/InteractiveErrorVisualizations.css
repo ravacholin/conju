@@ -608,7 +608,7 @@
 }
 
 .heatmap-canvas:hover {
-  box-shadow: 0 0 20px #333;
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
 }
 
 .network-svg:hover {

@@ -248,16 +248,16 @@
 }
 
 .tense-card.mastery-poor {
-  border-color: #333;
-  background: #333;
+  border-color: rgba(255, 159, 122, 0.3);
+  background: rgba(255, 159, 122, 0.05);
 }
 
 .tense-card.mastery-poor:hover {
-  border-color: #333;
-  background: #333;
+  border-color: rgba(255, 159, 122, 0.4);
+  background: rgba(255, 159, 122, 0.08);
   box-shadow: 
-    0 8px 32px #333,
-    0 1px 0 #333 inset;
+    0 8px 32px rgba(255, 159, 122, 0.2),
+    0 1px 0 rgba(255, 159, 122, 0.1) inset;
 }
 
 .tense-card.mastery-none {
@@ -394,8 +394,8 @@
 }
 
 .legend-color.mastery-poor {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 159, 122, 0.8);
+  border-color: rgba(255, 159, 122, 0.5);
 }
 
 /* Responsive design */

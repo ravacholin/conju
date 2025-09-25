@@ -262,7 +262,7 @@ export async function extractDueLemmas(userId, currentDate = new Date(), hoursAh
     })
 
     const uniqueLemmas = Array.from(lemmas)
-    console.log(` SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
+    console.log(`📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
     return uniqueLemmas
   } catch (error) {
     console.error('Error extracting due lemmas from SRS:', error)

@@ -365,7 +365,7 @@ export class PersonalizedCoach {
     if (masteredCount > 0) {
       insights.push({
         type: 'achievement',
-        icon: '',
+        icon: '🎯',
         title: `${masteredCount} tenses dominados`,
         message: `Has demostrado dominio en ${masteredCount} combinaciones de tiempo y modo. ¡Excelente progreso!`
       })
@@ -377,7 +377,7 @@ export class PersonalizedCoach {
       if (recentAccuracy >= 0.8) {
         insights.push({
           type: 'improvement',
-          icon: '',
+          icon: '📈',
           title: 'Racha de éxito',
           message: `Tu precisión reciente es del ${Math.round(recentAccuracy * 100)}%. ¡Estás en una buena racha!`
         })
@@ -389,14 +389,14 @@ export class PersonalizedCoach {
     if (levelProgression.readyForNext) {
       insights.push({
         type: 'milestone',
-        icon: '',
+        icon: '🚀',
         title: '¡Listo para el siguiente nivel!',
         message: `Has dominado las habilidades de ${userLevel}. Considera avanzar al siguiente nivel.`
       })
     } else if (levelProgression.completionPercentage >= 50) {
       insights.push({
         type: 'progress',
-        icon: '',
+        icon: '⭐',
         title: `${levelProgression.completionPercentage}% completado`,
         message: `Has completado más de la mitad de ${userLevel}. ¡Sigue así!`
       })

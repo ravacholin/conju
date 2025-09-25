@@ -18,7 +18,7 @@ describe('Pruebas de Rendimiento del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log(' Configurando entorno de pruebas de rendimiento...')
+    console.log('🔧 Configurando entorno de pruebas de rendimiento...')
   })
 
   it('debería calcular el peso por recencia rápidamente', () => {
@@ -293,6 +293,6 @@ describe('Pruebas de Rendimiento del Sistema de Progreso', () => {
     
     // Si llegamos aquí sin errores, el consumo de memoria es aceptable
     expect(true).toBe(true)
-    console.log(' Verificación de consumo de memoria completada')
+    console.log('💾 Verificación de consumo de memoria completada')
   })
 })

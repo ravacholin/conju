@@ -8,7 +8,7 @@ import { chooseNext } from './generator.js'
  * Enhanced test for the comprehensive curriculum-driven algorithm
  */
 export function quickB1Test() {
-  console.log('\n === ENHANCED CURRICULUM-DRIVEN B1 TEST ===')
+  console.log('\n🎯 === ENHANCED CURRICULUM-DRIVEN B1 TEST ===')
   console.log('Testing the advanced curriculum analysis system\n')
   
   try {
@@ -121,8 +121,8 @@ export function quickB1Test() {
       console.log('❌ No B1 recommendation available')
     }
     
-    console.log('\n Enhanced curriculum-driven B1 test completed!')
-    console.log(' Key improvements verified:')
+    console.log('\n🎉 Enhanced curriculum-driven B1 test completed!')
+    console.log('✨ Key improvements verified:')
     console.log('   • Comprehensive curriculum analysis from curriculum.json')
     console.log('   • Prerequisite dependency tracking')
     console.log('   • Pedagogical family grouping')
@@ -155,7 +155,7 @@ export function quickB1Test() {
  * Test the integration with the generator
  */
 export function testGeneratorIntegration() {
-  console.log('\n === GENERATOR INTEGRATION TEST ===')
+  console.log('\n🔧 === GENERATOR INTEGRATION TEST ===')
   console.log('Testing that the chooseNext function uses level-aware prioritization\n')
   
   // Mock the useSettings to return B1 level
@@ -254,24 +254,24 @@ export function testGeneratorIntegration() {
  * Run both quick tests
  */
 export function runQuickTests() {
-  console.log('\n === RUNNING QUICK LEVEL-DRIVEN TESTS ===')
+  console.log('\n🚀 === RUNNING QUICK LEVEL-DRIVEN TESTS ===')
   
   const b1Test = quickB1Test()
   const generatorTest = testGeneratorIntegration()
   
-  console.log('\n === QUICK TEST SUMMARY ===')
+  console.log('\n📊 === QUICK TEST SUMMARY ===')
   console.log(`B1 Prioritization Test: ${b1Test.success ? '✅ PASSED' : '❌ FAILED'}`)
   console.log(`Generator Integration Test: ${generatorTest.success ? '✅ PASSED' : '❌ FAILED'}`)
   
   if (b1Test.success && generatorTest.success) {
-    console.log('\n ALL TESTS PASSED! The level-driven system is working correctly.')
-    console.log('\n Key improvements verified:')
+    console.log('\n🎉 ALL TESTS PASSED! The level-driven system is working correctly.')
+    console.log('\n✨ Key improvements verified:')
     console.log('   • B1 users get subjunctive and perfect tenses (not just present indicative)')
     console.log('   • Different levels prioritize different tenses')
     console.log('   • The generator respects level-aware prioritization')
     console.log('   • The multi-tier system (SRS → Adaptive → Level-Aware) is integrated')
   } else {
-    console.log('\n️  Some tests failed. Check the details above.')
+    console.log('\n⚠️  Some tests failed. Check the details above.')
   }
   
   return {
@@ -290,7 +290,7 @@ if (typeof window !== 'undefined') {
   }
   
   console.log(`
- Quick Level Test Available!
+🚀 Quick Level Test Available!
 
 Run in browser console:
   window.quickLevelTest.runAll()    // Run all quick tests

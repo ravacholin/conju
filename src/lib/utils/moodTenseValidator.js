@@ -76,7 +76,7 @@ export function formatMoodTenseSafe(mood, tense) {
   
   // En desarrollo, mostrar advertencias visuales
   if (hasWarnings && import.meta.env.DEV) {
-    return `️ ${formatted}`
+    return `⚠️ ${formatted}`
   }
   
   return formatted

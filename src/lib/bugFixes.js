@@ -31,7 +31,7 @@ export const BUG_FIXES = {
       id: 'duplicate_verbs',
       description: 'Identified and prepared cleanup for duplicate verbs',
       impact: 'Medium - Data quality',
-      status: ' Identified'
+      status: '🔍 Identified'
     }
   ],
   
@@ -96,25 +96,25 @@ export const BUG_FIXES = {
 export function generateImprovementReport() {
   console.log('=== SPANISH CONJUGATOR IMPROVEMENT REPORT ===')
   
-  console.log('\n BUG FIXES COMPLETED:')
+  console.log('\n🔧 BUG FIXES COMPLETED:')
   BUG_FIXES.fixed.forEach(fix => {
     console.log(`  ✅ ${fix.description}`)
     console.log(`     Impact: ${fix.impact}`)
   })
   
-  console.log('\n IMPROVEMENTS MADE:')
+  console.log('\n🚀 IMPROVEMENTS MADE:')
   BUG_FIXES.improvements.forEach(improvement => {
     console.log(`  ✅ ${improvement.description}`)
     console.log(`     Impact: ${improvement.impact}`)
   })
   
-  console.log('\n RECOMMENDATIONS:')
+  console.log('\n📋 RECOMMENDATIONS:')
   BUG_FIXES.recommendations.forEach(rec => {
-    console.log(`  ${rec.priority === 'High' ? '' : rec.priority === 'Medium' ? '🟡' : '🟢'} ${rec.description}`)
+    console.log(`  ${rec.priority === 'High' ? '🔴' : rec.priority === 'Medium' ? '🟡' : '🟢'} ${rec.description}`)
     console.log(`     Priority: ${rec.priority}, Effort: ${rec.effort}`)
   })
   
-  console.log('\n SUMMARY:')
+  console.log('\n📊 SUMMARY:')
   console.log(`  - ${BUG_FIXES.fixed.length} bugs fixed`)
   console.log(`  - ${BUG_FIXES.improvements.length} improvements made`)
   console.log(`  - ${BUG_FIXES.recommendations.length} recommendations for future`)

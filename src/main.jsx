@@ -38,14 +38,14 @@ if (typeof window !== 'undefined') {
 
   // Setup automatic sync on login
   window.addEventListener('auth-login', async () => {
-    console.log(' Iniciando sincronización automática después del login...')
+    console.log('🔄 Iniciando sincronización automática después del login...')
     try {
       setSyncAuthHeaderName('Authorization')
       if (typeof authService.ensureAnonymousProgressMigration === 'function') {
         await authService.ensureAnonymousProgressMigration()
       }
     } catch (migrationError) {
-      console.warn('️ Falló la migración de progreso anónimo previa al sync:', migrationError?.message || migrationError)
+      console.warn('⚠️ Falló la migración de progreso anónimo previa al sync:', migrationError?.message || migrationError)
     }
 
     try {
@@ -53,7 +53,7 @@ if (typeof window !== 'undefined') {
       if (result.success) {
         console.log('✅ Sincronización automática completada:', result)
       } else {
-        console.log('️ Sincronización automática falló:', result.reason)
+        console.log('⚠️ Sincronización automática falló:', result.reason)
       }
     } catch (error) {
       console.warn('❌ Error en sincronización automática:', error.message)
@@ -93,16 +93,16 @@ if (typeof window !== 'undefined') {
       const el = document.createElement('div')
       el.id = id
       el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--accent-red);color:#fff;padding:8px 12px;z-index:9999;font-family:sans-serif;font-size:14px;'
-      el.textContent = `️ Error de aplicación: ${msg}`
+      el.textContent = `⚠️ Error de aplicación: ${msg}`
       document.body.appendChild(el)
     } catch {/* ignore DOM errors */}
   }
   window.addEventListener('error', (e) => {
-    console.error(' Window error:', e.error || e.message)
+    console.error('🛑 Window error:', e.error || e.message)
     if (import.meta.env.PROD) showGlobalErrorBanner(e?.message || 'Error inesperado')
   })
   window.addEventListener('unhandledrejection', (e) => {
-    console.error(' Unhandled rejection:', e.reason)
+    console.error('🛑 Unhandled rejection:', e.reason)
     if (import.meta.env.PROD) showGlobalErrorBanner(e?.reason?.message || 'Promesa rechazada sin manejar')
   })
 }

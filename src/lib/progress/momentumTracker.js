@@ -618,7 +618,7 @@ export class MomentumTracker {
       case MOMENTUM_TYPES.PEAK_PERFORMANCE:
         recommendations.push({
           type: 'maintain',
-          message: ' ¡Momentum extraordinario! Mantén este ritmo.',
+          message: '🚀 ¡Momentum extraordinario! Mantén este ritmo.',
           action: 'continue_challenging_content',
           priority: 'high'
         })
@@ -627,7 +627,7 @@ export class MomentumTracker {
       case MOMENTUM_TYPES.CONFIDENCE_BUILDING:
         recommendations.push({
           type: 'reinforce',
-          message: ' Tu confianza está creciendo. ¡Excelente progreso!',
+          message: '📈 Tu confianza está creciendo. ¡Excelente progreso!',
           action: 'gradually_increase_difficulty', 
           priority: 'medium'
         })
@@ -636,7 +636,7 @@ export class MomentumTracker {
       case MOMENTUM_TYPES.RECOVERY_MODE:
         recommendations.push({
           type: 'support',
-          message: ' Te estás recuperando bien. Continúa con paciencia.',
+          message: '💪 Te estás recuperando bien. Continúa con paciencia.',
           action: 'provide_easier_content',
           priority: 'high'
         })
@@ -645,7 +645,7 @@ export class MomentumTracker {
       case MOMENTUM_TYPES.CONFIDENCE_CRISIS:
         recommendations.push({
           type: 'recover',
-          message: ' Vamos paso a paso. Tómate tu tiempo.',
+          message: '🌱 Vamos paso a paso. Tómate tu tiempo.',
           action: 'switch_to_confidence_building',
           priority: 'critical'
         })
@@ -654,7 +654,7 @@ export class MomentumTracker {
       case MOMENTUM_TYPES.MINOR_SETBACK:
         recommendations.push({
           type: 'adjust',
-          message: ' Un pequeño ajuste y vuelves al camino.',
+          message: '🔄 Un pequeño ajuste y vuelves al camino.',
           action: 'slight_difficulty_reduction',
           priority: 'medium'
         })
@@ -663,7 +663,7 @@ export class MomentumTracker {
       default:
         recommendations.push({
           type: 'continue',
-          message: ' Progreso constante. Sigue adelante.',
+          message: '📚 Progreso constante. Sigue adelante.',
           action: 'maintain_current_level',
           priority: 'low'
         })
@@ -673,7 +673,7 @@ export class MomentumTracker {
     if (this.emotionalState.fatigue > 0.7) {
       recommendations.push({
         type: 'rest',
-        message: ' Considera tomar un descanso.',
+        message: '😴 Considera tomar un descanso.',
         action: 'suggest_break',
         priority: 'high'
       })
@@ -699,28 +699,28 @@ export class MomentumTracker {
     
     // Insight sobre tendencias
     if (this.trends.shortTerm > 0.5) {
-      insights.push(' Tu rendimiento está mejorando consistentemente')
+      insights.push('📈 Tu rendimiento está mejorando consistentemente')
     } else if (this.trends.shortTerm < -0.5) {
-      insights.push(' Tu rendimiento ha declinado recientemente')
+      insights.push('📉 Tu rendimiento ha declinado recientemente')
     }
     
     // Insight sobre streaks
     if (this.streaks.confidence > 7) {
-      insights.push(' ¡Racha de confianza excepcional!')
+      insights.push('🔥 ¡Racha de confianza excepcional!')
     } else if (this.streaks.consistency > 5) {
-      insights.push(' Muy consistente en tu práctica')
+      insights.push('⚡ Muy consistente en tu práctica')
     }
     
     // Insight sobre patrones
     if (this.patterns.recoveryRate > 0.8) {
-      insights.push('‍♂️ Te recuperas muy rápido de los errores')
+      insights.push('🏃‍♂️ Te recuperas muy rápido de los errores')
     } else if (this.patterns.difficultyTolerance > 0.7) {
-      insights.push(' Manejas bien el contenido difícil')
+      insights.push('💎 Manejas bien el contenido difícil')
     }
     
     // Insight sobre aprendizaje
     if (this.patterns.learningVelocity > 0.7) {
-      insights.push(' Tu velocidad de aprendizaje es impresionante')
+      insights.push('🚀 Tu velocidad de aprendizaje es impresionante')
     }
     
     return insights

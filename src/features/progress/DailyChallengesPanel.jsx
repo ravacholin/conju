@@ -84,7 +84,7 @@ export default function DailyChallengesPanel({ dailyChallenges, onCompleteChalle
               </div>
 
               <footer className="challenge-footer">
-                {rewardLabel && <span className="challenge-reward"> {rewardLabel}</span>}
+                {rewardLabel && <span className="challenge-reward">🎁 {rewardLabel}</span>}
                 {isCompleted ? (
                   <span className="challenge-status completed">Completado</span>
                 ) : canClaim ? (

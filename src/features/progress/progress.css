@@ -4,17 +4,17 @@
 :root {
   --mastery-high: rgba(125, 233, 184, 0.8);
   --mastery-medium: rgba(245, 214, 136, 0.8);
-  --mastery-low: #333;
+  --mastery-low: rgba(255, 159, 122, 0.8);
   --mastery-no-data: rgba(168, 168, 168, 0.6);
   
   --mastery-high-bg: rgba(125, 233, 184, 0.08);
   --mastery-medium-bg: rgba(245, 214, 136, 0.08);
-  --mastery-low-bg: #333;
+  --mastery-low-bg: rgba(255, 159, 122, 0.08);
   --mastery-no-data-bg: rgba(168, 168, 168, 0.04);
   
   --mastery-high-border: rgba(125, 233, 184, 0.2);
   --mastery-medium-border: rgba(245, 214, 136, 0.2);
-  --mastery-low-border: #333;
+  --mastery-low-border: rgba(255, 159, 122, 0.2);
   --mastery-no-data-border: rgba(168, 168, 168, 0.1);
 }
 
@@ -238,14 +238,14 @@
 .progress-bar {
   flex: 1;
   height: 8px;
-  background: #333;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: background: #333;
+  background: linear-gradient(90deg, rgba(125, 233, 184, 0.8), rgba(82, 178, 110, 0.9));
   transition: width 0.4s ease;
 }
 
@@ -320,7 +320,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: background: #333;
+  background: linear-gradient(90deg, transparent, rgba(245, 245, 245, 0.1), transparent);
 }
 
 .error-card:hover {
@@ -379,8 +379,8 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 159, 122, 0.08);
+  border: 1px solid rgba(255, 159, 122, 0.15);
   border-radius: 12px;
 }
 
@@ -392,7 +392,7 @@
 }
 
 .count-value {
-  color: #333;
+  color: rgba(255, 159, 122, 0.9);
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 1;
@@ -561,7 +561,7 @@
 
 .stat-value.error {
   color: var(--mastery-low);
-  text-shadow: 0 0 16px #333;
+  text-shadow: 0 0 16px rgba(255, 159, 122, 0.3);
 }
 
 .stat-label {
@@ -793,7 +793,7 @@
   gap: 1.618rem;
   margin-top: 1.618rem;
   padding: 1.5rem;
-  background: #333;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
   border-radius: 12px;
   backdrop-filter: blur(8px);
@@ -912,7 +912,7 @@
 }
 
 .stat-item:hover {
-  background: #333;
+  background: rgba(255, 255, 255, 0.02);
   margin: 0 -0.5rem;
   padding: 0.75rem 0.5rem;
   border-radius: 8px;
@@ -1112,8 +1112,8 @@
 .error {
   text-align: center;
   padding: 3rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 159, 122, 0.08);
+  border: 1px solid rgba(255, 159, 122, 0.2);
   border-radius: 16px;
   color: var(--accent-red);
   backdrop-filter: blur(8px);
@@ -1123,7 +1123,7 @@
 .empty {
   text-align: center;
   padding: 3rem;
-  background: #333;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
   border-radius: 16px;
   color: var(--muted-2);

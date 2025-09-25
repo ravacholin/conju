@@ -389,7 +389,7 @@ export class FamilyValidator {
 
 // Función principal de validación
 export function validateAllData() {
-  console.log(' INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
+  console.log('🔍 INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
   
   const verbValidator = new VerbValidator()
   const semanticValidator = new SemanticValidator()
@@ -401,8 +401,8 @@ export function validateAllData() {
   const problemVerbs = []
   
   // Validar todos los verbos
-  console.log(` Validando ${allVerbs.length} verbos...`)
-  console.log(` Incluye validación semántica, verbos defectivos y patrones irregulares
+  console.log(`📚 Validando ${allVerbs.length} verbos...`)
+  console.log(`🧠 Incluye validación semántica, verbos defectivos y patrones irregulares
 `)
   
   allVerbs.forEach((verb, index) => {
@@ -427,7 +427,7 @@ export function validateAllData() {
   
   // Validar familias irregulares
   console.log(`
-️  Validando ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares...
+🏗️  Validando ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares...
 `)
   
   const familyProblems = []
@@ -448,17 +448,17 @@ export function validateAllData() {
   
   // Reportar resultados
   console.log(`
- RESULTADOS DE VALIDACIÓN:
+📊 RESULTADOS DE VALIDACIÓN:
 `)
   console.log(`✅ Verbos validados: ${allVerbs.length}`)
   console.log(`✅ Familias validadas: ${Object.keys(IRREGULAR_FAMILIES).length}`)
   console.log(`❌ Total errores: ${totalErrors}`)
-  console.log(`️  Total advertencias: ${totalWarnings}`)
+  console.log(`⚠️  Total advertencias: ${totalWarnings}`)
   
   // Mostrar problemas más críticos
   if (totalErrors > 0) {
     console.log(`
- ERRORES CRÍTICOS:
+🚨 ERRORES CRÍTICOS:
 `)
     problemVerbs.filter(p => p.errors.length > 0).slice(0, 5).forEach(problem => {
       console.log(`  ${problem.verb}:
@@ -473,7 +473,7 @@ export function validateAllData() {
   
   if (totalWarnings > 0) {
     console.log(`
-️  ADVERTENCIAS:
+⚠️  ADVERTENCIAS:
 `)
     problemVerbs.filter(p => p.warnings.length > 0).forEach(problem => {
       console.log(`  ${problem.verb}:
@@ -491,7 +491,7 @@ export function validateAllData() {
   // Estado general
   if (totalErrors === 0 && totalWarnings === 0) {
     console.log(`
- ¡PERFECTO! Todos los datos pasaron la validación.
+🎉 ¡PERFECTO! Todos los datos pasaron la validación.
 `)
   } else if (totalErrors === 0) {
     console.log(`
@@ -499,7 +499,7 @@ export function validateAllData() {
 `)
   } else {
     console.log(`
- Se requieren correcciones antes del deploy.
+🔧 Se requieren correcciones antes del deploy.
 `)
   }
   

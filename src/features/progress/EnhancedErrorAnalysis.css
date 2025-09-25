@@ -36,7 +36,7 @@
 .analysis-header {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .view-selector {
@@ -50,7 +50,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(15, 15, 15, 0.45);
   color: var(--muted);
   border-radius: 10px;
@@ -62,15 +62,15 @@
 }
 
 .view-btn:hover {
-  background: #333;
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .view-btn.active {
-  background: #333;
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text);
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .view-btn .view-icon {
@@ -145,14 +145,14 @@
 
 .dashboard-card {
   background: rgba(17, 17, 17, 0.55);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 22px;
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .dashboard-card:hover {
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
 }
 
@@ -167,7 +167,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .stat-row:last-child {
@@ -191,9 +191,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  background: #333;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text);
   cursor: pointer;
   font-weight: 500;
@@ -203,8 +203,8 @@
 }
 
 .action-btn:hover {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
@@ -260,8 +260,8 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 60px 20px;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   color: var(--text);
   display: flex;
@@ -272,26 +272,26 @@
 
 .pattern-card {
   background: rgba(17, 17, 17, 0.55);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 22px;
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .pattern-card.high {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
 }
 
 .pattern-card.medium {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.25);
 }
 
 .pattern-card.low {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.15);
 }
 
 .pattern-card:hover {
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
 }
 
@@ -312,7 +312,7 @@
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #333;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .pattern-description {
@@ -325,8 +325,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   padding: 12px 16px;
   margin: 12px 0;
@@ -338,9 +338,9 @@
 .pattern-action-btn {
   width: 100%;
   padding: 12px;
-  background: #333;
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
@@ -355,8 +355,8 @@
 }
 
 .pattern-action-btn:hover {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
@@ -403,7 +403,7 @@
 
 .challenge-card {
   background: rgba(17, 17, 17, 0.55);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 22px;
   transition: border-color 0.2s ease, transform 0.2s ease;
@@ -412,19 +412,19 @@
 }
 
 .challenge-card.boss {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
 }
 
 .challenge-card.rescue {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.25);
 }
 
 .challenge-card.consistency {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.18);
 }
 
 .challenge-card:hover {
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-3px);
 }
 
@@ -464,12 +464,12 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #333;
+  background: rgba(255, 255, 255, 0.12);
   transition: background 0.2s ease;
 }
 
 .difficulty-dot.active {
-  background: #333;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .challenge-progress {
@@ -489,7 +489,7 @@
 
 .progress-fill {
   height: 100%;
-  background: #333;
+  background: rgba(255, 255, 255, 0.45);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -505,8 +505,8 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 10px 14px;
   margin: 12px 0;
@@ -517,9 +517,9 @@
 .challenge-btn {
   width: 100%;
   padding: 12px 14px;
-  background: #333;
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
@@ -533,8 +533,8 @@
 }
 
 .challenge-btn:hover {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
 }
 
@@ -558,18 +558,18 @@
   gap: 20px;
   padding: 16px;
   background: rgba(17, 17, 17, 0.55);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .timeline-day:hover {
-  border-color: #333;
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
 }
 
 .timeline-day.high-error {
-  border-left: 4px solid #333;
+  border-left: 4px solid rgba(255, 255, 255, 0.4);
 }
 
 .timeline-date {
@@ -598,7 +598,7 @@
   border-radius: 4px 4px 0 0;
   min-height: 10px;
   transition: height 0.3s ease;
-  background: linear-gradient(180deg, #333;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.1));
 }
 
 .day-details {
@@ -704,10 +704,10 @@
 }
 
 .enhanced-error-analysis *:focus {
-  outline: 2px solid #333;
+  outline: 2px solid rgba(255, 255, 255, 0.3);
   outline-offset: 2px;
 }
 
 .enhanced-error-analysis button:focus {
-  box-shadow: 0 0 0 3px #333;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
 }

@@ -21,7 +21,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
     if (value === undefined) {
       return false // No considerar como regular para evitar filtrado incorrecto
     }
-    console.warn('️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
+    console.warn('⚠️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
     return false
   }
   
@@ -399,7 +399,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
  */
 export function isRegularNonfiniteForm(lemma, tense, value) {
   if (!lemma || !value || typeof lemma !== 'string' || typeof value !== 'string') {
-    console.warn('️ isRegularNonfiniteForm called with invalid params:', { lemma, tense, value })
+    console.warn('⚠️ isRegularNonfiniteForm called with invalid params:', { lemma, tense, value })
     return false
   }
   

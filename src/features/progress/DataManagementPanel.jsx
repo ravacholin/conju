@@ -179,7 +179,7 @@ export default function DataManagementPanel({ onClose }) {
       if (res && (res.success || res.reason === 'offline_or_disabled')) {
         setStatus(isSyncEnabled() ? '✅ Conectividad OK' : 'ℹ️ Sync deshabilitado, configura URL/token')
       } else {
-        setStatus('️ No se pudo verificar conectividad')
+        setStatus('⚠️ No se pudo verificar conectividad')
       }
     } catch (err) {
       setError(`Error al probar sync: ${err.message}`)
@@ -210,7 +210,7 @@ export default function DataManagementPanel({ onClose }) {
                       result.reason === 'sync_disabled' ? 'Sync deshabilitado' :
                       result.reason === 'offline' ? 'Sin conexión' :
                       'Error desconocido'
-        setStatus(`️ Sync no completado: ${reason}`)
+        setStatus(`⚠️ Sync no completado: ${reason}`)
         setSyncStatus('ready')
       }
     } catch (err) {
@@ -223,7 +223,7 @@ export default function DataManagementPanel({ onClose }) {
 
   const getSyncStatusIcon = () => {
     switch (syncStatus) {
-      case 'syncing': return ''
+      case 'syncing': return '🔄'
       case 'synced': return '✅'
       case 'error': return '❌'
       default: return '☁️'
@@ -233,7 +233,7 @@ export default function DataManagementPanel({ onClose }) {
   return (
     <div className="data-management-panel">
       <div className="panel-header">
-        <h2>️ Gestión de Datos</h2>
+        <h2>🗂️ Gestión de Datos</h2>
         <button onClick={onClose} className="close-btn">✕</button>
       </div>
 
@@ -242,13 +242,13 @@ export default function DataManagementPanel({ onClose }) {
           className={activeTab === 'export' ? 'active' : ''} 
           onClick={() => setActiveTab('export')}
         >
-           Exportar
+          📤 Exportar
         </button>
         <button 
           className={activeTab === 'import' ? 'active' : ''} 
           onClick={() => setActiveTab('import')}
         >
-           Importar
+          📥 Importar
         </button>
         <button
           className={activeTab === 'sync' ? 'active' : ''}
@@ -267,7 +267,7 @@ export default function DataManagementPanel({ onClose }) {
           className={activeTab === 'backup' ? 'active' : ''} 
           onClick={() => setActiveTab('backup')}
         >
-           Respaldo
+          💾 Respaldo
         </button>
       </div>
 
@@ -277,19 +277,19 @@ export default function DataManagementPanel({ onClose }) {
             <h3>Exportar Datos de Progreso</h3>
             <div className="export-options">
               <button onClick={handleExportJSON} disabled={loading}>
-                 Exportar Todo (JSON)
+                📄 Exportar Todo (JSON)
               </button>
               <button onClick={() => handleExportCSV('attempts')} disabled={loading}>
-                 Exportar Intentos (CSV)
+                📊 Exportar Intentos (CSV)
               </button>
               <button onClick={() => handleExportCSV('mastery')} disabled={loading}>
-                 Exportar Dominio (CSV)
+                🎯 Exportar Dominio (CSV)
               </button>
               <button onClick={() => handleExportCSV('schedules')} disabled={loading}>
-                 Exportar Horarios (CSV)
+                ⏰ Exportar Horarios (CSV)
               </button>
               <button onClick={handleGenerateReport} disabled={loading}>
-                 Generar Reporte Completo
+                📈 Generar Reporte Completo
               </button>
             </div>
           </div>
@@ -329,7 +329,7 @@ export default function DataManagementPanel({ onClose }) {
                 </label>
               </div>
               <button onClick={handleImportData} disabled={loading || !importFile}>
-                 Importar Datos
+                📥 Importar Datos
               </button>
             </div>
           </div>
@@ -348,10 +348,10 @@ export default function DataManagementPanel({ onClose }) {
                     strategy: e.target.value
                   }))}
                 >
-                  <option value="smart"> Inteligente</option>
-                  <option value="delta"> Solo cambios</option>
-                  <option value="full"> Completa</option>
-                  <option value="force"> Forzada</option>
+                  <option value="smart">🧠 Inteligente</option>
+                  <option value="delta">📊 Solo cambios</option>
+                  <option value="full">🔄 Completa</option>
+                  <option value="force">💪 Forzada</option>
                 </select>
               </div>
               <div className="conflict-strategy">
@@ -364,7 +364,7 @@ export default function DataManagementPanel({ onClose }) {
                   }))}
                 >
                   <option value="merge">🤝 Fusionar</option>
-                  <option value="local"> Local gana</option>
+                  <option value="local">📱 Local gana</option>
                   <option value="remote">☁️ Remoto gana</option>
                 </select>
               </div>
@@ -378,7 +378,7 @@ export default function DataManagementPanel({ onClose }) {
               {!syncEnabled && (
                 <p className="sync-notice">
                   {localMode
-                    ? '️ Usando servidor local - Solo para desarrollo'
+                    ? '⚠️ Usando servidor local - Solo para desarrollo'
                     : 'ℹ️ Configura una URL de servidor para habilitar la sincronización'
                   }
                 </p>
@@ -424,8 +424,8 @@ export default function DataManagementPanel({ onClose }) {
               </label>
             </div>
             <div className="config-actions">
-              <button onClick={handleSaveSyncConfig} disabled={loading}> Guardar</button>
-              <button onClick={handleTestSync} disabled={loading}> Probar</button>
+              <button onClick={handleSaveSyncConfig} disabled={loading}>💾 Guardar</button>
+              <button onClick={handleTestSync} disabled={loading}>🔌 Probar</button>
             </div>
             <p style={{ opacity: 0.75, fontSize: 12, marginTop: 8 }}>
               Sugerencia: en desarrollo puedes usar <code>X-User-Id</code> y el valor de tu usuario local.
@@ -438,11 +438,11 @@ export default function DataManagementPanel({ onClose }) {
             <h3>Sistema de Respaldos</h3>
             <div className="backup-actions">
               <button onClick={handleCreateBackup} disabled={loading}>
-                 Crear Respaldo Manual
+                💾 Crear Respaldo Manual
               </button>
               <div className="backup-info">
-                <p> Los respaldos automáticos se crean cada vez que sincronizas</p>
-                <p> Tus datos se guardan localmente de forma segura</p>
+                <p>💡 Los respaldos automáticos se crean cada vez que sincronizas</p>
+                <p>🔒 Tus datos se guardan localmente de forma segura</p>
                 <p>☁️ La sincronización permite acceder desde cualquier dispositivo</p>
               </div>
             </div>

@@ -93,7 +93,7 @@ function handleGoogleResponse(response) {
       issuer: payload.iss
     }
 
-    console.log(' Google user data received:', {
+    console.log('📥 Google user data received:', {
       email: googleUser.email,
       name: googleUser.name,
       verified: googleUser.emailVerified,

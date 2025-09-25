@@ -70,7 +70,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
       <div className="challenge-header">
         <div className="user-progress-summary">
           <div className="progress-item">
-            <div className="progress-icon"></div>
+            <div className="progress-icon">⚡</div>
             <div className="progress-info">
               <span className="progress-value">{userProgress.totalXP}</span>
               <span className="progress-label">XP Total</span>
@@ -78,7 +78,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
           </div>
 
           <div className="progress-item">
-            <div className="progress-icon"></div>
+            <div className="progress-icon">🏆</div>
             <div className="progress-info">
               <span className="progress-value">Nivel {userProgress.level}</span>
               <span className="progress-label">
@@ -88,7 +88,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
           </div>
 
           <div className="progress-item">
-            <div className="progress-icon">️</div>
+            <div className="progress-icon">🎖️</div>
             <div className="progress-info">
               <span className="progress-value">{userProgress.badges.length}</span>
               <span className="progress-label">Medallas</span>
@@ -110,7 +110,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
       </div>
 
       <div className="badges-showcase">
-        <h3> Colección de Medallas</h3>
+        <h3>🏆 Colección de Medallas</h3>
         <div className="badges-grid">
           {getAllAvailableBadges().map(badge => {
             const isUnlocked = userProgress.badges.some(b => b.id === badge.id)
@@ -120,7 +120,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
                 className={`badge-item ${isUnlocked ? 'unlocked' : 'locked'}`}
               >
                 <div className="badge-icon">
-                  {isUnlocked ? badge.icon : ''}
+                  {isUnlocked ? badge.icon : '🔒'}
                 </div>
                 <div className="badge-info">
                   <div className="badge-name">{badge.name}</div>
@@ -146,7 +146,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
 
       {challenges.length === 0 && (
         <div className="no-challenges">
-          <div className="no-challenges-icon"></div>
+          <div className="no-challenges-icon">🎉</div>
           <h3>¡Felicitaciones!</h3>
           <p>Has completado todos los desafíos disponibles. ¡Sigue practicando para desbloquear nuevos retos!</p>
         </div>
@@ -197,7 +197,7 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
           <h4>{challenge.title}</h4>
         </div>
         <div className="challenge-difficulty">
-          {''.repeat(Math.max(1, challenge.difficultyLevel || 1))}
+          {'⭐'.repeat(Math.max(1, challenge.difficultyLevel || 1))}
         </div>
       </div>
 
@@ -206,7 +206,7 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
       </div>
 
       <div className="challenge-objectives">
-        <h5> Objetivos:</h5>
+        <h5>🎯 Objetivos:</h5>
         <ul>
           {challenge.objectives.map((objective, index) => (
             <li key={index}>{objective}</li>
@@ -216,12 +216,12 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
 
       <div className="challenge-rewards">
         <div className="reward-item">
-          <span className="reward-icon"></span>
+          <span className="reward-icon">⚡</span>
           <span>{challenge.xpReward} XP</span>
         </div>
         {challenge.badgeReward && (
           <div className="reward-item">
-            <span className="reward-icon"></span>
+            <span className="reward-icon">🏆</span>
             <span>{challenge.badgeReward.name}</span>
           </div>
         )}
@@ -254,7 +254,7 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
           </div>
         ) : challenge.status === 'active' ? (
           <div className="active-indicator">
-             En progreso...
+            🔥 En progreso...
           </div>
         ) : canStart ? (
           <button
@@ -265,14 +265,14 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
           </button>
         ) : (
           <div className="unavailable-indicator">
-             Proximamente
+            🔒 Proximamente
           </div>
         )}
       </div>
 
       {challenge.timeLimit && (
         <div className="challenge-timer">
-           {challenge.timeLimit}
+          ⏰ {challenge.timeLimit}
         </div>
       )}
     </div>
@@ -327,8 +327,8 @@ function generateGameifiedChallenges(attempts) {
       id: `boss-${errorType}`,
       category: 'boss',
       type: 'boss_fight',
-      title: isBoss ? ` Boss Final: ${getErrorTagLabel(errorType)}` : `⚔️ Mini Boss: ${getErrorTagLabel(errorType)}`,
-      emoji: isBoss ? '' : '⚔️',
+      title: isBoss ? `👑 Boss Final: ${getErrorTagLabel(errorType)}` : `⚔️ Mini Boss: ${getErrorTagLabel(errorType)}`,
+      emoji: isBoss ? '👑' : '⚔️',
       description: `Tu mayor enemigo: ${getErrorTagLabel(errorType)}. ${stats.count} errores recientes detectados.`,
       difficulty: isBoss ? 'legendary' : 'epic',
       difficultyLevel: isBoss ? 5 : 4,
@@ -341,12 +341,12 @@ function generateGameifiedChallenges(attempts) {
       badgeReward: isBoss ? {
         id: `boss-slayer-${errorType}`,
         name: 'Boss Slayer',
-        icon: '',
+        icon: '👑',
         description: 'Derrotaste a tu error más problemático'
       } : null,
       bonusRewards: isBoss ? [
-        { icon: '', name: 'Gema de la Victoria' },
-        { icon: '', name: 'Orbe de Sabiduría' }
+        { icon: '💎', name: 'Gema de la Victoria' },
+        { icon: '🔮', name: 'Orbe de Sabiduría' }
       ] : null,
       errorType,
       targetImprovement: 0.7,
@@ -365,8 +365,8 @@ function generateGameifiedChallenges(attempts) {
       id: `rescue-${area.combo}`,
       category: 'rescue',
       type: 'rescue_mission',
-      title: ` Misión de Rescate: ${area.name}`,
-      emoji: '',
+      title: `🚀 Misión de Rescate: ${area.name}`,
+      emoji: '🚀',
       description: `Rescata tu dominio en ${area.name}. Precisión actual: ${Math.round(area.accuracy * 100)}%`,
       difficulty: 'heroic',
       difficultyLevel: 3,
@@ -379,7 +379,7 @@ function generateGameifiedChallenges(attempts) {
       badgeReward: {
         id: `rescuer-${area.combo}`,
         name: 'Rescatista',
-        icon: '',
+        icon: '🚀',
         description: `Rescataste tu dominio en ${area.name}`
       },
       combo: area.combo,
@@ -400,8 +400,8 @@ function generateGameifiedChallenges(attempts) {
       id: 'consistency-master',
       category: 'consistency',
       type: 'consistency_challenge',
-      title: ' Maestro de la Consistencia',
-      emoji: '',
+      title: '📈 Maestro de la Consistencia',
+      emoji: '📈',
       description: 'Desarrolla un rendimiento constante día tras día.',
       difficulty: 'epic',
       difficultyLevel: 4,
@@ -414,7 +414,7 @@ function generateGameifiedChallenges(attempts) {
       badgeReward: {
         id: 'consistency-master',
         name: 'Maestro Constante',
-        icon: '',
+        icon: '📈',
         description: 'Mantuviste alta consistencia por una semana'
       },
       timeLimit: '7 días',
@@ -432,8 +432,8 @@ function generateGameifiedChallenges(attempts) {
       id: 'speed-demon',
       category: 'skill',
       type: 'speed_challenge',
-      title: ' Demonio de la Velocidad',
-      emoji: '',
+      title: '⚡ Demonio de la Velocidad',
+      emoji: '⚡',
       description: 'Mejora tu velocidad de respuesta manteniendo la precisión.',
       difficulty: 'rare',
       difficultyLevel: 3,
@@ -458,8 +458,8 @@ function generateGameifiedChallenges(attempts) {
     id: 'perfect-week',
     category: 'achievement',
     type: 'perfection_challenge',
-    title: ' Semana Perfecta',
-    emoji: '',
+    title: '💎 Semana Perfecta',
+    emoji: '💎',
     description: 'Logra una semana de práctica sin errores significativos.',
     difficulty: 'legendary',
     difficultyLevel: 5,
@@ -472,12 +472,12 @@ function generateGameifiedChallenges(attempts) {
     badgeReward: {
       id: 'perfectionist',
       name: 'Perfeccionista',
-      icon: '',
+      icon: '💎',
       description: 'Completaste una semana perfecta de práctica'
     },
     bonusRewards: [
-      { icon: '', name: 'Corona de la Perfección' },
-      { icon: '', name: 'Aura Dorada' }
+      { icon: '👑', name: 'Corona de la Perfección' },
+      { icon: '✨', name: 'Aura Dorada' }
     ],
     timeLimit: '7 días',
     progress: {
@@ -494,8 +494,8 @@ function generateGameifiedChallenges(attempts) {
         id: `mastery-${errorTag}`,
         category: 'mastery',
         type: 'mastery_challenge',
-        title: ` Maestría: ${getErrorTagLabel(errorTag)}`,
-        emoji: '',
+        title: `🎓 Maestría: ${getErrorTagLabel(errorTag)}`,
+        emoji: '🎓',
         description: `Domina completamente los errores de ${getErrorTagLabel(errorTag)}.`,
         difficulty: 'epic',
         difficultyLevel: 4,
@@ -508,7 +508,7 @@ function generateGameifiedChallenges(attempts) {
         badgeReward: {
           id: `master-${errorTag}`,
           name: `Maestro de ${getErrorTagLabel(errorTag)}`,
-          icon: '',
+          icon: '🎓',
           description: `Dominaste completamente ${getErrorTagLabel(errorTag)}`
         },
         errorType: errorTag,
@@ -620,14 +620,14 @@ function getLevelProgress(totalXP) {
 
 function getAllAvailableBadges() {
   return [
-    { id: 'boss-slayer', name: 'Cazador de Jefes', icon: '', description: 'Derrota a tu error más problemático' },
-    { id: 'rescuer', name: 'Rescatista', icon: '', description: 'Rescata un área problemática' },
-    { id: 'consistency-master', name: 'Maestro Constante', icon: '', description: 'Mantén consistencia por una semana' },
-    { id: 'speed-demon', name: 'Demonio de Velocidad', icon: '', description: 'Mejora significativamente tu velocidad' },
-    { id: 'perfectionist', name: 'Perfeccionista', icon: '', description: 'Completa una semana perfecta' },
-    { id: 'scholar', name: 'Erudito', icon: '', description: 'Domina un tipo de error específico' },
-    { id: 'marathon', name: 'Maratonista', icon: '', description: 'Practica 100 días consecutivos' },
-    { id: 'comeback-kid', name: 'Rey del Regreso', icon: '', description: 'Supera una racha de errores' }
+    { id: 'boss-slayer', name: 'Cazador de Jefes', icon: '👑', description: 'Derrota a tu error más problemático' },
+    { id: 'rescuer', name: 'Rescatista', icon: '🚀', description: 'Rescata un área problemática' },
+    { id: 'consistency-master', name: 'Maestro Constante', icon: '📈', description: 'Mantén consistencia por una semana' },
+    { id: 'speed-demon', name: 'Demonio de Velocidad', icon: '⚡', description: 'Mejora significativamente tu velocidad' },
+    { id: 'perfectionist', name: 'Perfeccionista', icon: '💎', description: 'Completa una semana perfecta' },
+    { id: 'scholar', name: 'Erudito', icon: '🎓', description: 'Domina un tipo de error específico' },
+    { id: 'marathon', name: 'Maratonista', icon: '🏃', description: 'Practica 100 días consecutivos' },
+    { id: 'comeback-kid', name: 'Rey del Regreso', icon: '🔥', description: 'Supera una racha de errores' }
   ]
 }
 
@@ -635,36 +635,36 @@ function getCategoryInfo(category) {
   const info = {
     boss: {
       name: 'Boss Fights',
-      icon: '',
+      icon: '👑',
       description: 'Enfréntate a tus errores más problemáticos'
     },
     rescue: {
       name: 'Misiones de Rescate',
-      icon: '',
+      icon: '🚀',
       description: 'Recupera áreas donde has perdido dominio'
     },
     consistency: {
       name: 'Desafíos de Consistencia',
-      icon: '',
+      icon: '📈',
       description: 'Desarrolla hábitos de práctica constante'
     },
     skill: {
       name: 'Desafíos de Habilidad',
-      icon: '',
+      icon: '⚡',
       description: 'Mejora velocidad, precisión y técnica'
     },
     achievement: {
       name: 'Logros Épicos',
-      icon: '',
+      icon: '💎',
       description: 'Los retos más difíciles y prestigiosos'
     },
     mastery: {
       name: 'Maestría Total',
-      icon: '',
+      icon: '🎓',
       description: 'Domina completamente cada tipo de error'
     }
   }
-  return info[category] || { name: 'Desafíos', icon: '', description: 'Desafíos variados' }
+  return info[category] || { name: 'Desafíos', icon: '🎯', description: 'Desafíos variados' }
 }
 
 function getErrorTagLabel(tag) {

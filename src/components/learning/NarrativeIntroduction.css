@@ -427,7 +427,7 @@
   align-items: center;
   gap: 0.6rem;
   background: rgba(68, 51, 121, 0.18);
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.7rem 1rem;
   border-radius: 12px;
 }

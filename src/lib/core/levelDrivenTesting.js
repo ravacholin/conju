@@ -42,7 +42,7 @@ export class LevelDrivenTester {
     
     // Generate summary report
     const summary = this.generateTestSummary()
-    console.log('\n TEST SUMMARY:')
+    console.log('\n📊 TEST SUMMARY:')
     console.log(`✅ Passed: ${summary.passed}`)
     console.log(`❌ Failed: ${summary.failed}`)
     console.log(`⏳ Total: ${summary.total}`)
@@ -66,7 +66,7 @@ export class LevelDrivenTester {
    * Test basic prioritizer functionality
    */
   async testPrioritizerBasics() {
-    console.log('\n Testing Prioritizer Basics...')
+    console.log('\n🔍 Testing Prioritizer Basics...')
     
     for (const level of this.allLevels) {
       try {
@@ -113,7 +113,7 @@ export class LevelDrivenTester {
    * Test that different levels have different priorities
    */
   async testLevelSpecificPriorities() {
-    console.log('\n Testing Level-Specific Priorities...')
+    console.log('\n🎯 Testing Level-Specific Priorities...')
     
     try {
       // Test that B1 prioritizes subjunctive present
@@ -225,7 +225,7 @@ export class LevelDrivenTester {
    * Test adaptive engine integration
    */
   async testAdaptiveEngineIntegration() {
-    console.log('\n Testing Adaptive Engine Integration...')
+    console.log('\n🤖 Testing Adaptive Engine Integration...')
     
     try {
       const engine = new AdaptivePracticeEngine()
@@ -272,7 +272,7 @@ export class LevelDrivenTester {
    * Test coaching system integration
    */
   async testCoachingSystemIntegration() {
-    console.log('\n Testing Coaching System Integration...')
+    console.log('\n💡 Testing Coaching System Integration...')
     
     try {
       const coach = new PersonalizedCoach()
@@ -322,7 +322,7 @@ export class LevelDrivenTester {
    * Test real-world scenarios
    */
   async testRealWorldScenarios() {
-    console.log('\n Testing Real-World Scenarios...')
+    console.log('\n🌍 Testing Real-World Scenarios...')
     
     try {
       // Scenario 1: New B1 user should get subjunctive present
@@ -436,7 +436,7 @@ export async function runLevelDrivenTests() {
  * Quick debug function to show level prioritization for all levels
  */
 export function debugAllLevelPrioritization() {
-  console.log('\n === DEBUG: ALL LEVEL PRIORITIZATION ===')
+  console.log('\n🔍 === DEBUG: ALL LEVEL PRIORITIZATION ===')
   
   const allLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
   
@@ -444,7 +444,7 @@ export function debugAllLevelPrioritization() {
     try {
       const prioritized = levelPrioritizer.getPrioritizedTenses(level)
       
-      console.log(`\n LEVEL ${level}:`)
+      console.log(`\n📚 LEVEL ${level}:`)
       console.log(`  Core (${prioritized.core.length}):`, 
         prioritized.core.slice(0, 3).map(t => `${t.mood}/${t.tense}(${t.priority})`))
       console.log(`  Review (${prioritized.review.length}):`, 
@@ -465,7 +465,7 @@ export function debugAllLevelPrioritization() {
  * Test specific level behavior
  */
 export function testSpecificLevel(level, mockUserProgress = null) {
-  console.log(`\n === TESTING SPECIFIC LEVEL: ${level} ===`)
+  console.log(`\n🎯 === TESTING SPECIFIC LEVEL: ${level} ===`)
   
   try {
     const prioritized = levelPrioritizer.getPrioritizedTenses(level, mockUserProgress)

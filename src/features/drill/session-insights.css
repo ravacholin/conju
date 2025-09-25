@@ -7,12 +7,12 @@
 }
 
 .insights-content {
-  background: #333;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 12px 16px;
-  box-shadow: 0 4px 20px #333;
-  border: 1px solid #333;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #333;
+  color: #e65100;
   font-weight: 600;
 }
 
@@ -60,13 +60,13 @@
 .metric-value {
   font-weight: 700;
   font-size: 1.1em;
-  color: #333;
+  color: #2e7d32;
   line-height: 1;
 }
 
 .metric-label {
   font-size: 0.75em;
-  color: #333;
+  color: #666;
   text-transform: lowercase;
   margin-top: 2px;
 }
@@ -74,21 +74,21 @@
 /* Dark theme support */
 @media (prefers-color-scheme: dark) {
   .insights-content {
-    background: #333;
-    color: #333;
-    border-color: #333;
+    background: rgba(40, 40, 40, 0.95);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.15);
   }
   
   .metric-value {
-    color: #333;
+    color: #66bb6a;
   }
   
   .metric-label {
-    color: #333;
+    color: #999;
   }
   
   .flow-indicator {
-    color: #333;
+    color: #ff9800;
   }
 }
 

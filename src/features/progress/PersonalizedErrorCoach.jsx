@@ -39,7 +39,7 @@ export default function PersonalizedErrorCoach({
     <div className="personalized-error-coach">
       <div className="coach-header">
         <div className="coach-avatar">
-          <div className="avatar-icon"></div>
+          <div className="avatar-icon">🎓</div>
           <div className="coach-info">
             <h2>Tu Coach Personal de Errores</h2>
             <p>Análisis inteligente adaptado a tu estilo de aprendizaje</p>
@@ -52,8 +52,8 @@ export default function PersonalizedErrorCoach({
             value={coachPersonality}
             onChange={(e) => setCoachPersonality(e.target.value)}
           >
-            <option value="encouraging"> Motivador</option>
-            <option value="analytical"> Analítico</option>
+            <option value="encouraging">🌟 Motivador</option>
+            <option value="analytical">🔍 Analítico</option>
             <option value="supportive">🤗 Empático</option>
             <option value="strategic">♟️ Estratégico</option>
           </select>
@@ -99,7 +99,7 @@ function CoachingDashboard({
     <div className="coaching-dashboard">
       {/* Estado Emocional Actual */}
       <div className="current-state-panel">
-        <h3> Tu Estado Actual</h3>
+        <h3>📊 Tu Estado Actual</h3>
         <div className="state-indicators">
           <div className="state-item">
             <span className="state-label">Flow:</span>
@@ -122,12 +122,12 @@ function CoachingDashboard({
       {/* Insights Principales */}
       <div className="primary-insights">
         <div className="insights-header">
-          <h3> Insights Principales</h3>
+          <h3>💡 Insights Principales</h3>
           <button
             className="toggle-detailed-btn"
             onClick={onToggleDetailed}
           >
-            {showDetailed ? '️ Vista Simple' : ' Vista Detallada'}
+            {showDetailed ? '👁️ Vista Simple' : '🔬 Vista Detallada'}
           </button>
         </div>
 
@@ -147,7 +147,7 @@ function CoachingDashboard({
 
       {/* Estrategias Adaptativas */}
       <div className="adaptive-strategies">
-        <h3> Estrategias Personalizadas</h3>
+        <h3>🎯 Estrategias Personalizadas</h3>
         <div className="strategies-container">
           {strategies.map(strategy => (
             <StrategyCard
@@ -162,7 +162,7 @@ function CoachingDashboard({
 
       {/* Mini-lecciones */}
       <div className="mini-lessons">
-        <h3> Mini-Lecciones Personalizadas</h3>
+        <h3>📚 Mini-Lecciones Personalizadas</h3>
         <div className="lessons-grid">
           {generateMiniLessons(insights).map(lesson => (
             <MiniLessonCard
@@ -206,7 +206,7 @@ function InsightCard({ insight, personality, priority, onStartSession, onStartPr
       </div>
 
       <div className="insight-prediction">
-        <strong> Predicción:</strong> {insight.prediction}
+        <strong>🔮 Predicción:</strong> {insight.prediction}
       </div>
 
       <div className="insight-actions">
@@ -214,14 +214,14 @@ function InsightCard({ insight, personality, priority, onStartSession, onStartPr
           className="primary-action-btn"
           onClick={() => onStartSession(insight)}
         >
-           Sesión de Coaching
+          🎯 Sesión de Coaching
         </button>
         {insight.quickPractice && (
           <button
             className="quick-action-btn"
             onClick={() => onStartPractice(insight.quickPractice)}
           >
-             Práctica Rápida
+            ⚡ Práctica Rápida
           </button>
         )}
       </div>
@@ -255,7 +255,7 @@ function StrategyCard({ strategy, personality, onApply }) {
       </div>
 
       <div className="strategy-benefits">
-        <h5> Beneficios:</h5>
+        <h5>✨ Beneficios:</h5>
         <ul>
           {strategy.benefits.map((benefit, index) => (
             <li key={index}>{benefit}</li>
@@ -264,7 +264,7 @@ function StrategyCard({ strategy, personality, onApply }) {
       </div>
 
       <div className="strategy-implementation">
-        <h5>️ Cómo implementar:</h5>
+        <h5>🛠️ Cómo implementar:</h5>
         <ol>
           {strategy.steps.map((step, index) => (
             <li key={index}>{step}</li>
@@ -276,7 +276,7 @@ function StrategyCard({ strategy, personality, onApply }) {
         className="apply-strategy-btn"
         onClick={() => onApply(strategy)}
       >
-         Aplicar Estrategia
+        🚀 Aplicar Estrategia
       </button>
     </div>
   )
@@ -299,18 +299,18 @@ function MiniLessonCard({ lesson, personality }) {
         </div>
 
         <div className="lesson-examples">
-          <h5> Ejemplos:</h5>
+          <h5>📝 Ejemplos:</h5>
           {lesson.examples.map((example, index) => (
             <div key={index} className="example-item">
               <span className="incorrect">❌ {example.incorrect}</span>
               <span className="correct">✅ {example.correct}</span>
-              <span className="reason"> {example.reason}</span>
+              <span className="reason">💡 {example.reason}</span>
             </div>
           ))}
         </div>
 
         <div className="lesson-tips">
-          <h5> Tips para recordar:</h5>
+          <h5>💭 Tips para recordar:</h5>
           <ul>
             {lesson.memoryTips.map((tip, index) => (
               <li key={index}>{tip}</li>
@@ -328,16 +328,16 @@ function CoachingSessionView({ session, personality, onEndSession, onStartPracti
   return (
     <div className="coaching-session">
       <div className="session-header">
-        <h2> Sesión de Coaching: {session.insight.title}</h2>
+        <h2>🎯 Sesión de Coaching: {session.insight.title}</h2>
         <div className="session-progress">
           <div className={`step ${sessionStep === 'analysis' ? 'active' : sessionStep === 'plan' || sessionStep === 'practice' || sessionStep === 'reflection' ? 'completed' : ''}`}>
-             Análisis
+            🔍 Análisis
           </div>
           <div className={`step ${sessionStep === 'plan' ? 'active' : sessionStep === 'practice' || sessionStep === 'reflection' ? 'completed' : ''}`}>
-             Plan
+            📋 Plan
           </div>
           <div className={`step ${sessionStep === 'practice' ? 'active' : sessionStep === 'reflection' ? 'completed' : ''}`}>
-             Práctica
+            🏃 Práctica
           </div>
           <div className={`step ${sessionStep === 'reflection' ? 'active' : ''}`}>
             🤔 Reflexión
@@ -391,7 +391,7 @@ function AnalysisStep({ insight, personality, onNext }) {
   return (
     <div className="analysis-step">
       <div className="coach-message">
-        <div className="coach-avatar-mini"></div>
+        <div className="coach-avatar-mini">🎓</div>
         <div className="message-bubble">
           {getPersonalizedAnalysisMessage(insight, personality)}
         </div>
@@ -399,7 +399,7 @@ function AnalysisStep({ insight, personality, onNext }) {
 
       <div className="analysis-details">
         <div className="problem-breakdown">
-          <h4> Desglose del Problema</h4>
+          <h4>🔍 Desglose del Problema</h4>
           <div className="breakdown-items">
             {insight.breakdown.map((item, index) => (
               <div key={index} className="breakdown-item">
@@ -420,7 +420,7 @@ function AnalysisStep({ insight, personality, onNext }) {
         </div>
 
         <div className="root-cause-analysis">
-          <h4> Análisis de Causa Raíz</h4>
+          <h4>🌱 Análisis de Causa Raíz</h4>
           <div className="cause-chain">
             {insight.rootCauses.map((cause, index) => (
               <div key={index} className="cause-item">
@@ -433,7 +433,7 @@ function AnalysisStep({ insight, personality, onNext }) {
       </div>
 
       <button className="next-step-btn" onClick={onNext}>
-        Continuar al Plan 
+        Continuar al Plan 📋
       </button>
     </div>
   )
@@ -443,7 +443,7 @@ function PlanStep({ personalizedPlan, personality, onNext, onBack }) {
   return (
     <div className="plan-step">
       <div className="coach-message">
-        <div className="coach-avatar-mini"></div>
+        <div className="coach-avatar-mini">🎓</div>
         <div className="message-bubble">
           {getPersonalizedPlanMessage(personalizedPlan, personality)}
         </div>
@@ -459,7 +459,7 @@ function PlanStep({ personalizedPlan, personality, onNext, onBack }) {
                 <span className="phase-duration">{phase.duration}</span>
               </div>
               <div className="phase-objectives">
-                <h5> Objetivos:</h5>
+                <h5>🎯 Objetivos:</h5>
                 <ul>
                   {phase.objectives.map((objective, i) => (
                     <li key={i}>{objective}</li>
@@ -467,7 +467,7 @@ function PlanStep({ personalizedPlan, personality, onNext, onBack }) {
                 </ul>
               </div>
               <div className="phase-activities">
-                <h5> Actividades:</h5>
+                <h5>🎮 Actividades:</h5>
                 <ul>
                   {phase.activities.map((activity, i) => (
                     <li key={i}>{activity}</li>
@@ -484,7 +484,7 @@ function PlanStep({ personalizedPlan, personality, onNext, onBack }) {
           ← Volver al Análisis
         </button>
         <button className="next-step-btn" onClick={onNext}>
-          Empezar Práctica 
+          Empezar Práctica 🏃
         </button>
       </div>
     </div>
@@ -495,7 +495,7 @@ function PracticeStep({ recommendations, personality, onStartPractice, onNext, o
   return (
     <div className="practice-step">
       <div className="coach-message">
-        <div className="coach-avatar-mini"></div>
+        <div className="coach-avatar-mini">🎓</div>
         <div className="message-bubble">
           {getPersonalizedPracticeMessage(recommendations, personality)}
         </div>
@@ -517,7 +517,7 @@ function PracticeStep({ recommendations, personality, onStartPractice, onNext, o
               className="start-practice-btn"
               onClick={() => onStartPractice(rec.config)}
             >
-               Comenzar
+              🚀 Comenzar
             </button>
           </div>
         ))}
@@ -539,7 +539,7 @@ function ReflectionStep({ session, personality, onFinish, onBack }) {
   return (
     <div className="reflection-step">
       <div className="coach-message">
-        <div className="coach-avatar-mini"></div>
+        <div className="coach-avatar-mini">🎓</div>
         <div className="message-bubble">
           {getPersonalizedReflectionMessage(session, personality)}
         </div>
@@ -547,7 +547,7 @@ function ReflectionStep({ session, personality, onFinish, onBack }) {
 
       <div className="reflection-content">
         <div className="session-summary">
-          <h4> Resumen de la Sesión</h4>
+          <h4>📊 Resumen de la Sesión</h4>
           <div className="summary-stats">
             <div className="stat">
               <span className="stat-label">Duración:</span>
@@ -563,7 +563,7 @@ function ReflectionStep({ session, personality, onFinish, onBack }) {
         </div>
 
         <div className="key-takeaways">
-          <h4> Puntos Clave</h4>
+          <h4>💡 Puntos Clave</h4>
           <ul>
             {session.insight.keyTakeaways.map((takeaway, index) => (
               <li key={index}>{takeaway}</li>
@@ -572,7 +572,7 @@ function ReflectionStep({ session, personality, onFinish, onBack }) {
         </div>
 
         <div className="next-steps">
-          <h4> Próximos Pasos</h4>
+          <h4>🚀 Próximos Pasos</h4>
           <ol>
             {session.personalizedPlan.nextSteps.map((step, index) => (
               <li key={index}>{step}</li>
@@ -602,7 +602,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
   if (errorAnalysis.length > 0) {
     insights.push({
       id: 'recurring-errors',
-      icon: '',
+      icon: '🔄',
       title: 'Errores Recurrentes Detectados',
       urgency: 'high',
       stats: {
@@ -638,7 +638,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
   if (currentFlowState === 'frustrated' || currentMomentum === 'declining') {
     insights.push({
       id: 'emotional-barrier',
-      icon: '',
+      icon: '😔',
       title: 'Barrera Emocional Detectada',
       urgency: 'critical',
       stats: {
@@ -648,7 +648,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
       },
       prediction: `Tu estado emocional actual podría impactar negativamente tu aprendizaje por los próximos días`,
       breakdown: [{
-        icon: '',
+        icon: '🧠',
         aspect: 'Estado Mental',
         description: 'Frustración o momentum negativo afecta la retención',
         severity: 'high'
@@ -671,7 +671,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
   if (plateauAnalysis.isInPlateau) {
     insights.push({
       id: 'learning-plateau',
-      icon: '',
+      icon: '📊',
       title: 'Plateau de Aprendizaje',
       urgency: 'medium',
       stats: {
@@ -681,7 +681,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
       },
       prediction: `Un cambio de estrategia podría acelerar tu progreso significativamente`,
       breakdown: [{
-        icon: '',
+        icon: '📈',
         aspect: 'Progreso Estancado',
         description: 'Tu precisión se mantiene estable sin mejora',
         severity: 'medium'
@@ -714,7 +714,7 @@ function generateAdaptiveStrategies(insights, currentFlowState, _currentMomentum
     strategies.push({
       id: 'pattern-interruption',
       name: 'Interrupción de Patrones',
-      icon: '',
+      icon: '🔄',
       effectiveness: 'high',
       effectivenessLevel: 4,
       description: 'Rompe el ciclo de errores recurrentes con práctica específica y consciente',
@@ -743,7 +743,7 @@ function generateAdaptiveStrategies(insights, currentFlowState, _currentMomentum
     strategies.push({
       id: 'confidence-rebuild',
       name: 'Reconstrucción de Confianza',
-      icon: '',
+      icon: '🌟',
       effectiveness: 'high',
       effectivenessLevel: 5,
       description: 'Recupera la confianza con éxitos graduales y celebración de progreso',
@@ -772,7 +772,7 @@ function generateAdaptiveStrategies(insights, currentFlowState, _currentMomentum
     strategies.push({
       id: 'variety-injection',
       name: 'Inyección de Variedad',
-      icon: '',
+      icon: '🎲',
       effectiveness: 'medium',
       effectivenessLevel: 3,
       description: 'Introduce variedad y complejidad para superar el estancamiento',
@@ -823,24 +823,24 @@ function generateMiniLessons(insights) {
 function getPersonalizedMessage(insight, personality) {
   const messages = {
     encouraging: {
-      'recurring-errors': "¡Hey! He notado un patrón en tus errores, pero esto es genial - significa que ya sé exactamente cómo ayudarte a mejorar! ",
-      'emotional-barrier': "Entiendo que puede ser frustrante, pero recuerda que cada error es un paso hacia el dominio. ¡Estás más cerca de lo que piensas! ",
-      'learning-plateau': "¡Es hora de un breakthrough! Los plateaus son señal de que estás listo para el siguiente nivel. "
+      'recurring-errors': "¡Hey! He notado un patrón en tus errores, pero esto es genial - significa que ya sé exactamente cómo ayudarte a mejorar! 🌟",
+      'emotional-barrier': "Entiendo que puede ser frustrante, pero recuerda que cada error es un paso hacia el dominio. ¡Estás más cerca de lo que piensas! 💪",
+      'learning-plateau': "¡Es hora de un breakthrough! Los plateaus son señal de que estás listo para el siguiente nivel. 🚀"
     },
     analytical: {
-      'recurring-errors': "Análisis: detecté un patrón específico que requiere intervención dirigida. Los datos muestran una correlación clara. ",
-      'emotional-barrier': "Estado emocional subóptimo detectado. Recomiendo ajuste de estrategia para optimizar condiciones de aprendizaje. ",
-      'learning-plateau': "Métricas indican estabilización de progreso. Análisis sugiere necesidad de incrementar variabilidad de estímulos. "
+      'recurring-errors': "Análisis: detecté un patrón específico que requiere intervención dirigida. Los datos muestran una correlación clara. 📊",
+      'emotional-barrier': "Estado emocional subóptimo detectado. Recomiendo ajuste de estrategia para optimizar condiciones de aprendizaje. 🔍",
+      'learning-plateau': "Métricas indican estabilización de progreso. Análisis sugiere necesidad de incrementar variabilidad de estímulos. 📈"
     },
     supportive: {
       'recurring-errors': "Está bien, todos tenemos nuestros desafíos. Vamos a trabajar juntos para superar esto paso a paso. 🤗",
-      'emotional-barrier': "Siento que estés pasando por esto. Es completamente normal. Vamos a encontrar una forma que funcione mejor para ti. ",
-      'learning-plateau': "No te preocupes por el plateau. Es parte natural del aprendizaje. Te voy a acompañar para salir de aquí. "
+      'emotional-barrier': "Siento que estés pasando por esto. Es completamente normal. Vamos a encontrar una forma que funcione mejor para ti. 💙",
+      'learning-plateau': "No te preocupes por el plateau. Es parte natural del aprendizaje. Te voy a acompañar para salir de aquí. 🌅"
     },
     strategic: {
       'recurring-errors': "Patrón identificado. Estrategia: práctica dirigida con refuerzo positivo. Plan de acción definido. ♟️",
-      'emotional-barrier': "Estado emocional impacta performance. Estrategia: recalibración mediante éxitos tempranos. ",
-      'learning-plateau': "Plateau detectado. Estrategia: diversificación de ejercicios y aumento de complejidad gradual. "
+      'emotional-barrier': "Estado emocional impacta performance. Estrategia: recalibración mediante éxitos tempranos. 🎯",
+      'learning-plateau': "Plateau detectado. Estrategia: diversificación de ejercicios y aumento de complejidad gradual. 📋"
     }
   }
 
@@ -931,24 +931,24 @@ function generateMemoryTips(errorType) {
 
 function getFlowStateEmoji(state) {
   const emojis = {
-    flow: '',
-    focused: '',
-    neutral: '',
-    distracted: '',
-    frustrated: '',
-    tired: ''
+    flow: '🌊',
+    focused: '🎯',
+    neutral: '😐',
+    distracted: '😵',
+    frustrated: '😤',
+    tired: '😴'
   }
-  return emojis[state] || ''
+  return emojis[state] || '😐'
 }
 
 function getMomentumEmoji(momentum) {
   const emojis = {
-    accelerating: '',
-    steady_progress: '',
-    declining: '',
-    struggling: '‍'
+    accelerating: '🚀',
+    steady_progress: '🚶',
+    declining: '📉',
+    struggling: '😮‍💨'
   }
-  return emojis[momentum] || ''
+  return emojis[momentum] || '🚶'
 }
 
 function formatFlowState(state) {
@@ -988,18 +988,18 @@ function getErrorTagLabel(tag) {
 function getErrorIcon(errorType) {
   const icons = {
     [ERROR_TAGS.ACCENT]: '´',
-    [ERROR_TAGS.VERBAL_ENDING]: '',
-    [ERROR_TAGS.IRREGULAR_STEM]: '',
-    [ERROR_TAGS.WRONG_PERSON]: '',
-    [ERROR_TAGS.WRONG_TENSE]: '',
-    [ERROR_TAGS.WRONG_MOOD]: ''
+    [ERROR_TAGS.VERBAL_ENDING]: '📝',
+    [ERROR_TAGS.IRREGULAR_STEM]: '🌱',
+    [ERROR_TAGS.WRONG_PERSON]: '👤',
+    [ERROR_TAGS.WRONG_TENSE]: '⏰',
+    [ERROR_TAGS.WRONG_MOOD]: '🎭'
   }
   return icons[errorType] || '❌'
 }
 
 function formatUrgency(urgency) {
   const labels = {
-    critical: ' Crítico',
+    critical: '🔴 Crítico',
     high: '🟠 Alto',
     medium: '🟡 Medio',
     low: '🟢 Bajo'
@@ -1032,8 +1032,8 @@ function getPersonalizedAnalysisMessage(insight, personality) {
 
 function getPersonalizedPlanMessage(plan, personality) {
   const messages = {
-    encouraging: "¡Perfecto! He creado un plan personalizado que te va a encantar. Vamos paso a paso hacia el éxito! ",
-    analytical: "Plan optimizado generado basado en tu perfil de aprendizaje y patrones de error identificados. ",
+    encouraging: "¡Perfecto! He creado un plan personalizado que te va a encantar. Vamos paso a paso hacia el éxito! 🎯",
+    analytical: "Plan optimizado generado basado en tu perfil de aprendizaje y patrones de error identificados. 📊",
     supportive: "He preparado un plan suave y efectivo, diseñado especialmente para ti. Iremos a tu ritmo. 🤗",
     strategic: "Estrategia definida. Plan de acción estructurado en fases para máxima efectividad. ♟️"
   }
@@ -1042,19 +1042,19 @@ function getPersonalizedPlanMessage(plan, personality) {
 
 function getPersonalizedPracticeMessage(recommendations, personality) {
   const messages = {
-    encouraging: "¡Es hora de brillar! Elige la opción que más te motive. ¡Estoy seguro de que lo vas a hacer genial! ",
-    analytical: "Opciones de práctica optimizadas para tu perfil. Cada una tiene métricas específicas de efectividad. ",
-    supportive: "Aquí tienes algunas opciones gentiles. Elige la que te haga sentir más cómodo. Estaré aquí apoyándote. ",
-    strategic: "Opciones tácticas disponibles. Selecciona según tus objetivos inmediatos y capacidad actual. "
+    encouraging: "¡Es hora de brillar! Elige la opción que más te motive. ¡Estoy seguro de que lo vas a hacer genial! ✨",
+    analytical: "Opciones de práctica optimizadas para tu perfil. Cada una tiene métricas específicas de efectividad. 📈",
+    supportive: "Aquí tienes algunas opciones gentiles. Elige la que te haga sentir más cómodo. Estaré aquí apoyándote. 💙",
+    strategic: "Opciones tácticas disponibles. Selecciona según tus objetivos inmediatos y capacidad actual. 🎯"
   }
   return messages[personality] || messages.encouraging
 }
 
 function getPersonalizedReflectionMessage(session, personality) {
   const messages = {
-    encouraging: "¡Wow! Has completado una sesión increíble. Tomemos un momento para celebrar tu progreso y planificar el siguiente paso. ",
-    analytical: "Sesión completada. Revisemos los datos y métricas para optimizar futuras sesiones de entrenamiento. ",
-    supportive: "Estoy muy orgulloso de ti por completar esta sesión. Reflexionemos juntos sobre lo aprendido. ",
+    encouraging: "¡Wow! Has completado una sesión increíble. Tomemos un momento para celebrar tu progreso y planificar el siguiente paso. 🎉",
+    analytical: "Sesión completada. Revisemos los datos y métricas para optimizar futuras sesiones de entrenamiento. 📊",
+    supportive: "Estoy muy orgulloso de ti por completar esta sesión. Reflexionemos juntos sobre lo aprendido. 🌟",
     strategic: "Misión cumplida. Analicemos resultados y definamos estrategia para maximizar el ROI de esta sesión. ♟️"
   }
   return messages[personality] || messages.encouraging
@@ -1120,7 +1120,7 @@ function generatePracticeRecommendations(insight, _userProgress) {
   return [
     {
       name: "Práctica Dirigida",
-      icon: "",
+      icon: "🎯",
       difficulty: "Específica",
       description: "Enfócate únicamente en el patrón problemático",
       benefits: ["Precisión dirigida", "Corrección específica", "Resultados rápidos"],
@@ -1128,7 +1128,7 @@ function generatePracticeRecommendations(insight, _userProgress) {
     },
     {
       name: "Práctica Contextual",
-      icon: "",
+      icon: "🌍",
       difficulty: "Aplicada",
       description: "Practica el patrón en situaciones reales",
       benefits: ["Aplicación práctica", "Retención mejorada", "Confianza real"],
@@ -1136,7 +1136,7 @@ function generatePracticeRecommendations(insight, _userProgress) {
     },
     {
       name: "Práctica Gradual",
-      icon: "",
+      icon: "📈",
       difficulty: "Progresiva",
       description: "Aumenta la complejidad paso a paso",
       benefits: ["Construcción de confianza", "Aprendizaje sólido", "Menos frustración"],
@@ -1148,46 +1148,46 @@ function generatePracticeRecommendations(insight, _userProgress) {
 function generateStateBasedRecommendation(flowState, momentum, personality) {
   if (flowState === 'frustrated' || momentum === 'declining') {
     const messages = {
-      encouraging: " Te recomiendo empezar con algo fácil para recuperar confianza. ¡Cada pequeño éxito cuenta!",
-      analytical: " Datos indican estado subóptimo. Recomiendo ejercicios de baja complejidad para restablecer baseline de confianza.",
-      supportive: " Sé que puede ser difícil ahora. ¿Qué tal si empezamos con algo que ya domines? Estoy aquí para apoyarte.",
+      encouraging: "🌟 Te recomiendo empezar con algo fácil para recuperar confianza. ¡Cada pequeño éxito cuenta!",
+      analytical: "📊 Datos indican estado subóptimo. Recomiendo ejercicios de baja complejidad para restablecer baseline de confianza.",
+      supportive: "💙 Sé que puede ser difícil ahora. ¿Qué tal si empezamos con algo que ya domines? Estoy aquí para apoyarte.",
       strategic: "♟️ Estrategia: revertir momentum negativo con victorias tempranas. Seleccionar ejercicios con >90% probabilidad de éxito."
     }
     return messages[personality] || messages.supportive
   } else if (flowState === 'flow' || momentum === 'accelerating') {
     const messages = {
-      encouraging: " ¡Estás en racha! Es el momento perfecto para desafiarte con algo nuevo.",
-      analytical: " Estado óptimo detectado. Momento ideal para introducir complejidad adicional y maximizar aprendizaje.",
-      supportive: " Te ves muy bien hoy. ¿Qué tal si probamos algo un poquito más desafiante?",
-      strategic: " Momentum positivo detectado. Explotar ventana de oportunidad con ejercicios de alta complejidad."
+      encouraging: "🚀 ¡Estás en racha! Es el momento perfecto para desafiarte con algo nuevo.",
+      analytical: "📈 Estado óptimo detectado. Momento ideal para introducir complejidad adicional y maximizar aprendizaje.",
+      supportive: "✨ Te ves muy bien hoy. ¿Qué tal si probamos algo un poquito más desafiante?",
+      strategic: "⚡ Momentum positivo detectado. Explotar ventana de oportunidad con ejercicios de alta complejidad."
     }
     return messages[personality] || messages.encouraging
   }
 
-  return " Tu estado actual es bueno para práctica regular. ¡Vamos a mantener el ritmo!"
+  return "🎯 Tu estado actual es bueno para práctica regular. ¡Vamos a mantener el ritmo!"
 }
 
 function getPersonalizedStrategyDescription(strategy, personality) {
   const descriptions = {
     encouraging: {
-      'pattern-interruption': "¡Esta es una estrategia súper efectiva! Vas a romper esos patrones molestos de una vez por todas. ",
-      'confidence-rebuild': "Te va a encantar esta estrategia. Está diseñada para que te sientas exitoso desde el primer momento. ",
-      'variety-injection': "¡Hora de divertirse! Esta estrategia añade emoción y novedad a tu aprendizaje. "
+      'pattern-interruption': "¡Esta es una estrategia súper efectiva! Vas a romper esos patrones molestos de una vez por todas. 💪",
+      'confidence-rebuild': "Te va a encantar esta estrategia. Está diseñada para que te sientas exitoso desde el primer momento. ✨",
+      'variety-injection': "¡Hora de divertirse! Esta estrategia añade emoción y novedad a tu aprendizaje. 🎲"
     },
     analytical: {
-      'pattern-interruption': "Metodología basada en neuroplasticidad dirigida. Eficiencia comprobada del 85% en interrupción de patrones. ",
-      'confidence-rebuild': "Protocolo de reconstrucción psicológica con refuerzo positivo gradual. Resultados medibles en 3-5 sesiones. ",
-      'variety-injection': "Sistema de diversificación de estímulos para prevenir habituación neuronal y acelerar aprendizaje. "
+      'pattern-interruption': "Metodología basada en neuroplasticidad dirigida. Eficiencia comprobada del 85% en interrupción de patrones. 📊",
+      'confidence-rebuild': "Protocolo de reconstrucción psicológica con refuerzo positivo gradual. Resultados medibles en 3-5 sesiones. 📈",
+      'variety-injection': "Sistema de diversificación de estímulos para prevenir habituación neuronal y acelerar aprendizaje. 🧠"
     },
     supportive: {
       'pattern-interruption': "No te preocupes, esta estrategia es muy gentil pero efectiva. Vamos a trabajar juntos paso a paso. 🤗",
-      'confidence-rebuild': "Esta estrategia está diseñada para que te sientas cómodo y seguro. Iremos a tu ritmo siempre. ",
-      'variety-injection': "Una forma divertida y relajada de superar el estancamiento. Sin presión, solo exploración. "
+      'confidence-rebuild': "Esta estrategia está diseñada para que te sientas cómodo y seguro. Iremos a tu ritmo siempre. 💙",
+      'variety-injection': "Una forma divertida y relajada de superar el estancamiento. Sin presión, solo exploración. 🌈"
     },
     strategic: {
       'pattern-interruption': "Táctica de disrupción neurológica. Plan de acción definido para neutralizar patrones contraproducentes. ♟️",
-      'confidence-rebuild': "Estrategia de recuperación psicológica mediante victorias calculadas. ROI emocional garantizado. ",
-      'variety-injection': "Diversificación de portfolio de ejercicios para optimizar curva de aprendizaje. Riesgo controlado. "
+      'confidence-rebuild': "Estrategia de recuperación psicológica mediante victorias calculadas. ROI emocional garantizado. 🎯",
+      'variety-injection': "Diversificación de portfolio de ejercicios para optimizar curva de aprendizaje. Riesgo controlado. 📋"
     }
   }
 
@@ -1197,8 +1197,8 @@ function getPersonalizedStrategyDescription(strategy, personality) {
 function getPersonalizedExplanation(lesson, personality) {
   // Implementación básica - se expandiría según la lección específica
   const explanations = {
-    encouraging: "¡Perfecto! Te voy a explicar esto de una manera súper clara y fácil de recordar. ",
-    analytical: "Análisis lingüístico detallado del patrón específico con ejemplos estructurales. ",
+    encouraging: "¡Perfecto! Te voy a explicar esto de una manera súper clara y fácil de recordar. 🌟",
+    analytical: "Análisis lingüístico detallado del patrón específico con ejemplos estructurales. 🔍",
     supportive: "No te preocupes si esto parece complicado al principio. Vamos paso a paso, con paciencia. 🤗",
     strategic: "Información técnica esencial para dominar este componente específico del sistema verbal. ♟️"
   }

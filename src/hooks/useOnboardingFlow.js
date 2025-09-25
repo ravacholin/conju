@@ -28,7 +28,7 @@ export function useOnboardingFlow() {
   // Interceptor para debuggear quién está cambiando el step
   const setOnboardingStep = (newStep) => {
     if (import.meta.env.DEV) {
-      console.log(` setOnboardingStep called: ${onboardingStep} → ${newStep}`);
+      console.log(`🚨 setOnboardingStep called: ${onboardingStep} → ${newStep}`);
       console.trace('Stack trace for setOnboardingStep:');
     }
     setOnboardingStepInternal(newStep);
@@ -46,7 +46,7 @@ export function useOnboardingFlow() {
       try {
         const initialState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
         if (import.meta.env.DEV) {
-          console.log(' Setting initial history state for step 1:', initialState);
+          console.log('🌟 Setting initial history state for step 1:', initialState);
         }
         window.history.replaceState(initialState, '');
       } catch {
@@ -618,7 +618,7 @@ export function useOnboardingFlow() {
     const previousStep = getPreviousStep(currentStep)
     
     if (import.meta.env.DEV) {
-      console.log(` Manual back navigation: ${currentStep} → ${previousStep}`);
+      console.log(`🔙 Manual back navigation: ${currentStep} → ${previousStep}`);
     }
     
     if (previousStep !== currentStep) {

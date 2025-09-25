@@ -14,7 +14,7 @@ describe('Pruebas de Internacionalización del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log(' Configurando entorno de pruebas de internacionalización...')
+    console.log('🔧 Configurando entorno de pruebas de internacionalización...')
   })
 
   it('debería ser compatible con diferentes idiomas', () => {

@@ -105,7 +105,7 @@ export default function AccountManagementModal({ isOpen, onClose }) {
                 />
               </label>
 
-              {error && <p className="account-modal__error">️ {error}</p>}
+              {error && <p className="account-modal__error">⚠️ {error}</p>}
               {success && <p className="account-modal__success">✅ {success}</p>}
 
               <div className="account-modal__actions">

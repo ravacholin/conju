@@ -34,7 +34,7 @@ class SafeComponent extends Component {
           color: '#dc2626'
         }}>
           <h3 style={{ margin: '0 0 0.5rem 0' }}>
-            ️ Error en {this.props.name || 'componente'}
+            ⚠️ Error en {this.props.name || 'componente'}
           </h3>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem' }}>
             No se pudo cargar esta sección. Los demás datos siguen disponibles.

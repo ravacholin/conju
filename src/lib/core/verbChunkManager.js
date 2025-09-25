@@ -224,7 +224,7 @@ class VerbChunkManager {
     const missingLemmas = verbLemmas.filter(lemma => !foundLemmas.has(lemma))
 
     if (missingLemmas.length > 0) {
-      console.log(` Chunk fallback: ${missingLemmas.length} missing lemmas [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
+      console.log(`🔄 Chunk fallback: ${missingLemmas.length} missing lemmas [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
 
       try {
         const fallbackVerbs = await this.loadMissingLemmasFromMainStore(missingLemmas)
@@ -363,7 +363,7 @@ class VerbChunkManager {
     }
 
     const shortage = expectedCount - actualCount
-    console.log(` Chunk ${chunkName} is undersized: ${actualCount}/${expectedCount} verbs (${shortage} short)`)
+    console.log(`📊 Chunk ${chunkName} is undersized: ${actualCount}/${expectedCount} verbs (${shortage} short)`)
 
     try {
       const supplementVerbs = await this.supplementChunkFromMainStore(chunkName, shortage, currentVerbs)
@@ -486,7 +486,7 @@ class VerbChunkManager {
         _supplementedAt: new Date().toISOString()
       }))
 
-      console.log(` Selected ${supplementVerbs.length} supplement verbs for ${chunkName}: [${supplementVerbs.slice(0, 3).map(v => v.lemma).join(', ')}${supplementVerbs.length > 3 ? '...' : ''}]`)
+      console.log(`📈 Selected ${supplementVerbs.length} supplement verbs for ${chunkName}: [${supplementVerbs.slice(0, 3).map(v => v.lemma).join(', ')}${supplementVerbs.length > 3 ? '...' : ''}]`)
 
       return supplementVerbs
 
@@ -538,7 +538,7 @@ class VerbChunkManager {
     // Enhanced fallback: if metadata.verbs is empty (common when manifest fails),
     // derive verbs dynamically based on chunk type
     if (metadata.verbs.length === 0) {
-      console.log(` Empty metadata for chunk ${chunkName}, deriving verbs dynamically`)
+      console.log(`🔄 Empty metadata for chunk ${chunkName}, deriving verbs dynamically`)
 
       if (chunkName === 'irregulars') {
         // For irregulars chunk: identify irregular verbs using categorizeVerb
@@ -595,7 +595,7 @@ class VerbChunkManager {
                  priorityVerbLemmas.has(verb.lemma)        // Priority verbs
         })
 
-        console.log(` Derived ${irregularVerbs.length} irregular verbs dynamically (prioritizing frequency)`)
+        console.log(`📊 Derived ${irregularVerbs.length} irregular verbs dynamically (prioritizing frequency)`)
         return irregularVerbs
       }
 
@@ -617,7 +617,7 @@ class VerbChunkManager {
           }
         })
 
-        console.log(` Derived ${advancedVerbs.length} advanced verbs dynamically`)
+        console.log(`📊 Derived ${advancedVerbs.length} advanced verbs dynamically`)
         return advancedVerbs
       }
 
@@ -672,7 +672,7 @@ class VerbChunkManager {
 
     // Log missing verbs for debugging
     if (notFound.length > 0) {
-      console.warn(`️  getVerbsFromLemmas: ${notFound.length} verbs not found in loaded chunks: [${notFound.slice(0, 3).join(', ')}${notFound.length > 3 ? '...' : ''}]`)
+      console.warn(`⚠️  getVerbsFromLemmas: ${notFound.length} verbs not found in loaded chunks: [${notFound.slice(0, 3).join(', ')}${notFound.length > 3 ? '...' : ''}]`)
     }
 
     return result
@@ -711,7 +711,7 @@ class VerbChunkManager {
    */
   async preloadDueVerbs(userId, currentDate = new Date(), hoursAhead = 24) {
     if (!userId) {
-      console.warn('️  preloadDueVerbs: No userId provided, skipping SRS preload')
+      console.warn('⚠️  preloadDueVerbs: No userId provided, skipping SRS preload')
       return
     }
 
@@ -722,11 +722,11 @@ class VerbChunkManager {
       const dueLemmas = await extractDueLemmas(userId, currentDate, hoursAhead)
 
       if (dueLemmas.length === 0) {
-        console.log(' SRS: No due lemmas found, skipping preload')
+        console.log('📊 SRS: No due lemmas found, skipping preload')
         return
       }
 
-      console.log(` SRS: Preloading ${dueLemmas.length} due verbs into chunks`)
+      console.log(`🔄 SRS: Preloading ${dueLemmas.length} due verbs into chunks`)
       const startTime = performance.now()
 
       // Preload all due verbs - this will trigger chunk loading if needed
@@ -753,7 +753,7 @@ class VerbChunkManager {
    */
   async preloadErrorProneVerbs(userId, limitVerbs = 15) {
     if (!userId) {
-      console.warn('️  preloadErrorProneVerbs: No userId provided, skipping error-driven preload')
+      console.warn('⚠️  preloadErrorProneVerbs: No userId provided, skipping error-driven preload')
       return 0
     }
 
@@ -776,7 +776,7 @@ class VerbChunkManager {
       // Preload error-prone verbs
       const verbList = Array.from(errorProneVerbs).slice(0, limitVerbs)
       if (verbList.length > 0) {
-        console.log(`️ Chunk: Preloading ${verbList.length} error-prone verbs`)
+        console.log(`⚠️ Chunk: Preloading ${verbList.length} error-prone verbs`)
         await this.ensureVerbsLoaded(verbList)
       }
 
@@ -796,7 +796,7 @@ class VerbChunkManager {
    */
   async preloadLowMasteryVerbs(userId, threshold = 60, limitVerbs = 10) {
     if (!userId) {
-      console.warn('️  preloadLowMasteryVerbs: No userId provided, skipping mastery-aware preload')
+      console.warn('⚠️  preloadLowMasteryVerbs: No userId provided, skipping mastery-aware preload')
       return 0
     }
 
@@ -814,7 +814,7 @@ class VerbChunkManager {
         .filter(lemma => lemma) // Remove undefined
 
       if (lowMasteryVerbs.length > 0) {
-        console.log(` Chunk: Preloading ${lowMasteryVerbs.length} low-mastery verbs`)
+        console.log(`📈 Chunk: Preloading ${lowMasteryVerbs.length} low-mastery verbs`)
         await this.ensureVerbsLoaded(lowMasteryVerbs)
       }
 
@@ -879,7 +879,7 @@ class VerbChunkManager {
       await Promise.allSettled(tasks)
 
       results.totalTime = performance.now() - startTime
-      console.log(` Smart preloading completed in ${results.totalTime.toFixed(2)}ms:`, results)
+      console.log(`🎯 Smart preloading completed in ${results.totalTime.toFixed(2)}ms:`, results)
 
       return results
     } catch (error) {
@@ -1004,10 +1004,10 @@ class VerbChunkManager {
     // FAILSAFE: If chunks completely fail, load from main verbs file
     try {
       const { verbs: allVerbs } = await import('../../data/verbs.js')
-      console.log(' getAllVerbs: Successfully loaded from main verbs file as fallback')
+      console.log('🚨 getAllVerbs: Successfully loaded from main verbs file as fallback')
       return allVerbs
     } catch (fallbackError) {
-      console.error(' CRITICAL: getAllVerbs main file fallback also failed:', fallbackError)
+      console.error('💀 CRITICAL: getAllVerbs main file fallback also failed:', fallbackError)
       throw new Error('CRITICAL: All verb loading methods failed in getAllVerbs')
     }
   }
@@ -1024,7 +1024,7 @@ class VerbChunkManager {
     const strategies = [
       // Strategy 1: Try preferred chunks
       async () => {
-        console.log(' Strategy 1: Loading preferred chunks:', preferredChunks)
+        console.log('🔄 Strategy 1: Loading preferred chunks:', preferredChunks)
         const verbs = []
         for (const chunkName of preferredChunks) {
           try {
@@ -1040,20 +1040,20 @@ class VerbChunkManager {
 
       // Strategy 2: Try all chunks
       async () => {
-        console.log(' Strategy 2: Loading all available chunks')
+        console.log('🔄 Strategy 2: Loading all available chunks')
         return await this.getAllVerbs()
       },
 
       // Strategy 3: Emergency fallback to main file
       async () => {
-        console.log(' Strategy 3: Emergency fallback to main verbs file')
+        console.log('🚨 Strategy 3: Emergency fallback to main verbs file')
         const { verbs: allVerbs } = await import('../../data/verbs.js')
         return allVerbs
       },
 
       // Strategy 4: Minimal essential verbs (absolute last resort)
       async () => {
-        console.log(' Strategy 4: Loading minimal essential verbs')
+        console.log('💀 Strategy 4: Loading minimal essential verbs')
         const essentialLemmas = ['ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber']
         try {
           const { verbs: allVerbs } = await import('../../data/verbs.js')
@@ -1074,7 +1074,7 @@ class VerbChunkManager {
     for (let strategyIndex = 0; strategyIndex < strategies.length; strategyIndex++) {
       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-          console.log(` Trying strategy ${strategyIndex + 1}, attempt ${attempt}`)
+          console.log(`🎯 Trying strategy ${strategyIndex + 1}, attempt ${attempt}`)
 
           // Wrap strategy execution with timeout
           const strategyPromise = strategies[strategyIndex]()
@@ -1090,7 +1090,7 @@ class VerbChunkManager {
             // Apply frequency filtering if irregulars are included in preferredChunks
             if (preferredChunks.includes('irregulars')) {
               const filteredVerbs = await this.applyFrequencyFilteringToIrregulars(verbs)
-              console.log(` Applied failsafe frequency filtering: ${verbs.length} → ${filteredVerbs.length} verbs`)
+              console.log(`📊 Applied failsafe frequency filtering: ${verbs.length} → ${filteredVerbs.length} verbs`)
               return filteredVerbs
             }
 
@@ -1101,14 +1101,14 @@ class VerbChunkManager {
 
           // If it's the last attempt of the last strategy, prepare for critical failure
           if (strategyIndex === strategies.length - 1 && attempt === maxAttempts) {
-            console.error(' CRITICAL: All failsafe strategies exhausted')
+            console.error('💀 CRITICAL: All failsafe strategies exhausted')
 
             // Auto-disable chunks if they keep failing
             try {
               const { useSettings } = await import('../../state/settings.js')
               const store = useSettings.getState()
               if (store.enableChunks) {
-                console.log(' Auto-disabling chunks due to repeated failures')
+                console.log('🔧 Auto-disabling chunks due to repeated failures')
                 store.set({
                   enableChunks: false,
                   chunksFailsafeActivated: true,
@@ -1171,7 +1171,7 @@ class VerbChunkManager {
     // Filter by specific irregular families if requested
     let filteredVerbs = themeVerbs
     if (irregularFamilies.length > 0) {
-      console.log(` Filtering ${themeVerbs.length} verbs by irregular families: ${irregularFamilies.join(', ')}`)
+      console.log(`🔍 Filtering ${themeVerbs.length} verbs by irregular families: ${irregularFamilies.join(', ')}`)
 
       filteredVerbs = themeVerbs.filter(verb => {
         try {
@@ -1194,18 +1194,18 @@ class VerbChunkManager {
         }
       })
 
-      console.log(` Family filtering: ${themeVerbs.length} → ${filteredVerbs.length} verbs`)
+      console.log(`📊 Family filtering: ${themeVerbs.length} → ${filteredVerbs.length} verbs`)
     }
 
     // Enhanced fallback: if no verbs found, try robust failsafe
     if (filteredVerbs.length === 0) {
-      console.warn(` getVerbsByTheme returned 0 verbs for theme "${theme}", activating failsafe`)
+      console.warn(`🚨 getVerbsByTheme returned 0 verbs for theme "${theme}", activating failsafe`)
       try {
         const failsafeVerbs = await this.getVerbsWithRobustFailsafe(Array.from(relevantChunks))
-        console.log(` Failsafe recovered ${failsafeVerbs.length} verbs for theme "${theme}"`)
+        console.log(`📊 Failsafe recovered ${failsafeVerbs.length} verbs for theme "${theme}"`)
         return failsafeVerbs
       } catch (error) {
-        console.error(` Theme failsafe also failed for "${theme}":`, error)
+        console.error(`💀 Theme failsafe also failed for "${theme}":`, error)
         return []
       }
     }
@@ -1274,7 +1274,7 @@ class VerbChunkManager {
              // as it includes advanced C1/C2 verbs like "proseguir", "argüir"
     })
 
-    console.log(` Applied frequency filtering: ${verbs.length} → ${filteredVerbs.length} irregular verbs`)
+    console.log(`📊 Applied frequency filtering: ${verbs.length} → ${filteredVerbs.length} irregular verbs`)
     return filteredVerbs
   }
 

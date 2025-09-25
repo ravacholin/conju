@@ -30,7 +30,7 @@ export async function recordLearningSession(userId, sessionData) {
     try {
       await initDB();
       await saveLearningSession(sessionMetrics);
-      console.log(' Learning session recorded:', sessionMetrics.sessionId);
+      console.log('📊 Learning session recorded:', sessionMetrics.sessionId);
     } catch (error) {
       console.error('Error storing learning session:', error);
     }
@@ -194,7 +194,7 @@ export async function generateErrorHeatMap(userId, timeframe = 'month') {
     heatMapData.overall.errorRate = heatMapData.overall.totalAttempts > 0 ? 
       (heatMapData.overall.totalErrors / heatMapData.overall.totalAttempts) : 0;
 
-    console.log(' Generated error heat map:', heatMapData);
+    console.log('📈 Generated error heat map:', heatMapData);
     return heatMapData;
 
   } catch (error) {
@@ -321,7 +321,7 @@ export async function generateLearningCurve(userId, tense = null, timeframe = 'm
           }
         });
 
-    console.log(' Generated learning curve:', curveData);
+    console.log('📈 Generated learning curve:', curveData);
     return curveData;
 
   } catch (error) {

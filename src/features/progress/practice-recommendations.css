@@ -126,7 +126,7 @@
 }
 
 .retry-btn {
-  background: background: #333;
+  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
   color: var(--bg);
   border: none;
   padding: 0.75rem 1.5rem;
@@ -141,7 +141,7 @@
 }
 
 .retry-btn:hover {
-  background: background: #333;
+  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
   transform: translateY(-2px) scale(1.02);
   box-shadow: 
     0 8px 24px rgba(245, 245, 245, 0.15),
@@ -222,8 +222,8 @@
 }
 
 .recommendation-card.high {
-  border-left: 4px solid #333;
-  background: #333;
+  border-left: 4px solid rgba(255, 159, 122, 0.6);
+  background: rgba(255, 159, 122, 0.05);
 }
 
 .recommendation-card.medium {
@@ -273,8 +273,8 @@
 }
 
 .priority-badge.high {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 159, 122, 0.15);
+  border-color: rgba(255, 159, 122, 0.3);
   color: var(--accent-red);
 }
 
@@ -320,7 +320,7 @@
 
 .difficulty-badge.green { background: rgba(125, 233, 184, 0.15); border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
 .difficulty-badge.orange { background: rgba(245, 214, 136, 0.15); border-color: rgba(245, 214, 136, 0.3); color: var(--accent-orange); }
-.difficulty-badge.red { background: #333; }
+.difficulty-badge.red { background: rgba(255, 159, 122, 0.15); border-color: rgba(255, 159, 122, 0.3); color: var(--accent-red); }
 .difficulty-badge.blue { background: rgba(142, 180, 227, 0.15); border-color: rgba(142, 180, 227, 0.3); color: var(--accent-blue); }
 .difficulty-badge.purple { background: rgba(168, 168, 168, 0.15); border-color: rgba(168, 168, 168, 0.3); color: var(--muted); }
 .difficulty-badge.teal { background: rgba(125, 233, 184, 0.15); border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
@@ -415,7 +415,7 @@
 
 .session-btn.short { border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
 .session-btn.medium { border-color: rgba(245, 214, 136, 0.3); color: var(--accent-orange); }
-.session-btn.long { border-color: #333; }
+.session-btn.long { border-color: rgba(255, 159, 122, 0.3); color: var(--accent-red); }
 
 .session-preview {
   background: rgba(21, 21, 21, 0.6);
@@ -458,7 +458,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: #333;
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.05);
   border-radius: 8px;
   font-size: 0.85rem;
@@ -466,7 +466,7 @@
 }
 
 .session-activity:hover {
-  background: #333;
+  background: rgba(255, 255, 255, 0.04);
   border-color: rgba(245, 245, 245, 0.08);
 }
 
@@ -489,7 +489,7 @@
 
 .start-session-btn {
   width: 100%;
-  background: background: #333;
+  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
   color: var(--bg);
   border: none;
   padding: 0.875rem;
@@ -504,7 +504,7 @@
 }
 
 .start-session-btn:hover {
-  background: background: #333;
+  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
   transform: translateY(-2px) scale(1.02);
   box-shadow: 
     0 8px 24px rgba(245, 245, 245, 0.15),

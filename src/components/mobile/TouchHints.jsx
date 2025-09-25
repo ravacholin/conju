@@ -51,18 +51,18 @@ export default function TouchHints({
       {showHint && (
         <div className={`touch-hint ${position}`}>
           <div className="touch-hint-content">
-            <span className="touch-hint-icon"></span>
+            <span className="touch-hint-icon">👆</span>
             <span className="touch-hint-text">{hint}</span>
           </div>
 
           {showSwipeHints && (
             <div className="swipe-hints">
               <div className="swipe-hint">
-                <span className="swipe-icon"></span>
+                <span className="swipe-icon">👈</span>
                 <span className="swipe-text">Desliza</span>
               </div>
               <div className="swipe-hint">
-                <span className="swipe-icon"></span>
+                <span className="swipe-icon">👉</span>
                 <span className="swipe-text">Navegar</span>
               </div>
             </div>

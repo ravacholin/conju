@@ -1,10 +1,10 @@
 /* Gamification Display Styles */
 .gamification-display {
-  background: var(--card-background, #333);
+  background: var(--card-background, #ffffff);
   border-radius: 12px;
   padding: 16px;
-  border: 1px solid var(--border-light, #333);
-  box-shadow: 0 2px 4px #333;
+  border: 1px solid var(--border-light, #e2e8f0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .gamification-display:hover {
-  box-shadow: 0 4px 12px #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
@@ -26,7 +26,7 @@
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  background: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
 }
@@ -59,7 +59,7 @@
 
 .gamification-display.compact .xp-bar {
   position: relative;
-  background: #333;
+  background: rgba(255, 255, 255, 0.2);
   height: 8px;
   border-radius: 4px;
   flex: 1;
@@ -68,7 +68,7 @@
 
 .gamification-display.compact .xp-progress {
   height: 100%;
-  background: #333;
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -91,7 +91,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  background: #333;
+  background: rgba(255, 255, 255, 0.15);
   padding: 4px 8px;
   border-radius: 12px;
 }
@@ -121,7 +121,7 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   font-size: 18px;
   font-weight: 600;
 }
@@ -152,14 +152,14 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: 700;
   font-size: 24px;
-  box-shadow: 0 4px 12px #333;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .level-details {
@@ -168,14 +168,14 @@
 
 .level-title {
   margin: 0 0 4px 0;
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   font-size: 20px;
   font-weight: 600;
 }
 
 .level-subtitle {
   margin: 0;
-  color: var(--text-secondary, #333);
+  color: var(--text-secondary, #64748b);
   font-size: 14px;
 }
 
@@ -191,7 +191,7 @@
 
 .xp-bar {
   height: 12px;
-  background: var(--background-secondary, #333);
+  background: var(--background-secondary, #f1f5f9);
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -199,7 +199,7 @@
 
 .xp-progress {
   height: 100%;
-  background: #333;
+  background: linear-gradient(90deg, #10b981, #34d399);
   border-radius: 6px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -212,7 +212,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #333, transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
 }
 
@@ -229,12 +229,12 @@
 }
 
 .xp-current {
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   font-weight: 600;
 }
 
 .xp-next {
-  color: var(--text-secondary, #333);
+  color: var(--text-secondary, #64748b);
 }
 
 .xp-remaining {
@@ -244,8 +244,8 @@
 
 .xp-remaining span {
   font-size: 12px;
-  color: var(--text-secondary, #333);
-  background: var(--background-secondary, #333);
+  color: var(--text-secondary, #64748b);
+  background: var(--background-secondary, #f1f5f9);
   padding: 2px 8px;
   border-radius: 8px;
 }
@@ -257,7 +257,7 @@
 
 .streaks-section h5 {
   margin: 0 0 12px 0;
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   font-size: 16px;
   font-weight: 600;
 }
@@ -274,26 +274,26 @@
   align-items: center;
   padding: 16px 12px;
   border-radius: 12px;
-  border: 1px solid var(--border-light, #333);
+  border: 1px solid var(--border-light, #e2e8f0);
   transition: all 0.2s ease;
 }
 
 .streak-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .streak-card.daily {
-  background: #333;
+  background: linear-gradient(135deg, #fef7cd, #fbbf24);
 }
 
 .streak-card.consecutive {
-  background: #333;
+  background: linear-gradient(135deg, #dbeafe, #3b82f6);
   color: white;
 }
 
 .streak-card.perfect {
-  background: #333;
+  background: linear-gradient(135deg, #d1fae5, #10b981);
   color: white;
 }
 
@@ -333,7 +333,7 @@
 /* Badges Section */
 .badges-section h5 {
   margin: 0 0 12px 0;
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   font-size: 16px;
   font-weight: 600;
 }
@@ -353,25 +353,25 @@
   min-width: 80px;
   padding: 12px 8px;
   border-radius: 12px;
-  background: var(--background-secondary, #333);
-  border: 2px solid #333;
+  background: var(--background-secondary, #f1f5f9);
+  border: 2px solid #ffd700;
   transition: all 0.2s ease;
 }
 
 .badge-item:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 16px #333;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
 }
 
 .badge-icon {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #333;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px #333;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
 }
 
 .badge-icon img {
@@ -383,7 +383,7 @@
   font-size: 11px;
   text-align: center;
   font-weight: 600;
-  color: var(--text-primary, #333);
+  color: var(--text-primary, #1a202c);
   line-height: 1.2;
 }
 
@@ -396,11 +396,11 @@
 
 .badges-more span {
   font-size: 12px;
-  color: var(--text-secondary, #333);
-  background: var(--background-secondary, #333);
+  color: var(--text-secondary, #64748b);
+  background: var(--background-secondary, #f1f5f9);
   padding: 4px 12px;
   border-radius: 12px;
-  border: 1px dashed var(--border-light, #333);
+  border: 1px dashed var(--border-light, #e2e8f0);
 }
 
 /* Responsive Design */
@@ -452,8 +452,8 @@
 .spinner.small {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--border-light, #333);
-  border-top-color: var(--primary, #333);
+  border: 2px solid var(--border-light, #e2e8f0);
+  border-top-color: var(--primary, #3b82f6);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -465,11 +465,11 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .gamification-display {
-    --card-background: #333;
-    --text-primary: #333;
-    --text-secondary: #333;
-    --background-secondary: #333;
-    --border-light: #333;
+    --card-background: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --background-secondary: #334155;
+    --border-light: #475569;
   }
 
   .badge-item {

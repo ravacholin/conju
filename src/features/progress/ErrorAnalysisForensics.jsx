@@ -54,7 +54,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
     <div className="error-analysis-forensics">
       <div className="forensics-header">
         <div className="header-title">
-          <h2> Análisis Forense de Errores</h2>
+          <h2>🔬 Análisis Forense de Errores</h2>
           <p>Investigación profunda de patrones, causas y contextos</p>
         </div>
 
@@ -74,7 +74,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
               className={viewMode === 'timeline' ? 'active' : ''}
               onClick={() => setViewMode('timeline')}
             >
-               Timeline
+              📈 Timeline
             </button>
             <button
               className={viewMode === 'patterns' ? 'active' : ''}
@@ -86,13 +86,13 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
               className={viewMode === 'context' ? 'active' : ''}
               onClick={() => setViewMode('context')}
             >
-               Contexto
+              🌐 Contexto
             </button>
             <button
               className={viewMode === 'prediction' ? 'active' : ''}
               onClick={() => setViewMode('prediction')}
             >
-               Predicción
+              🔮 Predicción
             </button>
           </div>
         </div>
@@ -114,8 +114,8 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
                   <div className="error-stats">
                     <span className="count">{errorType.count} errores</span>
                     <span className="trend">
-                      {errorType.trend === 'increasing' ? '' :
-                       errorType.trend === 'decreasing' ? '' : '➡️'}
+                      {errorType.trend === 'increasing' ? '📈' :
+                       errorType.trend === 'decreasing' ? '📉' : '➡️'}
                     </span>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
                 </div>
 
                 <div className="impact-assessment">
-                  <h4> Evaluación de Impacto</h4>
+                  <h4>📊 Evaluación de Impacto</h4>
                   <div className="impact-metrics">
                     <div className="metric">
                       <span className="metric-label">Impacto en Aprendizaje:</span>
@@ -211,7 +211,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
 
           {!selectedErrorAnalysis && (
             <div className="no-error-selected">
-              <div className="no-error-icon"></div>
+              <div className="no-error-icon">🔬</div>
               <h3>Selecciona un tipo de error</h3>
               <p>Elige un error de la lista para comenzar el análisis forense detallado</p>
             </div>
@@ -226,7 +226,7 @@ function TimelineAnalysis({ errorData, errorType: _errorType }) {
   return (
     <div className="timeline-analysis">
       <div className="analysis-header">
-        <h3> Análisis Temporal</h3>
+        <h3>📈 Análisis Temporal</h3>
         <p>Evolución del error a lo largo del tiempo</p>
       </div>
 
@@ -247,7 +247,7 @@ function TimelineAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="temporal-patterns">
-        <h4> Patrones Temporales Detectados</h4>
+        <h4>🕐 Patrones Temporales Detectados</h4>
         <div className="patterns-grid">
           {errorData.temporalPatterns.map((pattern, index) => (
             <div key={index} className="pattern-card">
@@ -265,7 +265,7 @@ function TimelineAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="critical-periods">
-        <h4>️ Períodos Críticos</h4>
+        <h4>⚠️ Períodos Críticos</h4>
         <div className="critical-list">
           {errorData.criticalPeriods.map((period, index) => (
             <div key={index} className="critical-period">
@@ -301,7 +301,7 @@ function PatternAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="linguistic-patterns">
-        <h4> Patrones Lingüísticos</h4>
+        <h4>📝 Patrones Lingüísticos</h4>
         <div className="patterns-container">
           {errorData.linguisticPatterns.map((pattern, index) => (
             <div key={index} className="linguistic-pattern">
@@ -328,7 +328,7 @@ function PatternAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="triggers-analysis">
-        <h4> Análisis de Triggers</h4>
+        <h4>🎯 Análisis de Triggers</h4>
         <div className="triggers-grid">
           {errorData.triggers.map((trigger, index) => (
             <div key={index} className="trigger-card">
@@ -355,7 +355,7 @@ function PatternAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="error-chains">
-        <h4> Cadenas de Error</h4>
+        <h4>🔗 Cadenas de Error</h4>
         <p className="section-description">
           Errores que tienden a ocurrir juntos o en secuencia
         </p>
@@ -393,12 +393,12 @@ function ContextAnalysis({ errorData, errorType: _errorType }) {
   return (
     <div className="context-analysis">
       <div className="analysis-header">
-        <h3> Análisis Contextual</h3>
+        <h3>🌐 Análisis Contextual</h3>
         <p>Factores ambientales y contextuales que influyen en el error</p>
       </div>
 
       <div className="contextual-factors">
-        <h4> Factores Contextuales</h4>
+        <h4>🎭 Factores Contextuales</h4>
         <div className="factors-grid">
           {errorData.contextualFactors.map((factor, index) => (
             <div key={index} className="context-factor">
@@ -435,7 +435,7 @@ function ContextAnalysis({ errorData, errorType: _errorType }) {
               </div>
 
               <div className="factor-recommendations">
-                <h6> Recomendaciones:</h6>
+                <h6>💡 Recomendaciones:</h6>
                 <ul>
                   {factor.recommendations.map((rec, i) => (
                     <li key={i}>{rec}</li>
@@ -448,10 +448,10 @@ function ContextAnalysis({ errorData, errorType: _errorType }) {
       </div>
 
       <div className="environmental-analysis">
-        <h4> Análisis Ambiental</h4>
+        <h4>🌍 Análisis Ambiental</h4>
         <div className="environmental-factors">
           <div className="env-factor">
-            <h5> Tiempo del Día</h5>
+            <h5>⏰ Tiempo del Día</h5>
             <div className="time-distribution">
               {Object.entries(errorData.timeDistribution).map(([hour, count]) => (
                 <div key={hour} className="time-slot">
@@ -469,7 +469,7 @@ function ContextAnalysis({ errorData, errorType: _errorType }) {
           </div>
 
           <div className="env-factor">
-            <h5> Día de la Semana</h5>
+            <h5>📅 Día de la Semana</h5>
             <div className="day-distribution">
               {errorData.dayDistribution.map((day, index) => (
                 <div key={index} className="day-slot">
@@ -487,7 +487,7 @@ function ContextAnalysis({ errorData, errorType: _errorType }) {
           </div>
 
           <div className="env-factor">
-            <h5> Estado Emocional</h5>
+            <h5>🧠 Estado Emocional</h5>
             <div className="emotional-states">
               {errorData.emotionalStates.map((state, index) => (
                 <div key={index} className="emotional-state">
@@ -515,12 +515,12 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
   return (
     <div className="prediction-analysis">
       <div className="analysis-header">
-        <h3> Análisis Predictivo</h3>
+        <h3>🔮 Análisis Predictivo</h3>
         <p>Predicciones y recomendaciones basadas en patrones identificados</p>
       </div>
 
       <div className="risk-assessment">
-        <h4>️ Evaluación de Riesgos</h4>
+        <h4>⚠️ Evaluación de Riesgos</h4>
         <div className="risk-cards">
           {errorData.risks.map((risk, index) => (
             <div key={index} className={`risk-card ${risk.level}`}>
@@ -539,7 +539,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
                 <span>Horizonte temporal: {risk.timeframe}</span>
               </div>
               <div className="risk-mitigation">
-                <h6>️ Mitigación:</h6>
+                <h6>🛡️ Mitigación:</h6>
                 <ul>
                   {risk.mitigationStrategies.map((strategy, i) => (
                     <li key={i}>{strategy}</li>
@@ -552,7 +552,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
       </div>
 
       <div className="improvement-projections">
-        <h4> Proyecciones de Mejora</h4>
+        <h4>📈 Proyecciones de Mejora</h4>
         <div className="projections-container">
           {errorData.improvementProjections.map((projection, index) => (
             <div key={index} className="projection-card">
@@ -576,7 +576,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
               </div>
 
               <div className="projection-requirements">
-                <h6> Requisitos:</h6>
+                <h6>📋 Requisitos:</h6>
                 <ul>
                   {projection.requirements.map((req, i) => (
                     <li key={i}>{req}</li>
@@ -589,7 +589,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
       </div>
 
       <div className="actionable-insights">
-        <h4> Insights Accionables</h4>
+        <h4>🎯 Insights Accionables</h4>
         <div className="insights-list">
           {errorData.actionableInsights.map((insight, index) => (
             <div key={index} className="actionable-insight">
@@ -605,12 +605,12 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
               </div>
 
               <div className="insight-recommendation">
-                <h5> Recomendación:</h5>
+                <h5>💡 Recomendación:</h5>
                 <p>{insight.recommendation}</p>
               </div>
 
               <div className="insight-evidence">
-                <h6> Evidencia:</h6>
+                <h6>📊 Evidencia:</h6>
                 <ul>
                   {insight.evidence.map((evidence, i) => (
                     <li key={i}>{evidence}</li>
@@ -619,7 +619,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
               </div>
 
               <div className="insight-actions">
-                <h6> Acciones Sugeridas:</h6>
+                <h6>🚀 Acciones Sugeridas:</h6>
                 <div className="action-buttons">
                   {insight.suggestedActions.map((action, i) => (
                     <button
@@ -638,7 +638,7 @@ function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice 
       </div>
 
       <div className="next-steps">
-        <h4> Próximos Pasos Recomendados</h4>
+        <h4>👣 Próximos Pasos Recomendados</h4>
         <div className="steps-roadmap">
           {errorData.nextSteps.map((step, index) => (
             <div key={index} className="roadmap-step">
@@ -866,7 +866,7 @@ function identifyTemporalPatterns(attempts) {
   if (weekendErrors.length > attempts.length * 0.3) {
     patterns.push({
       name: 'Efecto Fin de Semana',
-      icon: '',
+      icon: '📅',
       description: 'Mayor frecuencia de errores durante fines de semana',
       confidence: weekendErrors.length / attempts.length
     })
@@ -920,7 +920,7 @@ function identifyLinguisticPatterns(_attempts, _errorType) {
 function identifyTriggers(attempts, _errorType) {
   return [{
     name: 'Velocidad Alta',
-    icon: '',
+    icon: '⚡',
     description: 'Errores más frecuentes con respuestas rápidas',
     occurrences: Math.floor(attempts.length * 0.6),
     correlation: 0.75,
@@ -940,7 +940,7 @@ function identifyErrorChains(attempts, errorType) {
 function analyzeContextualFactors(_attempts) {
   return [{
     name: 'Estado Emocional',
-    icon: '',
+    icon: '🧠',
     impactLevel: 'high',
     description: 'El estado emocional influye significativamente en la frecuencia de errores',
     correlations: [
@@ -990,16 +990,16 @@ function getMaxDailyErrors(attempts) {
 
 function analyzeEmotionalStates(_attempts) {
   return [
-    { name: 'Neutral', icon: '', percentage: 40, impactLevel: 'low' },
-    { name: 'Frustrado', icon: '', percentage: 35, impactLevel: 'high' },
-    { name: 'Confiado', icon: '', percentage: 25, impactLevel: 'positive' }
+    { name: 'Neutral', icon: '😐', percentage: 40, impactLevel: 'low' },
+    { name: 'Frustrado', icon: '😤', percentage: 35, impactLevel: 'high' },
+    { name: 'Confiado', icon: '😊', percentage: 25, impactLevel: 'positive' }
   ]
 }
 
 function assessRisks(_attempts, _errorType) {
   return [{
     name: 'Riesgo de Fosilización',
-    icon: '️',
+    icon: '⚠️',
     level: 'medium',
     description: 'Patrón de error puede convertirse en permanente',
     probability: 0.4,
@@ -1042,12 +1042,12 @@ function generateActionableInsights(_attempts, errorType) {
     suggestedActions: [
       {
         label: 'Práctica Dirigida',
-        icon: '',
+        icon: '🎯',
         config: { errorType, focusMode: 'targeted', duration: 15 }
       },
       {
         label: 'Micro-lección',
-        icon: '',
+        icon: '📚',
         config: { errorType, mode: 'lesson', interactive: true }
       }
     ]
@@ -1079,16 +1079,16 @@ function formatDate(dateString) {
 function getErrorIcon(errorType) {
   const icons = {
     [ERROR_TAGS.ACCENT]: '´',
-    [ERROR_TAGS.VERBAL_ENDING]: '',
-    [ERROR_TAGS.IRREGULAR_STEM]: '',
-    [ERROR_TAGS.WRONG_PERSON]: '',
-    [ERROR_TAGS.WRONG_TENSE]: '',
-    [ERROR_TAGS.WRONG_MOOD]: '',
-    [ERROR_TAGS.CLITIC_PRONOUNS]: '',
-    [ERROR_TAGS.ORTHOGRAPHY_C_QU]: '',
-    [ERROR_TAGS.ORTHOGRAPHY_G_GU]: '',
-    [ERROR_TAGS.ORTHOGRAPHY_Z_C]: '',
-    [ERROR_TAGS.OTHER_VALID_FORM]: ''
+    [ERROR_TAGS.VERBAL_ENDING]: '📝',
+    [ERROR_TAGS.IRREGULAR_STEM]: '🌱',
+    [ERROR_TAGS.WRONG_PERSON]: '👤',
+    [ERROR_TAGS.WRONG_TENSE]: '⏰',
+    [ERROR_TAGS.WRONG_MOOD]: '🎭',
+    [ERROR_TAGS.CLITIC_PRONOUNS]: '🔗',
+    [ERROR_TAGS.ORTHOGRAPHY_C_QU]: '🔤',
+    [ERROR_TAGS.ORTHOGRAPHY_G_GU]: '🔠',
+    [ERROR_TAGS.ORTHOGRAPHY_Z_C]: '📖',
+    [ERROR_TAGS.OTHER_VALID_FORM]: '🔄'
   }
   return icons[errorType] || '❌'
 }

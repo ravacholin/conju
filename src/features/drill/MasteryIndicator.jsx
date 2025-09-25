@@ -67,9 +67,9 @@ export default function MasteryIndicator({ currentItem }) {
   }
 
   const getMasteryEmoji = (score) => {
-    if (score >= 80) return ''
-    if (score >= 60) return ''
-    return ''
+    if (score >= 80) return '🌟'
+    if (score >= 60) return '⚡'
+    return '🔥'
   }
 
   return (

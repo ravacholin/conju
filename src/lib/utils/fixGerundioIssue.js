@@ -17,16 +17,16 @@ export function fixGerundioIssue() {
     })
   })
   
-  console.log(' Total forms in database:', allForms.length)
+  console.log('📊 Total forms in database:', allForms.length)
   
   // Step 2: Check nonfinite forms specifically
   const nonfiniteForms = allForms.filter(f => f.mood === 'nonfinite')
   const gerundios = nonfiniteForms.filter(f => f.tense === 'ger')
   const participios = nonfiniteForms.filter(f => f.tense === 'part')
   
-  console.log(' Nonfinite forms:', nonfiniteForms.length)
-  console.log(' Gerundios:', gerundios.length)
-  console.log(' Participios:', participios.length)
+  console.log('📊 Nonfinite forms:', nonfiniteForms.length)
+  console.log('📊 Gerundios:', gerundios.length)
+  console.log('📊 Participios:', participios.length)
   
   // Step 3: Set correct settings for gerundio practice
   useSettings.setState({
@@ -45,7 +45,7 @@ export function fixGerundioIssue() {
   console.log('✅ Settings updated for gerundio practice')
   
   // Step 4: Show sample gerundios
-  console.log(' Sample gerundios:', gerundios.slice(0, 10).map(f => `${f.lemma}: ${f.value}`))
+  console.log('📊 Sample gerundios:', gerundios.slice(0, 10).map(f => `${f.lemma}: ${f.value}`))
   
   return {
     totalForms: allForms.length,

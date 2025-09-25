@@ -21,25 +21,25 @@ export default function InteractiveErrorVisualizations({
             className={`viz-btn ${activeVisualization === 'constellation' ? 'active' : ''}`}
             onClick={() => setActiveVisualization('constellation')}
           >
-             Constelación
+            🌌 Constelación
           </button>
           <button
             className={`viz-btn ${activeVisualization === 'timeline' ? 'active' : ''}`}
             onClick={() => setActiveVisualization('timeline')}
           >
-             Timeline
+            📈 Timeline
           </button>
           <button
             className={`viz-btn ${activeVisualization === 'heatmap' ? 'active' : ''}`}
             onClick={() => setActiveVisualization('heatmap')}
           >
-             Heatmap
+            🔥 Heatmap
           </button>
           <button
             className={`viz-btn ${activeVisualization === 'network' ? 'active' : ''}`}
             onClick={() => setActiveVisualization('network')}
           >
-            ️ Red
+            🕸️ Red
           </button>
         </div>
 
@@ -195,7 +195,7 @@ function ErrorConstellationMap({ attempts, timeRange, onErrorFocus, selectedErro
           <div key={index} className="legend-item">
             <div
               className="legend-color"
-              
+              style={{ backgroundColor: cluster.color }}
             ></div>
             <span>{cluster.name}</span>
             <span className="legend-count">({cluster.totalErrors})</span>
@@ -223,7 +223,7 @@ function AdvancedErrorTimeline({ timelineData, attempts, timeRange }) {
   return (
     <div className="advanced-timeline">
       <div className="timeline-header">
-        <h3> Timeline de Errores con Contexto Emocional</h3>
+        <h3>📊 Timeline de Errores con Contexto Emocional</h3>
         <div className="timeline-metrics">
           <div className="metric">
             <span className="metric-value">{processedTimeline.totalErrors}</span>
@@ -312,7 +312,7 @@ function ErrorHeatmapEvolution({ attempts, timeRange }) {
   return (
     <div className="heatmap-evolution">
       <div className="heatmap-controls">
-        <h3> Evolución de Errores por Tipo y Tiempo</h3>
+        <h3>🔥 Evolución de Errores por Tipo y Tiempo</h3>
         <div className="heatmap-legend">
           <span>Menos errores</span>
           <div className="color-solid"></div>
@@ -363,7 +363,7 @@ function ErrorNetworkGraph({ attempts, timeRange, onErrorFocus }) {
   return (
     <div className="error-network">
       <div className="network-header">
-        <h3>️ Red de Correlaciones de Errores</h3>
+        <h3>🕸️ Red de Correlaciones de Errores</h3>
         <p>Los errores conectados tienden a ocurrir juntos</p>
       </div>
 

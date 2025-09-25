@@ -106,7 +106,7 @@ export default function SRSReviewQueueModal({ isOpen, onClose, onStartSession })
 
         <section className="srs-queue__list">
           {loading && <p className="srs-queue__status">Cargando cola completa…</p>}
-          {error && <p className="srs-queue__error">️ {error}</p>}
+          {error && <p className="srs-queue__error">⚠️ {error}</p>}
           {!loading && filteredQueue.length === 0 && (
             <p className="srs-queue__status">No hay elementos que coincidan con los filtros seleccionados.</p>
           )}

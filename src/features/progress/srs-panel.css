@@ -1,15 +1,15 @@
 /* Panel SRS - Diseño minimalista y claro */
 
 .srs-panel {
-  background: #333;
+  background: rgba(17, 17, 17, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid #333;
+  border: 1px solid rgba(245, 245, 245, 0.08);
   border-radius: 20px;
   padding: 2rem;
   box-shadow:
-    0 12px 48px #333,
-    0 1px 0 #333 inset;
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(245, 245, 245, 0.05) inset;
   margin-bottom: 2rem;
   width: 100%;
 }
@@ -85,8 +85,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   margin-top: 0.5rem;
@@ -129,7 +129,7 @@
 }
 
 .toggle-details-btn.secondary:hover {
-  background: #333;
+  background: rgba(37, 99, 235, 0.1);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -160,8 +160,8 @@
 }
 
 .srs-stat-card {
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 1.5rem;
   position: relative;
@@ -179,22 +179,22 @@
 }
 
 .stat-indicator.urgent-indicator {
-  background: #333, #333);
+  background: linear-gradient(90deg, var(--accent-red), rgba(220, 53, 69, 0.7));
 }
 
 .stat-indicator.ready-indicator {
-  background: #333, #333);
+  background: linear-gradient(90deg, var(--accent-green), rgba(40, 167, 69, 0.7));
 }
 
 .stat-indicator.scheduled-indicator {
-  background: #333, #333);
+  background: linear-gradient(90deg, var(--accent-blue), rgba(0, 123, 255, 0.7));
 }
 
 .srs-stat-card:hover {
   transform: translateY(-2px) scale(1.01);
-  background: #333;
-  border-color: #333;
-  box-shadow: 0 8px 32px #333;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .stat-icon {
@@ -228,8 +228,8 @@
   border-radius: 50%;
   position: relative;
   background: conic-gradient(
-    var(--accent-blue, #333) calc(var(--progress) * 1%),
-    #333 0%
+    var(--accent-blue, #007bff) calc(var(--progress) * 1%),
+    rgba(255, 255, 255, 0.1) 0%
   );
   display: flex;
   align-items: center;
@@ -243,7 +243,7 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  background: #333;
+  background: rgba(17, 17, 17, 0.8);
   border-radius: 50%;
 }
 
@@ -257,22 +257,22 @@
 
 .srs-stat-card.urgent .progress-ring {
   background: conic-gradient(
-    var(--accent-red, #333) calc(var(--progress) * 1%),
-    #333 0%
+    var(--accent-red, #dc3545) calc(var(--progress) * 1%),
+    rgba(255, 255, 255, 0.1) 0%
   );
 }
 
 .srs-stat-card.ready .progress-ring {
   background: conic-gradient(
-    var(--accent-green, #333) calc(var(--progress) * 1%),
-    #333 0%
+    var(--accent-green, #28a745) calc(var(--progress) * 1%),
+    rgba(255, 255, 255, 0.1) 0%
   );
 }
 
 .srs-stat-card.scheduled .progress-ring {
   background: conic-gradient(
-    var(--accent-blue, #333) calc(var(--progress) * 1%),
-    #333 0%
+    var(--accent-blue, #007bff) calc(var(--progress) * 1%),
+    rgba(255, 255, 255, 0.1) 0%
   );
 }
 
@@ -282,7 +282,7 @@
   font-weight: 400;
   margin-top: 0.5rem;
   padding: 0.25rem 0.5rem;
-  background: #333;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   text-align: center;
 }
@@ -309,8 +309,8 @@
 .srs-main-btn {
   width: 100%;
   padding: 0;
-  background: #333, #333);
-  border: 1px solid #333;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -318,10 +318,10 @@
 }
 
 .srs-main-btn:hover {
-  background: #333, #333);
-  border-color: #333;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px #333;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 .btn-content {
@@ -368,8 +368,8 @@
 .srs-no-items {
   text-align: center;
   padding: 2rem 1rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   margin-bottom: 1rem;
 }
@@ -453,20 +453,20 @@
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #333;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text);
   font-weight: 400;
   transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: #333;
-  border-color: #333;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
 
 .btn-badge {
-  background: #333;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 0.75rem;
@@ -476,8 +476,8 @@
 
 /* Details Section - Rediseño minimalista */
 .srs-details {
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 1.5rem;
   margin-top: 2rem;
@@ -527,27 +527,27 @@
 }
 
 .legend-item.urgent-overdue {
-  background: #333;
+  background: rgba(220, 53, 69, 0.1);
   border-color: var(--accent-red);
-  color: #333;
+  color: #ff9999;
 }
 
 .legend-item.urgent-high {
-  background: #333;
+  background: rgba(255, 193, 7, 0.1);
   border-color: var(--warning);
-  color: #333;
+  color: #ffcc99;
 }
 
 .legend-item.urgent-medium {
-  background: #333;
+  background: rgba(40, 167, 69, 0.1);
   border-color: var(--accent-green);
-  color: #333;
+  color: #99ff99;
 }
 
 .legend-item.urgent-low {
-  background: #333;
+  background: rgba(23, 162, 184, 0.1);
   border-color: var(--accent-blue);
-  color: #333;
+  color: #99ccff;
 }
 
 /* Items List */
@@ -563,37 +563,37 @@
   align-items: center;
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  border: 1px solid #333;
-  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
   margin-bottom: 0.75rem;
 }
 
 .srs-item:hover {
   transform: translateX(4px);
-  box-shadow: 0 4px 16px #333;
-  background: #333;
-  border-color: #333;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .srs-item.urgent-overdue {
   border-left: 4px solid var(--accent-red);
-  background: #333, #333);
+  background: linear-gradient(90deg, rgba(220, 53, 69, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-item.urgent-high {
   border-left: 4px solid var(--warning);
-  background: #333, #333);
+  background: linear-gradient(90deg, rgba(255, 193, 7, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-item.urgent-medium {
   border-left: 4px solid var(--accent-green);
-  background: #333, #333);
+  background: linear-gradient(90deg, rgba(40, 167, 69, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-item.urgent-low {
   border-left: 4px solid var(--accent-blue);
-  background: #333, #333);
+  background: linear-gradient(90deg, rgba(23, 162, 184, 0.05), rgba(255, 255, 255, 0.02));
 }
 
 .srs-item-content {
@@ -668,17 +668,17 @@
 
 .mastery-value.mastery-high {
   color: var(--accent-green);
-  background: #333;
+  background: rgba(40, 167, 69, 0.1);
 }
 
 .mastery-value.mastery-medium {
   color: var(--warning);
-  background: #333;
+  background: rgba(255, 193, 7, 0.1);
 }
 
 .mastery-value.mastery-low {
   color: var(--accent-red);
-  background: #333;
+  background: rgba(220, 53, 69, 0.1);
 }
 
 .srs-item-timing {
@@ -701,7 +701,7 @@
 
 .urgency-badge.urgent-high {
   background: var(--warning);
-  color: #333;
+  color: #000;
 }
 
 .urgency-badge.urgent-medium {
@@ -724,7 +724,7 @@
   padding: 1rem;
   color: var(--muted);
   font-style: italic;
-  border-top: 1px solid #333;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
@@ -741,8 +741,8 @@
 .srs-empty {
   text-align: center;
   padding: 3rem 2rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   margin-top: 1rem;
 }
@@ -785,8 +785,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #333;
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;

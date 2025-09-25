@@ -374,7 +374,7 @@ export class FlowStateDetector {
       case FLOW_STATES.DEEP_FLOW:
         return {
           action: 'maintain',
-          message: ' ¡Estás en la zona! Mantén el ritmo.',
+          message: '🔥 ¡Estás en la zona! Mantén el ritmo.',
           difficultyAdjustment: 'increase_slightly', // Aumentar dificultad ligeramente
           contentType: 'challenging',
           urgency: 'low'
@@ -383,7 +383,7 @@ export class FlowStateDetector {
       case FLOW_STATES.LIGHT_FLOW:
         return {
           action: 'enhance',
-          message: ' Buen ritmo, puedes ir un poco más rápido.',
+          message: '✨ Buen ritmo, puedes ir un poco más rápido.',
           difficultyAdjustment: 'maintain',
           contentType: 'balanced',
           urgency: 'low'
@@ -392,7 +392,7 @@ export class FlowStateDetector {
       case FLOW_STATES.STRUGGLING:
         return {
           action: 'support',
-          message: ' Tómatelo con calma, vas bien.',
+          message: '💪 Tómatelo con calma, vas bien.',
           difficultyAdjustment: 'decrease',
           contentType: 'easier',
           urgency: 'medium'
@@ -401,7 +401,7 @@ export class FlowStateDetector {
       case FLOW_STATES.FRUSTRATED:
         return {
           action: 'recover',
-          message: ' Respira hondo, vamos a algo más fácil.',
+          message: '🌱 Respira hondo, vamos a algo más fácil.',
           difficultyAdjustment: 'decrease_significantly',
           contentType: 'confidence_building',
           urgency: 'high'
@@ -410,7 +410,7 @@ export class FlowStateDetector {
       default:
         return {
           action: 'continue',
-          message: ' Continúa con tu práctica.',
+          message: '📚 Continúa con tu práctica.',
           difficultyAdjustment: 'maintain',
           contentType: 'balanced',
           urgency: 'low'

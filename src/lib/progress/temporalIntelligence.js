@@ -654,21 +654,21 @@ export class TemporalIntelligence {
     const slot = this.timeSlots.get(hour)
     if (slot && slot.totalSessions > 3) {
       if (sessionEntry.performance > slot.averagePerformance + 0.1) {
-        insights.push(' Rendimiento excepcional para esta hora del día')
+        insights.push('🚀 Rendimiento excepcional para esta hora del día')
       } else if (sessionEntry.performance < slot.averagePerformance - 0.1) {
-        insights.push(' Rendimiento por debajo de tu promedio habitual para esta hora')
+        insights.push('📉 Rendimiento por debajo de tu promedio habitual para esta hora')
       }
     }
 
     // Insights de fatiga
     if (sessionEntry.fatigueLevel < 0.3 && sessionEntry.performance > 0.8) {
-      insights.push(' Excelente combinación: baja fatiga y alto rendimiento')
+      insights.push('⚡ Excelente combinación: baja fatiga y alto rendimiento')
     }
 
     // Insights de duración
     const sessionMinutes = sessionEntry.duration / (1000 * 60)
     if (sessionMinutes > this.circadianProfile.optimalSessionLength * 1.5 && sessionEntry.performance < 0.6) {
-      insights.push(' Sesión larga detectada - considera sesiones más cortas')
+      insights.push('⏰ Sesión larga detectada - considera sesiones más cortas')
     }
 
     return insights

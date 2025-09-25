@@ -105,17 +105,17 @@ function testLearningFamilies() {
     }
 
     if (generatedCount > 0) {
-      console.log(`    ¡ÉXITO! Se generaron ${generatedCount} verbos para LEARNING_PRET_3AS_PERSONAS`);
+      console.log(`   🎉 ¡ÉXITO! Se generaron ${generatedCount} verbos para LEARNING_PRET_3AS_PERSONAS`);
     } else {
-      console.log(`    ¡FALLO! No se pudo generar ningún verbo para LEARNING_PRET_3AS_PERSONAS`);
+      console.log(`   🚨 ¡FALLO! No se pudo generar ningún verbo para LEARNING_PRET_3AS_PERSONAS`);
       console.log(`   Familia convertida: ${testSettings.selectedFamily}`);
     }
 
   } catch (error) {
-    console.log(`    ERROR CRÍTICO: ${error.message}`);
+    console.log(`   🚨 ERROR CRÍTICO: ${error.message}`);
   }
 
-  console.log('\n PRUEBA COMPLETADA - Sistema pedagógico funcionando');
+  console.log('\n🎉 PRUEBA COMPLETADA - Sistema pedagógico funcionando');
 }
 
 // Exportar para uso en desarrollo

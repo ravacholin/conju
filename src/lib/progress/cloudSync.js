@@ -74,26 +74,26 @@ export async function syncWithCloud(options = {}) {
     ? include
     : ['attempts', 'mastery', 'schedules', 'sessions']
 
-  console.log(' DEBUG cloudSync: Iniciando syncWithCloud con opciones:', { include: collections, bypassIncognito })
+  console.log('🔍 DEBUG cloudSync: Iniciando syncWithCloud con opciones:', { include: collections, bypassIncognito })
 
   if (isIncognitoMode && !bypassIncognito) {
-    console.log(' Modo incógnito activo, omitiendo sincronización')
+    console.log('🔒 Modo incógnito activo, omitiendo sincronización')
     recordSyncOutcome({ success: true, skipped: 'incognito' })
     return true
   }
 
   if (!isSyncEnabled()) {
-    console.log('️ Sincronización no habilitada. Configurá VITE_PROGRESS_SYNC_URL o setSyncEndpoint().')
+    console.log('⚠️ Sincronización no habilitada. Configurá VITE_PROGRESS_SYNC_URL o setSyncEndpoint().')
     recordSyncOutcome({ success: false, reason: 'sync_disabled' })
     return false
   }
 
   if (isSyncing) {
-    console.log(' Sincronización ya en progreso, reutilizando estado actual')
+    console.log('🔄 Sincronización ya en progreso, reutilizando estado actual')
     return false
   }
 
-  console.log(' DEBUG cloudSync: getCurrentUserId al inicio:', getCurrentUserId())
+  console.log('🔍 DEBUG cloudSync: getCurrentUserId al inicio:', getCurrentUserId())
 
   isSyncing = true
   syncError = null
@@ -145,7 +145,7 @@ export function setIncognitoMode(enabled) {
   if (isIncognitoMode) {
     cancelScheduledSync()
   }
-  console.log(` Modo incógnito ${enabled ? 'activado' : 'desactivado'}`)
+  console.log(`🔒 Modo incógnito ${enabled ? 'activado' : 'desactivado'}`)
 }
 
 /**
@@ -154,17 +154,17 @@ export function setIncognitoMode(enabled) {
  */
 export async function hasPendingSyncData() {
   if (!isSyncEnabled()) {
-    console.log(' DEBUG hasPendingSyncData: Sync no habilitado')
+    console.log('🔍 DEBUG hasPendingSyncData: Sync no habilitado')
     return false
   }
 
   const userId = getCurrentUserId()
   if (!userId) {
-    console.log(' DEBUG hasPendingSyncData: No hay userId')
+    console.log('🔍 DEBUG hasPendingSyncData: No hay userId')
     return false
   }
 
-  console.log(` DEBUG hasPendingSyncData: Verificando datos pendientes para userId: ${userId}`)
+  console.log(`🔍 DEBUG hasPendingSyncData: Verificando datos pendientes para userId: ${userId}`)
 
   try {
     const [attempts, mastery, schedulesStore, sessions] = await Promise.all([
@@ -176,28 +176,28 @@ export async function hasPendingSyncData() {
 
     const schedules = schedulesStore.filter((item) => item.userId === userId)
 
-    console.log(` DEBUG hasPendingSyncData: Datos encontrados - attempts: ${attempts.length}, mastery: ${mastery.length}, schedules: ${schedules.length}, sessions: ${sessions.length}`)
+    console.log(`🔍 DEBUG hasPendingSyncData: Datos encontrados - attempts: ${attempts.length}, mastery: ${mastery.length}, schedules: ${schedules.length}, sessions: ${sessions.length}`)
 
     const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
     const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
     const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
     const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
 
-    console.log(` DEBUG hasPendingSyncData: Sin sincronizar - attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}`)
+    console.log(`🔍 DEBUG hasPendingSyncData: Sin sincronizar - attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}`)
 
     const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0 || unsyncedSessions.length > 0
 
     if (pending) {
-      console.log(' DEBUG hasPendingSyncData: HAY datos pendientes de sincronización')
+      console.log('🔍 DEBUG hasPendingSyncData: HAY datos pendientes de sincronización')
       return true
     }
 
     const queuedBatches = hasQueuedBatches()
-    console.log(' DEBUG hasPendingSyncData: Batches en cola:', queuedBatches)
+    console.log('🔍 DEBUG hasPendingSyncData: Batches en cola:', queuedBatches)
 
     return queuedBatches
   } catch (error) {
-    console.warn('️ No se pudo verificar datos pendientes de sincronización:', error)
+    console.warn('⚠️ No se pudo verificar datos pendientes de sincronización:', error)
     return false
   }
 }
@@ -208,7 +208,7 @@ export async function hasPendingSyncData() {
  * @returns {Promise<boolean>} Si la sincronización fue exitosa
  */
 export async function forceSync(options = {}) {
-  console.log(' Forzando sincronización completa (ignorando modo incógnito)...')
+  console.log('🔄 Forzando sincronización completa (ignorando modo incógnito)...')
   return await syncWithCloud({ ...options, bypassIncognito: true })
 }
 
@@ -249,7 +249,7 @@ export async function exportDataForBackup() {
  * @returns {Promise<void>}
  */
 export async function importDataFromBackup() {
-  console.warn('️ importDataFromBackup aún no implementado. Usa setSchedule() y helpers dedicados para restaurar datos.')
+  console.warn('⚠️ importDataFromBackup aún no implementado. Usa setSchedule() y helpers dedicados para restaurar datos.')
 }
 
 /**
@@ -258,7 +258,7 @@ export async function importDataFromBackup() {
  */
 export function handleConnectivityChange(online) {
   isOnline = !!online
-  console.log(` Conectividad: ${online ? 'Conectado' : 'Desconectado'}`)
+  console.log(`🌐 Conectividad: ${online ? 'Conectado' : 'Desconectado'}`)
   if (online) {
     flushSyncQueue().then(() => syncWithCloud()).catch(() => {})
   }
@@ -271,7 +271,7 @@ export function handleConnectivityChange(online) {
  */
 export async function syncDifferential(include = ['attempts', 'mastery']) {
   try {
-    console.log(' Iniciando sincronización diferencial:', include)
+    console.log('🔄 Iniciando sincronización diferencial:', include)
     return await syncWithCloud({ include })
   } catch (error) {
     console.error('Error en sincronización diferencial:', error)
@@ -288,7 +288,7 @@ export function scheduleAutoSync(intervalMs = 300000) {
 
   const timerApi = typeof globalThis !== 'undefined' ? globalThis : undefined
   if (!timerApi?.setInterval) {
-    console.warn(' No se pudo programar sincronización automática: setInterval no disponible')
+    console.warn('⏰ No se pudo programar sincronización automática: setInterval no disponible')
     return
   }
 
@@ -301,7 +301,7 @@ export function scheduleAutoSync(intervalMs = 300000) {
     syncWithCloud().catch(() => {})
   }, intervalMs)
 
-  console.log(` Programando sincronización automática cada ${Math.round(intervalMs / 60000)} minutos`)
+  console.log(`⏰ Programando sincronización automática cada ${Math.round(intervalMs / 60000)} minutos`)
 }
 
 /**

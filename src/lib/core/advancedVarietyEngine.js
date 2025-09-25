@@ -146,7 +146,7 @@ class SessionMemory {
       
       // DEBUG: Log penalty calculation
       if (import.meta.env.DEV) {
-        console.log(` REPETITION PENALTY - ${form.lemma}: age=${Math.floor(age/1000)}s, penalty=${verbPenalty.toFixed(3)}`)
+        console.log(`🚫 REPETITION PENALTY - ${form.lemma}: age=${Math.floor(age/1000)}s, penalty=${verbPenalty.toFixed(3)}`)
       }
     }
     
@@ -169,7 +169,7 @@ class SessionMemory {
     if (this.recentCombinations && this.recentCombinations.has(exactCombo)) {
       penalty += 0.95 // Very high penalty for exact same combination
       if (import.meta.env.DEV) {
-        console.log(` EXACT COMBO PENALTY - ${exactCombo}: +0.95 penalty`)
+        console.log(`🚫 EXACT COMBO PENALTY - ${exactCombo}: +0.95 penalty`)
       }
     }
     
@@ -343,10 +343,10 @@ export class AdvancedVarietyEngine {
       const totalCount = eligibleForms.length
       const highPriorityPercent = ((highPriorityCount / totalCount) * 100).toFixed(1)
       
-      console.group(` TOPIC PRACTICE PRIORITIZATION - Level ${level}`)
-      console.log(` Eligible forms: ${totalCount}`)
-      console.log(` High priority (A1/A2/B1): ${highPriorityCount} (${highPriorityPercent}%)`)
-      console.log(` Advanced (B2+/C1+): ${totalCount - highPriorityCount} (${(100 - parseFloat(highPriorityPercent)).toFixed(1)}%)`)
+      console.group(`🎯 TOPIC PRACTICE PRIORITIZATION - Level ${level}`)
+      console.log(`📊 Eligible forms: ${totalCount}`)
+      console.log(`⭐ High priority (A1/A2/B1): ${highPriorityCount} (${highPriorityPercent}%)`)
+      console.log(`🔺 Advanced (B2+/C1+): ${totalCount - highPriorityCount} (${(100 - parseFloat(highPriorityPercent)).toFixed(1)}%)`)
       console.groupEnd()
     }
     
@@ -364,7 +364,7 @@ export class AdvancedVarietyEngine {
    */
   selectBasicForm(forms, history) {
     // ENHANCED: Apply stronger variety algorithms even for basic selection
-    console.log(' BASIC SELECTION - Enhancing variety algorithms')
+    console.log('🔄 BASIC SELECTION - Enhancing variety algorithms')
     
     // Group forms by lemma to ensure verb variety
     const verbGroups = new Map()
@@ -375,7 +375,7 @@ export class AdvancedVarietyEngine {
       verbGroups.get(form.lemma).push(form)
     })
     
-    console.log(` VARIETY DEBUG - ${verbGroups.size} different verbs available:`, Array.from(verbGroups.keys()).slice(0, 10))
+    console.log(`🔄 VARIETY DEBUG - ${verbGroups.size} different verbs available:`, Array.from(verbGroups.keys()).slice(0, 10))
     
     const scoredForms = forms.map(form => {
       const accuracyScore = this.getAccuracyScore(form, history)
@@ -434,7 +434,7 @@ export class AdvancedVarietyEngine {
     scoredForms.sort((a, b) => b.score - a.score) // Higher score = higher priority
     const topCandidates = scoredForms.slice(0, Math.min(8, Math.ceil(forms.length * 0.4)))
     
-    console.log(' TOP CANDIDATES:', topCandidates.slice(0, 5).map(c => `${c.form.lemma}(${c.score.toFixed(2)})`))
+    console.log('🔄 TOP CANDIDATES:', topCandidates.slice(0, 5).map(c => `${c.form.lemma}(${c.score.toFixed(2)})`))
     
     const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)].form
     
@@ -442,7 +442,7 @@ export class AdvancedVarietyEngine {
     const category = this.getVerbSemanticCategory(selected.lemma)
     this.sessionMemory.recordSelection(selected, category)
     
-    console.log(' SELECTED:', `${selected.lemma} - ${selected.mood}/${selected.tense} - ${selected.person}`)
+    console.log('🔄 SELECTED:', `${selected.lemma} - ${selected.mood}/${selected.tense} - ${selected.person}`)
     
     return selected
   }
@@ -764,7 +764,7 @@ export class AdvancedVarietyEngine {
     const finalScore = priorityScore * weightMultiplier
     
     if (import.meta.env.DEV && Math.random() < 0.05) {
-      console.log(` VERB PRIORITY - ${lemma}: priority=${priority}, weight=${weight}, score=${finalScore.toFixed(2)}`)
+      console.log(`🎯 VERB PRIORITY - ${lemma}: priority=${priority}, weight=${weight}, score=${finalScore.toFixed(2)}`)
     }
     
     return Math.min(1.0, finalScore) // Cap at 1.0
@@ -793,7 +793,7 @@ export class AdvancedVarietyEngine {
         score = Math.max(0.05, score - compoundPenalty) // Minimum 5% chance
         
         if (import.meta.env.DEV) {
-          console.log(` COMPOUND COOLDOWN - Recent compounds: ${recentCompoundCount}, penalty: ${(compoundPenalty * 100).toFixed(1)}%, final score: ${(score * 100).toFixed(1)}%`)
+          console.log(`🔄 COMPOUND COOLDOWN - Recent compounds: ${recentCompoundCount}, penalty: ${(compoundPenalty * 100).toFixed(1)}%, final score: ${(score * 100).toFixed(1)}%`)
         }
       }
     }

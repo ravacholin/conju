@@ -43,7 +43,7 @@ function generateTestForms() {
  * Test anti-repetition system
  */
 export function testAntiRepetition() {
-  console.log('\n === ANTI-REPETITION SYSTEM TEST ===')
+  console.log('\n🔬 === ANTI-REPETITION SYSTEM TEST ===')
   
   varietyEngine.resetSession()
   const testForms = generateTestForms()
@@ -111,7 +111,7 @@ export function testAntiRepetition() {
  * Test level-specific priorities
  */
 export function testLevelSpecificPriorities() {
-  console.log('\n === LEVEL-SPECIFIC PRIORITIES TEST ===')
+  console.log('\n🎯 === LEVEL-SPECIFIC PRIORITIES TEST ===')
   
   const testForms = generateTestForms()
   const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -187,7 +187,7 @@ export function testLevelSpecificPriorities() {
  * Test progressive difficulty within session
  */
 export function testProgressiveDifficulty() {
-  console.log('\n === PROGRESSIVE DIFFICULTY TEST ===')
+  console.log('\n📈 === PROGRESSIVE DIFFICULTY TEST ===')
   
   varietyEngine.resetSession()
   const testForms = generateTestForms()
@@ -242,7 +242,7 @@ export function testProgressiveDifficulty() {
  * Test semantic category diversity
  */
 export function testSemanticDiversity() {
-  console.log('\n === SEMANTIC DIVERSITY TEST ===')
+  console.log('\n🌈 === SEMANTIC DIVERSITY TEST ===')
   
   varietyEngine.resetSession()
   
@@ -323,7 +323,7 @@ export function testSemanticDiversity() {
  * Comprehensive variety engine test suite
  */
 export function runAdvancedVarietyTests() {
-  console.log('\n === ADVANCED VARIETY ENGINE TEST SUITE ===')
+  console.log('\n🚀 === ADVANCED VARIETY ENGINE TEST SUITE ===')
   console.log('Testing the enhanced mixed practice algorithms\n')
   
   const antiRepetitionTest = testAntiRepetition()
@@ -331,7 +331,7 @@ export function runAdvancedVarietyTests() {
   const progressiveDifficultyTest = testProgressiveDifficulty()
   const semanticDiversityTest = testSemanticDiversity()
   
-  console.log('\n === COMPREHENSIVE TEST RESULTS ===')
+  console.log('\n📊 === COMPREHENSIVE TEST RESULTS ===')
   console.log(`Anti-Repetition System: ${antiRepetitionTest.success ? '✅ PASSED' : '❌ FAILED'}`)
   console.log(`Level-Specific Priorities: ${levelPrioritiesTest.success ? '✅ PASSED' : '❌ FAILED'}`)
   console.log(`Progressive Difficulty: ${progressiveDifficultyTest.success ? '✅ PASSED' : '❌ FAILED'}`)
@@ -343,14 +343,14 @@ export function runAdvancedVarietyTests() {
                          semanticDiversityTest.success
   
   if (overallSuccess) {
-    console.log('\n ALL ADVANCED VARIETY TESTS PASSED!')
-    console.log(' The enhanced mixed practice algorithm is working correctly:')
+    console.log('\n🎉 ALL ADVANCED VARIETY TESTS PASSED!')
+    console.log('✨ The enhanced mixed practice algorithm is working correctly:')
     console.log('   • Effective anti-repetition prevents boring patterns')
     console.log('   • Level-specific priorities ensure appropriate content')
     console.log('   • Progressive difficulty keeps sessions challenging')
     console.log('   • Semantic diversity provides engaging variety')
   } else {
-    console.log('\n️  Some advanced variety tests failed. Check the details above.')
+    console.log('\n⚠️  Some advanced variety tests failed. Check the details above.')
   }
   
   return {
@@ -373,7 +373,7 @@ if (typeof window !== 'undefined') {
   }
   
   console.log(`
- Advanced Variety Testing Available!
+🚀 Advanced Variety Testing Available!
 
 Run in browser console:
   window.testAdvancedVariety.runAll()           // Run all variety tests

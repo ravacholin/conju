@@ -9,7 +9,7 @@ export default function ErrorPatternRecognition({ attempts, mastery, onPatternAc
   return (
     <div className="error-pattern-recognition">
       <div className="patterns-header">
-        <h2> Inteligencia de Patrones Avanzada</h2>
+        <h2>🧠 Inteligencia de Patrones Avanzada</h2>
         <p className="patterns-subtitle">
           Análisis predictivo basado en comportamiento y contexto emocional
         </p>
@@ -17,28 +17,28 @@ export default function ErrorPatternRecognition({ attempts, mastery, onPatternAc
 
       <div className="patterns-categories">
         <PatternCategory
-          title=" Patrones Temporales"
+          title="🕒 Patrones Temporales"
           patterns={patterns.temporal}
           onPatternAction={onPatternAction}
           color="#17a2b8"
         />
 
         <PatternCategory
-          title=" Patrones Emocionales"
+          title="🧘 Patrones Emocionales"
           patterns={patterns.emotional}
           onPatternAction={onPatternAction}
           color="#6f42c1"
         />
 
         <PatternCategory
-          title=" Patrones Lingüísticos"
+          title="🎯 Patrones Lingüísticos"
           patterns={patterns.linguistic}
           onPatternAction={onPatternAction}
           color="#dc3545"
         />
 
         <PatternCategory
-          title=" Patrones de Progreso"
+          title="📈 Patrones de Progreso"
           patterns={patterns.progress}
           onPatternAction={onPatternAction}
           color="#28a745"
@@ -46,7 +46,7 @@ export default function ErrorPatternRecognition({ attempts, mastery, onPatternAc
       </div>
 
       <div className="pattern-insights-summary">
-        <h3> Predicciones y Recomendaciones</h3>
+        <h3>🔮 Predicciones y Recomendaciones</h3>
         <div className="insights-grid">
           {generatePredictiveInsights(patterns).map((insight, index) => (
             <InsightCard key={index} insight={insight} onAction={onPatternAction} />
@@ -61,7 +61,7 @@ function PatternCategory({ title, patterns, onPatternAction, color }) {
   if (patterns.length === 0) {
     return (
       <div className="pattern-category empty">
-        <h3 >{title}</h3>
+        <h3 style={{ color }}>{title}</h3>
         <p className="no-patterns-message">
           ✅ No se detectaron patrones problemáticos en esta categoría
         </p>
@@ -71,7 +71,7 @@ function PatternCategory({ title, patterns, onPatternAction, color }) {
 
   return (
     <div className="pattern-category">
-      <h3 >{title}</h3>
+      <h3 style={{ color }}>{title}</h3>
       <div className="patterns-list">
         {patterns.map((pattern, index) => (
           <PatternCard
@@ -89,11 +89,11 @@ function PatternCategory({ title, patterns, onPatternAction, color }) {
 function PatternCard({ pattern, onPatternAction, categoryColor }) {
   const getSeverityIcon = (severity) => {
     switch (severity) {
-      case 'critical': return ''
-      case 'high': return ''
+      case 'critical': return '🚨'
+      case 'high': return '🔴'
       case 'medium': return '🟡'
       case 'low': return '🟢'
-      default: return ''
+      default: return '⚪'
     }
   }
 
@@ -134,8 +134,8 @@ function PatternCard({ pattern, onPatternAction, categoryColor }) {
             <div className="data-item">
               <span className="data-label">Tendencia:</span>
               <span className={`data-value trend-${pattern.data.trend}`}>
-                {pattern.data.trend === 'increasing' ? ' Aumentando' :
-                 pattern.data.trend === 'decreasing' ? ' Mejorando' : '➡️ Estable'}
+                {pattern.data.trend === 'increasing' ? '📈 Aumentando' :
+                 pattern.data.trend === 'decreasing' ? '📉 Mejorando' : '➡️ Estable'}
               </span>
             </div>
           )}
@@ -153,12 +153,12 @@ function PatternCard({ pattern, onPatternAction, categoryColor }) {
       )}
 
       <div className="pattern-insight">
-         <strong>Insight:</strong> {pattern.insight}
+        💡 <strong>Insight:</strong> {pattern.insight}
       </div>
 
       {pattern.recommendations.map((rec, index) => (
         <div key={index} className="pattern-recommendation">
-           <strong>Recomendación:</strong> {rec}
+          🎯 <strong>Recomendación:</strong> {rec}
         </div>
       ))}
 
@@ -587,7 +587,7 @@ function generatePredictiveInsights(patterns) {
   const highRiskPatterns = allPatterns.filter(p => p.severity === 'high' || p.severity === 'critical')
   if (highRiskPatterns.length > 0) {
     insights.push({
-      icon: '️',
+      icon: '⚠️',
       title: 'Riesgo de Frustración Alta',
       description: `${highRiskPatterns.length} patrones críticos detectados que pueden afectar tu motivación`,
       prediction: 'Alta probabilidad de abandono si no se aborda en los próximos 7 días',
@@ -605,7 +605,7 @@ function generatePredictiveInsights(patterns) {
   const emotionalPatterns = patterns.emotional
   if (emotionalPatterns.length > 0) {
     insights.push({
-      icon: '',
+      icon: '🎯',
       title: 'Oportunidad de Optimización',
       description: 'Tu rendimiento varía significativamente según tu estado emocional',
       prediction: 'Podrías mejorar 40-60% optimizando cuándo y cómo practicas',
@@ -623,7 +623,7 @@ function generatePredictiveInsights(patterns) {
   const progressPatterns = patterns.progress
   if (progressPatterns.some(p => p.id === 'progress-plateau')) {
     insights.push({
-      icon: '',
+      icon: '🚀',
       title: 'Momento de Breakthrough',
       description: 'Estás en un plateau típico antes de un gran salto de progreso',
       prediction: 'Con pequeños cambios, podrías acelerar tu progreso significativamente',

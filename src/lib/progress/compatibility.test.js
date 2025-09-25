@@ -18,7 +18,7 @@ describe('Pruebas de Compatibilidad del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log(' Configurando entorno de pruebas de compatibilidad...')
+    console.log('🔧 Configurando entorno de pruebas de compatibilidad...')
   })
 
   it('debería ser compatible con diferentes navegadores modernos', () => {

@@ -23,7 +23,7 @@ class AuthService {
     this.setupGoogleEventListeners()
 
     // Debug sync configuration on initialization
-    console.log(' AuthService initialized with sync config:', getSyncConfigDebug())
+    console.log('🔧 AuthService initialized with sync config:', getSyncConfigDebug())
   }
 
   // Storage management
@@ -496,7 +496,7 @@ class AuthService {
 
         if (!initialized) {
           this.googleInitPromise = null
-          console.warn('️ Google OAuth initialization was not successful')
+          console.warn('⚠️ Google OAuth initialization was not successful')
         } else {
           console.log('✅ Google OAuth initialized in AuthService')
         }
@@ -504,7 +504,7 @@ class AuthService {
         return initialized
       })().catch((error) => {
         this.googleInitPromise = null
-        console.warn('️ Failed to initialize Google OAuth:', error?.message || error)
+        console.warn('⚠️ Failed to initialize Google OAuth:', error?.message || error)
         return false
       })
     }
@@ -519,7 +519,7 @@ class AuthService {
     window.addEventListener('google-auth-success', async (event) => {
       const googleUser = event.detail
       try {
-        console.log(' Processing Google auth success event:', googleUser)
+        console.log('🔵 Processing Google auth success event:', googleUser)
         await this.processGoogleLogin(googleUser)
 
         // Emit login event after successful processing
@@ -563,7 +563,7 @@ class AuthService {
         }
       }
 
-      console.log(' Sending Google login request to server:', {
+      console.log('🔵 Sending Google login request to server:', {
         email: googleUser.email,
         name: googleUser.name,
         deviceName: data.deviceName,
@@ -622,7 +622,7 @@ class AuthService {
           const { waitForProgressSystem } = await import('../progress/ProgressSystemEvents.js')
           await waitForProgressSystem(5000) // 5 second timeout
         } catch (timeoutError) {
-          console.warn('️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
+          console.warn('⚠️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
         }
 
         const module = await import('../progress/userManager.js')
@@ -639,12 +639,12 @@ class AuthService {
           try {
             anonymousUserId = localStorage.getItem('progress-system-user-id')
           } catch (storageError) {
-            console.warn('️ Could not access localStorage for userId fallback:', storageError.message)
+            console.warn('⚠️ Could not access localStorage for userId fallback:', storageError.message)
           }
         }
 
         if (!anonymousUserId) {
-          console.warn('️ No anonymous userId found in progress system or localStorage')
+          console.warn('⚠️ No anonymous userId found in progress system or localStorage')
           return null
         }
 
@@ -675,7 +675,7 @@ class AuthService {
         let localMigrationResult = null
         let validationResult = null
         try {
-          console.log(' Iniciando migración local de IndexedDB...')
+          console.log('🔄 Iniciando migración local de IndexedDB...')
           const databaseModule = await import('../progress/database.js')
           const { migrateUserIdInLocalDB, validateUserIdMigration, revertUserIdMigration } = databaseModule
 
@@ -687,7 +687,7 @@ class AuthService {
             // Validar que la migración fue exitosa
             if (typeof validateUserIdMigration === 'function') {
               validationResult = await validateUserIdMigration(anonymousUserId, authenticatedUserId)
-              console.log(' Resultado de validación:', validationResult)
+              console.log('🔍 Resultado de validación:', validationResult)
 
               if (!validationResult.valid) {
                 console.error('❌ Validación de migración falló. Intentando revertir...')
@@ -717,7 +717,7 @@ class AuthService {
               }
             }
           } else {
-            console.warn('️ Función migrateUserIdInLocalDB no encontrada')
+            console.warn('⚠️ Función migrateUserIdInLocalDB no encontrada')
           }
         } catch (localError) {
           console.error('❌ Error en migración local de IndexedDB:', localError)
@@ -728,7 +728,7 @@ class AuthService {
         // Fix: Treat "no rows migrated" case as success - still call setCurrentUserId
         if (localMigrationResult && !localMigrationResult.error && validationResult?.valid) {
           try {
-            console.log(' Actualizando sistema de progreso con nuevo userId...')
+            console.log('🔄 Actualizando sistema de progreso con nuevo userId...')
             const progressModule = await import('../progress/index.js')
             const { setCurrentUserId } = progressModule
 
@@ -737,11 +737,11 @@ class AuthService {
               if (updateSuccess) {
                 console.log('✅ Sistema de progreso actualizado con nuevo userId')
               } else {
-                console.warn('️ No se pudo actualizar userId en sistema de progreso')
+                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso')
               }
             }
           } catch (progressError) {
-            console.warn('️ Error actualizando sistema de progreso:', progressError.message)
+            console.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
           }
         } else if (localMigrationResult && !localMigrationResult.error && 
                    validationResult && 
@@ -750,7 +750,7 @@ class AuthService {
           // Special case: no rows to migrate (fresh device)
           // Treat as success and still update the progress system
           try {
-            console.log(' Actualizando sistema de progreso con nuevo userId (no data to migrate)...')
+            console.log('🔄 Actualizando sistema de progreso con nuevo userId (no data to migrate)...')
             const progressModule = await import('../progress/index.js')
             const { setCurrentUserId } = progressModule
 
@@ -759,14 +759,14 @@ class AuthService {
               if (updateSuccess) {
                 console.log('✅ Sistema de progreso actualizado con nuevo userId (no data case)')
               } else {
-                console.warn('️ No se pudo actualizar userId en sistema de progreso (no data case)')
+                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso (no data case)')
               }
             }
           } catch (progressError) {
-            console.warn('️ Error actualizando sistema de progreso (no data case):', progressError.message)
+            console.warn('⚠️ Error actualizando sistema de progreso (no data case):', progressError.message)
           }
         } else {
-          console.warn('️ Saltando actualización de sistema de progreso - migración no exitosa')
+          console.warn('⚠️ Saltando actualización de sistema de progreso - migración no exitosa')
         }
 
         this.lastMigratedAnonymousId = anonymousUserId
@@ -789,7 +789,7 @@ class AuthService {
           authenticatedUserId
         }
       } catch (error) {
-        console.warn('️ Failed to migrate anonymous progress:', error?.message || error)
+        console.warn('⚠️ Failed to migrate anonymous progress:', error?.message || error)
         return null
       } finally {
         this.postLoginMigrationPromise = null

@@ -91,7 +91,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
             {data.summary?.incorrect7 || 0} / {data.summary?.total7 || 0}
           </span>
           {data.summary && (
-            <span >
+            <span style={{ marginLeft: 8, fontSize: 12, color: data.summary.trend==='up' ? '#ff6b6b' : data.summary.trend==='down' ? '#5ee6a5' : '#ffd166' }}>
               {data.summary.trend==='up' ? '▲ peor' : data.summary.trend==='down' ? '▼ mejor' : '■ estable'}
             </span>
           )}

@@ -12,7 +12,7 @@ class GlobalErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     // Log for debugging
-    console.error('️ Error de aplicación capturado por GlobalErrorBoundary:', error, info)
+    console.error('⚠️ Error de aplicación capturado por GlobalErrorBoundary:', error, info)
   }
 
   handleRetry = () => {
@@ -25,7 +25,7 @@ class GlobalErrorBoundary extends React.Component {
       return (
         <div className="App">
           <div className="error-overlay">
-            <h2>️ Error de aplicación</h2>
+            <h2>⚠️ Error de aplicación</h2>
             <p style={{ whiteSpace: 'pre-wrap' }}>{msg}</p>
             <div style={{ marginTop: 12 }}>
               <button className="btn" onClick={this.handleRetry}>

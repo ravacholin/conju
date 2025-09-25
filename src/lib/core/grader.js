@@ -5,7 +5,7 @@ export function grade(input, expected, settings){
   const startTs = Date.now()
   
   // Debug only if there are issues
-  // console.log(' GRADER DEBUG - Input parameters:', {input, expected, settings})
+  // console.log('🔍 GRADER DEBUG - Input parameters:', {input, expected, settings})
   
   // PARAMETER VALIDATION: Ensure we never fail silently
   if (!input || typeof input !== 'string') {
@@ -178,11 +178,11 @@ export function grade(input, expected, settings){
         } else if (accentPolicy === 'warn') {
           // A2/B1: Reject, but message is instructive
           correct = false
-          feedback = `️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
+          feedback = `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
         } else {
           // B2+: Reject
           correct = false
-          feedback = `️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
+          feedback = `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
         }
       }
     }
@@ -310,7 +310,7 @@ export function grade(input, expected, settings){
   }
   
   if (!correct && feedback === undefined) {
-    console.warn('️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
+    console.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
     const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
     feedback = `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
   }
@@ -326,7 +326,7 @@ export function grade(input, expected, settings){
   }
   
   // Debug only for problematic cases
-  // console.log(' GRADER DEBUG - Final result:', {correct: result.correct, note: result.note})
+  // console.log('🔍 GRADER DEBUG - Final result:', {correct: result.correct, note: result.note})
   
   return result
 }
@@ -386,7 +386,7 @@ function generateGeneralFeedback(input, settings, expected) {
         tuVosPairs[input] === correctForm
       )
     ) {
-      return `️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`;
+      return `⚠️ USO DE "TÚ" EN RIO PLATENSE: Usaste la forma de "tú" ("${input}") pero en español rioplatense se usa "vos". La forma correcta es "${tuVosPairs[input]}"`;
     }
   }
 

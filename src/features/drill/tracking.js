@@ -20,7 +20,7 @@ import { classifyError as internalClassifyError } from '../../lib/progress/error
 export function trackAttemptStarted(item) {
   try {
     const attemptId = internalTrackAttemptStarted(item)
-    console.log(` Intento ${attemptId} iniciado para ítem ${item.id}`)
+    console.log(`🎯 Intento ${attemptId} iniciado para ítem ${item.id}`)
     return attemptId
   } catch (error) {
     console.error('❌ Error al iniciar intento:', error)
@@ -52,7 +52,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
 export async function trackSessionEnded(sessionData = {}) {
   try {
     await internalTrackSessionEnded(sessionData)
-    console.log(' Sesión finalizada')
+    console.log('🔚 Sesión finalizada')
   } catch (error) {
     console.error('❌ Error al finalizar sesión:', error)
   }
@@ -65,7 +65,7 @@ export async function trackSessionEnded(sessionData = {}) {
 export async function trackHintShown() {
   try {
     await internalTrackHintShown()
-    console.log(' Pista mostrada')
+    console.log('💡 Pista mostrada')
   } catch (error) {
     console.error('❌ Error al mostrar pista:', error)
   }
@@ -78,7 +78,7 @@ export async function trackHintShown() {
 export async function trackStreakIncremented() {
   try {
     await internalTrackStreakIncremented()
-    console.log(' Racha incrementada')
+    console.log('🔥 Racha incrementada')
   } catch (error) {
     console.error('❌ Error al incrementar racha:', error)
   }
@@ -92,7 +92,7 @@ export async function trackStreakIncremented() {
 export async function trackTenseDrillStarted(tense) {
   try {
     await internalTrackTenseDrillStarted(tense)
-    console.log(` Drill de tiempo ${tense} iniciado`)
+    console.log(`🔁 Drill de tiempo ${tense} iniciado`)
   } catch (error) {
     console.error('❌ Error al iniciar drill de tiempo:', error)
   }
