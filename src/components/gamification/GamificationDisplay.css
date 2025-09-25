@@ -199,7 +199,7 @@
 
 .xp-progress {
   height: 100%;
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: #666;
   border-radius: 6px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -284,7 +284,7 @@
 }
 
 .streak-card.daily {
-  background: linear-gradient(135deg, #fef7cd, #fbbf24);
+  background: #666;
 }
 
 .streak-card.consecutive {
@@ -293,7 +293,7 @@
 }
 
 .streak-card.perfect {
-  background: linear-gradient(135deg, #d1fae5, #10b981);
+  background: #666;
   color: white;
 }
 

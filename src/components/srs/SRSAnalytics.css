@@ -123,15 +123,15 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: #007bff;
+  background: #666;
 }
 
 .analytics-card.velocity::before {
-  background: #10b981;
+  background: #666;
 }
 
 .analytics-card.accuracy::before {
-  background: #f59e0b;
+  background: #666;
 }
 
 .analytics-card.speed::before {
@@ -139,7 +139,7 @@
 }
 
 .analytics-card.intervals::before {
-  background: #ef4444;
+  background: #666;
 }
 
 .analytics-card:hover {
@@ -231,11 +231,11 @@
 }
 
 .trend.positive {
-  color: #059669;
+  color: #ccc;
 }
 
 .trend.negative {
-  color: #dc2626;
+  color: #999;
 }
 
 .trend.neutral {
@@ -262,18 +262,18 @@
 }
 
 .assessment.good {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  background: rgba(204, 204, 204, 0.1);
+  color: #ccc;
 }
 
 .assessment.okay {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
+  background: rgba(153, 153, 153, 0.1);
+  color: #999;
 }
 
 .assessment.slow {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  background: rgba(153, 153, 153, 0.1);
+  color: #999;
 }
 
 /* Intervals Chart */
@@ -306,7 +306,7 @@
 
 .interval-fill {
   height: 100%;
-  background: #007bff;
+  background: #666;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -350,13 +350,13 @@
 }
 
 .insight.positive {
-  background: rgba(16, 185, 129, 0.05);
-  border-left-color: #10b981;
+  background: rgba(102, 102, 102, 0.05);
+  border-left-color: #666;
 }
 
 .insight.suggestion {
-  background: rgba(245, 158, 11, 0.05);
-  border-left-color: #f59e0b;
+  background: rgba(102, 102, 102, 0.05);
+  border-left-color: #666;
 }
 
 .insight-icon {

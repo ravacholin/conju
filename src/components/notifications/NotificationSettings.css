@@ -154,21 +154,21 @@
 }
 
 .permission-status.granted {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(204, 204, 204, 0.1);
+  color: #ccc;
+  border: 1px solid rgba(204, 204, 204, 0.2);
 }
 
 .permission-status.denied {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: rgba(153, 153, 153, 0.1);
+  color: #999;
+  border: 1px solid rgba(153, 153, 153, 0.2);
 }
 
 .permission-status.pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(153, 153, 153, 0.1);
+  color: #999;
+  border: 1px solid rgba(153, 153, 153, 0.2);
 }
 
 .status-icon {
