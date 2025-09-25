@@ -95,18 +95,19 @@
   top: 100%;
   right: 0;
   margin-top: 4px;
-  background: #000;
+  background: #000 !important;
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   min-width: 280px;
   z-index: 1000;
   overflow: hidden;
+  backdrop-filter: none;
 }
 
 .dropdown-header {
   padding: 16px 20px;
-  background: #222;
+  background: #1a1a1a !important;
   border-bottom: 1px solid #444;
 }
 
@@ -271,4 +272,10 @@
 
 .account-dropdown {
   animation: dropdown-appear 0.2s ease-out;
+}
+
+.menu-icon-small {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
 }

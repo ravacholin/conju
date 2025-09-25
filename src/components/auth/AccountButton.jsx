@@ -73,7 +73,7 @@ export default function AccountButton() {
           className="account-login-btn"
           title="Iniciar sesión para sincronizar entre dispositivos"
         >
-          👤 Iniciar Sesión
+          <img src="/icons/user.png" alt="" className="menu-icon-small" /> Iniciar Sesión
         </button>
 
         <AuthModal
@@ -117,7 +117,7 @@ export default function AccountButton() {
             <div className="dropdown-divider" />
 
             <div className="dropdown-section">
-              <div className="section-title">🔄 Sincronización</div>
+              <div className="section-title"><img src="/icons/sparks.png" alt="" className="menu-icon-small" /> Sincronización</div>
               <button
                 className="dropdown-item"
                 onClick={() => {
@@ -126,14 +126,14 @@ export default function AccountButton() {
                   setShowDropdown(false)
                 }}
               >
-                📱 Sincronizar ahora
+                <img src="/icons/sparks.png" alt="" className="menu-icon-small" /> Sincronizar ahora
               </button>
             </div>
 
             <div className="dropdown-divider" />
 
             <div className="dropdown-section">
-              <div className="section-title">⚙️ Cuenta</div>
+              <div className="section-title"><img src="/icons/robot.png" alt="" className="menu-icon-small" /> Cuenta</div>
               <button
                 className="dropdown-item"
                 onClick={() => {
@@ -141,7 +141,7 @@ export default function AccountButton() {
                   setShowAccountModal(true)
                 }}
               >
-                👤 Gestionar cuenta
+                <img src="/icons/user.png" alt="" className="menu-icon-small" /> Gestionar cuenta
               </button>
               <button
                 className="dropdown-item"
@@ -150,7 +150,7 @@ export default function AccountButton() {
                   setShowDeviceModal(true)
                 }}
               >
-                📱 Mis dispositivos
+                <img src="/icons/bolt.png" alt="" className="menu-icon-small" /> Mis dispositivos
               </button>
             </div>
 
@@ -160,7 +160,7 @@ export default function AccountButton() {
               className="dropdown-item logout-item"
               onClick={handleLogout}
             >
-              🚪 Cerrar sesión
+              <img src="/icons/bolt.png" alt="" className="menu-icon-small" /> Cerrar sesión
             </button>
           </div>
         )}
