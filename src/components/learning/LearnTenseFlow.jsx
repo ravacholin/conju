@@ -343,7 +343,14 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setVerbType(type);
     setSelectedFamilies(families);
     setDuration(5);  // Default to 5 minutes
-    // Skip duration selection and go directly to introduction
+    
+    // Set up example verbs using the passed type parameter instead of state
+    const verbObjects = selectExampleVerbs(type, families, selectedTense.tense);
+    setExampleVerbs(verbObjects);
+    
+    logger.debug('Starting learning with:', { selectedTense, duration: 5, verbType: type, selectedFamilies: families, verbObjects: verbObjects.map(v => v?.lemma) });
+    
+    // Move directly to introduction
     setCurrentStep('introduction');
   };
   
