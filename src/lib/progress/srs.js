@@ -1,9 +1,11 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
+// Integración híbrida SM-2 + FSRS con inteligencia emocional/temporal
 
 import { PROGRESS_CONFIG } from './config.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 import { handleSRSReviewComplete } from './gamification.js'
+import { calculateNextIntervalFSRS, isFSRSEnabled } from './fsrs.js'
 
 // Helpers
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
@@ -11,12 +13,31 @@ const randomInRange = (min, max) => min + Math.random() * (max - min)
 
 /**
  * Calcula el próximo intervalo basado en el desempeño
+ * Rutea automáticamente entre FSRS y SM-2 según configuración
  * @param {Object} schedule - Schedule actual
  * @param {boolean} correct - Si la respuesta fue correcta
  * @param {number} hintsUsed - Número de pistas usadas
+ * @param {Object} meta - Metadatos adicionales (latency, errorTags, etc.)
  * @returns {Object} Nuevo intervalo y fecha
  */
 export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
+  // Usar FSRS si está habilitado, caso contrario SM-2 legacy
+  if (isFSRSEnabled()) {
+    return calculateNextIntervalFSRS(schedule, correct, hintsUsed, meta)
+  }
+
+  return calculateNextIntervalSM2(schedule, correct, hintsUsed, meta)
+}
+
+/**
+ * Implementación SM-2 legacy (mantenida para compatibilidad y A/B testing)
+ * @param {Object} schedule - Schedule actual
+ * @param {boolean} correct - Si la respuesta fue correcta
+ * @param {number} hintsUsed - Número de pistas usadas
+ * @param {Object} meta - Metadatos adicionales
+ * @returns {Object} Nuevo intervalo y fecha
+ */
+export function calculateNextIntervalSM2(schedule, correct, hintsUsed, meta = {}) {
   // Campos existentes + defaults razonables
   let {
     interval = 0,   // días
@@ -143,26 +164,49 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
   }
   
   // Calcular nuevo intervalo
+  const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, meta)
   const updatedSchedule = {
     ...schedule,
-    ...calculateNextInterval(schedule, correct, hintsUsed, meta),
+    ...intervalResult,
     updatedAt: new Date(),
     syncedAt: null
   }
-  
+
   // Guardar en la base de datos
   await saveSchedule(updatedSchedule)
 
   // Procesar gamificación para este review
   try {
+    // Determinar si fue lapse basado en resultado
+    const wasLapse = !correct || (intervalResult.reps === 0)
+
     await handleSRSReviewComplete(cell, correct, hintsUsed, {
       ...meta,
-      wasLapse: q < 3,
+      wasLapse,
       recoveredFromLapse: schedule?.lapses > 0 && correct,
       consecutiveCorrect: meta.consecutiveCorrect || 0
     })
   } catch (error) {
     console.error('Error processing gamification for SRS review:', error)
+  }
+
+  // A/B Testing: Track algorithm performance
+  if (PROGRESS_CONFIG.FEATURE_FLAGS.A_B_TESTING) {
+    // Track event asynchronously without blocking
+    import('./abTesting.js').then(({ trackABEvent }) => {
+      trackABEvent('algorithm_comparison', {
+        algorithm: isFSRSEnabled() ? 'fsrs' : 'sm2',
+        correct,
+        hintsUsed,
+        interval: updatedSchedule.interval,
+        ease: updatedSchedule.ease,
+        latencyMs: meta.latencyMs,
+        errorTags: meta.errorTags
+      })
+    }).catch(error => {
+      // Non-critical, continue without A/B tracking
+      console.warn('A/B tracking failed:', error)
+    })
   }
 
   if (typeof window !== 'undefined') {

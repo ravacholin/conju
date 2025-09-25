@@ -54,6 +54,7 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { grade } from '../../lib/core/grader.js';
 import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
+import { buildFormsForRegion } from '../../lib/core/eligibility.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
@@ -68,6 +69,7 @@ import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { useLearningSession } from './LearningSessionContext.jsx';
 
 const logger = createLogger('LearningDrill');
 
@@ -117,8 +119,68 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const containerRef = useRef(null);
   const [entered, setEntered] = useState(false);
   const [swapAnim, setSwapAnim] = useState(false);
-  const settings = useSettings();
+  const userSettings = useSettings();
+  const { sessionSettings } = useLearningSession();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
+
+  const generatorSettings = React.useMemo(() => {
+    const allowedOverride = sessionSettings?.allowedLemmas;
+    const normalizedAllowed = allowedOverride instanceof Set
+      ? allowedOverride
+      : Array.isArray(allowedOverride)
+        ? new Set(allowedOverride.filter(Boolean))
+        : null;
+
+    return {
+      region: userSettings?.region || 'la_general',
+      level: getLevelForTense(tense?.tense) || userSettings?.level || 'A1',
+      practiceMode: sessionSettings?.practiceMode || 'specific',
+      specificMood: sessionSettings?.specificMood || tense?.mood,
+      specificTense: sessionSettings?.specificTense || tense?.tense,
+      verbType: sessionSettings?.verbType || verbType || 'all',
+      selectedFamily: sessionSettings?.selectedFamily || null,
+      allowedLemmas: normalizedAllowed,
+      cameFromTema: false,
+      useVoseo: userSettings?.useVoseo,
+      useTuteo: userSettings?.useTuteo,
+      useVosotros: userSettings?.useVosotros,
+      irregularityFilterMode: userSettings?.irregularityFilterMode || 'tense',
+      practicePronoun: userSettings?.practicePronoun,
+      enableProgressIntegration: userSettings?.enableProgressIntegration
+    };
+  }, [sessionSettings, userSettings, tense?.mood, tense?.tense, verbType]);
+
+  const gatherFormsForSession = React.useCallback(() => {
+    const allowedSet = generatorSettings.allowedLemmas instanceof Set
+      ? generatorSettings.allowedLemmas
+      : null;
+    const excludedSet = new Set((excludeLemmas || []).map((lemma) => (lemma || '').trim()).filter(Boolean));
+    const forms = [];
+
+    if (FORM_LOOKUP_MAP.size > 0) {
+      for (const form of FORM_LOOKUP_MAP.values()) {
+        if (generatorSettings.specificMood && form.mood !== generatorSettings.specificMood) continue;
+        if (generatorSettings.specificTense && form.tense !== generatorSettings.specificTense) continue;
+        if (allowedSet && !allowedSet.has(form.lemma)) continue;
+        if (excludedSet.has(form.lemma)) continue;
+        forms.push(form);
+      }
+    }
+
+    if (forms.length === 0) {
+      const fallbackRegion = generatorSettings.region || 'la_general';
+      const fallbackPool = buildFormsForRegion(fallbackRegion);
+      for (const form of fallbackPool) {
+        if (generatorSettings.specificMood && form.mood !== generatorSettings.specificMood) continue;
+        if (generatorSettings.specificTense && form.tense !== generatorSettings.specificTense) continue;
+        if (allowedSet && !allowedSet.has(form.lemma)) continue;
+        if (excludedSet.has(form.lemma)) continue;
+        forms.push(form);
+      }
+    }
+
+    return forms;
+  }, [generatorSettings, excludeLemmas]);
 
   const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {
     // Update local session stats based on progress tracking
@@ -143,65 +205,53 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   }, [duration]);
 
   const generateNextItem = React.useCallback(async () => {
-    // Get current settings snapshot WITHOUT modifying global state
-    const currentSettings = settings.getState ? settings.getState() : settings;
-    
-    // For irregular practice, cycle through families for variety
-    let selectedFamilyForGenerator = null;
+    const candidateForms = gatherFormsForSession();
+
+    if (candidateForms.length === 0) {
+      logger.warn('No eligible forms available for learning drill');
+      setCurrentItem(null);
+      return;
+    }
+
+    const runtimeSettings = {
+      ...generatorSettings
+    };
+
     if (selectedFamilies && selectedFamilies.length > 0) {
       const familyIndex = (totalAttempts || 0) % selectedFamilies.length;
       const learningFamilyId = selectedFamilies[familyIndex];
-      selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
+      runtimeSettings.selectedFamily = convertLearningFamilyToOld(learningFamilyId) || runtimeSettings.selectedFamily;
     }
-    
-    // Create isolated settings object for generator (NO GLOBAL MUTATION)
-    const sessionSettings = {
-      ...currentSettings,
-      practiceMode: 'specific', 
-      specificMood: tense?.mood,
-      specificTense: tense?.tense,
-      verbType: verbType === 'irregular' ? 'irregular' : verbType,
-      selectedFamily: selectedFamilyForGenerator,
-      cameFromTema: false,
-      level: (() => {
-        const mappedLevel = getLevelForTense(tense?.tense);
-        return mappedLevel || currentSettings.level || 'A1';
-      })()
-    };
-    
-    logger.debug('Session settings for generator', {
-      mood: tense?.mood,
-      tense: tense?.tense,
-      verbType,
-      selectedFamily: selectedFamilyForGenerator,
-      level: sessionSettings.level
-    });
-    
-    try {
-      const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
-      const allForms = Array.from(FORM_LOOKUP_MAP.values())
-      const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
 
-      // Use generator with isolated settings - NO GLOBAL MUTATION
+    logger.debug('Session settings for generator', {
+      mood: runtimeSettings.specificMood,
+      tense: runtimeSettings.specificTense,
+      verbType: runtimeSettings.verbType,
+      selectedFamily: runtimeSettings.selectedFamily,
+      level: runtimeSettings.level
+    });
+
+    logger.debug('Candidate forms ready', { count: candidateForms.length });
+
+    try {
       let nextItem = await chooseNext({
-        forms: filteredForms,
+        forms: candidateForms,
         history: exerciseHistory,
         currentItem,
-        sessionSettings // Pass settings as parameter instead of mutating global state
+        sessionSettings: runtimeSettings
       });
 
-      // Fallback: if no item was generated, use all forms
       if (!nextItem) {
         nextItem = await chooseNext({
-          forms: allForms,
-          history: exerciseHistory,
-          currentItem,
-          sessionSettings
-        })
+          forms: candidateForms,
+          history: [],
+          currentItem: null,
+          sessionSettings: runtimeSettings
+        });
       }
-      
+
       logger.debug('Generated exercise item', { lemma: nextItem?.lemma, person: nextItem?.person });
-      
+
       if (nextItem) {
         setCurrentItem(nextItem);
         setInputValue('');
@@ -210,21 +260,21 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         setExerciseHistory(prev => [...prev, nextItem].slice(-DRILL_THRESHOLDS.EXERCISE_HISTORY_SIZE));
         setTimeout(() => inputRef.current?.focus(), 0);
       } else {
-        logger.warn('No item generated - generator returned null');
+        logger.warn('Generator returned no item even after fallback');
         setCurrentItem(null);
       }
     } catch (error) {
       logger.error('Error generating next item', error);
       setCurrentItem(null);
     }
-  }, [tense, verbType, selectedFamilies, totalAttempts, excludeLemmas, exerciseHistory]); // Include exerciseHistory dependency
+  }, [gatherFormsForSession, generatorSettings, selectedFamilies, totalAttempts, exerciseHistory, currentItem]);
 
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
     if (!currentItem) {
       generateNextItem().catch(console.error);
     }
-  }, [tense?.tense, verbType, selectedFamilies]); // Don't depend on generateNextItem
+  }, [tense?.tense, verbType, selectedFamilies, excludeLemmas, generatorSettings.allowedLemmas]); // Don't depend on generateNextItem
 
   // Track tense drill session WITHOUT mutating global settings
   useEffect(() => {
@@ -515,7 +565,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
       const synth = window.speechSynthesis;
       const utter = new SpeechSynthesisUtterance(text);
-      const region = settings?.region || 'la_general';
+      const region = userSettings?.region || 'la_general';
       utter.lang = region === 'rioplatense' ? 'es-AR' : 'es-ES';
       utter.rate = 0.95;
 

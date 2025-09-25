@@ -193,17 +193,25 @@ beforeEach(() => {
   vi.clearAllMocks()
 
   // Clear DOM
-  document.body.innerHTML = ''
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.innerHTML = ''
+  }
 
-  // Reset window location
-  delete window.location
-  window.location = {
-    href: 'http://localhost:5173',
-    origin: 'http://localhost:5173',
-    pathname: '/',
-    search: '',
-    hash: '',
-    reload: vi.fn()
+  if (typeof window !== 'undefined') {
+    // Reset window location
+    try {
+      delete window.location
+    } catch {
+      // ignore deletion issues in secure contexts
+    }
+    window.location = {
+      href: 'http://localhost:5173',
+      origin: 'http://localhost:5173',
+      pathname: '/',
+      search: '',
+      hash: '',
+      reload: vi.fn()
+    }
   }
 })
 
@@ -212,11 +220,13 @@ afterEach(() => {
   vi.resetAllMocks()
 
   // Clear storage safely
-  if (window.localStorage?.clear) {
-    window.localStorage.clear()
-  }
-  if (window.sessionStorage?.clear) {
-    window.sessionStorage.clear()
+  if (typeof window !== 'undefined') {
+    if (window.localStorage?.clear) {
+      window.localStorage.clear()
+    }
+    if (window.sessionStorage?.clear) {
+      window.sessionStorage.clear()
+    }
   }
 
   // Clean up timers

@@ -207,6 +207,7 @@ export function useProgressTracking(currentItem, onResult) {
     handleHintShown,
     handleStreakIncremented,
     handleTenseDrillStarted,
-    handleTenseDrillEnded
+    handleTenseDrillEnded,
+    progressSystemReady
   }
 }

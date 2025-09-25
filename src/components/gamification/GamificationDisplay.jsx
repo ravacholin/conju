@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getGamificationStats, calculateLevel } from '../../lib/progress/gamification.js'
+import { getGamificationStats } from '../../lib/progress/gamification.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import './GamificationDisplay.css'
 

@@ -225,11 +225,15 @@ export async function createBackup(userId = null) {
 
     // Usar el sistema de exportación existente
     const { exportProgressData } = await import('./dataExport.js')
-    const backupData = await exportProgressData(actualUserId)
+    const backupData = (await exportProgressData(actualUserId)) || {}
 
-    // Agregar metadatos de respaldo
-    backupData.metadata.backupType = 'automatic'
-    backupData.metadata.backupId = `backup_${Date.now()}`
+    // Asegurar estructura básica
+    backupData.metadata = {
+      ...(backupData.metadata || {}),
+      backupType: 'automatic',
+      backupId: `backup_${Date.now()}`
+    }
+    backupData.data = backupData.data || {}
 
     // Intentar guardar en localStorage como respaldo de emergencia (si está disponible)
     try {

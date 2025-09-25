@@ -414,6 +414,142 @@ export class TemporalIntelligence {
   }
 
   /**
+   * Obtiene recomendaciones específicas para scheduling SRS
+   * Usado por FSRS para programar reviews de manera context-aware
+   */
+  getSRSSchedulingRecommendations(targetTime = null) {
+    const now = new Date()
+    const currentHour = now.getHours()
+    const fatigue = this.estimateCurrentFatigue()
+
+    // Si se proporciona un tiempo objetivo, analizarlo
+    const targetHour = targetTime ? new Date(targetTime).getHours() : currentHour
+
+    // Factores de ajuste temporal
+    let timingMultiplier = 1.0
+    let priorityAdjustment = 'normal'
+    let optimalWindow = null
+    let recommendations = []
+
+    // Análisis de hora actual vs hora objetivo
+    if (this.circadianProfile.peakHours.includes(targetHour)) {
+      timingMultiplier = 1.15  // Bonificación por hora pico
+      priorityAdjustment = 'preferred'
+      recommendations.push('scheduled_for_peak_hour')
+    } else if (this.circadianProfile.lowHours.includes(targetHour)) {
+      timingMultiplier = 0.85  // Penalización por hora baja
+      priorityAdjustment = 'lower'
+      recommendations.push('scheduled_for_low_hour')
+    }
+
+    // Análisis de fatiga
+    if (fatigue > 0.8) {
+      timingMultiplier *= 0.75  // Reducir intervalos si muy cansado
+      priorityAdjustment = 'later'  // Posponer si es posible
+      recommendations.push('high_fatigue_delay')
+    } else if (fatigue < 0.3) {
+      timingMultiplier *= 1.1   // Bonificar si está fresco
+      recommendations.push('low_fatigue_advance')
+    }
+
+    // Análisis de carga cognitiva actual
+    if (this.cognitiveLoad.current > this.cognitiveLoad.threshold) {
+      timingMultiplier *= 0.8
+      priorityAdjustment = 'reduce'
+      recommendations.push('cognitive_overload_reduce')
+    }
+
+    // Determinar ventana óptima para scheduling
+    optimalWindow = this.calculateOptimalSchedulingWindow()
+
+    return {
+      timingMultiplier: Math.max(0.5, Math.min(2.0, timingMultiplier)),
+      priorityAdjustment,
+      optimalWindow,
+      currentFatigue: fatigue,
+      currentCognitiveLoad: this.cognitiveLoad.current,
+      isOptimalTime: this.circadianProfile.peakHours.includes(currentHour),
+      shouldDelay: fatigue > 0.8 || this.cognitiveLoad.current > this.cognitiveLoad.threshold,
+      recommendations,
+      reasoning: this.generateTemporalSchedulingReasoning(fatigue, targetHour)
+    }
+  }
+
+  /**
+   * Calcula la ventana óptima para scheduling de reviews
+   */
+  calculateOptimalSchedulingWindow() {
+    const now = new Date()
+    const currentHour = now.getHours()
+
+    // Encontrar la próxima ventana de 2 horas centrada en hora pico
+    let nextPeakHour = null
+    let hoursUntilPeak = 24
+
+    for (const peakHour of this.circadianProfile.peakHours) {
+      let distance = peakHour - currentHour
+      if (distance < 0) distance += 24
+
+      if (distance < hoursUntilPeak) {
+        hoursUntilPeak = distance
+        nextPeakHour = peakHour
+      }
+    }
+
+    if (nextPeakHour !== null) {
+      const windowStart = nextPeakHour - 1 // 1 hora antes del pico
+      const windowEnd = nextPeakHour + 1   // 1 hora después del pico
+
+      return {
+        startHour: windowStart < 0 ? windowStart + 24 : windowStart,
+        endHour: windowEnd >= 24 ? windowEnd - 24 : windowEnd,
+        peakHour: nextPeakHour,
+        hoursUntil: hoursUntilPeak,
+        confidence: this.circadianProfile.peakHours.length >= 2 ? 0.8 : 0.6
+      }
+    }
+
+    // Si no hay horas pico definidas, usar ventana general favorable
+    return {
+      startHour: 9,   // 9 AM - generalmente bueno
+      endHour: 11,    // 11 AM - antes del lunch dip
+      peakHour: 10,   // 10 AM como centro
+      hoursUntil: 0,  // Usar ahora si está dentro de esta ventana
+      confidence: 0.3 // Baja confianza sin datos personalizados
+    }
+  }
+
+  /**
+   * Genera explicación para ajustes temporales en SRS
+   */
+  generateTemporalSchedulingReasoning(fatigue, targetHour) {
+    const reasons = []
+
+    if (this.circadianProfile.peakHours.includes(targetHour)) {
+      reasons.push('peak_performance_hour_bonus')
+    } else if (this.circadianProfile.lowHours.includes(targetHour)) {
+      reasons.push('low_performance_hour_penalty')
+    }
+
+    if (fatigue > 0.8) {
+      reasons.push('high_fatigue_delay_recommended')
+    } else if (fatigue < 0.3) {
+      reasons.push('low_fatigue_advance_opportunity')
+    }
+
+    if (this.cognitiveLoad.current > this.cognitiveLoad.threshold) {
+      reasons.push('cognitive_overload_reduce_complexity')
+    }
+
+    // Patrón circadiano personalizado
+    if (this.circadianProfile.learningRhythm !== 'neutral') {
+      reasons.push(`circadian_pattern_${this.circadianProfile.learningRhythm}`)
+    }
+
+    return reasons
+  }
+
+  /**
    * Recomienda tipo de sesión según contexto temporal
    */
   getSessionTypeRecommendation() {

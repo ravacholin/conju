@@ -22,7 +22,7 @@ export const PROGRESS_CONFIG = {
     LOW: 0     // N < 8
   },
   
-  // Intervalos SRS
+  // Intervalos SRS (Legacy SM-2)
   SRS_INTERVALS: [1, 3, 7, 14, 30, 90], // Días
 
   // Configuración avanzada del SRS (SM-2 inspirado + mejoras)
@@ -45,6 +45,67 @@ export const PROGRESS_CONFIG = {
     },
     // Jitter para evitar sincronías exactas
     FUZZ_RATIO: 0.10 // ±10%
+  },
+
+  // Configuración FSRS (Free Spaced Repetition Scheduler)
+  FSRS: {
+    VERSION: 6,
+    ENABLED: false, // Feature flag - inicialmente deshabilitado
+    // Parámetros FSRS optimizados (17 parámetros del modelo)
+    // Estos son valores por defecto entrenados en millones de reviews
+    WEIGHTS: [
+      0.4072,  // w[0] - initial difficulty after first review
+      1.1829,  // w[1] - initial difficulty after second review
+      3.1262,  // w[2] - initial difficulty after third review
+      15.4722, // w[3] - difficulty increase factor after incorrect review
+      7.2102,  // w[4] - difficulty increase factor after correct review
+      0.5316,  // w[5] - first stability factor
+      1.0651,  // w[6] - second stability factor
+      0.0234,  // w[7] - stability decrease factor after incorrect review
+      1.616,   // w[8] - stability increase factor after correct review
+      0.1544,  // w[9] - retrievability factor
+      1.0824,  // w[10] - second retrievability factor
+      1.9813,  // w[11] - difficulty factor in stability calculation
+      0.0953,  // w[12] - difficulty factor in retrievability calculation
+      0.2975,  // w[13] - interval factor
+      2.2042,  // w[14] - second interval factor
+      0.2407,  // w[15] - third interval factor
+      2.9466   // w[16] - fourth interval factor
+    ],
+    // Configuración del algoritmo
+    REQUEST_RETENTION: 0.90,    // 90% retención objetivo (puede ser personalizable)
+    MAXIMUM_INTERVAL: 36500,    // Máximo intervalo: 100 años
+    MINIMUM_INTERVAL: 1,        // Mínimo intervalo: 1 día
+    ENABLE_FUZZ: true,          // Activar jitter para evitar sincronización
+    FUZZ_FACTOR: 0.05,          // ±5% de variación aleatoria
+
+    // Factores de ajuste para ratings
+    HARD_FACTOR: 1.2,           // Factor para reviews "difícil"
+    EASY_BONUS: 1.3,            // Bonus para reviews "fácil"
+
+    // Integración con inteligencia emocional
+    CONFIDENCE_ADJUSTMENTS: {
+      STRUGGLING: 0.6,          // Reducir intervalos 40% cuando struggling
+      HESITANT: 0.8,           // Reducir intervalos 20% cuando hesitant
+      CONFIDENT: 1.1,          // Aumentar intervalos 10% cuando confident
+      OVERCONFIDENT: 1.25      // Aumentar intervalos 25% cuando overconfident
+    },
+
+    // Integración con temporal intelligence
+    TEMPORAL_ADJUSTMENTS: {
+      PEAK_HOURS_BONUS: 1.15,   // +15% intervalos en horas pico
+      LOW_HOURS_PENALTY: 0.85,  // -15% intervalos en horas bajas
+      HIGH_FATIGUE_PENALTY: 0.75, // -25% intervalos con alta fatiga
+      FLOW_STATE_BONUS: 1.20    // +20% intervalos en flow state
+    },
+
+    // Configuración del optimizador personal
+    OPTIMIZER: {
+      ENABLED: false,           // Optimización personal deshabilitada por defecto
+      MIN_REVIEWS_REQUIRED: 1000, // Mínimo reviews para optimización confiable
+      OPTIMIZATION_FREQUENCY: 30, // Días entre re-optimizaciones
+      PRETRAIN_ENABLED: true    // Usar parámetros preentrenados como base
+    }
   },
   
   // Configuración de UI
@@ -181,8 +242,35 @@ export const PROGRESS_CONFIG = {
   // Configuración de Auto-save
   AUTO_SAVE: {
     CONFIDENCE_ENGINE: 30000,    // 30 segundos
-    TEMPORAL_INTELLIGENCE: 60000, // 60 segundos  
+    TEMPORAL_INTELLIGENCE: 60000, // 60 segundos
     DYNAMIC_GOALS: 120000        // 120 segundos
+  },
+
+  // Feature Flags para Phase 2 - Advanced SRS
+  FEATURE_FLAGS: {
+    FSRS_ALGORITHM: false,         // Habilitar algoritmo FSRS
+    EMOTIONAL_SRS_INTEGRATION: true, // Integración con confidence/flow
+    TEMPORAL_SCHEDULING: true,      // Context-aware scheduling
+    ML_RECOMMENDATIONS: false,     // Recomendaciones predictivas ML
+    PERSONAL_OPTIMIZER: false,     // Optimizador personal de parámetros
+    ADVANCED_ANALYTICS: true,      // Analytics avanzados del SRS
+    A_B_TESTING: false            // Framework de testing A/B
+  },
+
+  // Configuración A/B Testing
+  AB_TESTING: {
+    ENABLED: false,
+    GROUPS: {
+      SM2_CONTROL: 0.5,           // 50% grupo control (SM-2)
+      FSRS_TREATMENT: 0.5         // 50% grupo tratamiento (FSRS)
+    },
+    METRICS_COLLECTION: {
+      RETENTION_RATE: true,
+      SESSION_DURATION: true,
+      MASTERY_IMPROVEMENT: true,
+      USER_SATISFACTION: false    // Requiere UI adicional
+    },
+    DURATION_DAYS: 30             // Duración del test A/B
   }
 }
 

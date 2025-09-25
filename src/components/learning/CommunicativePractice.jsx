@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
-import { updateSchedule } from '../../lib/progress/srs.js';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { trackAttemptStarted, trackAttemptSubmitted } from '../../features/drill/tracking.js';
 // import { grade } from '../../lib/core/grader.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
@@ -192,11 +191,28 @@ const chatData = {
   },
 };
 
+const normalizeText = (text = '') => text
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase();
+
 function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [chatEnded, setChatEnded] = useState(false);
   const [scriptIndex, setScriptIndex] = useState(0);
+
+  const normalizedFormLookup = useMemo(() => {
+    const map = new Map();
+    (eligibleForms || []).forEach((form) => {
+      if (!form?.value) return;
+      const key = normalizeText(form.value);
+      if (!map.has(key)) {
+        map.set(key, form);
+      }
+    });
+    return map;
+  }, [eligibleForms]);
 
   const exercise = tense ? chatData[tense.tense] : null;
   
@@ -208,7 +224,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
     mood: tense?.mood
   };
   
-  const { handleResult } = useProgressTracking(currentItem, (result) => {
+  const { handleResult, progressSystemReady } = useProgressTracking(currentItem, (result) => {
     console.log('Communicative practice progress tracking result:', result);
   });
 
@@ -233,21 +249,17 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
     const userMessage = { author: 'user', text: inputValue };
     const newMessages = [...messages, userMessage];
 
-    const userText = inputValue.toLowerCase();
+    const normalizedUser = normalizeText(inputValue);
 
     let keywordFound = null;
-    const keywordMatched = currentScriptNode.userKeywords.some(kw => {
-        // Normalize both texts to handle accents properly
-        const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-        const normalizedUser = normalizeText(userText);
-        const normalizedKeyword = normalizeText(kw);
-        
-        const regex = new RegExp(`\\b${normalizedKeyword.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
-        if (regex.test(normalizedUser)) {
-            keywordFound = kw;
-            return true;
-        }
-        return false;
+    const keywordMatched = currentScriptNode.userKeywords.some((kw) => {
+      const normalizedKeyword = normalizeText(kw);
+      const regex = new RegExp(`\\b${normalizedKeyword.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
+      if (regex.test(normalizedUser)) {
+        keywordFound = kw;
+        return true;
+      }
+      return false;
     });
 
     if (keywordMatched) {
@@ -255,31 +267,36 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       const botMessage = { author: 'bot', text: currentScriptNode.botResponse };
       newMessages.push(botMessage);
 
-      // Use official progress tracking system
       await handleResult({
         correct: true,
         userAnswer: inputValue,
         correctAnswer: keywordFound || 'correct usage',
         hintsUsed: 0,
         errorTags: [],
-        latencyMs: 0, // Not applicable for chat-based exercise
+        latencyMs: 0,
         isIrregular: false,
         itemId: currentItem.id
       });
 
-      // Keep SRS scheduling for specific verb forms
-      if (keywordFound) {
-        const formObject = eligibleForms?.find(f => f.value === keywordFound);
+      if (progressSystemReady && keywordFound) {
+        const formObject = normalizedFormLookup.get(normalizeText(keywordFound));
         if (formObject) {
-          try {
-            const userId = getCurrentUserId();
-            if (userId) {
-              await updateSchedule(userId, formObject, true, 0);
-              console.log(`Analytics: Updated schedule for communicative practice: ${formObject.lemma} - ${keywordFound}`);
-            }
-          } catch (error) {
-            console.error("Failed to update SRS schedule:", error);
-          }
+          const resolvedForm = {
+            ...formObject,
+            id: formObject.id || `${formObject.lemma}|${formObject.mood}|${formObject.tense}|${formObject.person}`
+          };
+          const attemptId = trackAttemptStarted(resolvedForm);
+          await trackAttemptSubmitted(attemptId, {
+            correct: true,
+            latencyMs: 0,
+            hintsUsed: 0,
+            errorTags: [],
+            userAnswer: inputValue,
+            correctAnswer: keywordFound,
+            item: resolvedForm
+          });
+        } else {
+          console.warn('CommunicativePractice: no eligible form matched', keywordFound);
         }
       }
 
@@ -307,6 +324,31 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
         isIrregular: false,
         itemId: currentItem.id
       });
+
+      if (progressSystemReady) {
+        const canonical = currentScriptNode.userKeywords?.[0];
+        if (canonical) {
+          const formObject = normalizedFormLookup.get(normalizeText(canonical));
+          if (formObject) {
+            const resolvedForm = {
+              ...formObject,
+              id: formObject.id || `${formObject.lemma}|${formObject.mood}|${formObject.tense}|${formObject.person}`
+            };
+            const attemptId = trackAttemptStarted(resolvedForm);
+            await trackAttemptSubmitted(attemptId, {
+              correct: false,
+              latencyMs: 0,
+              hintsUsed: 1,
+              errorTags: ['missing_verbs'],
+              userAnswer: inputValue,
+              correctAnswer: canonical,
+              item: resolvedForm
+            });
+          } else {
+            console.warn('CommunicativePractice: no eligible form matched for hint', canonical);
+          }
+        }
+      }
     }
 
     setMessages(newMessages);

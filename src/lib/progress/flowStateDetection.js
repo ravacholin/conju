@@ -379,7 +379,7 @@ export class FlowStateDetector {
           contentType: 'challenging',
           urgency: 'low'
         }
-        
+
       case FLOW_STATES.LIGHT_FLOW:
         return {
           action: 'enhance',
@@ -388,7 +388,7 @@ export class FlowStateDetector {
           contentType: 'balanced',
           urgency: 'low'
         }
-        
+
       case FLOW_STATES.STRUGGLING:
         return {
           action: 'support',
@@ -397,7 +397,7 @@ export class FlowStateDetector {
           contentType: 'easier',
           urgency: 'medium'
         }
-        
+
       case FLOW_STATES.FRUSTRATED:
         return {
           action: 'recover',
@@ -406,7 +406,7 @@ export class FlowStateDetector {
           contentType: 'confidence_building',
           urgency: 'high'
         }
-        
+
       default:
         return {
           action: 'continue',
@@ -416,6 +416,95 @@ export class FlowStateDetector {
           urgency: 'low'
         }
     }
+  }
+
+  /**
+   * Obtiene recomendaciones específicas para scheduling SRS
+   * Usado por FSRS para ajustar timing y prioridad de reviews
+   */
+  getSRSSchedulingRecommendations() {
+    const recommendations = this.getStateRecommendations()
+    let schedulingMultiplier = 1.0
+    let priorityAdjustment = 'normal'
+    let optimalTiming = 'now'
+
+    switch (this.currentState) {
+      case FLOW_STATES.DEEP_FLOW:
+        schedulingMultiplier = 1.20  // Intervalos 20% más largos - está dominando el contenido
+        priorityAdjustment = 'lower'  // Menor prioridad - puede esperar
+        optimalTiming = 'continue_session' // Continuar mientras esté en flow
+        break
+
+      case FLOW_STATES.LIGHT_FLOW:
+        schedulingMultiplier = 1.10  // Intervalos 10% más largos
+        priorityAdjustment = 'normal'
+        optimalTiming = 'now'
+        break
+
+      case FLOW_STATES.STRUGGLING:
+        schedulingMultiplier = 0.75  // Intervalos 25% más cortos
+        priorityAdjustment = 'higher' // Mayor prioridad - necesita atención
+        optimalTiming = 'soon'
+        break
+
+      case FLOW_STATES.FRUSTRATED:
+        schedulingMultiplier = 0.50  // Intervalos 50% más cortos
+        priorityAdjustment = 'critical' // Prioridad crítica
+        optimalTiming = 'after_break' // No ahora, después de descanso
+        break
+
+      default: // NEUTRAL
+        schedulingMultiplier = 1.0
+        priorityAdjustment = 'normal'
+        optimalTiming = 'now'
+    }
+
+    return {
+      schedulingMultiplier: Math.max(0.3, Math.min(2.0, schedulingMultiplier)),
+      priorityAdjustment,
+      optimalTiming,
+      flowState: this.currentState,
+      shouldDelay: this.currentState === FLOW_STATES.FRUSTRATED,
+      shouldAccelerate: this.currentState === FLOW_STATES.DEEP_FLOW,
+      recommendedAction: recommendations.action,
+      reasoning: this.generateFlowReasoning()
+    }
+  }
+
+  /**
+   * Genera explicación para ajustes basados en flow
+   */
+  generateFlowReasoning() {
+    const reasons = []
+
+    switch (this.currentState) {
+      case FLOW_STATES.DEEP_FLOW:
+        reasons.push('deep_flow_longer_intervals')
+        reasons.push('high_performance_can_wait')
+        break
+      case FLOW_STATES.LIGHT_FLOW:
+        reasons.push('good_flow_maintain_schedule')
+        break
+      case FLOW_STATES.STRUGGLING:
+        reasons.push('struggling_needs_more_practice')
+        reasons.push('shorter_intervals_for_support')
+        break
+      case FLOW_STATES.FRUSTRATED:
+        reasons.push('frustrated_needs_recovery')
+        reasons.push('delay_difficult_content')
+        break
+      default:
+        reasons.push('neutral_state_normal_schedule')
+    }
+
+    // Agregar información de streaks
+    if (this.streakCounter.correct >= 5) {
+      reasons.push('strong_streak_building')
+    } else if (this.streakCounter.errors >= 3) {
+      reasons.push('error_streak_needs_attention')
+    }
+
+    return reasons
   }
 
   /**

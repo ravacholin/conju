@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * HTML Sanitizer utility to prevent XSS attacks
  * Provides safe alternatives to dangerouslySetInnerHTML

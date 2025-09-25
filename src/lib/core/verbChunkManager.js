@@ -122,31 +122,31 @@ class VerbChunkManager {
     }
 
     const versionBuster = Date.now()
-    const fetchManifest = async () => {
-      const manifestUrl = `${this.buildChunkUrl('manifest.json')}?v=${versionBuster}`
-      const response = await fetch(manifestUrl, {
-        cache: 'no-store'
-      })
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`)
+    const manifestTask = (async () => {
+      try {
+        const manifestUrl = `${this.buildChunkUrl('manifest.json')}?v=${versionBuster}`
+        const response = await fetch(manifestUrl, {
+          cache: 'no-store'
+        })
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`)
+        }
+        const data = await response.json()
+        this.manifest = data
+        this.manifestLoadedAt = Date.now()
+        this.updateMetadataFromManifest(data)
+        return data
+      } catch (error) {
+        console.warn('No se pudo cargar el manifest de chunks, usando metadata estática:', error)
+        // Mantener metadata existente y continuar sin manifest
+        return null
+      } finally {
+        this.manifestPromise = null
       }
-      const data = await response.json()
-      this.manifest = data
-      this.manifestLoadedAt = Date.now()
-      this.updateMetadataFromManifest(data)
-      return data
-    }
+    })()
 
-    this.manifestPromise = fetchManifest()
-      .catch(error => {
-        this.manifestPromise = null
-        throw error
-      })
-      .finally(() => {
-        this.manifestPromise = null
-      })
-
-    return this.manifestPromise
+    this.manifestPromise = manifestTask
+    return manifestTask
   }
 
   updateMetadataFromManifest(manifest) {
@@ -176,11 +176,25 @@ class VerbChunkManager {
 
   buildChunkUrl(resource) {
     const base = this.chunkBaseUrl || '/'
-    if (base === '/' || base === './') {
-      return `/chunks/${resource}`
+    try {
+      if (typeof window !== 'undefined' && window.location) {
+        const origin = window.location.origin || 'http://localhost'
+        const basePath = base.startsWith('http')
+          ? base
+          : `${origin}${base.startsWith('/') ? base : `/${base}`}`
+        const normalizedBase = basePath.endsWith('/') ? basePath : `${basePath}/`
+        return new URL(`chunks/${resource}`, normalizedBase).toString()
+      }
+    } catch {
+      // Ignorar y usar fallback relativo/absoluto
     }
-    const normalized = base.endsWith('/') ? base.slice(0, -1) : base
-    return `${normalized}/chunks/${resource}`
+
+    if (base.startsWith('http')) {
+      const normalized = base.endsWith('/') ? base : `${base}/`
+      return `${normalized}chunks/${resource}`
+    }
+
+    return `/chunks/${resource}`
   }
   
   async ensureVerbsLoaded(verbLemmas) {

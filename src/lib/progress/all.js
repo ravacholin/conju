@@ -96,6 +96,31 @@ export {
   isItemDue
 } from './srs.js'
 
+// FSRS (Free Spaced Repetition Scheduler)
+export {
+  IntelligentFSRS,
+  isFSRSEnabled,
+  calculateNextIntervalFSRS
+} from './fsrs.js'
+
+// A/B Testing Framework
+export {
+  abTestingManager,
+  shouldUseFSRS,
+  trackABEvent,
+  getExperimentAnalysis
+} from './abTesting.js'
+
+// Learning Path Predictor
+export {
+  learningPathPredictor
+} from './learningPathPredictor.js'
+
+// ML Recommendations
+export {
+  mlRecommendationEngine
+} from './mlRecommendations.js'
+
 // Utilidades
 export {
   generateId,

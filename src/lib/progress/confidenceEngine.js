@@ -476,6 +476,113 @@ export class ConfidenceEngine {
   }
 
   /**
+   * Obtiene recomendaciones específicas para SRS scheduling
+   * Usado por FSRS para ajustar intervalos dinámicamente
+   */
+  getSRSRecommendations(categoryKey) {
+    const profile = this.confidenceProfiles.get(categoryKey)
+    const overall = this.sessionConfidence.overall
+    const level = this.getConfidenceLevel(overall)
+
+    // Factores de ajuste para intervals
+    let intervalMultiplier = 1.0
+    let difficultyAdjustment = 'maintain'
+    let priority = 'normal'
+
+    switch (level) {
+      case 'struggling':
+        intervalMultiplier = 0.6  // Intervalos 40% más cortos
+        difficultyAdjustment = 'decrease_significantly'
+        priority = 'high'
+        break
+      case 'hesitant':
+        intervalMultiplier = 0.8  // Intervalos 20% más cortos
+        difficultyAdjustment = 'decrease'
+        priority = 'medium'
+        break
+      case 'confident':
+        intervalMultiplier = 1.1  // Intervalos 10% más largos
+        difficultyAdjustment = 'increase'
+        priority = 'low'
+        break
+      case 'overconfident':
+        intervalMultiplier = 1.25 // Intervalos 25% más largos
+        difficultyAdjustment = 'increase_significantly'
+        priority = 'very_low'
+        break
+      default: // uncertain
+        intervalMultiplier = 1.0
+        difficultyAdjustment = 'maintain'
+        priority = 'normal'
+    }
+
+    // Ajustes específicos por categoría
+    if (profile) {
+      if (profile.trend === 'declining') {
+        intervalMultiplier *= 0.8  // Reducir intervalos si performance está declinando
+        priority = 'high'
+      } else if (profile.trend === 'improving') {
+        intervalMultiplier *= 1.1  // Aumentar intervalos si está mejorando
+      }
+
+      // Considerar consistencia
+      if (profile.confidence < 0.3) {
+        intervalMultiplier *= 0.7  // Intervalos muy cortos para áreas muy débiles
+        priority = 'critical'
+      }
+    }
+
+    return {
+      intervalMultiplier: Math.max(0.3, Math.min(2.0, intervalMultiplier)), // Clamp entre 30% y 200%
+      difficultyAdjustment,
+      priority,
+      confidenceLevel: level,
+      reasoning: this.generateSRSReasoning(level, profile?.trend, profile?.confidence),
+      recommendedSessionType: this.getRecommendedSessionType(level)
+    }
+  }
+
+  /**
+   * Genera explicación para ajustes SRS
+   */
+  generateSRSReasoning(level, trend, confidence) {
+    const reasons = []
+
+    if (level === 'struggling' || level === 'hesitant') {
+      reasons.push('low_confidence_shorter_intervals')
+    } else if (level === 'confident' || level === 'overconfident') {
+      reasons.push('high_confidence_longer_intervals')
+    }
+
+    if (trend === 'declining') {
+      reasons.push('performance_declining_needs_attention')
+    } else if (trend === 'improving') {
+      reasons.push('performance_improving_can_extend')
+    }
+
+    if (confidence !== undefined && confidence < 0.3) {
+      reasons.push('very_weak_area_intensive_practice')
+    }
+
+    return reasons
+  }
+
+  /**
+   * Recomienda tipo de sesión basado en confianza
+   */
+  getRecommendedSessionType(level) {
+    const sessionTypes = {
+      struggling: 'confidence_building',
+      hesitant: 'guided_practice',
+      uncertain: 'mixed_practice',
+      confident: 'challenge_practice',
+      overconfident: 'advanced_challenge'
+    }
+
+    return sessionTypes[level] || 'mixed_practice'
+  }
+
+  /**
    * Obtiene áreas de mayor confianza
    */
   getTopConfidenceAreas(count) {

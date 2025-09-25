@@ -83,6 +83,8 @@ import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
+import { getVerbsByLemmas } from '../../lib/core/optimizedCache.js';
+import { LearningSessionProvider, useLearningSession } from './LearningSessionContext.jsx';
 
 
 
@@ -93,6 +95,19 @@ import TypeSelectionStep from './TypeSelectionStep.jsx';
 import DurationSelectionStep from './DurationSelectionStep.jsx';
 
 const logger = createLogger('LearnTenseFlowContainer');
+
+function hasFormsForTense(verb, mood, tense) {
+  if (!verb?.paradigms) return false;
+  return verb.paradigms.some((paradigm) => {
+    if (!Array.isArray(paradigm?.forms)) return false;
+    return paradigm.forms.some((form) => {
+      if (!form?.value) return false;
+      if (mood && form.mood !== mood) return false;
+      if (tense && form.tense !== tense) return false;
+      return true;
+    });
+  });
+}
 
 /**
  * Selecciona 3 verbos ejemplo coherentes basados en la elección del usuario
@@ -116,8 +131,11 @@ const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
 const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
 
-function selectExampleVerbs(verbType, selectedFamilies, tense) {
-  logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
+function selectExampleVerbs(verbType, selectedFamilies, tenseInfo) {
+  const targetMood = typeof tenseInfo === 'object' && tenseInfo !== null ? tenseInfo.mood : null;
+  const targetTense = typeof tenseInfo === 'object' && tenseInfo !== null ? tenseInfo.tense : tenseInfo;
+
+  logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, targetMood, targetTense });
   let selectedVerbs = [];
   let candidateVerbs = [];
 
@@ -126,7 +144,9 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
     const regularAr = verbs.find(v => v.lemma === 'hablar' && v.type === 'regular');
     const regularEr = verbs.find(v => v.lemma === 'comer' && v.type === 'regular');
     const regularIr = verbs.find(v => v.lemma === 'vivir' && v.type === 'regular');
-    selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
+    selectedVerbs = [regularAr, regularEr, regularIr]
+      .filter(Boolean)
+      .filter(verb => hasFormsForTense(verb, targetMood, targetTense));
     
     logger.debug('Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
     
@@ -143,7 +163,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
         // Add priority verbs that exist in our database
         family.priorityExamples.forEach(lemma => {
           const verbObj = verbs.find(v => v.lemma === lemma);
-          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
+          if (verbObj && hasFormsForTense(verbObj, targetMood, targetTense) && !candidateVerbs.some(v => v.lemma === lemma)) {
             candidateVerbs.push(verbObj);
           }
         });
@@ -153,7 +173,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
         // Fallback to first 3 regular examples if no priorityExamples defined
         family.examples.slice(0, 3).forEach(lemma => {
           const verbObj = verbs.find(v => v.lemma === lemma);
-          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
+          if (verbObj && hasFormsForTense(verbObj, targetMood, targetTense) && !candidateVerbs.some(v => v.lemma === lemma)) {
             candidateVerbs.push(verbObj);
           }
         });
@@ -169,6 +189,9 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
     selectedVerbs = candidateVerbs.slice(0, 3);
     logger.debug('Selección de verbos prioritarios:', selectedVerbs.map(v => v.lemma));
   }
+
+  // Ensure selected verbs have full paradigms for the requested tense
+  selectedVerbs = selectedVerbs.filter(verb => hasFormsForTense(verb, targetMood, targetTense));
 
   // Final check: ensure we have exactly 3 verbs
   if (selectedVerbs.length < 3) {
@@ -189,6 +212,15 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
     // Only fall back to regular verbs if we're already working with regular verbs
     // OR if we absolutely can't find enough irregular verbs (which shouldn't happen)
     if (selectedVerbs.length < 3) {
+      if (verbType === 'irregular') {
+        const additionalIrregulars = verbs.filter(v => v.type === 'irregular' && hasFormsForTense(v, targetMood, targetTense));
+        for (const candidate of additionalIrregulars) {
+          if (!selectedVerbs.some(v => v.lemma === candidate.lemma)) {
+            selectedVerbs.push(candidate);
+            if (selectedVerbs.length >= 3) break;
+          }
+        }
+      }
       if (verbType === 'regular') {
         const defaults = [
           verbs.find(v => v.lemma === 'hablar'),
@@ -199,7 +231,7 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
         // Fill missing slots with defaults that don't duplicate
         while (selectedVerbs.length < 3) {
           const defaultVerb = defaults[selectedVerbs.length];
-          if (defaultVerb && !selectedVerbs.some(v => v.lemma === defaultVerb.lemma)) {
+          if (defaultVerb && hasFormsForTense(defaultVerb, targetMood, targetTense) && !selectedVerbs.some(v => v.lemma === defaultVerb.lemma)) {
             selectedVerbs.push(defaultVerb);
           }
         }
@@ -209,7 +241,9 @@ function selectExampleVerbs(verbType, selectedFamilies, tense) {
       }
     }
   }
-  
+
+  selectedVerbs = selectedVerbs.filter(Boolean);
+
   logger.debug('FINAL: Verbos seleccionados para', verbType, ':', selectedVerbs.map(v => v?.lemma));
   return selectedVerbs.slice(0, 3);
 }
@@ -233,6 +267,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
   const settings = useSettings();
+  const { updateSessionOverrides } = useLearningSession();
 
   // Generate eligible forms for SRS integration
   const eligibleForms = useMemo(() => {
@@ -255,6 +290,36 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
     return getEligibleFormsForSettings(basePool, learningSettings);
   }, [selectedTense, settings, verbType, selectedFamilies, exampleVerbs]);
+
+  useEffect(() => {
+    const overrides = {
+      practiceMode: 'specific'
+    };
+    if (selectedTense?.mood) {
+      overrides.specificMood = selectedTense.mood;
+    }
+    if (selectedTense?.tense) {
+      overrides.specificTense = selectedTense.tense;
+    }
+    if (verbType) {
+      overrides.verbType = verbType;
+    }
+    overrides.allowedLemmas = exampleVerbs && exampleVerbs.length > 0
+      ? new Set(exampleVerbs.map((verb) => verb?.lemma).filter(Boolean))
+      : null;
+    overrides.selectedFamily = selectedFamilies && selectedFamilies.length === 1
+      ? selectedFamilies[0]
+      : null;
+    updateSessionOverrides(overrides);
+  }, [selectedTense, verbType, exampleVerbs, selectedFamilies, updateSessionOverrides]);
+
+  useEffect(() => {
+    const lemmas = (exampleVerbs || []).map((verb) => verb?.lemma).filter(Boolean);
+    if (lemmas.length === 0) return;
+    getVerbsByLemmas(lemmas).catch((error) => {
+      logger.warn('Failed to warm optimized cache for example verbs', error);
+    });
+  }, [exampleVerbs]);
 
   // Calculate adaptive settings when tense and type are selected
   useEffect(() => {
@@ -385,7 +450,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const handleStartLearning = () => {
     if (selectedTense && duration && verbType) {
       // The true source of truth: select verbs based on user's choice
-      const verbObjects = selectExampleVerbs(verbType, selectedFamilies, selectedTense.tense);
+      const verbObjects = selectExampleVerbs(verbType, selectedFamilies, selectedTense);
       setExampleVerbs(verbObjects);
       
       logger.debug('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, verbObjects: verbObjects.map(v => v?.lemma) });
@@ -709,4 +774,12 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   return null;
 }
 
-export default LearnTenseFlowContainer;
+function LearnTenseFlow(props) {
+  return (
+    <LearningSessionProvider overrides={{ practiceMode: 'specific' }}>
+      <LearnTenseFlowContainer {...props} />
+    </LearningSessionProvider>
+  );
+}
+
+export default LearnTenseFlow;

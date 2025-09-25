@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
-import { updateSchedule } from '../../lib/progress/srs.js';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { trackAttemptStarted, trackAttemptSubmitted } from '../../features/drill/tracking.js';
 import { grade } from '../../lib/core/grader.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
@@ -257,11 +256,28 @@ const timelineData = {
   },
 };
 
+const normalizeText = (text = '') => text
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase();
+
 function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
   const [story, setStory] = useState('');
   const [feedback, setFeedback] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState(null);
+
+  const normalizedFormLookup = useMemo(() => {
+    const map = new Map();
+    (eligibleForms || []).forEach((form) => {
+      if (!form?.value) return;
+      const key = normalizeText(form.value);
+      if (!map.has(key)) {
+        map.set(key, form);
+      }
+    });
+    return map;
+  }, [eligibleForms]);
   
   // Create a dummy currentItem for progress tracking
   const currentItem = {
@@ -271,7 +287,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     mood: tense?.mood
   };
   
-  const { handleResult } = useProgressTracking(currentItem, (result) => {
+  const { handleResult, progressSystemReady } = useProgressTracking(currentItem, (result) => {
     console.log('Meaningful practice progress tracking result:', result);
   });
 
@@ -297,147 +313,160 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     setIsProcessing(true);
     setFeedback(null);
     
-    const userText = story.toLowerCase();
-    
+    const normalizedStory = normalizeText(story);
+
+    const evaluationResults = [];
     let missing = [];
     let foundVerbs = [];
 
     if (exercise.type === 'timeline') {
-        exercise.expectedVerbs.forEach(verb => {
-            // Normalize both texts to handle accents properly
-            const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-            const normalizedUser = normalizeText(userText);
-            const normalizedVerb = normalizeText(verb);
-            
-            // Use word boundaries with normalized text
-            const regex = new RegExp(`\\b${normalizedVerb.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(normalizedUser)) {
-                foundVerbs.push(verb);
-            } else {
-                missing.push(verb);
-            }
+      exercise.expectedVerbs.forEach((verb) => {
+        const normalizedVerb = normalizeText(verb);
+        const matched = normalizedStory.includes(normalizedVerb);
+        if (matched) {
+          foundVerbs.push(verb);
+        } else {
+          missing.push(verb);
+        }
+        evaluationResults.push({
+          options: [verb],
+          matchedOption: matched ? verb : null
         });
-    } else if (exercise.type === 'prompts') {
-        exercise.prompts.forEach(p => {
-            let bestMatch = null;
-            let bestScore = 0;
-            
-            // Try to find the best match using the grader system
-            for (const expectedVerb of p.expected) {
-                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\b`, 'i');
-                if (regex.test(userText)) {
-                    bestMatch = expectedVerb;
-                    bestScore = 1;
-                    break;
-                }
-                
-                // Also try fuzzy matching using grader for partial credit
-                const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, userText);
-                if (gradeResult.correct || gradeResult.score > bestScore) {
-                    bestMatch = expectedVerb;
-                    bestScore = gradeResult.score;
-                }
-            }
-            
-            if (bestMatch && bestScore > 0.7) {
-                foundVerbs.push(bestMatch);
-            } else {
-                missing.push(p.expected.join(' o '));
-            }
-        });
-    } else if (exercise.type === 'daily_routine') {
-        exercise.prompts.forEach(p => {
-            const found = p.expected.some(verb => {
-                // Use includes for simpler matching - check if verb appears as whole word
-                const regex = new RegExp(`\\b${verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-                if (regex.test(userText)) {
-                    foundVerbs.push(verb);
-                    return true;
-                }
-                return false;
-            });
-            if (!found) {
-                missing.push(p.expected.join(' o '));
-            }
-        });
-    }
-
-    const isCorrect = missing.length === 0;
-    
-    if (isCorrect) {
-      setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
-      
-      // Use official progress tracking system
-      await handleResult({
-        correct: true,
-        userAnswer: story,
-        correctAnswer: foundVerbs.join(', '),
-        hintsUsed: 0,
-        errorTags: [],
-        latencyMs: 0, // Not applicable for this type of exercise
-        isIrregular: false,
-        itemId: currentItem.id
       });
-      
-      // Keep SRS scheduling for found verbs
-      try {
-        const userId = getCurrentUserId();
-        if (userId) {
-          console.log('Analytics: Updating schedule for meaningful practice...');
-          for (const verbStr of foundVerbs) {
-            const formObject = eligibleForms?.find(f => f.value === verbStr);
-            if (formObject) {
-              await updateSchedule(userId, formObject, true, 0);
-              console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
-            }
+    } else if (exercise.type === 'prompts') {
+      exercise.prompts.forEach((p) => {
+        let bestMatch = null;
+        let bestScore = 0;
+
+        for (const expectedVerb of p.expected) {
+          const normalizedExpected = normalizeText(expectedVerb);
+          if (normalizedStory.includes(normalizedExpected)) {
+            bestMatch = expectedVerb;
+            bestScore = 1;
+            break;
+          }
+
+          const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, story);
+          if (gradeResult.correct || gradeResult.score > bestScore) {
+            bestMatch = expectedVerb;
+            bestScore = gradeResult.correct ? 1 : gradeResult.score;
           }
         }
-      } catch (error) {
-        console.error("Failed to update SRS schedule:", error);
-      }
+
+        if (bestMatch && bestScore > 0.7) {
+          foundVerbs.push(bestMatch);
+        } else {
+          missing.push(p.expected.join(' o '));
+          bestMatch = null;
+        }
+
+        evaluationResults.push({
+          options: p.expected,
+          matchedOption: bestMatch,
+          score: bestScore
+        });
+      });
+    } else if (exercise.type === 'daily_routine') {
+      exercise.prompts.forEach((p) => {
+        const matchedVerb = p.expected.find((verb) => {
+          const normalizedVerb = normalizeText(verb);
+          return normalizedStory.includes(normalizedVerb);
+        });
+
+        if (matchedVerb) {
+          foundVerbs.push(matchedVerb);
+        } else {
+          missing.push(p.expected.join(' o '));
+        }
+
+        evaluationResults.push({
+          options: p.expected,
+          matchedOption: matchedVerb || null
+        });
+      });
+    }
+
+    const isCorrect = evaluationResults.every((entry) => entry.matchedOption);
+
+    let attemptErrorTags = [];
+
+    if (isCorrect) {
+      setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
     } else {
-      // Enhanced error analysis for better feedback
-      const errorTags = ['missing_verbs'];
+      attemptErrorTags = ['missing_verbs'];
       let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
-      
-      // Try to provide more specific feedback
+
       if (missing.length === 1) {
         detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
-        errorTags.push('conjugation_error');
+        attemptErrorTags.push('conjugation_error');
       } else if (missing.length > 1) {
         detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
-        errorTags.push('multiple_missing');
+        attemptErrorTags.push('multiple_missing');
       }
-      
-      // Check if user wrote any verbs in wrong tense
+
       const currentTense = tense?.tense;
       if (currentTense) {
         const wrongTenseHints = {
-          'pres': 'Recuerda usar el presente: yo hablo, tú comes, él vive',
-          'pretIndef': 'Usa el pretérito: yo hablé, tú comiste, él vivió',
-          'impf': 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
-          'fut': 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
-          'pretPerf': 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
+          pres: 'Recuerda usar el presente: yo hablo, tú comes, él vive',
+          pretIndef: 'Usa el pretérito: yo hablé, tú comiste, él vivió',
+          impf: 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
+          fut: 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
+          pretPerf: 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
         };
-        
+
         if (wrongTenseHints[currentTense]) {
           detailedFeedback += ` ${wrongTenseHints[currentTense]}.`;
+          attemptErrorTags.push('tense_mismatch');
         }
       }
-      
+
       setFeedback({ type: 'incorrect', message: detailedFeedback });
-      
-      // Track incorrect attempt with enhanced error classification
-      await handleResult({
-        correct: false,
-        userAnswer: story,
-        correctAnswer: missing.join(', '),
-        hintsUsed: 0,
-        errorTags,
-        latencyMs: 0,
-        isIrregular: false,
-        itemId: currentItem.id
-      });
+    }
+
+    const canonicalAnswers = evaluationResults.map((entry) => entry.options?.[0]).filter(Boolean);
+
+    await handleResult({
+      correct: isCorrect,
+      userAnswer: story,
+      correctAnswer: isCorrect ? foundVerbs.join(', ') : canonicalAnswers.join(', '),
+      hintsUsed: 0,
+      errorTags: attemptErrorTags,
+      latencyMs: 0,
+      isIrregular: false,
+      itemId: currentItem.id
+    });
+
+    if (progressSystemReady) {
+      try {
+        for (const entry of evaluationResults) {
+          const canonical = entry.matchedOption || entry.options?.[0];
+          if (!canonical) continue;
+
+          const formObject = normalizedFormLookup.get(normalizeText(canonical));
+          if (!formObject) {
+            console.warn('MeaningfulPractice: no eligible form matched', canonical);
+            continue;
+          }
+
+          const resolvedForm = {
+            ...formObject,
+            id: formObject.id || `${formObject.lemma}|${formObject.mood}|${formObject.tense}|${formObject.person}`
+          };
+
+          const attemptId = trackAttemptStarted(resolvedForm);
+          await trackAttemptSubmitted(attemptId, {
+            correct: Boolean(entry.matchedOption),
+            latencyMs: 0,
+            hintsUsed: 0,
+            errorTags: entry.matchedOption ? [] : ['missing_verbs'],
+            userAnswer: story,
+            correctAnswer: canonical,
+            item: resolvedForm
+          });
+        }
+      } catch (error) {
+        console.error('Failed to record contextual attempts:', error);
+      }
     }
     
     setIsProcessing(false);
