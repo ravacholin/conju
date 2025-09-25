@@ -1,10 +1,9 @@
 /* SRS Analytics Styles */
 .srs-analytics {
-  background: var(--card-background, #ffffff);
-  border-radius: 16px;
+  background: #2a2a2a;
+  border-radius: 8px;
   padding: 20px;
-  border: 1px solid var(--border-light, #e2e8f0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #404040;
 }
 
 .srs-analytics.loading,
@@ -29,8 +28,8 @@
 /* Compact Analytics */
 .srs-analytics.compact {
   padding: 16px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: #2a2a2a;
+  border: 1px solid #404040;
 }
 
 .srs-analytics.compact .analytics-header h5 {
@@ -108,10 +107,10 @@
 }
 
 .analytics-card {
-  background: var(--background-secondary, #f8fafc);
-  border-radius: 12px;
+  background: #333;
+  border-radius: 8px;
   padding: 20px;
-  border: 1px solid var(--border-light, #e2e8f0);
+  border: 1px solid #404040;
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
@@ -124,29 +123,28 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary, #3b82f6), var(--primary-light, #60a5fa));
+  background: #007bff;
 }
 
 .analytics-card.velocity::before {
-  background: linear-gradient(90deg, #10b981, #34d399);
+  background: #10b981;
 }
 
 .analytics-card.accuracy::before {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  background: #f59e0b;
 }
 
 .analytics-card.speed::before {
-  background: linear-gradient(90deg, #8b5cf6, #a855f7);
+  background: #8b5cf6;
 }
 
 .analytics-card.intervals::before {
-  background: linear-gradient(90deg, #ef4444, #f87171);
+  background: #ef4444;
 }
 
 .analytics-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary, #3b82f6);
+  background: #3a3a3a;
+  border-color: #555;
 }
 
 .card-header {
@@ -308,7 +306,7 @@
 
 .interval-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary, #3b82f6), var(--primary-light, #60a5fa));
+  background: #007bff;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -441,7 +439,7 @@
   }
 
   .srs-analytics.compact {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    background: #2a2a2a;
   }
 }
 

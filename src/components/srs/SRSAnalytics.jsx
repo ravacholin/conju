@@ -126,16 +126,22 @@ export default function SRSAnalytics({ compact = false }) {
   if (!analytics) {
     return (
       <div className="srs-analytics empty">
-        <div className="empty-icon">📊</div>
+        <div className="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <rect x="7" y="8" width="3" height="8"/>
+            <rect x="14" y="8" width="3" height="8"/>
+          </svg>
+        </div>
         <p>Necesitas más repasos para generar estadísticas</p>
       </div>
     )
   }
 
   const getTrendIcon = (trend) => {
-    if (trend > 5) return '📈'
-    if (trend < -5) return '📉'
-    return '➡️'
+    if (trend > 5) return '↗'
+    if (trend < -5) return '↘'
+    return '→'
   }
 
   const getTrendColor = (trend) => {
@@ -148,7 +154,7 @@ export default function SRSAnalytics({ compact = false }) {
     return (
       <div className="srs-analytics compact">
         <div className="analytics-header">
-          <h5>📊 Rendimiento (30 días)</h5>
+          <h5>Rendimiento (30 días)</h5>
         </div>
         <div className="metrics-row">
           <div className="metric-item">
@@ -182,7 +188,13 @@ export default function SRSAnalytics({ compact = false }) {
         <div className="analytics-card velocity">
           <div className="card-header">
             <h5>Velocidad de Aprendizaje</h5>
-            <div className="card-icon">🚀</div>
+            <div className="card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
           </div>
           <div className="card-content">
             <div className="primary-metric">
@@ -205,7 +217,13 @@ export default function SRSAnalytics({ compact = false }) {
         <div className="analytics-card accuracy">
           <div className="card-header">
             <h5>Precisión</h5>
-            <div className="card-icon">🎯</div>
+            <div className="card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+              </svg>
+            </div>
           </div>
           <div className="card-content">
             <div className="primary-metric">
@@ -224,7 +242,11 @@ export default function SRSAnalytics({ compact = false }) {
         <div className="analytics-card speed">
           <div className="card-header">
             <h5>Velocidad de Respuesta</h5>
-            <div className="card-icon">⚡</div>
+            <div className="card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+              </svg>
+            </div>
           </div>
           <div className="card-content">
             <div className="primary-metric">
@@ -233,10 +255,10 @@ export default function SRSAnalytics({ compact = false }) {
             </div>
             <div className="speed-assessment">
               {analytics.averageResponseTime < 3
-                ? <span className="assessment good">🔥 Muy rápido</span>
+                ? <span className="assessment good">Muy rápido</span>
                 : analytics.averageResponseTime < 5
-                ? <span className="assessment okay">👍 Bien</span>
-                : <span className="assessment slow">🐢 Se puede mejorar</span>
+                ? <span className="assessment okay">Bien</span>
+                : <span className="assessment slow">Se puede mejorar</span>
               }
             </div>
           </div>
@@ -245,7 +267,14 @@ export default function SRSAnalytics({ compact = false }) {
         <div className="analytics-card intervals">
           <div className="card-header">
             <h5>Distribución de Intervalos</h5>
-            <div className="card-icon">📅</div>
+            <div className="card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
           </div>
           <div className="card-content">
             <div className="intervals-chart">
@@ -270,11 +299,11 @@ export default function SRSAnalytics({ compact = false }) {
       </div>
 
       <div className="learning-insights">
-        <h5>💡 Insights Personalizados</h5>
+        <h5>Insights Personalizados</h5>
         <div className="insights-list">
           {analytics.learningVelocity > 5 && (
             <div className="insight positive">
-              <span className="insight-icon">🚀</span>
+              <span className="insight-icon">↗</span>
               <span className="insight-text">
                 ¡Excelente ritmo! Estás aprendiendo {analytics.learningVelocity} items por día.
               </span>
@@ -283,7 +312,7 @@ export default function SRSAnalytics({ compact = false }) {
 
           {analytics.averageAccuracy > 85 && (
             <div className="insight positive">
-              <span className="insight-icon">🎯</span>
+              <span className="insight-icon">●</span>
               <span className="insight-text">
                 Tu precisión de {analytics.averageAccuracy}% es impresionante. Mantén el buen trabajo.
               </span>
@@ -292,7 +321,7 @@ export default function SRSAnalytics({ compact = false }) {
 
           {analytics.accuracyTrend > 10 && (
             <div className="insight positive">
-              <span className="insight-icon">📈</span>
+              <span className="insight-icon">↗</span>
               <span className="insight-text">
                 ¡Gran mejora! Tu precisión ha aumentado {analytics.accuracyTrend.toFixed(1)}% esta semana.
               </span>
@@ -310,7 +339,7 @@ export default function SRSAnalytics({ compact = false }) {
 
           {analytics.weeklyReviews < 20 && analytics.totalReviews > 50 && (
             <div className="insight suggestion">
-              <span className="insight-icon">📅</span>
+              <span className="insight-icon">□</span>
               <span className="insight-text">
                 Considera aumentar la frecuencia de repaso para mantener el progreso.
               </span>

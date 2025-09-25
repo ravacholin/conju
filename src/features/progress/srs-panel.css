@@ -1,15 +1,10 @@
 /* Panel SRS - Diseño minimalista y claro */
 
 .srs-panel {
-  background: rgba(17, 17, 17, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
   margin-bottom: 2rem;
   width: 100%;
 }
@@ -160,13 +155,13 @@
 }
 
 .srs-stat-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .stat-indicator {
@@ -179,22 +174,20 @@
 }
 
 .stat-indicator.urgent-indicator {
-  background: linear-gradient(90deg, var(--accent-red), rgba(220, 53, 69, 0.7));
+  background: #dc3545;
 }
 
 .stat-indicator.ready-indicator {
-  background: linear-gradient(90deg, var(--accent-green), rgba(40, 167, 69, 0.7));
+  background: #28a745;
 }
 
 .stat-indicator.scheduled-indicator {
-  background: linear-gradient(90deg, var(--accent-blue), rgba(0, 123, 255, 0.7));
+  background: #007bff;
 }
 
 .srs-stat-card:hover {
-  transform: translateY(-2px) scale(1.01);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: #333;
+  border-color: #555;
 }
 
 .stat-icon {
@@ -227,10 +220,7 @@
   height: 40px;
   border-radius: 50%;
   position: relative;
-  background: conic-gradient(
-    var(--accent-blue, #007bff) calc(var(--progress) * 1%),
-    rgba(255, 255, 255, 0.1) 0%
-  );
+  background: #404040;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,7 +233,7 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  background: rgba(17, 17, 17, 0.8);
+  background: #1a1a1a;
   border-radius: 50%;
 }
 
@@ -256,24 +246,15 @@
 }
 
 .srs-stat-card.urgent .progress-ring {
-  background: conic-gradient(
-    var(--accent-red, #dc3545) calc(var(--progress) * 1%),
-    rgba(255, 255, 255, 0.1) 0%
-  );
+  background: #dc3545;
 }
 
 .srs-stat-card.ready .progress-ring {
-  background: conic-gradient(
-    var(--accent-green, #28a745) calc(var(--progress) * 1%),
-    rgba(255, 255, 255, 0.1) 0%
-  );
+  background: #28a745;
 }
 
 .srs-stat-card.scheduled .progress-ring {
-  background: conic-gradient(
-    var(--accent-blue, #007bff) calc(var(--progress) * 1%),
-    rgba(255, 255, 255, 0.1) 0%
-  );
+  background: #007bff;
 }
 
 .stat-time {
@@ -309,19 +290,17 @@
 .srs-main-btn {
   width: 100%;
   padding: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   overflow: hidden;
   position: relative;
 }
 
 .srs-main-btn:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  background: #333;
+  border-color: #555;
 }
 
 .btn-content {
@@ -368,9 +347,9 @@
 .srs-no-items {
   text-align: center;
   padding: 2rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
   margin-bottom: 1rem;
 }
 
@@ -453,16 +432,15 @@
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid #404040;
   color: var(--text);
   font-weight: 400;
   transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background: #2a2a2a;
+  border-color: #555;
 }
 
 .btn-badge {
@@ -476,9 +454,9 @@
 
 /* Details Section - Rediseño minimalista */
 .srs-details {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
   padding: 1.5rem;
   margin-top: 2rem;
 }
@@ -562,38 +540,36 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 1px solid #404040;
+  background: #2a2a2a;
+  transition: all 0.2s ease;
   margin-bottom: 0.75rem;
 }
 
 .srs-item:hover {
-  transform: translateX(4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: #333;
+  border-color: #555;
 }
 
 .srs-item.urgent-overdue {
-  border-left: 4px solid var(--accent-red);
-  background: linear-gradient(90deg, rgba(220, 53, 69, 0.05), rgba(255, 255, 255, 0.02));
+  border-left: 4px solid #dc3545;
+  background: #2d2a2a;
 }
 
 .srs-item.urgent-high {
-  border-left: 4px solid var(--warning);
-  background: linear-gradient(90deg, rgba(255, 193, 7, 0.05), rgba(255, 255, 255, 0.02));
+  border-left: 4px solid #ffc107;
+  background: #2d2c2a;
 }
 
 .srs-item.urgent-medium {
-  border-left: 4px solid var(--accent-green);
-  background: linear-gradient(90deg, rgba(40, 167, 69, 0.05), rgba(255, 255, 255, 0.02));
+  border-left: 4px solid #28a745;
+  background: #2a2d2a;
 }
 
 .srs-item.urgent-low {
-  border-left: 4px solid var(--accent-blue);
-  background: linear-gradient(90deg, rgba(23, 162, 184, 0.05), rgba(255, 255, 255, 0.02));
+  border-left: 4px solid #007bff;
+  background: #2a2c2d;
 }
 
 .srs-item-content {
@@ -741,9 +717,9 @@
 .srs-empty {
   text-align: center;
   padding: 3rem 2rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
   margin-top: 1rem;
 }
 
@@ -785,9 +761,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  background: #333;
+  border: 1px solid #404040;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
   color: var(--muted);
