@@ -13,7 +13,7 @@ vi.mock('../../state/settings.js', () => ({
 
 vi.mock('./SRSPanel.jsx', () => ({ default: () => <div data-testid="srs-panel" /> }))
 vi.mock('./VerbMasteryMap.jsx', () => ({ default: () => <div data-testid="mastery-map" /> }))
-vi.mock('./ErrorInsights.jsx', () => ({ default: () => <div data-testid="error-insights" /> }))
+vi.mock('./EnhancedErrorAnalysis.jsx', () => ({ default: () => <div data-testid="enhanced-error-analysis" /> }))
 vi.mock('./ErrorIntelligence.jsx', () => ({ default: () => <div data-testid="error-intelligence" /> }))
 vi.mock('./PracticeRecommendations.jsx', () => ({ default: () => <div data-testid="practice-recos" /> }))
 
@@ -41,7 +41,7 @@ describe('ProgressDashboard (smoke)', () => {
     expect(screen.getByText(/Progreso y Analíticas/i)).toBeInTheDocument()
     expect(screen.getByTestId('mastery-map')).toBeInTheDocument()
     expect(screen.getByTestId('srs-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('error-insights')).toBeInTheDocument()
+    expect(screen.getByTestId('enhanced-error-analysis')).toBeInTheDocument()
     expect(screen.getByTestId('error-intelligence')).toBeInTheDocument()
     expect(screen.getByText(/Objetivos Semanales/i)).toBeInTheDocument()
   })

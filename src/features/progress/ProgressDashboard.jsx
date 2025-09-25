@@ -5,7 +5,7 @@ import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
 import PracticeRecommendations from './PracticeRecommendations.jsx'
 import SRSPanel from './SRSPanel.jsx'
-import ErrorInsights from './ErrorInsights.jsx'
+import EnhancedErrorAnalysis from './EnhancedErrorAnalysis.jsx'
 import { useSettings } from '../../state/settings.js'
 import { validateMoodTenseAvailability } from '../../lib/core/generator.js'
 import { buildFormsForRegion } from '../../lib/core/eligibility.js'
@@ -244,7 +244,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
             <img src="/diana.png" alt="Errores" className="section-icon" />
             Análisis de Errores
           </h2>
-          <ErrorInsights onNavigateToDrill={onNavigateToDrill} />
+          <EnhancedErrorAnalysis onStartPractice={onNavigateToDrill} />
         </section>
       </SafeComponent>
 
