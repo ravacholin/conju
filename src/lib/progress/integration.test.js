@@ -23,7 +23,7 @@ describe('Pruebas de Integración del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log('🔧 Configurando entorno de pruebas de integración...')
+    console.log(' Configurando entorno de pruebas de integración...')
   })
 
   it('debería integrar correctamente todas las funciones del sistema', async () => {

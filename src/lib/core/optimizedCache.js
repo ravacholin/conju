@@ -229,7 +229,7 @@ export async function getVerbsByLemmas(lemmas) {
   const missingLemmas = lemmas.filter(lemma => !foundLemmas.has(lemma))
 
   if (missingLemmas.length > 0) {
-    console.warn(`🔍 optimizedCache: ${missingLemmas.length} verbs still missing after chunk loading: [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
+    console.warn(` optimizedCache: ${missingLemmas.length} verbs still missing after chunk loading: [${missingLemmas.slice(0, 3).join(', ')}${missingLemmas.length > 3 ? '...' : ''}]`)
 
     // Final fallback: direct main store lookup for missing verbs
     try {
@@ -318,7 +318,7 @@ async function initializeCoreVerbs() {
     })
     
     if (import.meta.env?.DEV && !import.meta.env?.VITEST) {
-      console.log(`🚀 Core verbs initialized: ${coreVerbs.length} verbs`)
+      console.log(` Core verbs initialized: ${coreVerbs.length} verbs`)
     }
   } catch (error) {
     console.error('Failed to initialize core verbs:', error)
@@ -355,7 +355,7 @@ function initializeFallbackLookups() {
       })
 
       if (import.meta.env?.DEV && !import.meta.env?.VITEST) {
-        console.log(`🚀 Fallback verbs initialized: ${verbs.length} verbs, ${FORM_LOOKUP_MAP.size} forms`)
+        console.log(` Fallback verbs initialized: ${verbs.length} verbs, ${FORM_LOOKUP_MAP.size} forms`)
       }
     }).catch(console.error)
   } catch (error) {
@@ -366,7 +366,7 @@ function initializeFallbackLookups() {
 // Función para pre-calentar caches con datos frecuentes
 export async function warmupCaches() {
   if (import.meta.env?.DEV && !import.meta.env?.VITEST) {
-    console.log('🔥 Calentando caches del generador...')
+    console.log(' Calentando caches del generador...')
   }
   
   const commonVerbs = ['ser', 'estar', 'haber', 'tener', 'hacer', 'ir', 'venir', 'decir', 'poder', 'querer']
@@ -498,7 +498,7 @@ export async function initiatePredictiveLoading(userId, _userSettings = {}) {
 
     // Predictively cache these verbs
     if (predictedVerbs.size > 0) {
-      console.log(`🔮 Predictive cache: Loading ${predictedVerbs.size} predicted verbs`)
+      console.log(` Predictive cache: Loading ${predictedVerbs.size} predicted verbs`)
       await verbChunkManager.ensureVerbsLoaded(Array.from(predictedVerbs))
 
       // Update cache stats

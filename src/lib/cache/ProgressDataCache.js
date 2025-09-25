@@ -189,7 +189,7 @@ if (typeof window !== 'undefined') {
     const updateType = event.detail?.type || 'general'
     
     if (import.meta.env?.DEV) {
-      console.log('🗑️ Cache invalidation triggered:', { userId, updateType })
+      console.log('️ Cache invalidation triggered:', { userId, updateType })
     }
     
     if (userId) {
@@ -236,7 +236,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('progress:challengeCompleted', (event) => {
     const userId = event.detail?.userId
     if (import.meta.env?.DEV) {
-      console.log('🏅 Desafío diario completado, invalidando caché correspondiente', event.detail)
+      console.log(' Desafío diario completado, invalidando caché correspondiente', event.detail)
     }
     if (userId) {
       progressDataCache.invalidate(`${userId}:dailyChallenges`)

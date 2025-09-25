@@ -239,7 +239,7 @@
 }
 
 .severity-dot.high {
-  background: #ffc107;
+  background: #333;
 }
 
 .severity-dot.medium {
@@ -403,7 +403,7 @@
 }
 
 .impact-bar.high .impact-fill {
-  background: #ffc107;
+  background: #333;
 }
 
 .impact-bar.medium .impact-fill {
@@ -427,7 +427,7 @@
 }
 
 .metric-value.high {
-  color: #ffc107;
+  color: #333;
 }
 
 .metric-value.medium {
@@ -946,8 +946,8 @@
 }
 
 .impact-level.medium {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: #333;
+  color: #333;
 }
 
 .impact-level.low {
@@ -1213,8 +1213,8 @@
 }
 
 .risk-card.medium {
-  border-color: rgba(255, 193, 7, 0.3);
-  background: rgba(255, 193, 7, 0.05);
+  border-color: #333;
+  background: #333;
 }
 
 .risk-card.low {
@@ -1262,8 +1262,8 @@
 }
 
 .risk-level.high {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: #333;
+  color: #333;
 }
 
 .risk-level.medium {
@@ -1469,8 +1469,8 @@
 }
 
 .priority.medium {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: #333;
+  color: #333;
 }
 
 .priority.low {
@@ -1608,8 +1608,8 @@
 }
 
 .step-duration {
-  background: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: #333;
+  color: #333;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;

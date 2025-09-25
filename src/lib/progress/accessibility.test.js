@@ -21,7 +21,7 @@ describe('Pruebas de Accesibilidad del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log('🔧 Configurando entorno de pruebas de accesibilidad...')
+    console.log(' Configurando entorno de pruebas de accesibilidad...')
   })
 
   it('debería ser accesible para usuarios con discapacidad visual', () => {

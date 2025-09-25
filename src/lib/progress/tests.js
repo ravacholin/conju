@@ -95,7 +95,7 @@ export async function runBasicTests() {
       levelCritical 
     })
     
-    console.log('🎉 Todas las pruebas básicas pasaron')
+    console.log(' Todas las pruebas básicas pasaron')
     return true
   } catch (error) {
     console.error('❌ Error en pruebas básicas:', error)
@@ -108,7 +108,7 @@ export async function runBasicTests() {
  * @returns {Promise<Object>} Resultados de las pruebas de rendimiento
  */
 export async function runPerformanceTests() {
-  console.log('⚡ Ejecutando pruebas de rendimiento...')
+  console.log(' Ejecutando pruebas de rendimiento...')
   
   const results = {
     initTime: 0,
@@ -124,7 +124,7 @@ export async function runPerformanceTests() {
     const _userId = await initProgressSystem()
     results.initTime = performance.now() - initStart
     
-    console.log('⚡ Pruebas de rendimiento completadas:', results)
+    console.log(' Pruebas de rendimiento completadas:', results)
     return results
   } catch (error) {
     console.error('❌ Error en pruebas de rendimiento:', error)
@@ -137,7 +137,7 @@ export async function runPerformanceTests() {
  * @returns {Promise<Object>} Resultados de todas las pruebas
  */
 export async function runAllTests() {
-  console.log('🚀 Ejecutando todas las pruebas del sistema de progreso...')
+  console.log(' Ejecutando todas las pruebas del sistema de progreso...')
   
   const results = {
     basicTests: false,
@@ -157,7 +157,7 @@ export async function runAllTests() {
     results.totalTests += 1
     if (results.performanceTests) results.passedTests += 1
     
-    console.log(`🏁 Pruebas completadas: ${results.passedTests}/${results.totalTests} pasaron`)
+    console.log(` Pruebas completadas: ${results.passedTests}/${results.totalTests} pasaron`)
     return results
   } catch (error) {
     console.error('❌ Error ejecutando todas las pruebas:', error)
@@ -169,7 +169,7 @@ export async function runAllTests() {
 if (typeof window !== 'undefined' && window.location) {
   // Solo ejecutar en el navegador
   runAllTests().then(results => {
-    console.log('📊 Resultados finales de pruebas:', results)
+    console.log(' Resultados finales de pruebas:', results)
   }).catch(error => {
     console.error('Error en pruebas:', error)
   })

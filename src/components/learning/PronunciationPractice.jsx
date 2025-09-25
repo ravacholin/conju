@@ -301,7 +301,7 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
 
             <div className="audio-section">
               <button className="play-audio-btn" onClick={handlePlayAudio}>
-                <span className="audio-icon">🔊</span>
+                <span className="audio-icon"></span>
                 Escuchar pronunciación
               </button>
               <audio ref={audioRef} style={{ display: 'none' }} />
@@ -339,7 +339,7 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
                 onClick={handleStartRecording}
                 disabled={isRecording}
               >
-                <span className="mic-icon">🎤</span>
+                <span className="mic-icon"></span>
                 {isRecording ? 'Grabando...' : 'Grabar mi pronunciación'}
               </button>
 

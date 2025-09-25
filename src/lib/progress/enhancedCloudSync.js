@@ -70,7 +70,7 @@ export async function enhancedCloudSync(options = {}) {
  * Sincronización inteligente que analiza cambios
  */
 async function smartSync(userId, options) {
-  console.log('🧠 Ejecutando sincronización inteligente...')
+  console.log(' Ejecutando sincronización inteligente...')
   
   // Obtener cambios locales desde la última sincronización
   const localChanges = await getLocalChangesSinceLastSync(userId)
@@ -82,7 +82,7 @@ async function smartSync(userId, options) {
   const conflicts = analyzeConflicts(localChanges, remoteState)
   
   if (conflicts.length > 0) {
-    console.log(`⚠️ Se encontraron ${conflicts.length} conflictos`)
+    console.log(`️ Se encontraron ${conflicts.length} conflictos`)
     const resolvedChanges = await resolveConflicts(conflicts, options.conflictStrategy)
     return await applySyncChanges(resolvedChanges, userId)
   }
@@ -99,7 +99,7 @@ async function smartSync(userId, options) {
  * Sincronización delta (solo cambios)
  */
 async function deltaSync(userId, options) {
-  console.log('📊 Ejecutando sincronización delta...')
+  console.log(' Ejecutando sincronización delta...')
   
   const lastSyncTime = getLastSyncTimestamp(userId)
   const deltaChanges = await getChangesSince(userId, lastSyncTime)
@@ -124,7 +124,7 @@ async function deltaSync(userId, options) {
  * Sincronización completa
  */
 async function fullSync(userId, options) {
-  console.log('🔄 Ejecutando sincronización completa...')
+  console.log(' Ejecutando sincronización completa...')
   
   // Exportar todos los datos locales
   const localData = await exportProgressData(userId)
@@ -154,7 +154,7 @@ async function fullSync(userId, options) {
  * Sincronización forzada (sobrescribir)
  */
 async function forceSync(userId, options) {
-  console.log('💪 Ejecutando sincronización forzada...')
+  console.log(' Ejecutando sincronización forzada...')
   
   const localData = await exportProgressData(userId)
   
@@ -254,7 +254,7 @@ async function resolveConflicts(conflicts, strategy) {
  */
 async function mergeConflict(conflict) {
   // Estrategia de merge inteligente
-  console.log('🔀 Aplicando merge inteligente...')
+  console.log(' Aplicando merge inteligente...')
   
   return {
     ...conflict.local,
@@ -268,7 +268,7 @@ async function mergeConflict(conflict) {
  * Aplica cambios de sincronización
  */
 async function applySyncChanges(changes, _userId) {
-  console.log('📝 Aplicando cambios de sincronización...')
+  console.log(' Aplicando cambios de sincronización...')
   
   // En implementación real, esto aplicaría cambios a la DB local
   await new Promise(resolve => setTimeout(resolve, 1000))
@@ -287,7 +287,7 @@ async function retrySync(options, delay = 1000) {
   retryCount++
   const backoffDelay = delay * Math.pow(2, retryCount - 1)
   
-  console.log(`🔄 Reintentando sincronización en ${backoffDelay}ms (intento ${retryCount})`)
+  console.log(` Reintentando sincronización en ${backoffDelay}ms (intento ${retryCount})`)
   
   await new Promise(resolve => setTimeout(resolve, backoffDelay))
   
@@ -305,7 +305,7 @@ function scheduleNextSync() {
   // Sincronizar cada 15 minutos
   syncScheduler = setTimeout(() => {
     enhancedCloudSync({ strategy: 'smart' }).catch(error => {
-      console.warn('⚠️ Error en sincronización automática:', error)
+      console.warn('️ Error en sincronización automática:', error)
     })
   }, 15 * 60 * 1000)
 }

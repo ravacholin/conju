@@ -37,13 +37,13 @@ export async function initDB() {
   isInitializing = true
   
   try {
-    console.log('🔄 Inicializando base de datos de progreso...')
+    console.log(' Inicializando base de datos de progreso...')
     
     // Importar openDB dinámicamente para permitir mocks por prueba
     const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
       upgrade(db) {
-        console.log('🔧 Actualizando estructura de base de datos...')
+        console.log(' Actualizando estructura de base de datos...')
         
         // Crear tabla de usuarios
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USERS)) {
@@ -128,7 +128,7 @@ export async function initDB() {
           console.log('✅ Tabla de eventos auxiliares creada')
         }
 
-        console.log('🔧 Estructura de base de datos actualizada')
+        console.log(' Estructura de base de datos actualizada')
       }
     })
     
@@ -799,7 +799,7 @@ export async function getRecentEvents(userId, limit = 100) {
  * @returns {Promise<void>}
  */
 export async function initializeFullDB() {
-  console.log('🚀 Inicializando completamente la base de datos...')
+  console.log(' Inicializando completamente la base de datos...')
 
   try {
     // Inicializar base de datos
@@ -823,7 +823,7 @@ export async function closeDB() {
   if (dbInstance) {
     await dbInstance.close()
     dbInstance = null
-    console.log('🚪 Base de datos cerrada')
+    console.log(' Base de datos cerrada')
   }
 }
 
@@ -837,7 +837,7 @@ export async function deleteDB() {
     // Importar deleteDB de idb con alias para evitar sombra
     const { deleteDB: idbDeleteDB } = await import('idb')
     await idbDeleteDB(STORAGE_CONFIG.DB_NAME)
-    console.log('🗑️ Base de datos eliminada')
+    console.log('️ Base de datos eliminada')
   } catch (error) {
     console.error('❌ Error al eliminar la base de datos:', error)
     throw error
@@ -857,11 +857,11 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   }
 
   if (oldUserId === newUserId) {
-    console.log('🔄 No se requiere migración, userIds son idénticos')
+    console.log(' No se requiere migración, userIds son idénticos')
     return { migrated: 0, skipped: 'same_user_id' }
   }
 
-  console.log(`🔄 Iniciando migración de userId: ${oldUserId} → ${newUserId}`)
+  console.log(` Iniciando migración de userId: ${oldUserId} → ${newUserId}`)
 
   const stats = {
     attempts: 0,
@@ -892,21 +892,21 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
 
     // 1. Migrar tabla ATTEMPTS
     const oldAttempts = await getAttemptsByUser(oldUserId)
-    console.log(`📊 Migrando ${oldAttempts.length} intentos...`)
+    console.log(` Migrando ${oldAttempts.length} intentos...`)
     for (const attempt of oldAttempts) {
       await updateUser(STORAGE_CONFIG.STORES.ATTEMPTS, attempt, 'attempts')
     }
 
     // 2. Migrar tabla MASTERY
     const oldMastery = await getMasteryByUser(oldUserId)
-    console.log(`📈 Migrando ${oldMastery.length} registros de mastery...`)
+    console.log(` Migrando ${oldMastery.length} registros de mastery...`)
     for (const mastery of oldMastery) {
       await updateUser(STORAGE_CONFIG.STORES.MASTERY, mastery, 'mastery')
     }
 
     // 3. Migrar tabla SCHEDULES
     const oldSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
-    console.log(`⏰ Migrando ${oldSchedules.length} schedules SRS...`)
+    console.log(` Migrando ${oldSchedules.length} schedules SRS...`)
     for (const schedule of oldSchedules) {
       await updateUser(STORAGE_CONFIG.STORES.SCHEDULES, schedule, 'schedules')
     }
@@ -915,7 +915,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     try {
       const oldUser = await getUser(oldUserId)
       if (oldUser) {
-        console.log(`👤 Migrando usuario ${oldUserId}...`)
+        console.log(` Migrando usuario ${oldUserId}...`)
         // Create new user record and delete old one
         const migratedUser = { ...oldUser, id: newUserId, updatedAt: new Date() }
         await saveUser(migratedUser)
@@ -932,7 +932,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     console.log(`✅ Migración completada: ${totalMigrated} registros migrados`, stats)
 
     if (stats.errors.length > 0) {
-      console.warn('⚠️ Algunos errores durante la migración:', stats.errors)
+      console.warn('️ Algunos errores durante la migración:', stats.errors)
     }
 
     return {
@@ -955,7 +955,7 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     return { valid: false, reason: 'missing_user_ids' }
   }
 
-  console.log(`🔍 Validando migración: ${oldUserId} → ${newUserId}`)
+  console.log(` Validando migración: ${oldUserId} → ${newUserId}`)
 
   try {
     // Verificar que no queden datos bajo el userId anterior
@@ -991,7 +991,7 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     // This handles the case where a new device has no local data to migrate
     const isValid = totalRemaining === 0 && (totalNew > 0 || (totalNew === 0 && totalRemaining === 0))
 
-    console.log(`🔍 Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
+    console.log(` Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
 
     return {
       valid: isValid,
@@ -1020,7 +1020,7 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
     throw new Error('revertUserIdMigration: newUserId y oldUserId son requeridos')
   }
 
-  console.log(`🔄 Revirtiendo migración: ${newUserId} → ${oldUserId}`)
+  console.log(` Revirtiendo migración: ${newUserId} → ${oldUserId}`)
 
   try {
     // Básicamente es la misma operación pero en reversa

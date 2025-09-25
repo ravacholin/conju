@@ -103,7 +103,7 @@
 }
 
 .pattern-card.severity-medium::before {
-  background: #ffc107;
+  background: #333;
 }
 
 .pattern-card.severity-low::before {
@@ -234,13 +234,13 @@
 }
 
 .pattern-insight {
-  background: rgba(255, 193, 7, 0.08);
-  border: 1px solid rgba(255, 193, 7, 0.2);
+  background: #333;
+  border: 1px solid #333;
   border-radius: 8px;
   padding: 12px;
   margin: 12px 0;
   font-size: 14px;
-  color: #ffc107;
+  color: #333;
 }
 
 .pattern-recommendation {
@@ -332,11 +332,11 @@
 }
 
 .insight-card.priority-high {
-  border-color: rgba(255, 193, 7, 0.3);
+  border-color: #333;
 }
 
 .insight-card.priority-high::before {
-  background: rgba(255, 193, 7, 0.3);
+  background: #333;
 }
 
 .insight-card.priority-medium {

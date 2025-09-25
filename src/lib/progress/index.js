@@ -81,7 +81,7 @@ async function scheduleItemsInitializationBatched() {
  */
 export async function initProgressSystem(userId = null) {
   try {
-    console.log('🚀 Inicializando completamente el sistema de progreso...')
+    console.log(' Inicializando completamente el sistema de progreso...')
     
     // Nota: los errores de inicialización de DB se propagan desde initDB (que importa idb dinámicamente)
     
@@ -169,7 +169,7 @@ export async function initProgressSystem(userId = null) {
         // Notificar a través del sistema de eventos que el sistema está listo
         markProgressSystemReady()
 
-        console.log(`🎉 Sistema de progreso completamente inicializado para usuario ${userId}`)
+        console.log(` Sistema de progreso completamente inicializado para usuario ${userId}`)
         return userId
       })()
 
@@ -254,7 +254,7 @@ export function setCurrentUserId(newUserId) {
       window.localStorage.setItem(USER_ID_STORAGE_KEY, newUserId)
     }
 
-    console.log(`🔄 UserId del sistema de progreso actualizado: ${oldUserId} → ${newUserId}`)
+    console.log(` UserId del sistema de progreso actualizado: ${oldUserId} → ${newUserId}`)
 
     // Emitir evento para notificar el cambio
     if (typeof window !== 'undefined') {
@@ -279,7 +279,7 @@ export function setCurrentUserId(newUserId) {
 export async function endCurrentSession() {
   try {
     // En una implementación completa, esto finalizaría la sesión actual
-    console.log('🔚 Sesión finalizada')
+    console.log(' Sesión finalizada')
   } catch (error) {
     console.error('❌ Error al finalizar sesión:', error)
     throw error
@@ -292,7 +292,7 @@ export async function endCurrentSession() {
  */
 export async function resetProgressSystem() {
   try {
-    console.log('🔄 Reiniciando sistema de progreso...')
+    console.log(' Reiniciando sistema de progreso...')
     
     // Reiniciar estado
     isInitialized = false

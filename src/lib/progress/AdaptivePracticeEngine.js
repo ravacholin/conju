@@ -628,7 +628,7 @@ export class AdaptivePracticeEngine {
         ? settings
         : { ...settings, region: effectiveRegion }
       
-      console.log(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
+      console.log(` VALIDATION - Checking ${recommendations.length} recommendations`)
       
       const validRecommendations = []
       
@@ -653,12 +653,12 @@ export class AdaptivePracticeEngine {
       
       // If we filtered out all recommendations, provide safe fallbacks
       if (validRecommendations.length === 0 && recommendations.length > 0) {
-        console.log('⚠️  VALIDATION - All recommendations were invalid, adding fallbacks')
+        console.log('️  VALIDATION - All recommendations were invalid, adding fallbacks')
         const fallbacks = await this.generateFallbackRecommendations(effectiveSettings, allForms)
         validRecommendations.push(...fallbacks)
       }
       
-      console.log(`🔍 VALIDATION - Filtered to ${validRecommendations.length} valid recommendations`)
+      console.log(` VALIDATION - Filtered to ${validRecommendations.length} valid recommendations`)
       return validRecommendations
     } catch (error) {
       console.error('Error validating recommendations:', error)

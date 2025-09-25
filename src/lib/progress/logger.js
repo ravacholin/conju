@@ -15,7 +15,7 @@ class ProgressLogger {
   constructor() {
     this.enabled = PROGRESS_CONFIG.LOGGING.ENABLED
     this.currentLevel = PROGRESS_CONFIG.LOGGING.DEFAULT_LEVEL
-    this.prefix = '🧠 [Progreso]'
+    this.prefix = ' [Progreso]'
   }
 
   /**
@@ -46,7 +46,7 @@ class ProgressLogger {
    */
   warn(message, ...args) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.WARN) {
-      console.warn(`${this.prefix} ⚠️`, message, ...args)
+      console.warn(`${this.prefix} ️`, message, ...args)
     }
   }
 
@@ -64,7 +64,7 @@ class ProgressLogger {
    */
   debug(message, ...args) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.DEBUG) {
-      console.log(`${this.prefix} 🔍`, message, ...args)
+      console.log(`${this.prefix} `, message, ...args)
     }
   }
 
@@ -73,7 +73,7 @@ class ProgressLogger {
    */
   flow(message, data) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
-      console.log(`${this.prefix} 🔥 [Flow]`, message, data)
+      console.log(`${this.prefix}  [Flow]`, message, data)
     }
   }
 
@@ -82,7 +82,7 @@ class ProgressLogger {
    */
   momentum(message, data) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
-      console.log(`${this.prefix} 📈 [Momentum]`, message, data)
+      console.log(`${this.prefix}  [Momentum]`, message, data)
     }
   }
 
@@ -91,7 +91,7 @@ class ProgressLogger {
    */
   confidence(message, data) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
-      console.log(`${this.prefix} 🎯 [Confianza]`, message, data)
+      console.log(`${this.prefix}  [Confianza]`, message, data)
     }
   }
 
@@ -100,7 +100,7 @@ class ProgressLogger {
    */
   goals(message, data) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
-      console.log(`${this.prefix} 🏆 [Objetivos]`, message, data)
+      console.log(`${this.prefix}  [Objetivos]`, message, data)
     }
   }
 
@@ -109,7 +109,7 @@ class ProgressLogger {
    */
   temporal(message, data) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
-      console.log(`${this.prefix} ⏰ [Temporal]`, message, data)
+      console.log(`${this.prefix}  [Temporal]`, message, data)
     }
   }
 
@@ -119,7 +119,7 @@ class ProgressLogger {
   performance(message, timing) {
     if (this.enabled) {
       const timeStr = timing ? ` (${timing}ms)` : ''
-      console.log(`${this.prefix} ⚡ [Performance]`, message + timeStr)
+      console.log(`${this.prefix}  [Performance]`, message + timeStr)
     }
   }
 
@@ -138,7 +138,7 @@ class ProgressLogger {
   systemInit(systemName, success = true) {
     if (this.enabled && this.currentLevel >= LOG_LEVELS.INFO) {
       const status = success ? '✅ Inicializado' : '❌ Error al inicializar'
-      console.log(`${this.prefix} 🚀 [${systemName}]`, status)
+      console.log(`${this.prefix}  [${systemName}]`, status)
     }
   }
 

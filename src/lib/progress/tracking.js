@@ -22,7 +22,7 @@ let currentUserId = null
  * @returns {Promise<void>}
  */
 export async function initTracking(userId) {
-  console.log(`🎯 Inicializando tracking para usuario ${userId}`)
+  console.log(` Inicializando tracking para usuario ${userId}`)
   
   try {
     // Crear sesión actual
@@ -63,12 +63,12 @@ if (typeof window !== 'undefined') {
         }
         currentUserId = newUserId
 
-        console.log('🔄 Tracking actualizado tras cambio de userId:', {
+        console.log(' Tracking actualizado tras cambio de userId:', {
           newUserId: currentUserId,
           sessionId: currentSession.id
         })
       } catch (innerErr) {
-        console.warn('⚠️ No se pudo actualizar tracking tras cambio de userId:', innerErr?.message || innerErr)
+        console.warn('️ No se pudo actualizar tracking tras cambio de userId:', innerErr?.message || innerErr)
       }
     })
   } catch {/* ignore listener wiring errors */}
@@ -86,7 +86,7 @@ export function trackAttemptStarted(item) {
   
   const attemptId = `attempt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   
-  console.log(`🎯 Intento iniciado: ${attemptId} para ítem ${item.id}`)
+  console.log(` Intento iniciado: ${attemptId} para ítem ${item.id}`)
   return attemptId
 }
 
@@ -267,7 +267,7 @@ export async function trackSessionEnded(sessionData = {}) {
     // Marcar fin de sesión
     currentSession.endedAt = new Date()
     
-    console.log(`🔚 Sesión finalizada: ${currentSession.id}`, sessionData)
+    console.log(` Sesión finalizada: ${currentSession.id}`, sessionData)
   } catch (error) {
     console.error('❌ Error al finalizar sesión:', error)
     throw error
@@ -300,7 +300,7 @@ export async function trackHintShown(context = {}) {
     }
 
     await saveEvent(hintEvent)
-    console.log(`💡 Pista mostrada y registrada: ${hintEvent.id}`)
+    console.log(` Pista mostrada y registrada: ${hintEvent.id}`)
   } catch (error) {
     console.error('❌ Error al registrar pista mostrada:', error)
     throw error
@@ -334,7 +334,7 @@ export async function trackStreakIncremented(context = {}) {
     }
 
     await saveEvent(streakEvent)
-    console.log(`🔥 Racha incrementada y registrada: ${streakEvent.id} (longitud: ${streakEvent.streakLength})`)
+    console.log(` Racha incrementada y registrada: ${streakEvent.id} (longitud: ${streakEvent.streakLength})`)
   } catch (error) {
     console.error('❌ Error al registrar incremento de racha:', error)
     throw error
@@ -367,7 +367,7 @@ export async function trackTenseDrillStarted(tense, context = {}) {
     }
 
     await saveEvent(drillEvent)
-    console.log(`🔁 Drill de tiempo ${tense} iniciado y registrado: ${drillEvent.id}`)
+    console.log(` Drill de tiempo ${tense} iniciado y registrado: ${drillEvent.id}`)
   } catch (error) {
     console.error('❌ Error al registrar inicio de drill de tiempo:', error)
     throw error

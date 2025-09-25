@@ -17,7 +17,7 @@ export async function exportProgressData(userId = null) {
       throw new Error('No se encontró ID de usuario para exportar')
     }
 
-    console.log(`📦 Exportando datos de progreso para usuario ${actualUserId}...`)
+    console.log(` Exportando datos de progreso para usuario ${actualUserId}...`)
 
     // Obtener todos los datos del usuario
     const attempts = await getAllFromDB('attempts', actualUserId)
@@ -61,7 +61,7 @@ export async function exportToCSV(userId = null, dataType = 'attempts') {
       throw new Error('No se encontró ID de usuario para exportar CSV')
     }
 
-    console.log(`📊 Exportando ${dataType} en formato CSV...`)
+    console.log(` Exportando ${dataType} en formato CSV...`)
     
     const data = await getAllFromDB(dataType, actualUserId)
     
@@ -116,7 +116,7 @@ export function downloadExportedData(data, filename, type = 'application/json') 
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
     
-    console.log(`💾 Archivo descargado: ${filename}`)
+    console.log(` Archivo descargado: ${filename}`)
   } catch (error) {
     console.error('❌ Error al descargar archivo:', error)
     throw error
@@ -153,7 +153,7 @@ export async function generateProgressReport(userId = null) {
       reportGenerated: formatDate(new Date())
     }
     
-    console.log('📈 Reporte de progreso generado exitosamente')
+    console.log(' Reporte de progreso generado exitosamente')
     return report
   } catch (error) {
     console.error('❌ Error al generar reporte de progreso:', error)

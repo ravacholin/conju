@@ -146,7 +146,7 @@ export default function DeviceManagerModal({ isOpen, onClose, currentDeviceId })
         </header>
 
         <div className="device-modal__body">
-          {error && <p className="device-modal__error">⚠️ {error}</p>}
+          {error && <p className="device-modal__error">️ {error}</p>}
           {loading ? (
             <p className="device-modal__status">Cargando dispositivos…</p>
           ) : devices.length === 0 ? (

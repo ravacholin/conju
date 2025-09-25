@@ -283,7 +283,7 @@ export default function useProgressDashboardData() {
     }
 
     const handleProgressUpdate = (event) => {
-      console.log('🔄 Datos de progreso actualizados, refrescando dashboard...', event.detail)
+      console.log(' Datos de progreso actualizados, refrescando dashboard...', event.detail)
       scheduleRefresh()
     }
 
@@ -310,7 +310,7 @@ export default function useProgressDashboardData() {
     if (import.meta.env?.DEV) {
       const logCacheStats = () => {
         const stats = progressDataCache.getStats()
-        console.log('📊 Cache Stats:', stats)
+        console.log(' Cache Stats:', stats)
       }
 
       // Log cache stats every 30 seconds in development

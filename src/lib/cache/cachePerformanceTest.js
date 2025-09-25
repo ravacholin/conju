@@ -7,7 +7,7 @@ import { progressDataCache } from './ProgressDataCache.js'
  * Test cache performance and functionality
  */
 export async function testCachePerformance() {
-  console.log('🚀 Iniciando pruebas de rendimiento del caché...')
+  console.log(' Iniciando pruebas de rendimiento del caché...')
   
   // Clear cache for clean test
   progressDataCache.clear()
@@ -28,7 +28,7 @@ export async function testCachePerformance() {
   const userId = 'test-user'
   const results = {}
   
-  console.log('📊 Test 1: Cache miss performance')
+  console.log(' Test 1: Cache miss performance')
   const start1 = performance.now()
   try {
     await progressDataCache.get(`${userId}:test1`, mockLoaders.fastData, 'userStats')
@@ -39,7 +39,7 @@ export async function testCachePerformance() {
     console.error('❌ Cache miss test failed:', error)
   }
   
-  console.log('📊 Test 2: Cache hit performance')
+  console.log(' Test 2: Cache hit performance')
   const start2 = performance.now()
   try {
     await progressDataCache.get(`${userId}:test1`, mockLoaders.fastData, 'userStats')
@@ -50,7 +50,7 @@ export async function testCachePerformance() {
     console.error('❌ Cache hit test failed:', error)
   }
   
-  console.log('📊 Test 3: Request deduplication')
+  console.log(' Test 3: Request deduplication')
   const start3 = performance.now()
   try {
     const promises = [
@@ -66,7 +66,7 @@ export async function testCachePerformance() {
     console.error('❌ Deduplication test failed:', error)
   }
   
-  console.log('📊 Test 4: Error handling')
+  console.log(' Test 4: Error handling')
   try {
     await progressDataCache.get(`${userId}:error`, mockLoaders.errorData, 'errorIntel')
     console.log('❌ Error test should have failed')
@@ -75,7 +75,7 @@ export async function testCachePerformance() {
     results.errorHandling = true
   }
   
-  console.log('📊 Test 5: TTL expiration')
+  console.log(' Test 5: TTL expiration')
   // Set a very short TTL for testing
   progressDataCache.setTTL('testType', 100) // 100ms
   await progressDataCache.get(`${userId}:ttl`, mockLoaders.fastData, 'testType')
@@ -92,7 +92,7 @@ export async function testCachePerformance() {
   // Get final cache stats
   const stats = progressDataCache.getStats()
   
-  console.log('\n📈 RESULTADOS FINALES:')
+  console.log('\n RESULTADOS FINALES:')
   console.log('======================')
   console.log(`Cache miss: ${results.cacheMiss?.toFixed(2)}ms`)
   console.log(`Cache hit: ${results.cacheHit?.toFixed(2)}ms`)
@@ -128,7 +128,7 @@ export async function testCachePerformance() {
  * Test cache invalidation strategies
  */
 export async function testCacheInvalidation() {
-  console.log('🗑️ Iniciando pruebas de invalidación del caché...')
+  console.log('️ Iniciando pruebas de invalidación del caché...')
   
   progressDataCache.clear()
   const userId = 'test-user'
@@ -141,7 +141,7 @@ export async function testCacheInvalidation() {
   await progressDataCache.get(`${userId}:recommendations`, testLoader, 'recommendations')
   await progressDataCache.get(`other-user:userStats`, testLoader, 'userStats')
   
-  console.log(`📊 Cache populated with ${progressDataCache.getStats().cacheSize} entries`)
+  console.log(` Cache populated with ${progressDataCache.getStats().cacheSize} entries`)
   
   // Test user-specific invalidation
   progressDataCache.invalidateUser(userId)
@@ -156,7 +156,7 @@ export async function testCacheInvalidation() {
   const statsAfterPatternInvalidation = progressDataCache.getStats()
   console.log(`✅ After pattern invalidation: ${statsAfterPatternInvalidation.cacheSize} entries remaining`)
   
-  console.log('🎉 Cache invalidation tests completed')
+  console.log(' Cache invalidation tests completed')
 }
 
 // Export for console testing

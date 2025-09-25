@@ -48,7 +48,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
     // Estrategia de carga inteligente basada en contexto del usuario
     if (settings.enableChunks === false) {
       // FALLBACK SYSTEM: Si chunks están deshabilitados, usar archivo principal
-      console.log('🚨 CHUNKS DISABLED - Using fallback to main verbs file')
+      console.log(' CHUNKS DISABLED - Using fallback to main verbs file')
       const { verbs: allVerbs } = await import('../../data/verbs.js')
       verbs = allVerbs
     } else {
@@ -84,17 +84,17 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
       }
     }
   } catch (error) {
-    console.error('🚨 PRIMARY LOADING FAILED - Activating emergency protocols:', error)
+    console.error(' PRIMARY LOADING FAILED - Activating emergency protocols:', error)
 
     // EMERGENCY PROTOCOL: Multi-layered failsafe
     try {
-      console.log('🔄 Emergency Protocol 1: Direct main file load')
+      console.log(' Emergency Protocol 1: Direct main file load')
       const { verbs: allVerbs } = await import('../../data/verbs.js')
       verbs = allVerbs
 
       // Auto-disable chunks if they keep failing
       if (settings.enableChunks !== false) {
-        console.log('🔧 Auto-disabling chunks due to repeated failures')
+        console.log(' Auto-disabling chunks due to repeated failures')
         try {
           const { useSettings } = await import('../../state/settings.js')
           const store = useSettings.getState()
@@ -108,13 +108,13 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
         }
       }
     } catch (mainFileError) {
-      console.error('💀 Emergency Protocol 1 failed:', mainFileError)
+      console.error(' Emergency Protocol 1 failed:', mainFileError)
 
       try {
         console.log('🆘 Emergency Protocol 2: Robust failsafe with minimal verbs')
         verbs = await verbChunkManager.getVerbsWithRobustFailsafe(['core'], 1, 1000)
       } catch (robustFailsafeError) {
-        console.error('💀 Emergency Protocol 2 failed:', robustFailsafeError)
+        console.error(' Emergency Protocol 2 failed:', robustFailsafeError)
 
         // ABSOLUTE LAST RESORT: Hardcoded essential verbs
         console.log('☢️ LAST RESORT: Using hardcoded essential verbs')
@@ -165,7 +165,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
   
   // Log generation statistics
   const loadTime = performance.now() - startTime
-  console.log(`📊 Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
+  console.log(` Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
   
   // Cache el resultado
   formsCache.set(cacheKey, allForms)

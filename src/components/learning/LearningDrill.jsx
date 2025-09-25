@@ -690,7 +690,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             <div className="chrono-item"><div className="chrono-value streak-value"><span className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></div><div className="chrono-label">Racha</div></div>
             <div className="chrono-item"><div className="chrono-value">{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</div><div className="chrono-label">Precisión</div></div>
             {failedItemsQueue.length > 0 && (
-              <div className="chrono-item"><div className="chrono-value" style={{color: '#ff6b6b'}}>{failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
+              <div className="chrono-item"><div className="chrono-value">{failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
             )}
           </div>
 

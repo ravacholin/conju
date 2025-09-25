@@ -220,7 +220,7 @@ export async function sendProgressNotifications(userId, _progress) {
     // En una implementación completa, esto enviaría notificaciones
     // al usuario sobre su progreso
     
-    console.log(`🔔 Notificaciones de progreso enviadas a usuario ${userId}`)
+    console.log(` Notificaciones de progreso enviadas a usuario ${userId}`)
   } catch (error) {
     console.error('Error al enviar notificaciones de progreso:', error)
     throw error

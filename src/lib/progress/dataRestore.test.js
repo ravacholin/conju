@@ -91,7 +91,7 @@ describe('Sistema de Restauración de Datos', () => {
       expect(backupData.metadata.backupType).toBe('automatic')
       expect(backupData.metadata.backupId).toMatch(/^backup_\d+$/)
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '⚠️ localStorage no disponible - respaldo no persistido localmente'
+        '️ localStorage no disponible - respaldo no persistido localmente'
       )
 
       // Restaurar window
@@ -116,7 +116,7 @@ describe('Sistema de Restauración de Datos', () => {
       expect(backupData).toBeDefined()
       expect(backupData.metadata.backupType).toBe('automatic')
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '⚠️ localStorage no disponible - respaldo no persistido localmente'
+        '️ localStorage no disponible - respaldo no persistido localmente'
       )
 
       // Restaurar localStorage
@@ -151,7 +151,7 @@ describe('Sistema de Restauración de Datos', () => {
       expect(backupData).toBeDefined()
       expect(backupData.metadata.backupType).toBe('automatic')
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '⚠️ No se pudo guardar el respaldo en localStorage:',
+        '️ No se pudo guardar el respaldo en localStorage:',
         'QuotaExceededError: localStorage is full'
       )
 

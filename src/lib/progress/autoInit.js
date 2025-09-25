@@ -7,7 +7,7 @@ import { initProgressSystem } from './index.js'
  * @returns {Promise<void>}
  */
 export async function autoInitializeProgressSystem() {
-  console.log('🚀 Inicializando automáticamente el sistema de progreso...')
+  console.log(' Inicializando automáticamente el sistema de progreso...')
   
   try {
     // Inicializar el sistema de progreso
@@ -24,7 +24,7 @@ if (typeof window !== 'undefined') {
   autoInitializeProgressSystem().catch(error => {
     console.error('Error en inicialización automática:', error)
   })
-  console.log('🚀 Inicialización automática del sistema de progreso habilitada')
+  console.log(' Inicialización automática del sistema de progreso habilitada')
 }
 
 export default autoInitializeProgressSystem

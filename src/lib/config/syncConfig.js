@@ -19,7 +19,7 @@ function getSafeLocation() {
 
     return { hostname, protocol, origin, port }
   } catch (error) {
-    console.warn('⚠️ Unable to access window.location:', error?.message || error)
+    console.warn('️ Unable to access window.location:', error?.message || error)
     return null
   }
 }
@@ -28,7 +28,7 @@ function getSyncApiBase() {
   // 1. First, check for explicit environment variable override
   const envUrl = import.meta.env.VITE_PROGRESS_SYNC_URL
   if (envUrl) {
-    console.log('🔧 Using sync URL from environment variable:', envUrl)
+    console.log(' Using sync URL from environment variable:', envUrl)
     return envUrl
   }
 
@@ -40,21 +40,21 @@ function getSyncApiBase() {
     // Development environment detection
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       const devUrl = 'http://localhost:8787/api'
-      console.log('🔧 Development environment detected, using:', devUrl)
+      console.log(' Development environment detected, using:', devUrl)
       return devUrl
     }
 
     // Production environment detection
     if (hostname === 'verb-os.vercel.app' || hostname.includes('vercel.app')) {
       const prodUrl = 'https://conju.onrender.com/api'
-      console.log('🔧 Production environment detected, using:', prodUrl)
+      console.log(' Production environment detected, using:', prodUrl)
       return prodUrl
     }
   }
 
   // 3. Default fallback (should rarely be used)
   const fallbackUrl = 'https://conju.onrender.com/api'
-  console.log('🔧 Using fallback sync URL:', fallbackUrl)
+  console.log(' Using fallback sync URL:', fallbackUrl)
   return fallbackUrl
 }
 
@@ -116,14 +116,14 @@ function getSyncConfigDebug() {
 function attachGlobalSyncDebugger() {
   if (typeof window !== 'undefined') {
     window.debugSync = () => {
-      console.group('🔍 SYNC DEBUG INFORMATION')
-      console.log('📋 Current Configuration:', getSyncConfigDebug())
+      console.group(' SYNC DEBUG INFORMATION')
+      console.log(' Current Configuration:', getSyncConfigDebug())
 
       // Try to get auth service info
       try {
         const authModule = window.authService || null
         if (authModule) {
-          console.log('🔑 Authentication Status:', {
+          console.log(' Authentication Status:', {
             isLoggedIn: authModule.isLoggedIn?.() || false,
             hasToken: !!authModule.getToken?.(),
             tokenLength: authModule.getToken?.()?.length || 0,
@@ -131,7 +131,7 @@ function attachGlobalSyncDebugger() {
             account: authModule.getAccount?.() || null
           })
         } else {
-          console.log('⚠️ AuthService not found on window object')
+          console.log('️ AuthService not found on window object')
         }
       } catch (error) {
         console.error('❌ Error getting auth info:', error)
@@ -143,7 +143,7 @@ function attachGlobalSyncDebugger() {
         if (syncModule && syncModule.getSyncStatus) {
           console.log('☁️ Sync Status:', syncModule.getSyncStatus())
         } else {
-          console.log('⚠️ CloudSync module not found on window object')
+          console.log('️ CloudSync module not found on window object')
         }
       } catch (error) {
         console.error('❌ Error getting sync status:', error)
@@ -153,7 +153,7 @@ function attachGlobalSyncDebugger() {
       return getSyncConfigDebug()
     }
 
-    console.log('🔧 Global sync debugger attached. Call window.debugSync() for detailed info.')
+    console.log(' Global sync debugger attached. Call window.debugSync() for detailed info.')
   }
 }
 

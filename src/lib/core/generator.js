@@ -97,7 +97,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const verbType = VALID_VERB_TYPES.has(rawVerbType) ? rawVerbType : 'all'
   const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
   
-  dbg('🔍 chooseNext called with settings:', {
+  dbg(' chooseNext called with settings:', {
     level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length
   })
 
@@ -283,7 +283,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
         const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
 
         // DEBUG LOG
-        console.log(`🔍 FILTRO PEDAGÓGICO: ${f.lemma} (${f.person}) - Familias: ${verbFamilies.join(', ')} - Relevante: ${isPedagogicallyRelevant}`)
+        console.log(` FILTRO PEDAGÓGICO: ${f.lemma} (${f.person}) - Familias: ${verbFamilies.join(', ')} - Relevante: ${isPedagogicallyRelevant}`)
 
         if (!isPedagogicallyRelevant) {
           console.log(`❌ EXCLUIDO por no pedagógico: ${f.lemma}`)
@@ -522,16 +522,16 @@ export async function chooseNext({forms, history: _history, currentItem, session
         if (userId) {
           const masteryData = await getMasteryByUser(userId)
           userProgress = masteryData
-          dbg('📊 Progress system data loaded:', { userId, masteryRecords: masteryData?.length || 0 })
+          dbg(' Progress system data loaded:', { userId, masteryRecords: masteryData?.length || 0 })
         } else {
-          dbg('👤 No current user, continuing without mastery data')
+          dbg(' No current user, continuing without mastery data')
         }
       } else {
         dbg('⏸️ Progress integration disabled, continuing without mastery data')
       }
     } catch (error) {
       // Progress system might not be available, continue without it
-      dbg('⚠️ Progress system not available, continuing without mastery data:', error.message)
+      dbg('️ Progress system not available, continuing without mastery data:', error.message)
     }
 
     // Apply level-driven weighted selection (but only for non-A1 to avoid double weighting)
@@ -659,7 +659,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection
   
   // CRITICAL: Reset variety engine to prevent stuck selections
-  dbg('🔄 RESETTING varietyEngine to prevent stuck selections')
+  dbg(' RESETTING varietyEngine to prevent stuck selections')
   if (typeof varietyEngine.resetSession === 'function') {
     varietyEngine.resetSession()
   }

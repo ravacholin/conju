@@ -23,39 +23,39 @@ const NOTIFICATION_CONFIG = {
 
   MESSAGES: {
     MORNING_BOOST: [
-      '🌅 ¡Buenos días! Tu mente está fresca, perfecto para repasar',
+      ' ¡Buenos días! Tu mente está fresca, perfecto para repasar',
       '☀️ Momento ideal para fortalecer tu español matutino',
-      '🧠 Tu cerebro está en modo óptimo, ¡aprovechemos!'
+      ' Tu cerebro está en modo óptimo, ¡aprovechemos!'
     ],
 
     AFTERNOON_FOCUS: [
-      '⚡ Momento de energía post-almuerzo para tu español',
-      '🎯 Sesión de enfoque: tienes repasos esperándote',
-      '💪 ¡Dale un empujón a tu progreso esta tarde!'
+      ' Momento de energía post-almuerzo para tu español',
+      ' Sesión de enfoque: tienes repasos esperándote',
+      ' ¡Dale un empujón a tu progreso esta tarde!'
     ],
 
     EVENING_CONSOLIDATION: [
-      '🌙 Perfecto para consolidar lo aprendido hoy',
-      '✨ Termina el día fortaleciendo tu español',
-      '🎓 Última oportunidad para mantener tu racha'
+      ' Perfecto para consolidar lo aprendido hoy',
+      ' Termina el día fortaleciendo tu español',
+      ' Última oportunidad para mantener tu racha'
     ],
 
     STREAK_PRESERVATION: [
-      '🔥 ¡No pierdas tu racha! Solo faltan unos minutos',
-      '⏰ Tu racha de {streak} días está en riesgo',
-      '🚨 ¡Última llamada para mantener tu progreso!'
+      ' ¡No pierdas tu racha! Solo faltan unos minutos',
+      ' Tu racha de {streak} días está en riesgo',
+      ' ¡Última llamada para mantener tu progreso!'
     ],
 
     DUE_REMINDERS: [
-      '📚 Tienes {count} repasos listos para fortalecer tu memoria',
-      '🎯 {count} elementos esperan tu atención',
-      '⚡ ¡{count} oportunidades para mejorar tu español!'
+      ' Tienes {count} repasos listos para fortalecer tu memoria',
+      ' {count} elementos esperan tu atención',
+      ' ¡{count} oportunidades para mejorar tu español!'
     ],
 
     OPTIMAL_WINDOW: [
-      '🎯 Momento perfecto basado en tu historial de aprendizaje',
-      '⭐ Tu mente está en modo óptimo según tus patrones',
-      '🚀 Ventana de productividad detectada, ¡aprovéchala!'
+      ' Momento perfecto basado en tu historial de aprendizaje',
+      ' Tu mente está en modo óptimo según tus patrones',
+      ' Ventana de productividad detectada, ¡aprovéchala!'
     ]
   }
 }
@@ -84,7 +84,7 @@ export class SmartNotificationManager {
     // Configurar listeners de eventos
     this.setupEventListeners()
 
-    console.log('🔔 Smart Notifications initialized')
+    console.log(' Smart Notifications initialized')
     return true
   }
 
@@ -169,7 +169,7 @@ export class SmartNotificationManager {
         avgAccuracy: attempts.filter(a => a.correct).length / attempts.length
       }
 
-      console.log('📊 User patterns analyzed:', this.userPatterns)
+      console.log(' User patterns analyzed:', this.userPatterns)
     } catch (error) {
       console.error('Error analyzing user patterns:', error)
     }
@@ -201,7 +201,7 @@ export class SmartNotificationManager {
 
       await this.scheduleForDay(tomorrow, dueCount)
 
-      console.log('📅 Smart notifications scheduled')
+      console.log(' Smart notifications scheduled')
       return true
     } catch (error) {
       console.error('Error scheduling notifications:', error)
@@ -226,7 +226,7 @@ export class SmartNotificationManager {
         notifications.push({
           id: `optimal-${date.toDateString()}`,
           time: optimalTime,
-          title: '⭐ Momento óptimo para estudiar',
+          title: ' Momento óptimo para estudiar',
           body: this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.OPTIMAL_WINDOW),
           tag: 'optimal-timing',
           data: { type: 'optimal', dueCount, userHour: primaryHour }
@@ -241,7 +241,7 @@ export class SmartNotificationManager {
         notifications.push({
           id: `backup-${date.toDateString()}`,
           time: backupTime,
-          title: '💪 Otra oportunidad perfecta',
+          title: ' Otra oportunidad perfecta',
           body: dueCount > 0
             ? this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.DUE_REMINDERS).replace('{count}', dueCount)
             : this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.AFTERNOON_FOCUS),
@@ -273,7 +273,7 @@ export class SmartNotificationManager {
     notifications.push({
       id: `morning-${date.toDateString()}`,
       time: morningTime,
-      title: '🌅 ¡Buenos días!',
+      title: ' ¡Buenos días!',
       body: this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.MORNING_BOOST),
       tag: 'morning-reminder',
       data: { type: 'morning', dueCount }
@@ -286,7 +286,7 @@ export class SmartNotificationManager {
       notifications.push({
         id: `afternoon-${date.toDateString()}`,
         time: afternoonTime,
-        title: `⚡ ${dueCount} repasos te esperan`,
+        title: ` ${dueCount} repasos te esperan`,
         body: this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.DUE_REMINDERS).replace('{count}', dueCount),
         tag: 'due-reminder',
         data: { type: 'due', dueCount }
@@ -299,7 +299,7 @@ export class SmartNotificationManager {
     notifications.push({
       id: `evening-${date.toDateString()}`,
       time: eveningTime,
-      title: '🌙 Consolida tu aprendizaje',
+      title: ' Consolida tu aprendizaje',
       body: this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.EVENING_CONSOLIDATION),
       tag: 'evening-consolidation',
       data: { type: 'evening', dueCount }
@@ -331,7 +331,7 @@ export class SmartNotificationManager {
         notifications.push({
           id: `streak-${date.toDateString()}`,
           time: streakTime,
-          title: '🔥 ¡Mantén tu racha!',
+          title: ' ¡Mantén tu racha!',
           body: this.getRandomMessage(NOTIFICATION_CONFIG.MESSAGES.STREAK_PRESERVATION).replace('{streak}', '?'),
           tag: 'streak-preservation',
           data: { type: 'streak', urgent: true },
@@ -360,7 +360,7 @@ export class SmartNotificationManager {
 
       this.scheduledNotifications.set(notification.id, timeoutId)
 
-      console.log(`📅 Notification scheduled: ${notification.title} at ${notification.time.toLocaleString()}`)
+      console.log(` Notification scheduled: ${notification.title} at ${notification.time.toLocaleString()}`)
     } catch (error) {
       console.error('Error scheduling individual notification:', error)
     }
@@ -383,11 +383,11 @@ export class SmartNotificationManager {
         actions: [
           {
             action: 'study',
-            title: '📚 Estudiar ahora'
+            title: ' Estudiar ahora'
           },
           {
             action: 'later',
-            title: '⏰ Más tarde'
+            title: ' Más tarde'
           }
         ]
       })
@@ -401,7 +401,7 @@ export class SmartNotificationManager {
         notif.close()
       }
 
-      console.log('🔔 Notification sent:', notification.title)
+      console.log(' Notification sent:', notification.title)
     } catch (error) {
       console.error('Error sending notification:', error)
     }

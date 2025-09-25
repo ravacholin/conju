@@ -8,7 +8,7 @@ import { getSyncStatus } from './cloudSync.js'
  * @returns {Promise<boolean>} Si la integración es exitosa
  */
 export async function verifyProgressIntegration() {
-  console.log('🔍 Verificando integración del sistema de progreso...')
+  console.log(' Verificando integración del sistema de progreso...')
   
   try {
     // Verificar si el sistema está inicializado
@@ -27,7 +27,7 @@ export async function verifyProgressIntegration() {
     
     // Verificar estado de sincronización
     const syncStatus = getSyncStatus()
-    console.log('🔄 Estado de sincronización:', syncStatus)
+    console.log(' Estado de sincronización:', syncStatus)
     
     console.log('✅ Integración del sistema de progreso verificada')
     return true
@@ -44,9 +44,9 @@ export async function verifyProgressIntegration() {
 export async function runIntegrationCheck() {
   const isIntegrated = await verifyProgressIntegration()
   if (isIntegrated) {
-    console.log('🎉 Sistema de progreso completamente integrado')
+    console.log(' Sistema de progreso completamente integrado')
   } else {
-    console.error('💥 Sistema de progreso no está completamente integrado')
+    console.error(' Sistema de progreso no está completamente integrado')
   }
 }
 

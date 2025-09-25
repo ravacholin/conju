@@ -21,7 +21,7 @@ describe('Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log('🔧 Configurando entorno de pruebas...')
+    console.log(' Configurando entorno de pruebas...')
   })
 
   afterEach(() => {
@@ -163,7 +163,7 @@ describe('Sistema de Progreso', () => {
     // Monitorear progreso de lotes
     const unsubscribe = onBatchProgress((progress) => {
       batchUpdatesReceived++
-      console.log(`📊 Test: Lote ${progress.completedBatches}/${progress.totalBatches} completado`)
+      console.log(` Test: Lote ${progress.completedBatches}/${progress.totalBatches} completado`)
 
       // Si el sistema ya está inicializado pero los lotes siguen en proceso
       if (isProgressSystemInitialized() && progress.isRunning) {
@@ -196,8 +196,8 @@ describe('Sistema de Progreso', () => {
 
     // Verificaciones de comportamiento asincrónico
     console.log(`⏱️ Test: Sistema resuelto en ${systemResolvedTime - startTime}ms`)
-    console.log(`📈 Test: ${batchUpdatesReceived} actualizaciones de progreso recibidas`)
-    console.log(`🏁 Test: Estado final - batches: ${finalProgress.completedBatches}, creados: ${finalProgress.totalCreated}`)
+    console.log(` Test: ${batchUpdatesReceived} actualizaciones de progreso recibidas`)
+    console.log(` Test: Estado final - batches: ${finalProgress.completedBatches}, creados: ${finalProgress.totalCreated}`)
 
     // El sistema debería resolver rápidamente (< 50ms típicamente)
     expect(systemResolvedTime - startTime).toBeLessThan(500) // Tolerancia amplia para CI

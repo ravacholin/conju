@@ -74,7 +74,7 @@ function showUpdateNotification() {
 
   banner.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
-      <span>🚀 Nueva versión disponible</span>
+      <span> Nueva versión disponible</span>
       <button id="sw-update-btn" style="
         background: #3b82f6;
         color: white;

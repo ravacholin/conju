@@ -39,7 +39,7 @@ export const FlowIndicator = ({
       case 'deep_flow':
         return {
           color: 'var(--accent-green)',
-          emoji: '🔥',
+          emoji: '',
           label: 'En la Zona',
           description: 'Rendimiento máximo',
           pulse: true,
@@ -48,7 +48,7 @@ export const FlowIndicator = ({
       case 'light_flow':
         return {
           color: 'var(--success)',
-          emoji: '✨',
+          emoji: '',
           label: 'Buen Ritmo',
           description: 'Flow ligero',
           pulse: false,
@@ -57,7 +57,7 @@ export const FlowIndicator = ({
       case 'neutral':
         return {
           color: 'var(--text-secondary)',
-          emoji: '📚',
+          emoji: '',
           label: 'Normal',
           description: 'Aprendizaje constante',
           pulse: false,
@@ -66,7 +66,7 @@ export const FlowIndicator = ({
       case 'struggling':
         return {
           color: 'var(--warning)',
-          emoji: '💪',
+          emoji: '',
           label: 'Desafiado',
           description: 'Necesita apoyo',
           pulse: false,
@@ -75,7 +75,7 @@ export const FlowIndicator = ({
       case 'frustrated':
         return {
           color: 'var(--error)',
-          emoji: '🌱',
+          emoji: '',
           label: 'Recuperación',
           description: 'Tómate tu tiempo',
           pulse: false,
@@ -84,7 +84,7 @@ export const FlowIndicator = ({
       default:
         return {
           color: 'var(--text-muted)',
-          emoji: '⚪',
+          emoji: '',
           label: 'Iniciando',
           description: 'Preparándose...',
           pulse: false,
@@ -97,19 +97,19 @@ export const FlowIndicator = ({
   const getMomentumConfig = (momentum) => {
     switch (momentum) {
       case 'peak_performance':
-        return { icon: '🚀', label: 'Pico', color: 'var(--accent-gold)' }
+        return { icon: '', label: 'Pico', color: 'var(--accent-gold)' }
       case 'confidence_building':
-        return { icon: '📈', label: 'Creciendo', color: 'var(--accent-green)' }
+        return { icon: '', label: 'Creciendo', color: 'var(--accent-green)' }
       case 'steady_progress':
-        return { icon: '⚡', label: 'Constante', color: 'var(--accent-blue)' }
+        return { icon: '', label: 'Constante', color: 'var(--accent-blue)' }
       case 'minor_setback':
-        return { icon: '🔄', label: 'Ajustando', color: 'var(--warning)' }
+        return { icon: '', label: 'Ajustando', color: 'var(--warning)' }
       case 'recovery_mode':
-        return { icon: '💚', label: 'Recuperando', color: 'var(--success)' }
+        return { icon: '', label: 'Recuperando', color: 'var(--success)' }
       case 'confidence_crisis':
-        return { icon: '🌱', label: 'Reconstruyendo', color: 'var(--text-muted)' }
+        return { icon: '', label: 'Reconstruyendo', color: 'var(--text-muted)' }
       default:
-        return { icon: '⚪', label: 'Normal', color: 'var(--text-muted)' }
+        return { icon: '', label: 'Normal', color: 'var(--text-muted)' }
     }
   }
 
@@ -133,7 +133,7 @@ export const FlowIndicator = ({
       className={`flow-indicator ${position} ${size} ${animationClass}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      style={{ '--flow-color': stateConfig.color }}
+      
     >
       {/* Indicador principal */}
       <div 
@@ -154,7 +154,7 @@ export const FlowIndicator = ({
       {momentum && size !== 'minimal' && (
         <div 
           className="momentum-indicator"
-          style={{ borderColor: momentumConfig.color, color: momentumConfig.color }}
+          
         >
           <span className="momentum-icon">{momentumConfig.icon}</span>
         </div>
@@ -178,7 +178,7 @@ export const FlowIndicator = ({
           {momentum && (
             <div className="momentum-section">
               <div className="section-header">
-                <span className="section-icon">📈</span>
+                <span className="section-icon"></span>
                 <span className="section-title">Momentum</span>
               </div>
               <div className="momentum-info">
@@ -192,7 +192,7 @@ export const FlowIndicator = ({
           {metrics && Object.keys(metrics).length > 0 && (
             <div className="metrics-section">
               <div className="section-header">
-                <span className="section-icon">📊</span>
+                <span className="section-icon"></span>
                 <span className="section-title">Métricas</span>
               </div>
               
@@ -217,7 +217,7 @@ export const FlowIndicator = ({
                     <span className="metric-label">Racha</span>
                     <div className="streak-display">
                       <span className="streak-number">{metrics.currentStreak.correct}</span>
-                      <span className="streak-icon">🔥</span>
+                      <span className="streak-icon"></span>
                     </div>
                   </div>
                 )}

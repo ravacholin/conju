@@ -17,7 +17,7 @@ const BATCH_DELAY = 5
  * @returns {Promise<void>}
  */
 export async function initializeItems() {
-  console.log('🔄 Inicializando ítems de práctica...')
+  console.log(' Inicializando ítems de práctica...')
   
   try {
     // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
@@ -233,7 +233,7 @@ export async function initializeItemsBatched(options = {}) {
     onProgress
   } = options
 
-  console.log('🔄 Inicializando ítems por lotes (no bloqueante)...')
+  console.log(' Inicializando ítems por lotes (no bloqueante)...')
 
   try {
     // Importar funciones de eventos de progreso

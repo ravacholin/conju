@@ -11,7 +11,7 @@ import { generateId } from './helpers.js'
  */
 export async function performInitialDiagnosis(userId) {
   try {
-    console.log('🔍 Realizando diagnóstico inicial...')
+    console.log(' Realizando diagnóstico inicial...')
     
     // En una implementación completa, esto crearía un test adaptativo
     // de 3 minutos con ítems por tiempo clave
@@ -70,7 +70,7 @@ export async function performInitialDiagnosis(userId) {
  * @returns {Promise<void>}
  */
 export async function scheduleMonthlyRecalibration(_userId) {
-  console.log('📅 Programando recalibración mensual...')
+  console.log(' Programando recalibración mensual...')
   
   // En una implementación completa, esto programaría
   // una recalibración automática que inserta ítems
@@ -87,7 +87,7 @@ export async function scheduleMonthlyRecalibration(_userId) {
  */
 export async function performRecalibration(_userId) {
   try {
-    console.log('🔍 Realizando recalibración...')
+    console.log(' Realizando recalibración...')
     
     // En una implementación completa, esto insertaría
     // ítems sorpresa por celda con M ≥ 80

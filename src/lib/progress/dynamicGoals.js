@@ -477,7 +477,7 @@ export class DynamicGoalsSystem {
         target: Math.round(targetRate * 100),
         isComplete: targetMet,
         message: targetMet ?
-          '⚡ ¡Velocidad dominada! Respuestas rápidas y precisas' :
+          ' ¡Velocidad dominada! Respuestas rápidas y precisas' :
           `Respuestas rápidas: ${Math.round(currentRate * 100)}%`
       }
     }
@@ -505,8 +505,8 @@ export class DynamicGoalsSystem {
       target: goal.requirements.targetStreak,
       isComplete: targetMet,
       message: targetMet ?
-        `🔥 ¡Racha increíble! ${goal.progress.currentStreak} consecutivas` :
-        `🔥 Racha actual: ${goal.progress.currentStreak}/${goal.requirements.targetStreak}`
+        ` ¡Racha increíble! ${goal.progress.currentStreak} consecutivas` :
+        ` Racha actual: ${goal.progress.currentStreak}/${goal.requirements.targetStreak}`
     }
   }
 
@@ -533,8 +533,8 @@ export class DynamicGoalsSystem {
       isComplete: targetMet,
       timeExpired,
       message: targetMet ?
-        `🗺️ ¡Explorador consumado! ${goal.progress.totalVerbs} verbos dominados` :
-        `🗺️ Verbos explorados: ${goal.progress.totalVerbs}/${goal.requirements.uniqueVerbs}`
+        `️ ¡Explorador consumado! ${goal.progress.totalVerbs} verbos dominados` :
+        `️ Verbos explorados: ${goal.progress.totalVerbs}/${goal.requirements.uniqueVerbs}`
     }
   }
 
@@ -573,7 +573,7 @@ export class DynamicGoalsSystem {
         target: Math.round(goal.requirements.minAccuracy * 100),
         isComplete: targetMet,
         message: targetMet ?
-          '👑 ¡MAESTRÍA ALCANZADA! Dominio completo demostrado' :
+          ' ¡MAESTRÍA ALCANZADA! Dominio completo demostrado' :
           `Precisión: ${Math.round(currentAccuracy * 100)}% | Consistencia: ${Math.round((1 - variance) * 100)}%`
       }
     }
@@ -610,7 +610,7 @@ export class DynamicGoalsSystem {
       target: Math.round(targetImprovement * 100),
       isComplete: targetMet,
       message: targetMet ?
-        '🔥 ¡Recuperación épica! Has vuelto más fuerte que antes' :
+        ' ¡Recuperación épica! Has vuelto más fuerte que antes' :
         `Mejora: +${Math.round(improvement * 100)}% (objetivo: +${Math.round(targetImprovement * 100)}%)`
     }
   }
@@ -644,7 +644,7 @@ export class DynamicGoalsSystem {
       targetAccuracy: Math.round(goal.requirements.minAccuracy * 100),
       isComplete: targetMet,
       message: targetMet ?
-        '🏃 ¡Maratón completado! Sesión larga con excelente rendimiento' :
+        ' ¡Maratón completado! Sesión larga con excelente rendimiento' :
         `${Math.round(goal.progress.sessionDuration / (1000 * 60))}min @ ${Math.round(goal.progress.sessionAccuracy * 100)}%`
     }
   }
@@ -739,10 +739,10 @@ export class DynamicGoalsSystem {
    */
   getBadgeForGoal(goal) {
     const specialBadges = {
-      mastery: { name: '👑 Maestro', description: 'Dominio completo alcanzado' },
-      streak_50: { name: '🔥 Imparable', description: 'Racha de 50+ respuestas' },
-      speed_expert: { name: '⚡ Relámpago', description: 'Velocidad y precisión extrema' },
-      explorer_100: { name: '🗺️ Gran Explorador', description: '100+ verbos diferentes' }
+      mastery: { name: ' Maestro', description: 'Dominio completo alcanzado' },
+      streak_50: { name: ' Imparable', description: 'Racha de 50+ respuestas' },
+      speed_expert: { name: ' Relámpago', description: 'Velocidad y precisión extrema' },
+      explorer_100: { name: '️ Gran Explorador', description: '100+ verbos diferentes' }
     }
 
     // Lógica para badges especiales

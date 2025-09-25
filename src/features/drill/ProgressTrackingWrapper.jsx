@@ -21,7 +21,7 @@ export function ProgressTrackingWrapper({ currentItem, onResult, result }) {
     if (!result) {
       // Registrar fin de sesión cuando se reinicia
       // En una implementación completa, esto se haría en el momento adecuado
-      console.log('🔄 Sesión reiniciada')
+      console.log(' Sesión reiniciada')
     }
   }, [result])
 

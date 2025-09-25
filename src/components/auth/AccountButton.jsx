@@ -73,7 +73,7 @@ export default function AccountButton() {
           className="account-login-btn"
           title="Iniciar sesión para sincronizar entre dispositivos"
         >
-          👤 Iniciar Sesión
+           Iniciar Sesión
         </button>
 
         <AuthModal
@@ -117,7 +117,7 @@ export default function AccountButton() {
             <div className="dropdown-divider" />
 
             <div className="dropdown-section">
-              <div className="section-title">🔄 Sincronización</div>
+              <div className="section-title"> Sincronización</div>
               <button
                 className="dropdown-item"
                 onClick={() => {
@@ -126,7 +126,7 @@ export default function AccountButton() {
                   setShowDropdown(false)
                 }}
               >
-                📱 Sincronizar ahora
+                 Sincronizar ahora
               </button>
             </div>
 
@@ -141,7 +141,7 @@ export default function AccountButton() {
                   setShowAccountModal(true)
                 }}
               >
-                👤 Gestionar cuenta
+                 Gestionar cuenta
               </button>
               <button
                 className="dropdown-item"
@@ -150,7 +150,7 @@ export default function AccountButton() {
                   setShowDeviceModal(true)
                 }}
               >
-                📱 Mis dispositivos
+                 Mis dispositivos
               </button>
             </div>
 
@@ -160,7 +160,7 @@ export default function AccountButton() {
               className="dropdown-item logout-item"
               onClick={handleLogout}
             >
-              🚪 Cerrar sesión
+               Cerrar sesión
             </button>
           </div>
         )}

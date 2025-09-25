@@ -132,8 +132,8 @@
 }
 
 .badge-item.unlocked {
-  border-color: rgba(255, 193, 7, 0.3);
-  background: rgba(255, 193, 7, 0.05);
+  border-color: #333;
+  background: #333;
 }
 
 .badge-item.locked {
@@ -260,7 +260,7 @@
 }
 
 .challenge-card.legendary::before {
-  background: #ffd700;
+  background: #333;
 }
 
 .challenge-card.epic::before {
@@ -315,7 +315,7 @@
 }
 
 .challenge-difficulty {
-  color: #ffc107;
+  color: #333;
   font-size: 16px;
 }
 
@@ -378,9 +378,9 @@
 }
 
 .reward-item.bonus {
-  background: rgba(255, 193, 7, 0.1);
-  border-color: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+  background: #333;
+  border-color: #333;
+  color: #333;
 }
 
 .reward-icon {
@@ -454,11 +454,11 @@
 .active-indicator {
   width: 100%;
   padding: 14px;
-  background: rgba(255, 193, 7, 0.2);
-  border: 1px solid rgba(255, 193, 7, 0.3);
+  background: #333;
+  border: 1px solid #333;
   border-radius: 10px;
   text-align: center;
-  color: #ffc107;
+  color: #333;
   font-weight: 600;
   animation: pulse 2s infinite;
 }
@@ -543,7 +543,7 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #ffd700;
+  background: #333;
   border-radius: 50%;
   animation: particleExplode 2s ease-out infinite;
   animation-delay: var(--delay);
@@ -566,8 +566,8 @@
 }
 
 .unlock-badge {
-  background: rgba(255, 215, 0, 0.2);
-  border: 2px solid #ffd700;
+  background: #333;
+  border: 2px solid #333;
   border-radius: 20px;
   padding: 40px;
   backdrop-filter: blur(10px);
@@ -580,21 +580,21 @@
 
 .badge-icon-large {
   font-size: 80px;
-  filter: drop-shadow(0 0 20px #ffd700);
+  filter: drop-shadow(0 0 20px #333);
   animation: glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
-  from { filter: drop-shadow(0 0 20px #ffd700); }
-  to { filter: drop-shadow(0 0 30px #ffd700) drop-shadow(0 0 40px #ff8c00); }
+  from { filter: drop-shadow(0 0 20px #333); }
+  to { filter: drop-shadow(0 0 30px #333) drop-shadow(0 0 40px #333); }
 }
 
 .unlock-badge h2 {
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 700;
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  color: #333;
+  text-shadow: 0 0 10px #333;
 }
 
 .unlock-badge h3 {
@@ -754,10 +754,10 @@
 /* Dark mode specific adjustments */
 @media (prefers-color-scheme: light) {
   .challenge-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: #333;
   }
 
   .progress-item {
-    background: rgba(255, 255, 255, 0.8);
+    background: #333;
   }
 }

@@ -43,7 +43,7 @@
     flex: 1;
     padding: 8px 12px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.2);
+    background: #333;
   }
 
   /* SRS Panel mobile optimizations */
@@ -273,7 +273,7 @@
   .srs-analytics.compact .metric-item {
     flex: 1;
     padding: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #333;
     border-radius: 8px;
   }
 
@@ -312,7 +312,7 @@
   }
 
   .journey-stats .stat {
-    background: rgba(255, 255, 255, 0.1);
+    background: #333;
     padding: 12px;
     border-radius: 8px;
   }
@@ -478,8 +478,8 @@
 @media (max-width: 768px) and (prefers-color-scheme: dark) {
 
   .srs-stat-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: #333;
+    border-color: #333;
   }
 
   .analytics-card {
@@ -498,7 +498,7 @@
   }
 
   .notification {
-    background: linear-gradient(135deg, rgba(30, 41, 55, 0.95), rgba(17, 24, 39, 0.9));
+    background: background: #333;
     border-color: rgba(75, 85, 99, 0.3);
   }
 }

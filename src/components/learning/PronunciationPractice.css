@@ -31,7 +31,7 @@
 .target-verb {
   font-size: 3rem;
   font-weight: bold;
-  color: #00ff88;
+  color: #333;
   margin: 0;
   text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
 }
@@ -94,8 +94,8 @@
 }
 
 .show-pronunciation-btn:hover {
-  border-color: #00ff88;
-  color: #00ff88;
+  border-color: #333;
+  color: #333;
 }
 
 .pronunciation-details {
@@ -114,7 +114,7 @@
 
 .pronunciation-details label {
   font-weight: bold;
-  color: #00ff88;
+  color: #333;
   min-width: 120px;
   flex-shrink: 0;
 }
@@ -197,7 +197,7 @@
 }
 
 .recording-result.good {
-  border-left-color: #00ff88;
+  border-left-color: #333;
   background: rgba(0, 255, 136, 0.1);
 }
 
@@ -213,7 +213,7 @@
 }
 
 .recording-result.good .accuracy-score {
-  color: #00ff88;
+  color: #333;
 }
 
 .recording-result.needs-work .accuracy-score {
@@ -259,12 +259,12 @@
 
 .next-btn {
   background: #333;
-  border-color: #00ff88;
+  border-color: #333;
 }
 
 .next-btn:hover:not(:disabled) {
   background: #444;
-  border-color: #00ff88;
+  border-color: #333;
 }
 
 /* Responsive Design */

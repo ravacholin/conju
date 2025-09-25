@@ -3,8 +3,8 @@
   grid-template-columns: repeat(3, minmax(0,1fr));
   gap:8px;
   padding:8px 10px;
-  background: rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.07);
+  background: #333;
+  border:1px solid #333;
   border-radius:10px;
   margin:8px 0 14px; /* espacio respecto al input y al botón */
 }
@@ -12,7 +12,7 @@
   display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
   padding:6px 8px;
   border-radius:8px;
-  background: rgba(255,255,255,0.02);
+  background: #333;
 }
 .chrono-item.wide{ grid-column: span 3; }
 .chrono-value{
@@ -30,33 +30,33 @@
   100%{ transform: translateX(0) rotate(0); }
 }
 .streak-tier-0{ color: #e0e0e0; }
-.streak-tier-1{ color: #7fd3ff; }
+.streak-tier-1{ color: #333; }
 .streak-tier-2{ color: #5ee6a5; }
-.streak-tier-3{ color: #ffd166; }
-.streak-tier-4{ color: #ff8c66; }
-.streak-tier-5, .streak-tier-6{ color: #ff5ea0; text-shadow: 0 0 6px rgba(255,94,160,0.35); }
+.streak-tier-3{ color: #333; }
+.streak-tier-4{ color: #333; }
+.streak-tier-5, .streak-tier-6{ color: #333; text-shadow: 0 0 6px #333; }
 .chrono-sub{ font-size:11px; font-weight:400; opacity:0.7; margin-left:6px; }
 .chrono-label{
   font-size:10px; text-transform:uppercase; letter-spacing:1px; opacity:0.6; margin-top:4px;
 }
-.chrono-divider{ grid-column: span 3; height:1px; background:rgba(255,255,255,0.06); margin:2px 0; }
+.chrono-divider{ grid-column: span 3; height:1px; background:#333; margin:2px 0; }
 :root {
   --bg: #1a1a1a;
   --panel: #2c2c2c;
-  --text: #ffffff;
+  --text: #333;
   --muted: #a0a0a0;
   --muted-2: #808080;
   --border: #404040;
   --border-2: #505050;
   --hover: #3c3c3c;
-  --accent: #007bff;
-  --accent-blue: #007bff; /* legacy usage in progress UI */
-  --focus-ring: rgba(255, 255, 255, 0.35);
+  --accent: #333;
+  --accent-blue: #333; /* legacy usage in progress UI */
+  --focus-ring: #333;
   --accent-green: #28a745;
   --accent-orange: #fd7e14;
   --accent-red: #dc3545;
   /* Added tokens used by Progress/FlowIndicator */
-  --accent-gold: #ffd166;
+  --accent-gold: #333;
   --accent-purple: #a78bfa;
   --primary: var(--accent-blue);
   --secondary: #8892b0;
@@ -98,7 +98,7 @@
 .qs-select:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 4px #333;
 }
 
 /* removed scroll lock for mobile refresh */
@@ -135,7 +135,7 @@ body {
   right: 15vw;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(142, 180, 227, 0.05), transparent 70%);
+  background: background: #333;
   border-radius: 50%;
   animation: float-slow 20s infinite linear;
   z-index: 1;
@@ -149,7 +149,7 @@ body {
   left: 10vw;
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(125, 233, 184, 0.04), transparent 70%);
+  background: background: #333;
   border-radius: 50%;
   animation: float-slow 25s infinite linear reverse;
   z-index: 1;
@@ -412,8 +412,8 @@ body {
   font-family: 'Courier New', monospace;
   line-height: 1.4;
   padding-left: 0.75rem;
-  border-left: 3px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid #333;
+  background: #333;
   padding: 0.5rem 0.75rem;
   border-radius: 0 6px 6px 0;
   margin-top: 0.25rem;
@@ -432,7 +432,7 @@ body {
   box-shadow: 
     0 20px 64px rgba(0, 0, 0, 0.6),
     0 1px 0 rgba(245, 245, 245, 0.08) inset,
-    0 0 0 1px rgba(255, 255, 255, 0.12);
+    0 0 0 1px #333;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -513,8 +513,8 @@ body {
   font-family: 'Courier New', monospace;
   line-height: 1.4;
   padding-left: 0.75rem;
-  border-left: 3px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid #333;
+  background: #333;
   padding: 0.5rem 0.75rem;
   border-radius: 0 6px 6px 0;
   margin-top: 0.25rem;
@@ -622,8 +622,8 @@ body {
 
 /* Reverse mode styles */
 .reverse-container{
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: #333;
+  border: 1px solid #333;
   border-radius: 12px;
   padding: 1rem 1rem 1.2rem;
   margin-bottom: 1.2rem;
@@ -634,7 +634,7 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #9aa5b1;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid #333;
   padding: 4px 8px;
   border-radius: 999px;
   margin-bottom: 6px;
@@ -646,7 +646,7 @@ body {
 }
 .reverse-divider{
   height: 1px;
-  background: rgba(255,255,255,0.06);
+  background: #333;
   margin: 6px 0 12px;
 }
 .reverse-grid{
@@ -687,7 +687,7 @@ body {
 .double-grid{
   display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0,1fr));
 }
-.double-field{ display:flex; flex-direction:column; gap:6px; text-align:left; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; }
+.double-field{ display:flex; flex-direction:column; gap:6px; text-align:left; background: #333; border-radius: 12px; padding: 12px; }
 .double-context{ font-size: 0.9rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.05em; }
 
 
@@ -790,7 +790,7 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
+  background: background: #333;
   color: var(--bg);
   border: none;
   padding: 0.8rem 1.5rem;
@@ -809,7 +809,7 @@ body {
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
+  background: background: #333;
   transform: translateY(-2px) scale(1.02);
   box-shadow: 
     0 8px 24px rgba(245, 245, 245, 0.15),
@@ -841,7 +841,7 @@ body {
   margin-top: 1rem;
   padding: 0.5rem;
   border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #333;
 }
 
 .btn-secondary {
@@ -936,7 +936,7 @@ body {
   font-weight: 700;
   font-size: 2rem;
   letter-spacing: 0.08em;
-  color: #8cff66; /* verde retro */
+  color: #333; /* verde retro */
   text-shadow: 0 0 4px rgba(140,255,102,0.35), 0 0 10px rgba(140,255,102,0.2);
   background: #0a0d0a;
   border: 1px solid #1a2a1a;
@@ -951,7 +951,7 @@ body {
   padding: 2px 0;
   margin: 0 1px;
   border: 1px solid rgba(140,255,102,0.18);
-  background: linear-gradient(to bottom, rgba(140,255,102,0.08), rgba(140,255,102,0.04));
+  background: background: #333;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.55);
 }
 .digit-clock .digit.colon{
@@ -966,8 +966,8 @@ body {
   position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255,255,255,0.04) 0px,
-    rgba(255,255,255,0.04) 1px,
+    #333 0px,
+    #333 1px,
     transparent 2px,
     transparent 4px
   );
@@ -984,33 +984,33 @@ body {
 
 /* Urgent mode - last 5 seconds (red color) */
 .digit-clock.urgent {
-  color: #ff4444;
+  color: #333;
   animation: urgent-pulse 1s ease-in-out infinite;
 }
 
 @keyframes urgent-pulse {
   0% { 
-    color: #ff4444;
-    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+    color: #333;
+    text-shadow: 0 0 8px #333;
   }
   50% { 
-    color: #ff6666;
-    text-shadow: 0 0 12px rgba(255, 68, 68, 0.8);
+    color: #333;
+    text-shadow: 0 0 12px #333;
   }
   100% { 
-    color: #ff4444;
-    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+    color: #333;
+    text-shadow: 0 0 8px #333;
   }
 }
 
 .digit-clock.urgent .digit {
   color: var(--accent-red);
-  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  text-shadow: 0 0 8px #333;
 }
 
 .digit-clock.urgent .digit.colon {
   color: var(--accent-red);
-  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  text-shadow: 0 0 8px #333;
 }
 
 /* Vibración ligera para modo urgente */
@@ -1030,12 +1030,12 @@ body {
 .digit-clock.shake {
   animation: countdown-explosion 1.2s ease-in-out;
   color: var(--accent-red) !important;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+  text-shadow: 0 0 10px #333 !important;
 }
 
 .digit-clock.shake .digit {
   color: var(--accent-red) !important;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+  text-shadow: 0 0 10px #333 !important;
 }
 
 @keyframes countdown-explosion {
@@ -1363,16 +1363,16 @@ body {
   :root {
     --bg: #000000;
     --panel: #1a1a1a;
-    --text: #ffffff;
+    --text: #333;
     --muted: #dddddd;
     --muted-2: #cccccc;
     --border: #666666;
     --border-2: #888888;
     --hover: #222222;
-    --accent-blue: #99ccff;
-    --accent-green: #99ff99;
-    --accent-orange: #ffcc99;
-    --accent-red: #ff9999;
+    --accent-blue: #333;
+    --accent-green: #333;
+    --accent-orange: #333;
+    --accent-red: #333;
   }
   
   .option-card,
@@ -1407,7 +1407,7 @@ body {
 
 .games-panel .option-card.compact .conjugation-example {
   font-size: 1rem;
-  color: #ffffff;
+  color: #333;
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0,0,0,0.8);
   margin: 0 !important;
@@ -1439,11 +1439,11 @@ body {
     padding: 1.5rem !important;
     margin-bottom: 1rem !important;
     /* Improve contrast vs background on mobile */
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.18) !important;
+    background: #333 !important;
+    border-color: #333 !important;
     box-shadow: 
       0 8px 24px rgba(0, 0, 0, 0.45),
-      0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+      0 0 0 1px #333 inset !important;
   }
 
   /* Click-only sweep (mobile): applied when .click-anim class toggles */
@@ -1451,9 +1451,9 @@ body {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.05) 46%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.05) 54%,
+      #333 46%,
+      #333 50%,
+      #333 54%,
       transparent 100%
     );
     animation: clickSweep 0.5s ease-out 1;
@@ -1464,9 +1464,9 @@ body {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.05) 46%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0.05) 54%,
+      #333 46%,
+      #333 50%,
+      #333 54%,
       transparent 100%
     );
     animation: clickSweep 0.45s ease-out 1;
@@ -1801,7 +1801,7 @@ body {
   font-weight: 700;
   font-size: 2rem;
   letter-spacing: 0.08em;
-  color: #8cff66; /* verde retro */
+  color: #333; /* verde retro */
   text-shadow: 0 0 4px rgba(140,255,102,0.35), 0 0 10px rgba(140,255,102,0.2);
   background: #0a0d0a;
   border: 1px solid #1a2a1a;
@@ -1816,7 +1816,7 @@ body {
   padding: 2px 0;
   margin: 0 1px;
   border: 1px solid rgba(140,255,102,0.18);
-  background: linear-gradient(to bottom, rgba(140,255,102,0.08), rgba(140,255,102,0.04));
+  background: background: #333;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.55);
 }
 .digit-clock .digit.colon{
@@ -1831,8 +1831,8 @@ body {
   position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255,255,255,0.04) 0px,
-    rgba(255,255,255,0.04) 1px,
+    #333 0px,
+    #333 1px,
     transparent 2px,
     transparent 4px
   );
@@ -1849,33 +1849,33 @@ body {
 
 /* Urgent mode - last 5 seconds (red color) */
 .digit-clock.urgent {
-  color: #ff4444;
+  color: #333;
   animation: urgent-pulse 1s ease-in-out infinite;
 }
 
 @keyframes urgent-pulse {
   0% { 
-    color: #ff4444;
-    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+    color: #333;
+    text-shadow: 0 0 8px #333;
   }
   50% { 
-    color: #ff6666;
-    text-shadow: 0 0 12px rgba(255, 68, 68, 0.8);
+    color: #333;
+    text-shadow: 0 0 12px #333;
   }
   100% { 
-    color: #ff4444;
-    text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+    color: #333;
+    text-shadow: 0 0 8px #333;
   }
 }
 
 .digit-clock.urgent .digit {
-  color: #ff4444;
-  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  color: #333;
+  text-shadow: 0 0 8px #333;
 }
 
 .digit-clock.urgent .digit.colon {
-  color: #ff4444;
-  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+  color: #333;
+  text-shadow: 0 0 8px #333;
 }
 
 /* Vibración ligera para modo urgente */
@@ -1894,13 +1894,13 @@ body {
 /* Shake animation when countdown reaches zero */
 .digit-clock.shake {
   animation: countdown-explosion 1.2s ease-in-out;
-  color: #ff0000 !important;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+  color: #333 !important;
+  text-shadow: 0 0 10px #333 !important;
 }
 
 .digit-clock.shake .digit {
-  color: #ff0000 !important;
-  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
+  color: #333 !important;
+  text-shadow: 0 0 10px #333 !important;
 }
 
 @keyframes countdown-explosion {
@@ -1965,8 +1965,8 @@ body {
 .reverse-container {
   margin-top: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #333;
+  border: 1px solid #333;
   border-radius: 8px;
 }
 
@@ -1987,7 +1987,7 @@ body {
 
 .reverse-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #333;
   margin-bottom: 1rem;
 }
 

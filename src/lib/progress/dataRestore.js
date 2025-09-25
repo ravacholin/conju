@@ -18,7 +18,7 @@ export async function restoreProgressData(importData, options = {}) {
       validateData = true 
     } = options
 
-    console.log('📥 Iniciando restauración de datos de progreso...')
+    console.log(' Iniciando restauración de datos de progreso...')
 
     // Validar formato de datos
     if (validateData && !isValidExportFormat(importData)) {
@@ -41,7 +41,7 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar intentos
     if (data.attempts?.length) {
-      console.log(`📝 Restaurando ${data.attempts.length} intentos...`)
+      console.log(` Restaurando ${data.attempts.length} intentos...`)
       const attemptsResult = await restoreDataType('attempts', data.attempts, targetUserId, overwriteExisting)
       results.attempts = attemptsResult
       results.totalProcessed += attemptsResult.imported
@@ -49,7 +49,7 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar registros de mastery
     if (data.mastery?.length) {
-      console.log(`🎯 Restaurando ${data.mastery.length} registros de dominio...`)
+      console.log(` Restaurando ${data.mastery.length} registros de dominio...`)
       const masteryResult = await restoreDataType('mastery', data.mastery, targetUserId, overwriteExisting)
       results.mastery = masteryResult
       results.totalProcessed += masteryResult.imported
@@ -57,7 +57,7 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar horarios
     if (data.schedules?.length) {
-      console.log(`⏰ Restaurando ${data.schedules.length} horarios...`)
+      console.log(` Restaurando ${data.schedules.length} horarios...`)
       const schedulesResult = await restoreDataType('schedules', data.schedules, targetUserId, overwriteExisting)
       results.schedules = schedulesResult
       results.totalProcessed += schedulesResult.imported
@@ -101,7 +101,7 @@ async function restoreDataType(dataType, records, userId, overwriteExisting) {
       result.imported++
       
     } catch (error) {
-      console.warn(`⚠️ Error al restaurar registro ${dataType}:`, error)
+      console.warn(`️ Error al restaurar registro ${dataType}:`, error)
       result.errors++
     }
   }
@@ -191,7 +191,7 @@ function isValidExportFormat(importData) {
  */
 export async function importFromFile(file, options = {}) {
   try {
-    console.log(`📂 Importando datos desde archivo: ${file.name}`)
+    console.log(` Importando datos desde archivo: ${file.name}`)
     
     const text = await file.text()
     let importData
@@ -204,7 +204,7 @@ export async function importFromFile(file, options = {}) {
     
     const result = await restoreProgressData(importData, options)
     
-    console.log(`📥 Importación desde archivo completada exitosamente`)
+    console.log(` Importación desde archivo completada exitosamente`)
     return result
     
   } catch (error) {
@@ -221,7 +221,7 @@ export async function importFromFile(file, options = {}) {
 export async function createBackup(userId = null) {
   try {
     const actualUserId = userId || getCurrentUserId()
-    console.log(`💾 Creando respaldo automático para usuario ${actualUserId}...`)
+    console.log(` Creando respaldo automático para usuario ${actualUserId}...`)
 
     // Usar el sistema de exportación existente
     const { exportProgressData } = await import('./dataExport.js')
@@ -240,12 +240,12 @@ export async function createBackup(userId = null) {
       if (typeof window !== 'undefined' && window.localStorage) {
         const backupKey = `progress_backup_${actualUserId}`
         localStorage.setItem(backupKey, JSON.stringify(backupData))
-        console.log(`💾 Respaldo guardado en localStorage con clave: ${backupKey}`)
+        console.log(` Respaldo guardado en localStorage con clave: ${backupKey}`)
       } else {
-        console.warn('⚠️ localStorage no disponible - respaldo no persistido localmente')
+        console.warn('️ localStorage no disponible - respaldo no persistido localmente')
       }
     } catch (localStorageError) {
-      console.warn('⚠️ No se pudo guardar el respaldo en localStorage:', localStorageError.message)
+      console.warn('️ No se pudo guardar el respaldo en localStorage:', localStorageError.message)
     }
 
     console.log(`✅ Respaldo creado con ID: ${backupData.metadata.backupId}`)

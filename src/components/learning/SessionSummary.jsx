@@ -64,7 +64,7 @@ function SessionSummary({ onFinish, summary = {} }) {
             >
               <span 
                 className="grade-text"
-                style={{ color: getGradeColor(grade) }}
+                
               >
                 {grade}
               </span>
@@ -144,7 +144,7 @@ function SessionSummary({ onFinish, summary = {} }) {
                 <div className="recommendations-list">
                   {recommendations.map((rec, index) => (
                     <div key={index} className="recommendation">
-                      <span className="rec-icon">💡</span>
+                      <span className="rec-icon"></span>
                       <span className="rec-text">{rec}</span>
                     </div>
                   ))}

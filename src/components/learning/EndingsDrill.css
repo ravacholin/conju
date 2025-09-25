@@ -117,7 +117,7 @@
 .result.correct .correct-answer-display .ending-highlight {
     color: var(--text);
     font-weight: 600;
-    border-bottom: 1px dotted rgba(255,255,255,0.25);
+    border-bottom: 1px dotted #333;
 }
 
 @keyframes flash-success {
@@ -189,8 +189,8 @@
     margin-top: 2rem;
     width: 100%;
     max-width: 350px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: #333;
+    border: 1px solid #333;
     border-radius: 12px;
     padding: 1rem;
 }
@@ -223,7 +223,7 @@
 
 .ending-row.highlighted {
     opacity: 1;
-    background: rgba(255, 255, 255, 0.06);
+    background: #333;
     transform: scale(1.02) translateX(2px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
@@ -253,8 +253,8 @@
 .learning-drill.group-ar,
 .learning-drill.group-er,
 .learning-drill.group-ir {
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 12px 48px rgba(0,0,0,0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 1px #333;
+    border: 1px solid #333;
 }
 
 /* Remove color ribbons entirely */

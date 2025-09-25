@@ -97,7 +97,7 @@ class Router {
    * Handle browser back/forward events
    */
   handlePopState(event) {
-    console.group('🔙 Router PopState')
+    console.group(' Router PopState')
     console.log('History event state:', event.state)
     
     try {
@@ -111,12 +111,12 @@ class Router {
           timestamp: state.timestamp || Date.now()
         }
         
-        console.log('📋 Valid app navigation state found:', route)
+        console.log(' Valid app navigation state found:', route)
         this.currentRoute = route
         this.notifyListeners(route, 'popstate')
       } else {
         // No valid state, parse from URL
-        console.log('📋 No valid state, parsing from URL')
+        console.log(' No valid state, parsing from URL')
         const route = this.parseCurrentURL()
         this.currentRoute = route
         this.notifyListeners(route, 'popstate')

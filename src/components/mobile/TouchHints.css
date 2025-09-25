@@ -126,7 +126,7 @@
   gap: 16px;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #333;
 }
 
 .swipe-hint {
@@ -162,7 +162,7 @@
   gap: 6px;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #333;
   font-size: 12px;
 }
 
@@ -187,8 +187,8 @@
 
 /* Specialized hints */
 .srs-hints .touch-hint {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(139, 92, 246, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: background: #333;
+  border: 1px solid #333;
 }
 
 .srs-hints .touch-hint::before {
@@ -200,8 +200,8 @@
 }
 
 .gamification-hints .touch-hint {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(52, 211, 153, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: background: #333;
+  border: 1px solid #333;
 }
 
 .gamification-hints .touch-hint::before {
@@ -209,8 +209,8 @@
 }
 
 .journey-hints .touch-hint {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(251, 191, 36, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: background: #333;
+  border: 1px solid #333;
   color: #000;
 }
 

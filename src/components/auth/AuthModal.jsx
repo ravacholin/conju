@@ -20,7 +20,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   // Listen for auth events
   useEffect(() => {
     const handleAuthLogin = () => {
-      console.log('🔵 AuthModal: Received auth-login event')
+      console.log(' AuthModal: Received auth-login event')
       setLoading(false)
       onSuccess?.()
       onClose()
@@ -29,7 +29,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     }
 
     const handleGoogleError = (event) => {
-      console.log('🔴 AuthModal: Received google-auth-error event:', event.detail)
+      console.log(' AuthModal: Received google-auth-error event:', event.detail)
       setLoading(false)
       setError(event.detail.error || 'Error con Google OAuth')
     }
@@ -94,7 +94,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         return
       }
 
-      console.log('🔵 Iniciando Google Sign-In...')
+      console.log(' Iniciando Google Sign-In...')
       const result = await authService.triggerGoogleSignIn()
 
       if (!result) {
@@ -104,10 +104,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       }
 
       // Keep loading state, will be handled by event listeners
-      console.log('🔵 Google Sign-In triggered successfully')
+      console.log(' Google Sign-In triggered successfully')
 
     } catch (error) {
-      console.error('🔴 Google login error:', error)
+      console.error(' Google login error:', error)
       setError('Error con Google OAuth. Prueba con email y contraseña.')
       setLoading(false)
     }
@@ -124,7 +124,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="auth-modal-header">
-          <h2>{mode === 'login' ? '🔐 Iniciar Sesión' : '📝 Crear Cuenta'}</h2>
+          <h2>{mode === 'login' ? ' Iniciar Sesión' : ' Crear Cuenta'}</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
@@ -180,7 +180,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
             {error && (
               <div className="error-message">
-                ⚠️ {error}
+                ️ {error}
               </div>
             )}
 
@@ -189,7 +189,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               className="auth-submit-btn"
               disabled={loading}
             >
-              {loading ? '⏳ Procesando...' : (mode === 'login' ? '🔓 Iniciar Sesión' : '🎯 Crear Cuenta')}
+              {loading ? '⏳ Procesando...' : (mode === 'login' ? ' Iniciar Sesión' : ' Crear Cuenta')}
             </button>
           </form>
 
@@ -204,7 +204,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             disabled={loading || !authService.isGoogleAvailable()}
             title={!authService.isGoogleAvailable() ? 'Google OAuth no configurado' : ''}
           >
-            🌐 {authService.isGoogleAvailable() ? 'Continuar con Google' : 'Google OAuth (no configurado)'}
+             {authService.isGoogleAvailable() ? 'Continuar con Google' : 'Google OAuth (no configurado)'}
           </button>
 
           <div className="auth-switch">
@@ -226,12 +226,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className="auth-benefits">
-            <h4>✨ Beneficios de tener cuenta:</h4>
+            <h4> Beneficios de tener cuenta:</h4>
             <ul>
-              <li>📱 Sincronización entre dispositivos</li>
+              <li> Sincronización entre dispositivos</li>
               <li>☁️ Backup automático de tu progreso</li>
-              <li>📊 Historial completo de aprendizaje</li>
-              <li>🎯 Recomendaciones personalizadas</li>
+              <li> Historial completo de aprendizaje</li>
+              <li> Recomendaciones personalizadas</li>
             </ul>
           </div>
         </div>

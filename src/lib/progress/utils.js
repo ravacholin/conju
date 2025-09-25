@@ -126,8 +126,8 @@ export function getMasteryLevelText(score) {
  */
 export function getMasteryIcon(score) {
   if (score >= 80) return '✅'
-  if (score >= 60) return '🚧'
-  return '⚠️'
+  if (score >= 60) return ''
+  return '️'
 }
 
 /**

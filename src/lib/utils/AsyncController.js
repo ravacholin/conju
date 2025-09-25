@@ -109,7 +109,7 @@ export class AsyncController {
     if (operation) {
       operation.controller.abort()
       this.activeOperations.delete(key)
-      console.log(`🚫 Cancelled operation: ${key}`)
+      console.log(` Cancelled operation: ${key}`)
     }
   }
 
@@ -117,7 +117,7 @@ export class AsyncController {
    * Cancel all active operations
    */
   cancelAll() {
-    console.log(`🚫 Cancelling ${this.activeOperations.size} active operations`)
+    console.log(` Cancelling ${this.activeOperations.size} active operations`)
     
     this.activeOperations.forEach((operation) => {
       operation.controller.abort()

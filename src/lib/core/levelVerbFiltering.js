@@ -276,18 +276,18 @@ export function getFilteringStats(level) {
 export function debugVerbFilteringForLevel(level) {
   const stats = getFilteringStats(level)
   
-  console.group(`🎯 VERB FILTERING STATS - Nivel ${level}`)
-  console.log('📊 Total verbos clasificados:', stats.totalVerbsClassified)
+  console.group(` VERB FILTERING STATS - Nivel ${level}`)
+  console.log(' Total verbos clasificados:', stats.totalVerbsClassified)
   console.log('✅ Verbos permitidos:', stats.allowedVerbs.total)
   console.log('  - A1/A2:', stats.allowedVerbs.a1a2)
   console.log('  - B1:', stats.allowedVerbs.b1) 
   console.log('  - B2:', stats.allowedVerbs.b2)
   console.log('  - C1+:', stats.allowedVerbs.c1)
-  console.log('🚫 Verbos filtrados:', stats.filteredVerbs.total)
+  console.log(' Verbos filtrados:', stats.filteredVerbs.total)
   if (stats.filteredVerbs.examples.length > 0) {
     console.log('  Ejemplos:', stats.filteredVerbs.examples.join(', '))
   }
-  console.log('🎚️ Filtrado activo:', stats.filteringActive)
+  console.log('️ Filtrado activo:', stats.filteringActive)
   console.groupEnd()
   
   return stats

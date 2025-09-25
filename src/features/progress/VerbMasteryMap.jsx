@@ -76,7 +76,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
       if (!result[cell.mood]) {
         const moodInfo = moodConfig[cell.mood] || {
           label: cell.mood,
-          icon: '📝',
+          icon: '',
           description: 'Modo verbal'
         }
         result[cell.mood] = {

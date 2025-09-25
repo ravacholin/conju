@@ -391,7 +391,7 @@ export class ConfidenceEngine {
     const indicators = responseEntry.confidenceIndicators
     
     if (indicators.fluency) {
-      insights.push('🚀 Respuesta fluida - tu confianza en esta área está creciendo')
+      insights.push(' Respuesta fluida - tu confianza en esta área está creciendo')
     }
     
     if (indicators.hesitation && responseEntry.isCorrect) {
@@ -403,7 +403,7 @@ export class ConfidenceEngine {
     }
     
     if (indicators.help_seeking && responseEntry.isCorrect) {
-      insights.push('🎯 Buen uso de pistas - estás aprendiendo estratégicamente')
+      insights.push(' Buen uso de pistas - estás aprendiendo estratégicamente')
     }
 
     return insights

@@ -21,7 +21,7 @@ describe('Pruebas de Usabilidad del Sistema de Progreso', () => {
   beforeEach(async () => {
     // Limpiar el estado antes de cada prueba
     // En una implementación completa, esto limpiaría la base de datos
-    console.log('🔧 Configurando entorno de pruebas de usabilidad...')
+    console.log(' Configurando entorno de pruebas de usabilidad...')
   })
 
   it('debería ser fácil de inicializar para desarrolladores', async () => {

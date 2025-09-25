@@ -47,10 +47,10 @@ export default function SessionStats({
   }
 
   const getStreakEmoji = (streak) => {
-    if (streak >= 10) return '🔥'
-    if (streak >= 5) return '⚡'
-    if (streak >= 3) return '✨'
-    return '👍'
+    if (streak >= 10) return ''
+    if (streak >= 5) return ''
+    if (streak >= 3) return ''
+    return ''
   }
 
   return (
@@ -60,7 +60,7 @@ export default function SessionStats({
         onClick={() => setIsCollapsed(!isCollapsed)}
         title="Estadísticas de sesión"
       >
-        📊 {isCollapsed ? 'Ver Stats' : 'Ocultar'}
+         {isCollapsed ? 'Ver Stats' : 'Ocultar'}
       </button>
       
       {!isCollapsed && (

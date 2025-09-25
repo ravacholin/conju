@@ -129,7 +129,7 @@
 }
 
 .root-form .action-buttons .btn.secondary {
-  background: rgba(255, 255, 255, 0.08);
+  background: #333;
   color: rgba(245, 245, 245, 0.82);
 }
 

@@ -205,9 +205,9 @@ export function ErrorRadar({ axes = [] }) {
                             {formatMoodTenseLocal(ex.mood, ex.tense)}
                           </div>
                           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <span style={{ color: 'var(--muted-2)', fontFamily: 'monospace' }}>{ex.user}</span>
+                            <span >{ex.user}</span>
                             <span style={{ opacity: 0.6 }}>→</span>
-                            <span style={{ color: 'var(--text)', fontFamily: 'monospace' }}>{ex.correct}</span>
+                            <span >{ex.correct}</span>
                           </div>
                         </li>
                       ))}

@@ -96,7 +96,7 @@
 
 .learning-drill .chrono-item:hover {
   transform: translateY(-1px);
-  background: rgba(255,255,255,0.04);
+  background: #333;
 }
 
 .learning-drill .verb-lemma, .learning-drill .person-display {

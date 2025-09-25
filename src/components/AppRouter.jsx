@@ -101,7 +101,7 @@ function AppRouter() {
   // Stable route handler function
   // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
   const handleRouteChange = useCallback((route, type) => {
-    debugLog('📍 Route changed:', route, 'via', type)
+    debugLog(' Route changed:', route, 'via', type)
     setCurrentMode(route.mode)
     
     if (route.mode === 'onboarding' && route.step) {
@@ -146,22 +146,22 @@ function AppRouter() {
   }, [handleRouteChange])
 
   const handleStartPractice = () => {
-    debugLog('🚀 handleStartPractice called');
+    debugLog(' handleStartPractice called');
     router.navigate({ mode: 'drill' })
   }
 
   const handleHome = () => {
-    debugLog('🏠 handleHome called');
+    debugLog(' handleHome called');
     router.navigate({ mode: 'onboarding', step: 2 })
   }
 
   const handleGoToProgress = () => {
-    debugLog('📊 handleGoToProgress called');
+    debugLog(' handleGoToProgress called');
     router.navigate({ mode: 'progress' })
   }
 
   const handleStartLearningNewTense = () => {
-    debugLog('🧠 handleStartLearningNewTense called');
+    debugLog(' handleStartLearningNewTense called');
     router.navigate({ mode: 'learning' })
   };
 
@@ -184,13 +184,13 @@ function AppRouter() {
 
       // If settings changed and we have a current item, clear it first
       if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
-        debugLog('🔄 Practice settings changed while in drill mode, clearing current item');
+        debugLog(' Practice settings changed while in drill mode, clearing current item');
         drillMode.clearCurrentItem();
       }
 
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem && !drillMode.isGenerating) {
-        debugLog('🎯 Generating drill item');
+        debugLog(' Generating drill item');
         drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
       }
 
