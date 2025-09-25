@@ -44,7 +44,7 @@
 }
 
 .notification.level::before {
-  background: linear-gradient(90deg, #8b5cf6, #a855f7);
+  background: #666;
 }
 
 .notification.badge::before {
@@ -223,12 +223,12 @@
 }
 
 .notification.level {
-  border-left: 4px solid #8b5cf6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(255, 255, 255, 0.95));
+  border-left: 4px solid #666;
+  background: #2a2a2a;
 }
 
 .notification.level .notification-title {
-  color: #7c3aed;
+  color: #ccc;
   font-size: 18px;
 }
 

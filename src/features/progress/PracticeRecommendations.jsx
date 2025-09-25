@@ -110,7 +110,7 @@ export default function PracticeRecommendations({
       medium: { text: 'Medio', color: 'orange' },
       hard: { text: 'Difícil', color: 'red' },
       focused: { text: 'Enfocado', color: 'blue' },
-      review: { text: 'Repaso', color: 'purple' },
+      review: { text: 'Repaso', color: 'gray' },
       learning: { text: 'Nuevo', color: 'teal' }
     }
     return badges[difficulty] || { text: 'Normal', color: 'gray' }

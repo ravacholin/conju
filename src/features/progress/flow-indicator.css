@@ -299,7 +299,7 @@
 }
 
 .metric-fill.consistency {
-  background: linear-gradient(90deg, var(--accent-purple), var(--secondary));
+  background: #666;
 }
 
 .metric-value {
