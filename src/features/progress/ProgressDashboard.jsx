@@ -156,6 +156,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }
 
+  // Trigger sync automatically when component mounts
+  React.useEffect(() => {
+    if (syncAvailable && !loading && systemReady) {
+      handleSync()
+    }
+  }, [syncAvailable, loading, systemReady])
+
   // Listen for trigger-sync events from AccountButton
   React.useEffect(() => {
     const handleTriggerSync = () => {
