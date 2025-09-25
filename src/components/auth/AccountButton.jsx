@@ -73,8 +73,8 @@ export default function AccountButton() {
           className="account-login-btn"
           title="Iniciar sesión para sincronizar entre dispositivos"
         >
-          <img src="/icons/user.png" alt="" className="menu-icon-small" /> Iniciar Sesión
-        </button>
+            <img src="/icons/trophy.png" alt="" className="menu-icon-small" /> Iniciar Sesión
+          </button>
 
         <AuthModal
           isOpen={showAuthModal}
@@ -133,7 +133,7 @@ export default function AccountButton() {
             <div className="dropdown-divider" />
 
             <div className="dropdown-section">
-              <div className="section-title"><img src="/icons/robot.png" alt="" className="menu-icon-small" /> Cuenta</div>
+              <div className="section-title"><img src="/icons/timer.png" alt="" className="menu-icon-small" /> Cuenta</div>
               <button
                 className="dropdown-item"
                 onClick={() => {
@@ -141,7 +141,7 @@ export default function AccountButton() {
                   setShowAccountModal(true)
                 }}
               >
-                <img src="/icons/user.png" alt="" className="menu-icon-small" /> Gestionar cuenta
+                <img src="/icons/lightbulb.png" alt="" className="menu-icon-small" /> Gestionar cuenta
               </button>
               <button
                 className="dropdown-item"
@@ -150,7 +150,7 @@ export default function AccountButton() {
                   setShowDeviceModal(true)
                 }}
               >
-                <img src="/icons/bolt.png" alt="" className="menu-icon-small" /> Mis dispositivos
+                <img src="/icons/chart.png" alt="" className="menu-icon-small" /> Mis dispositivos
               </button>
             </div>
 
@@ -160,7 +160,7 @@ export default function AccountButton() {
               className="dropdown-item logout-item"
               onClick={handleLogout}
             >
-              <img src="/icons/bolt.png" alt="" className="menu-icon-small" /> Cerrar sesión
+              <img src="/icons/map.png" alt="" className="menu-icon-small" /> Cerrar sesión
             </button>
           </div>
         )}
