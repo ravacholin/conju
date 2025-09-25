@@ -104,7 +104,7 @@ export class IntelligentFSRS {
 
       logger.debug('FSRS calculation completed', {
         rating,
-        originalInterval: Math.round((selectedCard.due - Date.now()) / (1000 * 60 * 60 * 24)),
+        originalInterval: Math.round(card.interval),
         adjustedInterval: result.interval,
         difficulty: adjustedCard.difficulty,
         stability: adjustedCard.stability
