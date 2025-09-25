@@ -46,7 +46,7 @@ export default function PersonalizedPlanPanel({ plan, onRefresh }) {
     return (
       <section className="dashboard-section">
         <h2>
-          <img src="/icons/map.png" alt="Plan" className="section-icon" />
+          <img src="/icons/books.png" alt="Plan" className="section-icon" />
           Plan de estudio personalizado
         </h2>
         <div className="plan-placeholder">
@@ -66,7 +66,7 @@ export default function PersonalizedPlanPanel({ plan, onRefresh }) {
     <section className="dashboard-section personalized-plan">
       <div className="plan-header">
         <h2>
-          <img src="/icons/journey.png" alt="Plan" className="section-icon" />
+          <img src="/icons/books.png" alt="Plan" className="section-icon" />
           Plan de estudio personalizado
         </h2>
         <div className="plan-actions">
