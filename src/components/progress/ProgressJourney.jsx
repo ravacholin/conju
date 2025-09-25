@@ -59,7 +59,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'first_steps',
         title: 'Primeros Pasos',
         description: 'Has comenzado tu journey de aprendizaje',
-        icon: '👋',
+        icon: '/icons/sparks.png',
         threshold: 1,
         achieved: totalAttempts >= 1,
         value: Math.min(totalAttempts, 1),
@@ -69,7 +69,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'getting_started',
         title: 'Calentando Motores',
         description: 'Completaste tus primeros 10 intentos',
-        icon: '🔥',
+        icon: '/icons/bolt.png',
         threshold: 10,
         achieved: totalAttempts >= 10,
         value: Math.min(totalAttempts, 10),
@@ -79,7 +79,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'building_momentum',
         title: 'Construyendo Impulso',
         description: 'Ya llevas 50 intentos, ¡vas bien!',
-        icon: '💪',
+        icon: '/icons/brain.png',
         threshold: 50,
         achieved: totalAttempts >= 50,
         value: Math.min(totalAttempts, 50),
@@ -89,7 +89,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'dedicated_learner',
         title: 'Estudiante Dedicado',
         description: 'Has completado 100 ejercicios de repaso',
-        icon: '🎯',
+        icon: '/icons/trophy.png',
         threshold: 100,
         achieved: totalAttempts >= 100,
         value: Math.min(totalAttempts, 100),
@@ -99,7 +99,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'master_in_training',
         title: 'Maestro en Entrenamiento',
         description: '250 intentos demuestran tu compromiso',
-        icon: '👨‍🎓',
+        icon: '/icons/chart.png',
         threshold: 250,
         achieved: totalAttempts >= 250,
         value: Math.min(totalAttempts, 250),
@@ -109,7 +109,7 @@ export default function ProgressJourney({ compact = false }) {
         id: 'spanish_warrior',
         title: 'Guerrero del Español',
         description: '500 intentos te convierten en un veterano',
-        icon: '⚔️',
+        icon: '/icons/trophy.png',
         threshold: 500,
         achieved: totalAttempts >= 500,
         value: Math.min(totalAttempts, 500),
@@ -172,7 +172,9 @@ export default function ProgressJourney({ compact = false }) {
     return (
       <div className="progress-journey empty">
         <div className="journey-start">
-          <div className="start-icon">🌟</div>
+          <div className="start-icon">
+            <img src="/icons/sparks.png" alt="Journey Start" style={{width: "64px", height: "64px"}} />
+          </div>
           <h3>Tu Journey Comienza Aquí</h3>
           <p>Cada repaso que completes se convertirá en parte de tu historia de aprendizaje</p>
           <div className="start-encouragement">
@@ -209,7 +211,9 @@ export default function ProgressJourney({ compact = false }) {
     return (
       <div className="progress-journey compact">
         <div className="journey-summary">
-          <div className="journey-icon">🎯</div>
+          <div className="journey-icon">
+            <img src="/icons/trophy.png" alt="Journey" style={{width: "32px", height: "32px"}} />
+          </div>
           <div className="journey-stats">
             <div className="stat">
               <span className="value">{journey.daysSinceStart}</span>
@@ -258,7 +262,9 @@ export default function ProgressJourney({ compact = false }) {
         </div>
 
         <div className="motivational-message">
-          <div className="message-icon">💫</div>
+          <div className="message-icon">
+            <img src="/icons/sparks.png" alt="Motivation" style={{width: "24px", height: "24px"}} />
+          </div>
           <div className="message-text">{getMotivationalMessage()}</div>
         </div>
       </div>
@@ -278,8 +284,8 @@ export default function ProgressJourney({ compact = false }) {
               </div>
 
               <div className="milestone-content">
-                <div className="milestone-icon" style={{ backgroundColor: milestone.color }}>
-                  <span>{milestone.icon}</span>
+                <div className="milestone-icon" style={{ backgroundColor: "#404040" }}>
+                  <img src={milestone.icon} alt={milestone.title} style={{width: "28px", height: "28px"}} />
                 </div>
 
                 <div className="milestone-info">
@@ -288,7 +294,7 @@ export default function ProgressJourney({ compact = false }) {
 
                   {milestone.achieved ? (
                     <div className="milestone-achievement">
-                      <span className="achievement-badge">✅ Completado</span>
+                      <span className="achievement-badge">Completado</span>
                     </div>
                   ) : (
                     <div className="milestone-progress">
@@ -297,7 +303,7 @@ export default function ProgressJourney({ compact = false }) {
                           className="progress-fill"
                           style={{
                             width: `${(milestone.value / milestone.threshold) * 100}%`,
-                            backgroundColor: milestone.color
+                            backgroundColor: "#007bff"
                           }}
                         />
                       </div>
@@ -317,8 +323,8 @@ export default function ProgressJourney({ compact = false }) {
         <div className="next-milestone">
           <h4>Próximo Objetivo</h4>
           <div className="next-milestone-card">
-            <div className="next-icon" style={{ backgroundColor: journey.nextMilestone.color }}>
-              {journey.nextMilestone.icon}
+            <div className="next-icon" style={{ backgroundColor: "#404040" }}>
+              <img src={journey.nextMilestone.icon} alt={journey.nextMilestone.title} style={{width: "24px", height: "24px"}} />
             </div>
             <div className="next-info">
               <h5>{journey.nextMilestone.title}</h5>
@@ -334,10 +340,12 @@ export default function ProgressJourney({ compact = false }) {
       )}
 
       <div className="journey-insights">
-        <h4>📊 Insights de tu Journey</h4>
+        <h4>Insights de tu Journey</h4>
         <div className="insights-grid">
           <div className="insight-card">
-            <div className="insight-icon">📅</div>
+            <div className="insight-icon">
+              <img src="/icons/calendar.png" alt="Calendar" style={{width: "24px", height: "24px"}} />
+            </div>
             <div className="insight-content">
               <div className="insight-value">
                 {journey.firstAttemptDate.toLocaleDateString('es-ES', {
@@ -351,7 +359,9 @@ export default function ProgressJourney({ compact = false }) {
           </div>
 
           <div className="insight-card">
-            <div className="insight-icon">🔥</div>
+            <div className="insight-icon">
+              <img src="/icons/bolt.png" alt="Streak" style={{width: "24px", height: "24px"}} />
+            </div>
             <div className="insight-content">
               <div className="insight-value">{journey.currentStreak} días</div>
               <div className="insight-label">Racha actual</div>
@@ -360,7 +370,7 @@ export default function ProgressJourney({ compact = false }) {
 
           <div className="insight-card">
             <div className="insight-icon">
-              {journey.accuracyTrend > 5 ? '📈' : journey.accuracyTrend < -5 ? '📉' : '➡️'}
+              <img src="/icons/chart.png" alt="Trend" style={{width: "24px", height: "24px"}} />
             </div>
             <div className="insight-content">
               <div className={`insight-value ${
