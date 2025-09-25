@@ -38,6 +38,7 @@ El sistema de progreso y analíticas para el conjugador de español está diseñ
 - **Modo docente** con exportación
 - **Integración completa** con Drill
 - **Documentación exhaustiva** y pruebas unitarias
+- **Fase 3**: planes de estudio personalizados, modo experto del SRS, analítica avanzada, funciones sociales y soporte offline-first
 
 ---
 

@@ -256,7 +256,93 @@ export const PROGRESS_CONFIG = {
     ML_RECOMMENDATIONS: false,     // Recomendaciones predictivas ML
     PERSONAL_OPTIMIZER: false,     // Optimizador personal de parámetros
     ADVANCED_ANALYTICS: true,      // Analytics avanzados del SRS
-    A_B_TESTING: false            // Framework de testing A/B
+    A_B_TESTING: false,           // Framework de testing A/B
+    PERSONALIZED_STUDY_PLANS: true, // Planes de estudio personalizados (Fase 3)
+    EXPERT_MODE: false,            // Modo experto con ajustes de SRS avanzados
+    SOCIAL_CHALLENGES: true,       // Funciones sociales y desafíos comunitarios
+    OFFLINE_FIRST: true           // Arquitectura offline-first mejorada
+  },
+
+  // Configuración de personalización avanzada (Fase 3)
+  PERSONALIZATION: {
+    STUDY_PLAN: {
+      CACHE_TTL: 15 * 60 * 1000, // 15 minutos de cache para planes generados
+      DEFAULT_DURATION_WEEKS: 4,
+      MAX_SESSION_RECOMMENDATIONS: 6,
+      MAX_GOALS_IN_PLAN: 5,
+      INCLUDE_SOCIAL_SUGGESTIONS: true
+    }
+  },
+
+  // Configuración del modo experto de SRS
+  EXPERT_MODE: {
+    DEFAULT_ENABLED: false,
+    STORAGE_KEY: 'progress-expert-mode',
+    SRS: {
+      EASE_START: 2.6,
+      EASE_MIN: 1.2,
+      EASE_MAX: 3.6,
+      FIRST_STEPS: [1, 3],
+      RELEARN_STEPS: [0.25, 1],
+      FUZZ_RATIO: 0.12,
+      LEECH_THRESHOLD: 6,
+      LEECH_EASE_PENALTY: 0.5,
+      HINT_Q_PENALTY: 1
+    },
+    FSRS: {
+      REQUEST_RETENTION: 0.92,
+      MINIMUM_INTERVAL: 0.5, // 12 horas
+      MAXIMUM_INTERVAL: 36500,
+      ENABLE_FUZZ: true,
+      FUZZ_FACTOR: 0.08,
+      EASY_BONUS: 1.35,
+      HARD_FACTOR: 1.1
+    },
+    CUSTOM_INTERVALS: [1, 2, 4, 7, 14, 30, 60, 120]
+  },
+
+  // Configuración para analíticas avanzadas del aprendizaje
+  ADVANCED_ANALYTICS_CONFIG: {
+    RETENTION_WINDOW_DAYS: 30,
+    ENGAGEMENT_WINDOW_DAYS: 14,
+    MOMENTUM_LOOKBACK_ATTEMPTS: 40,
+    TIME_OF_DAY_SEGMENTS: [
+      { key: 'morning', label: 'Mañana', startHour: 6, endHour: 11 },
+      { key: 'afternoon', label: 'Tarde', startHour: 12, endHour: 17 },
+      { key: 'evening', label: 'Noche', startHour: 18, endHour: 22 },
+      { key: 'late', label: 'Madrugada', startHour: 23, endHour: 5 }
+    ],
+    RECENCY_DECAY_TAU: 7,
+    SESSION_LENGTH_BUCKETS_MINUTES: [5, 15, 30, 45]
+  },
+
+  // Configuración de funciones sociales y comunitarias
+  SOCIAL: {
+    COMMUNITY_SIZE_ESTIMATE: 1280,
+    LEADERBOARD_SIZE: 5,
+    CHALLENGE_ROTATION_DAYS: 3,
+    DEFAULT_COMMUNITY_TARGET: {
+      attempts: 2500,
+      xp: 4800,
+      streak: 12
+    },
+    BADGE_REWARDS: {
+      contributor: 3,
+      champion: 5,
+      mentor: 8
+    }
+  },
+
+  // Configuración de arquitectura offline-first
+  OFFLINE: {
+    ENABLED: true,
+    STATUS_POLL_INTERVAL: 15 * 1000, // 15 segundos
+    SYNC_RETRY_INTERVAL: 5 * 60 * 1000, // 5 minutos
+    PREFETCH_REVIEWS_LIMIT: 50,
+    STORAGE_KEYS: {
+      OFFLINE_QUEUE: 'progress-offline-queue',
+      SNAPSHOT: 'progress-offline-snapshot'
+    }
   },
 
   // Configuración A/B Testing

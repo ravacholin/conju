@@ -15,7 +15,7 @@ import {
   updateLearningSession,
   getLearningSessionsByUser
 } from './database.js'
-import { STORAGE_CONFIG } from './config.js'
+import { PROGRESS_CONFIG, STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
 import { progressDataCache } from '../cache/ProgressDataCache.js'
 import { getSyncApiBase, getSyncAuthHeaderName, getSyncConfigDebug } from '../config/syncConfig.js'
@@ -191,7 +191,66 @@ function defaultSettings() {
       CELLS_TO_IMPROVE: 3,
       MIN_SCORE: 75,
       SESSIONS: 5
+    },
+    expertMode: {
+      enabled: PROGRESS_CONFIG?.EXPERT_MODE?.DEFAULT_ENABLED ?? false,
+      overrides: {
+        srs: { ...(PROGRESS_CONFIG?.EXPERT_MODE?.SRS || {}) },
+        fsrs: { ...(PROGRESS_CONFIG?.EXPERT_MODE?.FSRS || {}) },
+        customIntervals: PROGRESS_CONFIG?.EXPERT_MODE?.CUSTOM_INTERVALS || null
+      },
+      lastUpdatedAt: null
+    },
+    personalizationProfile: {
+      style: 'balanced',
+      intensity: 'standard',
+      goalFocus: 'mixed'
+    },
+    socialPreferences: {
+      communityChallenges: true,
+      shareProgress: false
+    },
+    offlinePreferences: {
+      prefetchReviews: true
     }
+  }
+}
+
+export function updateUserSettings(userId, updater) {
+  try {
+    if (typeof window === 'undefined') {
+      return defaultSettings()
+    }
+
+    const key = userId || getCurrentUserId() || 'default'
+    const raw = window.localStorage.getItem(LS_KEY)
+    const store = raw ? JSON.parse(raw) : {}
+    const current = { ...defaultSettings(), ...(store[key] || {}) }
+    const nextState = typeof updater === 'function'
+      ? { ...current, ...updater(current) }
+      : { ...current, ...updater }
+
+    const persisted = {
+      ...defaultSettings(),
+      ...nextState,
+      lastActiveAt: nextState.lastActiveAt || new Date().toISOString()
+    }
+
+    store[key] = persisted
+    window.localStorage.setItem(LS_KEY, JSON.stringify(store))
+
+    try {
+      window.dispatchEvent(new CustomEvent('progress:user-settings-updated', {
+        detail: { userId: key, settings: persisted }
+      }))
+    } catch (eventError) {
+      console.warn('No se pudo emitir evento de actualización de settings:', eventError)
+    }
+
+    return persisted
+  } catch (error) {
+    console.warn('Fallo actualizando user settings; conservando valores actuales', error)
+    return defaultSettings()
   }
 }
 

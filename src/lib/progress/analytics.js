@@ -1,6 +1,7 @@
 // Análisis de progreso para el sistema de progreso
 
 import { getMasteryByUser, getAttemptsByUser, getAllFromDB } from './database.js'
+import { PROGRESS_CONFIG } from './config.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
@@ -509,6 +510,275 @@ export { getWeeklyGoals, checkWeeklyProgress } from './goals.js'
  */
 // Use intelligent recommendations from real-time analytics
 export const getRecommendations = getIntelligentRecommendations
+
+/**
+ * Analíticas avanzadas para dashboards enriquecidos (Fase 3)
+ * @param {string} userId
+ * @returns {Promise<Object>} Conjunto de métricas avanzadas
+ */
+export async function getAdvancedAnalytics(userId) {
+  const config = PROGRESS_CONFIG.ADVANCED_ANALYTICS_CONFIG || {}
+  const retentionWindow = config.RETENTION_WINDOW_DAYS || 30
+  const engagementWindow = config.ENGAGEMENT_WINDOW_DAYS || 14
+  const dayMs = 24 * 60 * 60 * 1000
+
+  try {
+    const [attempts, mastery] = await Promise.all([
+      getAttemptsByUser(userId),
+      getMasteryByUser(userId)
+    ])
+
+    const dailyStats = new Map()
+    const segmentStats = prepareSegments(config.TIME_OF_DAY_SEGMENTS)
+    const sessions = new Map()
+    const activeDays = new Set()
+
+    let totalCorrect = 0
+    let totalLatency = 0
+
+    attempts.forEach(attempt => {
+      const timestamp = new Date(attempt?.createdAt || attempt?.timestamp || Date.now())
+      const dayKey = timestamp.toISOString().slice(0, 10)
+      activeDays.add(dayKey)
+
+      const dayEntry = dailyStats.get(dayKey) || { total: 0, correct: 0, latency: 0 }
+      dayEntry.total += 1
+      if (attempt.correct) {
+        dayEntry.correct += 1
+        totalCorrect += 1
+      }
+      dayEntry.latency += attempt.latencyMs || attempt.latency || 0
+      totalLatency += attempt.latencyMs || attempt.latency || 0
+      dailyStats.set(dayKey, dayEntry)
+
+      const hour = timestamp.getHours()
+      if (segmentStats.length) {
+        segmentStats.forEach(segment => {
+          if (hourInSegment(hour, segment)) {
+            segment.total += 1
+            if (attempt.correct) segment.correct += 1
+            segment.latency += attempt.latencyMs || attempt.latency || 0
+          }
+        })
+      }
+
+      const sessionKey = attempt.sessionId || `day:${dayKey}`
+      const sessionEntry = sessions.get(sessionKey) || { attempts: 0, correct: 0, latency: 0, dayKey }
+      sessionEntry.attempts += 1
+      if (attempt.correct) sessionEntry.correct += 1
+      sessionEntry.latency += attempt.latencyMs || attempt.latency || 0
+      sessions.set(sessionKey, sessionEntry)
+    })
+
+    const retentionSeries = buildRetentionSeries(dailyStats, retentionWindow)
+    const retentionTrend = computeRetentionTrend(retentionSeries)
+    const engagementMetrics = computeEngagementMetrics(sessions, activeDays, engagementWindow, totalLatency)
+    const masteryDistribution = computeMasteryDistribution(mastery)
+    const timeOfDayPerformance = segmentStats.map(segment => ({
+      key: segment.key,
+      label: segment.label,
+      attempts: segment.total,
+      accuracy: segment.total ? Math.round((segment.correct / segment.total) * 100) : 0,
+      averageLatency: segment.total ? Math.round(segment.latency / segment.total) : 0
+    }))
+
+    return {
+      retention: {
+        windowDays: retentionWindow,
+        overallAccuracy: attempts.length ? Math.round((totalCorrect / attempts.length) * 100) : 0,
+        dailyAccuracy: retentionSeries,
+        trend: retentionTrend
+      },
+      engagement: engagementMetrics,
+      timeOfDay: timeOfDayPerformance,
+      mastery: masteryDistribution
+    }
+  } catch (error) {
+    console.warn('Advanced analytics unavailable:', error)
+    return {
+      retention: { windowDays: 0, overallAccuracy: 0, dailyAccuracy: [], trend: null },
+      engagement: null,
+      timeOfDay: [],
+      mastery: null
+    }
+  }
+}
+
+function prepareSegments(rawSegments = []) {
+  if (!Array.isArray(rawSegments) || rawSegments.length === 0) {
+    return []
+  }
+  return rawSegments.map(segment => ({
+    key: segment.key,
+    label: segment.label,
+    startHour: Number.isFinite(segment.startHour) ? segment.startHour : 0,
+    endHour: Number.isFinite(segment.endHour) ? segment.endHour : 23,
+    total: 0,
+    correct: 0,
+    latency: 0
+  }))
+}
+
+function hourInSegment(hour, segment) {
+  if (segment.startHour <= segment.endHour) {
+    return hour >= segment.startHour && hour <= segment.endHour
+  }
+  // Segmento que cruza medianoche
+  return hour >= segment.startHour || hour <= segment.endHour
+}
+
+function buildRetentionSeries(dailyStats, windowSize) {
+  const dayMs = 24 * 60 * 60 * 1000
+  const series = []
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  for (let i = windowSize - 1; i >= 0; i--) {
+    const day = new Date(today.getTime() - i * dayMs)
+    const dayKey = day.toISOString().slice(0, 10)
+    const entry = dailyStats.get(dayKey)
+    const accuracy = entry && entry.total
+      ? Math.round((entry.correct / entry.total) * 100)
+      : 0
+    series.push({ date: dayKey, accuracy, attempts: entry?.total || 0 })
+  }
+  return series
+}
+
+function computeRetentionTrend(series) {
+  if (!Array.isArray(series) || series.length === 0) {
+    return null
+  }
+  const last7 = series.slice(-7)
+  const prev7 = series.slice(-14, -7)
+  const avg = (data) => data.length ? data.reduce((sum, item) => sum + item.accuracy, 0) / data.length : 0
+  const recent = avg(last7)
+  const previous = avg(prev7)
+  return {
+    recent: Math.round(recent),
+    previous: Math.round(previous),
+    delta: Math.round((recent - previous) * 10) / 10
+  }
+}
+
+function computeEngagementMetrics(sessions, activeDays, engagementWindow, totalLatency) {
+  if (!sessions || sessions.size === 0) {
+    return {
+      sessionsPerWeek: 0,
+      averageSessionMinutes: 0,
+      averageAttemptsPerSession: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      totalPracticeMinutes: 0
+    }
+  }
+
+  const sessionEntries = Array.from(sessions.values())
+  const totalSessions = sessionEntries.length
+  const totalAttempts = sessionEntries.reduce((sum, session) => sum + session.attempts, 0)
+  const totalMinutes = totalLatency > 0 ? Math.round((totalLatency / 60000) * 10) / 10 : 0
+
+  const recentSessions = sessionEntries.filter(session => {
+    if (!session.dayKey) return true
+    const sessionDate = new Date(session.dayKey)
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - engagementWindow)
+    return sessionDate >= cutoff
+  })
+
+  const sessionsPerWeek = recentSessions.length
+  const averageSessionMinutes = totalSessions ? Math.round((totalMinutes / totalSessions) * 10) / 10 : 0
+  const averageAttemptsPerSession = totalSessions ? Math.round((totalAttempts / totalSessions) * 10) / 10 : 0
+
+  const streaks = computeActivityStreaks(activeDays)
+
+  return {
+    sessionsPerWeek,
+    averageSessionMinutes,
+    averageAttemptsPerSession,
+    currentStreak: streaks.current,
+    bestStreak: streaks.best,
+    totalPracticeMinutes: totalMinutes
+  }
+}
+
+function computeActivityStreaks(activeDaysSet) {
+  if (!activeDaysSet || activeDaysSet.size === 0) {
+    return { current: 0, best: 0 }
+  }
+  const dayMs = 24 * 60 * 60 * 1000
+  const sortedDates = Array.from(activeDaysSet)
+    .map(dayKey => new Date(dayKey))
+    .sort((a, b) => a - b)
+
+  let best = 0
+  let streak = 0
+  let previous = null
+
+  sortedDates.forEach(date => {
+    if (!previous) {
+      streak = 1
+    } else {
+      const diff = Math.round((date - previous) / dayMs)
+      streak = diff === 1 ? streak + 1 : 1
+    }
+    if (streak > best) best = streak
+    previous = date
+  })
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const lastDate = sortedDates[sortedDates.length - 1]
+  const diffFromToday = lastDate ? Math.round((today - lastDate) / dayMs) : Infinity
+  const current = diffFromToday === 0 ? streak : 0
+
+  return { current, best }
+}
+
+function computeMasteryDistribution(mastery) {
+  if (!Array.isArray(mastery) || mastery.length === 0) {
+    return {
+      total: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+      averageScore: 0,
+      topStruggles: []
+    }
+  }
+
+  let high = 0
+  let medium = 0
+  let low = 0
+  let totalScore = 0
+
+  mastery.forEach(record => {
+    const score = record.score || 0
+    totalScore += score
+    if (score >= 80) high += 1
+    else if (score >= 60) medium += 1
+    else low += 1
+  })
+
+  const sortedByScore = [...mastery]
+    .sort((a, b) => (a.score || 0) - (b.score || 0))
+    .slice(0, 5)
+    .map(record => ({
+      mood: record.mood,
+      tense: record.tense,
+      person: record.person,
+      score: record.score
+    }))
+
+  return {
+    total: mastery.length,
+    high,
+    medium,
+    low,
+    averageScore: Math.round(totalScore / mastery.length),
+    topStruggles: sortedByScore
+  }
+}
 
 /**
  * Obtiene estadísticas resumidas de SRS (debidos ahora y hoy)

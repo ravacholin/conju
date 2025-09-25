@@ -9,6 +9,7 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { FLOW_STATES, flowDetector } from './flowStateDetection.js'
 import { logger } from './logger.js'
 import { shouldUseFSRS } from './abTesting.js'
+import { getActiveFSRSConfig } from './expertMode.js'
 
 // Mapeo de ratings FSRS (1-4) a nuestros conceptos
 const FSRS_RATINGS = {
@@ -23,15 +24,11 @@ const FSRS_RATINGS = {
  */
 export class IntelligentFSRS {
   constructor() {
-    this.fsrsConfig = PROGRESS_CONFIG.FSRS
+    this.fsrsConfig = { ...PROGRESS_CONFIG.FSRS }
     this.featureFlags = PROGRESS_CONFIG.FEATURE_FLAGS
 
-    // Inicializar core FSRS con parámetros configurados
-    this.deck = createDeck({
-      w: this.fsrsConfig.WEIGHTS,
-      requestedRetentionRate: this.fsrsConfig.REQUEST_RETENTION,
-      maxStability: this.fsrsConfig.MAXIMUM_INTERVAL
-    })
+    // Inicializar core FSRS con parámetros por defecto
+    this.applyConfig(PROGRESS_CONFIG.FSRS)
 
     // Estado para métricas de comparación
     this.metrics = {
@@ -44,6 +41,27 @@ export class IntelligentFSRS {
     logger.systemInit('Intelligent FSRS initialized')
   }
 
+  applyConfig(config) {
+    if (!config) return
+    this.fsrsConfig = { ...config }
+    this.deck = createDeck({
+      w: this.fsrsConfig.WEIGHTS,
+      requestedRetentionRate: this.fsrsConfig.REQUEST_RETENTION,
+      maxStability: this.fsrsConfig.MAXIMUM_INTERVAL
+    })
+    this.configHash = hashConfig(this.fsrsConfig)
+  }
+
+  ensureConfig(meta) {
+    const userId = meta?.userId || null
+    const activeConfig = getActiveFSRSConfig(userId)
+    const nextHash = hashConfig(activeConfig)
+    if (!this.configHash || this.configHash !== nextHash) {
+      logger.debug('FSRS configuration updated via expert mode', { userId, hash: nextHash })
+      this.applyConfig(activeConfig)
+    }
+  }
+
   /**
    * Calcula el próximo intervalo usando FSRS con inteligencia integrada
    * Mantiene compatibilidad con la interface existente de calculateNextInterval
@@ -54,6 +72,8 @@ export class IntelligentFSRS {
       if (!this.featureFlags.FSRS_ALGORITHM) {
         return this.fallbackToSM2Sync(schedule, correct, hintsUsed, meta)
       }
+
+      this.ensureConfig(meta)
 
       // Determinar rating FSRS basado en performance y contexto
       const ratingValue = this.determineRating(correct, hintsUsed, meta)
@@ -424,6 +444,26 @@ export class IntelligentFSRS {
       emotionalAdjustments: 0,
       temporalAdjustments: 0
     }
+  }
+}
+
+function hashConfig(config) {
+  if (!config) return ''
+  try {
+    const snapshot = {
+      weights: Array.isArray(config.WEIGHTS) ? config.WEIGHTS : [],
+      retention: config.REQUEST_RETENTION,
+      minInterval: config.MINIMUM_INTERVAL,
+      maxInterval: config.MAXIMUM_INTERVAL,
+      fuzzEnabled: config.ENABLE_FUZZ,
+      fuzzFactor: config.FUZZ_FACTOR,
+      hardFactor: config.HARD_FACTOR,
+      easyBonus: config.EASY_BONUS
+    }
+    return JSON.stringify(snapshot)
+  } catch (error) {
+    logger.warn('Failed to hash FSRS config', error)
+    return `${Date.now()}-${Math.random()}`
   }
 }
 

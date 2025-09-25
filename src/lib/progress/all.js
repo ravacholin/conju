@@ -152,7 +152,8 @@ export {
   getHeatMapData,
   getCompetencyRadarData,
   getProgressLineData,
-  getUserStats as getAnalyticsUserStats
+  getUserStats as getAnalyticsUserStats,
+  getAdvancedAnalytics
 } from './analytics.js'
 
 // Initialization API (re-exported for test compatibility)
@@ -170,6 +171,42 @@ export {
   checkWeeklyProgress,
   getRecommendations
 } from './goals.js'
+
+// Personalized study plans
+export {
+  generatePersonalizedStudyPlan,
+  getCachedStudyPlan,
+  invalidateStudyPlan,
+  onStudyPlanUpdated
+} from './studyPlans.js'
+
+// Expert mode controls
+export {
+  getExpertModeSettings,
+  setExpertModeSettings,
+  toggleExpertMode,
+  getActiveSRSConfig,
+  getActiveFSRSConfig,
+  getActiveSRSIntervals,
+  resetExpertMode,
+  onExpertModeChange
+} from './expertMode.js'
+
+// Social/community features
+export {
+  getCommunitySnapshot,
+  recordCommunityContribution,
+  onCommunitySnapshot,
+  clearCommunityCache
+} from './social.js'
+
+// Offline helpers
+export {
+  getOfflineStatus,
+  getOfflinePlanSummary,
+  onOfflineStatusChange,
+  clearOfflineCache
+} from './offlineSupport.js'
 
 // Teacher Mode
 export {

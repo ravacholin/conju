@@ -20,6 +20,11 @@ import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
 import DataManagementPanel from './DataManagementPanel.jsx'
 import Toast from '../../components/Toast.jsx'
 import DailyChallengesPanel from './DailyChallengesPanel.jsx'
+import PersonalizedPlanPanel from './PersonalizedPlanPanel.jsx'
+import ExpertModePanel from './ExpertModePanel.jsx'
+import AdvancedAnalyticsPanel from './AdvancedAnalyticsPanel.jsx'
+import CommunityPulse from './CommunityPulse.jsx'
+import OfflineStatusBanner from './OfflineStatusBanner.jsx'
 
 // Styles moved to ProgressHeader.jsx
 
@@ -36,6 +41,11 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     weeklyProgress,
     recommendations,
     dailyChallenges,
+    studyPlan,
+    advancedAnalytics,
+    communitySnapshot,
+    offlineStatus,
+    expertModeSettings,
     loading,
     error,
     refreshing,
@@ -209,6 +219,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         syncEnabled={syncAvailable}
         onOpenDataPanel={() => setShowDataPanel(true)}
       />
+      <OfflineStatusBanner status={offlineStatus} onSync={handleSync} syncEnabled={syncAvailable} />
       {toast?.message && (
         <Toast
           key={`${toast.type}-${toast.message}`}
@@ -238,6 +249,14 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         </section>
       </SafeComponent>
 
+      <PersonalizedPlanPanel plan={studyPlan} onRefresh={() => {
+        refresh()
+      }} />
+
+      <ExpertModePanel settings={expertModeSettings} />
+
+      <AdvancedAnalyticsPanel analytics={advancedAnalytics} />
+
       <SafeComponent name="Análisis de Errores">
         <section className="dashboard-section">
           <h2>
@@ -259,6 +278,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       </SafeComponent>
 
       <DailyChallengesPanel dailyChallenges={dailyChallenges} onCompleteChallenge={completeChallenge} />
+
+      <CommunityPulse snapshot={communitySnapshot} />
 
       <WeeklyGoalsPanel weeklyGoals={weeklyGoals} weeklyProgress={weeklyProgress} userStats={userStats} />
 

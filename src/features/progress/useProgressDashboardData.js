@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations } from '../../lib/progress/analytics.js'
+import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations, getAdvancedAnalytics } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
 import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
+import { generatePersonalizedStudyPlan, invalidateStudyPlan, onStudyPlanUpdated } from '../../lib/progress/studyPlans.js'
+import { getCommunitySnapshot, onCommunitySnapshot, clearCommunityCache } from '../../lib/progress/social.js'
+import { getOfflineStatus, onOfflineStatusChange, clearOfflineCache } from '../../lib/progress/offlineSupport.js'
+import { getExpertModeSettings, onExpertModeChange } from '../../lib/progress/expertMode.js'
 
 export default function useProgressDashboardData() {
   const [heatMapData, setHeatMapData] = useState([])
@@ -14,6 +18,11 @@ export default function useProgressDashboardData() {
   const [weeklyProgress, setWeeklyProgress] = useState({})
   const [recommendations, setRecommendations] = useState([])
   const [dailyChallenges, setDailyChallenges] = useState({ date: null, metrics: {}, challenges: [] })
+  const [studyPlan, setStudyPlan] = useState(null)
+  const [advancedAnalytics, setAdvancedAnalytics] = useState(null)
+  const [communitySnapshot, setCommunitySnapshot] = useState(null)
+  const [offlineStatus, setOfflineStatus] = useState(null)
+  const [expertModeSettings, setExpertModeSettings] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -166,6 +175,61 @@ export default function useProgressDashboardData() {
             if (!signal.aborted) console.warn('Failed to load daily challenges:', e)
             return { date: null, metrics: {}, challenges: [] }
           }
+        },
+
+        studyPlan: async (signal) => {
+          try {
+            const plan = await generatePersonalizedStudyPlan(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return plan || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to generate study plan:', e)
+            return null
+          }
+        },
+
+        advancedAnalytics: async (signal) => {
+          try {
+            const analytics = await getAdvancedAnalytics(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return analytics || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load advanced analytics:', e)
+            return null
+          }
+        },
+
+        community: async (signal) => {
+          try {
+            const snapshot = await getCommunitySnapshot(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return snapshot || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load community snapshot:', e)
+            return null
+          }
+        },
+
+        offlineStatus: async (signal) => {
+          try {
+            const status = await getOfflineStatus(true)
+            if (signal.aborted) throw new Error('Cancelled')
+            return status
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to determine offline status:', e)
+            return null
+          }
+        },
+
+        expertMode: async (signal) => {
+          try {
+            const settings = getExpertModeSettings(userId)
+            if (signal.aborted) throw new Error('Cancelled')
+            return settings
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to retrieve expert mode settings:', e)
+            return null
+          }
         }
       }
 
@@ -180,6 +244,11 @@ export default function useProgressDashboardData() {
       setWeeklyProgress(results.weeklyProgress || {})
       setRecommendations(results.recommendations || [])
       setDailyChallenges(results.dailyChallenges || { date: null, metrics: {}, challenges: [] })
+      setStudyPlan(results.studyPlan || null)
+      setAdvancedAnalytics(results.advancedAnalytics || null)
+      setCommunitySnapshot(results.community || null)
+      setOfflineStatus(results.offlineStatus || null)
+      setExpertModeSettings(results.expertMode || getExpertModeSettings(userId))
 
       setError(null)
       setLoading(false)
@@ -226,6 +295,9 @@ export default function useProgressDashboardData() {
     const userId = getCurrentUserId()
     if (userId) {
       progressDataCache.invalidateUser(userId)
+      invalidateStudyPlan(userId)
+      clearCommunityCache(userId)
+      clearOfflineCache()
     }
     loadData(true)
   }
@@ -264,6 +336,19 @@ export default function useProgressDashboardData() {
       loadData()
     }
   }, [personFilter, systemReady])
+
+  useEffect(() => {
+    const unsubscribePlan = onStudyPlanUpdated(({ plan }) => setStudyPlan(plan))
+    const unsubscribeCommunity = onCommunitySnapshot(({ snapshot }) => setCommunitySnapshot(snapshot))
+    const unsubscribeOffline = onOfflineStatusChange(status => setOfflineStatus(status))
+    const unsubscribeExpert = onExpertModeChange(({ settings }) => setExpertModeSettings(settings))
+    return () => {
+      unsubscribePlan?.()
+      unsubscribeCommunity?.()
+      unsubscribeOffline?.()
+      unsubscribeExpert?.()
+    }
+  }, [])
 
   // Escuchar eventos de actualización de progreso para refrescar automáticamente
   useEffect(() => {
@@ -328,6 +413,11 @@ export default function useProgressDashboardData() {
     weeklyProgress,
     recommendations,
     dailyChallenges,
+    studyPlan,
+    advancedAnalytics,
+    communitySnapshot,
+    offlineStatus,
+    expertModeSettings,
     loading,
     error,
     refreshing,

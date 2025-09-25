@@ -1,0 +1,81 @@
+.expert-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.expert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expert-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.expert-toggle input[type='checkbox'] {
+  width: 42px;
+  height: 22px;
+}
+
+.expert-description {
+  margin: 0;
+  color: #475569;
+}
+
+.expert-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.expert-profile-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.expert-profile {
+  text-align: left;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.expert-profile strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.expert-profile.active {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
+}
+
+.expert-summary dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.expert-summary dt {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.expert-summary dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.expert-helper {
+  margin: 0;
+  font-style: italic;
+  color: #64748b;
+}

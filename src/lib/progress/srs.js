@@ -6,6 +6,7 @@ import { ERROR_TAGS } from './dataModels.js'
 import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 import { handleSRSReviewComplete } from './gamification.js'
 import { calculateNextIntervalFSRS, isFSRSEnabled } from './fsrs.js'
+import { getActiveSRSConfig, getActiveSRSIntervals } from './expertMode.js'
 
 // Helpers
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
@@ -38,17 +39,18 @@ export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
  * @returns {Object} Nuevo intervalo y fecha
  */
 export function calculateNextIntervalSM2(schedule, correct, hintsUsed, meta = {}) {
+  const userId = meta?.userId || null
+  const ADV = getActiveSRSConfig(userId)
+  const intervals = getActiveSRSIntervals(userId)
+
   // Campos existentes + defaults razonables
   let {
     interval = 0,   // días
-    ease = PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5,
+    ease = ADV?.EASE_START ?? PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5,
     reps = 0,
     lapses = 0,
     leech = false
   } = schedule || {}
-
-  const ADV = PROGRESS_CONFIG.SRS_ADVANCED || {}
-  const intervals = PROGRESS_CONFIG.SRS_INTERVALS || [1, 3, 7, 14, 30, 90]
 
   // Derivar calificación (Q: 0-5) a partir del resultado y metadatos
   // Q=5: correcto sin pista y en tiempo normal; Q=4: correcto con pista o lento; Q=3: fallo leve (p.ej. acento)
@@ -164,7 +166,10 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
   }
   
   // Calcular nuevo intervalo
-  const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, meta)
+  const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, {
+    ...meta,
+    userId
+  })
   const updatedSchedule = {
     ...schedule,
     ...intervalResult,
