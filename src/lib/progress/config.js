@@ -276,7 +276,7 @@ export const PROGRESS_CONFIG = {
 
   // Configuración del modo experto de SRS
   EXPERT_MODE: {
-    DEFAULT_ENABLED: false,
+    DEFAULT_ENABLED: true,
     STORAGE_KEY: 'progress-expert-mode',
     SRS: {
       EASE_START: 2.6,

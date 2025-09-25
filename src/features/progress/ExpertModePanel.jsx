@@ -49,21 +49,6 @@ export default function ExpertModePanel({ settings }) {
   const [updating, setUpdating] = useState(false)
   const currentProfile = useMemo(() => resolveProfile(settings), [settings])
 
-  if (!settings) {
-    return null
-  }
-
-  const handleToggle = async () => {
-    try {
-      setUpdating(true)
-      await toggleExpertMode(undefined, !settings.enabled)
-    } catch (error) {
-      console.error('No se pudo actualizar el modo experto', error)
-    } finally {
-      setUpdating(false)
-    }
-  }
-
   const applyProfile = async (profileKey) => {
     const profile = PROFILES.find(p => p.key === profileKey)
     if (!profile) return
@@ -87,63 +72,53 @@ export default function ExpertModePanel({ settings }) {
           <img src="/icons/brain.png" alt="Modo experto" className="section-icon" />
           Modo experto SRS
         </h2>
-        <label className="expert-toggle">
-          <span>{settings.enabled ? 'Activado' : 'Desactivado'}</span>
-          <input type="checkbox" checked={settings.enabled} onChange={handleToggle} disabled={updating} />
-        </label>
       </div>
 
       <p className="expert-description">
         Ajusta los parámetros del sistema SRS para adaptarlo a tu estilo de estudio. Úsalo solo si te sientes cómodo configurando algoritmos de repaso.
       </p>
 
-      {settings.enabled && (
-        <div className="expert-content">
-          <div className="expert-profiles">
-            <h3>Perfiles rápidos</h3>
-            <div className="expert-profile-grid">
-              {PROFILES.map(profile => (
-                <button
-                  key={profile.key}
-                  type="button"
-                  className={`expert-profile ${currentProfile === profile.key ? 'active' : ''}`}
-                  onClick={() => applyProfile(profile.key)}
-                  disabled={updating}
-                >
-                  <strong>{profile.label}</strong>
-                  <span>{profile.description}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="expert-summary">
-            <h3>Parámetros actuales</h3>
-            <dl>
-              <div>
-                <dt>Ease inicial</dt>
-                <dd>{settings.overrides?.srs?.EASE_START ?? '—'}</dd>
-              </div>
-              <div>
-                <dt>Retención FSRS objetivo</dt>
-                <dd>{Math.round((settings.overrides?.fsrs?.REQUEST_RETENTION ?? 0) * 100)}%</dd>
-              </div>
-              <div>
-                <dt>Intervalos personalizados</dt>
-                <dd>
-                  {Array.isArray(settings.overrides?.customIntervals)
-                    ? settings.overrides.customIntervals.join(', ')
-                    : 'Predeterminados'}
-                </dd>
-              </div>
-            </dl>
+      <div className="expert-content">
+        <div className="expert-profiles">
+          <h3>Perfiles rápidos</h3>
+          <div className="expert-profile-grid">
+            {PROFILES.map(profile => (
+              <button
+                key={profile.key}
+                type="button"
+                className={`expert-profile ${currentProfile === profile.key ? 'active' : ''}`}
+                onClick={() => applyProfile(profile.key)}
+                disabled={updating}
+              >
+                <strong>{profile.label}</strong>
+                <span>{profile.description}</span>
+              </button>
+            ))}
           </div>
         </div>
-      )}
 
-      {!settings.enabled && (
-        <p className="expert-helper">Activa el modo experto para desbloquear perfiles y ajustes avanzados del algoritmo.</p>
-      )}
+        <div className="expert-summary">
+          <h3>Parámetros actuales</h3>
+          <dl>
+            <div>
+              <dt>Ease inicial</dt>
+              <dd>{settings.overrides?.srs?.EASE_START ?? '—'}</dd>
+            </div>
+            <div>
+              <dt>Retención FSRS objetivo</dt>
+              <dd>{Math.round((settings.overrides?.fsrs?.REQUEST_RETENTION ?? 0) * 100)}%</dd>
+            </div>
+            <div>
+              <dt>Intervalos personalizados</dt>
+              <dd>
+                {Array.isArray(settings.overrides?.customIntervals)
+                  ? settings.overrides.customIntervals.join(', ')
+                  : 'Predeterminados'}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
     </section>
   )
 }
