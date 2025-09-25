@@ -32,11 +32,11 @@ const timelineData = {
     title: 'La rutina diaria de Carlos',
     description: 'Describe un día típico de Carlos usando los verbos indicados en presente.',
     prompts: [
-      { icon: '⏰', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
-      { icon: '🍳', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
-      { icon: '💼', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
-      { icon: '🏠', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
-      { icon: '🌙', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
+      { icon: '•', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
+      { icon: '•', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
+      { icon: '•', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
+      { icon: '•', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
+      { icon: '•', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
     ],
     // Ejercicios alternativos para mayor variedad
     alternativeExercises: [
@@ -45,11 +45,11 @@ const timelineData = {
         title: 'Un día en la oficina',
         description: 'Completa las frases sobre lo que pasa en una oficina típica.',
         prompts: [
-          { icon: '💻', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
-          { icon: '📧', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
-          { icon: '📊', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
-          { icon: '☕', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
-          { icon: '🏃‍♂️', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
+          { icon: '•', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
+          { icon: '•', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
+          { icon: '•', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
+          { icon: '•', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
+          { icon: '•', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
         ]
       },
       {
@@ -57,11 +57,11 @@ const timelineData = {
         title: 'La vida familiar',
         description: 'Describe las actividades de una familia típica.',
         prompts: [
-          { icon: '👶', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
-          { icon: '👨‍🍳', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
-          { icon: '🎯', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
-          { icon: '📺', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
-          { icon: '🐕', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
+          { icon: '•', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
+          { icon: '•', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
+          { icon: '•', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
+          { icon: '•', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
+          { icon: '•', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
         ]
       }
     ]
@@ -70,10 +70,10 @@ const timelineData = {
     type: 'timeline',
     title: 'El día de ayer de María',
     events: [
-      { time: '7:00', icon: '☕️', prompt: 'tomar café' },
-      { time: '12:00', icon: '🍽️', prompt: 'comer' },
-      { time: '18:00', icon: '🏋️', prompt: 'ir al gimnasio' },
-      { time: '22:00', icon: '🛏️', prompt: 'acostarse' },
+      { time: '7:00', icon: '•', prompt: 'tomar café' },
+      { time: '12:00', icon: '•', prompt: 'comer' },
+      { time: '18:00', icon: '•', prompt: 'ir al gimnasio' },
+      { time: '22:00', icon: '•', prompt: 'acostarse' },
     ],
     expectedVerbs: ['tomó', 'comió', 'fue', 'se acostó'],
     // Ejercicios alternativos más diversos
@@ -83,11 +83,11 @@ const timelineData = {
         title: 'Las vacaciones de verano',
         description: 'Completa la historia del viaje de Luis a Barcelona.',
         prompts: [
-          { icon: '✈️', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
-          { icon: '🏨', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
-          { icon: '🏛️', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
-          { icon: '🥘', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
-          { icon: '📸', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
+          { icon: '•', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
+          { icon: '•', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
+          { icon: '•', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
+          { icon: '•', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
+          { icon: '•', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
         ]
       },
       {
@@ -95,11 +95,11 @@ const timelineData = {
         title: 'La fiesta de anoche',
         description: 'Cuenta lo que pasó en la fiesta de cumpleaños de Ana.',
         prompts: [
-          { icon: '🎉', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
-          { icon: '👥', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
-          { icon: '🍰', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
-          { icon: '💃', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
-          { icon: '🏠', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
+          { icon: '•', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
+          { icon: '•', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
+          { icon: '•', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
+          { icon: '•', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
+          { icon: '•', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
         ]
       },
       {
@@ -107,11 +107,11 @@ const timelineData = {
         title: 'El misterio del libro perdido',
         description: 'Resuelve el misterio completando lo que pasó.',
         prompts: [
-          { icon: '📚', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
-          { icon: '🔍', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
-          { icon: '👮‍♂️', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
-          { icon: '💡', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
-          { icon: '😅', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
+          { icon: '•', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
+          { icon: '•', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
+          { icon: '•', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
+          { icon: '•', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
+          { icon: '•', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
         ]
       }
     ]
@@ -130,11 +130,11 @@ const timelineData = {
     title: 'Los recuerdos de la infancia',
     description: 'Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.',
     prompts: [
-      { icon: '🏠', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
-      { icon: '🎮', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
-      { icon: '📚', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
-      { icon: '👨‍👩‍👧‍👦', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
-      { icon: '🌞', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
+      { icon: '•', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
+      { icon: '•', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
+      { icon: '•', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
+      { icon: '•', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
+      { icon: '•', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
     ],
   },
   fut: {
@@ -152,11 +152,11 @@ const timelineData = {
         title: 'Predicciones para el año 2030',
         description: 'Haz predicciones sobre el futuro usando el futuro simple.',
         prompts: [
-          { icon: '🚗', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
-          { icon: '🌍', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
-          { icon: '🏠', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
-          { icon: '💻', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
-          { icon: '🎮', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
+          { icon: '•', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
+          { icon: '•', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
+          { icon: '•', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
+          { icon: '•', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
+          { icon: '•', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
         ]
       },
       {
@@ -164,11 +164,11 @@ const timelineData = {
         title: 'Mis metas personales',
         description: 'Completa tus planes y metas para el futuro.',
         prompts: [
-          { icon: '🏆', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
-          { icon: '❤️', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
-          { icon: '🏡', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
-          { icon: '🌎', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
-          { icon: '👨‍👩‍👧‍👦', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
+          { icon: '•', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
+          { icon: '•', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
+          { icon: '•', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
+          { icon: '•', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
+          { icon: '•', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
         ]
       }
     ]
@@ -177,10 +177,10 @@ const timelineData = {
     type: 'timeline',
     title: 'Lo que he hecho hoy',
     events: [
-      { time: '8:00', icon: '🌅', prompt: 'levantarse temprano' },
-      { time: '10:00', icon: '☕️', prompt: 'desayunar bien' },
-      { time: '14:00', icon: '💻', prompt: 'trabajar en el proyecto' },
-      { time: '19:00', icon: '👥', prompt: 'quedar con amigos' },
+      { time: '8:00', icon: '•', prompt: 'levantarse temprano' },
+      { time: '10:00', icon: '•', prompt: 'desayunar bien' },
+      { time: '14:00', icon: '•', prompt: 'trabajar en el proyecto' },
+      { time: '19:00', icon: '•', prompt: 'quedar con amigos' },
     ],
     expectedVerbs: ['me he levantado', 'he desayunado', 'he trabajado', 'he quedado'],
   },
@@ -495,7 +495,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="timeline-container">
               <h3>{exercise.title}</h3>
               {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
               )}
               <div className="timeline">
                 {exercise.events.map(event => (
@@ -513,7 +513,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="prompts-container">
                 <h3>{exercise.title}</h3>
                 {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                  <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
                 )}
                 <ul>
                     {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
@@ -525,7 +525,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <div className="daily-routine-container">
                 <h3>{exercise.title}</h3>
                 {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                  <p className="exercise-variant">Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
                 )}
                 <p className="description">{exercise.description}</p>
                 <div className="routine-prompts">
