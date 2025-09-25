@@ -3,9 +3,42 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { grade } from '../../lib/core/grader.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
+
+// Helper function to detect tense usage patterns in conversational text
+function detectTenseUsage(userText, expectedTense) {
+  const text = userText.toLowerCase();
+
+  const tensePatterns = {
+    'pres': /\b\w+[oaeáéí]\b|\b(soy|eres|es|somos|sois|son|estoy|estás|está|estamos|estáis|están|voy|vas|va|vamos|vais|van)\b/g,
+    'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b|\b(fui|fuiste|fue|fuimos|fuisteis|fueron|tuve|tuviste|tuvo|tuvimos|tuvisteis|tuvieron)\b/g,
+    'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b|\b(era|eras|éramos|erais|eran|estaba|estabas|estábamos|estabais|estaban)\b/g,
+    'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b|\b(seré|serás|será|seremos|seréis|serán|estaré|estarás|estará|estaremos|estaréis|estarán)\b/g,
+    'pretPerf': /\b(he|has|ha|hemos|habéis|han)\s+\w+ado\b|\b(he|has|ha|hemos|habéis|han)\s+\w+ido\b/g
+  };
+
+  const expectedPattern = tensePatterns[expectedTense];
+  const wrongTenseUsed = [];
+
+  // Check if user used expected tense
+  const hasExpectedTense = expectedPattern && expectedPattern.test(text);
+
+  // Check for wrong tenses
+  for (const [tense, pattern] of Object.entries(tensePatterns)) {
+    if (tense !== expectedTense && pattern.test(text)) {
+      wrongTenseUsed.push(tense);
+    }
+  }
+
+  return {
+    hasExpectedTense,
+    wrongTenseUsed: wrongTenseUsed.length > 0,
+    wrongTenses: wrongTenseUsed
+  };
+}
 
 const chatData = {
   pres: {
@@ -289,24 +322,78 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
         setScriptIndex(prev => prev + 1);
       }
     } else {
-      // No keyword, give a hint and track incorrect attempt
-      const hintText = tense.tense === 'pres' 
+      // Enhanced error analysis for communicative practice
+      const errorTags = [ERROR_TAGS.INCORRECT_TENSE_OR_VERB];
+      const userText = inputValue.toLowerCase();
+
+      // Analyze what type of error the user made
+      const hasVerbs = /\b\w+(o|as|a|amos|áis|an|é|aste|ó|amos|asteis|aron|ía|ías|íamos|íais|ían|ré|rás|rá|remos|réis|rán)\b/g.test(userText);
+
+      if (!hasVerbs) {
+        errorTags.push(ERROR_TAGS.NO_VERBS_DETECTED);
+      } else {
+        // Check if user used verbs but in wrong tense
+        const expectedTense = tense?.tense;
+        if (expectedTense) {
+          const tenseAnalysis = detectTenseUsage(userText, expectedTense);
+          if (tenseAnalysis.wrongTenseUsed) {
+            errorTags.push(ERROR_TAGS.WRONG_TENSE_USED);
+            errorTags.push(`expected_${expectedTense}`);
+          }
+        }
+      }
+
+      // Check if user provided a substantial response
+      if (userText.trim().length < 5) {
+        errorTags.push(ERROR_TAGS.TOO_SHORT_RESPONSE);
+      }
+
+      // Provide contextual hint
+      const hintText = tense.tense === 'pres'
         ? `Cuéntame usando verbos en presente. Por ejemplo: "Yo trabajo en..." o "Normalmente voy a..."`
         : `Intenta usar un verbo en ${formatMoodTense(tense.mood, tense.tense)} para contarme qué pasó.`;
       const hint = { author: 'bot', text: hintText };
       newMessages.push(hint);
-      
-      // Track incorrect attempt
+
+      // Track incorrect attempt with enhanced error classification
       await handleResult({
         correct: false,
         userAnswer: inputValue,
         correctAnswer: currentScriptNode.userKeywords.join(' o '),
         hintsUsed: 1, // Hint was given
-        errorTags: ['incorrect_tense'],
+        errorTags,
         latencyMs: 0,
         isIrregular: false,
-        itemId: currentItem.id
+        itemId: currentItem.id,
+        conversationContext: {
+          scriptIndex,
+          expectedKeywords: currentScriptNode.userKeywords,
+          botResponse: currentScriptNode.botResponse
+        }
       });
+
+      // Try to update SRS for expected verb forms if we can match them
+      if (eligibleForms && tense?.tense) {
+        try {
+          const userId = getCurrentUserId();
+          if (userId) {
+            // Mark expected verbs as needing more practice
+            const relevantForms = eligibleForms.filter(f =>
+              f.tense === tense.tense &&
+              currentScriptNode.userKeywords.some(keyword =>
+                f.value.includes(keyword) || keyword.includes(f.value)
+              )
+            );
+
+            for (const form of relevantForms.slice(0, 3)) { // Limit to avoid spam
+              await updateSchedule(userId, form, false, 1); // Mark as incorrect with hint
+              console.log(`Analytics: Marked verb form for more practice: ${form.lemma} - ${form.value}`);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to update SRS for communicative practice:", error);
+        }
+      }
     }
 
     setMessages(newMessages);

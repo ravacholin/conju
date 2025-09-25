@@ -35,7 +35,7 @@ export class LearningPathPredictor {
       DIFFICULTY_PROGRESSION: 0.05 // Progresión de dificultad
     }
 
-    logger.systemInit('Learning Path Predictor initialized')
+    logger.systemInit('Predictor de Ruta de Aprendizaje inicializado')
   }
 
   /**
@@ -84,7 +84,7 @@ export class LearningPathPredictor {
       return optimizedSequence
 
     } catch (error) {
-      logger.error('Error predicting learning path:', error)
+      logger.error('Error prediciendo ruta de aprendizaje:', error)
       return this.getFallbackRecommendations(options)
     }
   }

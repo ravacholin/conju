@@ -79,7 +79,21 @@ export const ERROR_TAGS = {
   ORTHOGRAPHY_Z_C: 'ortografía_z/c',
   NUMBER_AGREEMENT: 'concordancia_número',
   WRONG_MOOD: 'modo_equivocado',
-  OTHER_VALID_FORM: 'otra_forma_válida'
+  OTHER_VALID_FORM: 'otra_forma_válida',
+
+  // Learning module specific errors
+  MISSING_VERBS: 'verbos_faltantes',
+  CONJUGATION_ERROR: 'error_conjugación',
+  MULTIPLE_MISSING: 'múltiples_faltantes',
+  NO_TARGET_VERBS_USED: 'no_uso_verbos_objetivo',
+  PARTIAL_COMPLETION: 'completado_parcial',
+  WRONG_TENSE_DETECTED: 'tiempo_incorrecto_detectado',
+
+  // Communicative practice specific errors
+  INCORRECT_TENSE_OR_VERB: 'tiempo_o_verbo_incorrecto',
+  NO_VERBS_DETECTED: 'no_verbos_detectados',
+  WRONG_TENSE_USED: 'tiempo_incorrecto_usado',
+  TOO_SHORT_RESPONSE: 'respuesta_muy_corta'
 }
 
 // Definiciones de tipos para frecuencia léxica

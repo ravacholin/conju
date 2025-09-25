@@ -4,8 +4,63 @@ import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade } from '../../lib/core/grader.js';
+import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
+
+// Helper function to detect wrong tense patterns in user input
+function detectTensePatterns(userText, expectedTense) {
+  const text = userText.toLowerCase();
+  const wrongTenses = [];
+
+  const tensePatterns = {
+    'pres': {
+      correct: /\b\w+[oaeáéí]\b/g,
+      wrong: {
+        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
+        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban|ía)\b/g,
+        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
+      }
+    },
+    'pretIndef': {
+      correct: /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
+      wrong: {
+        'pres': /\b\w+[oae]\b/g,
+        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g,
+        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
+      }
+    },
+    'impf': {
+      correct: /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g,
+      wrong: {
+        'pres': /\b\w+[oae]\b/g,
+        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
+        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
+      }
+    },
+    'fut': {
+      correct: /\b\w+(ré|rás|rá|remos|réis|rán)\b/g,
+      wrong: {
+        'pres': /\b\w+[oae]\b/g,
+        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
+        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g
+      }
+    }
+  };
+
+  const patterns = tensePatterns[expectedTense];
+  if (!patterns) return { wrongTenses: [] };
+
+  // Check for wrong tense patterns
+  for (const [wrongTense, pattern] of Object.entries(patterns.wrong)) {
+    const matches = text.match(pattern);
+    if (matches && matches.length > 0) {
+      wrongTenses.push(wrongTense);
+    }
+  }
+
+  return { wrongTenses: [...new Set(wrongTenses)] };
+}
 
 // Función para seleccionar ejercicio aleatorio (principal o alternativo)
 function selectRandomExercise(tenseData) {
@@ -396,22 +451,55 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         console.error("Failed to update SRS schedule:", error);
       }
     } else {
-      // Enhanced error analysis for better feedback
-      const errorTags = ['missing_verbs'];
+      // Enhanced error analysis for better feedback and tracking
+      const errorTags = [ERROR_TAGS.MISSING_VERBS];
       let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
-      
-      // Try to provide more specific feedback
+
+      // Analyze found verbs for error classification
+      if (foundVerbs.length > 0 && eligibleForms) {
+        for (const verb of foundVerbs) {
+          const formObject = eligibleForms.find(f => f.value === verb);
+          if (formObject) {
+            // Track individual correct verb usage for SRS (for partial credit)
+            try {
+              const userId = getCurrentUserId();
+              if (userId) {
+                await updateSchedule(userId, formObject, true, 0);
+                console.log(`Analytics: Updated schedule for partially correct verb: ${formObject.lemma} - ${verb}`);
+              }
+            } catch (error) {
+              console.error("Failed to update SRS schedule for partial credit:", error);
+            }
+          }
+        }
+      }
+
+      // Try to provide more specific feedback and classification
       if (missing.length === 1) {
         detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
-        errorTags.push('conjugation_error');
+        errorTags.push(ERROR_TAGS.CONJUGATION_ERROR);
       } else if (missing.length > 1) {
         detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
-        errorTags.push('multiple_missing');
+        errorTags.push(ERROR_TAGS.MULTIPLE_MISSING);
       }
-      
-      // Check if user wrote any verbs in wrong tense
+
+      // Enhanced error classification for learning context
+      if (foundVerbs.length === 0) {
+        errorTags.push(ERROR_TAGS.NO_TARGET_VERBS_USED);
+      } else if (foundVerbs.length > 0 && missing.length > 0) {
+        errorTags.push(ERROR_TAGS.PARTIAL_COMPLETION);
+      }
+
+      // Analyze user's text for potential tense errors
       const currentTense = tense?.tense;
-      if (currentTense) {
+      if (currentTense && userText.length > 10) { // Only for substantial answers
+        // Simple heuristic to detect wrong tense usage
+        const tensePatternsFound = detectTensePatterns(userText, currentTense);
+        if (tensePatternsFound.wrongTenses.length > 0) {
+          errorTags.push(ERROR_TAGS.WRONG_TENSE_DETECTED);
+          detailedFeedback += ` Detectamos verbos en otros tiempos: ${tensePatternsFound.wrongTenses.join(', ')}.`;
+        }
+
         const wrongTenseHints = {
           'pres': 'Recuerda usar el presente: yo hablo, tú comes, él vive',
           'pretIndef': 'Usa el pretérito: yo hablé, tú comiste, él vivió',
@@ -419,15 +507,15 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
           'fut': 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
           'pretPerf': 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
         };
-        
+
         if (wrongTenseHints[currentTense]) {
           detailedFeedback += ` ${wrongTenseHints[currentTense]}.`;
         }
       }
-      
+
       setFeedback({ type: 'incorrect', message: detailedFeedback });
-      
-      // Track incorrect attempt with enhanced error classification
+
+      // Track incorrect attempt with comprehensive error classification
       await handleResult({
         correct: false,
         userAnswer: story,
@@ -436,8 +524,28 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         errorTags,
         latencyMs: 0,
         isIrregular: false,
-        itemId: currentItem.id
+        itemId: currentItem.id,
+        partialCredit: foundVerbs.length / (foundVerbs.length + missing.length) // Completion percentage
       });
+
+      // Update SRS for missed verbs (negative reinforcement)
+      try {
+        const userId = getCurrentUserId();
+        if (userId && eligibleForms) {
+          for (const missedVerb of missing) {
+            const formObject = eligibleForms.find(f =>
+              f.value === missedVerb ||
+              (Array.isArray(f.alt) && f.alt.includes(missedVerb))
+            );
+            if (formObject) {
+              await updateSchedule(userId, formObject, false, 1); // Mark as incorrect with hint
+              console.log(`Analytics: Updated schedule for missed verb: ${formObject.lemma} - ${missedVerb}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to update SRS schedule for missed verbs:", error);
+      }
     }
     
     setIsProcessing(false);

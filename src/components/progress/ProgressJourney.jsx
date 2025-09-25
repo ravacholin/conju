@@ -58,7 +58,7 @@ export default function ProgressJourney({ compact = false }) {
       {
         id: 'first_steps',
         title: 'Primeros Pasos',
-        description: 'Has comenzado tu journey de aprendizaje',
+        description: 'Has comenzado tu viaje de aprendizaje',
         icon: '/icons/sparks.png',
         threshold: 1,
         achieved: totalAttempts >= 1,
@@ -173,9 +173,9 @@ export default function ProgressJourney({ compact = false }) {
       <div className="progress-journey empty">
         <div className="journey-start">
           <div className="start-icon">
-            <img src="/icons/sparks.png" alt="Journey Start" style={{width: "64px", height: "64px"}} />
+            <img src="/icons/sparks.png" alt="Inicio del Viaje" style={{width: "64px", height: "64px"}} />
           </div>
-          <h3>Tu Journey Comienza Aquí</h3>
+          <h3>Tu Viaje Comienza Aquí</h3>
           <p>Cada repaso que completes se convertirá en parte de tu historia de aprendizaje</p>
           <div className="start-encouragement">
             <span>¡Da el primer paso y comienza a practicar!</span>
@@ -204,7 +204,7 @@ export default function ProgressJourney({ compact = false }) {
       return `Con ${totalAttempts} intentos, has demostrado una dedicación admirable.`
     }
 
-    return `Cada paso cuenta en tu journey. ¡Sigue construyendo tu historia!`
+    return `Cada paso cuenta en tu viaje. ¡Sigue construyendo tu historia!`
   }
 
   if (compact) {
@@ -212,7 +212,7 @@ export default function ProgressJourney({ compact = false }) {
       <div className="progress-journey compact">
         <div className="journey-summary">
           <div className="journey-icon">
-            <img src="/icons/trophy.png" alt="Journey" style={{width: "32px", height: "32px"}} />
+            <img src="/icons/trophy.png" alt="Viaje" style={{width: "32px", height: "32px"}} />
           </div>
           <div className="journey-stats">
             <div className="stat">
@@ -237,8 +237,8 @@ export default function ProgressJourney({ compact = false }) {
     <div className="progress-journey full">
       <div className="journey-header">
         <h3>
-          <img src="/icons/journey.png" alt="Journey" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
-          Tu Journey de Aprendizaje
+          <img src="/icons/journey.png" alt="Viaje" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
+          Tu Viaje de Aprendizaje
         </h3>
         <div className="journey-subtitle">
           {journey.daysSinceStart} días transformando tu español, un repaso a la vez
@@ -263,14 +263,14 @@ export default function ProgressJourney({ compact = false }) {
 
         <div className="motivational-message">
           <div className="message-icon">
-            <img src="/icons/sparks.png" alt="Motivation" style={{width: "24px", height: "24px"}} />
+            <img src="/icons/sparks.png" alt="Motivación" style={{width: "24px", height: "24px"}} />
           </div>
           <div className="message-text">{getMotivationalMessage()}</div>
         </div>
       </div>
 
       <div className="milestones-section">
-        <h4>Hitos del Journey</h4>
+        <h4>Hitos del Viaje</h4>
         <div className="milestones-timeline">
           {journey.milestones.map((milestone, index) => (
             <div
@@ -340,11 +340,11 @@ export default function ProgressJourney({ compact = false }) {
       )}
 
       <div className="journey-insights">
-        <h4>Insights de tu Journey</h4>
+        <h4>Perspectivas de tu Viaje</h4>
         <div className="insights-grid">
           <div className="insight-card">
             <div className="insight-icon">
-              <img src="/icons/calendar.png" alt="Calendar" style={{width: "24px", height: "24px"}} />
+              <img src="/icons/calendar.png" alt="Calendario" style={{width: "24px", height: "24px"}} />
             </div>
             <div className="insight-content">
               <div className="insight-value">
@@ -354,13 +354,13 @@ export default function ProgressJourney({ compact = false }) {
                   day: 'numeric'
                 })}
               </div>
-              <div className="insight-label">Comenzaste tu journey</div>
+              <div className="insight-label">Comenzaste tu viaje</div>
             </div>
           </div>
 
           <div className="insight-card">
             <div className="insight-icon">
-              <img src="/icons/bolt.png" alt="Streak" style={{width: "24px", height: "24px"}} />
+              <img src="/icons/bolt.png" alt="Racha" style={{width: "24px", height: "24px"}} />
             </div>
             <div className="insight-content">
               <div className="insight-value">{journey.currentStreak} días</div>
@@ -370,7 +370,7 @@ export default function ProgressJourney({ compact = false }) {
 
           <div className="insight-card">
             <div className="insight-icon">
-              <img src="/icons/chart.png" alt="Trend" style={{width: "24px", height: "24px"}} />
+              <img src="/icons/chart.png" alt="Tendencia" style={{width: "24px", height: "24px"}} />
             </div>
             <div className="insight-content">
               <div className={`insight-value ${

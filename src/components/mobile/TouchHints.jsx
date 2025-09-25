@@ -124,7 +124,7 @@ export function GamificationHints({ children, compact = false }) {
 }
 
 /**
- * Componente para hints de journey
+ * Componente para hints de viaje
  */
 export function JourneyHints({ children }) {
   return (
