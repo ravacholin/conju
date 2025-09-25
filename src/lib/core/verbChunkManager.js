@@ -343,7 +343,9 @@ class VerbChunkManager {
 
     try {
       // Usar importación dinámica para cargar chunks legacy (cuando existen)
-      const module = await import(`../../data/chunks/${chunkName}.js`)
+      // Vite requires static imports, so we use a more compatible approach
+      const chunkPath = new URL(`../../data/chunks/${chunkName}.js`, import.meta.url).href
+      const module = await import(/* @vite-ignore */ chunkPath)
       return module.verbs || module.default
     } catch (error) {
       console.warn(`Failed to load chunk ${chunkName} desde bundle legacy:`, error)
