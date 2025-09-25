@@ -1,0 +1,584 @@
+/* Notification Settings Styles */
+.notification-settings {
+  background: var(--card-background, #ffffff);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.notification-settings.unsupported {
+  text-align: center;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(248, 113, 113, 0.05));
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.unsupported-content .unsupported-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.unsupported-content h4 {
+  margin: 0 0 12px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.unsupported-content p {
+  margin: 0;
+  color: var(--text-secondary, #64748b);
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Compact Layout */
+.notification-settings.compact {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.compact-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.enable-btn.compact {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: var(--primary, #3b82f6);
+  color: white;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.enable-btn.compact:hover {
+  background: var(--primary-dark, #2563eb);
+  transform: translateY(-1px);
+}
+
+.enable-btn.compact:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.scheduled-info {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Full Layout */
+.notification-settings.full .settings-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.settings-header h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.section-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.settings-subtitle {
+  margin: 0;
+  color: var(--text-secondary, #64748b);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+/* Settings Content */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.permission-section,
+.features-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h4 {
+  margin: 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Permission Status */
+.permission-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.permission-status.granted {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.permission-status.denied {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.permission-status.pending {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-icon {
+  font-size: 16px;
+}
+
+/* Enable Section */
+.enable-section {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.enable-description {
+  margin: 0 0 20px 0;
+  color: var(--text-secondary, #64748b);
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.enable-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.enable-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.enable-btn:active {
+  transform: translateY(0);
+}
+
+.enable-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.btn-icon,
+.btn-spinner {
+  font-size: 18px;
+}
+
+.btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Denied Section */
+.denied-section {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.denied-message {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.denied-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.denied-text p {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.denied-help {
+  color: var(--text-secondary, #64748b) !important;
+  font-size: 14px !important;
+}
+
+/* Enabled Section */
+.enabled-section {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.enabled-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.test-btn {
+  background: transparent;
+  color: var(--text-primary, #1a202c);
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.test-btn:hover {
+  background: var(--background-secondary, #f8fafc);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scheduled-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary, #64748b);
+  font-size: 14px;
+}
+
+.scheduled-icon {
+  font-size: 16px;
+}
+
+/* User Patterns */
+.patterns-info {
+  background: var(--background-secondary, #f8fafc);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border-light, #e2e8f0);
+}
+
+.patterns-info h5 {
+  margin: 0 0 16px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.patterns-message {
+  margin: 0;
+  color: var(--text-secondary, #64748b);
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.patterns-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-primary, #1a202c);
+}
+
+.tip-icon {
+  font-size: 16px;
+}
+
+.pattern-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.insight-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.insight-text {
+  color: var(--text-primary, #1a202c);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Features Section */
+.features-section h4 {
+  margin: 0 0 20px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.features-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  background: var(--background-secondary, #f8fafc);
+  border-radius: 12px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  transition: all 0.2s ease;
+}
+
+.feature:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.feature-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.feature-content h5 {
+  margin: 0 0 4px 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.feature-content p {
+  margin: 0;
+  color: var(--text-secondary, #64748b);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .notification-settings {
+    padding: 20px;
+  }
+
+  .settings-header h3 {
+    font-size: 22px;
+  }
+
+  .settings-subtitle {
+    font-size: 15px;
+  }
+
+  .enable-section,
+  .denied-section,
+  .enabled-section,
+  .patterns-info {
+    padding: 20px;
+  }
+
+  .enable-btn {
+    padding: 14px 24px;
+    font-size: 15px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .enabled-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .test-btn {
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .features-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .feature {
+    padding: 16px;
+  }
+
+  .denied-message {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .patterns-tip {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+
+  .compact-content {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .enable-btn.compact {
+    width: 100%;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .notification-settings {
+    --card-background: #1e293b;
+    --background-secondary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-light: #475569;
+  }
+
+  .insight {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .test-btn {
+    border-color: var(--border-light);
+  }
+
+  .test-btn:hover {
+    background: var(--background-secondary);
+  }
+
+  .feature {
+    background: var(--background-secondary);
+  }
+
+  .patterns-info {
+    background: var(--background-secondary);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .permission-status {
+    border-width: 2px;
+  }
+
+  .enable-section,
+  .denied-section,
+  .enabled-section {
+    border-width: 2px;
+  }
+
+  .feature,
+  .insight,
+  .patterns-info {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .enable-btn,
+  .test-btn,
+  .feature {
+    transition: none;
+  }
+
+  .enable-btn:hover,
+  .test-btn:hover,
+  .feature:hover {
+    transform: none;
+  }
+
+  .btn-spinner {
+    animation: none;
+  }
+}

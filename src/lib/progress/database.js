@@ -377,6 +377,15 @@ export async function getUser(userId) {
 }
 
 /**
+ * Alias para obtener un usuario por ID (consistencia con gamificación)
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object|null>}
+ */
+export async function getUserById(userId) {
+  return await getUser(userId)
+}
+
+/**
  * Guarda un verbo
  * @param {Object} verb - Datos del verbo
  * @returns {Promise<void>}

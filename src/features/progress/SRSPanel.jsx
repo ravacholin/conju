@@ -4,6 +4,11 @@ import { useSettings } from '../../state/settings.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
+import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'
+import SRSAnalytics from '../../components/srs/SRSAnalytics.jsx'
+import ProgressJourney from '../../components/progress/ProgressJourney.jsx'
+import { SRSHints, GamificationHints, JourneyHints } from '../../components/mobile/TouchHints.jsx'
+import NotificationSettings from '../../components/notifications/NotificationSettings.jsx'
 import './srs-panel.css'
 
 /**
@@ -133,7 +138,8 @@ export default function SRSPanel({ onNavigateToDrill }) {
   }
 
   return (
-    <div className="srs-panel">
+    <SRSHints showDetails={showDetails}>
+      <div className="srs-panel">
       <div className="srs-header">
         <div className="srs-title">
           <h3>
@@ -141,7 +147,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
             Repaso Inteligente
           </h3>
           <p className="srs-explanation">
-            El sistema te muestra exactamente qué repasar y cuándo, 
+            El sistema te muestra exactamente qué repasar y cuándo,
             basado en tu curva de olvido personal para maximizar la retención.
           </p>
          <div className="srs-how-it-works">
@@ -149,7 +155,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
             <span className="how-text">Cuanto mejor domines algo, menos frecuentemente lo verás</span>
           </div>
         </div>
-        <button 
+        <button
           className="toggle-details-btn"
           onClick={() => setShowDetails(!showDetails)}
         >
@@ -158,6 +164,13 @@ export default function SRSPanel({ onNavigateToDrill }) {
         <button className="toggle-details-btn secondary" onClick={() => setShowQueueModal(true)}>
           Revisar ahora
         </button>
+      </div>
+
+      {/* Gamification Display */}
+      <div className="srs-gamification-section">
+        <GamificationHints compact={true}>
+          <GamificationDisplay compact={true} showBadges={false} />
+        </GamificationHints>
       </div>
 
       <div className="srs-overview">
@@ -217,6 +230,13 @@ export default function SRSPanel({ onNavigateToDrill }) {
         )}
       </div>
 
+      {/* Compact Analytics when not showing details */}
+      {!showDetails && stats.dueNow > 0 && (
+        <div className="srs-compact-analytics">
+          <SRSAnalytics compact={true} />
+        </div>
+      )}
+
       <div className="srs-actions">
         {stats.dueNow > 0 ? (
           <button 
@@ -263,76 +283,98 @@ export default function SRSPanel({ onNavigateToDrill }) {
         </div>
       </div>
 
-      {showDetails && queue.length > 0 && (
-        <div className="srs-details">
-          <div className="srs-details-header">
-            <h4>
-              <img src="/icons/chart.png" alt="Cola" className="inline-icon lg" />
-              Cola de repaso detallada
-            </h4>
-            <div className="srs-legend">
-              <div className="legend-explanation">
-                Los colores indican qué tan urgente es repasar cada elemento:
-              </div>
-              <div className="legend-items">
-                <span className="legend-item urgent-overdue">Se está olvidando</span>
-                <span className="legend-item urgent-high">Muy urgente</span>
-                <span className="legend-item urgent-medium">Urgente</span>
-                <span className="legend-item urgent-low">Programado</span>
-              </div>
-            </div>
+      {showDetails && (
+        <div className="srs-expanded-content">
+          {/* Progress Journey Section */}
+          <div className="srs-journey-section">
+            <JourneyHints>
+              <ProgressJourney compact={false} />
+            </JourneyHints>
           </div>
-          
-          <div className="srs-items-list">
-            {queue.slice(0, 8).map((item, index) => {
-              const timeLeft = new Date(item.nextDue) - new Date()
-              const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60))
-              const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24))
-              
-              const getTimeDisplay = () => {
-                if (timeLeft < 0) {
-                  const hoursOverdue = Math.abs(hoursLeft)
-                  if (hoursOverdue < 24) return `${hoursOverdue}h atrasado`
-                  return `${Math.abs(daysLeft)}d atrasado`
-                }
-                if (hoursLeft < 1) return 'Ahora'
-                if (hoursLeft < 24) return `en ${hoursLeft}h`
-                return `en ${daysLeft}d`
-              }
-              
-              return (
-                <div key={index} className={`srs-item ${getUrgencyColor(item.urgency)}`}>
-                  <div className="srs-item-main">
-                    <div className="srs-item-name">{item.formattedName}</div>
-                    <div className="srs-item-person">
-                      {item.person === '1s' ? 'Primera persona singular' : 
-                       item.person === '2s_tu' ? 'Segunda persona singular (tú)' :
-                       item.person === '3s' ? 'Tercera persona singular' : item.person}
-                    </div>
+
+          {/* Analytics Section */}
+          <div className="srs-analytics-section">
+            <SRSAnalytics compact={false} />
+          </div>
+
+          {/* Notifications Section */}
+          <div className="srs-notifications-section">
+            <NotificationSettings compact={false} />
+          </div>
+
+          {/* Queue Details */}
+          {queue.length > 0 && (
+            <div className="srs-details">
+              <div className="srs-details-header">
+                <h4>
+                  <img src="/icons/chart.png" alt="Cola" className="inline-icon lg" />
+                  Cola de repaso detallada
+                </h4>
+                <div className="srs-legend">
+                  <div className="legend-explanation">
+                    Los colores indican qué tan urgente es repasar cada elemento:
                   </div>
-                  <div className="srs-item-stats">
-                    <div className="mastery-display">
-                      <div className="mastery-label">Dominio</div>
-                      <div className={`mastery-value ${getMasteryColor(item.masteryScore)}`}>
-                        {Math.round(item.masteryScore)}%
-                      </div>
-                    </div>
-                    <div className="timing-display">
-                      <div className="timing-label">Momento</div>
-                      <div className="timing-value">{getTimeDisplay()}</div>
-                    </div>
+                  <div className="legend-items">
+                    <span className="legend-item urgent-overdue">Se está olvidando</span>
+                    <span className="legend-item urgent-high">Muy urgente</span>
+                    <span className="legend-item urgent-medium">Urgente</span>
+                    <span className="legend-item urgent-low">Programado</span>
                   </div>
                 </div>
-              )
-            })}
-            
-            {queue.length > 8 && (
-              <div className="srs-more-items">
-                <span className="more-icon">⋯</span>
-                <span>Y {queue.length - 8} elementos más en la cola</span>
               </div>
-            )}
-          </div>
+
+              <div className="srs-items-list">
+                {queue.slice(0, 8).map((item, index) => {
+                  const timeLeft = new Date(item.nextDue) - new Date()
+                  const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60))
+                  const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24))
+
+                  const getTimeDisplay = () => {
+                    if (timeLeft < 0) {
+                      const hoursOverdue = Math.abs(hoursLeft)
+                      if (hoursOverdue < 24) return `${hoursOverdue}h atrasado`
+                      return `${Math.abs(daysLeft)}d atrasado`
+                    }
+                    if (hoursLeft < 1) return 'Ahora'
+                    if (hoursLeft < 24) return `en ${hoursLeft}h`
+                    return `en ${daysLeft}d`
+                  }
+
+                  return (
+                    <div key={index} className={`srs-item ${getUrgencyColor(item.urgency)}`}>
+                      <div className="srs-item-main">
+                        <div className="srs-item-name">{item.formattedName}</div>
+                        <div className="srs-item-person">
+                          {item.person === '1s' ? 'Primera persona singular' :
+                           item.person === '2s_tu' ? 'Segunda persona singular (tú)' :
+                           item.person === '3s' ? 'Tercera persona singular' : item.person}
+                        </div>
+                      </div>
+                      <div className="srs-item-stats">
+                        <div className="mastery-display">
+                          <div className="mastery-label">Dominio</div>
+                          <div className={`mastery-value ${getMasteryColor(item.masteryScore)}`}>
+                            {Math.round(item.masteryScore)}%
+                          </div>
+                        </div>
+                        <div className="timing-display">
+                          <div className="timing-label">Momento</div>
+                          <div className="timing-value">{getTimeDisplay()}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {queue.length > 8 && (
+                  <div className="srs-more-items">
+                    <span className="more-icon">⋯</span>
+                    <span>Y {queue.length - 8} elementos más en la cola</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -358,6 +400,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
           settings.set({ practiceMode: 'review', reviewSessionFilter: filter })
         }}
       />
-    </div>
+      </div>
+    </SRSHints>
   )
 }

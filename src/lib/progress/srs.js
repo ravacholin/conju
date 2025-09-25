@@ -3,6 +3,7 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
+import { handleSRSReviewComplete } from './gamification.js'
 
 // Helpers
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
@@ -151,6 +152,18 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
   
   // Guardar en la base de datos
   await saveSchedule(updatedSchedule)
+
+  // Procesar gamificación para este review
+  try {
+    await handleSRSReviewComplete(cell, correct, hintsUsed, {
+      ...meta,
+      wasLapse: q < 3,
+      recoveredFromLapse: schedule?.lapses > 0 && correct,
+      consecutiveCorrect: meta.consecutiveCorrect || 0
+    })
+  } catch (error) {
+    console.error('Error processing gamification for SRS review:', error)
+  }
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('progress:srs-updated', {

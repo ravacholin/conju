@@ -1,5 +1,8 @@
 /* Font is now preloaded in HTML for better performance - no blocking import needed */
 
+/* Import mobile optimizations */
+@import './styles/mobile-optimizations.css';
+
 /* Minimal CSS reset for the Spanish conjugation app */
 * {
   margin: 0;

@@ -1,0 +1,373 @@
+/* Touch Hints Styles */
+.touch-hints-container {
+  position: relative;
+  display: inline-block;
+}
+
+.touch-hint {
+  position: absolute;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 280px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Positioning */
+.touch-hint.top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 12px;
+}
+
+.touch-hint.bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 12px;
+}
+
+.touch-hint.left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 12px;
+}
+
+.touch-hint.right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 12px;
+}
+
+/* Arrow indicators */
+.touch-hint::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.touch-hint.top::before {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0 8px;
+  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+}
+
+.touch-hint.bottom::before {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+}
+
+.touch-hint.left::before {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 8px 0 8px 8px;
+  border-color: transparent transparent transparent rgba(0, 0, 0, 0.9);
+}
+
+.touch-hint.right::before {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 8px 8px 8px 0;
+  border-color: transparent rgba(0, 0, 0, 0.9) transparent transparent;
+}
+
+/* Content */
+.touch-hint-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.touch-hint-icon {
+  font-size: 16px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.touch-hint-text {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Swipe hints */
+.swipe-hints {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.swipe-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.swipe-icon {
+  font-size: 14px;
+  animation: slide 2s ease-in-out infinite;
+}
+
+@keyframes slide {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+.swipe-text {
+  opacity: 0.9;
+  font-size: 11px;
+}
+
+/* Long press hint */
+.long-press-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+}
+
+.long-press-icon {
+  font-size: 14px;
+  animation: press 2s ease-in-out infinite;
+}
+
+@keyframes press {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+}
+
+.long-press-text {
+  opacity: 0.9;
+  font-size: 11px;
+}
+
+/* Specialized hints */
+.srs-hints .touch-hint {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(139, 92, 246, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.srs-hints .touch-hint::before {
+  border-color: rgba(59, 130, 246, 0.95) transparent transparent transparent;
+}
+
+.srs-hints.touch-hint.bottom::before {
+  border-color: transparent transparent rgba(59, 130, 246, 0.95) transparent;
+}
+
+.gamification-hints .touch-hint {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(52, 211, 153, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gamification-hints .touch-hint::before {
+  border-color: transparent transparent rgba(16, 185, 129, 0.95) transparent;
+}
+
+.journey-hints .touch-hint {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(251, 191, 36, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #000;
+}
+
+.journey-hints .touch-hint::before {
+  border-color: rgba(245, 158, 11, 0.95) transparent transparent transparent;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .touch-hint {
+    padding: 10px 14px;
+    font-size: 13px;
+    max-width: 250px;
+    left: 10px !important;
+    right: 10px !important;
+    transform: none !important;
+  }
+
+  .touch-hint::before {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .touch-hint-content {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .swipe-hints {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .swipe-hint,
+  .long-press-hint {
+    justify-content: center;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .touch-hint {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+  }
+
+  .swipe-hints,
+  .long-press-hint {
+    border-top-color: #fff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .touch-hint {
+    animation: none;
+  }
+
+  .touch-hint-icon,
+  .swipe-icon,
+  .long-press-icon {
+    animation: none;
+  }
+
+  @keyframes pulse,
+  @keyframes slide,
+  @keyframes press {
+    from, to {
+      transform: none;
+    }
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .journey-hints .touch-hint {
+    color: #1f2937;
+  }
+}
+
+/* Focus states for accessibility */
+.touch-hints-container:focus-visible .touch-hint {
+  opacity: 1;
+  animation: none;
+}
+
+/* Hide hints when not needed */
+@media (hover: hover) and (pointer: fine) {
+  /* Hide touch hints on non-touch devices */
+  .touch-hint {
+    display: none;
+  }
+}
+
+/* Touch-specific adjustments */
+@media (hover: none) and (pointer: coarse) {
+  .touch-hint {
+    display: block;
+  }
+
+  /* Larger touch targets for dismissing */
+  .touch-hints-container {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .touch-hint {
+    font-size: 12px;
+    padding: 8px 12px;
+    max-width: 200px;
+  }
+
+  .touch-hint-content {
+    gap: 6px;
+  }
+
+  .swipe-hints {
+    margin-top: 6px;
+    gap: 12px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .touch-hint {
+    padding: 8px 10px;
+    font-size: 12px;
+    max-width: 200px;
+  }
+
+  .touch-hint-icon {
+    font-size: 14px;
+  }
+
+  .touch-hint-text {
+    font-size: 11px;
+  }
+
+  .swipe-text,
+  .long-press-text {
+    font-size: 10px;
+  }
+}

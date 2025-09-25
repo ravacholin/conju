@@ -5,6 +5,8 @@ import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 // Inicializar automáticamente el sistema de progreso
 import './lib/progress/autoInit.js'
+// Initialize smart notifications
+import './lib/notifications/smartNotifications.js'
 // Initialize service worker update handling
 import './utils/swUpdateHandler.js'
 // Wire sync endpoint and auth from env (if provided)
