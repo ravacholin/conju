@@ -342,7 +342,9 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     logger.debug('Type selection:', { type, families });
     setVerbType(type);
     setSelectedFamilies(families);
-    setCurrentStep('duration-selection');
+    setDuration(5);  // Default to 5 minutes
+    // Skip duration selection and go directly to introduction
+    setCurrentStep('introduction');
   };
   
   const handleBackToTenseSelection = () => {
@@ -500,7 +502,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
           exampleVerbs={exampleVerbs}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
-          onBack={() => setCurrentStep('duration-selection')} 
+          onBack={() => setCurrentStep('type-selection')} 
           onContinue={() => handleSmartStepTransition('introduction', 'guided_drill_ar')}
         />
       </ErrorBoundary>
