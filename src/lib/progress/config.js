@@ -70,7 +70,9 @@ export const PROGRESS_CONFIG = {
       0.2975,  // w[13] - interval factor
       2.2042,  // w[14] - second interval factor
       0.2407,  // w[15] - third interval factor
-      2.9466   // w[16] - fourth interval factor
+      2.9466,  // w[16] - fourth interval factor
+      1.4318,  // w[17] - additional stability factor
+      0.0606   // w[18] - final retrievability factor
     ],
     // Configuración del algoritmo
     REQUEST_RETENTION: 0.90,    // 90% retención objetivo (puede ser personalizable)
