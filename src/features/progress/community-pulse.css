@@ -10,17 +10,33 @@
   gap: 1rem;
 }
 
+.community-summary div {
+  background: rgba(14, 14, 14, 0.9);
+  border: 1px solid rgba(245, 245, 245, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.85rem 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
 .community-label {
   display: block;
   font-size: 0.75rem;
-  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(245, 245, 245, 0.55);
+}
+
+.community-summary strong {
+  font-size: 1.15rem;
+  color: var(--text);
 }
 
 .community-goal {
-  border: 1px solid rgba(203, 213, 225, 0.6);
+  border: 1px solid rgba(245, 245, 245, 0.06);
   border-radius: 0.75rem;
-  padding: 1rem;
-  background: rgba(59, 130, 246, 0.08);
+  padding: 1.1rem;
+  background: rgba(18, 18, 18, 0.92);
+  color: var(--text);
 }
 
 .community-progress {
@@ -34,14 +50,14 @@
 
 .progress-bar {
   height: 8px;
-  background: rgba(148, 163, 184, 0.3);
+  background: rgba(37, 99, 235, 0.15);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #22d3ee 100%);
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.8) 0%, rgba(34, 211, 238, 0.7) 100%);
 }
 
 .community-leaderboard ol {
@@ -56,22 +72,24 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  border: 1px solid rgba(245, 245, 245, 0.06);
   border-radius: 0.75rem;
   padding: 0.6rem 0.8rem;
+  background: rgba(14, 14, 14, 0.88);
+  color: var(--text);
 }
 
 .community-leaderboard li.current-user {
-  border-color: #22d3ee;
-  background: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.25);
 }
 
 .community-rank {
   font-weight: 700;
-  color: #1d4ed8;
+  color: rgba(125, 233, 184, 0.9);
 }
 
 .community-player span {
   font-size: 0.8rem;
-  color: #475569;
+  color: rgba(245, 245, 245, 0.6);
 }

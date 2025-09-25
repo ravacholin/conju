@@ -16,7 +16,7 @@ function formatWeek(week) {
           ))}
         </ul>
       )}
-      {week.goal && <p className="plan-week-goal">🎯 {week.goal}</p>}
+      {week.goal && <p className="plan-week-goal">{week.goal}</p>}
     </div>
   )
 }
