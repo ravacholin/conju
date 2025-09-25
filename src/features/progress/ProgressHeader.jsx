@@ -72,7 +72,6 @@ export default function ProgressHeader({
         <img src="/icons/chart.png" alt="Analíticas" className="section-icon" />
         Progreso y Analíticas
       </h1>
-      <p>Seguimiento detallado de tu dominio del español</p>
       <div className="dashboard-controls">
         {/* Buttons have been removed as sync is now automatic */}
       </div>
