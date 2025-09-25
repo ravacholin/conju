@@ -222,7 +222,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
   )
 }
 
-function TimelineAnalysis({ errorData, errorType }) {
+function TimelineAnalysis({ errorData, errorType: _errorType }) {
   return (
     <div className="timeline-analysis">
       <div className="analysis-header">
@@ -292,7 +292,7 @@ function TimelineAnalysis({ errorData, errorType }) {
   )
 }
 
-function PatternAnalysis({ errorData, errorType }) {
+function PatternAnalysis({ errorData, errorType: _errorType }) {
   return (
     <div className="pattern-analysis">
       <div className="analysis-header">
@@ -389,7 +389,7 @@ function PatternAnalysis({ errorData, errorType }) {
   )
 }
 
-function ContextAnalysis({ errorData, errorType }) {
+function ContextAnalysis({ errorData, errorType: _errorType }) {
   return (
     <div className="context-analysis">
       <div className="analysis-header">
@@ -511,7 +511,7 @@ function ContextAnalysis({ errorData, errorType }) {
   )
 }
 
-function PredictionAnalysis({ errorData, errorType, onStartPractice }) {
+function PredictionAnalysis({ errorData, errorType: _errorType, onStartPractice }) {
   return (
     <div className="prediction-analysis">
       <div className="analysis-header">
@@ -769,7 +769,7 @@ function calculateTrend(attempts) {
   return 'stable'
 }
 
-function calculateSeverity(attempts, errorType) {
+function calculateSeverity(attempts, _errorType) {
   const frequency = attempts.length
   const recency = (Date.now() - new Date(attempts[attempts.length - 1]?.createdAt)) / (1000 * 60 * 60 * 24)
 
@@ -797,7 +797,7 @@ function calculateAverageFrequency(attempts) {
   return Math.min(100, (attempts.length / 50) * 100)
 }
 
-function assessLearningImpact(attempts, errorType) {
+function assessLearningImpact(attempts, _errorType) {
   const frequency = attempts.length
   let score = Math.min(100, frequency * 2)
   let level = 'low'
@@ -809,7 +809,7 @@ function assessLearningImpact(attempts, errorType) {
   return { score, level }
 }
 
-function assessFossilizationRisk(attempts, errorType) {
+function assessFossilizationRisk(attempts, _errorType) {
   const frequency = attempts.length
   const consistency = calculateConsistency(attempts)
 
@@ -906,7 +906,7 @@ function identifyCriticalPeriods(attempts) {
 }
 
 // Funciones auxiliares adicionales (implementaciones simplificadas)
-function identifyLinguisticPatterns(attempts, errorType) {
+function identifyLinguisticPatterns(_attempts, _errorType) {
   return [{
     type: 'Patrón Principal',
     frequency: 80,
@@ -917,7 +917,7 @@ function identifyLinguisticPatterns(attempts, errorType) {
   }]
 }
 
-function identifyTriggers(attempts, errorType) {
+function identifyTriggers(attempts, _errorType) {
   return [{
     name: 'Velocidad Alta',
     icon: '⚡',
@@ -937,7 +937,7 @@ function identifyErrorChains(attempts, errorType) {
   }]
 }
 
-function analyzeContextualFactors(attempts) {
+function analyzeContextualFactors(_attempts) {
   return [{
     name: 'Estado Emocional',
     icon: '🧠',
@@ -988,7 +988,7 @@ function getMaxDailyErrors(attempts) {
   return Math.max(...dayDist.map(d => d.count), 1)
 }
 
-function analyzeEmotionalStates(attempts) {
+function analyzeEmotionalStates(_attempts) {
   return [
     { name: 'Neutral', icon: '😐', percentage: 40, impactLevel: 'low' },
     { name: 'Frustrado', icon: '😤', percentage: 35, impactLevel: 'high' },
@@ -996,7 +996,7 @@ function analyzeEmotionalStates(attempts) {
   ]
 }
 
-function assessRisks(attempts, errorType) {
+function assessRisks(_attempts, _errorType) {
   return [{
     name: 'Riesgo de Fosilización',
     icon: '⚠️',
@@ -1012,7 +1012,7 @@ function assessRisks(attempts, errorType) {
   }]
 }
 
-function createImprovementProjections(attempts, errorType) {
+function createImprovementProjections(_attempts, _errorType) {
   return [{
     scenario: 'Práctica Regular',
     confidence: 0.8,
@@ -1029,7 +1029,7 @@ function createImprovementProjections(attempts, errorType) {
   }]
 }
 
-function generateActionableInsights(attempts, errorType) {
+function generateActionableInsights(_attempts, errorType) {
   return [{
     priority: 'high',
     expectedImpact: 'Reducción del 60% en errores',
@@ -1054,7 +1054,7 @@ function generateActionableInsights(attempts, errorType) {
   }]
 }
 
-function generateNextSteps(attempts, errorType) {
+function generateNextSteps(_attempts, _errorType) {
   return [
     {
       title: 'Práctica Intensiva',

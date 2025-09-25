@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
+import * as d3 from 'd3'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './InteractiveErrorVisualizations.css'
 
@@ -45,7 +46,11 @@ export default function InteractiveErrorVisualizations({
         <div className="time-range-selector">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
+            onChange={(event) => {
+              const nextRange = event.target.value
+              setTimeRange(nextRange)
+              onTimeRangeSelect?.(nextRange)
+            }}
             className="time-range-select"
           >
             <option value="7days">Últimos 7 días</option>
@@ -72,7 +77,6 @@ export default function InteractiveErrorVisualizations({
             timelineData={timelineData}
             attempts={attempts}
             timeRange={timeRange}
-            onTimeRangeSelect={onTimeRangeSelect}
           />
         )}
 
@@ -99,7 +103,6 @@ export default function InteractiveErrorVisualizations({
 function ErrorConstellationMap({ attempts, timeRange, onErrorFocus, selectedError, onErrorSelect }) {
   const canvasRef = useRef(null)
   const [hoveredError, setHoveredError] = useState(null)
-  const [errorStars, setErrorStars] = useState([])
 
   const processedData = useMemo(() => {
     return processConstellationData(attempts, timeRange)
@@ -143,9 +146,9 @@ function ErrorConstellationMap({ attempts, timeRange, onErrorFocus, selectedErro
       canvas.style.cursor = closestError ? 'pointer' : 'default'
     }
 
-    const handleClick = (e) => {
+    const handleClick = () => {
       if (hoveredError) {
-        setSelectedError(hoveredError.errorType)
+        onErrorSelect?.(hoveredError.errorType)
         onErrorFocus?.(hoveredError.errorType, hoveredError.examples)
       }
     }
@@ -157,7 +160,7 @@ function ErrorConstellationMap({ attempts, timeRange, onErrorFocus, selectedErro
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('click', handleClick)
     }
-  }, [processedData, hoveredError, onErrorFocus, setSelectedError])
+  }, [processedData, hoveredError, onErrorFocus, onErrorSelect])
 
   return (
     <div className="error-constellation">
@@ -204,7 +207,7 @@ function ErrorConstellationMap({ attempts, timeRange, onErrorFocus, selectedErro
 }
 
 // Timeline Avanzado con contexto emocional
-function AdvancedErrorTimeline({ timelineData, attempts, timeRange, onTimeRangeSelect }) {
+function AdvancedErrorTimeline({ timelineData, attempts, timeRange }) {
   const svgRef = useRef(null)
   const [selectedPeriod, setSelectedPeriod] = useState(null)
 
@@ -418,12 +421,12 @@ function processConstellationData(attempts, timeRange) {
   }
 
   const errorClusters = []
-  const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#feca57', '#ff9ff3']
+  const shades = [0.75, 0.6, 0.48, 0.36, 0.28]
 
   Object.entries(constellations).forEach(([name, errorTypes], index) => {
     const clusterData = {
       name,
-      color: colors[index % colors.length],
+      color: `rgba(255, 255, 255, ${shades[index % shades.length]})`,
       stars: [],
       totalErrors: 0
     }
@@ -684,16 +687,16 @@ function drawHeatmapEvolution(canvas, data, selectedCell, setSelectedCell) {
   const cellHeight = canvas.height / errorTypes.length
 
   // Encontrar valor máximo para normalización
-  const maxValue = Math.max(...Object.values(matrix).flatMap(Object.values))
+  const maxValue = Math.max(...Object.values(matrix).flatMap(Object.values), 1)
 
   timeSlots.forEach((timeSlot, x) => {
     errorTypes.forEach((errorType, y) => {
       const value = matrix[timeSlot][errorType] || 0
       const intensity = value / maxValue
 
-      // Color basado en intensidad
-      const alpha = Math.max(0.1, intensity)
-      ctx.fillStyle = `rgba(220, 53, 69, ${alpha})`
+      // Color neutro basado en intensidad
+      const shade = Math.round(70 + intensity * 140)
+      ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade}, ${Math.max(0.18, intensity)})`
 
       const rectX = x * cellWidth
       const rectY = y * cellHeight
@@ -704,6 +707,16 @@ function drawHeatmapEvolution(canvas, data, selectedCell, setSelectedCell) {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
       ctx.lineWidth = 1
       ctx.strokeRect(rectX, rectY, cellWidth, cellHeight)
+
+      const isSelected = selectedCell &&
+        selectedCell.timePeriod === timeSlot &&
+        selectedCell.errorType === errorType
+
+      if (isSelected) {
+        ctx.lineWidth = 2
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
+        ctx.strokeRect(rectX, rectY, cellWidth, cellHeight)
+      }
 
       // Texto si hay valor significativo
       if (value > 0) {
@@ -733,6 +746,36 @@ function drawHeatmapEvolution(canvas, data, selectedCell, setSelectedCell) {
     ctx.fillText(getErrorTagLabel(errorType), 0, 0)
     ctx.restore()
   })
+
+  canvas.onclick = (event) => {
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+
+    const slotIndex = Math.floor(x / cellWidth)
+    const errorIndex = Math.floor(y / cellHeight)
+
+    const timeSlot = timeSlots[slotIndex]
+    const errorType = errorTypes[errorIndex]
+
+    if (!timeSlot || !errorType) {
+      setSelectedCell?.(null)
+      return
+    }
+
+    const value = matrix[timeSlot][errorType] || 0
+    const intensity = maxValue ? value / maxValue : 0
+    const trend = intensity > 0.6 ? 'alta' : intensity > 0.3 ? 'media' : 'baja'
+
+    setSelectedCell?.({
+      timeSlot,
+      timePeriod: timeSlot,
+      errorType,
+      errorCount: value,
+      intensity,
+      trend
+    })
+  }
 }
 
 function drawErrorNetwork(svg, data, selectedNode, setSelectedNode) {
@@ -841,31 +884,31 @@ function getErrorTagLabel(tag) {
 }
 
 function getErrorColor(errorType) {
-  const colors = {
-    [ERROR_TAGS.ACCENT]: '#ff6b6b',
-    [ERROR_TAGS.VERBAL_ENDING]: '#4ecdc4',
-    [ERROR_TAGS.IRREGULAR_STEM]: '#45b7d1',
-    [ERROR_TAGS.WRONG_PERSON]: '#feca57',
-    [ERROR_TAGS.WRONG_TENSE]: '#ff9ff3',
-    [ERROR_TAGS.WRONG_MOOD]: '#54a0ff',
-    [ERROR_TAGS.CLITIC_PRONOUNS]: '#5ee6a5',
-    [ERROR_TAGS.ORTHOGRAPHY_C_QU]: '#ff7675',
-    [ERROR_TAGS.ORTHOGRAPHY_G_GU]: '#74b9ff',
-    [ERROR_TAGS.ORTHOGRAPHY_Z_C]: '#fd79a8',
-    [ERROR_TAGS.OTHER_VALID_FORM]: '#fdcb6e'
+  const tones = {
+    [ERROR_TAGS.ACCENT]: 'rgba(255, 255, 255, 0.75)',
+    [ERROR_TAGS.VERBAL_ENDING]: 'rgba(255, 255, 255, 0.65)',
+    [ERROR_TAGS.IRREGULAR_STEM]: 'rgba(255, 255, 255, 0.55)',
+    [ERROR_TAGS.WRONG_PERSON]: 'rgba(255, 255, 255, 0.5)',
+    [ERROR_TAGS.WRONG_TENSE]: 'rgba(255, 255, 255, 0.45)',
+    [ERROR_TAGS.WRONG_MOOD]: 'rgba(255, 255, 255, 0.4)',
+    [ERROR_TAGS.CLITIC_PRONOUNS]: 'rgba(255, 255, 255, 0.6)',
+    [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'rgba(255, 255, 255, 0.5)',
+    [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'rgba(255, 255, 255, 0.42)',
+    [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'rgba(255, 255, 255, 0.38)',
+    [ERROR_TAGS.OTHER_VALID_FORM]: 'rgba(255, 255, 255, 0.32)'
   }
-  return colors[errorType] || '#999999'
+  return tones[errorType] || 'rgba(255, 255, 255, 0.5)'
 }
 
 function getEmotionalColor(emotion) {
-  const colors = {
-    'flow': '#00d2d3',
-    'frustrated': '#ff6b6b',
-    'confident': '#5ee6a5',
-    'neutral': '#74b9ff',
-    'struggling': '#fd79a8'
+  const tones = {
+    flow: 'rgba(255, 255, 255, 0.7)',
+    frustrated: 'rgba(255, 255, 255, 0.45)',
+    confident: 'rgba(255, 255, 255, 0.65)',
+    neutral: 'rgba(255, 255, 255, 0.55)',
+    struggling: 'rgba(255, 255, 255, 0.4)'
   }
-  return colors[emotion] || '#999999'
+  return tones[emotion] || 'rgba(255, 255, 255, 0.5)'
 }
 
 function drawStarField(ctx, width, height) {
@@ -907,8 +950,8 @@ function drawStar(ctx, star, color, isHovered, isSelected) {
       star.x, star.y, 0,
       star.x, star.y, glowRadius
     )
-    gradient.addColorStop(0, color + '80')
-    gradient.addColorStop(1, 'transparent')
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.45)')
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
 
     ctx.fillStyle = gradient
     ctx.beginPath()
@@ -918,10 +961,8 @@ function drawStar(ctx, star, color, isHovered, isSelected) {
 
   // Star
   ctx.fillStyle = color
-  if (isSelected) {
-    ctx.strokeStyle = 'white'
-    ctx.lineWidth = 2
-  }
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
+  ctx.lineWidth = isSelected ? 2 : 1
 
   ctx.beginPath()
   ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2)

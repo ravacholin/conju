@@ -251,7 +251,7 @@ function analyzeTemporalPatterns(attempts) {
 
   // Encontrar horas problemáticas
   const hourlyRates = Object.entries(hourlyTotal)
-    .filter(([hour, total]) => total >= 10) // Mínimo 10 intentos
+    .filter(([_hour, total]) => total >= 10) // Mínimo 10 intentos
     .map(([hour, total]) => ({
       hour: parseInt(hour),
       rate: hourlyErrors[hour] / total,
@@ -338,7 +338,7 @@ function analyzeEmotionalPatterns(attempts) {
 
   // Encontrar estados problemáticos
   const problematicFlowStates = Object.entries(flowStates)
-    .filter(([state, data]) => data.total >= 15 && data.errors / data.total > 0.4)
+    .filter(([_state, data]) => data.total >= 15 && data.errors / data.total > 0.4)
     .sort(([,a], [,b]) => (b.errors / b.total) - (a.errors / a.total))
 
   problematicFlowStates.forEach(([state, data]) => {
@@ -404,7 +404,7 @@ function analyzeEmotionalPatterns(attempts) {
   return patterns
 }
 
-function analyzeLinguisticPatterns(attempts, mastery) {
+function analyzeLinguisticPatterns(attempts, _mastery) {
   const patterns = []
 
   // Análisis de errores por familia de verbos irregulares

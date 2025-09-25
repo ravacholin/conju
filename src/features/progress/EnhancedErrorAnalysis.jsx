@@ -1,10 +1,41 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
-import { getAttemptsByUser, getMasteryByUser } from '../../lib/progress/database.js'
+import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getErrorIntelligence, getErrorRadarData } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './EnhancedErrorAnalysis.css'
+
+const VIEW_OPTIONS = [
+  { id: 'dashboard', label: 'Panorama', icon: '/icons/chart.png', alt: 'Panel general' },
+  { id: 'patterns', label: 'Patrones', icon: '/icons/brain.png', alt: 'Patrones detectados' },
+  { id: 'challenges', label: 'Desafíos', icon: '/icons/trophy.png', alt: 'Desafíos sugeridos' },
+  { id: 'forensics', label: 'Forense', icon: '/icons/error.png', alt: 'Análisis detallado' }
+]
+
+const CHALLENGE_ICON_MAP = {
+  boss: '/icons/error.png',
+  rescue: '/icons/robot.png',
+  consistency: '/icons/chart.png'
+}
+
+const ERROR_TAG_LABELS = {
+  [ERROR_TAGS.ACCENT]: 'Acentuación',
+  [ERROR_TAGS.VERBAL_ENDING]: 'Terminaciones',
+  [ERROR_TAGS.IRREGULAR_STEM]: 'Raíz Irregular',
+  [ERROR_TAGS.WRONG_PERSON]: 'Persona Incorrecta',
+  [ERROR_TAGS.WRONG_TENSE]: 'Tiempo Incorrecto',
+  [ERROR_TAGS.WRONG_MOOD]: 'Modo Incorrecto',
+  [ERROR_TAGS.CLITIC_PRONOUNS]: 'Pronombres Clíticos',
+  [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'Ortografía C/QU',
+  [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'Ortografía G/GU',
+  [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'Ortografía Z/C',
+  [ERROR_TAGS.OTHER_VALID_FORM]: 'Otra Forma Válida'
+}
+
+function getErrorTagLabel(tag) {
+  return ERROR_TAG_LABELS[tag] || 'Error Desconocido'
+}
 
 export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
   const [analysisData, setAnalysisData] = useState({
@@ -16,7 +47,6 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
     loading: true
   })
   const [selectedView, setSelectedView] = useState('dashboard') // dashboard, patterns, challenges, forensics
-  const [selectedError, setSelectedError] = useState(null)
   const settings = useSettings()
 
   useEffect(() => {
@@ -26,16 +56,15 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
   async function loadErrorAnalysisData() {
     try {
       const uid = getCurrentUserId()
-      const [attempts, mastery, errorIntel, errorRadar] = await Promise.all([
+      const [attempts, errorIntel, errorRadar] = await Promise.all([
         getAttemptsByUser(uid),
-        getMasteryByUser(uid),
         getErrorIntelligence(uid),
         getErrorRadarData(uid)
       ])
 
       // Procesar datos emocionales y contextuales
       const emotionalContext = processEmotionalContext(attempts)
-      const patterns = detectErrorPatterns(attempts, mastery)
+      const patterns = detectErrorPatterns(attempts)
       const challenges = generateErrorChallenges(attempts, errorRadar)
       const timeline = buildErrorTimeline(attempts)
 
@@ -109,7 +138,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
     }
   }
 
-  function detectErrorPatterns(attempts, mastery) {
+  function detectErrorPatterns(attempts) {
     const patterns = []
     const recentAttempts = attempts.slice(-300)
 
@@ -181,10 +210,11 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
       challenges.push({
         id: 'boss-fight',
         type: 'boss',
-        title: `🏆 Boss Fight: ${bossError.label}`,
-        description: `Tu mayor desafío actual. ${bossError.count} errores recientes.`,
+        icon: '/icons/error.png',
+        title: `Desafío principal: ${bossError.label}`,
+        description: `Tu reto prioritario. ${bossError.count} errores en los últimos intentos.`,
         difficulty: Math.min(5, Math.ceil(bossError.value / 20)),
-        reward: '50 XP + Badge "Boss Slayer"',
+        reward: '50 XP • Insignia "Cazador de Jefes"',
         progress: 0,
         target: Math.max(10, Math.floor(bossError.count * 0.8)),
         actionable: true,
@@ -210,10 +240,11 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
       challenges.push({
         id: `rescue-${tag}`,
         type: 'rescue',
-        title: `🚀 Rescue Mission: ${getErrorTagLabel(tag)}`,
-        description: `Salva este patrón problemático. ${count} errores detectados.`,
+        icon: '/icons/robot.png',
+        title: `Rescate: ${getErrorTagLabel(tag)}`,
+        description: `Recuperá este patrón en descenso. ${count} errores identificados.`,
         difficulty: Math.min(3, Math.ceil(count / 8)),
-        reward: `${20 + index * 5} XP`,
+        reward: `${20 + index * 5} XP • Crédito de práctica`,
         progress: 0,
         target: Math.max(5, Math.floor(count * 0.6)),
         actionable: true,
@@ -233,10 +264,11 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
       challenges.push({
         id: 'consistency-master',
         type: 'consistency',
-        title: '📈 Consistency Master',
-        description: `Mejora tu consistencia diaria. Puntuación actual: ${Math.round(consistencyScore * 100)}%`,
+        icon: '/icons/chart.png',
+        title: 'Consistencia diaria',
+        description: `Mejorá tu consistencia. Puntuación actual: ${Math.round(consistencyScore * 100)}%`,
         difficulty: 2,
-        reward: '30 XP + Badge "Steady Progress"',
+        reward: '30 XP • Insignia "Progreso Constante"',
         progress: consistencyScore,
         target: 0.8,
         actionable: false
@@ -343,23 +375,6 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
   }
 
   // Utility functions
-  function getErrorTagLabel(tag) {
-    const labels = {
-      [ERROR_TAGS.ACCENT]: 'Acentuación',
-      [ERROR_TAGS.VERBAL_ENDING]: 'Terminaciones',
-      [ERROR_TAGS.IRREGULAR_STEM]: 'Raíz Irregular',
-      [ERROR_TAGS.WRONG_PERSON]: 'Persona Incorrecta',
-      [ERROR_TAGS.WRONG_TENSE]: 'Tiempo Incorrecto',
-      [ERROR_TAGS.WRONG_MOOD]: 'Modo Incorrecto',
-      [ERROR_TAGS.CLITIC_PRONOUNS]: 'Pronombres Clíticos',
-      [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'Ortografía C/QU',
-      [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'Ortografía G/GU',
-      [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'Ortografía Z/C',
-      [ERROR_TAGS.OTHER_VALID_FORM]: 'Otra Forma Válida'
-    }
-    return labels[tag] || 'Error Desconocido'
-  }
-
   function getErrorExamples(attempts, tag) {
     return attempts
       .filter(a => !a.correct && Array.isArray(a.errorTags) && a.errorTags.includes(tag))
@@ -418,44 +433,27 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
     <div className="enhanced-error-analysis">
       <div className="analysis-header">
         <div className="view-selector">
-          <button
-            className={`view-btn ${selectedView === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setSelectedView('dashboard')}
-          >
-            🏠 Dashboard
-          </button>
-          <button
-            className={`view-btn ${selectedView === 'patterns' ? 'active' : ''}`}
-            onClick={() => setSelectedView('patterns')}
-          >
-            🧩 Patrones
-          </button>
-          <button
-            className={`view-btn ${selectedView === 'challenges' ? 'active' : ''}`}
-            onClick={() => setSelectedView('challenges')}
-          >
-            🎯 Desafíos
-          </button>
-          <button
-            className={`view-btn ${selectedView === 'forensics' ? 'active' : ''}`}
-            onClick={() => setSelectedView('forensics')}
-          >
-            🔍 Análisis
-          </button>
+          {VIEW_OPTIONS.map(option => (
+            <button
+              key={option.id}
+              type="button"
+              className={`view-btn ${selectedView === option.id ? 'active' : ''}`}
+              onClick={() => setSelectedView(option.id)}
+            >
+              <img src={option.icon} alt={option.alt} className="view-icon" />
+              <span>{option.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="analysis-content">
         {selectedView === 'dashboard' && (
-          <DashboardView
-            data={analysisData}
-            onStartPractice={startTargetedPractice}
-          />
+          <DashboardView data={analysisData} />
         )}
         {selectedView === 'patterns' && (
           <PatternsView
             patterns={analysisData.patterns}
-            emotionalContext={analysisData.emotionalContext}
             onStartPractice={startTargetedPractice}
           />
         )}
@@ -466,10 +464,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
           />
         )}
         {selectedView === 'forensics' && (
-          <ForensicsView
-            timeline={analysisData.timeline}
-            onStartPractice={startTargetedPractice}
-          />
+          <ForensicsView timeline={analysisData.timeline} />
         )}
       </div>
     </div>
@@ -477,14 +472,17 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
 }
 
 // Sub-components
-function DashboardView({ data, onStartPractice }) {
+function DashboardView({ data }) {
   const { emotionalContext, errorIntelligence } = data
 
   return (
     <div className="dashboard-view">
       <div className="dashboard-grid">
         <div className="dashboard-card emotional-insights">
-          <h3>🧠 Insights Emocionales</h3>
+          <div className="card-heading">
+            <img src="/icons/brain.png" alt="Insights emocionales" className="card-icon" />
+            <h3>Insights emocionales</h3>
+          </div>
           <div className="emotional-stats">
             <div className="stat-row">
               <span>Errores por confianza baja:</span>
@@ -505,30 +503,39 @@ function DashboardView({ data, onStartPractice }) {
         </div>
 
         <div className="dashboard-card quick-actions">
-          <h3>⚡ Acciones Rápidas</h3>
+          <div className="card-heading">
+            <img src="/icons/bolt.png" alt="Acciones rápidas" className="card-icon" />
+            <h3>Acciones rápidas</h3>
+          </div>
           <div className="action-buttons">
-            <button className="action-btn confidence-boost">
-              🎯 Boost de Confianza
+            <button type="button" className="action-btn">
+              <img src="/icons/sparks.png" alt="Refuerzo" className="action-icon" />
+              Refuerzo de confianza
             </button>
-            <button className="action-btn focused-practice">
-              🔥 Práctica Enfocada
+            <button type="button" className="action-btn">
+              <img src="/icons/robot.png" alt="Práctica" className="action-icon" />
+              Práctica enfocada
             </button>
-            <button className="action-btn pattern-breaker">
-              💥 Rompe Patrones
+            <button type="button" className="action-btn">
+              <img src="/icons/lightbulb.png" alt="Patrones" className="action-icon" />
+              Cortar patrones
             </button>
           </div>
         </div>
 
         {errorIntelligence?.summary && (
           <div className="dashboard-card error-rate-card">
-            <h3>📊 Tasa de Error (7 días)</h3>
+            <div className="card-heading">
+              <img src="/icons/chart.png" alt="Tasa de error" className="card-icon" />
+              <h3>Tasa de error (7 días)</h3>
+            </div>
             <div className="error-rate-display">
               <div className="rate-number">
                 {Math.round((errorIntelligence.summary.errorRate7 || 0) * 100)}%
               </div>
               <div className="rate-trend">
-                {errorIntelligence.summary.trend === 'down' ? '📉 Mejorando' :
-                 errorIntelligence.summary.trend === 'up' ? '📈 Empeorando' : '➡️ Estable'}
+                {errorIntelligence.summary.trend === 'down' ? 'En mejora' :
+                 errorIntelligence.summary.trend === 'up' ? 'Necesita atención' : 'Estable'}
               </div>
             </div>
           </div>
@@ -538,14 +545,18 @@ function DashboardView({ data, onStartPractice }) {
   )
 }
 
-function PatternsView({ patterns, emotionalContext, onStartPractice }) {
+function PatternsView({ patterns, onStartPractice }) {
   return (
     <div className="patterns-view">
-      <h2>🧩 Patrones de Error Detectados</h2>
+      <h2 className="section-title">
+        <img src="/icons/brain.png" alt="Patrones" className="section-icon" />
+        Patrones de error detectados
+      </h2>
       <div className="patterns-grid">
         {patterns.length === 0 ? (
           <div className="no-patterns">
-            <p>🎉 ¡Excelente! No se detectaron patrones problemáticos.</p>
+            <img src="/icons/sparks.png" alt="Sin patrones" className="empty-state-icon" />
+            <p>¡Excelente! No se detectaron patrones problemáticos.</p>
           </div>
         ) : (
           patterns.map(pattern => (
@@ -553,19 +564,21 @@ function PatternsView({ patterns, emotionalContext, onStartPractice }) {
               <div className="pattern-header">
                 <h3>{pattern.title}</h3>
                 <span className={`severity-badge ${pattern.severity}`}>
-                  {pattern.severity === 'high' ? '🔴' : pattern.severity === 'medium' ? '🟡' : '🟢'}
+                  {pattern.severity === 'high' ? 'Alta' : pattern.severity === 'medium' ? 'Media' : 'Baja'}
                 </span>
               </div>
               <p className="pattern-description">{pattern.description}</p>
               <div className="pattern-insight">
-                💡 <em>{pattern.insight}</em>
+                <img src="/icons/lightbulb.png" alt="Idea" className="insight-icon" />
+                <em>{pattern.insight}</em>
               </div>
               {pattern.actionable && (
                 <button
                   className="pattern-action-btn"
                   onClick={() => pattern.data?.errorTag && onStartPractice(pattern.data.errorTag)}
                 >
-                  Practicar Ahora
+                  <img src="/icons/bolt.png" alt="Práctica" className="button-icon" />
+                  Practicar ahora
                 </button>
               )}
             </div>
@@ -579,67 +592,101 @@ function PatternsView({ patterns, emotionalContext, onStartPractice }) {
 function ChallengesView({ challenges, onStartPractice }) {
   return (
     <div className="challenges-view">
-      <h2>🎯 Desafíos de Error</h2>
+      <h2 className="section-title">
+        <img src="/icons/trophy.png" alt="Desafíos" className="section-icon" />
+        Desafíos de error
+      </h2>
       <div className="challenges-grid">
-        {challenges.map(challenge => (
-          <div key={challenge.id} className={`challenge-card ${challenge.type}`}>
-            <div className="challenge-header">
-              <h3>{challenge.title}</h3>
-              <div className="difficulty-stars">
-                {Array.from({length: challenge.difficulty}, (_, i) => '⭐').join('')}
+        {challenges.map(challenge => {
+          const progressRatio = challenge.target
+            ? Math.min(challenge.progress / challenge.target, 1)
+            : 0
+          const showPercentage = challenge.target && challenge.target <= 1
+          const currentValue = showPercentage
+            ? Math.round((challenge.progress || 0) * 100)
+            : Math.round(challenge.progress || 0)
+          const targetValue = showPercentage
+            ? Math.round(challenge.target * 100)
+            : challenge.target
+
+          return (
+            <div key={challenge.id} className={`challenge-card ${challenge.type}`}>
+              <div className="challenge-header">
+                <div className="challenge-title-block">
+                  <img
+                    src={challenge.icon || CHALLENGE_ICON_MAP[challenge.type] || '/icons/error.png'}
+                    alt="Desafío"
+                    className="challenge-icon"
+                  />
+                  <h3>{challenge.title}</h3>
+                </div>
+                <div className="difficulty-scale" aria-label={`Dificultad ${challenge.difficulty} de 5`}>
+                  {Array.from({ length: 5 }, (_, index) => (
+                    <span
+                      key={index}
+                      className={`difficulty-dot ${index < challenge.difficulty ? 'active' : ''}`}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-            <p>{challenge.description}</p>
-            <div className="challenge-progress">
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{width: `${(challenge.progress / challenge.target) * 100}%`}}
-                ></div>
+              <p>{challenge.description}</p>
+              <div className="challenge-progress">
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{width: `${progressRatio * 100}%`}}
+                  ></div>
+                </div>
+                <span className="progress-text">
+                  {currentValue}{showPercentage ? '%' : ''} / {targetValue}{showPercentage ? '%' : ''}
+                </span>
               </div>
-              <span className="progress-text">
-                {Math.round(challenge.progress)} / {challenge.target}
-              </span>
-            </div>
             <div className="challenge-reward">
-              🏆 {challenge.reward}
+              <img src="/icons/trophy.png" alt="Recompensa" className="reward-icon" />
+              {challenge.reward}
             </div>
             {challenge.actionable && (
               <button
                 className="challenge-btn"
                 onClick={() => onStartPractice(challenge.errorTag)}
               >
-                ¡Acepto el Desafío!
+                <img src="/icons/bolt.png" alt="Aceptar" className="button-icon" />
+                Iniciar práctica dirigida
               </button>
             )}
           </div>
-        ))}
+        )
+        })}
       </div>
     </div>
   )
 }
 
-function ForensicsView({ timeline, onStartPractice }) {
+function ForensicsView({ timeline }) {
   return (
     <div className="forensics-view">
-      <h2>🔍 Análisis Forense de Errores</h2>
+      <h2 className="section-title">
+        <img src="/icons/error.png" alt="Análisis" className="section-icon" />
+        Análisis forense de errores
+      </h2>
       <div className="timeline-container">
-        {timeline.map((day, index) => (
-          <div key={day.date} className="timeline-day">
+        {timeline.map(day => (
+          <div
+            key={day.date}
+            className={`timeline-day ${day.errorRate > 0.3 ? 'high-error' : ''}`}
+          >
             <div className="timeline-date">
               {new Date(day.date).toLocaleDateString('es-ES', {
                 day: 'numeric',
                 month: 'short'
               })}
             </div>
-            <div className={`timeline-content ${day.errorRate > 0.3 ? 'high-error' : ''}`}>
+            <div className="timeline-content">
               <div className="error-rate-indicator">
                 <div
                   className="error-rate-bar"
                   style={{
-                    height: `${Math.max(10, day.errorRate * 100)}px`,
-                    backgroundColor: day.errorRate > 0.3 ? '#dc3545' :
-                                   day.errorRate > 0.15 ? '#ffc107' : '#28a745'
+                    height: `${Math.max(12, day.errorRate * 120)}px`
                   }}
                 ></div>
               </div>
@@ -650,12 +697,12 @@ function ForensicsView({ timeline, onStartPractice }) {
                 </div>
                 {day.dominantEmotion && (
                   <div className="emotional-state">
-                    Estado: {day.dominantEmotion}
+                    Estado: {day.dominantEmotion.replace(/_/g, ' ')}
                   </div>
                 )}
                 {day.topErrorType && (
                   <div className="top-error">
-                    Principalmente: {day.topErrorType}
+                    Principalmente: {getErrorTagLabel(day.topErrorType)}
                   </div>
                 )}
               </div>

@@ -2,7 +2,6 @@
 // Rastrea las rachas emocionales del usuario más allá de simple acierto/error
 
 import { logger } from './logger.js'
-import { verbMetadataProvider } from './verbMetadataProvider.js'
 
 /**
  * Tipos de momentum emocional

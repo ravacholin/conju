@@ -2,7 +2,7 @@
 // Mantiene cache de mastery scores y actualiza incrementalmente con nuevos intentos
 
 import { getAttemptsByItem } from './database.js'
-import { getVerbDifficulty, calculateMasteryForItem as calculateMasteryForItemOriginal } from './mastery.js'
+import { getVerbDifficulty } from './mastery.js'
 import { calculateRecencyWeight } from './helpers.js'
 import { PROGRESS_CONFIG } from './config.js'
 

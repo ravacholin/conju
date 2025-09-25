@@ -11,8 +11,7 @@ import {
   getMasteryByUser,
   getByIndex,
   migrateUserIdInLocalDB,
-  validateUserIdMigration,
-  getUser
+  validateUserIdMigration
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 
@@ -139,4 +138,3 @@ describe('migrateUserIdInLocalDB', () => {
     expect((await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', newUserId)).length).toBe(0)
   })
 })
-

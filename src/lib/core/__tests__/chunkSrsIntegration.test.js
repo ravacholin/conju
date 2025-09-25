@@ -1,7 +1,7 @@
 // Comprehensive tests for chunk-SRS-progress integration
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { verbChunkManager } from '../verbChunkManager.js'
-import { calculateNextInterval, updateSchedule, extractDueLemmas } from '../../progress/srs.js'
+import { calculateNextInterval, extractDueLemmas } from '../../progress/srs.js'
 import { getErrorIntelligence } from '../../progress/analytics.js'
 import { initiatePredictiveLoading, predictiveCache, verbLookupCache } from '../optimizedCache.js'
 
@@ -332,8 +332,6 @@ describe('Chunk-SRS-Progress Integration', () => {
 
   describe('Performance and Efficiency', () => {
     it('should complete smart preloading within reasonable time', async () => {
-      const startTime = performance.now()
-
       const results = await verbChunkManager.smartPreload(
         { level: 'B1', verbType: 'irregular' },
         testUserId

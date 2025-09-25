@@ -4,8 +4,6 @@
  * End-to-end test for the JWT + account linking flow
  */
 
-import { generateJWT } from './src/auth-service.js'
-
 const SERVER_BASE = 'http://localhost:8788/api'
 const TEST_ACCOUNT_ID = 'e2e-account-' + Date.now()
 const TEST_USER_ID = 'e2e-user-' + Date.now()
@@ -111,7 +109,7 @@ async function testAuthenticatedUpload() {
   console.log('🔐 Testing authenticated upload with JWT...')
 
   // Create account and migrate anonymous data
-  const { realAccountId, realToken, realUserId } = await testAccountCreationAndMigration()
+  const { realToken, realUserId } = await testAccountCreationAndMigration()
 
   console.log('📤 Now uploading additional data as authenticated user...')
 
@@ -182,8 +180,8 @@ async function main() {
     console.log('🚀 Starting end-to-end test...\n')
 
     await testAnonymousUpload()
-    const { result: authResult, token } = await testAuthenticatedUpload()
-    const downloadResult = await testSyncDownload(token)
+    const { token } = await testAuthenticatedUpload()
+    await testSyncDownload(token)
 
     console.log('\n🎉 All tests passed!')
     console.log('\n📋 Summary:')

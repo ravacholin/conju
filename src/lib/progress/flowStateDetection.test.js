@@ -5,7 +5,7 @@
  * ensuring proper data flow and accurate flow state analysis.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import {
   FlowStateDetector,
   FLOW_STATES,

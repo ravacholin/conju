@@ -188,10 +188,10 @@ async function main() {
     console.log('🚀 Starting account linking verification tests...\n')
 
     await setupTestData()
-    const testData = await testAnonymousUpload()
+    await testAnonymousUpload()
     await testAuthenticatedUpload()
-    const mergedData = await testMergeAccountData()
-    const jwt = await testJWTFlow()
+    await testMergeAccountData()
+    await testJWTFlow()
 
     console.log('\n🎉 All tests passed! Account linking is working correctly.')
     console.log('\n📋 Test Summary:')

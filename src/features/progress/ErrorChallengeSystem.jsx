@@ -4,9 +4,8 @@ import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './ErrorChallengeSystem.css'
 
-export default function ErrorChallengeSystem({ onStartChallenge, userStats }) {
+export default function ErrorChallengeSystem({ onStartChallenge, userStats: _userStats }) {
   const [challenges, setChallenges] = useState([])
-  const [activeChallenge, setActiveChallenge] = useState(null)
   const [userProgress, setUserProgress] = useState({
     totalXP: 0,
     level: 1,
@@ -40,13 +39,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats }) {
     }
   }
 
-  function saveUserProgress(progress) {
-    localStorage.setItem(`error-challenge-progress-${getCurrentUserId()}`, JSON.stringify(progress))
-    setUserProgress(progress)
-  }
-
   function acceptChallenge(challenge) {
-    setActiveChallenge(challenge)
     onStartChallenge?.(challenge)
 
     // Actualizar estado del challenge
@@ -54,42 +47,6 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats }) {
       c.id === challenge.id ? { ...c, status: 'active', startedAt: new Date() } : c
     )
     setChallenges(updatedChallenges)
-  }
-
-  function completeChallenge(challengeId, result) {
-    const challenge = challenges.find(c => c.id === challengeId)
-    if (!challenge) return
-
-    const xpGained = calculateXPReward(challenge, result)
-    const newBadges = checkForNewBadges(challenge, result, userProgress)
-
-    const updatedProgress = {
-      ...userProgress,
-      totalXP: userProgress.totalXP + xpGained,
-      level: calculateLevel(userProgress.totalXP + xpGained),
-      badges: [...userProgress.badges, ...newBadges],
-      completedChallenges: [...userProgress.completedChallenges, challengeId]
-    }
-
-    saveUserProgress(updatedProgress)
-
-    // Mostrar animación de badges si hay nuevos
-    if (newBadges.length > 0) {
-      setShowBadgeAnimation(newBadges[0])
-      setTimeout(() => setShowBadgeAnimation(null), 3000)
-    }
-
-    // Actualizar challenges
-    const updatedChallenges = challenges.map(c =>
-      c.id === challengeId
-        ? { ...c, status: 'completed', completedAt: new Date(), result }
-        : c
-    )
-    setChallenges(updatedChallenges)
-    setActiveChallenge(null)
-
-    // Generar nuevos challenges si es necesario
-    setTimeout(loadChallenges, 1000)
   }
 
   const challengesByCategory = useMemo(() => {
@@ -240,7 +197,7 @@ function ChallengeCard({ challenge, onAccept, userProgress }) {
           <h4>{challenge.title}</h4>
         </div>
         <div className="challenge-difficulty">
-          {Array.from({ length: challenge.difficultyLevel || 1 }, (_, i) => '⭐').join('')}
+          {'⭐'.repeat(Math.max(1, challenge.difficultyLevel || 1))}
         </div>
       </div>
 
@@ -403,7 +360,7 @@ function generateGameifiedChallenges(attempts) {
 
   // Rescue Mission Challenges - Recuperar habilidades perdidas
   const strugglingAreas = findStrugglingAreas(attempts)
-  strugglingAreas.forEach((area, index) => {
+  strugglingAreas.forEach((area, _index) => {
     challenges.push({
       id: `rescue-${area.combo}`,
       category: 'rescue',
@@ -642,42 +599,6 @@ function calculateAverageResponseTime(attempts) {
   const withLatency = attempts.filter(a => a.latencyMs && a.latencyMs > 0)
   if (withLatency.length === 0) return 0
   return withLatency.reduce((sum, a) => sum + a.latencyMs, 0) / withLatency.length
-}
-
-function calculateXPReward(challenge, result) {
-  let baseXP = challenge.xpReward || 50
-
-  // Bonificaciones por rendimiento
-  if (result.accuracy > 0.9) baseXP *= 1.5
-  if (result.speed && result.speed < challenge.targetSpeed) baseXP *= 1.2
-  if (result.perfectRun) baseXP *= 2
-
-  return Math.round(baseXP)
-}
-
-function checkForNewBadges(challenge, result, userProgress) {
-  const newBadges = []
-
-  if (challenge.badgeReward && !userProgress.badges.some(b => b.id === challenge.badgeReward.id)) {
-    newBadges.push({
-      ...challenge.badgeReward,
-      unlockedAt: new Date(),
-      xp: 50
-    })
-  }
-
-  // Badges especiales por rendimiento
-  if (result.accuracy === 1.0 && !userProgress.badges.some(b => b.id === 'perfectionist-streak')) {
-    newBadges.push({
-      id: 'perfectionist-streak',
-      name: 'Racha Perfecta',
-      icon: '✨',
-      description: 'Completaste un desafío con 100% de precisión',
-      xp: 25
-    })
-  }
-
-  return newBadges
 }
 
 function calculateLevel(totalXP) {

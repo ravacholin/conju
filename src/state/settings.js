@@ -16,7 +16,7 @@ if (typeof window !== 'undefined') {
 
 const useSettings = create(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       // Configuración de usuario
       level: 'A1',
       // Variante: no se fija por defecto. Se define en Onboarding.

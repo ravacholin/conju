@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
-import { getAttemptsByUser, getMasteryByUser } from '../../lib/progress/database.js'
+import React, { useState, useMemo } from 'react'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './PersonalizedErrorCoach.css'
 
@@ -151,7 +149,7 @@ function CoachingDashboard({
       <div className="adaptive-strategies">
         <h3>🎯 Estrategias Personalizadas</h3>
         <div className="strategies-container">
-          {strategies.map((strategy, index) => (
+          {strategies.map(strategy => (
             <StrategyCard
               key={strategy.id}
               strategy={strategy}
@@ -166,7 +164,7 @@ function CoachingDashboard({
       <div className="mini-lessons">
         <h3>📚 Mini-Lecciones Personalizadas</h3>
         <div className="lessons-grid">
-          {generateMiniLessons(insights).map((lesson, index) => (
+          {generateMiniLessons(insights).map(lesson => (
             <MiniLessonCard
               key={lesson.id}
               lesson={lesson}
@@ -538,9 +536,6 @@ function PracticeStep({ recommendations, personality, onStartPractice, onNext, o
 }
 
 function ReflectionStep({ session, personality, onFinish, onBack }) {
-  const [reflection, setReflection] = useState('')
-  const [insights, setInsights] = useState([])
-
   return (
     <div className="reflection-step">
       <div className="coach-message">
@@ -710,7 +705,7 @@ function generatePersonalizedCoaching(attempts, userProgress, currentFlowState, 
   })
 }
 
-function generateAdaptiveStrategies(insights, currentFlowState, currentMomentum) {
+function generateAdaptiveStrategies(insights, currentFlowState, _currentMomentum) {
   const strategies = []
 
   // Estrategia para errores recurrentes
@@ -1065,7 +1060,7 @@ function getPersonalizedReflectionMessage(session, personality) {
   return messages[personality] || messages.encouraging
 }
 
-function generatePersonalizedPlan(insight, personality) {
+function generatePersonalizedPlan(_insight, _personality) {
   return {
     phases: [
       {
@@ -1113,7 +1108,7 @@ function generatePersonalizedPlan(insight, personality) {
   }
 }
 
-function generateEmotionalSupport(insight, currentFlowState) {
+function generateEmotionalSupport(_insight, _currentFlowState) {
   return {
     encouragement: "Cada error es una oportunidad de crecimiento",
     techniques: ["Respiración profunda", "Visualización positiva"],
@@ -1121,7 +1116,7 @@ function generateEmotionalSupport(insight, currentFlowState) {
   }
 }
 
-function generatePracticeRecommendations(insight, userProgress) {
+function generatePracticeRecommendations(insight, _userProgress) {
   return [
     {
       name: "Práctica Dirigida",

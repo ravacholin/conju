@@ -360,7 +360,6 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   // Diptongos → nueva familia unificada
   'DIPHT_E_IE': 'LEARNING_DIPHTHONGS',
   'DIPHT_O_UE': 'LEARNING_DIPHTHONGS',
-  'E_I_IR': 'LEARNING_DIPHTHONGS',
 
   // YO irregular → nueva familia de YO con -g
   'G_VERBS': 'LEARNING_YO_G_PRESENT',

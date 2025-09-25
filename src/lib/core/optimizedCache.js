@@ -442,7 +442,7 @@ export function getCacheStats() {
 }
 
 // Predictive loading basado en patrones de uso y mastery
-export async function initiatePredictiveLoading(userId, userSettings = {}) {
+export async function initiatePredictiveLoading(userId, _userSettings = {}) {
   if (!userId) return
 
   try {
@@ -450,7 +450,7 @@ export async function initiatePredictiveLoading(userId, userSettings = {}) {
     const { getErrorIntelligence, getUserStats } = await import('../progress/analytics.js')
     const { getMasteryByUser } = await import('../progress/database.js')
 
-    const [errorData, userStats, masteryRecords] = await Promise.all([
+    const [errorData, _userStats, masteryRecords] = await Promise.all([
       getErrorIntelligence(userId),
       getUserStats(userId),
       getMasteryByUser(userId)

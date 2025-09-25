@@ -4,7 +4,7 @@
 // moquean './database.js' sin ese export sigan funcionando. Lo cargamos de forma
 // perezosa y con fallback a no-op.
 import { initTracking } from './tracking.js'
-import { initializeItems, initializeItemsBatched } from './itemManagement.js'
+import { initializeItemsBatched } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 import { markProgressSystemReady } from './ProgressSystemEvents.js'
 import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
