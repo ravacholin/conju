@@ -48,9 +48,9 @@
 }
 
 .play-audio-btn {
-  background: #333;
-  border: 1px solid #555;
-  border-radius: 4px;
+  background: linear-gradient(145deg, #1e3a8a, #3b82f6);
+  border: none;
+  border-radius: 50px;
   color: white;
   font-size: 1.1em;
   padding: 15px 30px;
@@ -62,8 +62,9 @@
 }
 
 .play-audio-btn:hover {
-  background: #555;
-  border-color: #777;
+  background: linear-gradient(145deg, #3b82f6, #1e3a8a);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
 }
 
 .audio-icon {
@@ -150,9 +151,9 @@
 }
 
 .record-btn {
-  background: #333;
-  border: 1px solid #555;
-  border-radius: 4px;
+  background: linear-gradient(145deg, #dc2626, #ef4444);
+  border: none;
+  border-radius: 50px;
   color: white;
   font-size: 1.2em;
   padding: 20px 40px;
@@ -165,13 +166,13 @@
 }
 
 .record-btn:hover:not(:disabled) {
-  background: #555;
-  border-color: #777;
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
 }
 
 .record-btn.recording {
-  background: #444;
-  border-color: #777;
+  background: linear-gradient(145deg, #dc2626, #7f1d1d);
   animation: recording-pulse 1s infinite;
 }
 
@@ -236,9 +237,9 @@
 }
 
 .nav-btn {
-  background: #333;
-  border: 1px solid #555;
-  border-radius: 4px;
+  background: linear-gradient(145deg, #374151, #6b7280);
+  border: none;
+  border-radius: 8px;
   color: white;
   font-size: 1em;
   padding: 12px 24px;
@@ -247,8 +248,8 @@
 }
 
 .nav-btn:hover:not(:disabled) {
-  background: #555;
-  border-color: #777;
+  background: linear-gradient(145deg, #6b7280, #374151);
+  transform: translateY(-2px);
 }
 
 .nav-btn:disabled {
@@ -258,13 +259,11 @@
 }
 
 .next-btn {
-  background: #333;
-  border-color: #00ff88;
+  background: linear-gradient(145deg, #059669, #10b981);
 }
 
 .next-btn:hover:not(:disabled) {
-  background: #444;
-  border-color: #00ff88;
+  background: linear-gradient(145deg, #10b981, #059669);
 }
 
 /* Responsive Design */
