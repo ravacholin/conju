@@ -227,11 +227,13 @@
   height: 40px;
   border-radius: 50%;
   position: relative;
-  background: #666;
+  background: conic-gradient(
+    var(--accent-blue, #333) calc(var(--progress) * 1%),
+    #333 0%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #333;
 }
 
 .progress-ring::before {
@@ -254,18 +256,24 @@
 }
 
 .srs-stat-card.urgent .progress-ring {
-  background: #555;
-  border-color: #777;
+  background: conic-gradient(
+    var(--accent-red, #333) calc(var(--progress) * 1%),
+    #333 0%
+  );
 }
 
 .srs-stat-card.ready .progress-ring {
-  background: #666;
-  border-color: #888;
+  background: conic-gradient(
+    var(--accent-green, #333) calc(var(--progress) * 1%),
+    #333 0%
+  );
 }
 
 .srs-stat-card.scheduled .progress-ring {
-  background: #555;
-  border-color: #666;
+  background: conic-gradient(
+    var(--accent-blue, #333) calc(var(--progress) * 1%),
+    #333 0%
+  );
 }
 
 .stat-time {
