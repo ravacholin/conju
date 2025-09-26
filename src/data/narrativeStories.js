@@ -81,30 +81,62 @@ export const storyData = {
     },
   },
   fut: {
-    title: 'Raíces irregulares del futuro',
-    sentences: {
-        ar: 'Raíz __ROOT__ + terminación → yo __IRREG__ sin esfuerzo.',
-        er: 'Raíz __ROOT__ + terminación → tú __IRREG__ cuando haga falta.',
-        ir: 'Raíz __ROOT__ + terminación → ella __IRREG__ lo necesario.',
+    title: 'Planes futuros',
+    regularStory: {
+      title: 'Planes para el futuro',
+      sentences: {
+          ar: 'Mañana yo __VERB__ con el equipo sobre el proyecto.',
+          er: 'La semana próxima yo __VERB__ en el nuevo restaurante japonés.',
+          ir: 'Yo __VERB__ en la casa nueva muy pronto.',
+      },
+      verbSpecific: {
+          hablar: 'Mañana yo __VERB__ con el equipo sobre el proyecto.',
+          comer: 'La semana próxima yo __VERB__ en el nuevo restaurante japonés.',
+          vivir: 'Yo __VERB__ en la casa nueva muy pronto.',
+      }
     },
-    verbSpecific: {
-        tener: 'Tener adopta la raíz tendr-: mañana yo __IRREG__ el informe final.',
-        poder: 'Poder usa podr-: desde ahora tú __IRREG__ viajar cuando quieras.',
-        decir: 'Decir pasa a dir-: en la reunión ella __IRREG__ lo necesario sin rodeos.'
-    },
+    irregularStory: {
+      title: 'Raíces irregulares del futuro',
+      sentences: {
+          ar: 'Raíz __ROOT__ + terminación → yo __VERB__ sin esfuerzo.',
+          er: 'Raíz __ROOT__ + terminación → yo __VERB__ cuando haga falta.',
+          ir: 'Raíz __ROOT__ + terminación → yo __VERB__ lo necesario.',
+      },
+      verbSpecific: {
+          tener: 'Tener adopta la raíz tendr-: mañana yo __VERB__ el informe final.',
+          poder: 'Poder usa podr-: desde ahora yo __VERB__ viajar cuando quiera.',
+          decir: 'Decir pasa a dir-: en la reunión yo __VERB__ lo necesario sin rodeos.'
+      },
+    }
   },
   cond: {
-    title: 'Raíces irregulares del condicional',
-    sentences: {
-        ar: 'Raíz __ROOT__ + terminación → yo __IRREG__ si hiciera falta.',
-        er: 'Raíz __ROOT__ + terminación → tú __IRREG__ encantado.',
-        ir: 'Raíz __ROOT__ + terminación → nosotros __IRREG__ sin dudarlo.',
+    title: 'Situaciones hipotéticas',
+    regularStory: {
+      title: 'Si pudiera elegir...',
+      sentences: {
+          ar: 'En esa situación, yo __VERB__ con mi familia.',
+          er: 'Con más tiempo, yo __VERB__ más despacio.',
+          ir: 'Si tuviera oportunidad, yo __VERB__ en el campo.',
+      },
+      verbSpecific: {
+          hablar: 'En esa situación, yo __VERB__ con toda honestidad.',
+          comer: 'Con más tiempo libre, yo __VERB__ más despacio y relajado.',
+          vivir: 'Si tuviera la oportunidad, yo __VERB__ tranquilamente en el campo.',
+      }
     },
-    verbSpecific: {
-        poner: 'Poner cambia a pondr-: con un día extra yo __IRREG__ el plan en marcha.',
-        querer: 'Querer toma querr-: en otra situación tú __IRREG__ quedarte un poco más.',
-        venir: 'Venir adopta vendr-: con mejor clima nosotros __IRREG__ mañana sin dudarlo.'
-    },
+    irregularStory: {
+      title: 'Raíces irregulares del condicional',
+      sentences: {
+          ar: 'Raíz __ROOT__ + terminación → yo __VERB__ si hiciera falta.',
+          er: 'Raíz __ROOT__ + terminación → yo __VERB__ encantado.',
+          ir: 'Raíz __ROOT__ + terminación → yo __VERB__ sin dudarlo.',
+      },
+      verbSpecific: {
+          poner: 'Poner cambia a pondr-: con un día extra yo __VERB__ el plan en marcha.',
+          querer: 'Querer toma querr-: en otra situación yo __VERB__ quedarme un poco más.',
+          venir: 'Venir adopta vendr-: con mejor clima yo __VERB__ mañana sin dudarlo.'
+      },
+    }
   },
   subjPres: {
     title: 'Buenos deseos',

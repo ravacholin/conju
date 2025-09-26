@@ -381,6 +381,57 @@ function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
   )
 }
 
+function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings) {
+  if (!tense || !['fut', 'cond'].includes(tense.tense)) {
+    return null
+  }
+
+  const regularVerbs = exampleVerbs.filter(verbObj => verbObj.type === 'regular')
+  if (regularVerbs.length === 0) return null
+
+  const isConditional = tense.tense === 'cond'
+  const endingsSource = isConditional ? CONDITIONAL_ENDINGS : FUTURE_ENDINGS
+  const pronounOrder = [
+    '1s',
+    settings?.useVoseo ? '2s_vos' : '2s_tu',
+    '3s',
+    '1p',
+    (!settings?.useVoseo && settings?.useVosotros) ? '2p_vosotros' : null,
+    '3p'
+  ].filter(Boolean)
+
+  const endingsList = pronounOrder.map(pronoun => endingsSource[pronoun] || '')
+
+  return (
+    <div className="deconstruction-item future-root-group">
+      <div className="future-root-verbs">
+        {regularVerbs.map((verbObj, index) => {
+          const verb = verbObj.lemma
+          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
+
+          return (
+            <div key={`regular-verb-${index}`} className="future-root-item">
+              <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+              <span className="group-label-large">{group}</span>
+              <span className="arrow">→</span>
+              <span className="future-root-highlight">{verb}-</span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="root-endings">
+        <div className="root-endings-title">Terminaciones regulares ({isConditional ? 'condicional' : 'futuro'})</div>
+        <div className="ending-carousel">
+          {endingsList.map((ending, idx) => (
+            <div key={`regular-ending-${idx}`} className="regular-ending-item">{ending}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
   if (!tense || !['ger', 'part'].includes(tense.tense)) {
     return null
@@ -475,7 +526,40 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const [leaving, setLeaving] = useState(false);
   const settings = useSettings();
 
-  const tenseStoryData = tense ? storyData[tense.tense] : null;
+  // Determinar si tenemos verbos regulares o irregulares
+  const hasRegularVerbs = exampleVerbs && exampleVerbs.some(verbObj => verbObj.type === 'regular')
+  const hasIrregularVerbs = exampleVerbs && exampleVerbs.some(verbObj => verbObj.type === 'irregular')
+
+  // Para futuro y condicional, seleccionar la narrativa apropiada
+  const getTenseStoryData = () => {
+    if (!tense) return null
+
+    const baseStoryData = storyData[tense.tense]
+    if (!baseStoryData) return null
+
+    // Si es futuro o condicional y tiene estructura diferenciada
+    if (['fut', 'cond'].includes(tense.tense) && baseStoryData.regularStory && baseStoryData.irregularStory) {
+      // Si solo tenemos verbos regulares, usar narrativa regular
+      if (hasRegularVerbs && !hasIrregularVerbs) {
+        return baseStoryData.regularStory
+      }
+      // Si solo tenemos verbos irregulares, usar narrativa irregular
+      if (hasIrregularVerbs && !hasRegularVerbs) {
+        return baseStoryData.irregularStory
+      }
+      // Si tenemos mezcla, priorizar irregulares (comportamiento actual)
+      if (hasIrregularVerbs) {
+        return baseStoryData.irregularStory
+      }
+      // Fallback a regulares si no hay irregulares
+      return baseStoryData.regularStory
+    }
+
+    // Para otros tiempos, usar estructura normal
+    return baseStoryData
+  }
+
+  const tenseStoryData = getTenseStoryData()
 
   useEffect(() => {
     if (!tenseStoryData || !exampleVerbs) return;
@@ -675,10 +759,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const sentences = exampleVerbs.map((verbObj, index) => {
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
-      // Elegir persona según el texto de la narrativa (si comienza con "Yo", usar 1s; si "Nosotros", usar 1p; si no, 3s)
-      const personHint = /^\s*Yo\b/i.test(sentenceTemplate)
+      // Para futuro y condicional, usar siempre 1s porque todas las narrativas están en primera persona
+      const personHint = (['fut', 'cond'].includes(tense.tense))
         ? '1s'
-        : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s')
+        : (/^\s*Yo\b/i.test(sentenceTemplate)
+            ? '1s'
+            : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s'))
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
       const conjugation = getConjugation(verbObj, personHint, tense.mood);
       
@@ -751,6 +837,11 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
               <div className="deconstruction-placeholder">
                 <div className="deconstruction-list">
                   {(() => {
+                    // Primero verificar si es futuro/condicional con verbos regulares
+                    if (['fut', 'cond'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
+                      return renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings)
+                    }
+
                     const futureRootBlock = renderFutureRootDeconstruction(exampleVerbs, tense, settings)
                     if (futureRootBlock) {
                       return futureRootBlock
