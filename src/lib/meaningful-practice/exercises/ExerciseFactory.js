@@ -445,4 +445,3 @@ export class ExerciseFactory {
 const exerciseFactory = new ExerciseFactory();
 
 export default exerciseFactory;
-export { ExerciseFactory };

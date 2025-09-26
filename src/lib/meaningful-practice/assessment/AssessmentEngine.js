@@ -674,4 +674,3 @@ export class AssessmentEngine {
 const assessmentEngine = new AssessmentEngine();
 
 export default assessmentEngine;
-export { AssessmentEngine };

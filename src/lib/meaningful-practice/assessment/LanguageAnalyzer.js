@@ -710,4 +710,3 @@ export class LanguageAnalyzer {
 const languageAnalyzer = new LanguageAnalyzer();
 
 export default languageAnalyzer;
-export { LanguageAnalyzer };

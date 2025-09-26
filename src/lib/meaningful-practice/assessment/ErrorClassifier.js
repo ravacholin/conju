@@ -850,4 +850,3 @@ export class ErrorClassifier {
 const errorClassifier = new ErrorClassifier();
 
 export default errorClassifier;
-export { ErrorClassifier };

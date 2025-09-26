@@ -856,4 +856,3 @@ export class FeedbackGenerator {
 const feedbackGenerator = new FeedbackGenerator();
 
 export default feedbackGenerator;
-export { FeedbackGenerator };
