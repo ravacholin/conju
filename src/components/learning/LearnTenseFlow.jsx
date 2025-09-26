@@ -83,6 +83,8 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { generateAllFormsForRegion } from '../../hooks/modules/DrillFormFilters.js';
+import { categorizeVerb } from '../../lib/data/irregularFamilies.js';
 
 
 
@@ -232,6 +234,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
+  const [eligibleForms, setEligibleForms] = useState([]);
   const settings = useSettings();
 
   // Calculate adaptive settings when tense and type are selected
@@ -256,7 +259,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   // Initialize A/B testing on component mount
   useEffect(() => {
     const userId = getCurrentUserId();
-    
+
     // Create sample A/B test for learning flow optimization
     const abConfig = AB_TESTING_CONFIG.LEARNING_FLOW_V1;
     abTesting.createTest(abConfig.testId, {
@@ -271,9 +274,87 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     // Assign user to variant
     const variant = abTesting.assignUserToVariant(userId, abConfig.testId);
     setAbTestVariant(variant);
-    
+
     logger.debug('A/B Test variant assigned:', variant);
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadEligibleForms() {
+      if (!selectedTense?.tense || !selectedTense?.mood || !verbType) {
+        if (isMounted) {
+          setEligibleForms([]);
+        }
+        return;
+      }
+
+      try {
+        const region = settings?.region || 'la_general';
+        const baseSettings = {
+          region,
+          useVoseo: settings?.useVoseo,
+          useVosotros: settings?.useVosotros,
+          practicePronoun: settings?.practicePronoun,
+          level: settings?.level || 'ALL',
+          verbType,
+        };
+
+        const allForms = await generateAllFormsForRegion(region, baseSettings);
+
+        let filtered = allForms.filter(form => form?.mood === selectedTense.mood && form?.tense === selectedTense.tense);
+
+        if (verbType === 'regular') {
+          filtered = filtered.filter(form => (form?.verbType || 'regular') === 'regular');
+        } else if (verbType === 'irregular') {
+          filtered = filtered.filter(form => (form?.verbType || 'regular') !== 'regular');
+
+          if (Array.isArray(selectedFamilies) && selectedFamilies.length > 0) {
+            filtered = filtered.filter(form => {
+              const families = categorizeVerb(form?.lemma) || [];
+              return families.some(familyId => selectedFamilies.includes(familyId));
+            });
+          }
+        }
+
+        const dedupedForms = [];
+        const seenKeys = new Set();
+        for (const form of filtered) {
+          if (!form) continue;
+          const key = `${form.lemma}|${form.mood}|${form.tense}|${form.person}|${form.value}`;
+          if (!seenKeys.has(key)) {
+            seenKeys.add(key);
+            dedupedForms.push(form);
+          }
+        }
+
+        if (isMounted) {
+          setEligibleForms(dedupedForms);
+        }
+      } catch (error) {
+        logger.error('Failed to generate eligible forms for communicative phases:', error);
+        if (isMounted) {
+          setEligibleForms([]);
+        }
+      }
+    }
+
+    loadEligibleForms();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    selectedTense?.tense,
+    selectedTense?.mood,
+    verbType,
+    selectedFamilies,
+    settings?.region,
+    settings?.useVoseo,
+    settings?.useVosotros,
+    settings?.practicePronoun,
+    settings?.level,
+  ]);
 
   const availableTenses = useMemo(() => {
     // Remove compound tenses from learning module
@@ -656,10 +737,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'meaningful_practice') {
     return (
       <ErrorBoundary>
-        <MeaningfulPractice 
+        <MeaningfulPractice
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('practice')}
           onPhaseComplete={handleMeaningfulPhaseComplete}
         />
@@ -682,10 +764,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'communicative_practice') {
     return (
       <ErrorBoundary>
-        <CommunicativePractice 
+        <CommunicativePractice
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('pronunciation_practice')}
           onFinish={handleFinish}
         />

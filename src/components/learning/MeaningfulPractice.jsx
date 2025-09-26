@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
+import { normalizeFormValue } from '../../lib/utils/normalizeFormValue.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
 
@@ -346,6 +347,36 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
 
   const exercise = selectedExercise;
 
+  const findEligibleForm = useCallback(
+    candidate => {
+      if (!candidate || !Array.isArray(eligibleForms) || eligibleForms.length === 0) {
+        return null;
+      }
+
+      const normalizedCandidate = normalizeFormValue(candidate);
+
+      return (
+        eligibleForms.find(form => {
+          if (!form) return false;
+          if (normalizeFormValue(form.value) === normalizedCandidate) {
+            return true;
+          }
+
+          if (Array.isArray(form.alt) && form.alt.some(alt => normalizeFormValue(alt) === normalizedCandidate)) {
+            return true;
+          }
+
+          if (form.accepts && typeof form.accepts === 'object') {
+            return Object.values(form.accepts).some(val => normalizeFormValue(String(val)) === normalizedCandidate);
+          }
+
+          return false;
+        }) || null
+      );
+    },
+    [eligibleForms]
+  );
+
   const handleCheckStory = async () => {
     if (!exercise || !story.trim()) return;
     
@@ -440,7 +471,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         if (userId) {
           console.log('Analytics: Updating schedule for meaningful practice...');
           for (const verbStr of foundVerbs) {
-            const formObject = eligibleForms?.find(f => f.value === verbStr);
+            const formObject = findEligibleForm(verbStr);
             if (formObject) {
               await updateSchedule(userId, formObject, true, 0);
               console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
@@ -458,7 +489,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
       // Analyze found verbs for error classification
       if (foundVerbs.length > 0 && eligibleForms) {
         for (const verb of foundVerbs) {
-          const formObject = eligibleForms.find(f => f.value === verb);
+          const formObject = findEligibleForm(verb);
           if (formObject) {
             // Track individual correct verb usage for SRS (for partial credit)
             try {
@@ -533,10 +564,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         const userId = getCurrentUserId();
         if (userId && eligibleForms) {
           for (const missedVerb of missing) {
-            const formObject = eligibleForms.find(f =>
-              f.value === missedVerb ||
-              (Array.isArray(f.alt) && f.alt.includes(missedVerb))
-            );
+            const formObject = findEligibleForm(missedVerb);
             if (formObject) {
               await updateSchedule(userId, formObject, false, 1); // Mark as incorrect with hint
               console.log(`Analytics: Updated schedule for missed verb: ${formObject.lemma} - ${missedVerb}`);

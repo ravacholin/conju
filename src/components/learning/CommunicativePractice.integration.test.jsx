@@ -1,8 +1,3 @@
-/**
- * Integration test for CommunicativePractice SRS integration
- * Verifies that correct keyword matching updates the SRS schedule properly
- */
-
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
@@ -11,19 +6,17 @@ import * as userManager from '../../lib/progress/userManager.js';
 
 const mockUseProgressTracking = vi.hoisted(() => vi.fn());
 
-// Mock the SRS and user manager modules
 vi.mock('../../lib/progress/srs.js');
 vi.mock('../../lib/progress/userManager.js');
 vi.mock('../../features/drill/useProgressTracking.js', () => ({
-  useProgressTracking: (...args) => mockUseProgressTracking(...args)
+  useProgressTracking: (...args) => mockUseProgressTracking(...args),
 }));
 
-// Mock CSS imports
 vi.mock('./CommunicativePractice.css', () => ({}));
 
 import CommunicativePractice from './CommunicativePractice.jsx';
 
-describe('CommunicativePractice SRS Integration', () => {
+describe('CommunicativePractice integration', () => {
   const mockTense = { mood: 'indicativo', tense: 'pres' };
   const mockEligibleForms = [
     { lemma: 'trabajar', value: 'trabajo', mood: 'indicativo', tense: 'pres', person: '1s' },
@@ -40,15 +33,10 @@ describe('CommunicativePractice SRS Integration', () => {
     vi.clearAllMocks();
     mockUseProgressTracking.mockReset();
 
-    // Mock user manager
     vi.mocked(userManager.getCurrentUserId).mockReturnValue(mockUserId);
-
-    // Mock SRS updateSchedule
     vi.mocked(srs.updateSchedule).mockResolvedValue(undefined);
-
-    // Mock useProgressTracking returned object
     mockUseProgressTracking.mockReturnValue({
-      handleResult: vi.fn().mockResolvedValue(undefined)
+      handleResult: vi.fn().mockResolvedValue(undefined),
     });
   });
 
@@ -57,7 +45,12 @@ describe('CommunicativePractice SRS Integration', () => {
     mockUseProgressTracking.mockReset();
   });
 
-  it('should update SRS schedule when correct keyword is found in chat response', async () => {
+  function startConversation() {
+    const startButton = screen.getByRole('button', { name: /comenzar conversación/i });
+    fireEvent.click(startButton);
+  }
+
+  it('progresses through the scenario and updates SRS for matched eligible forms', async () => {
     render(
       <CommunicativePractice
         tense={mockTense}
@@ -67,143 +60,124 @@ describe('CommunicativePractice SRS Integration', () => {
       />
     );
 
-    // Wait for initial bot message to appear
     await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
+      expect(screen.getByText(/rutina conectada/i)).toBeInTheDocument();
     });
 
-    // Find the input field and enter a response with a correct keyword
+    startConversation();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Contame qué hacés en un día típico/i)).toBeInTheDocument();
+    });
+
     const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    const userResponse = 'Normalmente trabajo en la oficina y como en casa.';
 
-    fireEvent.change(input, { target: { value: userResponse } });
+    fireEvent.change(input, { target: { value: 'Trabajo y como en casa todos los días.' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
 
-    // Send the message
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    // Wait for the chat to process the message
     await waitFor(() => {
-      expect(screen.getByText(userResponse)).toBeInTheDocument();
+      expect(screen.getByText(/¡Genial!/i)).toBeInTheDocument();
     });
 
-    // Wait a bit more for async SRS operations
     await waitFor(() => {
-      expect(srs.updateSchedule).toHaveBeenCalled();
+      expect(screen.getByText(/¿Qué hacés para relajarte/i)).toBeInTheDocument();
     });
 
-    // Verify that updateSchedule was called for the matched keyword
+    fireEvent.change(input, { target: { value: 'Vivo con mis amigos y hago ejercicio con ellos.' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/¿Con quién compartís parte de esas actividades\?/i)).toBeInTheDocument();
+    });
+
+    fireEvent.change(input, { target: { value: 'Salimos juntos y mis amigos trabajan conmigo.' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Cierre reflexivo/i)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(srs.updateSchedule).toHaveBeenCalledTimes(4);
+    });
+
     expect(srs.updateSchedule).toHaveBeenCalledWith(
       mockUserId,
-      expect.objectContaining({
-        lemma: 'trabajar',
-        value: 'trabajo'
-      }),
-      true, // correct answer
-      0     // hints used
+      expect.objectContaining({ lemma: 'trabajar', value: 'trabajo' }),
+      true,
+      0,
+      expect.objectContaining({ evaluation: 'full' })
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ lemma: 'comer', value: 'como' }),
+      true,
+      0,
+      expect.objectContaining({ evaluation: 'full' })
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ lemma: 'vivir', value: 'vivo' }),
+      true,
+      0,
+      expect.objectContaining({ evaluation: 'full' })
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ lemma: 'hacer', value: 'hago' }),
+      true,
+      0,
+      expect.objectContaining({ evaluation: 'full' })
     );
   });
 
-  it('should not update SRS schedule when eligibleForms is not provided', async () => {
+  it('does not update SRS when eligible forms are absent', async () => {
     render(
       <CommunicativePractice
         tense={mockTense}
-        eligibleForms={undefined} // No eligible forms provided
+        eligibleForms={[]}
         onBack={mockOnBack}
         onFinish={mockOnFinish}
       />
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
+      expect(screen.getByText(/rutina conectada/i)).toBeInTheDocument();
     });
 
-    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    const userResponse = 'Normalmente trabajo en la oficina.';
+    startConversation();
 
-    fireEvent.change(input, { target: { value: userResponse } });
-    fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.change(screen.getByPlaceholderText('Escribe tu respuesta...'), {
+      target: { value: 'Trabajo en casa y cocino para mi familia.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(userResponse)).toBeInTheDocument();
+      expect(screen.getByText(/¿Qué hacés para relajarte/i)).toBeInTheDocument();
     });
 
-    // Verify that updateSchedule was NOT called since no eligible forms provided
-    expect(srs.updateSchedule).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByPlaceholderText('Escribe tu respuesta...'), {
+      target: { value: 'Descanso y salgo con amigos.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/¿Con quién compartís parte de esas actividades\?/i)).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Escribe tu respuesta...'), {
+      target: { value: 'Salimos en familia los domingos.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Cierre reflexivo/i)).toBeInTheDocument();
+    });
+
+    expect(vi.mocked(srs.updateSchedule)).not.toHaveBeenCalled();
   });
 
-  it('should not update SRS schedule when keyword is not found in eligibleForms', async () => {
-    const limitedEligibleForms = [
-      { lemma: 'estudiar', value: 'estudio', mood: 'indicativo', tense: 'pres', person: '1s' },
-    ];
-
-    render(
-      <CommunicativePractice
-        tense={mockTense}
-        eligibleForms={limitedEligibleForms}
-        onBack={mockOnBack}
-        onFinish={mockOnFinish}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
-    });
-
-    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    // Use a keyword that's not in the limited eligible forms
-    const userResponse = 'Normalmente trabajo en la oficina.';
-
-    fireEvent.change(input, { target: { value: userResponse } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    await waitFor(() => {
-      expect(screen.getByText(userResponse)).toBeInTheDocument();
-    });
-
-    // Verify that updateSchedule was NOT called since keyword not in eligible forms
-    expect(srs.updateSchedule).not.toHaveBeenCalled();
-  });
-
-  it('should handle incorrect responses by providing hints without SRS updates', async () => {
-    render(
-      <CommunicativePractice
-        tense={mockTense}
-        eligibleForms={mockEligibleForms}
-        onBack={mockOnBack}
-        onFinish={mockOnFinish}
-      />
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
-    });
-
-    const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    // Provide a response that doesn't match expected keywords
-    const incorrectResponse = 'Me gusta el chocolate.';
-
-    fireEvent.change(input, { target: { value: incorrectResponse } });
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    await waitFor(() => {
-      expect(screen.getByText(incorrectResponse)).toBeInTheDocument();
-    });
-
-    // Should show a hint message
-    await waitFor(() => {
-      expect(screen.getByText(/Cuéntame usando verbos en presente/)).toBeInTheDocument();
-    });
-
-    // Verify that updateSchedule was NOT called for incorrect response
-    expect(srs.updateSchedule).not.toHaveBeenCalled();
-  });
-
-  it('should handle SRS update errors gracefully', async () => {
-    // Mock updateSchedule to throw an error
-    vi.mocked(srs.updateSchedule).mockRejectedValueOnce(new Error('SRS update failed'));
-
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
+  it('provides formative hints when the response misses target verbs', async () => {
     render(
       <CommunicativePractice
         tense={mockTense}
@@ -214,70 +188,56 @@ describe('CommunicativePractice SRS Integration', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
+      expect(screen.getByText(/rutina conectada/i)).toBeInTheDocument();
     });
+
+    startConversation();
 
     const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    const userResponse = 'Normalmente trabajo en casa.';
-
-    fireEvent.change(input, { target: { value: userResponse } });
-    fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.change(input, { target: { value: 'Me gusta el chocolate.' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(userResponse)).toBeInTheDocument();
+      expect(screen.getByText(/Usá al menos dos verbos en presente/i)).toBeInTheDocument();
     });
 
-    // Wait for error handling
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to update SRS schedule:',
-        expect.any(Error)
-      );
+    const partialCalls = vi.mocked(srs.updateSchedule).mock.calls;
+    expect(partialCalls.length).toBeGreaterThan(0);
+    partialCalls.forEach(call => {
+      expect(call[2]).toBe(false);
+      expect(call[4]).toMatchObject({ evaluation: 'partial' });
     });
-
-    consoleSpy.mockRestore();
   });
 
-  it('should normalize keywords to match eligibleForms values', async () => {
-    // Test with accented characters to ensure normalization works
-    const eligibleFormsWithAccents = [
-      { lemma: 'trabajar', value: 'trabajo', mood: 'indicativo', tense: 'pres', person: '1s' },
-    ];
-
+  it('highlights tense issues when the user switches to another tense', async () => {
     render(
       <CommunicativePractice
         tense={mockTense}
-        eligibleForms={eligibleFormsWithAccents}
+        eligibleForms={mockEligibleForms}
         onBack={mockOnBack}
         onFinish={mockOnFinish}
       />
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Me gusta conocer la rutina/)).toBeInTheDocument();
+      expect(screen.getByText(/rutina conectada/i)).toBeInTheDocument();
     });
+
+    startConversation();
 
     const input = screen.getByPlaceholderText('Escribe tu respuesta...');
-    // Use a response that might have different accent normalization
-    const userResponse = 'Yo trabajo mucho.';
-
-    fireEvent.change(input, { target: { value: userResponse } });
-    fireEvent.keyDown(input, { key: 'Enter' });
+    fireEvent.change(input, { target: { value: 'Ayer trabajé mucho.' } });
+    fireEvent.click(screen.getByRole('button', { name: /enviar/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(userResponse)).toBeInTheDocument();
+      expect(screen.getByText(/Usá al menos dos verbos en presente/i)).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(srs.updateSchedule).toHaveBeenCalledWith(
-        mockUserId,
-        expect.objectContaining({
-          lemma: 'trabajar',
-          value: 'trabajo'
-        }),
-        true,
-        0
-      );
+    const tenseCalls = vi.mocked(srs.updateSchedule).mock.calls;
+    expect(tenseCalls.length).toBeGreaterThan(0);
+    tenseCalls.forEach(call => {
+      expect(call[2]).toBe(false);
+      expect(call[4]).toMatchObject({ evaluation: 'partial' });
     });
   });
 });
