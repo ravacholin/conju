@@ -459,6 +459,60 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
   )
 }
 
+function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
+  if (!tense || !['ger', 'part'].includes(tense.tense)) {
+    return null
+  }
+
+  const regularVerbs = exampleVerbs.filter(verbObj => verbObj.type === 'regular')
+  if (regularVerbs.length === 0) return null
+
+  const isGerund = tense.tense === 'ger'
+  const title = isGerund ? 'Formación regular de gerundios' : 'Formación regular de participios'
+
+  // Terminaciones regulares
+  const getRegularEnding = (verb) => {
+    if (isGerund) {
+      return verb.endsWith('ar') ? 'ando' : 'iendo'
+    } else {
+      return verb.endsWith('ar') ? 'ado' : 'ido'
+    }
+  }
+
+  return (
+    <div className="deconstruction-item future-root-group">
+      <div className="future-root-verbs">
+        {regularVerbs.map((verbObj, index) => {
+          const verb = verbObj.lemma
+          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
+          const stem = verb.slice(0, -2)
+          const ending = getRegularEnding(verb)
+
+          return (
+            <div key={`regular-nonfinite-${index}`} className="future-root-item">
+              <span className="lemma-stem-large">{stem}</span>
+              <span className="group-label-large">{group}</span>
+              <span className="arrow">→</span>
+              <span className="future-root-highlight">{stem + ending}</span>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="root-endings">
+        <div className="root-endings-title">{title}</div>
+        <div className="formation-formula">
+          <span className="infinitive-part">raíz</span>
+          <span className="plus-symbol">+</span>
+          <div className="ending-carousel">
+            <div className="regular-ending-item">{isGerund ? 'ando / iendo' : 'ado / ido'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
 function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
   const strongVerbs = exampleVerbs.filter(verbObj =>
@@ -530,15 +584,15 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const hasRegularVerbs = exampleVerbs && exampleVerbs.some(verbObj => verbObj.type === 'regular')
   const hasIrregularVerbs = exampleVerbs && exampleVerbs.some(verbObj => verbObj.type === 'irregular')
 
-  // Para futuro y condicional, seleccionar la narrativa apropiada
+  // Para tiempos con narrativas diferenciadas, seleccionar la apropiada
   const getTenseStoryData = () => {
     if (!tense) return null
 
     const baseStoryData = storyData[tense.tense]
     if (!baseStoryData) return null
 
-    // Si es futuro o condicional y tiene estructura diferenciada
-    if (['fut', 'cond'].includes(tense.tense) && baseStoryData.regularStory && baseStoryData.irregularStory) {
+    // Si tiene estructura diferenciada (futuro, condicional, gerundio, participio)
+    if (['fut', 'cond', 'ger', 'part'].includes(tense.tense) && baseStoryData.regularStory && baseStoryData.irregularStory) {
       // Si solo tenemos verbos regulares, usar narrativa regular
       if (hasRegularVerbs && !hasIrregularVerbs) {
         return baseStoryData.regularStory
@@ -685,18 +739,37 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
   const getConjugation = (verbObj, person, mood = 'indicative') => {
     if (!verbObj || !verbObj.paradigms) return '';
-    
+
+    // Para gerundios y participios, generar la forma regular si no existe
+    if (tense.tense === 'ger' || tense.tense === 'part') {
+      // Primero buscar en los datos
+      const paradigm = verbObj.paradigms.find(p => p.forms?.some(f => f.mood === 'nonfinite' && f.tense === tense.tense));
+      if (paradigm && paradigm.forms) {
+        const form = paradigm.forms.find(f => f.mood === 'nonfinite' && f.tense === tense.tense);
+        if (form?.value) return form.value;
+      }
+
+      // Si no encontramos forma específica, generar forma regular
+      const verb = verbObj.lemma;
+      const stem = verb.slice(0, -2);
+      if (tense.tense === 'ger') {
+        return verb.endsWith('ar') ? stem + 'ando' : stem + 'iendo';
+      } else if (tense.tense === 'part') {
+        return verb.endsWith('ar') ? stem + 'ado' : stem + 'ido';
+      }
+    }
+
     // Mapear nombres de español a inglés porque los datos están en inglés
     const moodMap = {
       'indicativo': 'indicative',
-      'subjuntivo': 'subjunctive', 
+      'subjuntivo': 'subjunctive',
       'imperativo': 'imperative',
       'condicional': 'conditional',
       'nonfinite': 'nonfinite'
     };
-    
+
     const englishMood = moodMap[mood] || mood;
-    
+
     const paradigm = verbObj.paradigms.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense));
     if (!paradigm || !paradigm.forms) return '';
     const form = paradigm.forms.find(f => f.mood === englishMood && f.tense === tense.tense && f.person === person);
@@ -759,8 +832,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const sentences = exampleVerbs.map((verbObj, index) => {
       const verbEnding = verbObj.lemma.slice(-2);
       const sentenceTemplate = (tenseStoryData.verbSpecific && tenseStoryData.verbSpecific[verbObj.lemma]) || tenseStoryData.sentences[verbEnding] || tenseStoryData.sentences.ar;
-      // Para futuro y condicional, usar siempre 1s porque todas las narrativas están en primera persona
-      const personHint = (['fut', 'cond'].includes(tense.tense))
+      // Para tiempos con narrativas diferenciadas, usar siempre 1s si la narrativa dice "yo"
+      const personHint = (['fut', 'cond', 'ger', 'part'].includes(tense.tense) && /\byo\b/i.test(sentenceTemplate))
         ? '1s'
         : (/^\s*Yo\b/i.test(sentenceTemplate)
             ? '1s'
@@ -840,6 +913,11 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     // Primero verificar si es futuro/condicional con verbos regulares
                     if (['fut', 'cond'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
                       return renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings)
+                    }
+
+                    // Verificar si es gerundio/participio con verbos regulares
+                    if (['ger', 'part'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
+                      return renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings)
                     }
 
                     const futureRootBlock = renderFutureRootDeconstruction(exampleVerbs, tense, settings)

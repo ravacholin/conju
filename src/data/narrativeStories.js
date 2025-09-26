@@ -251,35 +251,67 @@ export const storyData = {
     },
   },
   ger: {
-    title: 'Gerundios irregulares en acción',
-    sentences: {
-        ar: 'Forma clave: sigo __IRREG__ cada mañana.',
-        er: 'Forma clave: continúas __IRREG__ sin detenerte.',
-        ir: 'Forma clave: seguimos __IRREG__ hasta terminar.',
+    title: 'Acciones en progreso',
+    regularStory: {
+      title: 'Acciones continuas',
+      sentences: {
+          ar: 'Sigo __VERB__ con mi equipo cada día.',
+          er: 'Estoy __VERB__ más despacio últimamente.',
+          ir: 'Seguimos __VERB__ en la nueva casa.',
+      },
+      verbSpecific: {
+          hablar: 'Sigo __VERB__ con mi equipo cada día.',
+          comer: 'Estoy __VERB__ más despacio últimamente.',
+          vivir: 'Seguimos __VERB__ tranquilamente en la nueva casa.',
+      }
     },
-    verbSpecific: {
-        ir: 'Ir → yendo: sigo __IRREG__ al hospital cada semana.',
-        decir: 'Decir → diciendo: continúas __IRREG__ la verdad sin rodeos.',
-        dormir: 'Dormir → durmiendo: seguimos __IRREG__ profundamente pese al ruido.',
-        poder: 'Poder → pudiendo: hoy estamos __IRREG__ resolver más casos.',
-        traer: 'Traer → trayendo: el equipo viene __IRREG__ nuevas ideas.',
-    },
+    irregularStory: {
+      title: 'Gerundios irregulares en acción',
+      sentences: {
+          ar: 'Forma clave: sigo __VERB__ cada mañana.',
+          er: 'Forma clave: continúas __VERB__ sin detenerte.',
+          ir: 'Forma clave: seguimos __VERB__ hasta terminar.',
+      },
+      verbSpecific: {
+          ir: 'Ir → yendo: sigo __VERB__ al hospital cada semana.',
+          decir: 'Decir → diciendo: continúas __VERB__ la verdad sin rodeos.',
+          dormir: 'Dormir → durmiendo: seguimos __VERB__ profundamente pese al ruido.',
+          poder: 'Poder → pudiendo: hoy estamos __VERB__ resolver más casos.',
+          traer: 'Traer → trayendo: el equipo viene __VERB__ nuevas ideas.',
+      },
+    }
   },
   part: {
-    title: 'Participios irregulares memorables',
-    sentences: {
-        ar: 'Resultado clave: el trabajo queda __IRREG__ al final del día.',
-        er: 'Resultado clave: los detalles permanecen __IRREG__ hasta la revisión.',
-        ir: 'Resultado clave: el informe sigue __IRREG__ en la carpeta.',
+    title: 'Estados y resultados',
+    regularStory: {
+      title: 'Acciones completadas',
+      sentences: {
+          ar: 'El trabajo ya está __VERB__ para entregar.',
+          er: 'La comida ha sido __VERB__ con cariño.',
+          ir: 'Los documentos han sido __VERB__ correctamente.',
+      },
+      verbSpecific: {
+          hablar: 'El tema ya ha sido __VERB__ en la reunión.',
+          comer: 'La comida ha sido __VERB__ con mucho gusto.',
+          vivir: 'Esos momentos han sido __VERB__ intensamente.',
+      }
     },
-    verbSpecific: {
-        hacer: 'Hacer → hecho: el proyecto queda __IRREG__ y entregado.',
-        ver: 'Ver → visto: dejamos todo __IRREG__ antes de salir.',
-        escribir: 'Escribir → escrito: el informe ya está __IRREG__ y firmado.',
-        poner: 'Poner → puesto: cada sensor queda __IRREG__ en su lugar.',
-        cubrir: 'Cubrir → cubierto: los materiales quedan __IRREG__ para la lluvia.',
-        resolver: 'Resolver → resuelto: los casos quedan __IRREG__ antes de la reunión final.',
-    },
+    irregularStory: {
+      title: 'Participios irregulares memorables',
+      sentences: {
+          ar: 'Resultado clave: el trabajo queda __VERB__ al final del día.',
+          er: 'Resultado clave: los detalles permanecen __VERB__ hasta la revisión.',
+          ir: 'Resultado clave: el informe sigue __VERB__ en la carpeta.',
+      },
+      verbSpecific: {
+          hacer: 'Hacer → hecho: el proyecto queda __VERB__ y entregado.',
+          ver: 'Ver → visto: dejamos todo __VERB__ antes de salir.',
+          escribir: 'Escribir → escrito: el informe ya está __VERB__ y firmado.',
+          poner: 'Poner → puesto: cada sensor queda __VERB__ en su lugar.',
+          cubrir: 'Cubrir → cubierto: los materiales quedan __VERB__ para la lluvia.',
+          resolver: 'Resolver → resuelto: los casos quedan __VERB__ antes de la reunión final.',
+      },
+    }
   },
   impAff: {
     title: 'Consejos y recomendaciones',

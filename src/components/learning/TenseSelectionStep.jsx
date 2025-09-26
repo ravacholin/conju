@@ -9,12 +9,40 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
   }
 
   const getPersonConjugationExample = (moodKey, tenseKey) => {
-    const hablar = verbsData.find(v => v.lemma === 'hablar')
-    if (!hablar) {
-      if (tenseKey === 'ger') return 'hablando'
-      if (tenseKey === 'part') return 'hablado'
-      return ''
+    // Para gerundios y participios, mostrar los 3 verbos modelo
+    if (tenseKey === 'ger' || tenseKey === 'part') {
+      const modelVerbs = ['hablar', 'comer', 'vivir']
+      const examples = []
+
+      for (const lemma of modelVerbs) {
+        const verb = verbsData.find(v => v.lemma === lemma)
+        if (verb) {
+          // Buscar forma específica en los datos
+          const para = verb.paradigms?.find(p => p.forms?.some(f => f.mood === 'nonfinite' && f.tense === tenseKey))
+          if (para) {
+            const form = para.forms.find(f => f.mood === 'nonfinite' && f.tense === tenseKey)
+            if (form?.value) {
+              examples.push(form.value)
+              continue
+            }
+          }
+        }
+
+        // Si no hay forma específica, generar forma regular
+        const stem = lemma.slice(0, -2)
+        if (tenseKey === 'ger') {
+          examples.push(lemma.endsWith('ar') ? stem + 'ando' : stem + 'iendo')
+        } else if (tenseKey === 'part') {
+          examples.push(lemma.endsWith('ar') ? stem + 'ado' : stem + 'ido')
+        }
+      }
+
+      return examples.join(', ')
     }
+
+    // Para otros tiempos, usar lógica original
+    const hablar = verbsData.find(v => v.lemma === 'hablar')
+    if (!hablar) return ''
 
     const moodMap = {
       indicativo: 'indicative',
@@ -27,11 +55,7 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     const englishMood = moodMap[moodKey] || moodKey
     const para = hablar.paradigms?.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tenseKey))
 
-    if (!para) {
-      if (tenseKey === 'ger') return 'hablando'
-      if (tenseKey === 'part') return 'hablado'
-      return ''
-    }
+    if (!para) return ''
 
     const forms = para.forms?.filter(f => f.mood === englishMood && f.tense === tenseKey) || []
     const pron2Key = useVoseo ? '2s_vos' : '2s_tu'
@@ -57,7 +81,7 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     if (f2) parts.push(`${useVoseo ? 'vos' : 'tú'} ${f2}`)
     const f3 = getForm('3s')
     if (f3) parts.push(`ella ${f3}`)
-    
+
     return parts.join(', ')
   }
 
