@@ -1,0 +1,189 @@
+{
+  "storyBuilding": {
+    "viaje_vacaciones": {
+      "id": "story_viaje_vacaciones",
+      "title": "Un viaje de vacaciones",
+      "description": "Construye una historia sobre un viaje usando los elementos dados",
+      "targetTenses": ["pres", "pretIndef", "impf"],
+      "difficulty": "intermediate",
+      "estimatedTime": 8,
+      "elements": {
+        "characters": [
+          { "name": "María", "description": "una estudiante aventurera" },
+          { "name": "Carlos", "description": "su hermano mayor" },
+          { "name": "Elena", "description": "su mejor amiga" }
+        ],
+        "settings": [
+          "una playa tropical",
+          "un hotel antiguo",
+          "un mercado local",
+          "las montañas cercanas"
+        ],
+        "objects": [
+          "una cámara fotográfica",
+          "un mapa viejo",
+          "una mochila pesada",
+          "souvenirs locales"
+        ],
+        "events": [
+          "perderse en la ciudad",
+          "conocer gente local",
+          "descubrir un lugar secreto",
+          "tener una aventura inesperada"
+        ]
+      },
+      "requiredElements": 6,
+      "minLength": 150,
+      "maxLength": 300,
+      "targetVerbs": ["viajar", "llegar", "explorar", "descubrir", "caminar", "fotografiar", "hablar", "conocer"]
+    },
+    "dia_especial": {
+      "id": "story_dia_especial",
+      "title": "Un día especial",
+      "description": "Narra un día memorable usando los elementos proporcionados",
+      "targetTenses": ["pres", "pretIndef", "pretPerf"],
+      "difficulty": "beginner",
+      "estimatedTime": 6,
+      "elements": {
+        "characters": [
+          { "name": "Ana", "description": "una joven entusiasta" },
+          { "name": "Pedro", "description": "su novio" },
+          { "name": "la abuela Rosa", "description": "una señora sabia" }
+        ],
+        "settings": [
+          "el parque de la ciudad",
+          "una cafetería acogedora",
+          "la casa familiar",
+          "un restaurante elegante"
+        ],
+        "objects": [
+          "un regalo sorpresa",
+          "flores hermosas",
+          "una carta especial",
+          "fotografías antiguas"
+        ],
+        "events": [
+          "una celebración familiar",
+          "un encuentro inesperado",
+          "una conversación importante",
+          "un momento emotivo"
+        ]
+      },
+      "requiredElements": 5,
+      "minLength": 120,
+      "maxLength": 250,
+      "targetVerbs": ["celebrar", "regalar", "sorprender", "abrazar", "sonreír", "recordar", "compartir", "emocionar"]
+    },
+    "aventura_escuela": {
+      "id": "story_aventura_escuela",
+      "title": "Aventura en la escuela",
+      "description": "Crea una historia sobre algo interesante que pasó en la escuela",
+      "targetTenses": ["impf", "pretIndef", "plusc"],
+      "difficulty": "intermediate",
+      "estimatedTime": 7,
+      "elements": {
+        "characters": [
+          { "name": "Luisa", "description": "una estudiante curiosa" },
+          { "name": "el profesor Martínez", "description": "un maestro misterioso" },
+          { "name": "Javier", "description": "el mejor amigo de Luisa" }
+        ],
+        "settings": [
+          "el laboratorio de ciencias",
+          "la biblioteca silenciosa",
+          "el patio de recreo",
+          "el aula vacía"
+        ],
+        "objects": [
+          "un libro antiguo",
+          "un experimento fallido",
+          "una nota misteriosa",
+          "un proyecto secreto"
+        ],
+        "events": [
+          "descubrir algo oculto",
+          "resolver un misterio",
+          "ayudar a un compañero",
+          "aprender algo nuevo"
+        ]
+      },
+      "requiredElements": 6,
+      "minLength": 160,
+      "maxLength": 280,
+      "targetVerbs": ["estudiar", "investigar", "experimentar", "descubrir", "ayudar", "aprender", "enseñar", "resolver"]
+    },
+    "futuro_ideal": {
+      "id": "story_futuro_ideal",
+      "title": "Mi futuro ideal",
+      "description": "Imagina y describe cómo será tu vida en el futuro",
+      "targetTenses": ["fut", "cond", "pres"],
+      "difficulty": "advanced",
+      "estimatedTime": 9,
+      "elements": {
+        "characters": [
+          { "name": "yo", "description": "en el futuro" },
+          { "name": "mi familia", "description": "mis seres queridos" },
+          { "name": "mis colegas", "description": "compañeros de trabajo" }
+        ],
+        "settings": [
+          "mi casa ideal",
+          "mi lugar de trabajo",
+          "un destino de viaje",
+          "mi ciudad favorita"
+        ],
+        "objects": [
+          "mi profesión soñada",
+          "mis logros personales",
+          "tecnología avanzada",
+          "proyectos importantes"
+        ],
+        "events": [
+          "cumplir mis objetivos",
+          "hacer una diferencia",
+          "viajar por el mundo",
+          "formar una familia"
+        ]
+      },
+      "requiredElements": 5,
+      "minLength": 140,
+      "maxLength": 270,
+      "targetVerbs": ["trabajar", "vivir", "viajar", "conseguir", "construir", "crear", "ayudar", "disfrutar"]
+    },
+    "problema_solucion": {
+      "id": "story_problema_solucion",
+      "title": "Un problema y su solución",
+      "description": "Narra una situación problemática y cómo se resolvió",
+      "targetTenses": ["impf", "pretIndef", "cond", "pres"],
+      "difficulty": "advanced",
+      "estimatedTime": 10,
+      "elements": {
+        "characters": [
+          { "name": "Roberto", "description": "un joven determinado" },
+          { "name": "la señora López", "description": "una vecina comprensiva" },
+          { "name": "los bomberos", "description": "héroes locales" }
+        ],
+        "settings": [
+          "el barrio tranquilo",
+          "la estación de bomberos",
+          "una casa en peligro",
+          "la plaza del pueblo"
+        ],
+        "objects": [
+          "una escalera alta",
+          "un gato asustado",
+          "herramientas útiles",
+          "la gratitud de la gente"
+        ],
+        "events": [
+          "identificar el problema",
+          "pedir ayuda profesional",
+          "trabajar en equipo",
+          "celebrar el éxito"
+        ]
+      },
+      "requiredElements": 7,
+      "minLength": 180,
+      "maxLength": 320,
+      "targetVerbs": ["necesitar", "pedir", "ayudar", "resolver", "colaborar", "conseguir", "agradecer", "aprender"]
+    }
+  }
+}

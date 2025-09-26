@@ -1,648 +1,705 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
-// import { classifyError } from '../../features/drill/tracking.js';
+
+// Importar el nuevo sistema de práctica significativa
+import exerciseFactory from '../../lib/meaningful-practice/exercises/ExerciseFactory.js';
+import assessmentEngine from '../../lib/meaningful-practice/assessment/AssessmentEngine.js';
+import { EXERCISE_TYPES } from '../../lib/meaningful-practice/core/constants.js';
+
 import './MeaningfulPractice.css';
 
-// Helper function to detect wrong tense patterns in user input
-function detectTensePatterns(userText, expectedTense) {
-  const text = userText.toLowerCase();
-  const wrongTenses = [];
+/**
+ * MeaningfulPractice - Componente refactorizado usando la nueva arquitectura
+ *
+ * Utiliza el sistema modular de ejercicios, análisis avanzado y feedback inteligente
+ * para proporcionar experiencias de aprendizaje contextual y significativo.
+ */
+function MeaningfulPractice({
+  tense,
+  mood,
+  onComplete,
+  eligibleForms = [],
+  difficulty = 'intermediate',
+  exerciseType = null
+}) {
+  const [currentExercise, setCurrentExercise] = useState(null);
+  const [currentStep, setCurrentStep] = useState(null);
+  const [userResponse, setUserResponse] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [exerciseResults, setExerciseResults] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const tensePatterns = {
-    'pres': {
-      correct: /\b\w+[oaeáéí]\b/g,
-      wrong: {
-        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
-        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban|ía)\b/g,
-        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
-      }
-    },
-    'pretIndef': {
-      correct: /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
-      wrong: {
-        'pres': /\b\w+[oae]\b/g,
-        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g,
-        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
-      }
-    },
-    'impf': {
-      correct: /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g,
-      wrong: {
-        'pres': /\b\w+[oae]\b/g,
-        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
-        'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b/g
-      }
-    },
-    'fut': {
-      correct: /\b\w+(ré|rás|rá|remos|réis|rán)\b/g,
-      wrong: {
-        'pres': /\b\w+[oae]\b/g,
-        'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b/g,
-        'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b/g
-      }
-    }
-  };
+  // Usar el hook de seguimiento de progreso
+  const { handleResult, handleHintShown } = useProgressTracking(
+    currentStep ? {
+      verb: currentStep.title || 'meaningful_practice',
+      form: `${mood}_${tense}`,
+      mood,
+      tense,
+      type: 'meaningful_practice'
+    } : null,
+    onComplete
+  );
 
-  const patterns = tensePatterns[expectedTense];
-  if (!patterns) return { wrongTenses: [] };
+  // Crear configuración del ejercicio basada en props
+  const exerciseConfig = useMemo(() => {
+    return {
+      tense,
+      mood,
+      difficulty,
+      targetTenses: [tense],
+      eligibleForms,
+      includeProgressTracking: true,
+      adaptToUserLevel: true
+    };
+  }, [tense, mood, difficulty, eligibleForms]);
 
-  // Check for wrong tense patterns
-  for (const [wrongTense, pattern] of Object.entries(patterns.wrong)) {
-    const matches = text.match(pattern);
-    if (matches && matches.length > 0) {
-      wrongTenses.push(wrongTense);
-    }
-  }
-
-  return { wrongTenses: [...new Set(wrongTenses)] };
-}
-
-// Función para seleccionar ejercicio aleatorio (principal o alternativo)
-function selectRandomExercise(tenseData) {
-  if (!tenseData) return null;
-  
-  // Si no hay ejercicios alternativos, usar el principal
-  if (!tenseData.alternativeExercises || tenseData.alternativeExercises.length === 0) {
-    return tenseData;
-  }
-  
-  // Crear array con todas las opciones (principal + alternativos)
-  const allExercises = [
-    tenseData, // ejercicio principal
-    ...tenseData.alternativeExercises
-  ];
-  
-  // Seleccionar uno aleatoriamente
-  const randomIndex = Math.floor(Math.random() * allExercises.length);
-  return allExercises[randomIndex];
-}
-
-const timelineData = {
-  pres: {
-    type: 'daily_routine',
-    title: 'La rutina diaria de Carlos',
-    description: 'Describe un día típico de Carlos usando los verbos indicados en presente.',
-    prompts: [
-      { icon: '⏰', text: 'Por la mañana (despertarse, levantarse)', expected: ['despierta', 'levanta'] },
-      { icon: '🍳', text: 'En el desayuno (comer, beber)', expected: ['come', 'bebe'] },
-      { icon: '💼', text: 'En el trabajo (trabajar, escribir)', expected: ['trabaja', 'escribe'] },
-      { icon: '🏠', text: 'Al llegar a casa (cocinar, ver televisión)', expected: ['cocina', 've'] },
-      { icon: '🌙', text: 'Por la noche (leer, dormir)', expected: ['lee', 'duerme'] },
-    ],
-    // Ejercicios alternativos para mayor variedad
-    alternativeExercises: [
-      {
-        type: 'workplace_scenario',
-        title: 'Un día en la oficina',
-        description: 'Completa las frases sobre lo que pasa en una oficina típica.',
-        prompts: [
-          { icon: '💻', text: 'Los programadores _____ código todo el día', expected: ['escriben', 'programan'] },
-          { icon: '📧', text: 'La secretaria _____ emails importantes', expected: ['envía', 'responde'] },
-          { icon: '📊', text: 'El jefe _____ las reuniones semanales', expected: ['dirige', 'organiza'] },
-          { icon: '☕', text: 'Todos _____ café en la máquina', expected: ['toman', 'beben'] },
-          { icon: '🏃‍♂️', text: 'A las 6 PM, everyone _____ a casa', expected: ['vuelve', 'regresa'] },
-        ]
-      },
-      {
-        type: 'family_life',
-        title: 'La vida familiar',
-        description: 'Describe las actividades de una familia típica.',
-        prompts: [
-          { icon: '👶', text: 'El bebé _____ mucho por las noches', expected: ['llora', 'duerme'] },
-          { icon: '👨‍🍳', text: 'Papá _____ la cena los domingos', expected: ['prepara', 'cocina'] },
-          { icon: '🎯', text: 'Los niños _____ con sus juguetes', expected: ['juegan', 'se divierten'] },
-          { icon: '📺', text: 'La abuela _____ sus telenovelas', expected: ['ve', 'mira'] },
-          { icon: '🐕', text: 'El perro _____ en el jardín', expected: ['corre', 'juega'] },
-        ]
-      }
-    ]
-  },
-  pretIndef: {
-    type: 'timeline',
-    title: 'El día de ayer de María',
-    events: [
-      { time: '7:00', icon: '☕️', prompt: 'tomar café' },
-      { time: '12:00', icon: '🍽️', prompt: 'comer' },
-      { time: '18:00', icon: '🏋️', prompt: 'ir al gimnasio' },
-      { time: '22:00', icon: '🛏️', prompt: 'acostarse' },
-    ],
-    expectedVerbs: ['tomó', 'comió', 'fue', 'se acostó'],
-    // Ejercicios alternativos más diversos
-    alternativeExercises: [
-      {
-        type: 'travel_story',
-        title: 'Las vacaciones de verano',
-        description: 'Completa la historia del viaje de Luis a Barcelona.',
-        prompts: [
-          { icon: '✈️', text: 'Luis _____ a Barcelona en avión', expected: ['viajó', 'fue'] },
-          { icon: '🏨', text: 'Se _____ en un hotel cerca de la playa', expected: ['quedó', 'alojó'] },
-          { icon: '🏛️', text: '_____ la Sagrada Familia y el Park Güell', expected: ['visitó', 'vio'] },
-          { icon: '🥘', text: '_____ paella en un restaurante típico', expected: ['comió', 'probó'] },
-          { icon: '📸', text: '_____ muchas fotos de los monumentos', expected: ['tomó', 'sacó'] },
-        ]
-      },
-      {
-        type: 'party_night',
-        title: 'La fiesta de anoche',
-        description: 'Cuenta lo que pasó en la fiesta de cumpleaños de Ana.',
-        prompts: [
-          { icon: '🎉', text: 'Ana _____ una fiesta increíble para sus 25 años', expected: ['organizó', 'hizo'] },
-          { icon: '👥', text: '_____ más de 50 personas a celebrar', expected: ['vinieron', 'llegaron'] },
-          { icon: '🍰', text: 'Todos _____ "Cumpleaños feliz" a medianoche', expected: ['cantaron', 'dijeron'] },
-          { icon: '💃', text: 'La gente _____ hasta las 3 de la mañana', expected: ['bailó', 'se divirtió'] },
-          { icon: '🏠', text: 'Los últimos invitados _____ a las 4 AM', expected: ['se fueron', 'salieron'] },
-        ]
-      },
-      {
-        type: 'mystery_story',
-        title: 'El misterio del libro perdido',
-        description: 'Resuelve el misterio completando lo que pasó.',
-        prompts: [
-          { icon: '📚', text: 'El libro _____ de la biblioteca sin explicación', expected: ['desapareció', 'se perdió'] },
-          { icon: '🔍', text: 'La bibliotecaria _____ por toda la biblioteca', expected: ['buscó', 'investigó'] },
-          { icon: '👮‍♂️', text: 'Un detective _____ a hacer preguntas', expected: ['llegó', 'vino'] },
-          { icon: '💡', text: 'Finalmente _____ la verdad: un estudiante lo tenía', expected: ['descubrió', 'encontró'] },
-          { icon: '😅', text: 'El estudiante se lo _____ por accidente', expected: ['llevó', 'olvidó'] },
-        ]
-      }
-    ]
-  },
-  subjPres: {
-    type: 'prompts',
-    title: 'Dando Consejos',
-    prompts: [
-        { prompt: 'Tu amigo está cansado. (recomendar que...)', expected: ['descanse', 'duerma'] },
-        { prompt: 'Tu hermana quiere aprender español. (sugerir que...)', expected: ['practique', 'estudie'] },
-        { prompt: 'Tus padres van a viajar. (esperar que...)', expected: ['disfruten', 'viajen'] },
-    ],
-  },
-  impf: {
-    type: 'daily_routine',
-    title: 'Los recuerdos de la infancia',
-    description: 'Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.',
-    prompts: [
-      { icon: '🏠', text: 'Donde vivías de niño (vivir, tener)', expected: ['vivía', 'tenía'] },
-      { icon: '🎮', text: 'Con qué jugabas (jugar, divertirse)', expected: ['jugaba', 'divertía'] },
-      { icon: '📚', text: 'Qué estudiabas (estudiar, aprender)', expected: ['estudiaba', 'aprendía'] },
-      { icon: '👨‍👩‍👧‍👦', text: 'Cómo era tu familia (ser, estar)', expected: ['era', 'estaba'] },
-      { icon: '🌞', text: 'Qué hacías los veranos (ir, hacer)', expected: ['iba', 'hacía'] },
-    ],
-  },
-  fut: {
-    type: 'prompts',
-    title: 'Planes para el futuro',
-    prompts: [
-        { prompt: 'El próximo año... (viajar, conocer)', expected: ['viajaré', 'conoceré', 'viajarás', 'conocerás'] },
-        { prompt: 'En mis próximas vacaciones... (descansar, visitar)', expected: ['descansaré', 'visitaré', 'descansarás', 'visitarás'] },
-        { prompt: 'Cuando termine mis estudios... (trabajar, ser)', expected: ['trabajaré', 'seré', 'trabajarás', 'serás'] },
-        { prompt: 'En el futuro... (tener, hacer)', expected: ['tendré', 'haré', 'tendrás', 'harás'] },
-    ],
-    alternativeExercises: [
-      {
-        type: 'predictions',
-        title: 'Predicciones para el año 2030',
-        description: 'Haz predicciones sobre el futuro usando el futuro simple.',
-        prompts: [
-          { icon: '🚗', text: 'Los coches _____ completamente autónomos', expected: ['serán', 'estarán'] },
-          { icon: '🌍', text: 'La gente _____ más conciencia ecológica', expected: ['tendrá', 'mostrará'] },
-          { icon: '🏠', text: 'Las casas _____ con energía solar', expected: ['funcionarán', 'trabajarán'] },
-          { icon: '💻', text: 'Todo el mundo _____ desde casa', expected: ['trabajará', 'estudiará'] },
-          { icon: '🎮', text: 'Los videojuegos _____ más realistas que nunca', expected: ['serán', 'parecerán'] },
-        ]
-      },
-      {
-        type: 'life_goals',
-        title: 'Mis metas personales',
-        description: 'Completa tus planes y metas para el futuro.',
-        prompts: [
-          { icon: '🏆', text: 'En cinco años _____ mis objetivos profesionales', expected: ['conseguiré', 'alcanzaré'] },
-          { icon: '❤️', text: '_____ a alguien especial y me enamoraré', expected: ['conoceré', 'encontraré'] },
-          { icon: '🏡', text: '_____ mi propia casa con jardín', expected: ['compraré', 'tendré'] },
-          { icon: '🌎', text: '_____ por todo el mundo', expected: ['viajaré', 'recorreré'] },
-          { icon: '👨‍👩‍👧‍👦', text: '_____ una familia hermosa', expected: ['formaré', 'tendré'] },
-        ]
-      }
-    ]
-  },
-  pretPerf: {
-    type: 'timeline',
-    title: 'Lo que he hecho hoy',
-    events: [
-      { time: '8:00', icon: '🌅', prompt: 'levantarse temprano' },
-      { time: '10:00', icon: '☕️', prompt: 'desayunar bien' },
-      { time: '14:00', icon: '💻', prompt: 'trabajar en el proyecto' },
-      { time: '19:00', icon: '👥', prompt: 'quedar con amigos' },
-    ],
-    expectedVerbs: ['me he levantado', 'he desayunado', 'he trabajado', 'he quedado'],
-  },
-  cond: {
-    type: 'prompts',
-    title: 'Situaciones hipotéticas',
-    prompts: [
-        { prompt: 'Si tuviera mucho dinero... (comprar, viajar)', expected: ['compraría', 'viajaría'] },
-        { prompt: 'Si fuera invisible por un día... (hacer, ir)', expected: ['haría', 'iría'] },
-        { prompt: 'Si pudiera cambiar algo del mundo... (cambiar, mejorar)', expected: ['cambiaría', 'mejoraría'] },
-        { prompt: 'En tu lugar yo... (decir, hacer)', expected: ['diría', 'haría'] },
-    ],
-  },
-  plusc: {
-    type: 'prompts',
-    title: 'Cuando llegué, ya había pasado...',
-    prompts: [
-        { prompt: 'Cuando llegué a casa, mi hermana ya... (cocinar, limpiar)', expected: ['había cocinado', 'había limpiado'] },
-        { prompt: 'Cuando empezó la película, nosotros ya... (comprar, buscar)', expected: ['habíamos comprado', 'habíamos buscado'] },
-        { prompt: 'Cuando se despertaron, el sol ya... (salir, calentar)', expected: ['había salido', 'había calentado'] },
-        { prompt: 'Cuando llegaste, ellos ya... (terminar, irse)', expected: ['habían terminado', 'se habían ido'] },
-    ],
-  },
-  futPerf: {
-    type: 'prompts',
-    title: 'Lo que habrá pasado para entonces',
-    prompts: [
-        { prompt: 'Para el viernes, yo ya... (terminar, enviar)', expected: ['habré terminado', 'habré enviado'] },
-        { prompt: 'Para diciembre, tú... (aprender, mejorar)', expected: ['habrás aprendido', 'habrás mejorado'] },
-        { prompt: 'Para el año que viene, nosotros... (ahorrar, decidir)', expected: ['habremos ahorrado', 'habremos decidido'] },
-        { prompt: 'Para entonces, ellos ya... (mudarse, adaptarse)', expected: ['se habrán mudado', 'se habrán adaptado'] },
-    ],
-  },
-  subjImpf: {
-    type: 'prompts',
-    title: 'Si fuera diferente...',
-    prompts: [
-        { prompt: 'Si tuviera más tiempo, yo... (estudiar, viajar)', expected: ['estudiaría', 'viajaría', 'estudiara', 'viajara'] },
-        { prompt: 'Si fueras más paciente, tú... (entender, lograr)', expected: ['entenderías', 'lograrías', 'entendieras', 'lograras'] },
-        { prompt: 'Si viviéramos cerca del mar, nosotros... (nadar, pescar)', expected: ['nadaríamos', 'pescaríamos', 'nadáramos', 'pescáramos'] },
-        { prompt: 'Ojalá que ellos... (venir, quedarse)', expected: ['vinieran', 'se quedaran', 'vendrían', 'se quedarían'] },
-    ],
-  },
-  condPerf: {
-    type: 'prompts',
-    title: 'Lo que habría pasado si...',
-    prompts: [
-        { prompt: 'Si hubiera estudiado más, yo... (aprobar, conseguir)', expected: ['habría aprobado', 'habría conseguido'] },
-        { prompt: 'Si hubieras venido antes, tú... (conocer, disfrutar)', expected: ['habrías conocido', 'habrías disfrutado'] },
-        { prompt: 'Si hubiéramos salido temprano, nosotros... (llegar, evitar)', expected: ['habríamos llegado', 'habríamos evitado'] },
-        { prompt: 'Si hubieran avisado, ellos... (preparar, organizar)', expected: ['habrían preparado', 'habrían organizado'] },
-    ],
-  },
-  subjPerf: {
-    type: 'prompts',
-    title: 'Espero que haya...',
-    prompts: [
-        { prompt: 'Espero que ya... (llegar, encontrar)', expected: ['haya llegado', 'haya encontrado', 'hayas llegado', 'hayas encontrado'] },
-        { prompt: 'Es posible que él... (terminar, decidir)', expected: ['haya terminado', 'haya decidido'] },
-        { prompt: 'Dudo que nosotros... (cometer, olvidar)', expected: ['hayamos cometido', 'hayamos olvidado'] },
-        { prompt: 'No creo que ellos... (resolver, comprender)', expected: ['hayan resuelto', 'hayan comprendido'] },
-    ],
-  },
-  subjPlusc: {
-    type: 'prompts',
-    title: 'Si hubiera sabido que...',
-    prompts: [
-        { prompt: 'Si hubiera sabido que vendrías, yo... (preparar, comprar)', expected: ['hubiera preparado', 'hubiera comprado', 'habría preparado', 'habría comprado'] },
-        { prompt: 'Si hubieras estudiado más, tú... (aprobar, entender)', expected: ['hubieras aprobado', 'hubieras entendido', 'habrías aprobado', 'habrías entendido'] },
-        { prompt: 'Si hubiéramos salido antes, nosotros... (llegar, conseguir)', expected: ['hubiéramos llegado', 'hubiéramos conseguido', 'habríamos llegado', 'habríamos conseguido'] },
-        { prompt: 'Ojalá que ellos... (venir, avisar)', expected: ['hubieran venido', 'hubieran avisado'] },
-    ],
-  },
-};
-
-function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
-  const [story, setStory] = useState('');
-  const [feedback, setFeedback] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState(null);
-  
-  // Create a dummy currentItem for progress tracking
-  const currentItem = {
-    id: `meaningful-practice-${tense?.tense}`,
-    lemma: 'meaningful-practice',
-    tense: tense?.tense,
-    mood: tense?.mood
-  };
-  
-  const { handleResult } = useProgressTracking(currentItem, (result) => {
-    console.log('Meaningful practice progress tracking result:', result);
-  });
-
-  // Debug logging
-  console.log('MeaningfulPractice received tense:', tense);
-  console.log('Available exercises:', Object.keys(timelineData));
-  
-  // Seleccionar ejercicio aleatorio cuando cambie el tense
+  // Inicializar ejercicio al cargar el componente
   useEffect(() => {
-    if (tense?.tense) {
-      const tenseData = timelineData[tense.tense];
-      const randomExercise = selectRandomExercise(tenseData);
-      setSelectedExercise(randomExercise);
-      console.log('Selected exercise:', randomExercise);
-    }
-  }, [tense]);
+    initializeExercise();
+  }, [tense, mood, exerciseType]);
 
-  const exercise = selectedExercise;
+  async function initializeExercise() {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-  const handleCheckStory = async () => {
-    if (!exercise || !story.trim()) return;
-    
-    setIsProcessing(true);
-    setFeedback(null);
-    
-    const userText = story.toLowerCase();
-    
-    let missing = [];
-    let foundVerbs = [];
+      // Determinar tipo de ejercicio
+      const selectedExerciseType = exerciseType || determineExerciseType(tense, mood);
 
-    if (exercise.type === 'timeline') {
-        exercise.expectedVerbs.forEach(verb => {
-            // Normalize both texts to handle accents properly
-            const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-            const normalizedUser = normalizeText(userText);
-            const normalizedVerb = normalizeText(verb);
-            
-            // Use word boundaries with normalized text
-            const regex = new RegExp(`\\b${normalizedVerb.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(normalizedUser)) {
-                foundVerbs.push(verb);
-            } else {
-                missing.push(verb);
-            }
-        });
-    } else if (exercise.type === 'prompts') {
-        exercise.prompts.forEach(p => {
-            let bestMatch = null;
-            let bestScore = 0;
-            
-            // Try to find the best match using the grader system
-            for (const expectedVerb of p.expected) {
-                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\b`, 'i');
-                if (regex.test(userText)) {
-                    bestMatch = expectedVerb;
-                    bestScore = 1;
-                    break;
-                }
-                
-                // Also try fuzzy matching using grader for partial credit
-                const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, userText);
-                if (gradeResult.correct || gradeResult.score > bestScore) {
-                    bestMatch = expectedVerb;
-                    bestScore = gradeResult.score;
-                }
-            }
-            
-            if (bestMatch && bestScore > 0.7) {
-                foundVerbs.push(bestMatch);
-            } else {
-                missing.push(p.expected.join(' o '));
-            }
-        });
-    } else if (exercise.type === 'daily_routine') {
-        exercise.prompts.forEach(p => {
-            const found = p.expected.some(verb => {
-                // Use includes for simpler matching - check if verb appears as whole word
-                const regex = new RegExp(`\\b${verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-                if (regex.test(userText)) {
-                    foundVerbs.push(verb);
-                    return true;
-                }
-                return false;
-            });
-            if (!found) {
-                missing.push(p.expected.join(' o '));
-            }
-        });
-    }
+      // Crear ejercicio usando la factory
+      const exercise = await exerciseFactory.createExercise(selectedExerciseType, exerciseConfig);
 
-    const isCorrect = missing.length === 0;
-    
-    if (isCorrect) {
-      setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
-      
-      // Use official progress tracking system
-      await handleResult({
-        correct: true,
-        userAnswer: story,
-        correctAnswer: foundVerbs.join(', '),
-        hintsUsed: 0,
-        errorTags: [],
-        latencyMs: 0, // Not applicable for this type of exercise
-        isIrregular: false,
-        itemId: currentItem.id
-      });
-      
-      // Keep SRS scheduling for found verbs
-      try {
-        const userId = getCurrentUserId();
-        if (userId) {
-          console.log('Analytics: Updating schedule for meaningful practice...');
-          for (const verbStr of foundVerbs) {
-            const formObject = eligibleForms?.find(f => f.value === verbStr);
-            if (formObject) {
-              await updateSchedule(userId, formObject, true, 0);
-              console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Failed to update SRS schedule:", error);
-      }
-    } else {
-      // Enhanced error analysis for better feedback and tracking
-      const errorTags = [ERROR_TAGS.MISSING_VERBS];
-      let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
-
-      // Analyze found verbs for error classification
-      if (foundVerbs.length > 0 && eligibleForms) {
-        for (const verb of foundVerbs) {
-          const formObject = eligibleForms.find(f => f.value === verb);
-          if (formObject) {
-            // Track individual correct verb usage for SRS (for partial credit)
-            try {
-              const userId = getCurrentUserId();
-              if (userId) {
-                await updateSchedule(userId, formObject, true, 0);
-                console.log(`Analytics: Updated schedule for partially correct verb: ${formObject.lemma} - ${verb}`);
-              }
-            } catch (error) {
-              console.error("Failed to update SRS schedule for partial credit:", error);
-            }
-          }
-        }
+      if (!exercise) {
+        throw new Error('No se pudo crear el ejercicio');
       }
 
-      // Try to provide more specific feedback and classification
-      if (missing.length === 1) {
-        detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
-        errorTags.push(ERROR_TAGS.CONJUGATION_ERROR);
-      } else if (missing.length > 1) {
-        detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
-        errorTags.push(ERROR_TAGS.MULTIPLE_MISSING);
-      }
+      // Inicializar el ejercicio
+      await exercise.initialize();
+      setCurrentExercise(exercise);
 
-      // Enhanced error classification for learning context
-      if (foundVerbs.length === 0) {
-        errorTags.push(ERROR_TAGS.NO_TARGET_VERBS_USED);
-      } else if (foundVerbs.length > 0 && missing.length > 0) {
-        errorTags.push(ERROR_TAGS.PARTIAL_COMPLETION);
-      }
+      // Obtener el primer paso
+      const firstStep = exercise.getNextStep();
+      setCurrentStep(firstStep);
 
-      // Analyze user's text for potential tense errors
-      const currentTense = tense?.tense;
-      if (currentTense && userText.length > 10) { // Only for substantial answers
-        // Simple heuristic to detect wrong tense usage
-        const tensePatternsFound = detectTensePatterns(userText, currentTense);
-        if (tensePatternsFound.wrongTenses.length > 0) {
-          errorTags.push(ERROR_TAGS.WRONG_TENSE_DETECTED);
-          detailedFeedback += ` Detectamos verbos en otros tiempos: ${tensePatternsFound.wrongTenses.join(', ')}.`;
-        }
-
-        const wrongTenseHints = {
-          'pres': 'Recuerda usar el presente: yo hablo, tú comes, él vive',
-          'pretIndef': 'Usa el pretérito: yo hablé, tú comiste, él vivió',
-          'impf': 'Usa el imperfecto: yo hablaba, tú comías, él vivía',
-          'fut': 'Usa el futuro: yo hablaré, tú comerás, él vivirá',
-          'pretPerf': 'Usa el perfecto: yo he hablado, tú has comido, él ha vivido'
-        };
-
-        if (wrongTenseHints[currentTense]) {
-          detailedFeedback += ` ${wrongTenseHints[currentTense]}.`;
-        }
-      }
-
-      setFeedback({ type: 'incorrect', message: detailedFeedback });
-
-      // Track incorrect attempt with comprehensive error classification
-      await handleResult({
-        correct: false,
-        userAnswer: story,
-        correctAnswer: missing.join(', '),
-        hintsUsed: 0,
-        errorTags,
-        latencyMs: 0,
-        isIrregular: false,
-        itemId: currentItem.id,
-        partialCredit: foundVerbs.length / (foundVerbs.length + missing.length) // Completion percentage
+      console.log('✅ Ejercicio inicializado:', {
+        type: selectedExerciseType,
+        title: exercise.title,
+        steps: exercise.getTotalSteps()
       });
 
-      // Update SRS for missed verbs (negative reinforcement)
-      try {
-        const userId = getCurrentUserId();
-        if (userId && eligibleForms) {
-          for (const missedVerb of missing) {
-            const formObject = eligibleForms.find(f =>
-              f.value === missedVerb ||
-              (Array.isArray(f.alt) && f.alt.includes(missedVerb))
-            );
-            if (formObject) {
-              await updateSchedule(userId, formObject, false, 1); // Mark as incorrect with hint
-              console.log(`Analytics: Updated schedule for missed verb: ${formObject.lemma} - ${missedVerb}`);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Failed to update SRS schedule for missed verbs:", error);
-      }
+    } catch (err) {
+      console.error('❌ Error al inicializar ejercicio:', err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsProcessing(false);
-  };
+  }
 
-  if (!exercise) {
+  function determineExerciseType(tense, mood) {
+    // Mapeo inteligente de tiempos verbales a tipos de ejercicio
+    const tenseToExerciseMap = {
+      'pres': EXERCISE_TYPES.DAILY_ROUTINE,
+      'pretIndef': EXERCISE_TYPES.TIMELINE,
+      'impf': EXERCISE_TYPES.STORY_BUILDING,
+      'fut': EXERCISE_TYPES.PROBLEM_SOLVING,
+      'cond': EXERCISE_TYPES.ROLE_PLAYING,
+      'subjPres': EXERCISE_TYPES.ROLE_PLAYING,
+      'subjImpf': EXERCISE_TYPES.STORY_BUILDING
+    };
+
+    return tenseToExerciseMap[tense] || EXERCISE_TYPES.PROMPTS;
+  }
+
+  async function handleSubmit() {
+    if (!currentExercise || !userResponse.trim() || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+
+      // Procesar respuesta con el ejercicio
+      const result = await currentExercise.processResponse(userResponse.trim());
+
+      // Realizar análisis avanzado con AssessmentEngine
+      const assessment = await assessmentEngine.assessResponse(
+        userResponse.trim(),
+        {
+          exercise: currentExercise,
+          step: currentStep,
+          tense,
+          mood,
+          expectedElements: currentStep.expectedElements || []
+        }
+      );
+
+      // Combinar resultados
+      const combinedResult = {
+        ...result,
+        assessment,
+        userResponse: userResponse.trim(),
+        timestamp: Date.now()
+      };
+
+      // Guardar resultado
+      setExerciseResults(prev => [...prev, combinedResult]);
+
+      // Actualizar progreso usando el sistema SRS
+      if (combinedResult.success) {
+        await handleProgressUpdate(combinedResult);
+      }
+
+      // Obtener siguiente paso o completar ejercicio
+      if (result.nextStep) {
+        setCurrentStep(result.nextStep);
+        setUserResponse('');
+      } else {
+        // Ejercicio completado
+        await completeExercise(combinedResult);
+      }
+
+    } catch (err) {
+      console.error('❌ Error al procesar respuesta:', err);
+      setError('Error al procesar la respuesta. Inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleProgressUpdate(result) {
+    try {
+      const userId = getCurrentUserId();
+      if (!userId) return;
+
+      // Simular item para el sistema SRS
+      const mockItem = {
+        id: `meaningful_practice_${tense}_${mood}`,
+        verb: currentExercise.title,
+        form: `${mood}_${tense}`,
+        mood,
+        tense,
+        type: 'meaningful_practice'
+      };
+
+      // Calcular puntuación para el sistema de progreso
+      const score = calculateProgressScore(result);
+      const isCorrect = score >= 0.7;
+
+      // Actualizar SRS
+      await updateSchedule(userId, mockItem.id, isCorrect);
+
+      // Registrar con el sistema de seguimiento
+      await handleResult(mockItem, {
+        userAnswer: result.userResponse,
+        isCorrect,
+        score,
+        timeSpent: Date.now() - (result.timestamp || Date.now()),
+        errorTags: extractErrorTags(result.assessment),
+        metadata: {
+          exerciseType: currentExercise.type,
+          difficulty: currentExercise.difficulty,
+          wordCount: result.userResponse.split(/\s+/).length
+        }
+      });
+
+    } catch (err) {
+      console.error('❌ Error al actualizar progreso:', err);
+    }
+  }
+
+  function calculateProgressScore(result) {
+    let score = 0.5; // Base score
+
+    // Puntuación por éxito del ejercicio
+    if (result.success) score += 0.3;
+
+    // Puntuación por calidad del assessment
+    if (result.assessment) {
+      const { grammarScore, creativityScore, contentScore } = result.assessment;
+      score += (grammarScore * 0.1) + (creativityScore * 0.05) + (contentScore * 0.05);
+    }
+
+    // Puntuación por análisis específico del ejercicio
+    if (result.analysis) {
+      if (result.analysis.isCorrect || result.analysis.meetsRequirements) score += 0.2;
+      if (result.analysis.qualityScore) score += result.analysis.qualityScore * 0.1;
+    }
+
+    return Math.min(score, 1.0);
+  }
+
+  function extractErrorTags(assessment) {
+    if (!assessment || !assessment.errors) return [];
+
+    const errorTags = [];
+
+    assessment.errors.forEach(error => {
+      switch (error.category) {
+        case 'conjugation':
+          errorTags.push(ERROR_TAGS.CONJUGATION_ERROR);
+          break;
+        case 'tense':
+          errorTags.push(ERROR_TAGS.WRONG_TENSE);
+          break;
+        case 'agreement':
+          errorTags.push(ERROR_TAGS.AGREEMENT_ERROR);
+          break;
+        default:
+          errorTags.push(ERROR_TAGS.OTHER);
+      }
+    });
+
+    return [...new Set(errorTags)];
+  }
+
+  async function completeExercise(finalResult) {
+    try {
+      // Generar resumen del ejercicio
+      const exerciseStats = currentExercise.getExerciseStats();
+      const summary = {
+        exercise: currentExercise.title,
+        type: currentExercise.type,
+        totalSteps: currentExercise.getTotalSteps(),
+        results: exerciseResults.length + 1, // +1 for final result
+        averageScore: calculateAverageScore([...exerciseResults, finalResult]),
+        timeSpent: calculateTotalTime(),
+        completedAt: Date.now()
+      };
+
+      console.log('✅ Ejercicio completado:', summary);
+
+      // Llamar callback de completación
+      if (onComplete) {
+        onComplete({
+          success: true,
+          summary,
+          finalResult,
+          stats: exerciseStats
+        });
+      }
+
+    } catch (err) {
+      console.error('❌ Error al completar ejercicio:', err);
+    }
+  }
+
+  function calculateAverageScore(results) {
+    if (results.length === 0) return 0;
+    const totalScore = results.reduce((sum, result) => {
+      return sum + calculateProgressScore(result);
+    }, 0);
+    return totalScore / results.length;
+  }
+
+  function calculateTotalTime() {
+    if (exerciseResults.length === 0) return 0;
+    const firstTimestamp = exerciseResults[0]?.timestamp || Date.now();
+    return Date.now() - firstTimestamp;
+  }
+
+  function handleHint() {
+    if (currentStep && currentStep.instructions) {
+      handleHintShown();
+      // Mostrar hint en UI (implementación específica del tipo de ejercicio)
+      alert(currentStep.instructions);
+    }
+  }
+
+  // Renderizado condicional basado en el estado
+  if (isLoading) {
     return (
-      <div className="meaningful-practice">
-        <p>Ejercicio no disponible para este tiempo verbal aún.</p>
-        <button onClick={onBack} className="btn-secondary">Volver</button>
+      <div className="meaningful-practice-container">
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Preparando ejercicio de práctica...</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="App learn-flow">
-      <div className="center-column">
-        <div className="drill-header-learning">
-            <button onClick={onBack} className="back-btn-drill">
-                <img src="/back.png" alt="Volver" className="back-icon" />
-            </button>
-            <h2>Práctica Significativa: {formatMoodTense(tense.mood, tense.tense)}</h2>
+  if (error) {
+    return (
+      <div className="meaningful-practice-container">
+        <div className="error-state">
+          <h3>❌ Error</h3>
+          <p>{error}</p>
+          <button onClick={initializeExercise} className="retry-button">
+            Intentar de nuevo
+          </button>
         </div>
+      </div>
+    );
+  }
 
-        {exercise.type === 'timeline' && (
-            <div className="timeline-container">
-              <h3>{exercise.title}</h3>
-              {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
-              )}
-              <div className="timeline">
-                {exercise.events.map(event => (
-                  <div key={event.time} className="timeline-event">
-                    <span className="icon">{event.icon}</span>
-                    <span className="time">{event.time}</span>
-                    <span className="prompt">({event.prompt})</span>
-                  </div>
+  if (!currentExercise || !currentStep) {
+    return (
+      <div className="meaningful-practice-container">
+        <div className="empty-state">
+          <p>No hay ejercicios disponibles para este tiempo verbal.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Renderizado principal del ejercicio
+  return (
+    <div className="meaningful-practice-container">
+      <ExerciseHeader
+        exercise={currentExercise}
+        step={currentStep}
+        tense={tense}
+        mood={mood}
+      />
+
+      <ExerciseContent
+        step={currentStep}
+        userResponse={userResponse}
+        onResponseChange={setUserResponse}
+        onSubmit={handleSubmit}
+        onHint={handleHint}
+        isSubmitting={isSubmitting}
+        results={exerciseResults}
+      />
+
+      {exerciseResults.length > 0 && (
+        <ExerciseProgress
+          results={exerciseResults}
+          currentStep={currentStep}
+          totalSteps={currentExercise.getTotalSteps()}
+        />
+      )}
+    </div>
+  );
+}
+
+// Componente para mostrar el encabezado del ejercicio
+function ExerciseHeader({ exercise, step, tense, mood }) {
+  return (
+    <div className="exercise-header">
+      <div className="exercise-info">
+        <h2>{exercise.title}</h2>
+        <p className="exercise-description">{exercise.description}</p>
+        <div className="exercise-meta">
+          <span className="tense-label">{formatMoodTense(mood, tense)}</span>
+          <span className="difficulty-label">{exercise.difficulty}</span>
+          <span className="exercise-type">{exercise.type}</span>
+        </div>
+      </div>
+
+      {step && (
+        <div className="step-info">
+          <h3>{step.title || `Paso ${exercise.getCurrentStep()}`}</h3>
+          {step.instructions && (
+            <p className="step-instructions">{step.instructions}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Componente para mostrar el contenido del ejercicio
+function ExerciseContent({
+  step,
+  userResponse,
+  onResponseChange,
+  onSubmit,
+  onHint,
+  isSubmitting,
+  results
+}) {
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      onSubmit();
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (step.type) {
+      case 'timeline_input':
+        return (
+          <TimelineStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+
+      case 'story_building_input':
+        return (
+          <StoryBuildingStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+
+      case 'role_playing_interaction':
+        return (
+          <RolePlayingStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+
+      case 'problem_solving_decision':
+        return (
+          <ProblemSolvingStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+
+      default:
+        return (
+          <DefaultStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className="exercise-content">
+      {renderStepContent()}
+
+      {/* Mostrar resultados anteriores */}
+      {results.length > 0 && (
+        <div className="previous-results">
+          {results.slice(-2).map((result, index) => (
+            <div key={index} className="result-feedback">
+              <p className={`feedback ${result.success ? 'success' : 'needs-improvement'}`}>
+                {result.feedback}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Controles del ejercicio */}
+      <div className="exercise-controls">
+        <button
+          onClick={onHint}
+          className="hint-button"
+          disabled={isSubmitting}
+        >
+          💡 Pista
+        </button>
+
+        <button
+          onClick={onSubmit}
+          className="submit-button"
+          disabled={!userResponse.trim() || isSubmitting}
+        >
+          {isSubmitting ? 'Procesando...' : 'Enviar respuesta'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Componentes específicos para cada tipo de ejercicio
+function TimelineStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="timeline-step">
+      {step.prompts && (
+        <div className="timeline-prompts">
+          {step.prompts.map((prompt, index) => (
+            <div key={index} className="timeline-prompt">
+              <span className="prompt-icon">{prompt.icon}</span>
+              <span className="prompt-text">{prompt.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || "Describe la línea de tiempo usando los verbos indicados..."}
+        className="response-textarea timeline-textarea"
+        rows={6}
+      />
+    </div>
+  );
+}
+
+function StoryBuildingStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="story-building-step">
+      {step.elements && (
+        <div className="story-elements">
+          <h4>Elementos para tu historia:</h4>
+          {Object.entries(step.elements).map(([category, items]) => (
+            <div key={category} className="element-category">
+              <h5>{category}:</h5>
+              <div className="element-items">
+                {items.map((item, index) => (
+                  <span key={index} className="element-item">
+                    {item.name || item}
+                  </span>
                 ))}
               </div>
             </div>
-        )}
+          ))}
+        </div>
+      )}
 
-        {exercise.type === 'prompts' && (
-            <div className="prompts-container">
-                <h3>{exercise.title}</h3>
-                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
-                )}
-                <ul>
-                    {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
-                </ul>
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || "Escribe tu historia aquí..."}
+        className="response-textarea story-textarea"
+        rows={8}
+      />
+
+      {step.showWordCount && (
+        <div className="word-count">
+          Palabras: {userResponse.trim().split(/\s+/).length}
+          {step.minLength && ` (mínimo: ${step.minLength})`}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RolePlayingStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="role-playing-step">
+      {step.scenario && (
+        <div className="scenario-info">
+          <h4>Situación:</h4>
+          <p>{step.scenario.context}</p>
+          <p><strong>Tu rol:</strong> {step.scenario.userRole}</p>
+        </div>
+      )}
+
+      {step.npcMessage && (
+        <div className="npc-message">
+          <p><strong>{step.scenario?.npcRole || 'Interlocutor'}:</strong></p>
+          <p>"{step.npcMessage}"</p>
+        </div>
+      )}
+
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || "Escribe tu respuesta..."}
+        className="response-textarea roleplay-textarea"
+        rows={4}
+      />
+    </div>
+  );
+}
+
+function ProblemSolvingStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="problem-solving-step">
+      {step.problemContext && (
+        <div className="problem-context">
+          <h4>Situación:</h4>
+          <p>{step.problemContext.situation}</p>
+
+          {step.problemContext.constraints && (
+            <div className="constraints">
+              <h5>Limitaciones:</h5>
+              <ul>
+                {step.problemContext.constraints.map((constraint, index) => (
+                  <li key={index}>{constraint}</li>
+                ))}
+              </ul>
             </div>
-        )}
+          )}
+        </div>
+      )}
 
-        {exercise.type === 'daily_routine' && (
-            <div className="daily-routine-container">
-                <h3>{exercise.title}</h3>
-                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
-                )}
-                <p className="description">{exercise.description}</p>
-                <div className="routine-prompts">
-                    {exercise.prompts.map((prompt, i) => (
-                        <div key={i} className="routine-prompt">
-                            <span className="icon">{prompt.icon}</span>
-                            <span className="text">{prompt.text}</span>
-                        </div>
-                    ))}
-                </div>
+      {step.decisionPoint && (
+        <div className="decision-point">
+          <h4>{step.decisionPoint.question}</h4>
+          {step.decisionPoint.factors && (
+            <div className="factors">
+              <p><strong>Factores a considerar:</strong></p>
+              <ul>
+                {step.decisionPoint.factors.map((factor, index) => (
+                  <li key={index}>{factor}</li>
+                ))}
+              </ul>
             </div>
-        )}
+          )}
+        </div>
+      )}
 
-        <textarea
-          className="story-textarea"
-          placeholder="Escribe aquí tus respuestas..."
-          value={story}
-          onChange={(e) => setStory(e.target.value)}
-        />
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || "Desarrolla tu análisis y propuesta..."}
+        className="response-textarea problem-solving-textarea"
+        rows={8}
+      />
+    </div>
+  );
+}
 
-        {feedback && (
-          <div className={`feedback-message ${feedback.type}`}>
-            {feedback.message}
-          </div>
-        )}
+function DefaultStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="default-step">
+      {step.prompts && (
+        <div className="prompts">
+          {step.prompts.map((prompt, index) => (
+            <div key={index} className="prompt">
+              {prompt.icon && <span className="prompt-icon">{prompt.icon}</span>}
+              <span className="prompt-text">{prompt.text || prompt}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {feedback?.type === 'correct' ? (
-            <button onClick={onPhaseComplete} className="btn-primary">Siguiente Fase</button>
-        ) : (
-            <button 
-              onClick={handleCheckStory} 
-              className="btn-primary"
-              disabled={isProcessing || !story.trim()}
-            >
-              {isProcessing ? 'Revisando...' : 'Revisar Historia'}
-            </button>
-        )}
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || "Escribe tu respuesta..."}
+        className="response-textarea"
+        rows={6}
+      />
+    </div>
+  );
+}
+
+// Componente para mostrar el progreso del ejercicio
+function ExerciseProgress({ results, currentStep, totalSteps }) {
+  const completedSteps = results.length;
+  const progressPercentage = (completedSteps / totalSteps) * 100;
+
+  return (
+    <div className="exercise-progress">
+      <div className="progress-bar">
+        <div
+          className="progress-fill"
+          style={{ width: `${progressPercentage}%` }}
+        ></div>
       </div>
+      <p className="progress-text">
+        Paso {completedSteps + 1} de {totalSteps}
+      </p>
     </div>
   );
 }

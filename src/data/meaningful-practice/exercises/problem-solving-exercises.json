@@ -1,0 +1,268 @@
+{
+  "problemSolving": {
+    "plan_viaje_presupuesto": {
+      "id": "problem_plan_viaje_presupuesto",
+      "title": "Planificar un viaje con presupuesto limitado",
+      "description": "Planifica un viaje de fin de semana con un presupuesto de 300 euros",
+      "targetTenses": ["fut", "cond", "pres"],
+      "difficulty": "intermediate",
+      "estimatedTime": 12,
+      "problemContext": {
+        "situation": "Quieres hacer un viaje de fin de semana (2 días, 1 noche) pero solo tienes 300 euros de presupuesto total. Necesitas considerar transporte, alojamiento, comida y actividades.",
+        "constraints": [
+          "Presupuesto máximo: 300 euros",
+          "Duración: 2 días, 1 noche",
+          "Debe incluir transporte de ida y vuelta",
+          "Minimum 2 actividades principales"
+        ],
+        "requirements": [
+          "Justificar todas las decisiones de gasto",
+          "Comparar al menos 2 opciones diferentes",
+          "Incluir un plan de contingencia",
+          "Calcular el presupuesto detalladamente"
+        ]
+      },
+      "decisionPoints": [
+        {
+          "id": "destino",
+          "question": "¿Qué destino elegirías y por qué?",
+          "factors": ["distancia", "costo de vida", "atracciones", "transporte disponible"],
+          "expectedElements": ["justificación del destino", "comparación de opciones"],
+          "targetVerbs": ["elegir", "comparar", "considerar", "preferir", "costar"]
+        },
+        {
+          "id": "transporte",
+          "question": "¿Cómo viajarías y cuánto gastarías en transporte?",
+          "factors": ["precio", "tiempo", "comodidad", "flexibilidad"],
+          "expectedElements": ["tipo de transporte", "costo específico", "justificación"],
+          "targetVerbs": ["viajar", "gastar", "ahorrar", "decidir", "comparar"]
+        },
+        {
+          "id": "alojamiento",
+          "question": "¿Dónde te alojarías y por qué?",
+          "factors": ["precio por noche", "ubicación", "servicios incluidos", "cancelación"],
+          "expectedElements": ["tipo de alojamiento", "costo total", "ventajas"],
+          "targetVerbs": ["alojar", "reservar", "elegir", "buscar", "encontrar"]
+        },
+        {
+          "id": "actividades",
+          "question": "¿Qué actividades harías y cuánto presupuestarías para cada una?",
+          "factors": ["costo de entrada", "duración", "valor educativo/entretenimiento", "ubicación"],
+          "expectedElements": ["lista de actividades", "presupuesto por actividad", "justificación"],
+          "targetVerbs": ["hacer", "visitar", "disfrutar", "explorar", "conocer"]
+        },
+        {
+          "id": "contingencia",
+          "question": "¿Qué harías si surgen gastos inesperados?",
+          "factors": ["flexibilidad del presupuesto", "actividades alternativas", "reducción de costos"],
+          "expectedElements": ["plan alternativo", "estrategias de ahorro", "prioridades"],
+          "targetVerbs": ["cambiar", "adaptar", "reducir", "priorizar", "solucionar"]
+        }
+      ],
+      "evaluationCriteria": {
+        "realismo": "Las cifras y decisiones son realistas y factibles",
+        "creatividad": "Soluciones originales dentro del presupuesto",
+        "detalle": "Explicaciones específicas y bien fundamentadas",
+        "organización": "Información presentada de manera clara y lógica"
+      }
+    },
+    "conflicto_companeros_trabajo": {
+      "id": "problem_conflicto_companeros_trabajo",
+      "title": "Resolver conflicto entre compañeros de trabajo",
+      "description": "Mediar en una disputa entre dos colegas sobre responsabilidades del proyecto",
+      "targetTenses": ["cond", "subj", "pres"],
+      "difficulty": "advanced",
+      "estimatedTime": 15,
+      "problemContext": {
+        "situation": "Eres el coordinador de proyecto y dos miembros importantes del equipo (Ana y Carlos) están en desacuerdo sobre quién debe liderar una tarea crítica. Ambos tienen puntos válidos pero el conflicto está afectando la productividad del equipo.",
+        "constraints": [
+          "Fecha límite del proyecto en 2 semanas",
+          "Ambos empleados son valiosos y experimentados",
+          "El resto del equipo está empezando a tomar bandos",
+          "No puedes cambiar la fecha de entrega"
+        ],
+        "requirements": [
+          "Proponer una solución justa para ambas partes",
+          "Mantener la moral del equipo",
+          "Asegurar la calidad del trabajo",
+          "Prevenir futuros conflictos similares"
+        ]
+      },
+      "decisionPoints": [
+        {
+          "id": "analisis_situacion",
+          "question": "¿Cómo analizarías la situación desde la perspectiva de cada persona?",
+          "factors": ["puntos de vista individuales", "motivaciones", "fortalezas", "preocupaciones"],
+          "expectedElements": ["perspectiva de Ana", "perspectiva de Carlos", "análisis objetivo"],
+          "targetVerbs": ["entender", "analizar", "considerar", "evaluar", "escuchar"]
+        },
+        {
+          "id": "mediacion",
+          "question": "¿Cómo organizarías una reunión de mediación?",
+          "factors": ["ambiente", "agenda", "reglas de comunicación", "objetivos"],
+          "expectedElements": ["estructura de la reunión", "técnicas de mediación", "reglas establecidas"],
+          "targetVerbs": ["organizar", "facilitar", "mediar", "comunicar", "establecer"]
+        },
+        {
+          "id": "solucion_propuesta",
+          "question": "¿Qué solución específica propondrías?",
+          "factors": ["división de responsabilidades", "aprovechamiento de fortalezas", "compensaciones"],
+          "expectedElements": ["propuesta detallada", "justificación", "beneficios para cada parte"],
+          "targetVerbs": ["proponer", "dividir", "asignar", "colaborar", "complementar"]
+        },
+        {
+          "id": "implementacion",
+          "question": "¿Cómo implementarías y monitorearías la solución?",
+          "factors": ["cronograma", "puntos de control", "comunicación", "ajustes"],
+          "expectedElements": ["plan de implementación", "sistema de seguimiento", "métricas de éxito"],
+          "targetVerbs": ["implementar", "monitorear", "supervisar", "ajustar", "evaluar"]
+        },
+        {
+          "id": "prevencion",
+          "question": "¿Qué medidas tomarías para prevenir conflictos futuros?",
+          "factors": ["comunicación", "procesos", "capacitación", "cultura de equipo"],
+          "expectedElements": ["estrategias preventivas", "cambios en procesos", "capacitación"],
+          "targetVerbs": ["prevenir", "mejorar", "capacitar", "fortalecer", "desarrollar"]
+        }
+      ],
+      "evaluationCriteria": {
+        "empatía": "Comprensión de diferentes perspectivas",
+        "practicidad": "Soluciones viables y realistas",
+        "liderazgo": "Demostración de habilidades de liderazgo",
+        "comunicación": "Claridad y efectividad en la comunicación"
+      }
+    },
+    "evento_familiar_organizacion": {
+      "id": "problem_evento_familiar_organizacion",
+      "title": "Organizar reunión familiar con restricciones",
+      "description": "Planifica una reunión familiar considerando diferentes necesidades y limitaciones",
+      "targetTenses": ["fut", "cond", "subj"],
+      "difficulty": "intermediate",
+      "estimatedTime": 10,
+      "problemContext": {
+        "situation": "Tu familia quiere organizar una reunión para celebrar el 70º cumpleaños del abuelo. Hay 25 personas, incluyendo 3 vegetarianos, 2 celíacos, 4 niños pequeños, y algunos familiares que viven lejos. El presupuesto es limitado y hay diferentes opiniones sobre el tipo de celebración.",
+        "constraints": [
+          "25 personas con diferentes necesidades dietéticas",
+          "Presupuesto familiar conjunto limitado",
+          "Algunos familiares viven en otras ciudades",
+          "Necesita ser accesible para persona mayor"
+        ],
+        "requirements": [
+          "Incluir a toda la familia",
+          "Respetar restricciones dietéticas",
+          "Mantener el evento dentro del presupuesto",
+          "Crear un ambiente festivo y memorable"
+        ]
+      },
+      "decisionPoints": [
+        {
+          "id": "tipo_evento",
+          "question": "¿Qué tipo de celebración organizarías?",
+          "factors": ["preferencias del abuelo", "comodidad de invitados", "presupuesto", "logística"],
+          "expectedElements": ["formato del evento", "justificación", "consideraciones especiales"],
+          "targetVerbs": ["organizar", "celebrar", "planificar", "considerar", "adaptar"]
+        },
+        {
+          "id": "menu_comida",
+          "question": "¿Cómo resolverías el tema de la comida para todos?",
+          "factors": ["restricciones dietéticas", "costos", "preparación", "gustos generales"],
+          "expectedElements": ["menú detallado", "opciones para restricciones", "plan de preparación"],
+          "targetVerbs": ["preparar", "cocinar", "servir", "incluir", "satisfacer"]
+        },
+        {
+          "id": "logistica_lugar",
+          "question": "¿Dónde y cómo organizarías el espacio?",
+          "factors": ["capacidad", "accesibilidad", "costo", "ambiente"],
+          "expectedElements": ["ubicación específica", "distribución del espacio", "consideraciones de accesibilidad"],
+          "targetVerbs": ["ubicar", "distribuir", "acomodar", "decorar", "organizar"]
+        },
+        {
+          "id": "entretenimiento",
+          "question": "¿Qué actividades incluirías para todas las edades?",
+          "factors": ["edad de participantes", "intereses diversos", "duración", "costo"],
+          "expectedElements": ["actividades específicas", "entretenimiento por edades", "cronograma"],
+          "targetVerbs": ["entretener", "incluir", "divertir", "participar", "disfrutar"]
+        },
+        {
+          "id": "coordinacion",
+          "question": "¿Cómo coordinarías la participación de familiares que viven lejos?",
+          "factors": ["transporte", "alojamiento", "comunicación", "contribuciones"],
+          "expectedElements": ["plan de coordinación", "apoyo logístico", "comunicación efectiva"],
+          "targetVerbs": ["coordinar", "comunicar", "apoyar", "facilitar", "organizar"]
+        }
+      ],
+      "evaluationCriteria": {
+        "inclusividad": "Consideración de todas las necesidades",
+        "creatividad": "Soluciones innovadoras para los desafíos",
+        "organización": "Plan detallado y bien estructurado",
+        "sensibilidad": "Atención a aspectos emocionales y familiares"
+      }
+    },
+    "startup_decision_critica": {
+      "id": "problem_startup_decision_critica",
+      "title": "Decisión crítica para startup",
+      "description": "Decide el futuro de tu startup tecnológica con recursos limitados",
+      "targetTenses": ["cond", "fut", "subj"],
+      "difficulty": "advanced",
+      "estimatedTime": 18,
+      "problemContext": {
+        "situation": "Eres cofundador de una startup de aplicaciones móviles. Tienes fondos para 6 meses más, dos ofertas de inversión con condiciones muy diferentes, y la posibilidad de un contrato grande que requeriría cambiar completamente el enfoque del producto.",
+        "constraints": [
+          "Fondos actuales para solo 6 meses",
+          "Equipo de 8 personas dependiendo de ti",
+          "Dos ofertas de inversión con términos diferentes",
+          "Presión del mercado y competencia creciente"
+        ],
+        "requirements": [
+          "Analizar todas las opciones objetivamente",
+          "Considerar el impacto en el equipo",
+          "Evaluar riesgos y oportunidades",
+          "Tomar una decisión justificada estratégicamente"
+        ]
+      },
+      "decisionPoints": [
+        {
+          "id": "analisis_situacion",
+          "question": "¿Cómo evaluarías la situación actual de la empresa?",
+          "factors": ["estado financiero", "producto", "mercado", "competencia", "equipo"],
+          "expectedElements": ["análisis FODA", "métricas clave", "posición competitiva"],
+          "targetVerbs": ["evaluar", "analizar", "diagnosticar", "medir", "comparar"]
+        },
+        {
+          "id": "opciones_inversion",
+          "question": "¿Cómo compararías las dos ofertas de inversión?",
+          "factors": ["términos financieros", "control", "experiencia del inversor", "visión a largo plazo"],
+          "expectedElements": ["comparación detallada", "pros y contras", "impacto en el control"],
+          "targetVerbs": ["comparar", "negociar", "evaluar", "considerar", "sopesar"]
+        },
+        {
+          "id": "contrato_grande",
+          "question": "¿Valdría la pena cambiar el enfoque por el contrato grande?",
+          "factors": ["ingresos inmediatos", "visión original", "mercado futuro", "recursos necesarios"],
+          "expectedElements": ["análisis de oportunidad", "impacto estratégico", "riesgos asociados"],
+          "targetVerbs": ["cambiar", "adaptar", "redirigir", "sacrificar", "aprovechar"]
+        },
+        {
+          "id": "impacto_equipo",
+          "question": "¿Cómo manejarías el impacto de tu decisión en el equipo?",
+          "factors": ["estabilidad laboral", "motivación", "capacidades", "crecimiento"],
+          "expectedElements": ["estrategia de comunicación", "plan de retención", "desarrollo del equipo"],
+          "targetVerbs": ["comunicar", "motivar", "retener", "desarrollar", "liderar"]
+        },
+        {
+          "id": "decision_final",
+          "question": "¿Cuál sería tu decisión final y por qué?",
+          "factors": ["viabilidad", "alineación con visión", "riesgo vs. oportunidad", "sostenibilidad"],
+          "expectedElements": ["decisión específica", "justificación completa", "plan de implementación"],
+          "targetVerbs": ["decidir", "implementar", "ejecutar", "comprometer", "avanzar"]
+        }
+      ],
+      "evaluationCriteria": {
+        "análisis": "Profundidad y calidad del análisis estratégico",
+        "lógica": "Coherencia y lógica en el razonamiento",
+        "liderazgo": "Consideración del factor humano",
+        "visión": "Perspectiva a largo plazo y pensamiento estratégico"
+      }
+    }
+  }
+}

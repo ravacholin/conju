@@ -1,0 +1,231 @@
+{
+  "pretPerf": {
+    "main": {
+      "type": "timeline",
+      "id": "pretperf_today_main",
+      "title": "Lo que he hecho hoy",
+      "description": "Cuenta lo que has hecho hoy usando el pretérito perfecto.",
+      "category": "recent_past",
+      "difficulty": "intermediate",
+      "events": [
+        {
+          "time": "8:00",
+          "icon": "🌅",
+          "prompt": "levantarse temprano",
+          "context": "morning"
+        },
+        {
+          "time": "10:00",
+          "icon": "☕️",
+          "prompt": "desayunar bien",
+          "context": "breakfast"
+        },
+        {
+          "time": "14:00",
+          "icon": "💻",
+          "prompt": "trabajar en el proyecto",
+          "context": "work"
+        },
+        {
+          "time": "19:00",
+          "icon": "👥",
+          "prompt": "quedar con amigos",
+          "context": "social"
+        }
+      ],
+      "expectedVerbs": ["me he levantado", "he desayunado", "he trabajado", "he quedado"]
+    }
+  },
+  "plusc": {
+    "main": {
+      "type": "prompts",
+      "id": "plusc_sequences_main",
+      "title": "Cuando llegué, ya había pasado...",
+      "description": "Completa las secuencias de eventos usando el pluscuamperfecto.",
+      "category": "past_sequences",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Cuando llegué a casa, mi hermana ya... (cocinar, limpiar)",
+          "expected": ["había cocinado", "había limpiado"],
+          "context": "home_arrival"
+        },
+        {
+          "prompt": "Cuando empezó la película, nosotros ya... (comprar, buscar)",
+          "expected": ["habíamos comprado", "habíamos buscado"],
+          "context": "movie_theater"
+        },
+        {
+          "prompt": "Cuando se despertaron, el sol ya... (salir, calentar)",
+          "expected": ["había salido", "había calentado"],
+          "context": "morning"
+        },
+        {
+          "prompt": "Cuando llegaste, ellos ya... (terminar, irse)",
+          "expected": ["habían terminado", "se habían ido"],
+          "context": "late_arrival"
+        }
+      ]
+    }
+  },
+  "futPerf": {
+    "main": {
+      "type": "prompts",
+      "id": "futperf_completion_main",
+      "title": "Lo que habrá pasado para entonces",
+      "description": "Habla sobre lo que habrás completado en el futuro.",
+      "category": "future_completion",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Para el viernes, yo ya... (terminar, enviar)",
+          "expected": ["habré terminado", "habré enviado"],
+          "context": "work_deadline"
+        },
+        {
+          "prompt": "Para diciembre, tú... (aprender, mejorar)",
+          "expected": ["habrás aprendido", "habrás mejorado"],
+          "context": "learning_goals"
+        },
+        {
+          "prompt": "Para el año que viene, nosotros... (ahorrar, decidir)",
+          "expected": ["habremos ahorrado", "habremos decidido"],
+          "context": "annual_goals"
+        },
+        {
+          "prompt": "Para entonces, ellos ya... (mudarse, adaptarse)",
+          "expected": ["se habrán mudado", "se habrán adaptado"],
+          "context": "life_changes"
+        }
+      ]
+    }
+  },
+  "subjPerf": {
+    "main": {
+      "type": "prompts",
+      "id": "subjperf_hopes_main",
+      "title": "Espero que haya...",
+      "description": "Expresa esperanzas y dudas usando el subjuntivo perfecto.",
+      "category": "hopes_doubts",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Espero que ya... (llegar, encontrar)",
+          "expected": ["haya llegado", "haya encontrado", "hayas llegado", "hayas encontrado"],
+          "context": "hope"
+        },
+        {
+          "prompt": "Es posible que él... (terminar, decidir)",
+          "expected": ["haya terminado", "haya decidido"],
+          "context": "possibility"
+        },
+        {
+          "prompt": "Dudo que nosotros... (cometer, olvidar)",
+          "expected": ["hayamos cometido", "hayamos olvidado"],
+          "context": "doubt"
+        },
+        {
+          "prompt": "No creo que ellos... (resolver, comprender)",
+          "expected": ["hayan resuelto", "hayan comprendido"],
+          "context": "disbelief"
+        }
+      ]
+    }
+  },
+  "subjImpf": {
+    "main": {
+      "type": "prompts",
+      "id": "subjimpf_wishes_main",
+      "title": "Si fuera diferente...",
+      "description": "Expresa deseos y situaciones hipotéticas.",
+      "category": "wishes_hypothetical",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Si tuviera más tiempo, yo... (estudiar, viajar)",
+          "expected": ["estudiaría", "viajaría", "estudiara", "viajara"],
+          "context": "time_wishes"
+        },
+        {
+          "prompt": "Si fueras más paciente, tú... (entender, lograr)",
+          "expected": ["entenderías", "lograrías", "entendieras", "lograras"],
+          "context": "personality_change"
+        },
+        {
+          "prompt": "Si viviéramos cerca del mar, nosotros... (nadar, pescar)",
+          "expected": ["nadaríamos", "pescaríamos", "nadáramos", "pescáramos"],
+          "context": "location_wishes"
+        },
+        {
+          "prompt": "Ojalá que ellos... (venir, quedarse)",
+          "expected": ["vinieran", "se quedaran", "vendrían", "se quedarían"],
+          "context": "hopes"
+        }
+      ]
+    }
+  },
+  "condPerf": {
+    "main": {
+      "type": "prompts",
+      "id": "condperf_regrets_main",
+      "title": "Lo que habría pasado si...",
+      "description": "Habla sobre arrepentimientos y situaciones pasadas hipotéticas.",
+      "category": "regrets_past_hypothetical",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Si hubiera estudiado más, yo... (aprobar, conseguir)",
+          "expected": ["habría aprobado", "habría conseguido"],
+          "context": "academic_regrets"
+        },
+        {
+          "prompt": "Si hubieras venido antes, tú... (conocer, disfrutar)",
+          "expected": ["habrías conocido", "habrías disfrutado"],
+          "context": "missed_opportunities"
+        },
+        {
+          "prompt": "Si hubiéramos salido temprano, nosotros... (llegar, evitar)",
+          "expected": ["habríamos llegado", "habríamos evitado"],
+          "context": "timing_regrets"
+        },
+        {
+          "prompt": "Si hubieran avisado, ellos... (preparar, organizar)",
+          "expected": ["habrían preparado", "habrían organizado"],
+          "context": "communication_regrets"
+        }
+      ]
+    }
+  },
+  "subjPlusc": {
+    "main": {
+      "type": "prompts",
+      "id": "subjplusc_regrets_main",
+      "title": "Si hubiera sabido que...",
+      "description": "Expresa arrepentimientos profundos y situaciones pasadas irreales.",
+      "category": "deep_regrets",
+      "difficulty": "expert",
+      "prompts": [
+        {
+          "prompt": "Si hubiera sabido que vendrías, yo... (preparar, comprar)",
+          "expected": ["hubiera preparado", "hubiera comprado", "habría preparado", "habría comprado"],
+          "context": "preparation_regrets"
+        },
+        {
+          "prompt": "Si hubieras estudiado más, tú... (aprobar, entender)",
+          "expected": ["hubieras aprobado", "hubieras entendido", "habrías aprobado", "habrías entendido"],
+          "context": "study_regrets"
+        },
+        {
+          "prompt": "Si hubiéramos salido antes, nosotros... (llegar, conseguir)",
+          "expected": ["hubiéramos llegado", "hubiéramos conseguido", "habríamos llegado", "habríamos conseguido"],
+          "context": "timing_regrets"
+        },
+        {
+          "prompt": "Ojalá que ellos... (venir, avisar)",
+          "expected": ["hubieran venido", "hubieran avisado"],
+          "context": "unfulfilled_wishes"
+        }
+      ]
+    }
+  }
+}

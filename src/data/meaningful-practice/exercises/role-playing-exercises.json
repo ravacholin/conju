@@ -1,0 +1,248 @@
+{
+  "rolePlaying": {
+    "entrevista_trabajo": {
+      "id": "roleplay_entrevista_trabajo",
+      "title": "Entrevista de trabajo",
+      "description": "Participa en una simulación de entrevista laboral",
+      "targetTenses": ["pres", "pretPerf", "fut"],
+      "difficulty": "advanced",
+      "estimatedTime": 12,
+      "scenario": {
+        "context": "Estás en una entrevista para un puesto de trabajo que realmente deseas. El entrevistador te hará preguntas sobre tu experiencia, habilidades y planes futuros.",
+        "userRole": "candidato/a al puesto",
+        "npcRole": "entrevistador/a de recursos humanos",
+        "setting": "oficina corporativa moderna"
+      },
+      "phases": [
+        {
+          "id": "introduccion",
+          "title": "Presentación inicial",
+          "npcMessage": "Buenos días. Soy [NOMBRE], encargado/a de recursos humanos. Gracias por venir hoy. Para comenzar, ¿podrías contarme un poco sobre ti y por qué te interesa este puesto?",
+          "expectedElements": ["presentación personal", "motivación", "experiencia relevante"],
+          "targetVerbs": ["ser", "trabajar", "estudiar", "interesar", "buscar"],
+          "minLength": 80,
+          "followUpQuestions": [
+            "¿Qué experiencia tienes en este campo?",
+            "¿Por qué dejaste tu trabajo anterior?",
+            "¿Qué sabes sobre nuestra empresa?"
+          ]
+        },
+        {
+          "id": "experiencia",
+          "title": "Experiencia profesional",
+          "npcMessage": "Muy interesante. Ahora me gustaría conocer más detalles sobre tu experiencia profesional. ¿Puedes describirme tus logros más importantes y qué has aprendido en tus trabajos anteriores?",
+          "expectedElements": ["logros específicos", "aprendizajes", "habilidades desarrolladas"],
+          "targetVerbs": ["lograr", "conseguir", "desarrollar", "aprender", "manejar", "dirigir"],
+          "minLength": 100,
+          "followUpQuestions": [
+            "¿Cómo manejas el trabajo bajo presión?",
+            "¿Prefieres trabajar en equipo o individualmente?",
+            "¿Cuál ha sido tu mayor desafío profesional?"
+          ]
+        },
+        {
+          "id": "futuro",
+          "title": "Planes y objetivos",
+          "npcMessage": "Perfecto. Para finalizar, me gustaría conocer tus objetivos profesionales. ¿Dónde te ves en cinco años? ¿Qué esperas conseguir en este puesto si te contratamos?",
+          "expectedElements": ["objetivos a largo plazo", "crecimiento profesional", "contribución a la empresa"],
+          "targetVerbs": ["planear", "querer", "esperar", "conseguir", "crecer", "contribuir"],
+          "minLength": 90,
+          "followUpQuestions": [
+            "¿Qué harías en tus primeros 90 días aquí?",
+            "¿Cómo te mantienes actualizado en tu campo?",
+            "¿Tienes alguna pregunta sobre el puesto o la empresa?"
+          ]
+        }
+      ],
+      "evaluationCriteria": {
+        "profesionalismo": "Uso de lenguaje formal y apropiado",
+        "coherencia": "Respuestas bien estructuradas y coherentes",
+        "completitud": "Aborda todos los elementos solicitados",
+        "gramática": "Uso correcto de tiempos verbales"
+      }
+    },
+    "medico_consulta": {
+      "id": "roleplay_medico_consulta",
+      "title": "Consulta médica",
+      "description": "Simula una visita al médico describiendo síntomas y siguiendo indicaciones",
+      "targetTenses": ["pres", "pretPerf", "impf"],
+      "difficulty": "intermediate",
+      "estimatedTime": 10,
+      "scenario": {
+        "context": "Tienes algunos síntomas que te preocupan y has decidido ir al médico. Necesitas describir lo que sientes y responder a las preguntas del doctor.",
+        "userRole": "paciente",
+        "npcRole": "médico/a",
+        "setting": "consultorio médico"
+      },
+      "phases": [
+        {
+          "id": "sintomas",
+          "title": "Descripción de síntomas",
+          "npcMessage": "Buenos días. Soy el Dr./la Dra. [NOMBRE]. ¿Qué le trae por aquí hoy? Cuénteme qué síntomas ha estado experimentando.",
+          "expectedElements": ["síntomas actuales", "duración", "intensidad"],
+          "targetVerbs": ["sentir", "doler", "tener", "empezar", "durar", "molestar"],
+          "minLength": 70,
+          "followUpQuestions": [
+            "¿Cuándo comenzaron estos síntomas?",
+            "¿Ha tomado algún medicamento?",
+            "¿Ha tenido esto antes?"
+          ]
+        },
+        {
+          "id": "historial",
+          "title": "Historial médico",
+          "npcMessage": "Entiendo. Ahora necesito conocer un poco sobre su historial médico. ¿Ha tenido problemas de salud anteriores? ¿Toma algún medicamento regularmente?",
+          "expectedElements": ["historial previo", "medicamentos", "alergias"],
+          "targetVerbs": ["padecer", "sufrir", "tomar", "ser alérgico", "haber tenido"],
+          "minLength": 60,
+          "followUpQuestions": [
+            "¿Hay antecedentes familiares de esta condición?",
+            "¿Hace ejercicio regularmente?",
+            "¿Fuma o bebe alcohol?"
+          ]
+        },
+        {
+          "id": "tratamiento",
+          "title": "Indicaciones del tratamiento",
+          "npcMessage": "Basándome en lo que me ha contado, le voy a recetar un tratamiento. Es importante que siga las indicaciones al pie de la letra. ¿Entiende las instrucciones? ¿Tiene alguna pregunta?",
+          "expectedElements": ["comprensión del tratamiento", "preguntas sobre medicación", "seguimiento"],
+          "targetVerbs": ["entender", "seguir", "tomar", "preguntar", "volver", "mejorar"],
+          "minLength": 50,
+          "followUpQuestions": [
+            "¿Cuándo debo volver si no mejoro?",
+            "¿Qué efectos secundarios debo vigilar?",
+            "¿Puedo hacer actividad física normal?"
+          ]
+        }
+      ],
+      "evaluationCriteria": {
+        "claridad": "Descripción clara de síntomas",
+        "precisión": "Información médica específica y útil",
+        "comprensión": "Entendimiento de las indicaciones",
+        "comunicación": "Capacidad de hacer preguntas relevantes"
+      }
+    },
+    "restaurante_reserva": {
+      "id": "roleplay_restaurante_reserva",
+      "title": "Reserva en restaurante",
+      "description": "Haz una reserva en un restaurante y maneja la conversación completa",
+      "targetTenses": ["pres", "fut", "cond"],
+      "difficulty": "beginner",
+      "estimatedTime": 8,
+      "scenario": {
+        "context": "Quieres hacer una reserva en un restaurante elegante para una ocasión especial. Necesitas proporcionar detalles y hacer solicitudes específicas.",
+        "userRole": "cliente",
+        "npcRole": "recepcionista del restaurante",
+        "setting": "llamada telefónica al restaurante"
+      },
+      "phases": [
+        {
+          "id": "reserva_inicial",
+          "title": "Solicitud de reserva",
+          "npcMessage": "Buenas tardes, restaurante [NOMBRE]. ¿En qué puedo ayudarle?",
+          "expectedElements": ["solicitud de reserva", "fecha y hora", "número de personas"],
+          "targetVerbs": ["querer", "necesitar", "reservar", "buscar", "ser"],
+          "minLength": 40,
+          "followUpQuestions": [
+            "¿Para qué fecha?",
+            "¿A qué hora prefiere?",
+            "¿Para cuántas personas?"
+          ]
+        },
+        {
+          "id": "detalles_especiales",
+          "title": "Requisitos especiales",
+          "npcMessage": "Perfecto, tenemos disponibilidad. ¿Tiene alguna preferencia especial? ¿Mesa junto a la ventana, celebración especial, alguna alergia alimentaria?",
+          "expectedElements": ["preferencias de mesa", "ocasión especial", "restricciones dietéticas"],
+          "targetVerbs": ["preferir", "celebrar", "tener", "necesitar", "ser alérgico"],
+          "minLength": 50,
+          "followUpQuestions": [
+            "¿Es para alguna celebración?",
+            "¿Alguna restricción dietética?",
+            "¿Prefiere zona fumador o no fumador?"
+          ]
+        },
+        {
+          "id": "confirmacion",
+          "title": "Confirmación de datos",
+          "npcMessage": "Excelente. Para confirmar la reserva necesito sus datos de contacto. ¿Me podría dar su nombre completo y número de teléfono?",
+          "expectedElements": ["datos personales", "confirmación", "agradecimiento"],
+          "targetVerbs": ["llamarse", "confirmar", "agradecer", "esperar", "ver"],
+          "minLength": 30,
+          "followUpQuestions": [
+            "¿Cómo se escribe su apellido?",
+            "¿Confirma el número de teléfono?",
+            "¿Necesita la dirección del restaurante?"
+          ]
+        }
+      ],
+      "evaluationCriteria": {
+        "cortesía": "Uso de fórmulas de cortesía apropiadas",
+        "organización": "Información presentada de manera ordenada",
+        "completitud": "Proporciona toda la información necesaria",
+        "naturalidad": "Conversación fluida y natural"
+      }
+    },
+    "tienda_compras": {
+      "id": "roleplay_tienda_compras",
+      "title": "Compras en una tienda",
+      "description": "Realiza compras en una tienda de ropa, preguntando por productos y negociando",
+      "targetTenses": ["pres", "cond", "impf"],
+      "difficulty": "intermediate",
+      "estimatedTime": 10,
+      "scenario": {
+        "context": "Estás en una tienda de ropa buscando un outfit para una ocasión especial. Necesitas pedir ayuda, probarte ropa y posiblemente negociar precios.",
+        "userRole": "cliente",
+        "npcRole": "vendedor/a",
+        "setting": "tienda de ropa"
+      },
+      "phases": [
+        {
+          "id": "busqueda_producto",
+          "title": "Búsqueda del producto",
+          "npcMessage": "¡Hola! Bienvenido/a a nuestra tienda. ¿En qué puedo ayudarle hoy?",
+          "expectedElements": ["descripción de lo que busca", "ocasión de uso", "preferencias"],
+          "targetVerbs": ["buscar", "necesitar", "gustar", "preferir", "tener"],
+          "minLength": 60,
+          "followUpQuestions": [
+            "¿Para qué ocasión lo necesita?",
+            "¿Qué talla usa?",
+            "¿Tiene algún color preferido?"
+          ]
+        },
+        {
+          "id": "probador",
+          "title": "En el probador",
+          "npcMessage": "Aquí tiene varias opciones en su talla. El probador está al fondo a la derecha. Tómese su tiempo y si necesita otra talla o tiene alguna duda, no dude en llamarme.",
+          "expectedElements": ["opinión sobre las prendas", "solicitud de otras tallas", "dudas"],
+          "targetVerbs": ["quedar", "sentar", "cambiar", "probar", "ver", "parecer"],
+          "minLength": 70,
+          "followUpQuestions": [
+            "¿Cómo le queda?",
+            "¿Necesita otra talla?",
+            "¿Le gusta cómo se ve?"
+          ]
+        },
+        {
+          "id": "decision_compra",
+          "title": "Decisión de compra",
+          "npcMessage": "¿Ha decidido qué se va a llevar? ¿Le interesa conocer las formas de pago? También tenemos descuentos especiales hoy.",
+          "expectedElements": ["decisión final", "preguntas sobre precio", "forma de pago"],
+          "targetVerbs": ["llevar", "costar", "pagar", "decidir", "poder", "ofrecer"],
+          "minLength": 50,
+          "followUpQuestions": [
+            "¿Hay algún descuento disponible?",
+            "¿Aceptan tarjeta de crédito?",
+            "¿Cuál es su política de devoluciones?"
+          ]
+        }
+      ],
+      "evaluationCriteria": {
+        "especificidad": "Descripciones detalladas de lo que busca",
+        "interacción": "Participación activa en la conversación",
+        "decisión": "Capacidad para tomar decisiones informadas",
+        "negociación": "Habilidades básicas de negociación"
+      }
+    }
+  }
+}

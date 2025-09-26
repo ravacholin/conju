@@ -1,0 +1,217 @@
+{
+  "subjPres": {
+    "main": {
+      "type": "prompts",
+      "id": "subjpres_advice_main",
+      "title": "Dando Consejos",
+      "description": "Da consejos usando el subjuntivo presente.",
+      "category": "advice_giving",
+      "difficulty": "intermediate",
+      "prompts": [
+        {
+          "prompt": "Tu amigo está cansado. (recomendar que...)",
+          "expected": ["descanse", "duerma"],
+          "context": "health_advice"
+        },
+        {
+          "prompt": "Tu hermana quiere aprender español. (sugerir que...)",
+          "expected": ["practique", "estudie"],
+          "context": "learning_advice"
+        },
+        {
+          "prompt": "Tus padres van a viajar. (esperar que...)",
+          "expected": ["disfruten", "viajen"],
+          "context": "travel_wishes"
+        }
+      ]
+    }
+  },
+  "fut": {
+    "main": {
+      "type": "prompts",
+      "id": "fut_plans_main",
+      "title": "Planes para el futuro",
+      "description": "Completa las frases sobre planes futuros.",
+      "category": "future_plans",
+      "difficulty": "intermediate",
+      "prompts": [
+        {
+          "prompt": "El próximo año... (viajar, conocer)",
+          "expected": ["viajaré", "conoceré", "viajarás", "conocerás"],
+          "context": "yearly_plans"
+        },
+        {
+          "prompt": "En mis próximas vacaciones... (descansar, visitar)",
+          "expected": ["descansaré", "visitaré", "descansarás", "visitarás"],
+          "context": "vacation_plans"
+        },
+        {
+          "prompt": "Cuando termine mis estudios... (trabajar, ser)",
+          "expected": ["trabajaré", "seré", "trabajarás", "serás"],
+          "context": "career_plans"
+        },
+        {
+          "prompt": "En el futuro... (tener, hacer)",
+          "expected": ["tendré", "haré", "tendrás", "harás"],
+          "context": "long_term_goals"
+        }
+      ]
+    },
+    "alternatives": [
+      {
+        "type": "predictions",
+        "id": "fut_predictions_alt1",
+        "title": "Predicciones para el año 2030",
+        "description": "Haz predicciones sobre el futuro usando el futuro simple.",
+        "category": "predictions",
+        "difficulty": "advanced",
+        "prompts": [
+          {
+            "icon": "🚗",
+            "text": "Los coches _____ completamente autónomos",
+            "expected": ["serán", "estarán"],
+            "context": "technology"
+          },
+          {
+            "icon": "🌍",
+            "text": "La gente _____ más conciencia ecológica",
+            "expected": ["tendrá", "mostrará"],
+            "context": "environment"
+          },
+          {
+            "icon": "🏠",
+            "text": "Las casas _____ con energía solar",
+            "expected": ["funcionarán", "trabajarán"],
+            "context": "energy"
+          },
+          {
+            "icon": "💻",
+            "text": "Todo el mundo _____ desde casa",
+            "expected": ["trabajará", "estudiará"],
+            "context": "remote_work"
+          },
+          {
+            "icon": "🎮",
+            "text": "Los videojuegos _____ más realistas que nunca",
+            "expected": ["serán", "parecerán"],
+            "context": "entertainment"
+          }
+        ]
+      },
+      {
+        "type": "life_goals",
+        "id": "fut_goals_alt1",
+        "title": "Mis metas personales",
+        "description": "Completa tus planes y metas para el futuro.",
+        "category": "personal_goals",
+        "difficulty": "intermediate",
+        "prompts": [
+          {
+            "icon": "🏆",
+            "text": "En cinco años _____ mis objetivos profesionales",
+            "expected": ["conseguiré", "alcanzaré"],
+            "context": "career"
+          },
+          {
+            "icon": "❤️",
+            "text": "_____ a alguien especial y me enamoraré",
+            "expected": ["conoceré", "encontraré"],
+            "context": "relationships"
+          },
+          {
+            "icon": "🏡",
+            "text": "_____ mi propia casa con jardín",
+            "expected": ["compraré", "tendré"],
+            "context": "housing"
+          },
+          {
+            "icon": "🌎",
+            "text": "_____ por todo el mundo",
+            "expected": ["viajaré", "recorreré"],
+            "context": "travel"
+          },
+          {
+            "icon": "👨‍👩‍👧‍👦",
+            "text": "_____ una familia hermosa",
+            "expected": ["formaré", "tendré"],
+            "context": "family"
+          }
+        ]
+      }
+    ]
+  },
+  "cond": {
+    "main": {
+      "type": "prompts",
+      "id": "cond_hypothetical_main",
+      "title": "Situaciones hipotéticas",
+      "description": "Completa las situaciones hipotéticas usando el condicional.",
+      "category": "hypothetical",
+      "difficulty": "advanced",
+      "prompts": [
+        {
+          "prompt": "Si tuviera mucho dinero... (comprar, viajar)",
+          "expected": ["compraría", "viajaría"],
+          "context": "wealth_fantasy"
+        },
+        {
+          "prompt": "Si fuera invisible por un día... (hacer, ir)",
+          "expected": ["haría", "iría"],
+          "context": "superpowers"
+        },
+        {
+          "prompt": "Si pudiera cambiar algo del mundo... (cambiar, mejorar)",
+          "expected": ["cambiaría", "mejoraría"],
+          "context": "world_change"
+        },
+        {
+          "prompt": "En tu lugar yo... (decir, hacer)",
+          "expected": ["diría", "haría"],
+          "context": "advice"
+        }
+      ]
+    }
+  },
+  "impf": {
+    "main": {
+      "type": "daily_routine",
+      "id": "impf_childhood_main",
+      "title": "Los recuerdos de la infancia",
+      "description": "Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.",
+      "category": "childhood_memories",
+      "difficulty": "intermediate",
+      "prompts": [
+        {
+          "icon": "🏠",
+          "text": "Donde vivías de niño (vivir, tener)",
+          "expected": ["vivía", "tenía"],
+          "context": "home"
+        },
+        {
+          "icon": "🎮",
+          "text": "Con qué jugabas (jugar, divertirse)",
+          "expected": ["jugaba", "divertía"],
+          "context": "games"
+        },
+        {
+          "icon": "📚",
+          "text": "Qué estudiabas (estudiar, aprender)",
+          "expected": ["estudiaba", "aprendía"],
+          "context": "school"
+        },
+        {
+          "icon": "👨‍👩‍👧‍👦",
+          "text": "Cómo era tu familia (ser, estar)",
+          "expected": ["era", "estaba"],
+          "context": "family"
+        },
+        {
+          "icon": "🌞",
+          "text": "Qué hacías los veranos (ir, hacer)",
+          "expected": ["iba", "hacía"],
+          "context": "summer"
+        }
+      ]
+    }
+  }
+}

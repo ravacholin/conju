@@ -1,0 +1,285 @@
+{
+  "pres": {
+    "main": {
+      "type": "daily_routine",
+      "id": "pres_routine_main",
+      "title": "La rutina diaria de Carlos",
+      "description": "Describe un día típico de Carlos usando los verbos indicados en presente.",
+      "category": "daily_life",
+      "difficulty": "beginner",
+      "prompts": [
+        {
+          "icon": "⏰",
+          "text": "Por la mañana (despertarse, levantarse)",
+          "expected": ["despierta", "levanta"],
+          "context": "morning_routine"
+        },
+        {
+          "icon": "🍳",
+          "text": "En el desayuno (comer, beber)",
+          "expected": ["come", "bebe"],
+          "context": "breakfast"
+        },
+        {
+          "icon": "💼",
+          "text": "En el trabajo (trabajar, escribir)",
+          "expected": ["trabaja", "escribe"],
+          "context": "work"
+        },
+        {
+          "icon": "🏠",
+          "text": "Al llegar a casa (cocinar, ver televisión)",
+          "expected": ["cocina", "ve"],
+          "context": "evening"
+        },
+        {
+          "icon": "🌙",
+          "text": "Por la noche (leer, dormir)",
+          "expected": ["lee", "duerme"],
+          "context": "night"
+        }
+      ]
+    },
+    "alternatives": [
+      {
+        "type": "workplace_scenario",
+        "id": "pres_workplace_alt1",
+        "title": "Un día en la oficina",
+        "description": "Completa las frases sobre lo que pasa en una oficina típica.",
+        "category": "work_life",
+        "difficulty": "beginner",
+        "prompts": [
+          {
+            "icon": "💻",
+            "text": "Los programadores _____ código todo el día",
+            "expected": ["escriben", "programan"],
+            "context": "programming"
+          },
+          {
+            "icon": "📧",
+            "text": "La secretaria _____ emails importantes",
+            "expected": ["envía", "responde"],
+            "context": "communication"
+          },
+          {
+            "icon": "📊",
+            "text": "El jefe _____ las reuniones semanales",
+            "expected": ["dirige", "organiza"],
+            "context": "management"
+          },
+          {
+            "icon": "☕",
+            "text": "Todos _____ café en la máquina",
+            "expected": ["toman", "beben"],
+            "context": "break_time"
+          },
+          {
+            "icon": "🏃‍♂️",
+            "text": "A las 6 PM, todos _____ a casa",
+            "expected": ["vuelven", "regresan"],
+            "context": "end_of_day"
+          }
+        ]
+      },
+      {
+        "type": "family_life",
+        "id": "pres_family_alt1",
+        "title": "La vida familiar",
+        "description": "Describe las actividades de una familia típica.",
+        "category": "family",
+        "difficulty": "beginner",
+        "prompts": [
+          {
+            "icon": "👶",
+            "text": "El bebé _____ mucho por las noches",
+            "expected": ["llora", "duerme"],
+            "context": "baby_care"
+          },
+          {
+            "icon": "👨‍🍳",
+            "text": "Papá _____ la cena los domingos",
+            "expected": ["prepara", "cocina"],
+            "context": "cooking"
+          },
+          {
+            "icon": "🎯",
+            "text": "Los niños _____ con sus juguetes",
+            "expected": ["juegan", "se divierten"],
+            "context": "play_time"
+          },
+          {
+            "icon": "📺",
+            "text": "La abuela _____ sus telenovelas",
+            "expected": ["ve", "mira"],
+            "context": "entertainment"
+          },
+          {
+            "icon": "🐕",
+            "text": "El perro _____ en el jardín",
+            "expected": ["corre", "juega"],
+            "context": "pets"
+          }
+        ]
+      }
+    ]
+  },
+  "pretIndef": {
+    "main": {
+      "type": "timeline",
+      "id": "pret_timeline_main",
+      "title": "El día de ayer de María",
+      "description": "Cuenta lo que hizo María ayer siguiendo la línea de tiempo.",
+      "category": "past_events",
+      "difficulty": "intermediate",
+      "events": [
+        {
+          "time": "7:00",
+          "icon": "☕️",
+          "prompt": "tomar café",
+          "context": "morning"
+        },
+        {
+          "time": "12:00",
+          "icon": "🍽️",
+          "prompt": "comer",
+          "context": "lunch"
+        },
+        {
+          "time": "18:00",
+          "icon": "🏋️",
+          "prompt": "ir al gimnasio",
+          "context": "exercise"
+        },
+        {
+          "time": "22:00",
+          "icon": "🛏️",
+          "prompt": "acostarse",
+          "context": "bedtime"
+        }
+      ],
+      "expectedVerbs": ["tomó", "comió", "fue", "se acostó"]
+    },
+    "alternatives": [
+      {
+        "type": "travel_story",
+        "id": "pret_travel_alt1",
+        "title": "Las vacaciones de verano",
+        "description": "Completa la historia del viaje de Luis a Barcelona.",
+        "category": "travel",
+        "difficulty": "intermediate",
+        "prompts": [
+          {
+            "icon": "✈️",
+            "text": "Luis _____ a Barcelona en avión",
+            "expected": ["viajó", "fue"],
+            "context": "transportation"
+          },
+          {
+            "icon": "🏨",
+            "text": "Se _____ en un hotel cerca de la playa",
+            "expected": ["quedó", "alojó"],
+            "context": "accommodation"
+          },
+          {
+            "icon": "🏛️",
+            "text": "_____ la Sagrada Familia y el Park Güell",
+            "expected": ["visitó", "vio"],
+            "context": "sightseeing"
+          },
+          {
+            "icon": "🥘",
+            "text": "_____ paella en un restaurante típico",
+            "expected": ["comió", "probó"],
+            "context": "dining"
+          },
+          {
+            "icon": "📸",
+            "text": "_____ muchas fotos de los monumentos",
+            "expected": ["tomó", "sacó"],
+            "context": "photography"
+          }
+        ]
+      },
+      {
+        "type": "party_night",
+        "id": "pret_party_alt1",
+        "title": "La fiesta de anoche",
+        "description": "Cuenta lo que pasó en la fiesta de cumpleaños de Ana.",
+        "category": "social_events",
+        "difficulty": "intermediate",
+        "prompts": [
+          {
+            "icon": "🎉",
+            "text": "Ana _____ una fiesta increíble para sus 25 años",
+            "expected": ["organizó", "hizo"],
+            "context": "party_planning"
+          },
+          {
+            "icon": "👥",
+            "text": "_____ más de 50 personas a celebrar",
+            "expected": ["vinieron", "llegaron"],
+            "context": "guests"
+          },
+          {
+            "icon": "🍰",
+            "text": "Todos _____ \"Cumpleaños feliz\" a medianoche",
+            "expected": ["cantaron", "dijeron"],
+            "context": "celebration"
+          },
+          {
+            "icon": "💃",
+            "text": "La gente _____ hasta las 3 de la mañana",
+            "expected": ["bailó", "se divirtió"],
+            "context": "dancing"
+          },
+          {
+            "icon": "🏠",
+            "text": "Los últimos invitados _____ a las 4 AM",
+            "expected": ["se fueron", "salieron"],
+            "context": "departure"
+          }
+        ]
+      },
+      {
+        "type": "mystery_story",
+        "id": "pret_mystery_alt1",
+        "title": "El misterio del libro perdido",
+        "description": "Resuelve el misterio completando lo que pasó.",
+        "category": "mystery",
+        "difficulty": "advanced",
+        "prompts": [
+          {
+            "icon": "📚",
+            "text": "El libro _____ de la biblioteca sin explicación",
+            "expected": ["desapareció", "se perdió"],
+            "context": "disappearance"
+          },
+          {
+            "icon": "🔍",
+            "text": "La bibliotecaria _____ por toda la biblioteca",
+            "expected": ["buscó", "investigó"],
+            "context": "investigation"
+          },
+          {
+            "icon": "👮‍♂️",
+            "text": "Un detective _____ a hacer preguntas",
+            "expected": ["llegó", "vino"],
+            "context": "police_work"
+          },
+          {
+            "icon": "💡",
+            "text": "Finalmente _____ la verdad: un estudiante lo tenía",
+            "expected": ["descubrió", "encontró"],
+            "context": "revelation"
+          },
+          {
+            "icon": "😅",
+            "text": "El estudiante se lo _____ por accidente",
+            "expected": ["llevó", "olvidó"],
+            "context": "resolution"
+          }
+        ]
+      }
+    ]
+  }
+}
