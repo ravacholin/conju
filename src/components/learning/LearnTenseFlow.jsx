@@ -83,6 +83,7 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
 
 
 
@@ -115,6 +116,16 @@ const logger = createLogger('LearnTenseFlowContainer');
 const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
 const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
+const LEMMA_TYPE_MAP = new Map(verbs.map(verb => [verb.lemma, verb.type || 'regular']))
+const MOOD_CANONICAL_MAP = {
+  indicativo: 'indicative',
+  subjuntivo: 'subjunctive',
+  imperativo: 'imperative',
+  condicional: 'conditional',
+  nonfinite: 'nonfinite'
+}
+
+const normalizeMood = mood => MOOD_CANONICAL_MAP[mood] || mood
 
 function selectExampleVerbs(verbType, selectedFamilies, tense) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
@@ -233,6 +244,61 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
   const settings = useSettings();
+
+  const regionKey = settings?.region || 'global';
+
+  const familyLemmaSet = useMemo(() => {
+    if (!selectedFamilies || selectedFamilies.length === 0) {
+      return null;
+    }
+
+    const lemmas = new Set();
+    selectedFamilies.forEach(familyId => {
+      const family = LEARNING_IRREGULAR_FAMILIES[familyId];
+      if (!family) return;
+
+      [...(family.priorityExamples || []), ...(family.examples || [])].forEach(lemma => {
+        lemmas.add(lemma);
+      });
+    });
+
+    return lemmas;
+  }, [selectedFamilies]);
+
+  const formsForRegion = useMemo(() => buildFormsForRegion(regionKey), [regionKey]);
+
+  const eligibleForms = useMemo(() => {
+    if (!selectedTense?.tense) {
+      return [];
+    }
+
+    const gatingSettings = {
+      ...settings,
+      verbType: verbType || settings?.verbType,
+      selectedFamilies
+    };
+
+    const gatedForms = getEligibleFormsForSettings(formsForRegion, gatingSettings) || [];
+
+    const targetMood = normalizeMood(selectedTense.mood)
+
+    let filtered = gatedForms.filter(form => {
+      if (!form) return false;
+      const matchesMood = form.mood === targetMood;
+      const matchesTense = form.tense === selectedTense.tense;
+      return matchesMood && matchesTense;
+    });
+
+    if (verbType) {
+      filtered = filtered.filter(form => (LEMMA_TYPE_MAP.get(form.lemma) || 'regular') === verbType);
+    }
+
+    if (verbType === 'irregular' && familyLemmaSet && familyLemmaSet.size > 0) {
+      filtered = filtered.filter(form => familyLemmaSet.has(form.lemma));
+    }
+
+    return filtered;
+  }, [formsForRegion, settings, selectedTense?.mood, selectedTense?.tense, verbType, selectedFamilies, familyLemmaSet]);
 
   // Calculate adaptive settings when tense and type are selected
   useEffect(() => {
@@ -656,8 +722,9 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'meaningful_practice') {
     return (
       <ErrorBoundary>
-        <MeaningfulPractice 
+        <MeaningfulPractice
           tense={selectedTense}
+          eligibleForms={eligibleForms}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('practice')}
@@ -682,8 +749,9 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'communicative_practice') {
     return (
       <ErrorBoundary>
-        <CommunicativePractice 
+        <CommunicativePractice
           tense={selectedTense}
+          eligibleForms={eligibleForms}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
           onBack={() => setCurrentStep('pronunciation_practice')}

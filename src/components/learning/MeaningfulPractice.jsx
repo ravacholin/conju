@@ -3,10 +3,41 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
-import { grade } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './MeaningfulPractice.css';
+
+const escapeRegex = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const normalizeText = text =>
+  (text || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
+const tokenizeText = text => normalizeText(text).split(/[^a-zñü]+/u).filter(Boolean);
+
+const hasNormalizedMatch = (normalizedSource, candidate) => {
+  const normalizedCandidate = normalizeText(candidate);
+  if (!normalizedCandidate) return false;
+  const regex = new RegExp(`\\b${escapeRegex(normalizedCandidate)}\\b`, 'i');
+  return regex.test(normalizedSource);
+};
+
+const findFormInEligibleForms = (eligibleForms, surfaceForm) => {
+  if (!eligibleForms || !surfaceForm) return null;
+  const normalizedTarget = normalizeText(surfaceForm);
+  return eligibleForms.find(form => {
+    if (!form) return false;
+    if (normalizeText(form.value) === normalizedTarget) {
+      return true;
+    }
+    if (Array.isArray(form.alt)) {
+      return form.alt.some(alt => normalizeText(alt) === normalizedTarget);
+    }
+    return false;
+  }) || null;
+};
 
 // Helper function to detect wrong tense patterns in user input
 function detectTensePatterns(userText, expectedTense) {
@@ -65,26 +96,34 @@ function detectTensePatterns(userText, expectedTense) {
 // Función para seleccionar ejercicio aleatorio (principal o alternativo)
 function selectRandomExercise(tenseData) {
   if (!tenseData) return null;
-  
-  // Si no hay ejercicios alternativos, usar el principal
-  if (!tenseData.alternativeExercises || tenseData.alternativeExercises.length === 0) {
-    return tenseData;
-  }
-  
-  // Crear array con todas las opciones (principal + alternativos)
-  const allExercises = [
-    tenseData, // ejercicio principal
-    ...tenseData.alternativeExercises
-  ];
-  
-  // Seleccionar uno aleatoriamente
+
+  const { alternativeExercises = [], ...baseExercise } = tenseData;
+
+  const normalizedBase = {
+    ...baseExercise,
+    layout: baseExercise.layout,
+    variant: baseExercise.variant || 'default'
+  };
+
+  const normalizedAlternatives = alternativeExercises.map(altExercise => {
+    const { variant, layout, ...rest } = altExercise;
+    return {
+      ...rest,
+      layout: layout || baseExercise.layout,
+      variant: variant || altExercise.type || 'alternate'
+    };
+  });
+
+  const allExercises = [normalizedBase, ...normalizedAlternatives];
+
   const randomIndex = Math.floor(Math.random() * allExercises.length);
   return allExercises[randomIndex];
 }
 
 const timelineData = {
   pres: {
-    type: 'daily_routine',
+    layout: 'daily_routine',
+    variant: 'default',
     title: 'La rutina diaria de Carlos',
     description: 'Describe un día típico de Carlos usando los verbos indicados en presente.',
     prompts: [
@@ -97,7 +136,8 @@ const timelineData = {
     // Ejercicios alternativos para mayor variedad
     alternativeExercises: [
       {
-        type: 'workplace_scenario',
+        layout: 'daily_routine',
+        variant: 'workplace_scenario',
         title: 'Un día en la oficina',
         description: 'Completa las frases sobre lo que pasa en una oficina típica.',
         prompts: [
@@ -109,7 +149,8 @@ const timelineData = {
         ]
       },
       {
-        type: 'family_life',
+        layout: 'daily_routine',
+        variant: 'family_life',
         title: 'La vida familiar',
         description: 'Describe las actividades de una familia típica.',
         prompts: [
@@ -123,7 +164,8 @@ const timelineData = {
     ]
   },
   pretIndef: {
-    type: 'timeline',
+    layout: 'timeline',
+    variant: 'default',
     title: 'El día de ayer de María',
     events: [
       { time: '7:00', icon: '☕️', prompt: 'tomar café' },
@@ -135,7 +177,8 @@ const timelineData = {
     // Ejercicios alternativos más diversos
     alternativeExercises: [
       {
-        type: 'travel_story',
+        layout: 'daily_routine',
+        variant: 'travel_story',
         title: 'Las vacaciones de verano',
         description: 'Completa la historia del viaje de Luis a Barcelona.',
         prompts: [
@@ -147,7 +190,8 @@ const timelineData = {
         ]
       },
       {
-        type: 'party_night',
+        layout: 'daily_routine',
+        variant: 'party_night',
         title: 'La fiesta de anoche',
         description: 'Cuenta lo que pasó en la fiesta de cumpleaños de Ana.',
         prompts: [
@@ -159,7 +203,8 @@ const timelineData = {
         ]
       },
       {
-        type: 'mystery_story',
+        layout: 'daily_routine',
+        variant: 'mystery_story',
         title: 'El misterio del libro perdido',
         description: 'Resuelve el misterio completando lo que pasó.',
         prompts: [
@@ -173,7 +218,8 @@ const timelineData = {
     ]
   },
   subjPres: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Dando Consejos',
     prompts: [
         { prompt: 'Tu amigo está cansado. (recomendar que...)', expected: ['descanse', 'duerma'] },
@@ -182,7 +228,8 @@ const timelineData = {
     ],
   },
   impf: {
-    type: 'daily_routine',
+    layout: 'daily_routine',
+    variant: 'default',
     title: 'Los recuerdos de la infancia',
     description: 'Describe cómo era la vida cuando eras pequeño usando los verbos en imperfecto.',
     prompts: [
@@ -194,7 +241,8 @@ const timelineData = {
     ],
   },
   fut: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Planes para el futuro',
     prompts: [
         { prompt: 'El próximo año... (viajar, conocer)', expected: ['viajaré', 'conoceré', 'viajarás', 'conocerás'] },
@@ -204,7 +252,8 @@ const timelineData = {
     ],
     alternativeExercises: [
       {
-        type: 'predictions',
+        layout: 'daily_routine',
+        variant: 'predictions',
         title: 'Predicciones para el año 2030',
         description: 'Haz predicciones sobre el futuro usando el futuro simple.',
         prompts: [
@@ -216,7 +265,8 @@ const timelineData = {
         ]
       },
       {
-        type: 'life_goals',
+        layout: 'daily_routine',
+        variant: 'life_goals',
         title: 'Mis metas personales',
         description: 'Completa tus planes y metas para el futuro.',
         prompts: [
@@ -230,7 +280,8 @@ const timelineData = {
     ]
   },
   pretPerf: {
-    type: 'timeline',
+    layout: 'timeline',
+    variant: 'default',
     title: 'Lo que he hecho hoy',
     events: [
       { time: '8:00', icon: '🌅', prompt: 'levantarse temprano' },
@@ -241,7 +292,8 @@ const timelineData = {
     expectedVerbs: ['me he levantado', 'he desayunado', 'he trabajado', 'he quedado'],
   },
   cond: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Situaciones hipotéticas',
     prompts: [
         { prompt: 'Si tuviera mucho dinero... (comprar, viajar)', expected: ['compraría', 'viajaría'] },
@@ -251,7 +303,8 @@ const timelineData = {
     ],
   },
   plusc: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Cuando llegué, ya había pasado...',
     prompts: [
         { prompt: 'Cuando llegué a casa, mi hermana ya... (cocinar, limpiar)', expected: ['había cocinado', 'había limpiado'] },
@@ -261,7 +314,8 @@ const timelineData = {
     ],
   },
   futPerf: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Lo que habrá pasado para entonces',
     prompts: [
         { prompt: 'Para el viernes, yo ya... (terminar, enviar)', expected: ['habré terminado', 'habré enviado'] },
@@ -271,7 +325,8 @@ const timelineData = {
     ],
   },
   subjImpf: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Si fuera diferente...',
     prompts: [
         { prompt: 'Si tuviera más tiempo, yo... (estudiar, viajar)', expected: ['estudiaría', 'viajaría', 'estudiara', 'viajara'] },
@@ -281,7 +336,8 @@ const timelineData = {
     ],
   },
   condPerf: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Lo que habría pasado si...',
     prompts: [
         { prompt: 'Si hubiera estudiado más, yo... (aprobar, conseguir)', expected: ['habría aprobado', 'habría conseguido'] },
@@ -291,7 +347,8 @@ const timelineData = {
     ],
   },
   subjPerf: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Espero que haya...',
     prompts: [
         { prompt: 'Espero que ya... (llegar, encontrar)', expected: ['haya llegado', 'haya encontrado', 'hayas llegado', 'hayas encontrado'] },
@@ -301,7 +358,8 @@ const timelineData = {
     ],
   },
   subjPlusc: {
-    type: 'prompts',
+    layout: 'prompts',
+    variant: 'default',
     title: 'Si hubiera sabido que...',
     prompts: [
         { prompt: 'Si hubiera sabido que vendrías, yo... (preparar, comprar)', expected: ['hubiera preparado', 'hubiera comprado', 'habría preparado', 'habría comprado'] },
@@ -348,80 +406,83 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
 
   const handleCheckStory = async () => {
     if (!exercise || !story.trim()) return;
-    
+
     setIsProcessing(true);
     setFeedback(null);
-    
-    const userText = story.toLowerCase();
-    
-    let missing = [];
-    let foundVerbs = [];
 
-    if (exercise.type === 'timeline') {
-        exercise.expectedVerbs.forEach(verb => {
-            // Normalize both texts to handle accents properly
-            const normalizeText = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-            const normalizedUser = normalizeText(userText);
-            const normalizedVerb = normalizeText(verb);
-            
-            // Use word boundaries with normalized text
-            const regex = new RegExp(`\\b${normalizedVerb.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(normalizedUser)) {
-                foundVerbs.push(verb);
-            } else {
-                missing.push(verb);
-            }
-        });
-    } else if (exercise.type === 'prompts') {
-        exercise.prompts.forEach(p => {
-            let bestMatch = null;
-            let bestScore = 0;
-            
-            // Try to find the best match using the grader system
-            for (const expectedVerb of p.expected) {
-                const regex = new RegExp(`\b${expectedVerb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\b`, 'i');
-                if (regex.test(userText)) {
-                    bestMatch = expectedVerb;
-                    bestScore = 1;
-                    break;
-                }
-                
-                // Also try fuzzy matching using grader for partial credit
-                const gradeResult = grade({ value: expectedVerb, alt: [], accepts: {} }, userText);
-                if (gradeResult.correct || gradeResult.score > bestScore) {
-                    bestMatch = expectedVerb;
-                    bestScore = gradeResult.score;
-                }
-            }
-            
-            if (bestMatch && bestScore > 0.7) {
-                foundVerbs.push(bestMatch);
-            } else {
-                missing.push(p.expected.join(' o '));
-            }
-        });
-    } else if (exercise.type === 'daily_routine') {
-        exercise.prompts.forEach(p => {
-            const found = p.expected.some(verb => {
-                // Use includes for simpler matching - check if verb appears as whole word
-                const regex = new RegExp(`\\b${verb.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-                if (regex.test(userText)) {
-                    foundVerbs.push(verb);
-                    return true;
-                }
-                return false;
-            });
-            if (!found) {
-                missing.push(p.expected.join(' o '));
-            }
-        });
+    const normalizedUserText = normalizeText(story);
+    const userTokens = new Set(tokenizeText(story));
+
+    const missingMessages = [];
+    const missingFormsSet = new Set();
+    const foundFormsSet = new Set();
+
+    const registerMissing = (expectedForms, message) => {
+      if (message) {
+        missingMessages.push(message);
+      }
+      expectedForms.forEach(form => {
+        if (form) {
+          missingFormsSet.add(form);
+        }
+      });
+    };
+
+    const registerFound = form => {
+      if (form) {
+        foundFormsSet.add(form);
+      }
+    };
+
+    const findMatchForExpected = expectedForms => {
+      for (const candidate of expectedForms) {
+        if (hasNormalizedMatch(normalizedUserText, candidate)) {
+          return candidate;
+        }
+        const candidateTokens = tokenizeText(candidate);
+        if (candidateTokens.length > 0 && candidateTokens.every(token => userTokens.has(token))) {
+          return candidate;
+        }
+      }
+      return null;
+    };
+
+    if (exercise.layout === 'timeline') {
+      exercise.expectedVerbs.forEach(verb => {
+        if (hasNormalizedMatch(normalizedUserText, verb)) {
+          registerFound(verb);
+        } else {
+          registerMissing([verb], verb);
+        }
+      });
+    } else if (exercise.layout === 'prompts') {
+      exercise.prompts.forEach(prompt => {
+        const match = findMatchForExpected(prompt.expected);
+        if (match) {
+          registerFound(match);
+        } else {
+          registerMissing(prompt.expected, prompt.expected.join(' o '));
+        }
+      });
+    } else if (exercise.layout === 'daily_routine') {
+      exercise.prompts.forEach(prompt => {
+        const match = findMatchForExpected(prompt.expected);
+        if (match) {
+          registerFound(match);
+        } else {
+          registerMissing(prompt.expected, prompt.expected.join(' o '));
+        }
+      });
     }
 
-    const isCorrect = missing.length === 0;
-    
+    const missingMessagesUnique = Array.from(new Set(missingMessages));
+    const missingForms = Array.from(missingFormsSet);
+    const foundVerbs = Array.from(foundFormsSet);
+    const isCorrect = missingForms.length === 0;
+
     if (isCorrect) {
       setFeedback({ type: 'correct', message: '¡Excelente! Usaste todos los verbos necesarios.' });
-      
+
       // Use official progress tracking system
       await handleResult({
         correct: true,
@@ -440,7 +501,7 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
         if (userId) {
           console.log('Analytics: Updating schedule for meaningful practice...');
           for (const verbStr of foundVerbs) {
-            const formObject = eligibleForms?.find(f => f.value === verbStr);
+            const formObject = findFormInEligibleForms(eligibleForms, verbStr);
             if (formObject) {
               await updateSchedule(userId, formObject, true, 0);
               console.log(`  - Updated ${formObject.lemma} (${verbStr})`);
@@ -453,12 +514,12 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
     } else {
       // Enhanced error analysis for better feedback and tracking
       const errorTags = [ERROR_TAGS.MISSING_VERBS];
-      let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missing.join(', ')}`;
+      let detailedFeedback = `Faltaron algunos verbos o no están bien conjugados: ${missingMessagesUnique.join(', ')}`;
 
       // Analyze found verbs for error classification
       if (foundVerbs.length > 0 && eligibleForms) {
         for (const verb of foundVerbs) {
-          const formObject = eligibleForms.find(f => f.value === verb);
+          const formObject = findFormInEligibleForms(eligibleForms, verb);
           if (formObject) {
             // Track individual correct verb usage for SRS (for partial credit)
             try {
@@ -475,26 +536,26 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
       }
 
       // Try to provide more specific feedback and classification
-      if (missing.length === 1) {
-        detailedFeedback = `Falta usar correctamente: ${missing[0]}. Revisa la conjugación.`;
+      if (missingMessagesUnique.length === 1) {
+        detailedFeedback = `Falta usar correctamente: ${missingMessagesUnique[0]}. Revisa la conjugación.`;
         errorTags.push(ERROR_TAGS.CONJUGATION_ERROR);
-      } else if (missing.length > 1) {
-        detailedFeedback = `Faltan ${missing.length} verbos: ${missing.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
+      } else if (missingMessagesUnique.length > 1) {
+        detailedFeedback = `Faltan ${missingMessagesUnique.length} verbos: ${missingMessagesUnique.join(', ')}. Revisa las conjugaciones y asegúrate de usar todos los verbos sugeridos.`;
         errorTags.push(ERROR_TAGS.MULTIPLE_MISSING);
       }
 
       // Enhanced error classification for learning context
       if (foundVerbs.length === 0) {
         errorTags.push(ERROR_TAGS.NO_TARGET_VERBS_USED);
-      } else if (foundVerbs.length > 0 && missing.length > 0) {
+      } else if (foundVerbs.length > 0 && missingForms.length > 0) {
         errorTags.push(ERROR_TAGS.PARTIAL_COMPLETION);
       }
 
       // Analyze user's text for potential tense errors
       const currentTense = tense?.tense;
-      if (currentTense && userText.length > 10) { // Only for substantial answers
+      if (currentTense && story.length > 10) { // Only for substantial answers
         // Simple heuristic to detect wrong tense usage
-        const tensePatternsFound = detectTensePatterns(userText, currentTense);
+        const tensePatternsFound = detectTensePatterns(story, currentTense);
         if (tensePatternsFound.wrongTenses.length > 0) {
           errorTags.push(ERROR_TAGS.WRONG_TENSE_DETECTED);
           detailedFeedback += ` Detectamos verbos en otros tiempos: ${tensePatternsFound.wrongTenses.join(', ')}.`;
@@ -519,24 +580,23 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
       await handleResult({
         correct: false,
         userAnswer: story,
-        correctAnswer: missing.join(', '),
+        correctAnswer: missingMessagesUnique.join(', '),
         hintsUsed: 0,
         errorTags,
         latencyMs: 0,
         isIrregular: false,
         itemId: currentItem.id,
-        partialCredit: foundVerbs.length / (foundVerbs.length + missing.length) // Completion percentage
+        partialCredit: (foundVerbs.length + missingForms.length) > 0
+          ? foundVerbs.length / (foundVerbs.length + missingForms.length)
+          : 0
       });
 
       // Update SRS for missed verbs (negative reinforcement)
       try {
         const userId = getCurrentUserId();
         if (userId && eligibleForms) {
-          for (const missedVerb of missing) {
-            const formObject = eligibleForms.find(f =>
-              f.value === missedVerb ||
-              (Array.isArray(f.alt) && f.alt.includes(missedVerb))
-            );
+          for (const missedVerb of missingForms) {
+            const formObject = findFormInEligibleForms(eligibleForms, missedVerb);
             if (formObject) {
               await updateSchedule(userId, formObject, false, 1); // Mark as incorrect with hint
               console.log(`Analytics: Updated schedule for missed verb: ${formObject.lemma} - ${missedVerb}`);
@@ -570,11 +630,11 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             <h2>Práctica Significativa: {formatMoodTense(tense.mood, tense.tense)}</h2>
         </div>
 
-        {exercise.type === 'timeline' && (
+        {exercise.layout === 'timeline' && (
             <div className="timeline-container">
               <h3>{exercise.title}</h3>
-              {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+              {exercise.variant && exercise.variant !== 'default' && (
+                <p className="exercise-variant">🎯 Ejercicio temático: {exercise.variant.replace('_', ' ')}</p>
               )}
               <div className="timeline">
                 {exercise.events.map(event => (
@@ -588,11 +648,11 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             </div>
         )}
 
-        {exercise.type === 'prompts' && (
+        {exercise.layout === 'prompts' && (
             <div className="prompts-container">
                 <h3>{exercise.title}</h3>
-                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                {exercise.variant && exercise.variant !== 'default' && (
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.variant.replace('_', ' ')}</p>
                 )}
                 <ul>
                     {exercise.prompts.map((p, i) => <li key={i}>{p.prompt}</li>)}
@@ -600,11 +660,11 @@ function MeaningfulPractice({ tense, eligibleForms, onBack, onPhaseComplete }) {
             </div>
         )}
 
-        {exercise.type === 'daily_routine' && (
+        {exercise.layout === 'daily_routine' && (
             <div className="daily-routine-container">
                 <h3>{exercise.title}</h3>
-                {exercise.type && ['travel_story', 'party_night', 'mystery_story', 'workplace_scenario', 'family_life', 'predictions', 'life_goals'].includes(exercise.type) && (
-                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.type.replace('_', ' ')}</p>
+                {exercise.variant && exercise.variant !== 'default' && (
+                  <p className="exercise-variant">🎯 Ejercicio temático: {exercise.variant.replace('_', ' ')}</p>
                 )}
                 <p className="description">{exercise.description}</p>
                 <div className="routine-prompts">

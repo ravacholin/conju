@@ -194,4 +194,136 @@ describe('MeaningfulPractice SRS Integration', () => {
 
     consoleSpy.mockRestore();
   });
+
+  it('should normalize accents and casing for prompts-based exercises', async () => {
+    const futTense = { mood: 'indicativo', tense: 'fut' };
+    const futEligibleForms = [
+      { lemma: 'viajar', value: 'viajaré', mood: 'indicativo', tense: 'fut', person: '1s' },
+      { lemma: 'descansar', value: 'descansaré', mood: 'indicativo', tense: 'fut', person: '1s' },
+      { lemma: 'trabajar', value: 'trabajaré', mood: 'indicativo', tense: 'fut', person: '1s' },
+      { lemma: 'tener', value: 'tendré', mood: 'indicativo', tense: 'fut', person: '1s' },
+    ];
+
+    render(
+      <MeaningfulPractice
+        tense={futTense}
+        eligibleForms={futEligibleForms}
+        onBack={mockOnBack}
+        onPhaseComplete={mockOnPhaseComplete}
+      />
+    );
+
+    const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
+    const response = 'VIAJARE por el mundo y CONOCERE nuevas culturas. EN MIS PROXIMAS VACACIONES DESCANSARE junto al mar. ' +
+      'CUANDO TERMINE MIS ESTUDIOS TRABAJARE duro y SERE feliz. EN EL FUTURO TENDRE mi propia empresa y HARE lo que amo.';
+
+    fireEvent.change(textarea, { target: { value: response } });
+    fireEvent.click(screen.getByText('Revisar Historia'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/¡Excelente!/)).toBeInTheDocument();
+    });
+
+    const calledForms = srs.updateSchedule.mock.calls.map(call => call[1].value);
+    expect(calledForms).toEqual(expect.arrayContaining(['viajaré', 'descansaré', 'trabajaré', 'tendré']));
+  });
+
+  it('should register every canonical synonym as missing when prompts are skipped', async () => {
+    const synonymsEligibleForms = [
+      { lemma: 'descansar', value: 'descanse', mood: 'subjuntivo', tense: 'subjPres', person: '3s' },
+      { lemma: 'dormir', value: 'duerma', mood: 'subjuntivo', tense: 'subjPres', person: '3s' },
+      { lemma: 'practicar', value: 'practique', mood: 'subjuntivo', tense: 'subjPres', person: '3s' },
+      { lemma: 'estudiar', value: 'estudie', mood: 'subjuntivo', tense: 'subjPres', person: '3s' },
+      { lemma: 'disfrutar', value: 'disfruten', mood: 'subjuntivo', tense: 'subjPres', person: '3p' },
+      { lemma: 'viajar', value: 'viajen', mood: 'subjuntivo', tense: 'subjPres', person: '3p' },
+    ];
+
+    render(
+      <MeaningfulPractice
+        tense={{ mood: 'subjuntivo', tense: 'subjPres' }}
+        eligibleForms={synonymsEligibleForms}
+        onBack={mockOnBack}
+        onPhaseComplete={mockOnPhaseComplete}
+      />
+    );
+
+    const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
+    fireEvent.change(textarea, { target: { value: 'Recomiendo que tu amigo descanse mucho.' } });
+    fireEvent.click(screen.getByText('Revisar Historia'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Faltan/)).toBeInTheDocument();
+    });
+
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ value: 'descanse' }),
+      true,
+      0
+    );
+
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ value: 'practique' }),
+      false,
+      1
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ value: 'estudie' }),
+      false,
+      1
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ value: 'disfruten' }),
+      false,
+      1
+    );
+    expect(srs.updateSchedule).toHaveBeenCalledWith(
+      mockUserId,
+      expect.objectContaining({ value: 'viajen' }),
+      false,
+      1
+    );
+  });
+
+  it('should render alternative variants and grade their verbs correctly', async () => {
+    Math.random.mockReturnValue(0.8);
+
+    const familyEligibleForms = [
+      { lemma: 'llorar', value: 'llora', mood: 'indicativo', tense: 'pres', person: '3s' },
+      { lemma: 'preparar', value: 'prepara', mood: 'indicativo', tense: 'pres', person: '3s' },
+      { lemma: 'jugar', value: 'juegan', mood: 'indicativo', tense: 'pres', person: '3p' },
+      { lemma: 'ver', value: 've', mood: 'indicativo', tense: 'pres', person: '3s' },
+      { lemma: 'correr', value: 'corre', mood: 'indicativo', tense: 'pres', person: '3s' },
+    ];
+
+    render(
+      <MeaningfulPractice
+        tense={mockTense}
+        eligibleForms={familyEligibleForms}
+        onBack={mockOnBack}
+        onPhaseComplete={mockOnPhaseComplete}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/Ejercicio temático: family life/i)).toBeInTheDocument();
+    });
+
+    const textarea = screen.getByPlaceholderText('Escribe aquí tus respuestas...');
+    const thematicStory = 'En casa el bebé llora por las noches, papá prepara la cena y los niños juegan en el salón. ' +
+      'La abuela ve sus novelas mientras el perro corre en el jardín.';
+
+    fireEvent.change(textarea, { target: { value: thematicStory } });
+    fireEvent.click(screen.getByText('Revisar Historia'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/¡Excelente!/)).toBeInTheDocument();
+    });
+
+    const updatedValues = srs.updateSchedule.mock.calls.map(call => call[1].value);
+    expect(updatedValues).toEqual(expect.arrayContaining(['llora', 'prepara', 'juegan', 've', 'corre']));
+  });
 });
