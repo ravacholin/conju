@@ -77,6 +77,7 @@ import CommunicativePractice from './CommunicativePractice.jsx';
 import PronunciationPractice from './PronunciationPractice.jsx';
 import IrregularRootDrill from './IrregularRootDrill.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
+import NonfiniteGuidedDrill from './NonfiniteGuidedDrill.jsx';
 import ErrorBoundary from '../ErrorBoundary.jsx';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
@@ -318,6 +319,8 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
   const durationOptions = useMemo(() => getSessionDurationOptions(), []);
 
+  const isNonfinite = selectedTense?.tense === 'ger' || selectedTense?.tense === 'part';
+
   const shouldUseRootDrill = useMemo(() => {
     if (!selectedTense || verbType !== 'irregular') return false
     const tenseKey = selectedTense.tense
@@ -438,7 +441,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
       return;
     }
 
-    if (shouldUseRootDrill && ['guided_drill_ar', 'guided_drill_er', 'guided_drill_ir'].includes(toStep)) {
+    if (shouldUseRootDrill && !isNonfinite && ['guided_drill_ar', 'guided_drill_er', 'guided_drill_ir'].includes(toStep)) {
       logger.debug('Root drill activo: saltando fases guiadas hacia práctica directa.');
       setTimeout(() => setCurrentStep('practice'), 0);
       return;
@@ -519,15 +522,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'guided_drill_ar') {
     return (
       <ErrorBoundary>
-        <EndingsDrill 
-          key={`guided-ar-${exampleVerbs?.[0]?.lemma || 'ar'}`}
-          verb={exampleVerbs[0]}
-          tense={selectedTense}
-          onBack={handleBackToIntroduction}
-          onComplete={handleCompleteArDrill}
-          onHome={onHome}
-          onGoToProgress={onGoToProgress}
-        />
+        {isNonfinite ? (
+          <NonfiniteGuidedDrill
+            key={`nonfinite-guided-ar-${selectedTense?.tense || 'nf'}`}
+            tense={selectedTense}
+            verbType={verbType}
+            stageKey="ar"
+            onBack={handleBackToIntroduction}
+            onComplete={handleCompleteArDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        ) : (
+          <EndingsDrill 
+            key={`guided-ar-${exampleVerbs?.[0]?.lemma || 'ar'}`}
+            verb={exampleVerbs[0]}
+            tense={selectedTense}
+            onBack={handleBackToIntroduction}
+            onComplete={handleCompleteArDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        )}
       </ErrorBoundary>
     );
   }
@@ -535,15 +551,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'guided_drill_er') {
     return (
       <ErrorBoundary>
-        <EndingsDrill 
-          key={`guided-er-${exampleVerbs?.[1]?.lemma || 'er'}`}
-          verb={exampleVerbs[1]}
-          tense={selectedTense}
-          onBack={handleBackToArDrill}
-          onComplete={handleCompleteErDrill}
-          onHome={onHome}
-          onGoToProgress={onGoToProgress}
-        />
+        {isNonfinite ? (
+          <NonfiniteGuidedDrill
+            key={`nonfinite-guided-er-${selectedTense?.tense || 'nf'}`}
+            tense={selectedTense}
+            verbType={verbType}
+            stageKey="er"
+            onBack={handleBackToArDrill}
+            onComplete={handleCompleteErDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        ) : (
+          <EndingsDrill 
+            key={`guided-er-${exampleVerbs?.[1]?.lemma || 'er'}`}
+            verb={exampleVerbs[1]}
+            tense={selectedTense}
+            onBack={handleBackToArDrill}
+            onComplete={handleCompleteErDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        )}
       </ErrorBoundary>
     );
   }
@@ -551,15 +580,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'guided_drill_ir') {
     return (
       <ErrorBoundary>
-        <EndingsDrill 
-          key={`guided-ir-${exampleVerbs?.[2]?.lemma || 'ir'}`}
-          verb={exampleVerbs[2]}
-          tense={selectedTense}
-          onBack={handleBackToErDrill}
-          onComplete={handleCompleteIrDrill}
-          onHome={onHome}
-          onGoToProgress={onGoToProgress}
-        />
+        {isNonfinite ? (
+          <NonfiniteGuidedDrill
+            key={`nonfinite-guided-ir-${selectedTense?.tense || 'nf'}`}
+            tense={selectedTense}
+            verbType={verbType}
+            stageKey="ir"
+            onBack={handleBackToErDrill}
+            onComplete={handleCompleteIrDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        ) : (
+          <EndingsDrill 
+            key={`guided-ir-${exampleVerbs?.[2]?.lemma || 'ir'}`}
+            verb={exampleVerbs[2]}
+            tense={selectedTense}
+            onBack={handleBackToErDrill}
+            onComplete={handleCompleteIrDrill}
+            onHome={onHome}
+            onGoToProgress={onGoToProgress}
+          />
+        )}
       </ErrorBoundary>
     );
   }

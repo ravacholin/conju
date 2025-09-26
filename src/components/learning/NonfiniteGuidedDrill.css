@@ -1,0 +1,45 @@
+.nonfinite-stage-head {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.nonfinite-stage-head h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.nonfinite-stage-head p {
+  margin: 0;
+  color: var(--text-secondary, #4f5d75);
+  font-size: 1rem;
+}
+
+.nonfinite-prompt {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.nonfinite-hint {
+  font-size: 1rem;
+  color: var(--accent, #0b7285);
+  background: rgba(11, 114, 133, 0.1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.result-note {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #4f5d75);
+}
+
+.round-counter {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #4f5d75);
+}
