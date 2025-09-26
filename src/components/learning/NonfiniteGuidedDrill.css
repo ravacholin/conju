@@ -1,45 +1,84 @@
-.nonfinite-stage-head {
-  text-align: left;
-  margin-bottom: 1.5rem;
+.nonfinite-header {
+  width: 100%;
+  margin-bottom: 1.75rem;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
-.nonfinite-stage-head h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.nonfinite-stage-head p {
+.nonfinite-header h2 {
   margin: 0;
-  color: var(--text-secondary, #4f5d75);
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 1.45rem;
+  color: var(--text);
 }
 
-.nonfinite-prompt {
-  font-size: 2.2rem;
-  font-weight: 700;
-  text-transform: lowercase;
-  letter-spacing: 0.5px;
+.nonfinite-header .nonfinite-description {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.stage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.85rem;
   margin-bottom: 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.nonfinite-hint {
-  font-size: 1rem;
-  color: var(--accent, #0b7285);
-  background: rgba(11, 114, 133, 0.1);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+.person-display.nonfinite-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 1.75rem;
+}
+
+.hint-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.person-display.nonfinite-hint span:last-child {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .result-note {
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--text-secondary, #4f5d75);
+  margin-top: 0.35rem;
+  font-size: 0.92rem;
+  color: var(--muted);
 }
 
-.round-counter {
-  margin-top: 1.5rem;
-  font-size: 0.95rem;
-  color: var(--text-secondary, #4f5d75);
+@media (max-width: 540px) {
+  .nonfinite-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .person-display.nonfinite-hint {
+    font-size: 1.2rem;
+  }
+
+  .person-display.nonfinite-hint span:last-child {
+    font-size: 1rem;
+  }
 }

@@ -239,6 +239,15 @@ function NonfiniteGuidedDrill({
     return shuffle(built)
   }, [stageDefinition, mode])
 
+  const stageTag = useMemo(() => {
+    const modeLabel = mode === 'gerund' ? 'Gerundios' : 'Participios'
+    const groupLabel = stageKey ? `verbos -${stageKey}` : null
+    const patternLabel = intensity === 'irregular' ? 'patrones irregulares' : 'patrón regular'
+    return [modeLabel, groupLabel, patternLabel].filter(Boolean).join(' · ')
+  }, [mode, stageKey, intensity])
+
+  const hintLabel = intensity === 'irregular' ? 'Patrón' : 'Regla'
+
   useEffect(() => {
     setQueue(tasks)
     setIndex(0)
@@ -372,13 +381,19 @@ function NonfiniteGuidedDrill({
 
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
-          <div className="nonfinite-stage-head">
-            <h2>{stageDefinition.title}</h2>
-            <p>{stageDefinition.description}</p>
+          <div className="drill-header nonfinite-header">
+            <div>
+              <span className="stage-tag">{stageTag}</span>
+              <h2>{stageDefinition.title}</h2>
+              <p className="nonfinite-description">{stageDefinition.description}</p>
+            </div>
           </div>
 
-          <div className="nonfinite-prompt">{currentTask.lemma}</div>
-          <div className="nonfinite-hint">{currentTask.hint}</div>
+          <div className="verb-lemma">{currentTask.lemma}</div>
+          <div className="person-display nonfinite-hint">
+            <span className="hint-pill">{hintLabel}</span>
+            <span>{currentTask.hint}</span>
+          </div>
 
           <div className="input-container">
             <input
