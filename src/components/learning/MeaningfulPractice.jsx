@@ -74,7 +74,10 @@ function MeaningfulPractice({
       const selectedExerciseType = exerciseType || determineExerciseType(tense, mood);
 
       // Crear ejercicio usando la factory
-      const exercise = await exerciseFactory.createExercise(selectedExerciseType, exerciseConfig);
+      const exercise = await exerciseFactory.createExercise({
+        type: selectedExerciseType,
+        ...exerciseConfig
+      });
 
       if (!exercise) {
         throw new Error('No se pudo crear el ejercicio');

@@ -575,9 +575,15 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           setTimeout(() => {
             setSwapAnim(false);
             generateNextItem().catch(console.error);
-            // Ensure focus is set after animation
-            setTimeout(() => inputRef.current?.focus(), 50);
           }, 250);
+          // Ensure focus is set after animation with longer delay
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+              // Ensure cursor is visible
+              inputRef.current.setSelectionRange(0, 0);
+            }
+          }, 300);
         }
     }
   };
