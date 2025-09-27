@@ -435,7 +435,14 @@ function AppRouter() {
       <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
         <ProgressDashboard
           onNavigateHome={handleProgressMenu}
-          onNavigateToDrill={() => router.navigate({ mode: 'drill' })}
+          onNavigateToDrill={() => {
+            // Force regeneration of drill item with current settings before navigation
+            drillMode.clearHistoryAndRegenerate(
+              onboardingFlow.getAvailableMoodsForLevel,
+              onboardingFlow.getAvailableTensesForLevelAndMood
+            )
+            router.navigate({ mode: 'drill' })
+          }}
         />
       </React.Suspense>
     )
