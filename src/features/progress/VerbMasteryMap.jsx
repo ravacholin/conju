@@ -24,7 +24,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         { key: 'futPerf', label: 'Futuro perfecto', group: 'compound' }
       ]
     },
-    subjunctive: {
+    subjuntivo: {
       label: 'Subjuntivo',
       icon: '/posib-subj.png',
       description: 'Modo de la subjetividad y la irrealidad',
@@ -144,7 +144,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         specificMood: mood,
         specificTense: tense,
         // CRITICAL FIX: Ensure level is set for progress navigation
-        level: currentSettings.level || 'B1'  // Default to B1 if level is null
+        level: currentSettings.level || 'ALL'  // Default to ALL to allow any tense level
       }
 
       settings.set(newSettings)

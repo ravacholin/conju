@@ -395,17 +395,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
     
     // Specific practice filtering
     if(practiceMode === 'specific') {
-      // DEBUGGING: Log filtering for imperativo negativo
-      if (specificMood === 'imperative' && specificTense === 'impNeg') {
-        console.log('🔍 Filtering form for imperativo negativo:', {
-          form: `${f.lemma} ${f.mood}/${f.tense}/${f.person}`,
-          expectedMood: specificMood,
-          expectedTense: specificTense,
-          moodMatch: f.mood === specificMood,
-          tenseMatch: f.tense === specificTense
-        })
-      }
-
       if(specificMood && f.mood !== specificMood) {
         return false
       }
