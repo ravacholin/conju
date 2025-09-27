@@ -72,6 +72,7 @@ import {
 import { abTesting } from '../../lib/learning/analytics.js';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
+import AdaptiveLearningDrill from './AdaptiveLearningDrill/AdaptiveLearningDrill.jsx';
 import MeaningfulPractice from './MeaningfulPractice.jsx';
 import CommunicativePractice from './CommunicativePractice.jsx';
 import PronunciationPractice from './PronunciationPractice.jsx';
@@ -636,13 +637,14 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
             onGoToProgress={onGoToProgress}
           />
         ) : (
-          <LearningDrill 
+          <AdaptiveLearningDrill
             tense={selectedTense}
             verbType={verbType}
             selectedFamilies={selectedFamilies}
             duration={duration}
             excludeLemmas={(exampleVerbs || []).map(v => v?.lemma).filter(Boolean)}
-            onBack={() => setCurrentStep('recap')} 
+            exampleVerbs={exampleVerbs}
+            onBack={() => setCurrentStep('recap')}
             onFinish={handleFinish}
             onPhaseComplete={handleMechanicalPhaseComplete}
             onHome={onHome}
