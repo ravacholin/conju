@@ -175,47 +175,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         allSelectedFamilies: selectedFamilies
       });
 
-      // CRITICAL FIX: Force-load irregulars chunk for STEM_CHANGES and other irregular families
-      if (selectedFamilyForGenerator === 'STEM_CHANGES' || selectedFamilyForGenerator?.includes('DIPHT_') || selectedFamilyForGenerator?.includes('E_I_')) {
-        console.log('🔥 FORCING IRREGULARS CHUNK LOAD for:', selectedFamilyForGenerator);
-        try {
-          const { verbChunkManager } = await import('../../lib/core/verbChunkManager.js');
-          const { FORM_LOOKUP_MAP } = await import('../../lib/core/optimizedCache.js');
-
-          await verbChunkManager.loadChunk('irregulars');
-          console.log('✅ Irregulars chunk loaded successfully');
-
-          // MANUAL FIX: Force population of irregulars chunk forms into FORM_LOOKUP_MAP
-          const irregularsChunk = verbChunkManager.loadedChunks.get('irregulars');
-          if (irregularsChunk) {
-            let formsAdded = 0;
-            irregularsChunk.forEach(verb => {
-              if (verb.paradigms) {
-                verb.paradigms.forEach(paradigm => {
-                  if (paradigm.forms) {
-                    paradigm.forms.forEach(form => {
-                      const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`;
-                      if (!FORM_LOOKUP_MAP.has(key)) {
-                        const enrichedForm = {
-                          ...form,
-                          lemma: verb.lemma,
-                          id: key,
-                          type: verb.type || 'irregular'
-                        };
-                        FORM_LOOKUP_MAP.set(key, enrichedForm);
-                        formsAdded++;
-                      }
-                    });
-                  }
-                });
-              }
-            });
-            console.log(`✅ Manually added ${formsAdded} forms from irregulars chunk to FORM_LOOKUP_MAP`);
-          }
-        } catch (error) {
-          console.error('❌ Failed to load irregulars chunk:', error);
-        }
-      }
+      // Note: Irregular forms are now automatically available in FORM_LOOKUP_MAP
+      // No need for manual chunk loading as maps are initialized synchronously
     }
 
     // Create isolated settings object for generator (NO GLOBAL MUTATION)

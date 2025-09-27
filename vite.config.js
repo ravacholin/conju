@@ -88,31 +88,9 @@ export default defineConfig(({ mode }) => ({
             return 'vendor-libs'
           }
           
-          // NEW: Verb chunks - different chunk for each verb group
-          if (id.includes('src/data/chunks/core.js')) {
-            return 'verbs-core' // Core verbs - highest priority, smallest bundle
-          }
-          if (id.includes('src/data/chunks/common.js')) {
-            return 'verbs-common' // Common verbs - loaded early
-          }
-          if (id.includes('src/data/chunks/irregulars.js')) {
-            return 'verbs-irregulars' // Irregular verbs - loaded on demand
-          }
-          if (id.includes('src/data/chunks/advanced.js')) {
-            return 'verbs-advanced' // Advanced verbs - loaded when needed
-          }
-          if (id.includes('src/data/chunks/')) {
-            return 'verbs-misc' // Any other verb chunks
-          }
-          
-          // LEGACY: Heavy verb data - now only fallback
+          // Verb data - now loaded directly
           if (id.includes('src/data/verbs.js')) {
-            return 'data-verbs-fallback' // Original file as fallback
-          }
-          
-          // Chunk manager and verb loading system
-          if (id.includes('src/lib/core/verbChunkManager.js')) {
-            return 'chunk-manager' // Load early for dynamic chunks
+            return 'data-verbs' // Main verb data
           }
           
           // Progress system - heavy modules
