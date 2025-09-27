@@ -194,6 +194,7 @@ export const useDrillGenerator = () => {
       let selectionMethod = 'standard'
 
       // Tier 1: SRS due items
+      const userId = getCurrentUserId()
       if (userId) {
         let dueCells = await getDueItems(userId, new Date())
         dueCells = gateDueItemsByCurriculum(dueCells, settings)

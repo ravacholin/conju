@@ -34,7 +34,7 @@ export async function initializeItems() {
     let itemCount = 0
     let skippedCount = 0
     
-    const verbs = await getAllVerbs({ ensureChunks: true })
+    const verbs = getAllVerbs() // Now synchronous
 
     // Procesar cada verbo
     for (const verb of verbs) {
@@ -255,6 +255,9 @@ export async function initializeItemsBatched(options = {}) {
     let totalCreated = 0
     let totalSkipped = 0
     let batchCount = 0
+
+    // Obtener todos los verbos
+    const verbs = getAllVerbs() // Now synchronous
 
     // Crear generador de lotes
     const batchGenerator = createFormsBatchGenerator(verbs, batchSize)

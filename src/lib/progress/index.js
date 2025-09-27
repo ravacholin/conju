@@ -133,7 +133,7 @@ export async function initProgressSystem(userId = null) {
 
         // Inyectar verbos en el metadata provider para motores emocionales
         try {
-          let verbs = await getAllVerbs({ ensureChunks: true })
+          let verbs = getAllVerbs() // Now synchronous
           if (!verbs || verbs.length === 0) {
             console.warn('verbMetadataProvider', 'Servicio devolvió 0 verbos, intentando fallback estático')
             try {

@@ -9,7 +9,7 @@ import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
  */
 export async function initializeVerbs() {
   console.log('🔄 Inicializando verbos en el sistema de progreso...')
-  
+
   try {
     // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
     let saveVerb = async () => {}
@@ -23,8 +23,8 @@ export async function initializeVerbs() {
     let diphtongCount = 0
     let orthographicChangeCount = 0
     let errorCount = 0
-    
-    const verbs = await getAllVerbs({ ensureChunks: true })
+
+    const verbs = getAllVerbs() // Now synchronous
 
     // Procesar cada verbo
     for (const verb of verbs) {
