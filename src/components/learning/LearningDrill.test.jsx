@@ -136,6 +136,18 @@ describe('LearningDrill Component', () => {
       
       expect(() => render(<LearningDrill {...minimalProps} />)).not.toThrow()
     })
+
+    it('passes canonical mood to generator when tense uses Spanish mood', async () => {
+      const { chooseNext } = require('../../lib/core/generator.js')
+      render(<LearningDrill {...defaultProps} tense={{ mood: 'indicativo', tense: 'pres' }} />)
+
+      await waitFor(() => {
+        expect(chooseNext).toHaveBeenCalled()
+      })
+
+      const args = chooseNext.mock.calls[0][0]
+      expect(args.sessionSettings.specificMood).toBe('indicative')
+    })
   })
 
   describe('User Interaction', () => {

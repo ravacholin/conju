@@ -71,6 +71,16 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js';
 
 const logger = createLogger('LearningDrill');
 
+const MOOD_CANONICAL_MAP = {
+  indicativo: 'indicative',
+  subjuntivo: 'subjunctive',
+  imperativo: 'imperative',
+  condicional: 'conditional',
+  nonfinite: 'nonfinite'
+};
+
+const canonicalizeMood = (mood) => MOOD_CANONICAL_MAP[mood] || mood;
+
 const PRONOUNS_DISPLAY = {
   '1s': 'yo',
   '2s_tu': 'tú',
@@ -158,7 +168,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     const sessionSettings = {
       ...currentSettings,
       practiceMode: 'specific', 
-      specificMood: tense?.mood,
+      specificMood: canonicalizeMood(tense?.mood),
       specificTense: tense?.tense,
       verbType: verbType === 'irregular' ? 'irregular' : verbType,
       selectedFamily: selectedFamilyForGenerator,
@@ -170,7 +180,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     };
     
     logger.debug('Session settings for generator', {
-      mood: tense?.mood,
+      mood: canonicalizeMood(tense?.mood),
       tense: tense?.tense,
       verbType,
       selectedFamily: selectedFamilyForGenerator,
