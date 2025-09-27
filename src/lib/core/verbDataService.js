@@ -313,7 +313,7 @@ export function getVerbDataCacheStats() {
   }
 }
 
-export { getVerbByLemma } from './optimizedCache.js'
+export { getVerbByLemma, getVerbsByLemmas } from './optimizedCache.js'
 
 export async function getAllVerbs(options = {}) {
   try {
