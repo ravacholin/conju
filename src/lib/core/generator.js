@@ -19,15 +19,27 @@ import {
 import {
   VERB_LOOKUP_MAP,
   FORM_LOOKUP_MAP,
-  // verbCategorizationCache,  // UNUSED
   formFilterCache,
-  // combinationCache,        // UNUSED
   warmupCaches as WARMUP_CACHES,
-  clearAllCaches
+  clearAllCaches,
+  initializeMaps
 } from './optimizedCache.js'
 
 // Quiet debug logging during tests; keep in dev runtime
 const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args) }
+
+// Ensure maps are initialized
+function ensureMapsInitialized() {
+  if (VERB_LOOKUP_MAP.size === 0) {
+    console.log('⚠️ Generator: Verb maps not initialized, initializing now...')
+    try {
+      initializeMaps()
+    } catch (error) {
+      console.error('❌ Generator: Failed to initialize verb maps:', error)
+      throw new Error('Generator cannot function without initialized verb maps')
+    }
+  }
+}
 
 // Fast lookups (ahora usando cache optimizado)
 const LEMMA_TO_VERB = VERB_LOOKUP_MAP
@@ -79,6 +91,8 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
 }
 
 export async function chooseNext({forms, history: _history, currentItem, sessionSettings}){
+  // Ensure maps are initialized before proceeding
+  ensureMapsInitialized()
 
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()

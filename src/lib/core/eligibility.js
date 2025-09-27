@@ -1,5 +1,5 @@
 import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel } from './curriculumGate.js'
-import { getFormsForRegion as fetchFormsForRegion } from './verbDataService.js'
+import { getFormsForRegion } from './verbDataService.js'
 
 // Returns forms eligible for the given settings and precomputed region forms
 export function getEligibleFormsForSettings(allFormsForRegion, settings) {
@@ -45,15 +45,13 @@ export function getAllowedTensesForMood(settings, mood) {
   return Array.from(out)
 }
 
-// Build canonical pool of forms for a given region, including synthesized nonfinite forms
-export async function buildFormsForRegion(region, settings = {}) {
+// Build canonical pool of forms for a given region (now synchronous)
+export function buildFormsForRegion(region, settings = {}) {
   if (!region) return []
 
   if (region === 'global') {
-    const [rioplatenseForms, peninsularForms] = await Promise.all([
-      fetchFormsForRegion('rioplatense', settings),
-      fetchFormsForRegion('peninsular', settings)
-    ])
+    const rioplatenseForms = getFormsForRegion('rioplatense', settings)
+    const peninsularForms = getFormsForRegion('peninsular', settings)
 
     const allForms = [...rioplatenseForms, ...peninsularForms]
     const seen = new Set()
@@ -68,11 +66,11 @@ export async function buildFormsForRegion(region, settings = {}) {
     return out
   }
 
-  return fetchFormsForRegion(region, settings)
+  return getFormsForRegion(region, settings)
 }
 
-// One-stop helper: build the pool for region and apply curriculum+dialect gate
-export async function getEligiblePool(settings) {
-  const base = await buildFormsForRegion(settings?.region, settings)
+// One-stop helper: build the pool for region and apply curriculum+dialect gate (now synchronous)
+export function getEligiblePool(settings) {
+  const base = buildFormsForRegion(settings?.region, settings)
   return getEligibleFormsForSettings(base, settings)
 }
