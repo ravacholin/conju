@@ -509,8 +509,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
       logger.debug('Incorrect answer - added to retry queue', { lemma: currentItem.lemma, person: getPersonText(currentItem.person) });
     }
-    
-    setTimeout(() => containerRef.current?.focus(), 0);
+
+    setTimeout(() => inputRef.current?.focus(), 0);
 
     // Record detailed attempt for analytics
     const detailedAttempt = {
@@ -570,9 +570,13 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         } else {
           // subtle swap animation when moving to next random item
           setSwapAnim(true);
+          // Reset result immediately to enable input
+          setResult('idle');
           setTimeout(() => {
             setSwapAnim(false);
             generateNextItem().catch(console.error);
+            // Ensure focus is set after animation
+            setTimeout(() => inputRef.current?.focus(), 50);
           }, 250);
         }
     }

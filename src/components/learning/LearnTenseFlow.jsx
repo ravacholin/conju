@@ -83,6 +83,7 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
 
 
 
@@ -318,6 +319,23 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   }, [selectedTense?.tense]);
 
   const durationOptions = useMemo(() => getSessionDurationOptions(), []);
+
+  // Generate eligible forms for SRS integration in learning components
+  const eligibleForms = useMemo(() => {
+    if (!selectedTense?.tense || !selectedTense?.mood) return [];
+
+    const basePool = buildFormsForRegion(settings.region || 'la_general');
+    const learningSettings = {
+      ...settings,
+      practiceMode: 'specific',
+      specificMood: selectedTense.mood,
+      specificTense: selectedTense.tense,
+      verbType: verbType || 'all',
+      selectedFamilies
+    };
+
+    return getEligibleFormsForSettings(basePool, learningSettings);
+  }, [selectedTense, settings, verbType, selectedFamilies]);
 
   const isNonfinite = selectedTense?.tense === 'ger' || selectedTense?.tense === 'part';
 
@@ -657,10 +675,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'meaningful_practice') {
     return (
       <ErrorBoundary>
-        <MeaningfulPractice 
+        <MeaningfulPractice
           tense={selectedTense}
           verbType={verbType}
           selectedFamilies={selectedFamilies}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('practice')}
           onPhaseComplete={handleMeaningfulPhaseComplete}
         />
