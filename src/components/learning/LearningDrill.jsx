@@ -155,7 +155,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const generateNextItem = React.useCallback(async () => {
     // Get current settings snapshot WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
-    
+
     // For irregular practice, cycle through families for variety
     let selectedFamilyForGenerator = null;
     if (selectedFamilies && selectedFamilies.length > 0) {
@@ -163,38 +163,48 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       const learningFamilyId = selectedFamilies[familyIndex];
       selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
     }
-    
+
     // Create isolated settings object for generator (NO GLOBAL MUTATION)
     const sessionSettings = {
       ...currentSettings,
-      practiceMode: 'specific', 
+      practiceMode: 'specific',
       specificMood: canonicalizeMood(tense?.mood),
       specificTense: tense?.tense,
       verbType: verbType === 'irregular' ? 'irregular' : verbType,
       selectedFamily: selectedFamilyForGenerator,
       cameFromTema: false,
+      // Force verb jumping: prioritize different verbs over same verb different persons
+      prioritizeVerbVariety: true,
       level: (() => {
         const mappedLevel = getLevelForTense(tense?.tense);
         return mappedLevel || currentSettings.level || 'A1';
       })()
     };
-    
+
     logger.debug('Session settings for generator', {
       mood: canonicalizeMood(tense?.mood),
       tense: tense?.tense,
       verbType,
       selectedFamily: selectedFamilyForGenerator,
-      level: sessionSettings.level
+      level: sessionSettings.level,
+      prioritizeVerbVariety: true
     });
-    
+
     try {
       const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
       const allForms = Array.from(FORM_LOOKUP_MAP.values())
       const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
 
+      // Enhanced filtering to prioritize different verbs over same verb
+      const recentVerbsUsed = exerciseHistory.slice(-5).map(item => item.lemma);
+      const formsWithoutRecentVerbs = filteredForms.filter(f => !recentVerbsUsed.includes(f.lemma));
+
+      // Use forms without recent verbs if available, otherwise fall back to all forms
+      const prioritizedForms = formsWithoutRecentVerbs.length > 0 ? formsWithoutRecentVerbs : filteredForms;
+
       // Use generator with isolated settings - NO GLOBAL MUTATION
       let nextItem = await chooseNext({
-        forms: filteredForms,
+        forms: prioritizedForms,
         history: exerciseHistory,
         currentItem,
         sessionSettings // Pass settings as parameter instead of mutating global state
@@ -209,9 +219,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           sessionSettings
         })
       }
-      
-      logger.debug('Generated exercise item', { lemma: nextItem?.lemma, person: nextItem?.person });
-      
+
+      logger.debug('Generated exercise item', { lemma: nextItem?.lemma, person: nextItem?.person, verbVarietyApplied: formsWithoutRecentVerbs.length > 0 });
+
       if (nextItem) {
         setCurrentItem(nextItem);
         setInputValue('');
