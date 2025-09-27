@@ -134,24 +134,34 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
 
   const handleTenseClick = (mood, tense) => {
     try {
-      console.log(`Mastery map clicked: ${mood}/${tense}`)
-      
-      // Update configuration for specific practice
-      settings.set({ 
-        practiceMode: 'specific', 
-        specificMood: mood, 
-        specificTense: tense 
-      })
-      
-      // Navigate to drill mode
-      if (onNavigateToDrill) {
-        onNavigateToDrill()
-      } else {
-        // Fallback: dispatch event for when accessed from drill
-        window.dispatchEvent(new CustomEvent('progress:navigate', { 
-          detail: { mood, tense } 
-        }))
+
+      // Update configuration for specific practice FIRST
+      // Use getState() and set() to avoid race conditions
+      const currentSettings = useSettings.getState()
+      const newSettings = {
+        ...currentSettings,
+        practiceMode: 'specific',
+        specificMood: mood,
+        specificTense: tense,
+        // CRITICAL FIX: Ensure level is set for progress navigation
+        level: currentSettings.level || 'B1'  // Default to B1 if level is null
       }
+
+      settings.set(newSettings)
+
+      // Wait for settings to be applied before navigation to avoid race condition
+      setTimeout(() => {
+
+        // Navigate to drill mode (the AppRouter will handle regeneration)
+        if (onNavigateToDrill) {
+          onNavigateToDrill()
+        } else {
+          // Fallback: dispatch event for when accessed from drill
+          window.dispatchEvent(new CustomEvent('progress:navigate', {
+            detail: { mood, tense }
+          }))
+        }
+      }, 50) // Small delay to ensure settings persistence
     } catch (error) {
       console.error('Error clicking mastery cell:', error)
     }

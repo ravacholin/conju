@@ -110,9 +110,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const verbType = VALID_VERB_TYPES.has(rawVerbType) ? rawVerbType : 'all'
   const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
   
-  dbg('🔍 chooseNext called with settings:', {
-    level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length, selectedFamily
-  })
 
   // DEBUG: Log when STEM_CHANGES family is being used
   if (selectedFamily === 'STEM_CHANGES') {
@@ -145,13 +142,19 @@ export async function chooseNext({forms, history: _history, currentItem, session
   })()
 
   const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|allowed:${allowedSig}`
-  
+
+  // CACHE CLEARING: Force fresh calculation for specific practice navigation from progress module
+  if (practiceMode === 'specific' && specificMood && specificTense) {
+    formFilterCache.delete(filterKey)
+  }
+
   // Intentar obtener del cache
   let eligible = formFilterCache.get(filterKey)
   
   if (!eligible) {
     // Paso 1: Gate sistemático por curriculum y dialecto
     let pre = gateFormsByCurriculumAndDialect(forms, allSettings)
+
     
     // Paso 2: Filtros adicionales (valor definido, toggles, pronoun subset)
     eligible = pre.filter(f=>{
@@ -163,8 +166,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
       }
       
       // Level filtering (O(1) with precomputed set)
-      // SKIP level filtering only for Theme, or Specific when explicitly coming from Tema
-      const isSpecificTopicPractice = (practiceMode === 'theme') || (practiceMode === 'specific' && cameFromTema === true)
+      // SKIP level filtering for Theme and Specific practice to allow targeted practice
+      const isSpecificTopicPractice = (practiceMode === 'theme') || (practiceMode === 'specific')
       if (!isSpecificTopicPractice) {
         // Determine allowed combos: from current block if set, else level
         const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
@@ -392,10 +395,21 @@ export async function chooseNext({forms, history: _history, currentItem, session
     
     // Specific practice filtering
     if(practiceMode === 'specific') {
+      // DEBUGGING: Log filtering for imperativo negativo
+      if (specificMood === 'imperative' && specificTense === 'impNeg') {
+        console.log('🔍 Filtering form for imperativo negativo:', {
+          form: `${f.lemma} ${f.mood}/${f.tense}/${f.person}`,
+          expectedMood: specificMood,
+          expectedTense: specificTense,
+          moodMatch: f.mood === specificMood,
+          tenseMatch: f.tense === specificTense
+        })
+      }
+
       if(specificMood && f.mood !== specificMood) {
         return false
       }
-      
+
       // Handle mixed options for imperative and nonfinite
       if(specificTense) {
         if(specificTense === 'impMixed') {
@@ -408,7 +422,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
           if(f.mood !== 'nonfinite' || (f.tense !== 'ger' && f.tense !== 'part')) {
             return false
           }
-          
+
           // For irregular verb type, allow all nonfinite forms of irregular lemmas
           if(verbType === 'irregular') {
             const v = LEMMA_TO_VERB.get(f.lemma)
@@ -432,12 +446,16 @@ export async function chooseNext({forms, history: _history, currentItem, session
     // Guardar en cache para futuros usos
     formFilterCache.set(filterKey, eligible)
   }
-  
+
+
   // If no eligible forms remain, fail fast with clear error
   if (!eligible || eligible.length === 0) {
     if (practiceMode === 'specific') {
       const moodText = specificMood || 'any mood'
       const tenseText = specificTense || 'any tense'
+      console.error(`❌ No valid exercises found for ${moodText} / ${tenseText}`)
+      console.log('Forms available:', forms?.length)
+      console.log('Filter key:', filterKey)
       throw new Error(`No valid exercises found for ${moodText} / ${tenseText}`)
     }
     eligible = eligible || []

@@ -123,9 +123,8 @@ function AppRouter() {
   // Stable route handler function
   // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
   const handleRouteChange = useCallback((route, type) => {
-    debugLog('📍 Route changed:', route, 'via', type)
     setCurrentMode(route.mode)
-    
+
     if (route.mode === 'onboarding' && route.step) {
       cleanupStateForStep(route.step)
       onboardingFlowRef.current.setOnboardingStep(route.step)
@@ -197,7 +196,7 @@ function AppRouter() {
     // Check if we're in drill mode
     if (currentMode === 'drill') {
       // Detect if specific practice settings changed
-      const settingsChanged = 
+      const settingsChanged =
         prevSettingsRef.current.practiceMode !== settings.practiceMode ||
         prevSettingsRef.current.specificMood !== settings.specificMood ||
         prevSettingsRef.current.specificTense !== settings.specificTense ||
@@ -206,14 +205,18 @@ function AppRouter() {
 
       // If settings changed and we have a current item, clear it first
       if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
-        debugLog('🔄 Practice settings changed while in drill mode, clearing current item');
         drillMode.clearCurrentItem();
       }
 
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem && !drillMode.isGenerating) {
-        debugLog('🎯 Generating drill item');
-        drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+        // Get the LATEST settings at generation time to avoid stale closure values
+        const latestSettings = useSettings.getState();
+
+        // Add a small delay to ensure settings have propagated
+        setTimeout(() => {
+          drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+        }, 10);
       }
 
       // Update previous settings reference
@@ -231,9 +234,23 @@ function AppRouter() {
 
   // Enhanced state cleanup function
   const cleanupStateForStep = (targetStep) => {
-    debugLog(`🧹 cleanupStateForStep called for step: ${targetStep}`);
+    const currentSettings = useSettings.getState()
+
+    // IMPORTANT: If user has valid specific practice settings, preserve them
+    // This handles navigation from drill → menu → progress correctly
+    const hasValidSpecificSettings = currentSettings.practiceMode === 'specific' &&
+                                     currentSettings.specificMood &&
+                                     currentSettings.specificTense
+    const hasValidThemeSettings = currentSettings.practiceMode === 'theme' &&
+                                  currentSettings.specificMood &&
+                                  currentSettings.specificTense
+
+    if (hasValidSpecificSettings || hasValidThemeSettings) {
+      return // Don't reset anything
+    }
+
     const updates = {}
-    
+
     // Clear settings based on target step
     // DO NOT clear region for step 1 - it should keep selected region
     if (targetStep < 1) {
@@ -257,7 +274,6 @@ function AppRouter() {
     }
 
     if (Object.keys(updates).length > 0) {
-      debugLog('Applying state cleanup:', updates);
       settings.set(updates)
     }
   }
@@ -436,11 +452,8 @@ function AppRouter() {
         <ProgressDashboard
           onNavigateHome={handleProgressMenu}
           onNavigateToDrill={() => {
-            // Force regeneration of drill item with current settings before navigation
-            drillMode.clearHistoryAndRegenerate(
-              onboardingFlow.getAvailableMoodsForLevel,
-              onboardingFlow.getAvailableTensesForLevelAndMood
-            )
+            // Navigate first, let the AppRouter's useEffect handle drill regeneration
+            // This ensures settings are fully applied before regeneration
             router.navigate({ mode: 'drill' })
           }}
         />

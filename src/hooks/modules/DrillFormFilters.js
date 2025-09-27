@@ -193,8 +193,9 @@ export const matchesSpecific = (form, specificConstraints) => {
 export const allowsLevel = (form, settings) => {
   // Theme practice always shows all topics across levels
   if (settings.practiceMode === 'theme') return true
-  // Specific practice: only bypass level gating when explicitly coming from Tema
-  if (settings.practiceMode === 'specific' && settings.cameFromTema === true) return true
+  // Specific practice: bypass level gating to allow practice of any specific form
+  // This includes both Tema practice and Progress module navigation
+  if (settings.practiceMode === 'specific') return true
 
   const userLevel = settings.level || 'A1'
   const allowed = getAllowedCombosForLevel(userLevel)
@@ -209,9 +210,11 @@ export const allowsLevel = (form, settings) => {
  */
 export const filterForSpecificPractice = (allForms, specificConstraints) => {
   const { isSpecific, specificMood, specificTense } = specificConstraints
-  
-  if (!isSpecific) return allForms
-  
+
+  if (!isSpecific) {
+    return allForms
+  }
+
   const filtered = allForms.filter(form => {
     // Handle mixed tenses
     if (specificTense === 'impMixed') {
@@ -220,11 +223,11 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
     if (specificTense === 'nonfiniteMixed') {
       return form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
     }
-    
+
     // Standard specific filtering
     return form.mood === specificMood && form.tense === specificTense
   })
-  
+
   return filtered
 }
 
