@@ -75,10 +75,6 @@ function AppRouter() {
     selectedFamily: settings.selectedFamily
   })
 
-  debugLog('--- RENDER AppRouter ---', { 
-    currentMode,
-    onboardingStep: onboardingFlow.onboardingStep
-  });
 
   const [formsForRegion, setFormsForRegion] = useState([])
 
@@ -167,22 +163,18 @@ function AppRouter() {
   }, [handleRouteChange])
 
   const handleStartPractice = () => {
-    debugLog('🚀 handleStartPractice called');
     router.navigate({ mode: 'drill' })
   }
 
   const handleHome = () => {
-    debugLog('🏠 handleHome called');
     router.navigate({ mode: 'onboarding', step: 2 })
   }
 
   const handleGoToProgress = () => {
-    debugLog('📊 handleGoToProgress called');
     router.navigate({ mode: 'progress' })
   }
 
   const handleStartLearningNewTense = () => {
-    debugLog('🧠 handleStartLearningNewTense called');
     router.navigate({ mode: 'learning' })
   };
 
@@ -333,8 +325,7 @@ function AppRouter() {
   }
 
   const handlePracticeModeChange = (mode, mood = null, tense = null) => {
-    debugLog(`Practice mode change: ${mode}, mood: ${mood}, tense: ${tense}`)
-    settings.set({ 
+    settings.set({
       practiceMode: mode,
       specificMood: mood,
       specificTense: tense

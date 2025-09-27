@@ -31,7 +31,6 @@ const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITES
 // Ensure maps are initialized
 function ensureMapsInitialized() {
   if (VERB_LOOKUP_MAP.size === 0) {
-    console.log('⚠️ Generator: Verb maps not initialized, initializing now...')
     try {
       initializeMaps()
     } catch (error) {
@@ -113,15 +112,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
   // DEBUG: Log when STEM_CHANGES family is being used
   if (selectedFamily === 'STEM_CHANGES') {
-    console.log('🔥 SEGUNDO DRILL PROBLEMA - STEM_CHANGES detectado:', {
-      selectedFamily,
-      practiceMode,
-      verbType,
-      specificMood,
-      specificTense,
-      level,
-      totalForms: forms?.length
-    });
   }
 
   
@@ -312,10 +302,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
         const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
 
         // DEBUG LOG
-        console.log(`🔍 FILTRO PEDAGÓGICO: ${f.lemma} (${f.person}) - Familias: ${verbFamilies.join(', ')} - Relevante: ${isPedagogicallyRelevant}`)
 
         if (!isPedagogicallyRelevant) {
-          console.log(`❌ EXCLUIDO por no pedagógico: ${f.lemma}`)
           return false
         }
 
@@ -324,11 +312,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
         const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
         const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
         if (hasStrongPreteriteIrregularities) {
-          console.log(`❌ EXCLUIDO por muy irregular: ${f.lemma} - ${verbFamilies.filter(fam => strongPreteriteIrregularities.includes(fam)).join(', ')}`)
           return false // Exclude verbs like saber, querer, haber, etc.
         }
 
-        console.log(`✅ PERMITIDO: ${f.lemma}`)
       }
 
       // Standard family filtering - apply for theme practice too, except for pedagogical drills
@@ -343,23 +329,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
           // DEBUG: Log detailed family expansion for STEM_CHANGES
           if (selectedFamily === 'STEM_CHANGES') {
-            console.log(`🔍 DEBUGGING STEM_CHANGES for ${f.lemma}:`, {
-              selectedFamily,
-              expandedFamilies,
-              verbFamilies,
-              isMatch,
-              tense: f.tense,
-              mood: f.mood,
-              person: f.person,
-              value: f.value
-            });
-
-            // Log specifically which expanded families match
-            if (isMatch) {
-              const matchingFamilies = verbFamilies.filter(vf => expandedFamilies.includes(vf));
-              console.log(`✅ ${f.lemma} INCLUIDO por familias:`, matchingFamilies);
-            } else {
-              console.log(`❌ ${f.lemma} EXCLUIDO - sin coincidencias en:`, expandedFamilies);
             }
           }
 
@@ -443,8 +412,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
       const moodText = specificMood || 'any mood'
       const tenseText = specificTense || 'any tense'
       console.error(`❌ No valid exercises found for ${moodText} / ${tenseText}`)
-      console.log('Forms available:', forms?.length)
-      console.log('Filter key:', filterKey)
       throw new Error(`No valid exercises found for ${moodText} / ${tenseText}`)
     }
     eligible = eligible || []
@@ -1003,75 +970,7 @@ function estimateCliticSyllables(cl) {
   return Math.max(1, count)
 }
 
-// Debug function to test A1 regular filtering specifically
-export function debugA1RegularFiltering() {
-  console.log('=== A1 REGULAR FILTERING DEBUG ===')
-  
-  const testForms = [
-    { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'hablás' },
-    { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'comés' },
-    { lemma: 'vivir', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'vivís' },
-    { lemma: 'poder', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'podés' }
-  ]
-  
-  testForms.forEach(form => {
-    const verb = LEMMA_TO_VERB.get(form.lemma)
-    console.log(`\n${form.lemma}:`)
-    console.log(`  - Verb object:`, verb)
-    console.log(`  - Verb type:`, verb?.type)
-    console.log(`  - Should be included with verbType='regular'?`, verb?.type === 'regular')
-  })
-}
 
-// Debug function to show available verbs for each combination
-export function debugVerbAvailability() {
-  console.log('=== VERB AVAILABILITY DEBUG ===')
-  
-  const moods = ['indicative', 'subjunctive', 'imperative', 'conditional']
-  const tenses = ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf', 'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc', 'impAff', 'impNeg', 'cond', 'condPerf']
-  const verbTypes = ['regular', 'irregular', 'all']
-  
-  const verbList = Array.from(VERB_LOOKUP_MAP.values())
-  const allForms = []
-  verbList.forEach(verb => {
-    verb.paradigms?.forEach(paradigm => {
-      paradigm.forms?.forEach(form => {
-        allForms.push({
-          ...form,
-          lemma: verb.lemma,
-          type: verb.type || 'regular'
-        })
-      })
-    })
-  })
-  
-  console.log('Total forms en cache:', allForms.length)
-  console.log('Total verbs en cache:', verbList.length)
-  
-  // Check each combination
-  moods.forEach(mood => {
-    tenses.forEach(tense => {
-      verbTypes.forEach(verbType => {
-        const filtered = allForms.filter(form => {
-          if (form.mood !== mood) return false
-          if (form.tense !== tense) return false
-          if (verbType === 'regular' && form.type !== 'regular') return false
-          if (verbType === 'irregular' && form.type !== 'irregular') return false
-          return true
-        })
-        
-        if (filtered.length > 0) {
-          const uniqueVerbs = [...new Set(filtered.map(f => f.lemma))]
-          console.log(`${mood} ${tense} ${verbType}: ${filtered.length} forms, ${uniqueVerbs.length} verbs (${uniqueVerbs.slice(0, 5).join(', ')}${uniqueVerbs.length > 5 ? '...' : ''})`)
-        } else {
-          console.log(`${mood} ${tense} ${verbType}: ❌ NO VERBS AVAILABLE`)
-        }
-      })
-    })
-  })
-  
-  console.log('=== END VERB AVAILABILITY DEBUG ===')
-}
 
 // Helper function to determine if a verb is irregular (fallback)
 function IS_IRREGULAR_VERB(lemma) {

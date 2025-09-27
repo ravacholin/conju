@@ -9,6 +9,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
 
   // Configuración de modos con sus tiempos organizados lingüísticamente
   // SOLO MOSTRAR las formas que realmente han sido practicadas
+  // Data comes with English mood names, so we use those as keys
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
@@ -69,29 +70,17 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
   const masteryByMode = useMemo(() => {
     const result = {}
 
-    // Map data mood keys to display mood keys
-    const dataToDisplayMoodMapping = {
-      'indicativo': 'indicative',
-      'subjuntivo': 'subjunctive',
-      'condicional': 'conditional',
-      'imperativo': 'imperative',
-      'nonfinite': 'nonfinite'
-    }
-
     // Solo incluir datos que tienen intentos reales
     const practicedData = data?.filter(cell => cell.count > 0) || []
 
     practicedData.forEach(cell => {
-      // Map data mood to display mood for lookup in moodConfig
-      const displayMood = dataToDisplayMoodMapping[cell.mood] || cell.mood
-
-      if (!result[displayMood]) {
-        const moodInfo = moodConfig[displayMood] || {
+      if (!result[cell.mood]) {
+        const moodInfo = moodConfig[cell.mood] || {
           label: cell.mood,
           icon: '📝',
           description: 'Modo verbal'
         }
-        result[displayMood] = {
+        result[cell.mood] = {
           ...moodInfo,
           tenses: [],
           avgScore: 0,
@@ -101,20 +90,20 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
       }
 
       // Encontrar la configuración del tiempo o usar default
-      const tenseConfig = moodConfig[displayMood]?.tenses.find(t => t.key === cell.tense) || {
+      const tenseConfig = moodConfig[cell.mood]?.tenses.find(t => t.key === cell.tense) || {
         key: cell.tense,
         label: cell.tense,
         group: 'simple'
       }
-      
-      result[displayMood].tenses.push({
+
+      result[cell.mood].tenses.push({
         ...tenseConfig,
         score: cell.score,
         count: cell.count,
         hasData: true
       })
 
-      result[displayMood].totalAttempts += cell.count
+      result[cell.mood].totalAttempts += cell.count
     })
     
     // Calcular promedios para cada modo
@@ -148,11 +137,12 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     try {
 
       // Map display mood keys to data mood keys
+      // The data uses English mood names, so we keep them as-is
       const moodMapping = {
-        'indicative': 'indicativo',
-        'subjunctive': 'subjuntivo',
-        'conditional': 'condicional',
-        'imperative': 'imperativo',
+        'indicative': 'indicative',
+        'subjunctive': 'subjunctive',
+        'conditional': 'conditional',
+        'imperative': 'imperative',
         'nonfinite': 'nonfinite'
       }
 
@@ -164,8 +154,9 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         practiceMode: 'specific',
         specificMood: moodMapping[mood] || mood,  // Map to correct mood key
         specificTense: tense,
-        // CRITICAL FIX: Ensure level is set for progress navigation
-        level: currentSettings.level || 'ALL'  // Default to ALL to allow any tense level
+        // CRITICAL FIX: Always set level to ALL when navigating from progress
+        // This ensures any tense from the progress map can be practiced regardless of user's last level selection
+        level: 'ALL'
       }
 
       settings.set(newSettings)

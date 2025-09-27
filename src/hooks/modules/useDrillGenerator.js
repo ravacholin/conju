@@ -139,7 +139,7 @@ export const useDrillGenerator = () => {
       }
 
       // Set up specific practice constraints
-      const isSpecific = (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
+      const isSpecific = (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
                         settings.specificMood && settings.specificTense
       const specificConstraints = {
         isSpecific,
@@ -272,11 +272,21 @@ export const useDrillGenerator = () => {
 
       // Tier 3: Standard generator
       if (!nextForm) {
-        nextForm = await chooseNext({ forms: eligibleForms, history, currentItem: itemToExclude })
+        nextForm = await chooseNext({
+          forms: eligibleForms,
+          history,
+          currentItem: itemToExclude,
+          sessionSettings: settings
+        })
         selectionMethod = 'standard_generator'
-        
+
         logger.debug('generateNextItem', 'Standard generator used', {
-          eligibleFormsCount: eligibleForms.length
+          eligibleFormsCount: eligibleForms.length,
+          passedSettings: {
+            practiceMode: settings.practiceMode,
+            specificMood: settings.specificMood,
+            specificTense: settings.specificTense
+          }
         })
       }
 
