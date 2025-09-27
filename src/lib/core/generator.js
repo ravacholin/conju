@@ -110,9 +110,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
   
 
-  // DEBUG: Log when STEM_CHANGES family is being used
-  if (selectedFamily === 'STEM_CHANGES') {
-  }
 
   
   
