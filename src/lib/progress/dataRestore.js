@@ -193,7 +193,19 @@ export async function importFromFile(file, options = {}) {
   try {
     console.log(`📂 Importando datos desde archivo: ${file.name}`)
     
-    const text = await file.text()
+    let text
+    if (file && typeof file.text === 'function') {
+      text = await file.text()
+    } else if (file && typeof file.arrayBuffer === 'function') {
+      const buffer = await file.arrayBuffer()
+      text = Buffer.from(buffer).toString('utf8')
+    } else if (typeof file?.content === 'string') {
+      text = file.content
+    } else if (typeof file === 'string') {
+      text = file
+    } else {
+      throw new Error('El archivo no soporta lectura de texto')
+    }
     let importData
     
     try {

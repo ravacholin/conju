@@ -1,8 +1,8 @@
 // Clasificación de errores para el sistema de progreso
 
 import { ERROR_TAGS } from './dataModels.js'
-import { verbs } from '../../data/verbs.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
+import { VERB_LOOKUP_MAP } from '../core/optimizedCache.js'
 
 /**
  * Clasifica errores en la conjugación de verbos
@@ -113,7 +113,7 @@ export function classifyError(userAnswer, correctAnswer, item) {
  */
 function findMatchingFormForLemma(lemma, normalizedUser) {
   if (!lemma || !normalizedUser) return null
-  const verb = verbs.find(v => v.lemma === lemma)
+  const verb = VERB_LOOKUP_MAP.get(lemma)
   if (!verb || !Array.isArray(verb.paradigms)) return null
   for (const p of verb.paradigms) {
     for (const f of p.forms || []) {
@@ -191,7 +191,7 @@ function hasWrongPerson(user, correct, item) {
   }
   
   // Para verbos irregulares, también verificar raíz
-  const verb = verbs.find(v => v.lemma === item.lemma)
+  const verb = VERB_LOOKUP_MAP.get(item.lemma)
   const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
   
   if (item.verbType === 'irregular' || isIrregularForTense) {

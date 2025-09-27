@@ -9,7 +9,7 @@
  * - Item structure standardization
  */
 
-import { verbs } from '../../data/verbs.js'
+import { VERB_LOOKUP_MAP } from '../../lib/core/optimizedCache.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('DrillItemGenerator')
@@ -86,8 +86,8 @@ const autoActivateDialectSettings = (baseSettings, person) => {
  * @returns {Object} - Complete verb information
  */
 const getVerbInformation = (lemma) => {
-  const parentVerb = verbs.find(v => v.lemma === lemma) || {}
-  
+  const parentVerb = VERB_LOOKUP_MAP.get(lemma) || {}
+
   return {
     type: parentVerb.type || 'regular',
     irregularTenses: parentVerb.irregularTenses || [],

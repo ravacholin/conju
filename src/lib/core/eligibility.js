@@ -1,6 +1,5 @@
 import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel } from './curriculumGate.js'
-import { verbs } from '../../data/verbs.js'
-import { buildNonfiniteFormsForLemma } from './nonfiniteBuilder.js'
+import { getFormsForRegion as fetchFormsForRegion } from './verbDataService.js'
 
 // Returns forms eligible for the given settings and precomputed region forms
 export function getEligibleFormsForSettings(allFormsForRegion, settings) {
@@ -47,59 +46,33 @@ export function getAllowedTensesForMood(settings, mood) {
 }
 
 // Build canonical pool of forms for a given region, including synthesized nonfinite forms
-export function buildFormsForRegion(region) {
+export async function buildFormsForRegion(region, settings = {}) {
   if (!region) return []
 
   if (region === 'global') {
-    const rioplatenseForms = buildFormsForRegion('rioplatense');
-    const peninsularForms = buildFormsForRegion('peninsular');
-    const allForms = [...rioplatenseForms, ...peninsularForms];
-    const seen = new Set();
-    const out = [];
+    const [rioplatenseForms, peninsularForms] = await Promise.all([
+      fetchFormsForRegion('rioplatense', settings),
+      fetchFormsForRegion('peninsular', settings)
+    ])
+
+    const allForms = [...rioplatenseForms, ...peninsularForms]
+    const seen = new Set()
+    const out = []
     for (const f of allForms) {
-      const person = f.mood === 'nonfinite' ? '' : (f.person || '');
-      const key = `${f.lemma}|${f.mood}|${f.tense}|${person}|${f.value}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push(f);
+      const person = f.mood === 'nonfinite' ? '' : (f.person || '')
+      const key = `${f.lemma}|${f.mood}|${f.tense}|${person}|${f.value}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(f)
     }
-    return out;
+    return out
   }
 
-  const regionForms = []
-  const lemmas = new Set()
-  for (const verb of verbs) {
-    const paradigms = verb.paradigms || []
-    let eligible = false
-    for (const p of paradigms) {
-      if (!p.regionTags || !p.regionTags.includes(region)) continue
-      eligible = true
-      for (const f of p.forms || []) {
-        regionForms.push({ ...f, lemma: verb.lemma })
-      }
-    }
-    if (eligible) lemmas.add(verb.lemma)
-  }
-  // Add nonfinite synthesized once per lemma
-  for (const lemma of lemmas) {
-    const nf = buildNonfiniteFormsForLemma(lemma)
-    regionForms.push(...nf)
-  }
-  // Deduplicate
-  const seen = new Set()
-  const out = []
-  for (const f of regionForms) {
-    const person = f.mood === 'nonfinite' ? '' : (f.person || '')
-    const key = `${f.lemma}|${f.mood}|${f.tense}|${person}|${f.value}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    out.push(f)
-  }
-  return out
+  return fetchFormsForRegion(region, settings)
 }
 
 // One-stop helper: build the pool for region and apply curriculum+dialect gate
-export function getEligiblePool(settings) {
-  const base = buildFormsForRegion(settings?.region)
+export async function getEligiblePool(settings) {
+  const base = await buildFormsForRegion(settings?.region, settings)
   return getEligibleFormsForSettings(base, settings)
 }

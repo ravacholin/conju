@@ -60,7 +60,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import curriculum from '../../data/curriculum.json';
-import { verbs } from '../../data/verbs.js';
 import { storyData } from '../../data/narrativeStories.js';
 import { getLearningFamiliesForTense } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, personalizeSessionDuration, canSkipPhase } from '../../lib/learning/adaptiveEngine.js';
@@ -84,6 +83,7 @@ import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
+import { getExampleVerbs, getVerbByLemma } from '../../lib/core/verbDataService.js';
 
 
 
@@ -117,102 +117,78 @@ const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
 const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
 
-function selectExampleVerbs(verbType, selectedFamilies, tense) {
-  logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense });
-  let selectedVerbs = [];
-  let candidateVerbs = [];
+async function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
+  logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense, region })
 
+  let selectedVerbs = []
+  try {
+    selectedVerbs = await getExampleVerbs({ verbType, families: selectedFamilies, tense, region })
+  } catch (error) {
+    logger.warn('Fallo al obtener verbos ejemplo desde el servicio centralizado:', error)
+  }
+
+  const ensureVerb = async lemma => {
+    if (!lemma) return null
+    try {
+      return await getVerbByLemma(lemma)
+    } catch (error) {
+      logger.warn(`No se pudo cargar verbo de fallback ${lemma}`, error)
+      return null
+    }
+  }
+
+  const candidateLemmas = []
   if (verbType === 'regular') {
-    // For regular verbs, use simple regular examples
-    const regularAr = verbs.find(v => v.lemma === 'hablar' && v.type === 'regular');
-    const regularEr = verbs.find(v => v.lemma === 'comer' && v.type === 'regular');
-    const regularIr = verbs.find(v => v.lemma === 'vivir' && v.type === 'regular');
-    selectedVerbs = [regularAr, regularEr, regularIr].filter(Boolean);
-    
-    logger.debug('Verbos regulares seleccionados:', selectedVerbs.map(v => v?.lemma));
-    
-  } else if (verbType === 'irregular' && selectedFamilies && selectedFamilies.length > 0) {
-    // For irregular verbs, PRIORITIZE representative examples from family definitions
-    logger.debug('Seleccionando de familias:', selectedFamilies);
-    
-    // Get PRIORITY examples from each selected family first
+    candidateLemmas.push('hablar', 'comer', 'vivir')
+  } else if (verbType === 'irregular' && Array.isArray(selectedFamilies)) {
     selectedFamilies.forEach(familyId => {
-      const family = LEARNING_IRREGULAR_FAMILIES[familyId];
-      if (family && family.priorityExamples) {
-        logger.debug(`Familia ${familyId} - verbos prioritarios:`, family.priorityExamples);
-        
-        // Add priority verbs that exist in our database
-        family.priorityExamples.forEach(lemma => {
-          const verbObj = verbs.find(v => v.lemma === lemma);
-          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
-            candidateVerbs.push(verbObj);
-          }
-        });
-      } else if (family && family.examples) {
-        logger.debug(`Familia ${familyId} sin verbos prioritarios, usando ejemplos regulares:`, family.examples.slice(0, 3));
-        
-        // Fallback to first 3 regular examples if no priorityExamples defined
-        family.examples.slice(0, 3).forEach(lemma => {
-          const verbObj = verbs.find(v => v.lemma === lemma);
-          if (verbObj && !candidateVerbs.some(v => v.lemma === lemma)) {
-            candidateVerbs.push(verbObj);
-          }
-        });
-      } else {
-        logger.warn(`Familia ${familyId} no encontrada o sin ejemplos`);
-      }
-    });
-    
-    logger.debug('Candidatos prioritarios encontrados:', candidateVerbs.map(v => v.lemma));
-    
-    // For learning purposes, just take the first 3 priority candidates
-    // They are already carefully selected to be pedagogically optimal
-    selectedVerbs = candidateVerbs.slice(0, 3);
-    logger.debug('Selección de verbos prioritarios:', selectedVerbs.map(v => v.lemma));
+      const family = LEARNING_IRREGULAR_FAMILIES[familyId]
+      if (!family) return
+      const priority = Array.isArray(family.priorityExamples) ? family.priorityExamples : []
+      const secondary = Array.isArray(family.examples) ? family.examples : []
+      priority.concat(secondary).forEach(lemma => {
+        if (lemma && !candidateLemmas.includes(lemma)) {
+          candidateLemmas.push(lemma)
+        }
+      })
+    })
   }
 
-  // Final check: ensure we have exactly 3 verbs
-  if (selectedVerbs.length < 3) {
-    logger.warn(`Solo se encontraron ${selectedVerbs.length} verbos, buscando más en las familias...`);
-    
-    // For irregular verbs, NEVER fall back to regular verbs - find more from same families
-    if (verbType === 'irregular' && candidateVerbs.length > selectedVerbs.length) {
-      // Take more candidates from the same families to maintain coherence
-      while (selectedVerbs.length < 3 && candidateVerbs.length > selectedVerbs.length) {
-        const nextCandidate = candidateVerbs[selectedVerbs.length];
-        if (!selectedVerbs.some(v => v.lemma === nextCandidate.lemma)) {
-          selectedVerbs.push(nextCandidate);
-        }
-      }
-      logger.debug('Completado con más irregulares de las mismas familias');
+  const uniqueVerbs = []
+  const seen = new Set()
+  selectedVerbs.forEach(verb => {
+    if (verb?.lemma && !seen.has(verb.lemma)) {
+      seen.add(verb.lemma)
+      uniqueVerbs.push(verb)
     }
-    
-    // Only fall back to regular verbs if we're already working with regular verbs
-    // OR if we absolutely can't find enough irregular verbs (which shouldn't happen)
-    if (selectedVerbs.length < 3) {
-      if (verbType === 'regular') {
-        const defaults = [
-          verbs.find(v => v.lemma === 'hablar'),
-          verbs.find(v => v.lemma === 'comer'), 
-          verbs.find(v => v.lemma === 'vivir')
-        ];
-        
-        // Fill missing slots with defaults that don't duplicate
-        while (selectedVerbs.length < 3) {
-          const defaultVerb = defaults[selectedVerbs.length];
-          if (defaultVerb && !selectedVerbs.some(v => v.lemma === defaultVerb.lemma)) {
-            selectedVerbs.push(defaultVerb);
-          }
-        }
-      } else {
-        logger.error('CRITICAL: No se pudieron encontrar suficientes verbos irregulares para', selectedFamilies);
-        logger.error('Esto es un error del sistema - las familias deberían tener suficientes verbos');
+  })
+
+  for (const lemma of candidateLemmas) {
+    if (uniqueVerbs.length >= 3) break
+    if (seen.has(lemma)) continue
+    const verb = await ensureVerb(lemma)
+    if (verb) {
+      seen.add(lemma)
+      uniqueVerbs.push(verb)
+    }
+  }
+
+  if (uniqueVerbs.length < 3) {
+    const emergencyFallbacks = verbType === 'irregular'
+      ? ['ser', 'tener', 'hacer', 'ir']
+      : ['hablar', 'comer', 'vivir']
+    for (const lemma of emergencyFallbacks) {
+      if (uniqueVerbs.length >= 3) break
+      if (seen.has(lemma)) continue
+      const verb = await ensureVerb(lemma)
+      if (verb) {
+        seen.add(lemma)
+        uniqueVerbs.push(verb)
       }
     }
   }
-  
-  logger.debug('FINAL: Verbos seleccionados para', verbType, ':', selectedVerbs.map(v => v?.lemma));
-  return selectedVerbs.slice(0, 3);
+
+  return uniqueVerbs.slice(0, 3)
 }
 
 /**
@@ -229,7 +205,8 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const [duration, setDuration] = useState(null);
   const [verbType, setVerbType] = useState(null);
   const [selectedFamilies, setSelectedFamilies] = useState([]);
-  const [exampleVerbs, setExampleVerbs] = useState(null);
+  const [exampleVerbs, setExampleVerbs] = useState([]);
+  const [exampleVerbsLoading, setExampleVerbsLoading] = useState(false);
   const [adaptiveSettings, setAdaptiveSettings] = useState(null);
   const [personalizedDuration, setPersonalizedDuration] = useState(null);
   const [abTestVariant, setAbTestVariant] = useState(null);
@@ -320,22 +297,45 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
   const durationOptions = useMemo(() => getSessionDurationOptions(), []);
 
-  // Generate eligible forms for SRS integration in learning components
-  const eligibleForms = useMemo(() => {
-    if (!selectedTense?.tense || !selectedTense?.mood) return [];
+  const [eligibleForms, setEligibleForms] = useState([]);
 
-    const basePool = buildFormsForRegion(settings.region || 'la_general');
-    const learningSettings = {
-      ...settings,
-      practiceMode: 'specific',
-      specificMood: selectedTense.mood,
-      specificTense: selectedTense.tense,
-      verbType: verbType || 'all',
-      selectedFamilies
-    };
+  useEffect(() => {
+    if (!selectedTense?.tense || !selectedTense?.mood) {
+      setEligibleForms([])
+      return
+    }
 
-    return getEligibleFormsForSettings(basePool, learningSettings);
-  }, [selectedTense, settings, verbType, selectedFamilies]);
+    let cancelled = false
+
+    async function loadEligibleForms() {
+      try {
+        const basePool = await buildFormsForRegion(settings.region || 'la_general', settings)
+        const learningSettings = {
+          ...settings,
+          practiceMode: 'specific',
+          specificMood: selectedTense.mood,
+          specificTense: selectedTense.tense,
+          verbType: verbType || 'all',
+          selectedFamilies
+        }
+        const gated = getEligibleFormsForSettings(basePool, learningSettings)
+        if (!cancelled) {
+          setEligibleForms(gated)
+        }
+      } catch (error) {
+        logger.error('No se pudieron generar formas elegibles para el flujo de aprendizaje', error)
+        if (!cancelled) {
+          setEligibleForms([])
+        }
+      }
+    }
+
+    loadEligibleForms()
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedTense, settings, verbType, selectedFamilies])
 
   const isNonfinite = selectedTense?.tense === 'ger' || selectedTense?.tense === 'part';
 
@@ -359,20 +359,37 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setCurrentStep('type-selection');
   };
   
-  const handleTypeSelection = (type, families = []) => {
+  const handleTypeSelection = async (type, families = []) => {
     logger.debug('Type selection:', { type, families });
     setVerbType(type);
     setSelectedFamilies(families);
     setDuration(5);  // Default to 5 minutes
     
-    // Set up example verbs using the passed type parameter instead of state
-    const verbObjects = selectExampleVerbs(type, families, selectedTense.tense);
-    setExampleVerbs(verbObjects);
-    
-    logger.debug('Starting learning with:', { selectedTense, duration: 5, verbType: type, selectedFamilies: families, verbObjects: verbObjects.map(v => v?.lemma) });
-    
-    // Move directly to introduction
-    setCurrentStep('introduction');
+    setExampleVerbsLoading(true)
+    try {
+      const verbObjects = await selectExampleVerbs({
+        verbType: type,
+        selectedFamilies: families,
+        tense: selectedTense?.tense,
+        region: settings.region || 'la_general'
+      })
+      setExampleVerbs(verbObjects)
+
+      logger.debug('Starting learning with:', {
+        selectedTense,
+        duration: 5,
+        verbType: type,
+        selectedFamilies: families,
+        verbObjects: verbObjects.map(v => v?.lemma)
+      })
+      setCurrentStep('introduction')
+    } catch (error) {
+      logger.error('No se pudieron preparar los verbos ejemplo para la selección de tipo', error)
+      setExampleVerbs([])
+      setCurrentStep('introduction')
+    } finally {
+      setExampleVerbsLoading(false)
+    }
   };
   
   const handleBackToTenseSelection = () => {
@@ -389,14 +406,31 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setCurrentStep('type-selection');
   };
 
-  const handleStartLearning = () => {
+  const handleStartLearning = async () => {
     if (selectedTense && duration && verbType) {
-      // The true source of truth: select verbs based on user's choice
-      const verbObjects = selectExampleVerbs(verbType, selectedFamilies, selectedTense.tense);
-      setExampleVerbs(verbObjects);
-      
-      logger.debug('Starting learning with:', { selectedTense, duration, verbType, selectedFamilies, verbObjects: verbObjects.map(v => v?.lemma) });
-      handleSmartStepTransition('duration-selection', 'introduction');
+      setExampleVerbsLoading(true)
+      try {
+        const verbObjects = await selectExampleVerbs({
+          verbType,
+          selectedFamilies,
+          tense: selectedTense.tense,
+          region: settings.region || 'la_general'
+        })
+        setExampleVerbs(verbObjects)
+
+        logger.debug('Starting learning with:', {
+          selectedTense,
+          duration,
+          verbType,
+          selectedFamilies,
+          verbObjects: verbObjects.map(v => v?.lemma)
+        })
+        handleSmartStepTransition('duration-selection', 'introduction')
+      } catch (error) {
+        logger.error('No se pudieron obtener verbos ejemplo al iniciar el aprendizaje', error)
+      } finally {
+        setExampleVerbsLoading(false)
+      }
     }
   };
 
@@ -445,7 +479,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setDuration(null);
     setVerbType(null);
     setSelectedFamilies([]);
-    setExampleVerbs(null);
+    setExampleVerbs([]);
     setCurrentStep('tense-selection');
     if (onHome) onHome();
   };
@@ -521,6 +555,14 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     logger.debug('Pronunciation practice complete, moving to communicative practice.');
     setCurrentStep('communicative_practice');
   };
+
+  if (exampleVerbsLoading) {
+    return (
+      <div className="learning-flow-loading">
+        <p>Cargando verbos de ejemplo…</p>
+      </div>
+    )
+  }
 
   if (currentStep === 'introduction') {
     return (
@@ -721,6 +763,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
         onSelect={handleTenseSelection}
         onHome={onHome}
         useVoseo={settings?.useVoseo === true}
+        region={settings?.region}
       />
     );
   }

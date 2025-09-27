@@ -18,7 +18,9 @@ vi.mock('../../data/verbs.js', () => ({
 // Mock the settings store
 const mockSettingsStore = {
   set: vi.fn(),
-  enableChunks: true
+  enableChunks: true,
+  chunksFailsafeActivated: false,
+  chunksFailsafeCount: 0
 }
 vi.mock('../../state/settings.js', () => ({
   useSettings: {
@@ -60,6 +62,7 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     mockVerbsImport.mockReset()
+    vi.clearAllTimers()
   })
 
   it('should successfully use Strategy 1 when preferred chunks work', async () => {
@@ -161,8 +164,13 @@ describe('VerbChunkManager Failsafe Mechanisms', () => {
     try {
       await chunkManager.getVerbsWithRobustFailsafe(['core'], 1, 100) // Fast timeout
     } catch {
-      // Expected to fail, but should have disabled chunks
-      expect(mockSettingsStore.set).toHaveBeenCalledWith({ enableChunks: false })
+      // Expected to fail, but should have scheduled recovery and disabled chunks via settings
+      expect(mockSettingsStore.set).toHaveBeenCalledWith(expect.objectContaining({
+        enableChunks: false,
+        chunksFailsafeActivated: true
+      }))
+      expect(chunkManager.chunkHealth.status).toBe('recovering')
+      expect(chunkManager.chunkHealth.recoveryTimer).not.toBeNull()
     }
   })
 

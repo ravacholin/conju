@@ -1,8 +1,8 @@
 // Reglas de clasificación de errores para el sistema de progreso
 
 import { ERROR_TAGS } from './dataModels.js'
-import { verbs } from '../../data/verbs.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
+import { VERB_LOOKUP_MAP } from '../core/optimizedCache.js'
 
 /**
  * Clasifica errores en la conjugación de verbos
@@ -94,7 +94,7 @@ function hasWrongPerson(user, correct, item) {
   // esperadas para cada persona
   
   // Check if the verb is irregular in this specific tense for more accurate detection
-  const verb = verbs.find(v => v.lemma === item.lemma)
+  const verb = VERB_LOOKUP_MAP.get(item.lemma)
   const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
   
   // For verbs irregular in this tense, stem differences indicate person errors
@@ -135,7 +135,7 @@ function hasIrregularStemIssue(item, user, correct) {
   // En una implementación completa, se verificaría contra las familias irregulares
   
   // Check if the verb is irregular in this specific tense for stem error detection
-  const verb = verbs.find(v => v.lemma === item.lemma)
+  const verb = VERB_LOOKUP_MAP.get(item.lemma)
   const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
   
   // For verbs irregular in this tense, stem differences indicate stem errors

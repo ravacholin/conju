@@ -1,6 +1,6 @@
 // Gestión de ítems de práctica en el sistema de progreso
 
-import { verbs } from '../../data/verbs.js'
+import { getAllVerbs } from '../core/verbDataService.js'
 
 /**
  * Tamaño del lote para procesamiento no bloqueante
@@ -34,6 +34,8 @@ export async function initializeItems() {
     let itemCount = 0
     let skippedCount = 0
     
+    const verbs = await getAllVerbs({ ensureChunks: true })
+
     // Procesar cada verbo
     for (const verb of verbs) {
       // Procesar cada paradigma del verbo

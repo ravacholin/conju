@@ -9,10 +9,8 @@
  * - Mixed tense handling (imperative mixed, nonfinite mixed)
  */
 
-// Dynamic verb loading with chunk manager
-import { verbChunkManager } from '../../lib/core/verbChunkManager.js'
-// Fallback dataset for lemma-type lookups
-import { verbs as FULL_VERB_DATASET } from '../../data/verbs.js'
+import { getFormsForRegion } from '../../lib/core/verbDataService.js'
+import { VERB_LOOKUP_MAP } from '../../lib/core/optimizedCache.js'
 import { 
   isRegularFormForMood, 
   isRegularNonfiniteForm,
@@ -25,6 +23,21 @@ import { expandSimplifiedGroup } from '../../lib/data/simplifiedFamilyGroups.js'
 
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
+
+function deduplicateForms(forms = []) {
+  const seen = new Set()
+  const out = []
+  for (const form of forms) {
+    const person = form.mood === 'nonfinite' ? '' : (form.person || '')
+    const key = `${form.lemma}|${form.mood}|${form.tense}|${person}|${form.value}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(form)
+  }
+  return out
+}
+
+const lookupVerb = (lemma) => VERB_LOOKUP_MAP.get(lemma)
 
 /**
  * Genera dinámicamente todas las formas de verbos para una región específica
@@ -41,136 +54,49 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
     return formsCache.get(cacheKey)
   }
   
-  const startTime = performance.now()
-  let verbs = []
-  
+  const normalizeForms = (forms = []) => forms.map(form => ({ ...form }))
+
   try {
-    // Estrategia de carga inteligente basada en contexto del usuario
-    if (settings.enableChunks === false) {
-      // FALLBACK SYSTEM: Si chunks están deshabilitados, usar archivo principal
-      console.log('🚨 CHUNKS DISABLED - Using fallback to main verbs file')
-      const { verbs: allVerbs } = await import('../../data/verbs.js')
-      verbs = allVerbs
+    let forms
+    if (region === 'global') {
+      const [rioplatense, peninsular] = await Promise.all([
+        getFormsForRegion('rioplatense', settings),
+        getFormsForRegion('peninsular', settings)
+      ])
+      const combined = [...normalizeForms(rioplatense), ...normalizeForms(peninsular)]
+      const dedup = deduplicateForms(combined)
+      forms = dedup
     } else {
-      // Sistema de chunks normal con failsafe robusto
-      let preferredChunks = ['core']
+      forms = normalizeForms(await getFormsForRegion(region, settings))
+    }
 
-      if (settings.practiceMode === 'theme' || settings.selectedFamily) {
-        // Para práctica por tema, usar getVerbsByTheme con failsafe
-        try {
-          const theme = settings.selectedFamily || 'mixed'
-          const families = settings.selectedFamily ? [settings.selectedFamily] : []
-          verbs = await verbChunkManager.getVerbsByTheme(theme, families)
-
-          if (!verbs || verbs.length === 0) {
-            throw new Error('Theme-based loading returned no verbs')
-          }
-        } catch (themeError) {
-          console.warn('Theme loading failed, using robust failsafe:', themeError.message)
-          verbs = await verbChunkManager.getVerbsWithRobustFailsafe(['core', 'irregulars'])
-        }
-      } else {
-        // Determinar chunks preferidos basado en configuración
-        if (settings.level && ['A1', 'A2'].includes(settings.level)) {
-          preferredChunks = ['core', 'common']
-        } else if (settings.verbType === 'irregular' || (settings.level && ['B1', 'B2', 'C1', 'C2'].includes(settings.level))) {
-          preferredChunks = ['core', 'common', 'irregulars']
-        } else {
-          preferredChunks = ['core', 'common']
-        }
-
-        // Usar el sistema de failsafe robusto
-        verbs = await verbChunkManager.getVerbsWithRobustFailsafe(preferredChunks)
+    if ((!forms || forms.length === 0) && settings.enableChunks !== false) {
+      console.warn('generateAllFormsForRegion', 'Primary form load returned empty, retrying with chunks disabled')
+      const fallbackSettings = { ...settings, enableChunks: false }
+      const fallbackForms = region === 'global'
+        ? deduplicateForms([
+            ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings)),
+            ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings))
+          ])
+        : normalizeForms(await getFormsForRegion(region, fallbackSettings))
+      if (fallbackForms?.length) {
+        forms = fallbackForms
       }
     }
+
+    if (!forms || forms.length === 0) {
+      console.error('generateAllFormsForRegion', 'No forms available after all fallbacks', { region, settings })
+      formsCache.set(cacheKey, [])
+      return []
+    }
+
+    formsCache.set(cacheKey, forms)
+    return forms
   } catch (error) {
-    console.error('🚨 PRIMARY LOADING FAILED - Activating emergency protocols:', error)
-
-    // EMERGENCY PROTOCOL: Multi-layered failsafe
-    try {
-      console.log('🔄 Emergency Protocol 1: Direct main file load')
-      const { verbs: allVerbs } = await import('../../data/verbs.js')
-      verbs = allVerbs
-
-      // Auto-disable chunks if they keep failing
-      if (settings.enableChunks !== false) {
-        console.log('🔧 Auto-disabling chunks due to repeated failures')
-        try {
-          const { useSettings } = await import('../../state/settings.js')
-          const store = useSettings.getState()
-          store.set({
-            enableChunks: false,
-            chunksFailsafeActivated: true,
-            chunksFailsafeCount: (store.chunksFailsafeCount || 0) + 1
-          })
-        } catch (settingsError) {
-          console.warn('Could not disable chunks in settings:', settingsError.message)
-        }
-      }
-    } catch (mainFileError) {
-      console.error('💀 Emergency Protocol 1 failed:', mainFileError)
-
-      try {
-        console.log('🆘 Emergency Protocol 2: Robust failsafe with minimal verbs')
-        verbs = await verbChunkManager.getVerbsWithRobustFailsafe(['core'], 1, 1000)
-      } catch (robustFailsafeError) {
-        console.error('💀 Emergency Protocol 2 failed:', robustFailsafeError)
-
-        // ABSOLUTE LAST RESORT: Hardcoded essential verbs
-        console.log('☢️ LAST RESORT: Using hardcoded essential verbs')
-        const essentialLemmas = ['ser', 'estar', 'haber', 'tener', 'hacer']
-        verbs = essentialLemmas.map(lemma => ({
-          lemma,
-          id: lemma,
-          type: 'irregular',
-          paradigms: [{
-            regionTags: ['la_general', 'rioplatense', 'peninsular'],
-            forms: [
-              { mood: 'indicative', tense: 'pres', person: '1s', value: lemma === 'ser' ? 'soy' : (lemma === 'estar' ? 'estoy' : (lemma === 'haber' ? 'he' : (lemma === 'tener' ? 'tengo' : 'hago'))) },
-              { mood: 'indicative', tense: 'pres', person: '2s', value: lemma === 'ser' ? 'eres' : (lemma === 'estar' ? 'estás' : (lemma === 'haber' ? 'has' : (lemma === 'tener' ? 'tienes' : 'haces'))) },
-              { mood: 'indicative', tense: 'pres', person: '3s', value: lemma === 'ser' ? 'es' : (lemma === 'estar' ? 'está' : (lemma === 'haber' ? 'ha' : (lemma === 'tener' ? 'tiene' : 'hace'))) }
-            ]
-          }]
-        }))
-
-        if (verbs.length === 0) {
-          throw new Error('CATASTROPHIC FAILURE: Even hardcoded verbs failed to load')
-        }
-      }
-    }
+    console.error('generateAllFormsForRegion', 'Failed to build forms for region', { region, settings, error })
+    formsCache.set(cacheKey, [])
+    return []
   }
-  
-  // Generar formas de todos los verbos cargados
-  const allForms = []
-  
-  verbs.forEach(verb => {
-    verb.paradigms?.forEach(paradigm => {
-      // Filtrar por región si está especificada
-      if (region !== 'ALL' && region !== 'global' && !paradigm.regionTags?.includes(region)) {
-        return
-      }
-      
-      paradigm.forms?.forEach(form => {
-        // Enriquecer forma con información del verbo
-        const enrichedForm = {
-          ...form,
-          lemma: verb.lemma,
-          verbId: verb.id,
-          verbType: verb.type || 'regular'
-        }
-        allForms.push(enrichedForm)
-      })
-    })
-  })
-  
-  // Log generation statistics
-  const loadTime = performance.now() - startTime
-  console.log(`📊 Forms generation: ${allForms.length} forms from ${verbs.length} verbs in ${loadTime.toFixed(1)}ms`)
-  
-  // Cache el resultado
-  formsCache.set(cacheKey, allForms)
-  
-  return allForms
 }
 
 /**
@@ -342,12 +268,8 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
     const getLemmaType = (lemma, fallback) => {
       if (!lemma) return fallback || 'regular'
       if (lemmaTypeCache.has(lemma)) return lemmaTypeCache.get(lemma)
-      // Prefer embedded verbType if present in any form
-      let t = fallback
-      if (!t) {
-        const v = FULL_VERB_DATASET.find(vb => vb.lemma === lemma)
-        t = v?.type || 'regular'
-      }
+      const verb = lookupVerb(lemma)
+      const t = verb?.type || fallback || 'regular'
       lemmaTypeCache.set(lemma, t)
       return t
     }
@@ -508,7 +430,7 @@ const applyPedagogicalFiltering = (forms, settings) => {
     // Only apply pedagogical filtering for "Irregulares en 3ª persona" drill (all persons)
     if (f.tense === 'pretIndef' && settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
       // Find the verb in the dataset to get its complete definition
-      const verb = FULL_VERB_DATASET.find(v => v.lemma === f.lemma)
+      const verb = lookupVerb(f.lemma)
       if (!verb) return true // If verb not found, allow it through (defensive)
 
       const verbFamilies = categorizeVerb(f.lemma, verb)
@@ -547,7 +469,7 @@ const applyFamilyFiltering = (forms, settings) => {
   return forms.filter(form => {
     try {
       // Find the verb in the dataset to get its complete definition
-      const verb = FULL_VERB_DATASET.find(v => v.lemma === form.lemma)
+      const verb = lookupVerb(form.lemma)
       if (!verb) return true // If verb not found, allow it through (defensive)
 
       const verbFamilies = categorizeVerb(form.lemma, verb)

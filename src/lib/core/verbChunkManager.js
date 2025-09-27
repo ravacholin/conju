@@ -5,6 +5,8 @@
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 
+const MIN_CHUNK_COVERAGE = 0.9
+
 class VerbChunkManager {
   constructor() {
     this.loadedChunks = new Map() // chunkName -> verbs array
@@ -18,6 +20,16 @@ class VerbChunkManager {
       chunksLoaded: 0,
       totalLoadTime: 0
     }
+    this.chunkHealth = {
+      status: 'healthy',
+      lowCoverage: new Map(),
+      failures: 0,
+      lastFailureAt: 0,
+      recoveryTimer: null,
+      recoveryBackoffMs: 1000
+    }
+    this.supplementalCache = new Map()
+    this.globalFallbackVerbs = null
     this.manifest = null
     this.manifestPromise = null
     this.manifestLoadedAt = 0
@@ -25,6 +37,9 @@ class VerbChunkManager {
     this.refreshTimer = null
     this.fetchAvailable = typeof window !== 'undefined' && typeof window.fetch === 'function'
     this.chunkBaseUrl = '/'
+    if (typeof import.meta !== 'undefined' && import.meta?.vitest) {
+      this.fetchAvailable = false
+    }
     try {
       if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
         this.chunkBaseUrl = import.meta.env.BASE_URL
@@ -155,6 +170,9 @@ class VerbChunkManager {
     }
     manifest.chunks.forEach(chunk => {
       const existing = this.chunkMetadata.get(chunk.name) || {}
+      const expectedCount = chunk.expectedCount ?? existing.expectedCount ?? (Array.isArray(existing.verbs) ? existing.verbs.length : 0)
+      const lemmaCount = Array.isArray(chunk.lemmas) ? chunk.lemmas.length : (existing.verbs?.length ?? 0)
+      const coverageRatio = expectedCount > 0 ? lemmaCount / expectedCount : 1
       const metadata = {
         ...existing,
         verbs: Array.isArray(chunk.lemmas) ? chunk.lemmas : existing.verbs || [],
@@ -164,9 +182,26 @@ class VerbChunkManager {
         bytes: chunk.bytes ?? existing.bytes ?? 0,
         hash: chunk.hash ?? existing.hash ?? null,
         lastUpdated: manifest.generatedAt || new Date().toISOString(),
-        lastAccess: existing.lastAccess || 0
+        lastAccess: existing.lastAccess || 0,
+        expectedCount,
+        coverage: Number.isFinite(coverageRatio) ? coverageRatio : 1
       }
       this.chunkMetadata.set(chunk.name, metadata)
+
+      if (metadata.expectedCount > 0 && metadata.coverage < MIN_CHUNK_COVERAGE) {
+        this.chunkHealth.lowCoverage.set(chunk.name, {
+          expected: metadata.expectedCount,
+          actual: metadata.verbs.length,
+          coverage: metadata.coverage,
+          flaggedAt: Date.now()
+        })
+        console.warn(`⚠️  Chunk ${chunk.name} coverage ${(metadata.coverage * 100).toFixed(1)}% below threshold; supplementing with fallback data`)
+        this.ensureGlobalFallbackVerbs().catch(error => {
+          console.warn('Failed to warm global fallback verbs:', error)
+        })
+      } else {
+        this.chunkHealth.lowCoverage.delete(chunk.name)
+      }
     })
 
     // Mantener metadata existente pero limpiar índice para chunks actualizados
@@ -302,6 +337,92 @@ class VerbChunkManager {
       this.loadingPromises.delete(chunkName)
     }
   }
+
+  async ensureGlobalFallbackVerbs() {
+    if (Array.isArray(this.globalFallbackVerbs) && this.globalFallbackVerbs.length > 0) {
+      return this.globalFallbackVerbs
+    }
+    try {
+      const { verbs } = await import('../../data/verbs.js')
+      this.globalFallbackVerbs = Array.isArray(verbs) ? verbs : []
+    } catch (error) {
+      console.warn('Failed to load global fallback verbs:', error)
+      this.globalFallbackVerbs = []
+    }
+    return this.globalFallbackVerbs
+  }
+
+  async handleCriticalFailure(reason) {
+    this.chunkHealth.status = 'degraded'
+    this.chunkHealth.lastFailureAt = Date.now()
+    this.chunkHealth.failures += 1
+
+    try {
+      const { useSettings } = await import('../../state/settings.js')
+      const store = useSettings.getState()
+      const failureMessage = typeof reason === 'string' ? reason : reason?.message || 'Unknown chunk failure'
+      store.set({
+        enableChunks: false,
+        chunksFailsafeActivated: true,
+        chunksFailsafeCount: (store.chunksFailsafeCount || 0) + 1,
+        chunksRecoveryScheduledAt: new Date().toISOString(),
+        lastChunkFailureReason: failureMessage
+      })
+    } catch (error) {
+      console.warn('Failed to update settings store after chunk failure:', error)
+    }
+
+    this.scheduleRecoveryAttempt()
+  }
+
+  scheduleRecoveryAttempt() {
+    if (this.chunkHealth.recoveryTimer) {
+      return
+    }
+
+    const delay = Math.min(this.chunkHealth.recoveryBackoffMs, 5 * 60 * 1000)
+    this.chunkHealth.status = 'recovering'
+    this.chunkHealth.recoveryTimer = setTimeout(() => {
+      this.attemptRecovery().catch(error => {
+        console.warn('Chunk recovery attempt failed:', error)
+        this.chunkHealth.status = 'degraded'
+        this.scheduleRecoveryAttempt()
+      })
+    }, delay)
+
+    // Exponential backoff up to 5 minutes
+    this.chunkHealth.recoveryBackoffMs = Math.min(this.chunkHealth.recoveryBackoffMs * 2, 5 * 60 * 1000)
+  }
+
+  async attemptRecovery() {
+    this.chunkHealth.recoveryTimer = null
+    try {
+      await this.ensureManifest(true)
+      await this.loadChunk('core')
+      await this.loadChunk('common')
+      this.chunkHealth.status = 'healthy'
+      this.chunkHealth.failures = 0
+      this.chunkHealth.recoveryBackoffMs = 1000
+
+      try {
+        const { useSettings } = await import('../../state/settings.js')
+        const store = useSettings.getState()
+        store.set({
+          enableChunks: true,
+          chunksFailsafeActivated: false,
+          chunksRecoveryScheduledAt: null,
+          lastChunkFailureReason: null
+        })
+      } catch (error) {
+        console.warn('Failed to update settings store after successful recovery:', error)
+      }
+
+      console.log('✅ Chunk system recovered and re-enabled after failsafe')
+    } catch (error) {
+      console.warn('Chunk recovery attempt could not restore the system yet:', error)
+      throw error
+    }
+  }
   
   async performChunkLoad(chunkName) {
     if (this.fetchAvailable) {
@@ -394,7 +515,7 @@ class VerbChunkManager {
 
   async supplementChunkFromMainStore(chunkName, targetCount, existingVerbs) {
     try {
-      const { verbs } = await import('../../data/verbs.js')
+      const verbs = await this.ensureGlobalFallbackVerbs()
 
       // Get existing lemmas to avoid duplicates
       const existingLemmas = new Set(existingVerbs.map(v => v.lemma))
@@ -498,8 +619,10 @@ class VerbChunkManager {
 
   async loadMissingLemmasFromMainStore(missingLemmas) {
     try {
-      const { verbs } = await import('../../data/verbs.js')
-      const foundVerbs = verbs.filter(verb => missingLemmas.includes(verb.lemma))
+      const allVerbs = await this.ensureGlobalFallbackVerbs()
+      const foundVerbs = Array.isArray(allVerbs)
+        ? allVerbs.filter(verb => missingLemmas.includes(verb.lemma))
+        : []
 
       // If we didn't find all verbs, try priority verbs
       const stillMissing = missingLemmas.filter(lemma =>
@@ -520,14 +643,14 @@ class VerbChunkManager {
 
       return foundVerbs
     } catch (error) {
-      console.error('Critical: Failed to load verbs from main store:', error)
+      console.error('Critical: Failed to load verbs from fallback dataset:', error)
       return []
     }
   }
 
   async loadFromMainFile(chunkName) {
     // Fallback: cargar todos los verbos y filtrar
-    const { verbs } = await import('../../data/verbs.js')
+    const verbs = await this.ensureGlobalFallbackVerbs()
     const metadata = this.chunkMetadata.get(chunkName)
 
     if (!metadata) {
@@ -712,7 +835,7 @@ class VerbChunkManager {
   async preloadDueVerbs(userId, currentDate = new Date(), hoursAhead = 24) {
     if (!userId) {
       console.warn('⚠️  preloadDueVerbs: No userId provided, skipping SRS preload')
-      return
+      return 0
     }
 
     try {
@@ -723,7 +846,7 @@ class VerbChunkManager {
 
       if (dueLemmas.length === 0) {
         console.log('📊 SRS: No due lemmas found, skipping preload')
-        return
+        return 0
       }
 
       console.log(`🔄 SRS: Preloading ${dueLemmas.length} due verbs into chunks`)
@@ -739,9 +862,10 @@ class VerbChunkManager {
       this.stats.srsPreloadCount = (this.stats.srsPreloadCount || 0) + 1
       this.stats.lastSrsPreloadTime = Date.now()
       this.stats.lastSrsPreloadDuration = loadTime
-
+      return dueLemmas.length
     } catch (error) {
       console.error('❌ SRS: Failed to preload due verbs:', error)
+      return 0
     }
   }
 
@@ -1102,23 +1226,7 @@ class VerbChunkManager {
           // If it's the last attempt of the last strategy, prepare for critical failure
           if (strategyIndex === strategies.length - 1 && attempt === maxAttempts) {
             console.error('💀 CRITICAL: All failsafe strategies exhausted')
-
-            // Auto-disable chunks if they keep failing
-            try {
-              const { useSettings } = await import('../../state/settings.js')
-              const store = useSettings.getState()
-              if (store.enableChunks) {
-                console.log('🔧 Auto-disabling chunks due to repeated failures')
-                store.set({
-                  enableChunks: false,
-                  chunksFailsafeActivated: true,
-                  chunksFailsafeCount: (store.chunksFailsafeCount || 0) + 1
-                })
-              }
-            } catch {
-              // Settings update failed, but continue
-            }
-
+            await this.handleCriticalFailure(error)
             throw new Error('CRITICAL: All verb loading strategies failed - application cannot continue')
           }
 

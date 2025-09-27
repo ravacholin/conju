@@ -7,6 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT_DIR = path.resolve(__dirname, '..')
 const VERBS_FILE = path.join(ROOT_DIR, 'src/data/verbs.js')
 const OUTPUT_DIR = path.join(ROOT_DIR, 'public/chunks')
+const MIN_COVERAGE_RATIO = 0.9
+const CHECK_MODE = process.argv.includes('--check')
 
 function extractVerbs(jsonSource) {
   const match = jsonSource.match(/export const verbs = (\[.*\]);?\s*$/s)
@@ -291,9 +293,15 @@ async function buildChunks() {
     const expected = data.expectedCount
     const coverage = ((actual / expected) * 100).toFixed(1)
     console.log(`📈 ${chunkName}: ${actual}/${expected} verbs (${coverage}% of target)`)
+
+    if (expected > 0 && actual / expected < MIN_COVERAGE_RATIO) {
+      throw new Error(`Chunk ${chunkName} coverage ${coverage}% below minimum ${(MIN_COVERAGE_RATIO * 100).toFixed(0)}%`)
+    }
   })
 
-  await mkdir(OUTPUT_DIR, { recursive: true })
+  if (!CHECK_MODE) {
+    await mkdir(OUTPUT_DIR, { recursive: true })
+  }
 
   const manifest = {
     generatedAt: new Date().toISOString(),
@@ -310,7 +318,9 @@ async function buildChunks() {
     const byteSize = Buffer.byteLength(json, 'utf8')
     const lemmas = Array.from(data.lemmas).sort()
 
-    await writeFile(path.join(OUTPUT_DIR, `${name}.json`), json)
+    if (!CHECK_MODE) {
+      await writeFile(path.join(OUTPUT_DIR, `${name}.json`), json)
+    }
 
     manifest.chunks.push({
       name,
@@ -332,14 +342,17 @@ async function buildChunks() {
 
   manifest.chunks.sort((a, b) => (a.priority ?? 5) - (b.priority ?? 5))
 
-  await writeFile(path.join(OUTPUT_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2))
+  if (!CHECK_MODE) {
+    await writeFile(path.join(OUTPUT_DIR, 'manifest.json'), JSON.stringify(manifest, null, 2))
+  }
   return manifest
 }
 
 buildChunks()
   .then((manifest) => {
-    console.log(`\n✅ Chunks generados (${manifest.chunkCount}) con versión ${manifest.version}`)
-    console.log('📊 Final distribution:')
+    const modeLabel = CHECK_MODE ? 'verificados' : 'generados'
+    console.log(`\n✅ Chunks ${modeLabel} (${manifest.chunkCount}) con versión ${manifest.version}`)
+    console.log('📊 Distribución final:')
     manifest.chunks.forEach(chunk => {
       console.log(`   ${chunk.name}: ${chunk.lemmaCount} verbs (${chunk.coverage}% of target) - ${chunk.description}`)
     })

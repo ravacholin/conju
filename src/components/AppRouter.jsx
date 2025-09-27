@@ -31,7 +31,7 @@
  * @requires router - Sistema de enrutamiento interno
  */
 
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
@@ -80,8 +80,30 @@ function AppRouter() {
     onboardingStep: onboardingFlow.onboardingStep
   });
 
-  // Compute forms for current region (memoized for performance)
-  const allFormsForRegion = useMemo(() => buildFormsForRegion(settings.region), [settings.region])
+  const [formsForRegion, setFormsForRegion] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadForms() {
+      setFormsForRegion([])
+      try {
+        const forms = await buildFormsForRegion(settings.region, settings)
+        if (!cancelled) {
+          setFormsForRegion(forms)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('AppRouter: failed to load forms for region', error)
+          setFormsForRegion([])
+        }
+      }
+    }
+
+    loadForms()
+    return () => {
+      cancelled = true
+    }
+  }, [settings])
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 
@@ -112,7 +134,7 @@ function AppRouter() {
     // Regenerate drill item if navigating to drill without current item
     if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
       setTimeout(() => {
-        // Use the new dynamic forms generation - no need to pass allFormsForRegion
+        // Use the new dynamic forms generation - no need to pass cached region forms
         drillModeRef.current.generateNextItem(
           null, 
           onboardingFlowRef.current.getAvailableMoodsForLevel, 
@@ -353,7 +375,7 @@ function AppRouter() {
       <OnboardingFlow 
         onStartPractice={handleStartPractice} 
         setCurrentMode={setCurrentMode} 
-        formsForRegion={allFormsForRegion}
+        formsForRegion={formsForRegion}
         // Pass all hook functions as props
         onboardingStep={onboardingFlow.onboardingStep}
         selectDialect={onboardingFlow.selectDialect}
@@ -383,7 +405,7 @@ function AppRouter() {
         currentItem={drillMode.currentItem}
         settings={settings}
         onDrillResult={drillMode.handleDrillResult}
-        onContinue={() => drillMode.handleContinue(allFormsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
+        onContinue={() => drillMode.handleContinue(formsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
         onHome={handleHome}
         onRegenerateItem={handleRegenerateItem}
         onDialectChange={handleDialectChange}

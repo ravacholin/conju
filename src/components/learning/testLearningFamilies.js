@@ -6,13 +6,15 @@ import {
   getLearningFamiliesByLevel,
   convertLearningFamilyToOld
 } from '../../lib/data/learningIrregularFamilies.js';
-import { verbs } from '../../data/verbs.js';
+import { getAllVerbs } from '../../lib/core/verbDataService.js';
 import { chooseNext } from '../../lib/core/generator.js';
 
 // Función de prueba
-function testLearningFamilies() {
+async function testLearningFamilies() {
   console.log('🧪 PRUEBA DEL NUEVO SISTEMA PEDAGÓGICO DE FAMILIAS IRREGULARES');
   console.log('================================================================\n');
+
+  const verbs = await getAllVerbs({ ensureChunks: true })
 
   // 1. Probar categorización de verbos paradigmáticos
   console.log('1️⃣ CATEGORIZACIÓN DE VERBOS PARADIGMÁTICOS PEDAGÓGICOS:');

@@ -1,6 +1,6 @@
 // Inicialización de verbos en el sistema de progreso
 
-import { verbs } from '../../data/verbs.js'
+import { getAllVerbs } from '../core/verbDataService.js'
 import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 
 /**
@@ -24,6 +24,8 @@ export async function initializeVerbs() {
     let orthographicChangeCount = 0
     let errorCount = 0
     
+    const verbs = await getAllVerbs({ ensureChunks: true })
+
     // Procesar cada verbo
     for (const verb of verbs) {
       try {

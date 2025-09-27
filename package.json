@@ -12,6 +12,7 @@
     "build:production": "vite build",
     "build:dev": "vite build",
     "chunks:build": "node scripts/buildChunks.mjs",
+    "chunks:check": "node scripts/buildChunks.mjs --check",
     "lint": "eslint .",
     "preview": "vite preview",
     "preview:learning": "vite preview --open /?mode=learning",

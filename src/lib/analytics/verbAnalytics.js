@@ -1,6 +1,6 @@
 // Enhanced verb analytics using per-tense irregularity data
 
-import { verbs } from '../../data/verbs.js'
+import { getAllVerbs, getVerbByLemma } from '../core/verbDataService.js'
 import { 
   getIrregularTenses, 
   getVerbIrregularityStats,
@@ -12,7 +12,8 @@ import {
  * Generate comprehensive verb analytics using per-tense irregularity data
  * @returns {Object} Analytics report
  */
-export function generateVerbAnalytics() {
+export async function generateVerbAnalytics() {
+  const verbs = await getAllVerbs({ ensureChunks: true })
   const analytics = {
     overview: {},
     irregularityDistribution: {},
@@ -176,8 +177,8 @@ function generateRecommendations(analytics) {
  * @param {string} lemma - Verb lemma
  * @returns {Object|null} Detailed verb info or null if not found
  */
-export function getVerbDetailedInfo(lemma) {
-  const verb = verbs.find(v => v.lemma === lemma)
+export async function getVerbDetailedInfo(lemma) {
+  const verb = await getVerbByLemma(lemma)
   if (!verb) return null
 
   const stats = getVerbIrregularityStats(verb)

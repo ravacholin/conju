@@ -10,7 +10,8 @@
  */
 
 import { gateFormsByCurriculumAndDialect } from '../../lib/core/curriculumGate.js'
-import { verbs } from '../../data/verbs.js'
+import { VERB_LOOKUP_MAP } from '../../lib/core/optimizedCache.js'
+import { getVerbsByLemmas } from '../../lib/core/verbDataService.js'
 import {
   matchesSpecific,
   allowsPerson,
@@ -29,12 +30,19 @@ const logger = createLogger('DrillFallback')
  * @param {Object} settings - User settings
  * @returns {Array} - Filtered forms
  */
-const applyPedagogicalFiltering = (forms, settings) => {
+const lookupVerb = (lemma, verbMap) => {
+  if (verbMap && verbMap.has(lemma)) {
+    return verbMap.get(lemma)
+  }
+  return VERB_LOOKUP_MAP.get(lemma)
+}
+
+const applyPedagogicalFiltering = (forms, settings, verbMap) => {
   return forms.filter(f => {
     // Only apply pedagogical filtering for "Irregulares en 3ª persona" drill (all persons)
     if (f.tense === 'pretIndef' && settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
       // Find the verb in the dataset to get its complete definition
-      const verb = verbs.find(v => v.lemma === f.lemma)
+      const verb = lookupVerb(f.lemma, verbMap)
       if (!verb) return true // If verb not found, allow it through (defensive)
 
       const verbFamilies = categorizeVerb(f.lemma, verb)
@@ -64,11 +72,11 @@ const applyPedagogicalFiltering = (forms, settings) => {
  * @param {string} verbType - 'regular', 'irregular', 'all', or null/undefined
  * @returns {Array} - Filtered forms
  */
-const applyVerbTypeFilter = (forms, verbType) => {
+const applyVerbTypeFilter = (forms, verbType, verbMap) => {
   if (!verbType || verbType === 'all') return forms
   
   return forms.filter(f => {
-    const verb = verbs.find(v => v.lemma === f.lemma)
+    const verb = lookupVerb(f.lemma, verbMap)
     if (!verb) return false
     
     if (verbType === 'regular') {
@@ -93,8 +101,10 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
   
   logger.info('tryIntelligentFallback', 'Starting intelligent fallback with multiple strategies')
   
+  const verbMap = await buildVerbMap(eligibleForms)
+  
   // Apply verb type filter before processing
-  const verbTypeFiltered = applyVerbTypeFilter(eligibleForms, settings.verbType)
+  const verbTypeFiltered = applyVerbTypeFilter(eligibleForms, settings.verbType, verbMap)
   logger.debug('tryIntelligentFallback', `Verb type filter applied`, {
     verbType: settings.verbType,
     originalCount: eligibleForms.length,
@@ -184,6 +194,27 @@ export const tryIntelligentFallback = async (settings, eligibleForms, context) =
   
   logger.warn('tryIntelligentFallback', 'All fallback strategies failed')
   return null
+}
+
+async function buildVerbMap(forms) {
+  const lemmas = Array.from(new Set(forms.map(f => f.lemma).filter(Boolean)))
+  if (lemmas.length === 0) {
+    return new Map()
+  }
+
+  try {
+    const verbs = await getVerbsByLemmas(lemmas)
+    const map = new Map()
+    verbs.forEach(verb => {
+      if (verb?.lemma) {
+        map.set(verb.lemma, verb)
+      }
+    })
+    return map
+  } catch (error) {
+    logger.warn('buildVerbMap', 'Failed to hydrate verb map from service', error)
+    return new Map()
+  }
 }
 
 /**

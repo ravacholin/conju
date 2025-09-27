@@ -47,7 +47,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     useSettings.setState(testSettings)
     
     // Build forms for testing
-    const forms = buildFormsForRegion('la_general')
+    const forms = await buildFormsForRegion('la_general')
     
     // Generate 100 exercises to catch the bug
     for (let i = 0; i < 100; i++) {
@@ -84,7 +84,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     }
     
     useSettings.setState(testSettings)
-    const forms = buildFormsForRegion('la_general')
+    const forms = await buildFormsForRegion('la_general')
     
     // Filter to only componer forms in imperfect
     const componerImperfectForms = forms.filter(f => 
@@ -123,7 +123,7 @@ describe('Bug Test: Incorrect mood/tense filtering', () => {
     }
     
     useSettings.setState(testSettings)
-    const forms = buildFormsForRegion('la_general')
+    const forms = await buildFormsForRegion('la_general')
     
     await expect(chooseNext({ forms, history: {}, currentItem: null })).rejects.toThrow()
   })

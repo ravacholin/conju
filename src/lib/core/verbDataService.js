@@ -37,7 +37,7 @@ function cacheVerbs(verbs) {
 
 async function loadVerbsForContext(region, settings = {}) {
   if (settings.enableChunks === false) {
-    const { verbs: allVerbs } = await import('../../data/verbs.js')
+    const allVerbs = await verbChunkManager.ensureGlobalFallbackVerbs()
     cacheVerbs(allVerbs)
     return allVerbs
   }
@@ -69,16 +69,14 @@ async function loadVerbsForContext(region, settings = {}) {
     }
   } catch (error) {
     console.warn('verbDataService: chunk loading failed, using fallback', error)
+    if (verbChunkManager.fetchAvailable) {
+      await verbChunkManager.handleCriticalFailure(error)
+    }
   }
 
-  try {
-    const { verbs: allVerbs } = await import('../../data/verbs.js')
-    cacheVerbs(allVerbs)
-    return allVerbs
-  } catch (error) {
-    console.error('verbDataService: fallback to main verbs file failed', error)
-    return []
-  }
+  const allVerbs = await verbChunkManager.ensureGlobalFallbackVerbs()
+  cacheVerbs(allVerbs)
+  return allVerbs
 }
 
 function buildFormsFromVerbs(verbs, region) {
@@ -223,7 +221,13 @@ export async function getLemmaType(lemma) {
 }
 
 export async function getExampleVerbs({ verbType = 'all', families = [], tense = null, region = 'la_general' } = {}) {
-  const forms = await getFormsForRegion(region, { verbType })
+  const regionSettings = {
+    verbType,
+    practiceMode: families.length > 0 ? 'theme' : 'mixed',
+    selectedFamily: families[0] || null
+  }
+
+  const forms = await getFormsForRegion(region, regionSettings)
   let filtered = forms
 
   if (verbType && verbType !== 'all') {
@@ -231,7 +235,10 @@ export async function getExampleVerbs({ verbType = 'all', families = [], tense =
   }
 
   if (families.length > 0) {
-    const expandedFamilies = families.flatMap(family => expandSimplifiedGroup(family))
+    const expandedFamilies = families.flatMap(family => {
+      const expanded = expandSimplifiedGroup(family)
+      return Array.isArray(expanded) && expanded.length > 0 ? expanded : [family]
+    })
     const lemmas = new Set()
     for (const form of filtered) {
       lemmas.add(form.lemma)
@@ -251,14 +258,26 @@ export async function getExampleVerbs({ verbType = 'all', families = [], tense =
     filtered = filtered.filter(form => form.tense === tense)
   }
 
-  const examplesByLemma = new Map()
+  const orderedLemmas = []
+  const seen = new Set()
   for (const form of filtered) {
-    if (!examplesByLemma.has(form.lemma)) {
-      examplesByLemma.set(form.lemma, form)
+    if (!seen.has(form.lemma)) {
+      seen.add(form.lemma)
+      orderedLemmas.push(form.lemma)
     }
   }
 
-  return Array.from(examplesByLemma.values()).slice(0, 15)
+  if (orderedLemmas.length === 0) {
+    return []
+  }
+
+  const verbs = await getVerbsByLemmas(orderedLemmas)
+  const byLemma = new Map(verbs.map(verb => [verb.lemma, verb]))
+  const orderedVerbs = orderedLemmas
+    .map(lemma => byLemma.get(lemma))
+    .filter(Boolean)
+
+  return orderedVerbs.slice(0, 15)
 }
 
 export async function preloadNonfiniteSets(lemmas) {
@@ -291,5 +310,18 @@ export function getVerbDataCacheStats() {
     metadata: metadataCache.size,
     formsIndexed: FORM_LOOKUP_MAP.size,
     verbsIndexed: VERB_LOOKUP_MAP.size
+  }
+}
+
+export { getVerbByLemma } from './optimizedCache.js'
+
+export async function getAllVerbs(options = {}) {
+  try {
+    const verbs = await verbChunkManager.getAllVerbs(options)
+    cacheVerbs(verbs)
+    return verbs
+  } catch (error) {
+    console.error('verbDataService: getAllVerbs failed', error)
+    return []
   }
 }

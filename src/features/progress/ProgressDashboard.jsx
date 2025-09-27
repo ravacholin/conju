@@ -1,5 +1,5 @@
 // Componente principal del dashboard de progreso
-import React, { useMemo } from 'react'
+import React from 'react'
 
 import VerbMasteryMap from './VerbMasteryMap.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
@@ -59,14 +59,31 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [showDataPanel, setShowDataPanel] = React.useState(false)
   const syncAvailable = isSyncEnabled()
 
-  // Memoize regional forms to avoid expensive recalculation on every recommendation click
-  // This optimization prevents rebuilding the entire verb dataset each time a user clicks a recommendation
-  const regionalForms = useMemo(() => {
-    if (import.meta.env.DEV) {
-      console.log(`🔄 Building regional forms for region: ${settings.region}`)
+  const [regionalForms, setRegionalForms] = React.useState([])
+  const [regionalFormsLoading, setRegionalFormsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    let cancelled = false
+    async function loadRegionalForms() {
+      setRegionalFormsLoading(true)
+      try {
+        const forms = await buildFormsForRegion(settings.region, settings)
+        if (!cancelled) setRegionalForms(forms)
+      } catch (err) {
+        console.error('ProgressDashboard: no se pudieron obtener las formas regionales', err)
+        if (!cancelled) {
+          setRegionalForms([])
+        }
+      } finally {
+        if (!cancelled) setRegionalFormsLoading(false)
+      }
     }
-    return buildFormsForRegion(settings.region)
-  }, [settings.region])
+
+    loadRegionalForms()
+    return () => {
+      cancelled = true
+    }
+  }, [settings])
 
   const handleSync = async () => {
     try {
@@ -320,7 +337,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
                 const tense = recommendation?.targetCombination?.tense
                 if (!mood || !tense) return
                 // Use memoized regional forms instead of recalculating
-                const isValid = validateMoodTenseAvailability(mood, tense, settings, regionalForms)
+                const isValid = regionalFormsLoading ? true : validateMoodTenseAvailability(mood, tense, settings, regionalForms)
                 if (!isValid) return
                 settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
                 if (onNavigateToDrill) onNavigateToDrill()

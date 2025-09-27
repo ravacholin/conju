@@ -5,13 +5,17 @@ import { sanitizeVerbsInPlace } from './dataSanitizer.js'
 
 // Cache inteligente optimizado con expiración y límite de memoria
 class IntelligentCache {
-  constructor(maxSize = 1000, ttl = 5 * 60 * 1000) { // 5 minutos TTL
+  constructor(maxSize = 1000, ttl = 5 * 60 * 1000, masteryAware = false) { // 5 minutos TTL
     this.cache = new Map()
     this.accessTimes = new Map()
     this.maxSize = maxSize
     this.ttl = ttl
     this.hits = 0
     this.misses = 0
+    this.masteryAware = masteryAware
+    this.masteryScores = new Map()
+    this.totalMasteryScore = 0
+    this.predictions = 0
   }
 
   get(key) {
@@ -35,7 +39,7 @@ class IntelligentCache {
     return entry.value
   }
 
-  set(key, value) {
+  set(key, value, masteryScore) {
     // Limpiar cache si está lleno
     if (this.cache.size >= this.maxSize) {
       this._evictOldest()
@@ -44,9 +48,22 @@ class IntelligentCache {
     const timestamp = Date.now()
     this.cache.set(key, { value, timestamp })
     this.accessTimes.set(key, timestamp)
+
+     if (this.masteryAware) {
+      const score = Number.isFinite(masteryScore) ? masteryScore : 0
+      if (this.masteryScores.has(key)) {
+        this.totalMasteryScore -= this.masteryScores.get(key)
+      }
+      this.masteryScores.set(key, score)
+      this.totalMasteryScore += score
+    }
   }
 
   delete(key) {
+    if (this.masteryAware && this.masteryScores.has(key)) {
+      this.totalMasteryScore -= this.masteryScores.get(key)
+      this.masteryScores.delete(key)
+    }
     this.cache.delete(key)
     this.accessTimes.delete(key)
   }
@@ -71,17 +88,28 @@ class IntelligentCache {
   clear() {
     this.cache.clear()
     this.accessTimes.clear()
+    if (this.masteryAware) {
+      this.masteryScores.clear()
+      this.totalMasteryScore = 0
+    }
+    this.predictions = 0
   }
 
   getStats() {
     const hitRate = this.hits + this.misses > 0 ? (this.hits / (this.hits + this.misses) * 100).toFixed(1) : '0'
+    const avgMastery = this.masteryAware && this.masteryScores.size > 0
+      ? (this.totalMasteryScore / this.masteryScores.size).toFixed(1)
+      : 'N/A'
     return {
       size: this.cache.size,
       maxSize: this.maxSize,
       usage: (this.cache.size / this.maxSize * 100).toFixed(1) + '%',
       hits: this.hits,
       misses: this.misses,
-      hitRate: hitRate + '%'
+      hitRate: hitRate + '%',
+      masteryAware: this.masteryAware,
+      avgMasteryScore: avgMastery,
+      predictions: this.predictions
     }
   }
 }
@@ -122,10 +150,10 @@ export async function getVerbByLemma(lemma) {
   // Fallback: direct lookup from main verbs data
   if (!verb) {
     try {
-      const { verbs } = await import('../../data/verbs.js')
-      verb = verbs.find(v => v.lemma === lemma)
+      const allVerbs = await verbChunkManager.getAllVerbs()
+      verb = Array.isArray(allVerbs) ? allVerbs.find(v => v.lemma === lemma) : null
     } catch (error) {
-      console.error('Failed to load verbs directly:', error)
+      console.error('Failed to load verbs via chunk manager fallback:', error)
       return null
     }
   }
@@ -188,14 +216,15 @@ export async function getVerbsByLemmas(lemmas) {
     try {
       newVerbs = await verbChunkManager.ensureVerbsLoaded(uncachedLemmas)
     } catch (error) {
-      console.warn('Chunk manager failed for bulk load, using direct lookup:', error)
+      console.warn('Chunk manager failed for bulk load, using all-verbs fallback:', error)
 
-      // Fallback: load all verbs and filter
       try {
-        const { verbs } = await import('../../data/verbs.js')
-        newVerbs = verbs.filter(v => uncachedLemmas.includes(v.lemma))
+        const allVerbs = await verbChunkManager.getAllVerbs()
+        newVerbs = Array.isArray(allVerbs)
+          ? allVerbs.filter(v => uncachedLemmas.includes(v.lemma))
+          : []
       } catch (fallbackError) {
-        console.error('Failed to load verbs directly:', fallbackError)
+        console.error('Failed to load verbs via chunk manager fallback:', fallbackError)
         return cachedVerbs
       }
     }
@@ -233,8 +262,10 @@ export async function getVerbsByLemmas(lemmas) {
 
     // Final fallback: direct main store lookup for missing verbs
     try {
-      const { verbs } = await import('../../data/verbs.js')
-      const fallbackVerbs = verbs.filter(v => missingLemmas.includes(v.lemma))
+      const allVerbsSource = await verbChunkManager.getAllVerbs()
+      const fallbackVerbs = Array.isArray(allVerbsSource)
+        ? allVerbsSource.filter(v => missingLemmas.includes(v.lemma))
+        : []
 
       if (fallbackVerbs.length > 0) {
         console.log(`✅ optimizedCache: Recovered ${fallbackVerbs.length} verbs via direct fallback`)
@@ -272,7 +303,7 @@ export async function getVerbsByLemmas(lemmas) {
       }
 
     } catch (error) {
-      console.error('Critical: Direct fallback also failed in optimizedCache:', error)
+      console.error('Critical: Fallback via chunk manager also failed in optimizedCache:', error)
     }
   }
 
@@ -333,13 +364,12 @@ initializeCoreVerbs().catch(error => {
 
 // Fallback: initialize lookup maps synchronously with main verbs data
 function initializeFallbackLookups() {
-  try {
-    // Dynamic import won't work in build, use require-style import
-    import('../../data/verbs.js').then(({ verbs }) => {
-      verbs.forEach(verb => {
+  verbChunkManager.getAllVerbs()
+    .then(verbs => {
+      (verbs || []).forEach(verb => {
+        if (!verb?.lemma) return
         VERB_LOOKUP_MAP.set(verb.lemma, verb)
 
-        // Populate form lookup map
         verb.paradigms?.forEach(paradigm => {
           paradigm.forms?.forEach(form => {
             const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`
@@ -355,12 +385,12 @@ function initializeFallbackLookups() {
       })
 
       if (import.meta.env?.DEV && !import.meta.env?.VITEST) {
-        console.log(`🚀 Fallback verbs initialized: ${verbs.length} verbs, ${FORM_LOOKUP_MAP.size} forms`)
+        console.log(`🚀 Fallback verbs initialized: ${(verbs || []).length} verbs, ${FORM_LOOKUP_MAP.size} forms`)
       }
-    }).catch(console.error)
-  } catch (error) {
-    console.error('Failed to initialize fallback lookups:', error)
-  }
+    })
+    .catch(error => {
+      console.error('Failed to initialize fallback lookups via chunk manager:', error)
+    })
 }
 
 // Función para pre-calentar caches con datos frecuentes
@@ -445,6 +475,9 @@ export function getCacheStats() {
 export async function initiatePredictiveLoading(userId, _userSettings = {}) {
   if (!userId) return
 
+  const predictedVerbs = new Set()
+  const masteryMap = new Map()
+
   try {
     // Import analytics to predict next likely verbs
     const { getErrorIntelligence, getUserStats } = await import('../progress/analytics.js')
@@ -457,15 +490,11 @@ export async function initiatePredictiveLoading(userId, _userSettings = {}) {
     ])
 
     // Create mastery lookup map
-    const masteryMap = new Map()
     masteryRecords.forEach(record => {
       if (record.lemma) {
         masteryMap.set(record.lemma, record.score)
       }
     })
-
-    // Predict verbs that might be needed based on error patterns
-    const predictedVerbs = new Set()
 
     // Add frequently missed verbs (higher priority for low mastery)
     for (const tag of errorData.tags.slice(0, 2)) {
@@ -496,17 +525,25 @@ export async function initiatePredictiveLoading(userId, _userSettings = {}) {
       predictiveCache.set(cacheKey, { lemma: verb, lowMastery: true }, masteryScore)
     })
 
-    // Predictively cache these verbs
-    if (predictedVerbs.size > 0) {
-      console.log(`🔮 Predictive cache: Loading ${predictedVerbs.size} predicted verbs`)
-      await verbChunkManager.ensureVerbsLoaded(Array.from(predictedVerbs))
-
-      // Update cache stats
-      predictiveCache.predictions += predictedVerbs.size
-    }
-
   } catch (error) {
     console.warn('Predictive loading failed:', error)
+  }
+
+  if (predictedVerbs.size === 0) {
+    const fallbackVerbs = ['ser', 'estar', 'tener', 'hacer', 'decir', 'ir']
+    fallbackVerbs.forEach(verb => {
+      predictedVerbs.add(verb)
+      predictiveCache.set(`fallback:${verb}`, { lemma: verb, fallback: true }, 40)
+    })
+  }
+
+  // Predictively cache these verbs
+  if (predictedVerbs.size > 0) {
+    console.log(`🔮 Predictive cache: Loading ${predictedVerbs.size} predicted verbs`)
+    await verbChunkManager.ensureVerbsLoaded(Array.from(predictedVerbs))
+
+    // Update cache stats
+    predictiveCache.predictions += predictedVerbs.size
   }
 }
 

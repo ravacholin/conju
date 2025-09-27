@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { buildGerund, buildParticiple } from '../../lib/core/nonfiniteBuilder.js'
-import { verbs } from '../../data/verbs.js'
+import { getVerbByLemma, preloadNonfiniteSets } from '../../lib/core/verbDataService.js'
 import { IRREGULAR_PARTICIPLES } from '../../lib/data/irregularPatterns.js'
 import './LearningDrill.css'
 import './NonfiniteGuidedDrill.css'
@@ -11,8 +11,6 @@ const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü']
 const PARTICIPLE_ALT_MAP = new Map(
   IRREGULAR_PARTICIPLES.map(({ lemma, alt }) => [lemma, alt || []])
 )
-
-const VERB_LOOKUP = new Map(verbs.map((verb) => [verb.lemma, verb]))
 
 const GERUND_STAGE_DEFINITIONS = {
   regular: {
@@ -151,8 +149,8 @@ function shuffle(list) {
   return arr
 }
 
-function getNonfiniteForm(lemma, tenseKey) {
-  const verb = VERB_LOOKUP.get(lemma)
+function getNonfiniteForm(lemma, tenseKey, verbLookup) {
+  const verb = verbLookup.get(lemma)
   if (!verb) {
     return null
   }
@@ -181,11 +179,11 @@ function mergeAlternates(...lists) {
   return merged
 }
 
-function buildTask(lemmaEntry, mode, defaultHint) {
+function buildTask(lemmaEntry, mode, defaultHint, verbLookup) {
   const entry = typeof lemmaEntry === 'string' ? { lemma: lemmaEntry } : lemmaEntry
   const lemma = entry.lemma
   const tenseKey = mode === 'gerund' ? 'ger' : 'part'
-  const datasetForm = getNonfiniteForm(lemma, tenseKey)
+  const datasetForm = getNonfiniteForm(lemma, tenseKey, verbLookup)
   const builtForm = mode === 'gerund' ? buildGerund(lemma) : buildParticiple(lemma)
   const expected = datasetForm?.value || builtForm
   if (!expected) {
@@ -222,6 +220,8 @@ function NonfiniteGuidedDrill({
   const [entered, setEntered] = useState(false)
   const [queue, setQueue] = useState([])
   const [index, setIndex] = useState(0)
+  const [verbLookup, setVerbLookup] = useState(new Map())
+  const [loadingVerbs, setLoadingVerbs] = useState(false)
 
   const mode = tense?.tense === 'ger' ? 'gerund' : 'participle'
   const intensity = verbType === 'irregular' ? 'irregular' : 'regular'
@@ -234,10 +234,64 @@ function NonfiniteGuidedDrill({
   const tasks = useMemo(() => {
     if (!stageDefinition) return []
     const built = stageDefinition.lemmas
-      .map((lemmaEntry) => buildTask(lemmaEntry, mode, stageDefinition.hint))
+      .map((lemmaEntry) => buildTask(lemmaEntry, mode, stageDefinition.hint, verbLookup))
       .filter(Boolean)
     return shuffle(built)
-  }, [stageDefinition, mode])
+  }, [stageDefinition, mode, verbLookup])
+
+  const stageLemmas = useMemo(() => {
+    if (!stageDefinition) return []
+    return stageDefinition.lemmas
+      .map((entry) => (typeof entry === 'string' ? entry : entry?.lemma))
+      .filter(Boolean)
+  }, [stageDefinition])
+
+  useEffect(() => {
+    if (!stageLemmas.length) {
+      setVerbLookup(new Map())
+      return
+    }
+
+    let cancelled = false
+    setLoadingVerbs(true)
+
+    async function loadVerbs() {
+      try {
+        await preloadNonfiniteSets(stageLemmas)
+        const pairs = await Promise.all(
+          stageLemmas.map(async (lemma) => {
+            try {
+              const verb = await getVerbByLemma(lemma)
+              return verb ? [lemma, verb] : null
+            } catch (error) {
+              console.warn(`NonfiniteGuidedDrill: no se pudo cargar ${lemma}`, error)
+              return null
+            }
+          })
+        )
+
+        if (!cancelled) {
+          const map = new Map(pairs.filter(Boolean))
+          setVerbLookup(map)
+        }
+      } catch (error) {
+        console.error('NonfiniteGuidedDrill: fallo al precargar verbos no finitos', error)
+        if (!cancelled) {
+          setVerbLookup(new Map())
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingVerbs(false)
+        }
+      }
+    }
+
+    loadVerbs()
+
+    return () => {
+      cancelled = true
+    }
+  }, [stageLemmas.join('|')])
 
   const stageTag = useMemo(() => {
     const modeLabel = mode === 'gerund' ? 'Gerundios' : 'Participios'
@@ -332,7 +386,7 @@ function NonfiniteGuidedDrill({
     }
   }
 
-  if (!stageDefinition || !currentTask) {
+  if (loadingVerbs || !stageDefinition || !currentTask) {
     return (
       <div className="App">
         <header className="header">
@@ -344,7 +398,7 @@ function NonfiniteGuidedDrill({
         </header>
         <div className="main-content">
           <div className="drill-container learning-drill">
-            <p>Material en preparación para esta combinación.</p>
+            <p>{loadingVerbs ? 'Cargando verbos de ejemplo…' : 'Material en preparación para esta combinación.'}</p>
           </div>
         </div>
       </div>

@@ -1,9 +1,49 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { MOOD_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
-import { verbs as defaultVerbs } from '../../data/verbs.js'
+import { getVerbForms } from '../../lib/core/verbDataService.js'
 
-function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = false, verbsData = defaultVerbs }) {
+const REFERENCE_LEMMAS = ['hablar', 'comer', 'vivir']
+
+function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = false, region }) {
+  const [referenceForms, setReferenceForms] = useState(new Map())
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadReferenceForms() {
+      try {
+        const pairs = await Promise.all(
+          REFERENCE_LEMMAS.map(async lemma => {
+            try {
+              const forms = await getVerbForms(lemma, { region })
+              return [lemma, forms]
+            } catch (error) {
+              console.warn(`TenseSelectionStep: no se pudieron obtener formas para ${lemma}`, error)
+              return [lemma, []]
+            }
+          })
+        )
+
+        if (!cancelled) {
+          setReferenceForms(new Map(pairs))
+        }
+      } catch (error) {
+        console.error('TenseSelectionStep: fallo al cargar verbos de referencia', error)
+        if (!cancelled) {
+          setReferenceForms(new Map())
+        }
+      }
+    }
+
+    loadReferenceForms()
+
+    return () => {
+      cancelled = true
+    }
+  }, [region])
+
+  const getFormsForLemma = (lemma) => referenceForms.get(lemma) || []
   if (!availableTenses || Object.keys(availableTenses).length === 0) {
     return null
   }
@@ -15,17 +55,11 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
       const examples = []
 
       for (const lemma of modelVerbs) {
-        const verb = verbsData.find(v => v.lemma === lemma)
-        if (verb) {
-          // Buscar forma específica en los datos
-          const para = verb.paradigms?.find(p => p.forms?.some(f => f.mood === 'nonfinite' && f.tense === tenseKey))
-          if (para) {
-            const form = para.forms.find(f => f.mood === 'nonfinite' && f.tense === tenseKey)
-            if (form?.value) {
-              examples.push(form.value)
-              continue
-            }
-          }
+        const forms = getFormsForLemma(lemma)
+        const match = forms.find(f => f.mood === 'nonfinite' && f.tense === tenseKey)
+        if (match?.value) {
+          examples.push(match.value)
+          continue
         }
 
         // Si no hay forma específica, generar forma regular
@@ -40,9 +74,9 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
       return examples.join(', ')
     }
 
-    // Para otros tiempos, usar lógica original
-    const hablar = verbsData.find(v => v.lemma === 'hablar')
-    if (!hablar) return ''
+    // Para otros tiempos, usar el verbo de referencia "hablar"
+    const hablarForms = getFormsForLemma('hablar')
+    if (hablarForms.length === 0) return ''
 
     const moodMap = {
       indicativo: 'indicative',
@@ -53,11 +87,7 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     }
 
     const englishMood = moodMap[moodKey] || moodKey
-    const para = hablar.paradigms?.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tenseKey))
-
-    if (!para) return ''
-
-    const forms = para.forms?.filter(f => f.mood === englishMood && f.tense === tenseKey) || []
+    const forms = hablarForms.filter(f => f.mood === englishMood && f.tense === tenseKey)
     const pron2Key = useVoseo ? '2s_vos' : '2s_tu'
 
     const getForm = (key) => {

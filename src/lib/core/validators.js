@@ -1,10 +1,7 @@
 // Sistema de validación automática para Spanish Conjugator
-import { verbs } from '../../data/verbs.js'
+import { getAllVerbs } from '../core/verbDataService.js'
 import { getAllVerbsWithPriority } from '../../data/priorityVerbs.js'
 import { IRREGULAR_FAMILIES } from '../data/irregularFamilies.js'
-
-// Obtener todos los verbos (principales + prioritarios)
-const allVerbs = getAllVerbsWithPriority(verbs)
 
 // Validadores individuales
 export class VerbValidator {
@@ -388,13 +385,15 @@ export class FamilyValidator {
 }
 
 // Función principal de validación
-export function validateAllData() {
+export async function validateAllData() {
   console.log('🔍 INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
   
   const verbValidator = new VerbValidator()
   const semanticValidator = new SemanticValidator()
   const familyValidator = new FamilyValidator()
   const _patternValidator = new IrregularPatternValidator() // NUEVO
+  const baseVerbs = await getAllVerbs({ ensureChunks: true })
+  const allVerbs = getAllVerbsWithPriority(baseVerbs)
   
   let totalErrors = 0
   let totalWarnings = 0
@@ -791,8 +790,10 @@ export class IrregularPatternValidator {
 }
 
 // Función de validación rápida (solo errores críticos)
-export function quickValidation() {
+export async function quickValidation() {
   const criticalErrors = []
+  const baseVerbs = await getAllVerbs({ ensureChunks: true })
+  const allVerbs = getAllVerbsWithPriority(baseVerbs)
   
   // Verificar que verbos básicos estén presentes
   const essentialVerbs = ['ser', 'estar', 'tener', 'hacer', 'ir']

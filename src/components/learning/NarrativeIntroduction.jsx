@@ -15,18 +15,11 @@ import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
-import { verbs } from '../../data/verbs.js';
 
 // Extraer formas conjugadas reales de la base de datos
 function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
   if (!verbObj || !verbObj.paradigms) {
-    // Fallback: buscar en verbs directos si no hay paradigmas
-    const directVerb = verbs.find(v => v.lemma === verbObj?.lemma);
-    if (directVerb && directVerb.paradigms) {
-      verbObj = directVerb;
-    } else {
-      return [];
-    }
+    return []
   }
 
   // Buscar paradigma correcto

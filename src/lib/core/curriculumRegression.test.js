@@ -1,30 +1,20 @@
 import { describe, it, expect } from 'vitest'
-import { verbs } from '../../data/verbs.js'
+import { getFormsForRegion } from './verbDataService.js'
 import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel, getAllowedPersonsForRegion } from './curriculumGate.js'
 
 // Helper: build region-scoped forms as en AppRouter
-function buildRegionForms(region) {
-  const regionForms = []
-  for (const verb of verbs) {
-    const paradigms = verb.paradigms || []
-    for (const p of paradigms) {
-      if (!p.regionTags || !p.regionTags.includes(region)) continue
-      for (const f of p.forms || []) {
-        regionForms.push({ ...f, lemma: verb.lemma })
-      }
-    }
-  }
-  return regionForms
+async function buildRegionForms(region) {
+  return getFormsForRegion(region, {})
 }
 
 const LEVELS = ['A1','A2','B1','B2','C1','C2']
 const REGIONS = ['rioplatense','la_general','peninsular']
 
 describe('Regresión por Niveles y Dialectos (CurriculumGate)', () => {
-  it('Por nivel (mixto): todas las combinaciones respetan curriculum y dialecto', () => {
+  it('Por nivel (mixto): todas las combinaciones respetan curriculum y dialecto', async () => {
     for (const level of LEVELS) {
       for (const region of REGIONS) {
-        const forms = buildRegionForms(region)
+        const forms = await buildRegionForms(region)
         const settings = { level, region, practiceMode: 'mixed', cameFromTema: false }
         const out = gateFormsByCurriculumAndDialect(forms, settings)
         const allowedCombos = getAllowedCombosForLevel(level)
@@ -52,9 +42,9 @@ describe('Regresión por Niveles y Dialectos (CurriculumGate)', () => {
     }
   })
 
-  it('Por nivel (específica): respeta selection + curriculum', () => {
+  it('Por nivel (específica): respeta selection + curriculum', async () => {
     const region = 'rioplatense'
-    const forms = buildRegionForms(region)
+    const forms = await buildRegionForms(region)
     const settings = {
       level: 'A2',
       region,
@@ -72,9 +62,9 @@ describe('Regresión por Niveles y Dialectos (CurriculumGate)', () => {
     }
   })
 
-  it('Por tema: bypass de curriculum pero mantiene dialecto', () => {
+  it('Por tema: bypass de curriculum pero mantiene dialecto', async () => {
     for (const region of REGIONS) {
-      const forms = buildRegionForms(region)
+      const forms = await buildRegionForms(region)
       const settings = {
         level: 'A2',
         region,

@@ -8,6 +8,7 @@ import { initializeItemsBatched } from './itemManagement.js'
 import { PROGRESS_CONFIG } from './config.js'
 import { markProgressSystemReady } from './ProgressSystemEvents.js'
 import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
+import { getAllVerbs } from '../core/verbDataService.js'
 import { cleanupMasteryCache } from './incrementalMastery.js'
 
 // Estado del sistema
@@ -132,9 +133,24 @@ export async function initProgressSystem(userId = null) {
 
         // Inyectar verbos en el metadata provider para motores emocionales
         try {
-          const { verbs } = await import('../../data/verbs.js')
-          injectVerbsIntoProvider(verbs)
-          console.log('✅ Metadata provider inicializado con dataset de verbos')
+          let verbs = await getAllVerbs({ ensureChunks: true })
+          if (!verbs || verbs.length === 0) {
+            console.warn('verbMetadataProvider', 'Servicio devolvió 0 verbos, intentando fallback estático')
+            try {
+              const fallback = await import('../../data/verbs.js')
+              verbs = fallback.verbs || []
+            } catch (fallbackError) {
+              console.warn('Fallback estático de verbos también falló', fallbackError)
+              verbs = []
+            }
+          }
+
+          if (verbs.length > 0) {
+            injectVerbsIntoProvider(verbs)
+            console.log('✅ Metadata provider inicializado con servicio de verbos')
+          } else {
+            console.warn('Metadata provider no recibió verbos; las analíticas pueden ser limitadas')
+          }
         } catch (error) {
           console.warn('No se pudo inyectar verbos en metadata provider:', error)
         }

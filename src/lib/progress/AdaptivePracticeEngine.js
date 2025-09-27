@@ -616,17 +616,17 @@ export class AdaptivePracticeEngine {
       const settings = useSettings.getState()
 
       let effectiveRegion = settings.region
-      let allForms = buildFormsForRegion(effectiveRegion)
+      let regionAwareSettings = settings
+      let allForms = await buildFormsForRegion(effectiveRegion, regionAwareSettings)
 
       if (!allForms.length) {
         // Fall back to general Latin American forms when user hasn't picked a region yet
         effectiveRegion = 'la_general'
-        allForms = buildFormsForRegion(effectiveRegion)
+        regionAwareSettings = { ...settings, region: effectiveRegion }
+        allForms = await buildFormsForRegion(effectiveRegion, regionAwareSettings)
       }
 
-      const effectiveSettings = effectiveRegion === settings.region
-        ? settings
-        : { ...settings, region: effectiveRegion }
+      const effectiveSettings = regionAwareSettings
       
       console.log(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
       

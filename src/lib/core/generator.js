@@ -1,5 +1,4 @@
 import { useSettings } from '../../state/settings.js'
-import { verbs } from '../../data/verbs.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
@@ -206,7 +205,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
     
     // Verb type filtering - check both user selection and MCER level restrictions
     // Prefer fast lookup map; if empty (e.g., in tests after cache clear), fallback to full dataset
-    const verb = LEMMA_TO_VERB.get(f.lemma) || verbs.find(v => v.lemma === f.lemma) || { type: 'regular', lemma: f.lemma }
+    const verb = LEMMA_TO_VERB.get(f.lemma) || { type: 'regular', lemma: f.lemma }
 
     // Always enforce MCER level-based verb allowances (regular and irregular)
     // Apply before any later branching so A1/A2 never see advanced lemmas
@@ -601,7 +600,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // ENHANCED: Strong preference for PURE regular lemmas when user selects 'regular'
   if (verbType === 'regular') {
     try {
-      const pureRegularSet = new Set(verbs.filter(v => v.type === 'regular').map(v => v.lemma))
+      const pureRegularSet = new Set(
+        Array.from(VERB_LOOKUP_MAP.values())
+          .filter(v => v?.type === 'regular')
+          .map(v => v.lemma)
+      )
       const isCompound = (t) => (t === 'pretPerf' || t === 'plusc' || t === 'futPerf' || t === 'condPerf' || t === 'subjPerf' || t === 'subjPlusc')
       
       
@@ -923,7 +926,7 @@ function sampleArray(array, count) {
 
 // Helper function to find a verb by its lemma
 function FIND_VERB_BY_LEMMA(lemma) {
-  return verbs.find(v => v.lemma === lemma)
+  return VERB_LOOKUP_MAP.get(lemma)
 }
 
 // Accent rules for imperativo + clíticos (voseo):
@@ -1007,22 +1010,22 @@ export function debugVerbAvailability() {
   const tenses = ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf', 'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc', 'impAff', 'impNeg', 'cond', 'condPerf']
   const verbTypes = ['regular', 'irregular', 'all']
   
-  // Flatten all forms from all verbs
+  const verbList = Array.from(VERB_LOOKUP_MAP.values())
   const allForms = []
-  verbs.forEach(verb => {
-    verb.paradigms.forEach(paradigm => {
-      paradigm.forms.forEach(form => {
+  verbList.forEach(verb => {
+    verb.paradigms?.forEach(paradigm => {
+      paradigm.forms?.forEach(form => {
         allForms.push({
           ...form,
           lemma: verb.lemma,
-          type: verb.type
+          type: verb.type || 'regular'
         })
       })
     })
   })
   
-  console.log('Total forms in database:', allForms.length)
-  console.log('Total verbs in database:', verbs.length)
+  console.log('Total forms en cache:', allForms.length)
+  console.log('Total verbs en cache:', verbList.length)
   
   // Check each combination
   moods.forEach(mood => {
