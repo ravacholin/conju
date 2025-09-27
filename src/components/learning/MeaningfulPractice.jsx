@@ -520,7 +520,13 @@ function TimelineStepContent({ step, userResponse, onResponseChange, onKeyPress 
         <div className="timeline-prompts">
           {step.prompts.map((prompt, index) => (
             <div key={index} className="timeline-prompt">
-              <span className="prompt-icon">{prompt.icon}</span>
+              <span className="prompt-icon">
+                {prompt.icon?.startsWith('/') ? (
+                  <img src={prompt.icon} alt="" className="icon-image" />
+                ) : (
+                  prompt.icon
+                )}
+              </span>
               <span className="prompt-text">{prompt.text}</span>
             </div>
           ))}
@@ -665,7 +671,15 @@ function DefaultStepContent({ step, userResponse, onResponseChange, onKeyPress }
         <div className="prompts">
           {step.prompts.map((prompt, index) => (
             <div key={index} className="prompt">
-              {prompt.icon && <span className="prompt-icon">{prompt.icon}</span>}
+              {prompt.icon && (
+                <span className="prompt-icon">
+                  {prompt.icon?.startsWith('/') ? (
+                    <img src={prompt.icon} alt="" className="icon-image" />
+                  ) : (
+                    prompt.icon
+                  )}
+                </span>
+              )}
               <span className="prompt-text">{prompt.text || prompt}</span>
             </div>
           ))}

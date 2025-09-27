@@ -317,7 +317,7 @@ export class GamificationEngine {
         id: 'first_exercise',
         title: 'Primer Paso',
         description: 'Completa tu primer ejercicio de práctica significativa',
-        icon: 'target',
+        icon: '/diana.png',
         points: 20,
         checkCondition: (stats) => stats.exercisesCompleted >= 1
       },
@@ -325,7 +325,7 @@ export class GamificationEngine {
         id: 'streak_3',
         title: 'Constancia',
         description: 'Mantén una racha de 3 días consecutivos',
-        icon: 'fire',
+        icon: '/crono.png',
         points: 50,
         checkCondition: (stats) => stats.currentStreak >= 3
       },
@@ -333,7 +333,7 @@ export class GamificationEngine {
         id: 'streak_7',
         title: 'Dedicación',
         description: 'Mantén una racha de 7 días consecutivos',
-        icon: '⚡',
+        icon: '/crono.png',
         points: 100,
         checkCondition: (stats) => stats.currentStreak >= 7
       },
@@ -341,7 +341,7 @@ export class GamificationEngine {
         id: 'perfectionist',
         title: 'Perfeccionista',
         description: 'Completa 10 ejercicios de manera perfecta',
-        icon: 'star',
+        icon: '/diana.png',
         points: 75,
         checkCondition: (stats) => stats.perfectExercises >= 10
       },
@@ -349,7 +349,7 @@ export class GamificationEngine {
         id: 'hundred_exercises',
         title: 'Centurión',
         description: 'Completa 100 ejercicios',
-        icon: '💯',
+        icon: '/verbosverbos.png',
         points: 200,
         checkCondition: (stats) => stats.exercisesCompleted >= 100
       },
@@ -357,7 +357,7 @@ export class GamificationEngine {
         id: 'level_5',
         title: 'Estudiante Avanzado',
         description: 'Alcanza el nivel 5',
-        icon: '🎓',
+        icon: '/openbook.png',
         points: 150,
         checkCondition: (stats) => stats.level >= 5
       },
@@ -365,7 +365,7 @@ export class GamificationEngine {
         id: 'time_master',
         title: 'Maestro del Tiempo',
         description: 'Acumula 10 horas de práctica',
-        icon: '⏰',
+        icon: '/crono.png',
         points: 120,
         checkCondition: (stats) => stats.totalTimeSpent >= 36000 // 10 horas en segundos
       },
@@ -373,7 +373,7 @@ export class GamificationEngine {
         id: 'story_teller',
         title: 'Narrador',
         description: 'Completa 20 ejercicios de Story Building',
-        icon: 'book',
+        icon: '/books.png',
         points: 80,
         checkCondition: async (stats) => {
           return this.getExerciseTypeCount('story_building') >= 20;
@@ -383,7 +383,7 @@ export class GamificationEngine {
         id: 'problem_solver',
         title: 'Solucionador',
         description: 'Completa 15 ejercicios de Problem Solving',
-        icon: '🧩',
+        icon: '/dice.png',
         points: 90,
         checkCondition: async (stats) => {
           return this.getExerciseTypeCount('problem_solving') >= 15;
@@ -393,7 +393,7 @@ export class GamificationEngine {
         id: 'role_player',
         title: 'Actor',
         description: 'Completa 25 ejercicios de Role Playing',
-        icon: 'drama',
+        icon: '/play.png',
         points: 85,
         checkCondition: async (stats) => {
           return this.getExerciseTypeCount('role_playing') >= 25;
