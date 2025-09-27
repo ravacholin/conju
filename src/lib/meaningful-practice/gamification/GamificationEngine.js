@@ -317,7 +317,7 @@ export class GamificationEngine {
         id: 'first_exercise',
         title: 'Primer Paso',
         description: 'Completa tu primer ejercicio de práctica significativa',
-        icon: '🎯',
+        icon: 'target',
         points: 20,
         checkCondition: (stats) => stats.exercisesCompleted >= 1
       },
@@ -325,7 +325,7 @@ export class GamificationEngine {
         id: 'streak_3',
         title: 'Constancia',
         description: 'Mantén una racha de 3 días consecutivos',
-        icon: '🔥',
+        icon: 'fire',
         points: 50,
         checkCondition: (stats) => stats.currentStreak >= 3
       },
@@ -341,7 +341,7 @@ export class GamificationEngine {
         id: 'perfectionist',
         title: 'Perfeccionista',
         description: 'Completa 10 ejercicios de manera perfecta',
-        icon: '⭐',
+        icon: 'star',
         points: 75,
         checkCondition: (stats) => stats.perfectExercises >= 10
       },
@@ -373,7 +373,7 @@ export class GamificationEngine {
         id: 'story_teller',
         title: 'Narrador',
         description: 'Completa 20 ejercicios de Story Building',
-        icon: '📚',
+        icon: 'book',
         points: 80,
         checkCondition: async (stats) => {
           return this.getExerciseTypeCount('story_building') >= 20;
@@ -393,7 +393,7 @@ export class GamificationEngine {
         id: 'role_player',
         title: 'Actor',
         description: 'Completa 25 ejercicios de Role Playing',
-        icon: '🎭',
+        icon: 'drama',
         points: 85,
         checkCondition: async (stats) => {
           return this.getExerciseTypeCount('role_playing') >= 25;

@@ -497,7 +497,7 @@ function ExerciseContent({
           className="hint-button"
           disabled={isSubmitting}
         >
-          💡 Pista
+          Pista
         </button>
 
         <button
