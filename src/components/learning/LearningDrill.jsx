@@ -54,6 +54,7 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { grade } from '../../lib/core/grader.js';
 import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
+import { classifyError } from '../../lib/progress/errorClassification.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
@@ -122,6 +123,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [failedItemsQueue, setFailedItemsQueue] = useState([]);
   // Historial de ejercicios para evitar repeticiones
   const [exerciseHistory, setExerciseHistory] = useState([]);
+  // Error tracking for SRS integration
+  const [detailedErrorHistory, setDetailedErrorHistory] = useState([]);
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -315,6 +318,45 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
     const isCorrect = gradeResult.correct;
 
+    // Enhanced error classification for SRS integration
+    let detailedErrorTags = [];
+    if (!isCorrect) {
+      // Use the progress system's error classification
+      detailedErrorTags = classifyError(userAnswer, currentItem.value, {
+        lemma: currentItem.lemma,
+        mood: currentItem.mood,
+        tense: currentItem.tense,
+        person: currentItem.person
+      });
+
+      // Track detailed error for future SRS targeting
+      const errorDetail = {
+        timestamp: Date.now(),
+        item: {
+          lemma: currentItem.lemma,
+          mood: currentItem.mood,
+          tense: currentItem.tense,
+          person: currentItem.person,
+          value: currentItem.value
+        },
+        userAnswer,
+        errorTags: detailedErrorTags,
+        sessionContext: {
+          tense: tense?.tense,
+          verbType,
+          sessionPhase: 'drill'
+        }
+      };
+
+      setDetailedErrorHistory(prev => [...prev, errorDetail]);
+      logger.debug('Error classified for SRS targeting:', {
+        lemma: currentItem.lemma,
+        errorTags: detailedErrorTags,
+        userAnswer,
+        correctAnswer: currentItem.value
+      });
+    }
+
     setTotalAttempts(prev => prev + 1);
     setResponseTimes(prev => [...prev, responseTime]);
 
@@ -348,9 +390,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     } else {
       setResult('incorrect');
       setCorrectStreak(0);
-      // Use grader's error analysis for session stats
-      const errorType = gradeResult.errorTags?.[0] || 'complete_error';
-      setErrorPatterns(prev => ({ ...prev, [errorType]: (prev[errorType] || 0) + 1 }));
+      // Use detailed error analysis for session stats
+      const primaryErrorType = detailedErrorTags[0] || gradeResult.errorTags?.[0] || 'complete_error';
+      setErrorPatterns(prev => ({ ...prev, [primaryErrorType]: (prev[primaryErrorType] || 0) + 1 }));
       
       // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
       setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
@@ -366,7 +408,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       userAnswer,
       correctAnswer: currentItem.value,
       hintsUsed: 0,
-      errorTags: gradeResult.errorTags || [],
+      errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
       latencyMs: responseTime,
       isIrregular: currentItem.type === 'irregular',
       itemId: currentItem.id,
@@ -387,7 +429,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       userAnswer,
       correctAnswer: currentItem.value,
       hintsUsed: 0,
-      errorTags: gradeResult.errorTags || [],
+      errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
       latencyMs: responseTime,
       isIrregular: currentItem.type === 'irregular',
       itemId: currentItem.id
@@ -479,7 +521,18 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         phaseType: 'mechanical_drill',
         attempts: allAttempts,
         realTimeDifficultyFinal: realTimeDifficulty,
-        recommendations
+        recommendations,
+        // Enhanced error tracking for SRS integration
+        detailedErrorHistory,
+        errorItemsForSRS: detailedErrorHistory.map(error => ({
+          lemma: error.item.lemma,
+          mood: error.item.mood,
+          tense: error.item.tense,
+          person: error.item.person,
+          errorTags: error.errorTags,
+          priorityLevel: error.errorTags.includes('IRREGULAR_STEM') ? 'high' :
+                        error.errorTags.includes('ACCENT') ? 'low' : 'medium'
+        }))
       };
 
       recordLearningSession(userId, sessionAnalytics);
@@ -488,17 +541,28 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       logger.error('Error recording session analytics', error);
     }
     
-    return { 
-      grade, 
-      accuracy: Math.round(accuracy), 
-      averageTime: Math.round(avgTime / 1000 * 10) / 10, 
-      maxStreak: correctStreak, 
-      points: sessionStats.points, 
-      totalAttempts, 
-      correctAnswers, 
-      errorPatterns, 
+    return {
+      grade,
+      accuracy: Math.round(accuracy),
+      averageTime: Math.round(avgTime / 1000 * 10) / 10,
+      maxStreak: correctStreak,
+      points: sessionStats.points,
+      totalAttempts,
+      correctAnswers,
+      errorPatterns,
       recommendations,
-      adaptiveLevel: adaptiveSettings?.level || 'intermediate'
+      adaptiveLevel: adaptiveSettings?.level || 'intermediate',
+      // Error data for SRS system integration
+      detailedErrorHistory,
+      errorItemsForSRS: detailedErrorHistory.map(error => ({
+        lemma: error.item.lemma,
+        mood: error.item.mood,
+        tense: error.item.tense,
+        person: error.item.person,
+        errorTags: error.errorTags,
+        priorityLevel: error.errorTags.includes('IRREGULAR_STEM') ? 'high' :
+                      error.errorTags.includes('ACCENT') ? 'low' : 'medium'
+      }))
     };
   };
 
