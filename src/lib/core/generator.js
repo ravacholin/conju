@@ -98,8 +98,21 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
   
   dbg('🔍 chooseNext called with settings:', {
-    level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length
+    level, region, practiceMode, specificMood, specificTense, verbType, formsLength: forms?.length, selectedFamily
   })
+
+  // DEBUG: Log when STEM_CHANGES family is being used
+  if (selectedFamily === 'STEM_CHANGES') {
+    console.log('🔥 SEGUNDO DRILL PROBLEMA - STEM_CHANGES detectado:', {
+      selectedFamily,
+      practiceMode,
+      verbType,
+      specificMood,
+      specificTense,
+      level,
+      totalForms: forms?.length
+    });
+  }
 
   
   
@@ -311,6 +324,29 @@ export async function chooseNext({forms, history: _history, currentItem, session
         if (expandedFamilies.length > 0) {
           // It's a simplified group. Check if the verb belongs to ANY of the included families.
           const isMatch = verbFamilies.some(vf => expandedFamilies.includes(vf))
+
+          // DEBUG: Log detailed family expansion for STEM_CHANGES
+          if (selectedFamily === 'STEM_CHANGES') {
+            console.log(`🔍 DEBUGGING STEM_CHANGES for ${f.lemma}:`, {
+              selectedFamily,
+              expandedFamilies,
+              verbFamilies,
+              isMatch,
+              tense: f.tense,
+              mood: f.mood,
+              person: f.person,
+              value: f.value
+            });
+
+            // Log specifically which expanded families match
+            if (isMatch) {
+              const matchingFamilies = verbFamilies.filter(vf => expandedFamilies.includes(vf));
+              console.log(`✅ ${f.lemma} INCLUIDO por familias:`, matchingFamilies);
+            } else {
+              console.log(`❌ ${f.lemma} EXCLUIDO - sin coincidencias en:`, expandedFamilies);
+            }
+          }
+
           if (!isMatch) {
             return false
           }

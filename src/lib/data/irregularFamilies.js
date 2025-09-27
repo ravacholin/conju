@@ -7,7 +7,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'DIPHT_E_IE',
     name: 'Diptongación e→ie',
     description: 'pensar, cerrar, empezar',
-    examples: ['pensar', 'cerrar', 'empezar', 'comenzar', 'despertar', 'sentir'],
+    examples: ['pensar', 'cerrar', 'empezar', 'comenzar', 'despertar', 'sentir', 'querer', 'entender', 'perder', 'preferir'],
     pattern: 'e→ie en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['pensar', 'cerrar', 'empezar']
@@ -17,7 +17,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'DIPHT_O_UE',
     name: 'Diptongación o→ue',
     description: 'volver, poder, contar',
-    examples: ['volver', 'poder', 'contar', 'mostrar', 'dormir', 'morir'],
+    examples: ['volver', 'poder', 'contar', 'mostrar', 'dormir', 'morir', 'encontrar', 'recordar', 'costar', 'sonar', 'volar'],
     pattern: 'o→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['volver', 'poder', 'contar']
@@ -37,7 +37,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'E_I_IR',
     name: 'e→i (verbos -ir)',
     description: 'pedir, servir, repetir, seguir, sentir, preferir',
-    examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir'],
+    examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir', 'reír', 'freír', 'sonreír', 'elegir', 'corregir'],
     pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
     affectedTenses: ['pres', 'subjPres', 'pretIndef', 'ger'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']

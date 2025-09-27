@@ -391,7 +391,7 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
 const LEARNING_TO_OLD_FAMILY_MAP = {
   // Nuevas familias del presente
   'LEARNING_YO_G_PRESENT': 'G_VERBS',
-  'LEARNING_DIPHTHONGS': 'DIPHT_E_IE', // Usar la más común como representante
+  'LEARNING_DIPHTHONGS': 'STEM_CHANGES', // Usar grupo simplificado que incluye TODAS las familias de diptongos
   'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',
 
 
@@ -429,7 +429,7 @@ export function convertLearningFamilyToOld(learningFamilyId) {
 
   // Si el resultado es un grupo simplificado (como 'PRETERITE_THIRD_PERSON'),
   // retornarlo tal como está - el generator ya sabe cómo expandirlo
-  if (result && result.startsWith('PRETERITE_') || result && result.startsWith('STEM_') || result && result.startsWith('FIRST_PERSON_')) {
+  if (result && (result.startsWith('PRETERITE_') || result.startsWith('STEM_') || result.startsWith('FIRST_PERSON_') || result === 'STEM_CHANGES')) {
     return result // Grupo simplificado - será expandido por el generator
   }
 

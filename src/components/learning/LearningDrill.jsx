@@ -165,6 +165,57 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       const familyIndex = (totalAttempts || 0) % selectedFamilies.length;
       const learningFamilyId = selectedFamilies[familyIndex];
       selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
+
+      // DEBUG: Log family conversion
+      console.log('🔄 SEGUNDO DRILL - Conversión de familia:', {
+        learningFamilyId,
+        selectedFamilyForGenerator,
+        familyIndex,
+        totalAttempts,
+        allSelectedFamilies: selectedFamilies
+      });
+
+      // CRITICAL FIX: Force-load irregulars chunk for STEM_CHANGES and other irregular families
+      if (selectedFamilyForGenerator === 'STEM_CHANGES' || selectedFamilyForGenerator?.includes('DIPHT_') || selectedFamilyForGenerator?.includes('E_I_')) {
+        console.log('🔥 FORCING IRREGULARS CHUNK LOAD for:', selectedFamilyForGenerator);
+        try {
+          const { verbChunkManager } = await import('../../lib/core/verbChunkManager.js');
+          const { FORM_LOOKUP_MAP } = await import('../../lib/core/optimizedCache.js');
+
+          await verbChunkManager.loadChunk('irregulars');
+          console.log('✅ Irregulars chunk loaded successfully');
+
+          // MANUAL FIX: Force population of irregulars chunk forms into FORM_LOOKUP_MAP
+          const irregularsChunk = verbChunkManager.loadedChunks.get('irregulars');
+          if (irregularsChunk) {
+            let formsAdded = 0;
+            irregularsChunk.forEach(verb => {
+              if (verb.paradigms) {
+                verb.paradigms.forEach(paradigm => {
+                  if (paradigm.forms) {
+                    paradigm.forms.forEach(form => {
+                      const key = `${verb.lemma}|${form.mood}|${form.tense}|${form.person}`;
+                      if (!FORM_LOOKUP_MAP.has(key)) {
+                        const enrichedForm = {
+                          ...form,
+                          lemma: verb.lemma,
+                          id: key,
+                          type: verb.type || 'irregular'
+                        };
+                        FORM_LOOKUP_MAP.set(key, enrichedForm);
+                        formsAdded++;
+                      }
+                    });
+                  }
+                });
+              }
+            });
+            console.log(`✅ Manually added ${formsAdded} forms from irregulars chunk to FORM_LOOKUP_MAP`);
+          }
+        } catch (error) {
+          console.error('❌ Failed to load irregulars chunk:', error);
+        }
+      }
     }
 
     // Create isolated settings object for generator (NO GLOBAL MUTATION)
@@ -193,6 +244,17 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       prioritizeVerbVariety: true
     });
 
+    // DEBUG: Log detailed settings for second drill
+    console.log('🎯 SEGUNDO DRILL - Configuración del generador:', {
+      tense: tense?.tense,
+      mood: canonicalizeMood(tense?.mood),
+      verbType,
+      selectedFamily: selectedFamilyForGenerator,
+      level: sessionSettings.level,
+      excludeLemmas: excludeLemmas,
+      practiceMode: sessionSettings.practiceMode
+    });
+
     try {
       const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
       const allForms = Array.from(FORM_LOOKUP_MAP.values())
@@ -215,6 +277,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
       // Fallback: if no item was generated, use all forms
       if (!nextItem) {
+        logger.warn('First generator call failed, trying fallback with all forms');
         nextItem = await chooseNext({
           forms: allForms,
           history: exerciseHistory,
@@ -223,7 +286,53 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         })
       }
 
-      logger.debug('Generated exercise item', { lemma: nextItem?.lemma, person: nextItem?.person, verbVarietyApplied: formsWithoutRecentVerbs.length > 0 });
+      // Second fallback: try with simpler settings if still no item
+      if (!nextItem) {
+        logger.warn('Second generator call failed, trying with simplified settings');
+        const simplifiedSettings = {
+          ...sessionSettings,
+          practiceMode: 'mixed',
+          verbType: 'all',
+          selectedFamily: null,
+          level: 'A1' // Use most basic level
+        };
+        nextItem = await chooseNext({
+          forms: allForms,
+          history: [],
+          currentItem: null,
+          sessionSettings: simplifiedSettings
+        })
+      }
+
+      // Third fallback: try with global settings if all else fails
+      if (!nextItem) {
+        logger.warn('All generator calls failed, trying with global settings');
+        nextItem = await chooseNext({
+          forms: allForms,
+          history: [],
+          currentItem: null,
+          sessionSettings: null // Use global settings
+        })
+      }
+
+      logger.debug('Generated exercise item', {
+        lemma: nextItem?.lemma,
+        person: nextItem?.person,
+        verbVarietyApplied: formsWithoutRecentVerbs.length > 0,
+        fallbackUsed: !nextItem ? 'none' : 'success'
+      });
+
+      // DEBUG: Log the generated item for second drill
+      console.log('✅ SEGUNDO DRILL - Ejercicio generado:', {
+        lemma: nextItem?.lemma,
+        person: nextItem?.person,
+        mood: nextItem?.mood,
+        tense: nextItem?.tense,
+        value: nextItem?.value,
+        totalEligibleForms: filteredForms.length,
+        excludedLemmas: Array.from(excludeSet),
+        recentVerbs: exerciseHistory.slice(-5).map(item => item.lemma)
+      });
 
       if (nextItem) {
         setCurrentItem(nextItem);
@@ -233,7 +342,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         setExerciseHistory(prev => [...prev, nextItem].slice(-DRILL_THRESHOLDS.EXERCISE_HISTORY_SIZE));
         setTimeout(() => inputRef.current?.focus(), 0);
       } else {
-        logger.warn('No item generated - generator returned null');
+        logger.error('CRITICAL: All generator fallbacks failed - no exercises available');
+        logger.error('Session settings:', sessionSettings);
+        logger.error('Available forms:', allForms.length);
         setCurrentItem(null);
       }
     } catch (error) {
