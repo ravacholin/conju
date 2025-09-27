@@ -327,10 +327,6 @@ export async function chooseNext({forms, history: _history, currentItem, session
           // It's a simplified group. Check if the verb belongs to ANY of the included families.
           const isMatch = verbFamilies.some(vf => expandedFamilies.includes(vf))
 
-          // DEBUG: Log detailed family expansion for STEM_CHANGES
-          if (selectedFamily === 'STEM_CHANGES') {
-            }
-          }
 
           if (!isMatch) {
             return false
