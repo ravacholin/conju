@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useReducer, useEffect } from 'react'
 import { useSettings } from '../state/settings.js'
 import { getTensesForMood /* getTenseLabel, getMoodLabel */ } from '../lib/utils/verbLabels.js'
 import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
 import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
 import { LEVELS } from '../lib/data/levels.js'
+import router from '../lib/routing/Router.js'
 // import gates from '../data/curriculum.json'
 
 // Helper function to get allowed lemmas from level configuration
@@ -21,18 +22,119 @@ function getAllowedLemmasForLevel(level) {
   return allowedLemmas
 }
 
+const ONBOARDING_ACTIONS = {
+  SET_STEP: 'SET_STEP',
+  BACK: 'BACK'
+}
+
+const initialOnboardingState = {
+  step: 1,
+  lastUpdate: 'init'
+}
+
+const createSettingsSnapshot = (settings) => ({
+  level: settings.level,
+  practiceMode: settings.practiceMode,
+  specificMood: settings.specificMood,
+  specificTense: settings.specificTense
+})
+
+const computePreviousStep = (currentStep, settingsSnapshot) => {
+  const sanitizedStep = typeof currentStep === 'number' && !Number.isNaN(currentStep)
+    ? currentStep
+    : 1
+
+  switch (sanitizedStep) {
+    case 8:
+      return 7
+    case 7:
+      if (settingsSnapshot?.specificTense) return 6
+      if (settingsSnapshot?.specificMood) return 5
+      if (settingsSnapshot?.level) return 4
+      return 2
+    case 6:
+      return 5
+    case 5:
+      if (settingsSnapshot?.level && settingsSnapshot?.practiceMode) {
+        return 4
+      }
+      return 2
+    case 4:
+      return 3
+    case 3:
+      return 2
+    case 2:
+      return 1
+    default:
+      return 1
+  }
+}
+
+const onboardingReducer = (state, action) => {
+  switch (action.type) {
+    case ONBOARDING_ACTIONS.SET_STEP: {
+      const nextStep = typeof action.step === 'number' && action.step >= 1 ? action.step : 1
+      const source = action.source ?? 'internal'
+      if (nextStep === state.step && source === state.lastUpdate) {
+        return state
+      }
+
+      return {
+        step: nextStep,
+        lastUpdate: source
+      }
+    }
+    case ONBOARDING_ACTIONS.BACK: {
+      const previousStep = computePreviousStep(state.step, action.settings)
+      if (previousStep === state.step) {
+        return state
+      }
+
+      return {
+        step: previousStep,
+        lastUpdate: 'internal'
+      }
+    }
+    default:
+      return state
+  }
+}
+
 export function useOnboardingFlow() {
-  const [onboardingStep, setOnboardingStepInternal] = useState(1)
+  const [state, dispatch] = useReducer(onboardingReducer, initialOnboardingState)
+  const onboardingStep = state.step
   const settings = useSettings()
-  
+
+  const navigateToStep = (step, options = {}) => {
+    const safeStep = typeof step === 'number' && step >= 1 ? step : 1
+    try {
+      router.navigate({ mode: 'onboarding', step: safeStep }, options)
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.warn('Router navigation failed, ignoring.', error)
+      }
+    }
+  }
+
   // Interceptor para debuggear quién está cambiando el step
-  const setOnboardingStep = (newStep) => {
+  const setOnboardingStep = (newStep, options = {}) => {
+    const { syncRouter = true, replace = false } = options
+    const safeStep = typeof newStep === 'number' && newStep >= 1 ? newStep : 1
     if (import.meta.env.DEV) {
-      console.log(`🚨 setOnboardingStep called: ${onboardingStep} → ${newStep}`);
+      console.log(`🚨 setOnboardingStep called: ${onboardingStep} → ${safeStep}`, { syncRouter, replace });
       console.trace('Stack trace for setOnboardingStep:');
     }
-    setOnboardingStepInternal(newStep);
-  };
+
+    dispatch({
+      type: ONBOARDING_ACTIONS.SET_STEP,
+      step: safeStep,
+      source: syncRouter ? 'internal' : 'external'
+    })
+
+    if (syncRouter) {
+      navigateToStep(safeStep, { replace })
+    }
+  }
   
   if (import.meta.env.DEV) {
     console.log('--- HOOK useOnboardingFlow ---', {
@@ -44,29 +146,15 @@ export function useOnboardingFlow() {
   useEffect(() => {
     if (onboardingStep === 1) {
       try {
-        const initialState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
         if (import.meta.env.DEV) {
-          console.log('🌟 Setting initial history state for step 1:', initialState);
+          console.log('🌟 Setting initial history state for step 1 via router.navigate (replace)');
         }
-        window.history.replaceState(initialState, '');
+        router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
       } catch {
         /* ignore */
       }
     }
   }, []);  // Run only once on mount
-
-  // Push a browser history entry to align hardware back with app back
-  const pushHistory = (nextStep) => {
-    try {
-      const stateToPush = { appNav: true, mode: 'onboarding', step: nextStep ?? onboardingStep, ts: Date.now() };
-      if (import.meta.env.DEV) {
-        console.log('pushHistory:', stateToPush);
-      }
-      window.history.pushState(stateToPush, '')
-    } catch {
-      /* ignore */
-    }
-  }
 
   const closeTopPanelsAndFeatures = () => {
     // Function to close all top panels and features - will be defined in parent
@@ -288,7 +376,6 @@ export function useOnboardingFlow() {
         break
     }
     setOnboardingStep(2)
-    pushHistory(2)
   }
 
   const selectLevel = (level) => {
@@ -394,7 +481,6 @@ export function useOnboardingFlow() {
     }
     settings.set(updates)
     setOnboardingStep(4) // Go to practice mode selection
-    pushHistory(4)
   }
 
   const selectPracticeMode = (mode) => {
@@ -427,7 +513,6 @@ export function useOnboardingFlow() {
         allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
-      pushHistory(5)
     } else {
       // For other practice modes, reset theme-based practice settings
       settings.set({ 
@@ -439,14 +524,12 @@ export function useOnboardingFlow() {
       
       if (mode === 'mixed') {
         setOnboardingStep(5) // Go to verb type selection for mixed practice
-        pushHistory(5)
       } else if (mode === 'specific') {
         // For specific practice without level, set to C2 to show all forms
         if (!settings.level) {
           settings.set({ level: 'C2' })
         }
         setOnboardingStep(5) // Go to mood selection for specific practice
-        pushHistory(5)
       }
     }
   }
@@ -462,13 +545,11 @@ export function useOnboardingFlow() {
     if (settings.practiceMode === 'theme') {
       // For theme-based practice, go to step 6 for tense selection
       setOnboardingStep(6)
-      pushHistory(6)
     } else if (settings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
-      pushHistory(6)
     } else {
       // For other specific practice, stay in step 5 but with specific mood set
-      pushHistory(5)
+      setOnboardingStep(5)
     }
   }
 
@@ -502,14 +583,11 @@ export function useOnboardingFlow() {
     if (settings.practiceMode === 'theme') {
       // For theme-based practice, go to step 7 (VerbTypeSelection)
       setOnboardingStep(7)
-      pushHistory(7)
     } else if (settings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
-      pushHistory(7)
     } else {
       // For other specific practice, go to step 6
       setOnboardingStep(6) // Go to verb type selection for general practice
-      pushHistory(6)
     }
   }
 
@@ -544,7 +622,6 @@ export function useOnboardingFlow() {
         // Multiple families available - show family selection
         settings.set({ verbType })
         setOnboardingStep(8) // Go to family selection
-        pushHistory(8)
       }
     } else {
       // For regulares and todos, start practice directly
@@ -568,63 +645,21 @@ export function useOnboardingFlow() {
     if (import.meta.env.DEV) {
       console.log('ACTION: goBack');
     }
-    // Calculate the proper previous step based on current step
-    const getCurrentStep = () => onboardingStep
-    const getPreviousStep = (currentStep) => {
-      // Define proper step flow backwards based on current settings
-      switch (currentStep) {
-        case 8: return 7  // Family Selection → Verb Type Selection
-        case 7: 
-          // Verb Type Selection can come from different paths
-          if (settings.specificTense) {
-            return 6  // Came from Tense Selection (Por tema flow)
-          } else if (settings.specificMood) {
-            return 5  // Came from Mood Selection (Por tema flow)
-          } else if (settings.level) {
-            return 4  // Came from Practice Mode Selection (Por nivel flow)
-          } else {
-            return 2  // Fallback to main menu
-          }
-        case 6: return 5  // Tense Selection → Mood Selection
-        case 5: 
-          // Mood/Tense Selection OR Verb Type Selection (mixed practice)
-          if (settings.level && settings.practiceMode) {
-            return 4  // Came from Practice Mode Selection (Por nivel flow)
-          } else {
-            return 2  // Came from Main Menu (Por tema flow)
-          }
-        case 4: return 3  // Practice Mode Selection → Level Details
-        case 3: return 2  // Level Details → Main Menu  
-        case 2: return 1  // Main Menu → Dialect Selection
-        case 1: return 1  // Dialect Selection → stay (can't go back further)
-        default: return 2  // Fallback to main menu
-      }
+
+    const settingsSnapshot = createSettingsSnapshot(settings)
+    const action = { type: ONBOARDING_ACTIONS.BACK, settings: settingsSnapshot }
+    const nextState = onboardingReducer(state, action)
+
+    if (import.meta.env.DEV) {
+      console.log(`🔙 Manual back navigation: ${onboardingStep} → ${nextState.step}`)
     }
 
-    // First try browser history (for hardware back compatibility)
-    try {
-      // Check if there's actually history to go back to
-      const hasHistory = window.history.length > 1
-      if (hasHistory) {
-        window.history.back()
-        return  // Let popstate handler deal with it
-      }
-    } catch {
-      // Browser history failed
+    if (nextState.step === onboardingStep) {
+      return
     }
-    
-    // Fallback: manually navigate to previous step
-    const currentStep = getCurrentStep()
-    const previousStep = getPreviousStep(currentStep)
-    
-    if (import.meta.env.DEV) {
-      console.log(`🔙 Manual back navigation: ${currentStep} → ${previousStep}`);
-    }
-    
-    if (previousStep !== currentStep) {
-      setOnboardingStep(previousStep)
-      pushHistory(previousStep)
-    }
+
+    dispatch(action)
+    navigateToStep(nextState.step)
   }
 
   const goToLevelDetails = () => {
@@ -632,7 +667,6 @@ export function useOnboardingFlow() {
       console.log('ACTION: goToLevelDetails');
     }
     setOnboardingStep(3)
-    pushHistory(3)
   }
 
   const handleHome = (setCurrentMode) => {
@@ -651,16 +685,7 @@ export function useOnboardingFlow() {
       specificTense: null
     })
     
-    // CLEAR BROWSER HISTORY to prevent back navigation issues
-    try {
-      // Replace current state with clean onboarding state
-      const cleanState = { appNav: true, mode: 'onboarding', step: 1, ts: Date.now() };
-      window.history.replaceState(cleanState, '')
-    } catch {
-      /* ignore */
-    }
-    
-    setOnboardingStep(1) // Go to step 1: Dialect selection for clean start
+    setOnboardingStep(1, { replace: true }) // Go to step 1: Dialect selection for clean start
   }
 
   return {

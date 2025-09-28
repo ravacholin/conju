@@ -17,7 +17,6 @@ export default defineConfig({
       '**/*.e2e.{js,jsx,ts,tsx}',
       // Temporarily exclude problematic tests with clipboard issues
       'src/utils/swUpdateHandler.test.js',
-      'src/components/onboarding/navigationBack.test.jsx',
       'src/components/learning/LearningDrill.test.jsx'
     ],
 
