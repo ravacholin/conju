@@ -358,15 +358,13 @@ function MeaningfulPractice({
       <div className="drill-header">
         <div className="header-nav">
           {onBack && (
-            <button onClick={onBack} className="back-to-menu-btn">
+            <button onClick={onBack} className="back-to-menu-btn" aria-label="Volver">
               <img src="/back.png" alt="Volver" className="back-icon" />
-              Volver
             </button>
           )}
           {onHome && (
-            <button onClick={onHome} className="home-btn">
-              <img src="/home.png" alt="Inicio" className="home-icon" />
-              Inicio
+            <button onClick={onHome} className="home-btn" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="home-icon large-icon" />
             </button>
           )}
         </div>
