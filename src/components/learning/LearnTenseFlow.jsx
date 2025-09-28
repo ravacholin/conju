@@ -722,6 +722,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
           mood={selectedTense?.mood}
           eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('practice')}
+          onHome={onHome}
           onComplete={handleMeaningfulPhaseComplete}
         />
       </ErrorBoundary>

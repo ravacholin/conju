@@ -23,6 +23,8 @@ function MeaningfulPractice({
   tense,
   mood,
   onComplete,
+  onBack,
+  onHome,
   eligibleForms = [],
   difficulty = 'intermediate',
   exerciseType = null
@@ -352,6 +354,25 @@ function MeaningfulPractice({
   // Renderizado principal del ejercicio
   return (
     <div className="meaningful-practice-container">
+      {/* Navigation Header */}
+      <div className="drill-header">
+        <div className="header-nav">
+          {onBack && (
+            <button onClick={onBack} className="back-to-menu-btn">
+              <img src="/back.png" alt="Volver" className="back-icon" />
+              Volver
+            </button>
+          )}
+          {onHome && (
+            <button onClick={onHome} className="home-btn">
+              <img src="/home.png" alt="Inicio" className="home-icon" />
+              Inicio
+            </button>
+          )}
+        </div>
+        <h2>Práctica Significativa</h2>
+      </div>
+
       <ExerciseHeader
         exercise={currentExercise}
         step={currentStep}

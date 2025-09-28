@@ -62,14 +62,45 @@ const speakText = (text, lang = 'es-ES', options = {}) => {
 
 // Generate pronunciation data from eligible forms
 const generatePronunciationData = (eligibleForms, tense) => {
-  if (!eligibleForms || eligibleForms.length === 0) return null;
+  console.log('🔍 generatePronunciationData called with:', {
+    eligibleFormsLength: eligibleForms?.length,
+    tense,
+    firstForm: eligibleForms?.[0]
+  });
+
+  if (!eligibleForms || eligibleForms.length === 0) {
+    console.log('❌ No eligibleForms available');
+    return null;
+  }
+
+  // More permissive filtering - try different approaches
+  let selectedForms = [];
+
+  // First attempt: exact match with mood and tense
+  if (tense?.mood && tense?.tense) {
+    selectedForms = eligibleForms.filter(form =>
+      form.mood === tense.mood && form.tense === tense.tense
+    );
+    console.log('🎯 Exact match filter result:', selectedForms.length, 'forms');
+  }
+
+  // Second attempt: match by tense only (more permissive)
+  if (selectedForms.length === 0 && tense?.tense) {
+    selectedForms = eligibleForms.filter(form => form.tense === tense.tense);
+    console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
+  }
+
+  // Third attempt: take any forms if still empty (fallback)
+  if (selectedForms.length === 0) {
+    selectedForms = eligibleForms.slice(0, 10); // Take first 10 forms as fallback
+    console.log('🚨 Using fallback - taking first 10 forms:', selectedForms.length);
+  }
 
   // Select 5-7 representative forms for practice
-  const selectedForms = eligibleForms
-    .filter(form => form.mood === tense?.mood && form.tense === tense?.tense)
+  const finalForms = selectedForms
     .slice(0, 7)
     .map(form => ({
-      verb: form.verb,
+      verb: form.verb || form.lemma,
       form: form.value,
       person: form.person,
       mood: form.mood,
@@ -77,13 +108,19 @@ const generatePronunciationData = (eligibleForms, tense) => {
       // Generate basic pronunciation guidance
       ipa: generateIPA(form.value),
       pronunciation: generatePronunciationGuide(form.value),
-      tip: generatePronunciationTip(form.value, form.verb),
-      audioKey: `${form.verb}_${form.tense}_${form.person}`
+      tip: generatePronunciationTip(form.value, form.verb || form.lemma),
+      audioKey: `${form.verb || form.lemma}_${form.tense}_${form.person}`
     }));
 
-  return selectedForms.length > 0 ? {
+  console.log('✅ Final pronunciation data:', {
     title: `Pronunciación - ${TENSE_LABELS[tense?.tense] || 'Práctica'}`,
-    verbs: selectedForms
+    verbsCount: finalForms.length,
+    verbs: finalForms
+  });
+
+  return finalForms.length > 0 ? {
+    title: `Pronunciación - ${TENSE_LABELS[tense?.tense] || 'Práctica'}`,
+    verbs: finalForms
   } : null;
 };
 
@@ -139,9 +176,18 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
   // Generate dynamic exercise data from eligible forms
   const exerciseData = useMemo(() => {
+    console.log('🎯 PronunciationPractice useMemo triggered:', {
+      eligibleFormsLength: eligibleForms?.length,
+      eligibleFormsFirst3: eligibleForms?.slice(0, 3),
+      tense,
+      hasEligibleForms: eligibleForms && eligibleForms.length > 0
+    });
+
     if (eligibleForms && eligibleForms.length > 0) {
       return generatePronunciationData(eligibleForms, tense);
     }
+
+    console.log('❌ No eligibleForms in useMemo, returning null');
     return null;
   }, [eligibleForms, tense]);
 
