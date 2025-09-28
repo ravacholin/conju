@@ -66,6 +66,7 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 - Precaching con revisiones: `index.html` y assets se precachean con hash/revision; al desplegar una nueva build, el SW detecta cambios y actualiza sin borrar caché.
 - Forzar actualización: normalmente basta recargar una vez tras el despliegue. El SW nuevo toma control inmediatamente; si el dispositivo tenía un SW antiguo, cerrar y reabrir la pestaña lo adopta.
 - Desactivar PWA temporalmente: exporta `DISABLE_PWA=true` (ver `vite.config.js`).
+- **Permisos de notificaciones**: el recordatorio inteligente depende de que el usuario otorgue permiso de notificaciones y de que el Service Worker esté activo (`navigator.serviceWorker.ready`); sin ellos, la app recurre al `Notification` nativo como fallback.
 
 ## Pendientes Prioritarios
 - Review Mode (SRS):
