@@ -105,15 +105,6 @@ class PronunciationAnalyzer {
       const normalizedTarget = this.normalizeText(target);
       const normalizedRecognized = this.normalizeText(recognized);
 
-      // Debug logging
-      console.log('🔍 Pronunciation Analysis Debug:', {
-        original_target: target,
-        original_recognized: recognized,
-        normalized_target: normalizedTarget,
-        normalized_recognized: normalizedRecognized,
-        exact_match: normalizedTarget === normalizedRecognized
-      });
-
       // Core analysis components
       analysis.detailedAnalysis = {
         textSimilarity: this.analyzeTextSimilarity(normalizedTarget, normalizedRecognized),
@@ -122,13 +113,8 @@ class PronunciationAnalyzer {
         fluentAnalysis: this.analyzeFluency(normalizedTarget, normalizedRecognized, options)
       };
 
-      // Debug detailed analysis
-      console.log('📊 Detailed Analysis:', analysis.detailedAnalysis);
-
       // Calculate overall accuracy
       analysis.accuracy = this.calculateOverallAccuracy(analysis.detailedAnalysis);
-
-      console.log('🎯 Final Accuracy:', analysis.accuracy);
 
       // Generate feedback and suggestions
       analysis.feedback = this.generateFeedback(analysis.accuracy, analysis.detailedAnalysis);
@@ -161,12 +147,6 @@ class PronunciationAnalyzer {
       .replace(/[óòöô]/g, 'o')
       .replace(/[úùüû]/g, 'u');
 
-    console.log('🔤 Text normalization:', {
-      original: text,
-      normalized: normalized,
-      length_original: text.length,
-      length_normalized: normalized.length
-    });
 
     return normalized;
   }

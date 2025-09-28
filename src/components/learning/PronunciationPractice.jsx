@@ -86,24 +86,17 @@ const generatePronunciationData = (eligibleForms, tense) => {
       console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
     }
 
-    // Third attempt: take any forms if still empty (fallback)
+    // Third attempt: if no forms for specific tense, don't use fallback
     if (selectedForms.length === 0) {
-      selectedForms = eligibleForms.slice(0, 10); // Take first 10 forms as fallback
-      console.log('🚨 Using fallback - taking first 10 forms:', selectedForms.length);
+      console.log('❌ No forms found for specified tense/mood:', tense);
+      return null; // Don't show pronunciation practice if no relevant forms
     }
   }
 
-  // Create emergency fallback data if no eligible forms or still empty
+  // If no eligible forms and no selected forms, don't show pronunciation practice
   if (selectedForms.length === 0) {
-    console.log('🆘 Creating emergency fallback pronunciation data');
-    const fallbackVerbs = [
-      { lemma: 'hablar', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '1s', value: 'hablo' },
-      { lemma: 'comer', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '2s', value: 'comes' },
-      { lemma: 'vivir', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '3s', value: 'vive' },
-      { lemma: 'ser', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '1p', value: 'somos' },
-      { lemma: 'tener', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '2p', value: 'tenéis' }
-    ];
-    selectedForms = fallbackVerbs;
+    console.log('❌ No pronunciation data available for this tense/mood');
+    return null;
   }
 
   // Select 5-7 representative forms for practice
@@ -237,14 +230,6 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     if (result.isFinal && currentVerb) {
       setIsRecording(false);
 
-      // Debug logging BEFORE analyzer
-      console.log('🎙️ PRONUNCIATION DEBUG - Input to analyzer:', {
-        target: currentVerb.form,
-        recognized: result.transcript,
-        currentVerb: currentVerb,
-        confidence: result.confidence
-      });
-
       const analysis = analyzer.analyzePronunciation(
         currentVerb.form,
         result.transcript,
@@ -253,9 +238,6 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           timing: Date.now() - recordingStartTime.current
         }
       );
-
-      // Debug logging AFTER analyzer
-      console.log('🎙️ PRONUNCIATION DEBUG - Analyzer output:', analysis);
 
       setRecordingResult({
         ...analysis,
