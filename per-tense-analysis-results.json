@@ -7832,8 +7832,8 @@
     },
     "familyClassification": [
       "G_VERBS",
-      "PRET_J",
-      "IRREG_GERUNDS"
+      "IRREG_GERUNDS",
+      "HIATUS_Y"
     ],
     "expectedAffectedTenses": [
       "pres",

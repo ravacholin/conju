@@ -428,7 +428,7 @@ export function categorizeVerb(lemma, _verbData) {
     'hacer': ['G_VERBS', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'venir': ['G_VERBS', 'DIPHT_E_IE', 'PRET_I', 'IMPERATIVE_IRREG', 'IRREG_CONDITIONAL', 'IRREG_GERUNDS'],
     'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IRREG_GERUNDS', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG', 'IRREG_PARTICIPLES'],
-    'oír': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
+    'oír': ['G_VERBS', 'IRREG_GERUNDS', 'HIATUS_Y'],
     'traer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS'],
     'caer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
     'valer': ['G_VERBS'],

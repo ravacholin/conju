@@ -44,5 +44,12 @@ describe('irregularFamilies data helpers', () => {
     // -uir verbs (non -guir)
     expect(categorizeVerb('construir')).toContain('UIR_Y')
   })
+
+  it('categorizeVerb classifies oír in hiato and gerund families without PRET_J', () => {
+    const families = categorizeVerb('oír')
+    expect(families).toContain('HIATUS_Y')
+    expect(families).toContain('IRREG_GERUNDS')
+    expect(families).not.toContain('PRET_J')
+  })
 })
 
