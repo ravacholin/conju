@@ -3,6 +3,15 @@
  * Replaces manual History API management with a centralized solution
  */
 
+const debug = (method, ...args) => {
+  if (!import.meta.env?.DEV) return
+
+  const fn = console[method]
+  if (typeof fn === 'function') {
+    fn(...args)
+  }
+}
+
 class Router {
   constructor() {
     this.currentRoute = null
@@ -39,7 +48,7 @@ class Router {
         timestamp: Date.now()
       }
     } catch (error) {
-      console.warn('Error parsing URL:', error)
+      debug('warn', 'Error parsing URL:', error)
       return { mode: 'onboarding', step: null, timestamp: Date.now() }
     }
   }
@@ -62,7 +71,7 @@ class Router {
 
       // Validate route
       if (!['onboarding', 'drill', 'learning', 'progress'].includes(newRoute.mode)) {
-        console.warn('Invalid route mode:', newRoute.mode)
+        debug('warn', 'Invalid route mode:', newRoute.mode)
         newRoute.mode = 'onboarding'
       }
 
@@ -97,8 +106,8 @@ class Router {
    * Handle browser back/forward events
    */
   handlePopState(event) {
-    console.group('🔙 Router PopState')
-    console.log('History event state:', event.state)
+    debug('group', '🔙 Router PopState')
+    debug('log', 'History event state:', event.state)
     
     try {
       const state = event.state || window.history.state || {}
@@ -111,12 +120,12 @@ class Router {
           timestamp: state.timestamp || Date.now()
         }
         
-        console.log('📋 Valid app navigation state found:', route)
+        debug('log', '📋 Valid app navigation state found:', route)
         this.currentRoute = route
         this.notifyListeners(route, 'popstate')
       } else {
         // No valid state, parse from URL
-        console.log('📋 No valid state, parsing from URL')
+        debug('log', '📋 No valid state, parsing from URL')
         const route = this.parseCurrentURL()
         this.currentRoute = route
         this.notifyListeners(route, 'popstate')
@@ -128,8 +137,8 @@ class Router {
       this.currentRoute = fallbackRoute
       this.notifyListeners(fallbackRoute, 'popstate')
     }
-    
-    console.groupEnd()
+
+    debug('groupEnd')
   }
 
   /**
