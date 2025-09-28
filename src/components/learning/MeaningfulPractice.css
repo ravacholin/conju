@@ -815,22 +815,23 @@
 }
 
 .back-to-menu-btn:hover,
-.home-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
 .back-icon,
 .home-icon {
   width: 16px;
   height: 16px;
   opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.back-icon:hover,
+.home-icon:hover {
+  opacity: 1;
 }
 
 .home-icon.large-icon {
-  width: 32px;
-  height: 32px;
+  width: 48px !important;
+  height: 48px !important;
+  opacity: 0.9;
 }
 
 .drill-header h2 {

@@ -236,6 +236,15 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const handleSpeechResult = (result) => {
     if (result.isFinal && currentVerb) {
       setIsRecording(false);
+
+      // Debug logging BEFORE analyzer
+      console.log('🎙️ PRONUNCIATION DEBUG - Input to analyzer:', {
+        target: currentVerb.form,
+        recognized: result.transcript,
+        currentVerb: currentVerb,
+        confidence: result.confidence
+      });
+
       const analysis = analyzer.analyzePronunciation(
         currentVerb.form,
         result.transcript,
@@ -244,6 +253,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           timing: Date.now() - recordingStartTime.current
         }
       );
+
+      // Debug logging AFTER analyzer
+      console.log('🎙️ PRONUNCIATION DEBUG - Analyzer output:', analysis);
 
       setRecordingResult({
         ...analysis,

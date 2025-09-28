@@ -149,7 +149,7 @@ class PronunciationAnalyzer {
    * Normalize text for comparison
    */
   normalizeText(text) {
-    return text
+    const normalized = text
       .toLowerCase()
       .trim()
       .replace(/[¿¡]/g, '') // Remove question/exclamation marks
@@ -160,6 +160,15 @@ class PronunciationAnalyzer {
       .replace(/[íìïî]/g, 'i')
       .replace(/[óòöô]/g, 'o')
       .replace(/[úùüû]/g, 'u');
+
+    console.log('🔤 Text normalization:', {
+      original: text,
+      normalized: normalized,
+      length_original: text.length,
+      length_normalized: normalized.length
+    });
+
+    return normalized;
   }
 
   /**
