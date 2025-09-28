@@ -14,6 +14,20 @@ import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('DrillItemGenerator')
 
+let drillItemIdCounter = 0
+
+const createDrillItemId = () => {
+  if (typeof globalThis !== 'undefined') {
+    const cryptoObject = globalThis.crypto
+    if (cryptoObject && typeof cryptoObject.randomUUID === 'function') {
+      return cryptoObject.randomUUID()
+    }
+  }
+
+  drillItemIdCounter += 1
+  return `drill-item-${drillItemIdCounter}`
+}
+
 /**
  * Find canonical form from the available forms pool
  * @param {string} lemma - Verb lemma
@@ -126,7 +140,7 @@ export const generateDrillItem = (selectedForm, settings, formsPool = []) => {
   
   // Create complete drill item
   const drillItem = {
-    id: Date.now(), // Unique identifier to force re-render
+    id: createDrillItemId(),
     lemma: selectedForm.lemma,
     mood: selectedForm.mood,
     tense: selectedForm.tense,
@@ -302,9 +316,9 @@ export const validateDrillItemStructure = (item) => {
  */
 export const createFallbackDrillItem = (fallbackData, settings) => {
   logger.warn('createFallbackDrillItem', 'Creating fallback drill item')
-  
+
   return {
-    id: Date.now(),
+    id: createDrillItemId(),
     lemma: fallbackData.lemma || 'ser',
     mood: fallbackData.mood || 'ind',
     tense: fallbackData.tense || 'pres',
