@@ -76,6 +76,43 @@ export const useDrillProgress = () => {
   const [flowState, setFlowState] = useState(null)
   const [momentum, setMomentum] = useState(null)
   const [confidence, setConfidence] = useState(null)
+  const hintTrackingGuardRef = useRef(() => ({
+    canTrack: false,
+    reason: 'uninitialized',
+    userId: null,
+    processFn: null
+  }))
+
+  useEffect(() => {
+    hintTrackingGuardRef.current = () => {
+      const userId = getCurrentUserId()
+
+      if (!userId) {
+        return {
+          canTrack: false,
+          reason: 'missing-user',
+          userId: null,
+          processFn: null
+        }
+      }
+
+      if (!systemReady || !processUserResponse) {
+        return {
+          canTrack: false,
+          reason: 'system-not-ready',
+          userId,
+          processFn: null
+        }
+      }
+
+      return {
+        canTrack: true,
+        reason: null,
+        userId,
+        processFn: processUserResponse
+      }
+    }
+  }, [systemReady, processUserResponse])
 
   /**
    * Process a drill response with comprehensive progress tracking
@@ -313,38 +350,37 @@ export const useDrillProgress = () => {
    */
   const handleHintShown = useCallback(async (item, hintType = 'generic') => {
     try {
-      const userId = getCurrentUserId()
-      if (!userId || !processUserResponse || !systemReady) {
-        logger.debug('handleHintShown', 'Progress system not available for hint tracking')
+      const guardResult = hintTrackingGuardRef.current()
+
+      if (!guardResult.canTrack || !guardResult.processFn) {
+        logger.debug('handleHintShown', 'Progress system not available for hint tracking', {
+          reason: guardResult.reason
+        })
         return
       }
 
       logger.debug('handleHintShown', 'Recording hint usage', {
-        userId,
+        userId: guardResult.userId,
         itemId: item.id,
         lemma: item.lemma,
         hintType
       })
 
-      // Record hint usage in progress system
-      if (processUserResponse) {
-        await processUserResponse(item, {
-          type: 'hint_shown',
-          hintType,
-          timestamp: new Date()
-        }, {
-          userId,
-          sessionContext: {
-            practiceMode: item.settings?.practiceMode,
-            level: item.settings?.level
-          }
-        })
-      }
-
+      await guardResult.processFn(item, {
+        type: 'hint_shown',
+        hintType,
+        timestamp: new Date()
+      }, {
+        userId: guardResult.userId,
+        sessionContext: {
+          practiceMode: item.settings?.practiceMode,
+          level: item.settings?.level
+        }
+      })
     } catch (error) {
       logger.warn('handleHintShown', 'Error recording hint usage', error)
     }
-  }, [])
+  }, [processUserResponse, systemReady])
 
   /**
    * Get current progress insights
