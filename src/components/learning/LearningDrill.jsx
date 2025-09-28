@@ -373,6 +373,16 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     }
   }, [sessionStartTimestamp]);
 
+  // Ensure container maintains focus for keyboard navigation
+  useEffect(() => {
+    if (result !== 'idle' && containerRef.current) {
+      // When result is shown (correct/incorrect), ensure container keeps focus for Enter key
+      setTimeout(() => {
+        containerRef.current?.focus();
+      }, 100);
+    }
+  }, [result]);
+
   // calculatePoints function removed - now handled by progress tracking system
 
 
