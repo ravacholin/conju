@@ -69,6 +69,7 @@ export class SmartNotificationManager {
     this.permission = null
     this.scheduledNotifications = new Map()
     this.userPatterns = null
+    this.registrationPromise = null
     this.init()
   }
 
@@ -351,6 +352,10 @@ export class SmartNotificationManager {
       const now = new Date()
       if (notification.time <= now) return // No programar notificaciones pasadas
 
+      if (this.isSupported && 'serviceWorker' in navigator) {
+        await this.getServiceWorkerRegistration()
+      }
+
       const delay = notification.time - now
 
       const timeoutId = setTimeout(() => {
@@ -368,12 +373,12 @@ export class SmartNotificationManager {
 
   /**
    * Envía una notificación
-   */
+  */
   async sendNotification(notification) {
     if (this.permission !== 'granted') return
 
     try {
-      const notif = new Notification(notification.title, {
+      const options = {
         body: notification.body,
         icon: '/icons/logo-192x192.png',
         badge: '/icons/logo-72x72.png',
@@ -390,7 +395,17 @@ export class SmartNotificationManager {
             title: '⏰ Más tarde'
           }
         ]
-      })
+      }
+
+      const registration = await this.getServiceWorkerRegistration()
+
+      if (registration?.showNotification) {
+        await registration.showNotification(notification.title, options)
+        console.log('🔔 Notification sent (SW):', notification.title)
+        return
+      }
+
+      const notif = new Notification(notification.title, options)
 
       notif.onclick = () => {
         window.focus()
@@ -405,6 +420,25 @@ export class SmartNotificationManager {
     } catch (error) {
       console.error('Error sending notification:', error)
     }
+  }
+
+  async getServiceWorkerRegistration() {
+    if (!this.isSupported || !('serviceWorker' in navigator)) return null
+
+    if (!this.registrationPromise) {
+      this.registrationPromise = navigator.serviceWorker.ready.catch(error => {
+        console.warn('Service worker registration unavailable:', error)
+        this.registrationPromise = null
+        return null
+      })
+    }
+
+    const registration = await this.registrationPromise
+    if (!registration) {
+      this.registrationPromise = null
+    }
+
+    return registration
   }
 
   /**
