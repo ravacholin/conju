@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import 'fake-indexeddb/auto'
 
-import { exportProgressData, exportToCSV } from '../src/lib/progress/dataExport.js'
+import { exportProgressData } from '../src/lib/progress/dataExport.js'
 import {
   saveAttempt,
   saveMastery,
@@ -157,21 +157,4 @@ describe('exportación de datos filtrada por usuario', () => {
     expect(result.data.schedules.some(record => record.userId === USER_B)).toBe(false)
   })
 
-  it('exportToCSV reutiliza el filtrado para intentos y schedules', async () => {
-    await seedTestData()
-
-    const attemptsCsv = await exportToCSV(USER_A, 'attempts')
-    const attemptLines = attemptsCsv.split('\n').filter(line => line.trim().length > 0)
-
-    expect(attemptLines.length).toBe(3) // header + 2 filas de USER_A
-    expect(attemptLines.slice(1).every(line => line.includes(USER_A))).toBe(true)
-    expect(attemptLines.slice(1).some(line => line.includes(USER_B))).toBe(false)
-
-    const schedulesCsv = await exportToCSV(USER_A, 'schedules')
-    const scheduleLines = schedulesCsv.split('\n').filter(line => line.trim().length > 0)
-
-    expect(scheduleLines.length).toBe(3)
-    expect(scheduleLines.slice(1).every(line => line.includes(USER_A))).toBe(true)
-    expect(scheduleLines.slice(1).some(line => line.includes(USER_B))).toBe(false)
-  })
 })

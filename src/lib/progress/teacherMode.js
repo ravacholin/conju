@@ -78,38 +78,6 @@ export async function generateStudentReport(userId = null) {
 }
 
 /**
- * Exporta datos como CSV
- * @param {Array} data - Datos a exportar
- * @param {string} filename - Nombre del archivo
- * @returns {string} Datos en formato CSV
- */
-export function exportToCSV(data) {
-  if (!data || data.length === 0) return ''
-  
-  try {
-    // Crear encabezados
-    const headers = Object.keys(data[0]).join(',')
-    
-    // Crear filas
-    const rows = data.map(row => 
-      Object.values(row).map(value => 
-        `"${String(value).replace(/"/g, '""')}"`
-      ).join(',')
-    )
-    
-    // Combinar todo
-    const csv = [headers, ...rows].join('\n')
-    
-    // En una implementación completa, esto crearía un archivo descargable
-    // Por ahora, solo devolvemos el contenido CSV
-    return csv
-  } catch (error) {
-    console.error('Error al exportar datos a CSV:', error)
-    throw error
-  }
-}
-
-/**
  * Genera un código de sesión para compartir con docentes
  * @returns {string} Código de sesión
  */

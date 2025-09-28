@@ -50,54 +50,6 @@ export async function exportProgressData(userId = null) {
   }
 }
 
-/**
- * Exporta los datos en formato CSV
- * @param {string} userId - ID del usuario
- * @param {string} dataType - Tipo de datos a exportar ('attempts', 'mastery', 'schedules')
- * @returns {Promise<string>} Datos en formato CSV
- */
-export async function exportToCSV(userId = null, dataType = 'attempts') {
-  try {
-    const actualUserId = userId || getCurrentUserId()
-    if (!actualUserId) {
-      throw new Error('No se encontró ID de usuario para exportar CSV')
-    }
-
-    console.log(`📊 Exportando ${dataType} en formato CSV...`)
-    
-    const data = await getUserDataForExport(dataType, actualUserId)
-    
-    if (!data.length) {
-      return `No hay datos de ${dataType} para exportar`
-    }
-
-    // Generar headers del CSV basado en el primer registro
-    const headers = Object.keys(data[0])
-    
-    // Convertir datos a CSV
-    const csvLines = [
-      headers.join(','),
-      ...data.map(row => 
-        headers.map(header => {
-          const value = row[header]
-          // Escapar comillas y envolver en comillas si contiene comas
-          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-            return `"${value.replace(/"/g, '""')}"`
-          }
-          return value || ''
-        }).join(',')
-      )
-    ]
-
-    const csvContent = csvLines.join('\n')
-    console.log(`✅ CSV generado con ${data.length} registros`)
-    return csvContent
-  } catch (error) {
-    console.error(`❌ Error al exportar CSV de ${dataType}:`, error)
-    throw error
-  }
-}
-
 async function getUserDataForExport(dataType, userId) {
   switch (dataType) {
     case 'attempts':
