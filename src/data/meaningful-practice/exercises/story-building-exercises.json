@@ -3,7 +3,7 @@
     "viaje_vacaciones": {
       "id": "story_viaje_vacaciones",
       "title": "Un viaje de vacaciones",
-      "description": "Construye una historia sobre un viaje usando los elementos dados",
+      "description": "Construye una historia sobre un viaje usando los elementos dados. DEBES usar los verbos indicados en los tiempos correspondientes.",
       "targetTenses": ["pres", "pretIndef", "impf"],
       "difficulty": "intermediate",
       "estimatedTime": 8,
@@ -35,12 +35,14 @@
       "requiredElements": 6,
       "minLength": 150,
       "maxLength": 300,
-      "targetVerbs": ["viajar", "llegar", "explorar", "descubrir", "caminar", "fotografiar", "hablar", "conocer"]
+      "targetVerbs": ["viajar", "llegar", "explorar", "descubrir", "caminar", "fotografiar", "hablar", "conocer"],
+      "expectedVerbs": ["viajaron", "llegaron", "exploraron", "descubrieron", "caminaron", "fotografiaron", "hablaron", "conocieron"],
+      "verbInstructions": "Usa ESTOS verbos en pretérito indefinido: viajaron, llegaron, exploraron, descubrieron, caminaron, fotografiaron, hablaron, conocieron"
     },
     "dia_especial": {
       "id": "story_dia_especial",
       "title": "Un día especial",
-      "description": "Narra un día memorable usando los elementos proporcionados",
+      "description": "Narra un día memorable usando los elementos proporcionados. DEBES usar los verbos indicados en los tiempos correspondientes.",
       "targetTenses": ["pres", "pretIndef", "pretPerf"],
       "difficulty": "beginner",
       "estimatedTime": 6,
@@ -72,7 +74,9 @@
       "requiredElements": 5,
       "minLength": 120,
       "maxLength": 250,
-      "targetVerbs": ["celebrar", "regalar", "sorprender", "abrazar", "sonreír", "recordar", "compartir", "emocionar"]
+      "targetVerbs": ["celebrar", "regalar", "sorprender", "abrazar", "sonreír", "recordar", "compartir", "emocionar"],
+      "expectedVerbs": ["celebraron", "regaló", "sorprendió", "abrazó", "sonrió", "recordó", "compartió", "se emocionó"],
+      "verbInstructions": "Usa ESTOS verbos en pretérito indefinido: celebraron, regaló, sorprendió, abrazó, sonrió, recordó, compartió, se emocionó"
     },
     "aventura_escuela": {
       "id": "story_aventura_escuela",

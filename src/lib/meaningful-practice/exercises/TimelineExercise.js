@@ -65,9 +65,11 @@ export class TimelineExercise extends ExerciseBase {
       title: this.title,
       description: this.description,
       events: this.events,
+      expectedVerbs: this.expectedVerbs, // Incluir verbos esperados
       currentStep: this.currentStep,
       totalSteps: this.getTotalSteps(),
-      instructions: this.getInstructions()
+      instructions: this.getInstructions(),
+      placeholder: `Cuenta la historia usando estos verbos en ${this.getTenseDescription()}: ${this.expectedVerbs ? this.expectedVerbs.join(', ') : 'los verbos indicados'}...`
     };
   }
 
@@ -76,7 +78,13 @@ export class TimelineExercise extends ExerciseBase {
    * @returns {string} Instrucciones formateadas
    */
   getInstructions() {
-    return `Describe la historia siguiendo la línea de tiempo. Usa los verbos sugeridos en cada evento y escribe en ${this.getTenseDescription()}.`;
+    const verbList = this.expectedVerbs && this.expectedVerbs.length > 0
+      ? `VERBOS REQUERIDOS: ${this.expectedVerbs.join(', ')}`
+      : '';
+
+    const mainInstruction = `Describe la historia siguiendo la línea de tiempo. Usa todos los verbos indicados y escribe en ${this.getTenseDescription()}.`;
+
+    return verbList ? `${mainInstruction}\n\n${verbList}` : mainInstruction;
   }
 
   /**

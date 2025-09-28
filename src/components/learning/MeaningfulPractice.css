@@ -167,6 +167,116 @@
   color: var(--accent-green);
 }
 
+/* ===== SECCIÓN DE VERBOS REQUERIDOS ===== */
+.required-verbs-section {
+  background: rgba(0, 123, 255, 0.08);
+  border: 2px solid rgba(0, 123, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow:
+    0 8px 32px rgba(0, 123, 255, 0.1),
+    0 1px 0 rgba(0, 123, 255, 0.1) inset;
+}
+
+.verb-instructions {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.verb-instructions h3 {
+  font-size: 1.3rem;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.verb-instructions-text {
+  font-size: 1.125rem;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.5;
+  background: rgba(0, 123, 255, 0.1);
+  border: 1px solid rgba(0, 123, 255, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.verb-instructions-text strong {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+.verb-list {
+  text-align: center;
+}
+
+.verb-list h4 {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.verb-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.verb-tag {
+  background: linear-gradient(135deg, rgba(0, 123, 255, 0.2), rgba(0, 123, 255, 0.1));
+  border: 2px solid rgba(0, 123, 255, 0.4);
+  color: var(--accent);
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 12px rgba(0, 123, 255, 0.15),
+    0 1px 0 rgba(0, 123, 255, 0.2) inset;
+  transition: all 0.2s ease;
+}
+
+.verb-tag:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 6px 16px rgba(0, 123, 255, 0.25),
+    0 1px 0 rgba(0, 123, 255, 0.3) inset;
+  border-color: rgba(0, 123, 255, 0.6);
+}
+
+.conjugated-examples {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.conjugated-examples p {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.conjugated-examples strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .step-info {
   border-top: 1px solid var(--border);
   padding-top: 1.5rem;
@@ -218,6 +328,54 @@
 }
 
 /* Timeline Exercise */
+.timeline-verbs-reminder {
+  background: rgba(255, 193, 7, 0.08);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.timeline-verbs-reminder h4 {
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.timeline-verb-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.timeline-verb-tag {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.1));
+  border: 2px solid rgba(255, 193, 7, 0.4);
+  color: var(--accent-gold);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 3px 10px rgba(255, 193, 7, 0.15),
+    0 1px 0 rgba(255, 193, 7, 0.2) inset;
+  transition: all 0.2s ease;
+}
+
+.timeline-verb-tag:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow:
+    0 5px 14px rgba(255, 193, 7, 0.25),
+    0 1px 0 rgba(255, 193, 7, 0.3) inset;
+  border-color: rgba(255, 193, 7, 0.6);
+}
+
 .timeline-prompts {
   display: flex;
   justify-content: space-between;
@@ -269,6 +427,54 @@
 }
 
 /* Story Building Exercise */
+.story-verbs-reminder {
+  background: rgba(40, 167, 69, 0.08);
+  border: 2px solid rgba(40, 167, 69, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.story-verbs-reminder h4 {
+  font-size: 1.1rem;
+  color: var(--accent-green);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.story-verb-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.story-verb-tag {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(40, 167, 69, 0.1));
+  border: 2px solid rgba(40, 167, 69, 0.4);
+  color: var(--accent-green);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: lowercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 3px 10px rgba(40, 167, 69, 0.15),
+    0 1px 0 rgba(40, 167, 69, 0.2) inset;
+  transition: all 0.2s ease;
+}
+
+.story-verb-tag:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow:
+    0 5px 14px rgba(40, 167, 69, 0.25),
+    0 1px 0 rgba(40, 167, 69, 0.3) inset;
+  border-color: rgba(40, 167, 69, 0.6);
+}
+
 .story-elements {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -696,6 +902,44 @@
     min-width: auto;
   }
 
+  /* Timeline verbos en mobile */
+  .timeline-verbs-reminder {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .timeline-verbs-reminder h4 {
+    font-size: 1rem;
+  }
+
+  .timeline-verb-list {
+    gap: 0.4rem;
+  }
+
+  .timeline-verb-tag {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  /* Story verbos en mobile */
+  .story-verbs-reminder {
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .story-verbs-reminder h4 {
+    font-size: 1rem;
+  }
+
+  .story-verb-list {
+    gap: 0.4rem;
+  }
+
+  .story-verb-tag {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
   .prompt-icon {
     font-size: 1.5rem;
     margin-bottom: 0;
@@ -737,6 +981,38 @@
 
   .exercise-progress {
     padding: 1.25rem;
+  }
+
+  /* Verbos requeridos en mobile */
+  .required-verbs-section {
+    padding: 1.25rem;
+    margin: 1.25rem 0;
+  }
+
+  .verb-instructions h3 {
+    font-size: 1.2rem;
+  }
+
+  .verb-instructions-text {
+    font-size: 1rem;
+    padding: 0.875rem;
+  }
+
+  .verb-tags {
+    gap: 0.5rem;
+  }
+
+  .verb-tag {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .conjugated-examples {
+    padding: 0.875rem;
+  }
+
+  .conjugated-examples p {
+    font-size: 0.9rem;
   }
 
   /* Mejorar contraste en mobile */

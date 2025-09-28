@@ -128,73 +128,76 @@
       "type": "timeline",
       "id": "pret_timeline_main",
       "title": "El día de ayer de María",
-      "description": "Cuenta lo que hizo María ayer siguiendo la línea de tiempo.",
+      "description": "Cuenta lo que hizo María ayer siguiendo la línea de tiempo. DEBES usar todos los verbos indicados en pretérito indefinido.",
       "category": "past_events",
       "difficulty": "intermediate",
       "events": [
         {
           "time": "7:00",
           "icon": "☕️",
-          "prompt": "tomar café",
+          "prompt": "tomar café (tomó)",
           "context": "morning"
         },
         {
           "time": "12:00",
           "icon": "🍽️",
-          "prompt": "comer",
+          "prompt": "comer (comió)",
           "context": "lunch"
         },
         {
           "time": "18:00",
           "icon": "🏋️",
-          "prompt": "ir al gimnasio",
+          "prompt": "ir al gimnasio (fue)",
           "context": "exercise"
         },
         {
           "time": "22:00",
           "icon": "🛏️",
-          "prompt": "acostarse",
+          "prompt": "acostarse (se acostó)",
           "context": "bedtime"
         }
       ],
-      "expectedVerbs": ["tomó", "comió", "fue", "se acostó"]
+      "expectedVerbs": ["tomó", "comió", "fue", "se acostó"],
+      "verbInstructions": "Usa EXACTAMENTE estos verbos en pretérito indefinido: tomó, comió, fue, se acostó"
     },
     "alternatives": [
       {
         "type": "travel_story",
         "id": "pret_travel_alt1",
         "title": "Las vacaciones de verano",
-        "description": "Completa la historia del viaje de Luis a Barcelona.",
+        "description": "Completa la historia del viaje de Luis a Barcelona usando TODOS los verbos en pretérito indefinido.",
         "category": "travel",
         "difficulty": "intermediate",
+        "expectedVerbs": ["viajó", "se quedó", "visitó", "comió", "tomó"],
+        "verbInstructions": "Usa ESTOS verbos en pretérito indefinido: viajó, se quedó, visitó, comió, tomó",
         "prompts": [
           {
             "icon": "✈️",
-            "text": "Luis _____ a Barcelona en avión",
+            "text": "Luis _____ a Barcelona en avión (viajó)",
             "expected": ["viajó", "fue"],
             "context": "transportation"
           },
           {
             "icon": "🏨",
-            "text": "Se _____ en un hotel cerca de la playa",
+            "text": "Se _____ en un hotel cerca de la playa (se quedó)",
             "expected": ["quedó", "alojó"],
             "context": "accommodation"
           },
           {
             "icon": "🏛️",
-            "text": "_____ la Sagrada Familia y el Park Güell",
+            "text": "_____ la Sagrada Familia y el Park Güell (visitó)",
             "expected": ["visitó", "vio"],
             "context": "sightseeing"
           },
           {
             "icon": "🥘",
-            "text": "_____ paella en un restaurante típico",
+            "text": "_____ paella en un restaurante típico (comió)",
             "expected": ["comió", "probó"],
             "context": "dining"
           },
           {
             "icon": "📸",
-            "text": "_____ muchas fotos de los monumentos",
+            "text": "_____ muchas fotos de los monumentos (tomó)",
             "expected": ["tomó", "sacó"],
             "context": "photography"
           }
@@ -204,37 +207,39 @@
         "type": "party_night",
         "id": "pret_party_alt1",
         "title": "La fiesta de anoche",
-        "description": "Cuenta lo que pasó en la fiesta de cumpleaños de Ana.",
+        "description": "Cuenta lo que pasó en la fiesta de cumpleaños de Ana usando TODOS los verbos en pretérito indefinido.",
         "category": "social_events",
         "difficulty": "intermediate",
+        "expectedVerbs": ["organizó", "vinieron", "cantaron", "bailó", "se fueron"],
+        "verbInstructions": "Usa ESTOS verbos en pretérito indefinido: organizó, vinieron, cantaron, bailó, se fueron",
         "prompts": [
           {
             "icon": "🎉",
-            "text": "Ana _____ una fiesta increíble para sus 25 años",
+            "text": "Ana _____ una fiesta increíble para sus 25 años (organizó)",
             "expected": ["organizó", "hizo"],
             "context": "party_planning"
           },
           {
             "icon": "👥",
-            "text": "_____ más de 50 personas a celebrar",
+            "text": "_____ más de 50 personas a celebrar (vinieron)",
             "expected": ["vinieron", "llegaron"],
             "context": "guests"
           },
           {
             "icon": "🍰",
-            "text": "Todos _____ \"Cumpleaños feliz\" a medianoche",
+            "text": "Todos _____ \"Cumpleaños feliz\" a medianoche (cantaron)",
             "expected": ["cantaron", "dijeron"],
             "context": "celebration"
           },
           {
             "icon": "💃",
-            "text": "La gente _____ hasta las 3 de la mañana",
+            "text": "La gente _____ hasta las 3 de la mañana (bailó)",
             "expected": ["bailó", "se divirtió"],
             "context": "dancing"
           },
           {
             "icon": "🏠",
-            "text": "Los últimos invitados _____ a las 4 AM",
+            "text": "Los últimos invitados _____ a las 4 AM (se fueron)",
             "expected": ["se fueron", "salieron"],
             "context": "departure"
           }
@@ -244,37 +249,39 @@
         "type": "mystery_story",
         "id": "pret_mystery_alt1",
         "title": "El misterio del libro perdido",
-        "description": "Resuelve el misterio completando lo que pasó.",
+        "description": "Resuelve el misterio completando lo que pasó usando TODOS los verbos en pretérito indefinido.",
         "category": "mystery",
         "difficulty": "advanced",
+        "expectedVerbs": ["desapareció", "buscó", "llegó", "descubrió", "se llevó"],
+        "verbInstructions": "Usa ESTOS verbos en pretérito indefinido: desapareció, buscó, llegó, descubrió, se llevó",
         "prompts": [
           {
             "icon": "📚",
-            "text": "El libro _____ de la biblioteca sin explicación",
+            "text": "El libro _____ de la biblioteca sin explicación (desapareció)",
             "expected": ["desapareció", "se perdió"],
             "context": "disappearance"
           },
           {
             "icon": "🔍",
-            "text": "La bibliotecaria _____ por toda la biblioteca",
+            "text": "La bibliotecaria _____ por toda la biblioteca (buscó)",
             "expected": ["buscó", "investigó"],
             "context": "investigation"
           },
           {
             "icon": "👮‍♂️",
-            "text": "Un detective _____ a hacer preguntas",
+            "text": "Un detective _____ a hacer preguntas (llegó)",
             "expected": ["llegó", "vino"],
             "context": "police_work"
           },
           {
             "icon": "💡",
-            "text": "Finalmente _____ la verdad: un estudiante lo tenía",
+            "text": "Finalmente _____ la verdad: un estudiante lo tenía (descubrió)",
             "expected": ["descubrió", "encontró"],
             "context": "revelation"
           },
           {
             "icon": "😅",
-            "text": "El estudiante se lo _____ por accidente",
+            "text": "El estudiante se lo _____ por accidente (se llevó)",
             "expected": ["llevó", "olvidó"],
             "context": "resolution"
           }

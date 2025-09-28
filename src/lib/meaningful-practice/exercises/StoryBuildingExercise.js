@@ -24,6 +24,7 @@ export class StoryBuildingExercise extends ExerciseBase {
     this.elements = config.elements || {};
     this.requiredElements = config.requiredElements || 5;
     this.targetVerbs = config.targetVerbs || [];
+    this.expectedVerbs = config.expectedVerbs || [];
     this.selectedElements = [];
     this.usedElements = [];
     this.userStory = '';
@@ -106,10 +107,12 @@ export class StoryBuildingExercise extends ExerciseBase {
       elements: this.selectedElements,
       requiredElements: this.requiredElements,
       targetVerbs: this.targetVerbs,
+      expectedVerbs: this.expectedVerbs, // Incluir verbos esperados
       progress: this.storyProgress,
       instructions: this.getInstructions(),
       minLength: this.minLength || 150,
-      maxLength: this.maxLength || 300
+      maxLength: this.maxLength || 300,
+      placeholder: `Escribe tu historia usando estos verbos: ${this.expectedVerbs && this.expectedVerbs.length > 0 ? this.expectedVerbs.join(', ') : 'los verbos indicados'}...`
     };
   }
 
