@@ -2,7 +2,7 @@
 // Funcionalidades avanzadas de Fase 5
 
 import { useState, useEffect } from 'react'
-import { exportProgressData, exportToCSV, downloadExportedData, generateProgressReport } from '../../lib/progress/dataExport.js'
+import { exportProgressData, downloadExportedData, generateProgressReport } from '../../lib/progress/dataExport.js'
 import { importFromFile, createBackup } from '../../lib/progress/dataRestore.js'
 import {
   setSyncEndpoint,
@@ -82,22 +82,6 @@ export default function DataManagementPanel({ onClose }) {
       setStatus('✅ Datos exportados exitosamente')
     } catch (err) {
       setError(`Error al exportar: ${err.message}`)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleExportCSV = async (dataType) => {
-    setLoading(true)
-    setError('')
-    try {
-      setStatus(`Exportando ${dataType} en formato CSV...`)
-      const csvData = await exportToCSV(null, dataType)
-      const filename = `${dataType}_export_${new Date().toISOString().split('T')[0]}.csv`
-      downloadExportedData(csvData, filename, 'text/csv')
-      setStatus(`✅ ${dataType} exportado exitosamente`)
-    } catch (err) {
-      setError(`Error al exportar CSV: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -278,15 +262,6 @@ export default function DataManagementPanel({ onClose }) {
             <div className="export-options">
               <button onClick={handleExportJSON} disabled={loading}>
                 📄 Exportar Todo (JSON)
-              </button>
-              <button onClick={() => handleExportCSV('attempts')} disabled={loading}>
-                📊 Exportar Intentos (CSV)
-              </button>
-              <button onClick={() => handleExportCSV('mastery')} disabled={loading}>
-                🎯 Exportar Dominio (CSV)
-              </button>
-              <button onClick={() => handleExportCSV('schedules')} disabled={loading}>
-                ⏰ Exportar Horarios (CSV)
               </button>
               <button onClick={handleGenerateReport} disabled={loading}>
                 📈 Generar Reporte Completo

@@ -211,7 +211,6 @@ export {
 // Teacher Mode
 export {
   generateStudentReport,
-  exportToCSV,
   generateSessionCode,
   getClassStats
 } from './teacherMode.js'

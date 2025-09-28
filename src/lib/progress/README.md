@@ -401,14 +401,13 @@ Si usa pista: no sube de nivel en esa pasada.
 
 #### Funcionalidades
 
-- **Exportar** a CSV o PDF
+- **Generar reportes** descargables
 - **Filtrar** por lista de verbos de clase
 - **Código breve** de sesión para compartir
 
 #### Funciones Principales
 
 - `generateStudentReport(userId)` - Genera informe para docente
-- `exportToCSV(data, filename)` - Exporta datos a CSV
 - `generateSessionCode()` - Genera código de sesión
 - `getClassStats(userIds)` - Obtiene estadísticas de clase
 
@@ -569,7 +568,6 @@ Práctica sin logging si el usuario quiere solo "calentar".
 
 ##### Modo Docente
 - `generateStudentReport(userId)` - Genera informe para docente
-- `exportToCSV(data, filename)` - Exporta datos a CSV
 - `generateSessionCode()` - Genera código de sesión
 - `getClassStats(userIds)` - Obtiene estadísticas de clase
 
