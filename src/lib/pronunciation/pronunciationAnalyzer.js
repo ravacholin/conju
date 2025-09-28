@@ -105,6 +105,15 @@ class PronunciationAnalyzer {
       const normalizedTarget = this.normalizeText(target);
       const normalizedRecognized = this.normalizeText(recognized);
 
+      // Debug logging
+      console.log('🔍 Pronunciation Analysis Debug:', {
+        original_target: target,
+        original_recognized: recognized,
+        normalized_target: normalizedTarget,
+        normalized_recognized: normalizedRecognized,
+        exact_match: normalizedTarget === normalizedRecognized
+      });
+
       // Core analysis components
       analysis.detailedAnalysis = {
         textSimilarity: this.analyzeTextSimilarity(normalizedTarget, normalizedRecognized),
@@ -113,8 +122,13 @@ class PronunciationAnalyzer {
         fluentAnalysis: this.analyzeFluency(normalizedTarget, normalizedRecognized, options)
       };
 
+      // Debug detailed analysis
+      console.log('📊 Detailed Analysis:', analysis.detailedAnalysis);
+
       // Calculate overall accuracy
       analysis.accuracy = this.calculateOverallAccuracy(analysis.detailedAnalysis);
+
+      console.log('🎯 Final Accuracy:', analysis.accuracy);
 
       // Generate feedback and suggestions
       analysis.feedback = this.generateFeedback(analysis.accuracy, analysis.detailedAnalysis);
@@ -204,6 +218,17 @@ class PronunciationAnalyzer {
    * Analyze phonetic accuracy
    */
   analyzePhonetics(target, recognized) {
+    // If exactly the same, perfect score
+    if (target === recognized) {
+      return {
+        vowel_accuracy: 100,
+        consonant_accuracy: 100,
+        diphthong_accuracy: 100,
+        common_errors: [],
+        overall_score: 100
+      };
+    }
+
     const phonetics = {
       vowel_accuracy: this.analyzeVowels(target, recognized),
       consonant_accuracy: this.analyzeConsonants(target, recognized),
@@ -317,6 +342,15 @@ class PronunciationAnalyzer {
    * Analyze stress patterns (simplified)
    */
   analyzeStressPatterns(target, recognized) {
+    // If exactly the same, perfect accuracy
+    if (target === recognized) {
+      return {
+        syllable_count: this.countSyllables(target),
+        stress_type: this.getStressType(target),
+        accuracy: 100
+      };
+    }
+
     // Basic stress analysis - can be enhanced with syllable detection
     const syllableCount = this.countSyllables(target);
     const stressType = this.getStressType(target);
@@ -324,7 +358,7 @@ class PronunciationAnalyzer {
     return {
       syllable_count: syllableCount,
       stress_type: stressType,
-      accuracy: this.normalizeText(target) === this.normalizeText(recognized) ? 100 : 75
+      accuracy: target === recognized ? 100 : 75
     };
   }
 

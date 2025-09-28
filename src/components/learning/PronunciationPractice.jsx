@@ -499,7 +499,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
                 onClick={handlePlayAudio}
                 disabled={isPlaying}
               >
-                <img src="/play.png" alt="Reproducir" className="audio-icon" />
+                <span className="play-icon">{isPlaying ? '⏸️' : '▶️'}</span>
                 {isPlaying ? 'Reproduciendo...' : 'Escuchar pronunciación'}
               </button>
               <audio
