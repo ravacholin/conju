@@ -16,8 +16,14 @@ import { createLogger } from '../../lib/utils/logger.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
 
 // Import progress system modules with error handling
-let processUserResponse, flowDetector, momentumTracker, confidenceEngine, dynamicGoalsSystem
-let recordAttempt, updateMastery, scheduleNextReview
+let processUserResponse = null
+let flowDetector = null
+let momentumTracker = null
+let confidenceEngine = null
+let dynamicGoalsSystem = null
+let recordAttempt = null
+let updateMastery = null
+let scheduleNextReview = null
 
 try {
   const flowModule = await import('../../lib/progress/flowStateDetection.js')
@@ -82,7 +88,7 @@ export const useDrillProgress = () => {
    * @param {Object} item - Current drill item
    * @param {Object} response - User response object
    * @param {Function} onResult - Callback for result handling
-   * @returns {Promise<Object>} - Processing result
+   * @returns {Promise<{success: boolean, progressResult: (Object|null), flowState: (Object|null), momentum: (Object|null), confidence: (Object|null), stats: Object, reason?: string, error?: Error}>} - Processing result summary
    */
   const handleResponse = useCallback(async (item, response, onResult) => {
     // Check processing lock immediately and return early if locked
@@ -203,6 +209,10 @@ export const useDrillProgress = () => {
         }
       }
 
+      let latestFlowState = flowState
+      let latestMomentum = momentum
+      let latestConfidence = confidence
+
       // Process flow state
       if (progressSystemAvailable && flowDetector) {
         try {
@@ -211,6 +221,7 @@ export const useDrillProgress = () => {
             userId,
             timestamp: new Date()
           })
+          latestFlowState = newFlowState
           setFlowState(newFlowState)
         } catch (error) {
           logger.warn('handleResponse', 'Flow state processing failed', error)
@@ -225,6 +236,7 @@ export const useDrillProgress = () => {
             userId,
             timestamp: new Date()
           })
+          latestMomentum = newMomentum
           setMomentum(newMomentum)
         } catch (error) {
           logger.warn('handleResponse', 'Momentum tracking failed', error)
@@ -239,6 +251,7 @@ export const useDrillProgress = () => {
             userId,
             timestamp: new Date()
           })
+          latestConfidence = newConfidence
           setConfidence(newConfidence)
         } catch (error) {
           logger.warn('handleResponse', 'Confidence tracking failed', error)
@@ -283,9 +296,9 @@ export const useDrillProgress = () => {
       return {
         success: true,
         progressResult,
-        flowState,
-        momentum,
-        confidence,
+        flowState: latestFlowState,
+        momentum: latestMomentum,
+        confidence: latestConfidence,
         stats: updatedStats,
         reason: !progressSystemAvailable ? 'Graceful degradation - progress system not ready' : undefined
       }
