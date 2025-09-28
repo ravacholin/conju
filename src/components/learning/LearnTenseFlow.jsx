@@ -718,12 +718,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     return (
       <ErrorBoundary>
         <MeaningfulPractice
-          tense={selectedTense}
-          verbType={verbType}
-          selectedFamilies={selectedFamilies}
+          tense={selectedTense?.tense}
+          mood={selectedTense?.mood}
           eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('practice')}
-          onPhaseComplete={handleMeaningfulPhaseComplete}
+          onComplete={handleMeaningfulPhaseComplete}
         />
       </ErrorBoundary>
     );

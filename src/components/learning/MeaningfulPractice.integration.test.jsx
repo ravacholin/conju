@@ -40,7 +40,7 @@ describe('MeaningfulPractice SRS Integration', () => {
   const mockUserId = 'test-user-123';
 
   const mockOnBack = vi.fn();
-  const mockOnPhaseComplete = vi.fn();
+  const mockOnComplete = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -69,10 +69,11 @@ describe('MeaningfulPractice SRS Integration', () => {
   it('should update SRS schedule when correct verbs are found in meaningful practice', async () => {
     render(
       <MeaningfulPractice
-        tense={mockTense}
+        tense={mockTense.tense}
+        mood={mockTense.mood}
         eligibleForms={mockEligibleForms}
         onBack={mockOnBack}
-        onPhaseComplete={mockOnPhaseComplete}
+        onComplete={mockOnComplete}
       />
     );
 
@@ -104,10 +105,11 @@ describe('MeaningfulPractice SRS Integration', () => {
   it('should not update SRS schedule when eligibleForms is not provided', async () => {
     render(
       <MeaningfulPractice
-        tense={mockTense}
+        tense={mockTense.tense}
+        mood={mockTense.mood}
         eligibleForms={undefined} // No eligible forms provided
         onBack={mockOnBack}
-        onPhaseComplete={mockOnPhaseComplete}
+        onComplete={mockOnComplete}
       />
     );
 
@@ -134,10 +136,11 @@ describe('MeaningfulPractice SRS Integration', () => {
 
     render(
       <MeaningfulPractice
-        tense={mockTense}
+        tense={mockTense.tense}
+        mood={mockTense.mood}
         eligibleForms={limitedEligibleForms}
         onBack={mockOnBack}
-        onPhaseComplete={mockOnPhaseComplete}
+        onComplete={mockOnComplete}
       />
     );
 
@@ -167,10 +170,11 @@ describe('MeaningfulPractice SRS Integration', () => {
 
     render(
       <MeaningfulPractice
-        tense={mockTense}
+        tense={mockTense.tense}
+        mood={mockTense.mood}
         eligibleForms={mockEligibleForms}
         onBack={mockOnBack}
-        onPhaseComplete={mockOnPhaseComplete}
+        onComplete={mockOnComplete}
       />
     );
 
