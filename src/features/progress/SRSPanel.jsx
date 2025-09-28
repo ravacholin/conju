@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
@@ -20,18 +20,16 @@ export default function SRSPanel({ onNavigateToDrill }) {
   const [showDetails, setShowDetails] = useState(false)
   const [showQueueModal, setShowQueueModal] = useState(false)
   const settings = useSettings()
-  const { queue, loading, stats: queueStats } = useSRSQueue()
+  const { queue, loading, stats: queueStats, reload, lastUpdated } = useSRSQueue()
 
-  useEffect(() => {
-    loadSRSData()
-    const openHandler = () => setShowQueueModal(true)
-    window.addEventListener('progress:open-review-queue', openHandler)
-    return () => {
-      window.removeEventListener('progress:open-review-queue', openHandler)
-    }
-  }, [])
+  const refreshStateRef = useRef({
+    hydrated: false,
+    lastUpdated: null,
+    statsSignature: '',
+    skipNext: false
+  })
 
-  const loadSRSData = async () => {
+  const loadSRSData = useCallback(async () => {
     try {
       const now = new Date()
       const uid = getCurrentUserId()
@@ -44,7 +42,78 @@ export default function SRSPanel({ onNavigateToDrill }) {
     } catch (error) {
       console.error('Error loading SRS data:', error)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const openHandler = () => setShowQueueModal(true)
+    loadSRSData()
+    window.addEventListener('progress:open-review-queue', openHandler)
+    return () => {
+      window.removeEventListener('progress:open-review-queue', openHandler)
+    }
+  }, [loadSRSData])
+
+  useEffect(() => {
+    const handleSRSUpdated = () => {
+      refreshStateRef.current = {
+        ...refreshStateRef.current,
+        skipNext: true
+      }
+      loadSRSData()
+      reload()
+    }
+
+    window.addEventListener('progress:srs-updated', handleSRSUpdated)
+
+    return () => {
+      window.removeEventListener('progress:srs-updated', handleSRSUpdated)
+    }
+  }, [loadSRSData, reload])
+
+  useEffect(() => {
+    const signature = [
+      queueStats.total || 0,
+      queueStats.urgent || 0,
+      queueStats.overdue || 0,
+      queueStats.scheduled || 0
+    ].join('|')
+    const lastUpdatedTs = lastUpdated ? new Date(lastUpdated).getTime() : null
+    const {
+      hydrated,
+      lastUpdated: previousLastUpdated,
+      statsSignature: previousSignature,
+      skipNext
+    } = refreshStateRef.current
+
+    const hasStatsChanged = signature !== previousSignature
+    const hasLastUpdatedChanged = lastUpdatedTs !== previousLastUpdated
+
+    refreshStateRef.current = {
+      hydrated: true,
+      lastUpdated: lastUpdatedTs,
+      statsSignature: signature,
+      skipNext: false
+    }
+
+    if (!hydrated) {
+      return
+    }
+
+    if (skipNext) {
+      return
+    }
+
+    if (hasStatsChanged || hasLastUpdatedChanged) {
+      loadSRSData()
+    }
+  }, [
+    queueStats.total,
+    queueStats.urgent,
+    queueStats.overdue,
+    queueStats.scheduled,
+    lastUpdated,
+    loadSRSData
+  ])
 
   const getUrgencyColor = (urgency) => {
     switch(urgency) {

@@ -111,6 +111,11 @@ Componentes React para:
 - Mapa de calor interactivo
 - Radar de competencias visual
 
+#### Panel de Repaso Inteligente (dashboard)
+- `SRSPanel.jsx` escucha el evento global `progress:srs-updated` para disparar `reload()` del hook `useSRSQueue()` y volver a calcular los totales agregados vía `loadSRSData()`.
+- Los cambios en `queueStats` y `lastUpdated` rehidratan automáticamente los contadores de "listos", "urgentes" y "vencidos" sin interacción del usuario.
+- La vista permanece sincronizada aun cuando otros módulos actualizan la cola SRS (p. ej. al registrar intentos en Drill o tras una sincronización).
+
 ### 9. Integración con Drill (`src/features/drill/`)
 Hooks y wrappers para:
 - Tracking automático de intentos
