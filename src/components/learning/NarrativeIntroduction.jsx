@@ -260,7 +260,18 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
   return (
     <div className="deconstruction-item third-person-irregular-group">
       <div className="third-person-verbs-container">
-        {thirdPersonIrregularVerbs.map((verbObj, index) => {
+        {thirdPersonIrregularVerbs
+          .sort((a, b) => {
+            // Ordenar por terminación: -ar, -er, -ir
+            const getEndingOrder = (verb) => {
+              if (verb.lemma.endsWith('ar')) return 0;
+              if (verb.lemma.endsWith('er')) return 1;
+              if (verb.lemma.endsWith('ir')) return 2;
+              return 3;
+            };
+            return getEndingOrder(a) - getEndingOrder(b);
+          })
+          .map((verbObj, index) => {
           const verb = verbObj.lemma;
           const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
 
@@ -297,7 +308,18 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
       <div className="irregular-forms-section">
         <div className="irregular-forms-title">3ª persona (raíz cambia)</div>
         <div className="irregular-forms-display">
-          {thirdPersonIrregularVerbs.slice(0, 3).map((verbObj, index) => {
+          {thirdPersonIrregularVerbs
+            .sort((a, b) => {
+              // Ordenar por terminación: -ar, -er, -ir
+              const getEndingOrder = (verb) => {
+                if (verb.lemma.endsWith('ar')) return 0;
+                if (verb.lemma.endsWith('er')) return 1;
+                if (verb.lemma.endsWith('ir')) return 2;
+                return 3;
+              };
+              return getEndingOrder(a) - getEndingOrder(b);
+            })
+            .slice(0, 3).map((verbObj, index) => {
             const changes = getStemChange(verbObj);
 
             return (
@@ -398,7 +420,18 @@ function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, setti
   return (
     <div className="deconstruction-item future-root-group">
       <div className="future-root-verbs">
-        {regularVerbs.map((verbObj, index) => {
+        {regularVerbs
+          .sort((a, b) => {
+            // Ordenar por terminación: -ar, -er, -ir
+            const getEndingOrder = (verb) => {
+              if (verb.lemma.endsWith('ar')) return 0;
+              if (verb.lemma.endsWith('er')) return 1;
+              if (verb.lemma.endsWith('ir')) return 2;
+              return 3;
+            };
+            return getEndingOrder(a) - getEndingOrder(b);
+          })
+          .map((verbObj, index) => {
           const verb = verbObj.lemma
           const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
 
@@ -475,7 +508,18 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
   return (
     <div className="deconstruction-item future-root-group">
       <div className="future-root-verbs">
-        {regularVerbs.map((verbObj, index) => {
+        {regularVerbs
+          .sort((a, b) => {
+            // Ordenar por terminación: -ar, -er, -ir
+            const getEndingOrder = (verb) => {
+              if (verb.lemma.endsWith('ar')) return 0;
+              if (verb.lemma.endsWith('er')) return 1;
+              if (verb.lemma.endsWith('ir')) return 2;
+              return 3;
+            };
+            return getEndingOrder(a) - getEndingOrder(b);
+          })
+          .map((verbObj, index) => {
           const verb = verbObj.lemma
           const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
           const stem = verb.slice(0, -2)
@@ -536,7 +580,18 @@ function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
   return (
     <div className="deconstruction-item strong-preterite-group">
       <div className="strong-verbs-container">
-        {strongVerbs.map((verbObj, index) => {
+        {strongVerbs
+          .sort((a, b) => {
+            // Ordenar por terminación: -ar, -er, -ir
+            const getEndingOrder = (verb) => {
+              if (verb.lemma.endsWith('ar')) return 0;
+              if (verb.lemma.endsWith('er')) return 1;
+              if (verb.lemma.endsWith('ir')) return 2;
+              return 3;
+            };
+            return getEndingOrder(a) - getEndingOrder(b);
+          })
+          .map((verbObj, index) => {
           const verb = verbObj.lemma;
           const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
           const irregularStem = getIrregularStem(verb);
@@ -944,7 +999,18 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     }
 
                     // Si no hay pretéritos fuertes ni irregulares de terceras personas, usar la lógica normal
-                    return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs.map((verbObj, index) => {
+                    return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs
+                      .sort((a, b) => {
+                        // Ordenar por terminación: -ar, -er, -ir
+                        const getEndingOrder = (verb) => {
+                          if (verb.lemma.endsWith('ar')) return 0;
+                          if (verb.lemma.endsWith('er')) return 1;
+                          if (verb.lemma.endsWith('ir')) return 2;
+                          return 3;
+                        };
+                        return getEndingOrder(a) - getEndingOrder(b);
+                      })
+                      .map((verbObj, index) => {
                       const pronouns = pronounsForDialect();
                       const verb = verbObj.lemma;
                       const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
