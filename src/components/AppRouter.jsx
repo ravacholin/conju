@@ -123,7 +123,7 @@ function AppRouter() {
 
     if (route.mode === 'onboarding' && route.step) {
       cleanupStateForStep(route.step)
-      onboardingFlowRef.current.setOnboardingStep(route.step)
+      onboardingFlowRef.current.setOnboardingStep(route.step, { syncRouter: false })
     }
     
     // Regenerate drill item if navigating to drill without current item
@@ -147,13 +147,13 @@ function AppRouter() {
     if (initialRoute.mode === 'onboarding') {
       // If dialect not selected yet, force onboarding to start at step 1
       if (!useSettings.getState().region) {
-        onboardingFlowRef.current.setOnboardingStep(1)
+        onboardingFlowRef.current.setOnboardingStep(1, { syncRouter: false })
         try { router.navigate({ mode: 'onboarding', step: 1 }) } catch { /* Navigation error ignored */ }
       } else if (initialRoute.step) {
-        onboardingFlowRef.current.setOnboardingStep(initialRoute.step)
+        onboardingFlowRef.current.setOnboardingStep(initialRoute.step, { syncRouter: false })
       }
     } else if (initialRoute.step) {
-      onboardingFlowRef.current.setOnboardingStep(initialRoute.step)
+      onboardingFlowRef.current.setOnboardingStep(initialRoute.step, { syncRouter: false })
     }
 
     // Subscribe to route changes

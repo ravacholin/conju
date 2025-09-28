@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, /* expect, */ it } from 'vitest'
-import { render, screen, act } from '@testing-library/react'
+import { render, screen, act, waitFor } from '@testing-library/react'
 import React from 'react'
 import AppRouter from '../../components/AppRouter.jsx'
 import { useSettings } from '../../state/settings.js'
+import router from '../../lib/routing/Router.js'
 
 // Helpers
 const resetSettings = () => {
@@ -27,6 +28,12 @@ const resetSettings = () => {
     selectedFamily: null,
     cameFromTema: false
   })
+
+  try {
+    router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
+  } catch {
+    /* ignore */
+  }
 }
 
 const chooseDialectVos = async (user) => {
@@ -201,5 +208,56 @@ describe('Navegación y Back (flujo actual)', () => {
     // Back → vuelve a paso 5 (debe aparecer "Formas no conjugadas")
     await clickBack(user)
     await screen.findByRole('button', { name: /Formas no conjugadas/i })
+  })
+
+  it('UI Atrás retrocede exactamente un paso en el historial de onboarding', async () => {
+    render(<AppRouter />)
+
+    await chooseDialectVos(user)
+    await goToPorTema(user)
+    await chooseMood(user, 'Indicativo')
+
+    await screen.findByRole('button', { name: /Presente/i })
+    await waitFor(() => {
+      expect(router.getCurrentRoute().step).toBe(6)
+    })
+
+    const previous = router.getCurrentRoute().step
+
+    await clickBack(user)
+
+    await waitFor(() => {
+      expect(router.getCurrentRoute().step).toBe(previous - 1)
+    })
+
+    await screen.findByRole('button', { name: /Indicativo/i })
+  })
+
+  it('Evento popstate retrocede exactamente un paso en el historial de onboarding', async () => {
+    render(<AppRouter />)
+
+    await chooseDialectVos(user)
+    await goToPorTema(user)
+    await chooseMood(user, 'Indicativo')
+
+    await screen.findByRole('button', { name: /Presente/i })
+    await waitFor(() => {
+      expect(router.getCurrentRoute().step).toBe(6)
+    })
+
+    const previous = router.getCurrentRoute().step
+
+    await act(async () => {
+      const targetStep = previous - 1
+      window.dispatchEvent(new PopStateEvent('popstate', {
+        state: { appNav: true, mode: 'onboarding', step: targetStep }
+      }))
+    })
+
+    await waitFor(() => {
+      expect(router.getCurrentRoute().step).toBe(previous - 1)
+    })
+
+    await screen.findByRole('button', { name: /Indicativo/i })
   })
 })
