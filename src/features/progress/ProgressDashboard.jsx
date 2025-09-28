@@ -32,7 +32,14 @@ import OfflineStatusBanner from './OfflineStatusBanner.jsx'
  * Componente principal del dashboard de progreso
  */
 export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
-  const settings = useSettings()
+  const { region, useVoseo, useTuteo, useVosotros, set } = useSettings((state) => ({
+    region: state.region,
+    useVoseo: state.useVoseo,
+    useTuteo: state.useTuteo,
+    useVosotros: state.useVosotros,
+    set: state.set
+  }))
+  const dialectDebugRef = React.useRef({ region, useVoseo, useTuteo, useVosotros })
   const {
     heatMapData,
     errorIntel,
@@ -64,10 +71,29 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
   React.useEffect(() => {
     let cancelled = false
+    const minimalSettings = { region, useVoseo, useTuteo, useVosotros }
+
+    if (import.meta.env?.DEV && !import.meta?.vitest) {
+      const previous = dialectDebugRef.current
+      const changedKeys = []
+      if (previous.region !== region) changedKeys.push('region')
+      if (previous.useVoseo !== useVoseo) changedKeys.push('useVoseo')
+      if (previous.useTuteo !== useTuteo) changedKeys.push('useTuteo')
+      if (previous.useVosotros !== useVosotros) changedKeys.push('useVosotros')
+      const reason = changedKeys.length > 0 ? changedKeys.join(', ') : 'mount'
+      console.debug('[ProgressDashboard] Reloading regional forms due to:', reason)
+    }
+
     async function loadRegionalForms() {
       setRegionalFormsLoading(true)
       try {
-        const forms = await buildFormsForRegion(settings.region, settings)
+        if (!minimalSettings.region) {
+          if (!cancelled) {
+            setRegionalForms([])
+          }
+          return
+        }
+        const forms = await buildFormsForRegion(minimalSettings.region, minimalSettings)
         if (!cancelled) setRegionalForms(forms)
       } catch (err) {
         console.error('ProgressDashboard: no se pudieron obtener las formas regionales', err)
@@ -80,10 +106,11 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
 
     loadRegionalForms()
+    dialectDebugRef.current = minimalSettings
     return () => {
       cancelled = true
     }
-  }, [settings])
+  }, [region, useVoseo, useTuteo, useVosotros])
 
   const handleSync = async () => {
     try {
@@ -151,11 +178,11 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       switch (rec?.id) {
         case 'focus-struggling':
           // Mixed practice to let generator focus broadly; block handled by generator/history
-          settings.set({ practiceMode: 'mixed', currentBlock: null })
+          set({ practiceMode: 'mixed', currentBlock: null })
           break
         case 'maintain-mastery':
           // Route to review session (today)
-          settings.set({ practiceMode: 'review', reviewSessionType: 'today' })
+          set({ practiceMode: 'review', reviewSessionType: 'today' })
           break
         case 'improve-accuracy':
         case 'improve-speed':
@@ -325,9 +352,9 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
                     (act.combos || []).forEach(c => { if (c?.mood && c?.tense) combos.push({ mood: c.mood, tense: c.tense }) })
                   })
                   if (combos.length > 0) {
-                    settings.set({ practiceMode: 'mixed', currentBlock: { combos, itemsRemaining: recommendation.session.estimatedItems || combos.length * 3 } })
+                    set({ practiceMode: 'mixed', currentBlock: { combos, itemsRemaining: recommendation.session.estimatedItems || combos.length * 3 } })
                   } else {
-                    settings.set({ practiceMode: 'mixed', currentBlock: null })
+                    set({ practiceMode: 'mixed', currentBlock: null })
                   }
                   if (onNavigateToDrill) onNavigateToDrill()
                   return
@@ -337,9 +364,10 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
                 const tense = recommendation?.targetCombination?.tense
                 if (!mood || !tense) return
                 // Use memoized regional forms instead of recalculating
-                const isValid = regionalFormsLoading ? true : validateMoodTenseAvailability(mood, tense, settings, regionalForms)
+                const latestSettings = useSettings.getState()
+                const isValid = regionalFormsLoading ? true : validateMoodTenseAvailability(mood, tense, latestSettings, regionalForms)
                 if (!isValid) return
-                settings.set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
+                set({ practiceMode: 'specific', specificMood: mood, specificTense: tense })
                 if (onNavigateToDrill) onNavigateToDrill()
               } catch (e) {
                 console.error('Error processing recommendation:', e)
