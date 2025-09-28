@@ -1,7 +1,7 @@
 // Sistema de exportación de datos de progreso
 // Parte de la Fase 5: Exportación y respaldo de datos
 
-import { getAllFromDB } from './database.js'
+import { getAllFromDB, getAttemptsByUser, getMasteryByUser } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { formatDate } from './helpers.js'
 
@@ -20,9 +20,11 @@ export async function exportProgressData(userId = null) {
     console.log(`📦 Exportando datos de progreso para usuario ${actualUserId}...`)
 
     // Obtener todos los datos del usuario
-    const attempts = await getAllFromDB('attempts', actualUserId)
-    const mastery = await getAllFromDB('mastery', actualUserId) 
-    const schedules = await getAllFromDB('schedules', actualUserId)
+    const [attempts, mastery, schedules] = await Promise.all([
+      getUserDataForExport('attempts', actualUserId),
+      getUserDataForExport('mastery', actualUserId),
+      getUserDataForExport('schedules', actualUserId)
+    ])
     
     const exportData = {
       metadata: {
@@ -63,7 +65,7 @@ export async function exportToCSV(userId = null, dataType = 'attempts') {
 
     console.log(`📊 Exportando ${dataType} en formato CSV...`)
     
-    const data = await getAllFromDB(dataType, actualUserId)
+    const data = await getUserDataForExport(dataType, actualUserId)
     
     if (!data.length) {
       return `No hay datos de ${dataType} para exportar`
@@ -93,6 +95,25 @@ export async function exportToCSV(userId = null, dataType = 'attempts') {
   } catch (error) {
     console.error(`❌ Error al exportar CSV de ${dataType}:`, error)
     throw error
+  }
+}
+
+async function getUserDataForExport(dataType, userId) {
+  switch (dataType) {
+    case 'attempts':
+      return await getAttemptsByUser(userId)
+    case 'mastery':
+      return await getMasteryByUser(userId)
+    case 'schedules': {
+      const schedules = await getAllFromDB('schedules')
+      return schedules.filter(record => record.userId === userId)
+    }
+    default: {
+      const records = await getAllFromDB(dataType)
+      return Array.isArray(records)
+        ? records.filter(record => record?.userId === userId)
+        : []
+    }
   }
 }
 
