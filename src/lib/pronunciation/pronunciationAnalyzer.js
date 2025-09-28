@@ -410,16 +410,30 @@ class PronunciationAnalyzer {
    * Calculate overall accuracy score
    */
   calculateOverallAccuracy(detailedAnalysis) {
+    // PRIORITIZE TEXT SIMILARITY - if recognition is accurate, score should be high
+    const textSim = detailedAnalysis.textSimilarity.similarity;
+
     // If there's an exact text match, give excellent score
     if (detailedAnalysis.textSimilarity.exact_match) {
       return 95; // Near perfect for exact match
     }
 
+    // If text similarity is very high (90%+), give excellent score regardless of other factors
+    if (textSim >= 90) {
+      return 90;
+    }
+
+    // If text similarity is good (80%+), give good score
+    if (textSim >= 80) {
+      return 80;
+    }
+
+    // For lower similarities, use weighted approach but boost text similarity importance
     const weights = {
-      textSimilarity: 0.4,
-      phoneticAnalysis: 0.3,
-      stressAnalysis: 0.2,
-      fluentAnalysis: 0.1
+      textSimilarity: 0.7,  // Increased from 0.4 to 0.7
+      phoneticAnalysis: 0.2, // Reduced from 0.3 to 0.2
+      stressAnalysis: 0.05,  // Reduced from 0.2 to 0.05
+      fluentAnalysis: 0.05   // Reduced from 0.1 to 0.05
     };
 
     let totalScore = 0;

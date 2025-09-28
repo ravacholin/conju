@@ -310,6 +310,12 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     function loadEligibleForms() {
       try {
         const basePool = buildFormsForRegion(settings.region || 'la_general', settings)
+        console.log('📊 BasePool for pronunciation practice:', {
+          region: settings.region || 'la_general',
+          totalForms: basePool.length,
+          sampleForms: basePool.slice(0, 3)
+        });
+
         const learningSettings = {
           ...settings,
           practiceMode: 'specific',
@@ -318,7 +324,19 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
           verbType: verbType || 'all',
           selectedFamilies
         }
+
+        console.log('⚙️ Learning settings for pronunciation practice:', learningSettings);
+
         const gated = getEligibleFormsForSettings(basePool, learningSettings)
+
+        console.log('🎯 Eligible forms after gating:', {
+          totalEligible: gated.length,
+          targetTense: selectedTense.tense,
+          targetMood: selectedTense.mood,
+          formsOfTargetTense: gated.filter(f => f.tense === selectedTense.tense).length,
+          sampleForms: gated.filter(f => f.tense === selectedTense.tense).slice(0, 5)
+        });
+
         if (!cancelled) {
           setEligibleForms(gated)
         }

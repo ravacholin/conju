@@ -60,6 +60,113 @@ const speakText = (text, lang = 'es-ES', options = {}) => {
   }
 };
 
+// On-demand form generator for guaranteed pronunciation content
+const generateFormsForTense = (tenseMood) => {
+  const basicVerbs = [
+    { lemma: 'hablar', type: 'regular' },
+    { lemma: 'comer', type: 'regular' },
+    { lemma: 'vivir', type: 'regular' },
+    { lemma: 'ser', type: 'irregular' },
+    { lemma: 'tener', type: 'irregular' },
+    { lemma: 'hacer', type: 'irregular' },
+    { lemma: 'ir', type: 'irregular' }
+  ];
+
+  const conjugationMap = {
+    // Presente indicativo
+    'indicative-pres': {
+      'hablar': ['hablo', 'hablas', 'habla', 'hablamos', 'habláis', 'hablan'],
+      'comer': ['como', 'comes', 'come', 'comemos', 'coméis', 'comen'],
+      'vivir': ['vivo', 'vives', 'vive', 'vivimos', 'vivís', 'viven'],
+      'ser': ['soy', 'eres', 'es', 'somos', 'sois', 'son'],
+      'tener': ['tengo', 'tienes', 'tiene', 'tenemos', 'tenéis', 'tienen'],
+      'hacer': ['hago', 'haces', 'hace', 'hacemos', 'hacéis', 'hacen'],
+      'ir': ['voy', 'vas', 'va', 'vamos', 'vais', 'van']
+    },
+    // Pretérito indefinido
+    'indicative-pretIndef': {
+      'hablar': ['hablé', 'hablaste', 'habló', 'hablamos', 'hablasteis', 'hablaron'],
+      'comer': ['comí', 'comiste', 'comió', 'comimos', 'comisteis', 'comieron'],
+      'vivir': ['viví', 'viviste', 'vivió', 'vivimos', 'vivisteis', 'vivieron'],
+      'ser': ['fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron'],
+      'tener': ['tuve', 'tuviste', 'tuvo', 'tuvimos', 'tuvisteis', 'tuvieron'],
+      'hacer': ['hice', 'hiciste', 'hizo', 'hicimos', 'hicisteis', 'hicieron'],
+      'ir': ['fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron']
+    },
+    // Imperfecto
+    'indicative-impf': {
+      'hablar': ['hablaba', 'hablabas', 'hablaba', 'hablábamos', 'hablabais', 'hablaban'],
+      'comer': ['comía', 'comías', 'comía', 'comíamos', 'comíais', 'comían'],
+      'vivir': ['vivía', 'vivías', 'vivía', 'vivíamos', 'vivíais', 'vivían'],
+      'ser': ['era', 'eras', 'era', 'éramos', 'erais', 'eran'],
+      'tener': ['tenía', 'tenías', 'tenía', 'teníamos', 'teníais', 'tenían'],
+      'hacer': ['hacía', 'hacías', 'hacía', 'hacíamos', 'hacíais', 'hacían'],
+      'ir': ['iba', 'ibas', 'iba', 'íbamos', 'ibais', 'iban']
+    },
+    // Futuro
+    'indicative-fut': {
+      'hablar': ['hablaré', 'hablarás', 'hablará', 'hablaremos', 'hablaréis', 'hablarán'],
+      'comer': ['comeré', 'comerás', 'comerá', 'comeremos', 'comeréis', 'comerán'],
+      'vivir': ['viviré', 'vivirás', 'vivirá', 'viviremos', 'viviréis', 'vivirán'],
+      'ser': ['seré', 'serás', 'será', 'seremos', 'seréis', 'serán'],
+      'tener': ['tendré', 'tendrás', 'tendrá', 'tendremos', 'tendréis', 'tendrán'],
+      'hacer': ['haré', 'harás', 'hará', 'haremos', 'haréis', 'harán'],
+      'ir': ['iré', 'irás', 'irá', 'iremos', 'iréis', 'irán']
+    },
+    // Condicional
+    'conditional-cond': {
+      'hablar': ['hablaría', 'hablarías', 'hablaría', 'hablaríamos', 'hablaríais', 'hablarían'],
+      'comer': ['comería', 'comerías', 'comería', 'comeríamos', 'comeríais', 'comerían'],
+      'vivir': ['viviría', 'vivirías', 'viviría', 'viviríamos', 'viviríais', 'vivirían'],
+      'ser': ['sería', 'serías', 'sería', 'seríamos', 'seríais', 'serían'],
+      'tener': ['tendría', 'tendrías', 'tendría', 'tendríamos', 'tendríais', 'tendrían'],
+      'hacer': ['haría', 'harías', 'haría', 'haríamos', 'haríais', 'harían'],
+      'ir': ['iría', 'irías', 'iría', 'iríamos', 'iríais', 'irían']
+    },
+    // Presente subjuntivo
+    'subjunctive-subjPres': {
+      'hablar': ['hable', 'hables', 'hable', 'hablemos', 'habléis', 'hablen'],
+      'comer': ['coma', 'comas', 'coma', 'comamos', 'comáis', 'coman'],
+      'vivir': ['viva', 'vivas', 'viva', 'vivamos', 'viváis', 'vivan'],
+      'ser': ['sea', 'seas', 'sea', 'seamos', 'seáis', 'sean'],
+      'tener': ['tenga', 'tengas', 'tenga', 'tengamos', 'tengáis', 'tengan'],
+      'hacer': ['haga', 'hagas', 'haga', 'hagamos', 'hagáis', 'hagan'],
+      'ir': ['vaya', 'vayas', 'vaya', 'vayamos', 'vayáis', 'vayan']
+    }
+  };
+
+  const persons = ['1s', '2s', '3s', '1p', '2p', '3p'];
+  const tenseKey = `${tenseMood.mood}-${tenseMood.tense}`;
+  const conjugations = conjugationMap[tenseKey];
+
+  if (!conjugations) {
+    console.warn(`No conjugations available for ${tenseKey}, using present as fallback`);
+    return generateFormsForTense({ mood: 'indicative', tense: 'pres' });
+  }
+
+  const generatedForms = [];
+  basicVerbs.forEach(verb => {
+    const forms = conjugations[verb.lemma];
+    if (forms) {
+      forms.forEach((value, index) => {
+        if (index < persons.length) {
+          generatedForms.push({
+            lemma: verb.lemma,
+            verb: verb.lemma,
+            value: value,
+            person: persons[index],
+            mood: tenseMood.mood,
+            tense: tenseMood.tense,
+            type: verb.type
+          });
+        }
+      });
+    }
+  });
+
+  return generatedForms;
+};
+
 // Generate pronunciation data from eligible forms or create fallback data
 const generatePronunciationData = (eligibleForms, tense) => {
   console.log('🔍 generatePronunciationData called with:', {
@@ -70,7 +177,7 @@ const generatePronunciationData = (eligibleForms, tense) => {
 
   let selectedForms = [];
 
-  // Try to use eligible forms if available
+  // STRATEGY 1: Try to use eligible forms if available
   if (eligibleForms && eligibleForms.length > 0) {
     // First attempt: exact match with mood and tense
     if (tense?.mood && tense?.tense) {
@@ -85,18 +192,32 @@ const generatePronunciationData = (eligibleForms, tense) => {
       selectedForms = eligibleForms.filter(form => form.tense === tense.tense);
       console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
     }
+  }
 
-    // Third attempt: if no forms for specific tense, don't use fallback
-    if (selectedForms.length === 0) {
-      console.log('❌ No forms found for specified tense/mood:', tense);
-      return null; // Don't show pronunciation practice if no relevant forms
+  // STRATEGY 2: If no eligible forms or insufficient forms, generate guaranteed forms
+  if (selectedForms.length < 5) {
+    console.log('⚠️ Insufficient forms from eligibleForms, generating guaranteed forms for:', tense);
+
+    if (tense?.mood && tense?.tense) {
+      const generatedForms = generateFormsForTense({ mood: tense.mood, tense: tense.tense });
+
+      if (generatedForms.length > 0) {
+        // Merge with existing selectedForms, avoiding duplicates
+        const existingValues = new Set(selectedForms.map(f => f.value));
+        const newForms = generatedForms.filter(f => !existingValues.has(f.value));
+        selectedForms = [...selectedForms, ...newForms];
+        console.log('✅ Added', newForms.length, 'generated forms, total:', selectedForms.length);
+      }
     }
   }
 
-  // If no eligible forms and no selected forms, don't show pronunciation practice
+  // STRATEGY 3: Final safety check - if still no forms, this shouldn't happen with our generator
   if (selectedForms.length === 0) {
-    console.log('❌ No pronunciation data available for this tense/mood');
-    return null;
+    console.error('🚨 CRITICAL: No forms available even after generation. This should not happen.');
+    // Emergency fallback - use presente if all else fails
+    const emergencyForms = generateFormsForTense({ mood: 'indicative', tense: 'pres' });
+    selectedForms = emergencyForms.slice(0, 5);
+    console.log('🆘 Using emergency presente fallback:', selectedForms.length, 'forms');
   }
 
   // Select 5-7 representative forms for practice
