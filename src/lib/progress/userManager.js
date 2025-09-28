@@ -493,20 +493,57 @@ async function wakeUpServer() {
   if (!SYNC_BASE_URL) return false
   try {
     console.log('☁️ Despertando servidor...')
-    const baseUrl = SYNC_BASE_URL.replace('/api', '')
+    let requestUrl = SYNC_BASE_URL
+
+    try {
+      const syncUrl = new URL(SYNC_BASE_URL)
+
+      // Remove query/hash noise so we ping the actual host
+      syncUrl.search = ''
+      syncUrl.hash = ''
+
+      const trimmedPath = syncUrl.pathname.replace(/\/$/, '')
+      if (trimmedPath.endsWith('/api')) {
+        const segments = trimmedPath.split('/')
+        segments.pop()
+        const newPath = segments.join('/') || '/'
+        syncUrl.pathname = newPath || '/'
+      }
+
+      requestUrl = syncUrl.toString()
+      if (requestUrl.endsWith('/')) {
+        requestUrl = requestUrl.slice(0, -1)
+      }
+    } catch (urlError) {
+      console.warn('⚠️ URL de sincronización inválida, usando fallback:', urlError?.message)
+      requestUrl = SYNC_BASE_URL.replace(/\/api\/?$/, '')
+    }
 
     // Mobile-compatible timeout
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 25000)
 
-    const response = await fetch(baseUrl, {
+    const response = await fetch(requestUrl, {
       method: 'GET',
       signal: controller.signal
     })
 
     clearTimeout(timeoutId)
-    console.log('✅ Servidor despierto')
-    return response.ok
+
+    if (response.status === 404) {
+      console.warn('❌ El servidor de sincronización respondió 404 (no encontrado).', {
+        url: requestUrl
+      })
+      return false
+    }
+
+    if (response.ok) {
+      console.log('✅ Servidor despierto')
+      return true
+    }
+
+    console.warn('⚠️ No se pudo despertar el servidor. Estado:', response.status, response.statusText)
+    return false
   } catch (error) {
     console.warn('⚠️ No se pudo despertar el servidor:', error.message)
     // Even if wake-up fails, continue with sync attempt
@@ -1122,4 +1159,8 @@ export default {
   getSyncAuthToken,
   clearSyncAuthToken,
   setSyncAuthHeaderName
+}
+
+export const __testing = {
+  wakeUpServer
 }
