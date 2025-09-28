@@ -175,14 +175,24 @@ function calculateMasteryDistribution(masteryData) {
   return distribution
 }
 
-function calculatePracticeFrequency(attempts) {
-  const daysWithPractice = new Set(
-    attempts.map(a => new Date(a.timestamp).toDateString())
-  ).size
-  
+export function calculatePracticeFrequency(attempts) {
+  const practiceDays = attempts
+    .map(attempt => {
+      const dateValue = attempt?.createdAt ?? attempt?.timestamp
+      if (!dateValue) return null
+
+      const practiceDate = new Date(dateValue)
+      if (Number.isNaN(practiceDate.getTime())) return null
+
+      return practiceDate.toDateString()
+    })
+    .filter(Boolean)
+
+  const daysWithPractice = new Set(practiceDays).size
+
   return {
     totalDays: daysWithPractice,
-    averageAttemptsPerDay: daysWithPractice ? (attempts.length / daysWithPractice).toFixed(1) : 0
+    averageAttemptsPerDay: daysWithPractice ? (practiceDays.length / daysWithPractice).toFixed(1) : 0
   }
 }
 
