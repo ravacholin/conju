@@ -731,8 +731,9 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'pronunciation_practice') {
     return (
       <ErrorBoundary>
-        <PronunciationPractice 
+        <PronunciationPractice
           tense={selectedTense}
+          eligibleForms={eligibleForms}
           onBack={() => setCurrentStep('meaningful_practice')}
           onContinue={handlePronunciationPhaseComplete}
         />

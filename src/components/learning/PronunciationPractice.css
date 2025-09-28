@@ -1,4 +1,4 @@
-/* PronunciationPractice.css */
+/* PronunciationPractice.css - Coherent with webapp design system */
 
 .pronunciation-container {
   max-width: 800px;
@@ -7,6 +7,7 @@
   background: #000;
   color: #fff;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .progress-indicator {
@@ -14,14 +15,16 @@
   margin-bottom: 30px;
   font-size: 1.1em;
   color: #888;
+  font-weight: 500;
 }
 
 .pronunciation-card {
   background: #111;
   border: 1px solid #333;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 30px;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .verb-info {
@@ -30,10 +33,11 @@
 
 .target-verb {
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 700;
   color: #00ff88;
   margin: 0;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+  letter-spacing: 0.05em;
 }
 
 .verb-infinitive {
@@ -41,42 +45,73 @@
   color: #888;
   margin: 10px 0;
   font-style: italic;
+  font-weight: 400;
 }
 
+/* Audio Section */
 .audio-section {
   margin: 30px 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
 }
 
 .play-audio-btn {
-  background: linear-gradient(145deg, #1e3a8a, #3b82f6);
-  border: none;
-  border-radius: 50px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 6px;
   color: white;
   font-size: 1.1em;
-  padding: 15px 30px;
+  font-weight: 500;
+  padding: 12px 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-width: 220px;
 }
 
-.play-audio-btn:hover {
-  background: linear-gradient(145deg, #3b82f6, #1e3a8a);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+.play-audio-btn:hover:not(:disabled) {
+  background: #333;
+  border-color: #555;
+  transform: translateY(-1px);
+}
+
+.play-audio-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.play-audio-btn.playing {
+  background: #333;
+  border-color: #00ff88;
 }
 
 .audio-icon {
-  font-size: 1.3em;
-  animation: pulse 2s infinite;
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+.verb-context {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.9em;
+  color: #666;
 }
 
+.verb-person,
+.verb-mood-tense {
+  padding: 4px 8px;
+  background: #1a1a1a;
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+
+/* Pronunciation Guide */
 .pronunciation-guide {
   margin: 30px 0;
   border-top: 1px solid #333;
@@ -85,13 +120,14 @@
 
 .show-pronunciation-btn {
   background: transparent;
-  border: 1px solid #555;
-  border-radius: 8px;
+  border: 1px solid #444;
+  border-radius: 6px;
   color: #ccc;
   padding: 10px 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   margin-bottom: 20px;
+  font-weight: 500;
 }
 
 .show-pronunciation-btn:hover {
@@ -101,7 +137,8 @@
 
 .pronunciation-details {
   background: #0a0a0a;
-  border-radius: 8px;
+  border: 1px solid #222;
+  border-radius: 6px;
   padding: 20px;
   text-align: left;
 }
@@ -114,10 +151,11 @@
 }
 
 .pronunciation-details label {
-  font-weight: bold;
+  font-weight: 600;
   color: #00ff88;
   min-width: 120px;
   flex-shrink: 0;
+  font-size: 0.9em;
 }
 
 .pronunciation-details span {
@@ -129,104 +167,394 @@
   font-family: 'Courier New', monospace;
   font-size: 1.2em;
   background: #222;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 4px;
+  border: 1px solid #333;
 }
 
 .simplified-pronunciation span {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1.1em;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .pronunciation-tip span {
   font-style: italic;
   color: #ccc;
+  line-height: 1.4;
 }
 
+/* Recording Section */
 .recording-section {
   margin: 30px 0;
   border-top: 1px solid #333;
   padding-top: 20px;
 }
 
+.recording-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
 .record-btn {
-  background: linear-gradient(145deg, #dc2626, #ef4444);
-  border: none;
-  border-radius: 50px;
+  background: #222;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
   color: white;
   font-size: 1.2em;
-  padding: 20px 40px;
+  font-weight: 600;
+  padding: 16px 32px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  min-width: 240px;
+  justify-content: center;
 }
 
 .record-btn:hover:not(:disabled) {
-  background: linear-gradient(145deg, #ef4444, #dc2626);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-}
-
-.record-btn.recording {
-  background: linear-gradient(145deg, #dc2626, #7f1d1d);
-  animation: recording-pulse 1s infinite;
+  background: #333;
+  border-color: #ef4444;
+  transform: translateY(-1px);
 }
 
 .record-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-@keyframes recording-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  50% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+.record-btn.recording {
+  background: #dc2626;
+  border-color: #dc2626;
+  animation: pulse-recording 1.5s infinite;
+}
+
+@keyframes pulse-recording {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+  }
 }
 
 .mic-icon {
-  font-size: 1.4em;
+  display: inline-block;
+  font-size: 18px;
+  color: #dc2626;
+  opacity: 0.9;
 }
 
+.recording-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.waveform {
+  display: flex;
+  align-items: end;
+  gap: 2px;
+  height: 40px;
+  padding: 0 20px;
+}
+
+.wave-bar {
+  width: 3px;
+  background: #00ff88;
+  border-radius: 2px;
+  min-height: 4px;
+  transition: height 0.1s ease;
+}
+
+.recording-text {
+  color: #00ff88;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+/* Recording Results */
 .recording-result {
   background: #111;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 20px;
+  margin-top: 20px;
   border-left: 4px solid #333;
+  text-align: left;
+}
+
+.recording-result.excellent {
+  border-left-color: #00ff88;
+  background: rgba(0, 255, 136, 0.05);
 }
 
 .recording-result.good {
-  border-left-color: #00ff88;
-  background: rgba(0, 255, 136, 0.1);
+  border-left-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.recording-result.fair {
+  border-left-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
 }
 
 .recording-result.needs-work {
-  border-left-color: #fbbf24;
-  background: rgba(251, 191, 36, 0.1);
+  border-left-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.recording-result.error {
+  border-left-color: #dc2626;
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.accuracy-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 15px;
 }
 
 .accuracy-score {
-  font-size: 1.3em;
-  font-weight: bold;
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.recording-result.good .accuracy-score {
+.score-number {
+  font-size: 2em;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.recording-result.excellent .score-number {
   color: #00ff88;
 }
 
-.recording-result.needs-work .accuracy-score {
-  color: #fbbf24;
+.recording-result.good .score-number {
+  color: #10b981;
+}
+
+.recording-result.fair .score-number {
+  color: #f59e0b;
+}
+
+.recording-result.needs-work .score-number {
+  color: #ef4444;
+}
+
+.score-label {
+  font-size: 0.8em;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.accuracy-bar {
+  flex: 1;
+  height: 8px;
+  background: #222;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.accuracy-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+.recording-result.excellent .accuracy-fill {
+  background: #00ff88;
+}
+
+.recording-result.good .accuracy-fill {
+  background: #10b981;
+}
+
+.recording-result.fair .accuracy-fill {
+  background: #f59e0b;
+}
+
+.recording-result.needs-work .accuracy-fill {
+  background: #ef4444;
 }
 
 .feedback {
   font-size: 1.1em;
-  color: #ccc;
-  font-style: italic;
+  color: #fff;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  font-weight: 500;
 }
 
+.transcript {
+  margin: 15px 0;
+  padding: 12px;
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.suggestions {
+  margin: 15px 0;
+}
+
+.suggestions ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.suggestions li {
+  margin-bottom: 5px;
+  color: #ccc;
+  line-height: 1.3;
+}
+
+/* Detailed Analysis */
+.detailed-toggle {
+  margin-top: 20px;
+  border-top: 1px solid #222;
+  padding-top: 15px;
+}
+
+.show-detailed-btn {
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #888;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+}
+
+.show-detailed-btn:hover {
+  border-color: #666;
+  color: #ccc;
+}
+
+.detailed-analysis {
+  margin-top: 15px;
+  padding: 15px;
+  background: #0a0a0a;
+  border: 1px solid #222;
+  border-radius: 4px;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.analysis-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #111;
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+
+.analysis-item label {
+  font-size: 0.85em;
+  color: #888;
+  font-weight: 500;
+}
+
+.analysis-item span {
+  font-weight: 600;
+  color: #fff;
+}
+
+.phonetics-breakdown {
+  margin-top: 15px;
+}
+
+.phonetics-breakdown h4 {
+  color: #00ff88;
+  margin-bottom: 10px;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.breakdown-details {
+  margin-bottom: 15px;
+}
+
+.breakdown-details p {
+  margin: 5px 0;
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.difficulty-elements {
+  border-top: 1px solid #222;
+  padding-top: 10px;
+}
+
+.difficulty-elements h5 {
+  color: #f59e0b;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.difficulty-item {
+  margin-bottom: 8px;
+  font-size: 0.85em;
+  color: #ccc;
+  line-height: 1.3;
+}
+
+/* Result Actions */
+.result-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.action-btn {
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ccc;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.action-btn:hover {
+  background: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.action-icon {
+  display: inline-block;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Navigation */
 .navigation-buttons {
   display: flex;
   justify-content: space-between;
@@ -236,20 +564,27 @@
   border-top: 1px solid #333;
 }
 
+.center-actions {
+  display: flex;
+  gap: 12px;
+}
+
 .nav-btn {
-  background: linear-gradient(145deg, #374151, #6b7280);
-  border: none;
-  border-radius: 8px;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 6px;
   color: white;
   font-size: 1em;
+  font-weight: 500;
   padding: 12px 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .nav-btn:hover:not(:disabled) {
-  background: linear-gradient(145deg, #6b7280, #374151);
-  transform: translateY(-2px);
+  background: #333;
+  border-color: #555;
+  transform: translateY(-1px);
 }
 
 .nav-btn:disabled {
@@ -259,11 +594,103 @@
 }
 
 .next-btn {
-  background: linear-gradient(145deg, #059669, #10b981);
+  background: #00ff88;
+  border-color: #00ff88;
+  color: #000;
+  font-weight: 600;
 }
 
 .next-btn:hover:not(:disabled) {
-  background: linear-gradient(145deg, #10b981, #059669);
+  background: #00e677;
+  border-color: #00e677;
+}
+
+.skip-btn {
+  background: transparent;
+  border: 1px solid #666;
+  color: #999;
+  font-size: 0.9em;
+  padding: 8px 16px;
+}
+
+.skip-btn:hover {
+  border-color: #888;
+  color: #ccc;
+}
+
+/* Error States */
+.no-data-message,
+.compatibility-error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+}
+
+.no-data-message p,
+.compatibility-error p {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.compatibility-error h3 {
+  color: #ef4444;
+  margin-bottom: 20px;
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.error-details {
+  text-align: left;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.error-details p {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+.recommendations {
+  margin-top: 15px;
+  border-top: 1px solid #222;
+  padding-top: 15px;
+}
+
+.recommendations h4 {
+  color: #f59e0b;
+  margin-bottom: 10px;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.recommendations ul {
+  padding-left: 20px;
+}
+
+.recommendations li {
+  margin-bottom: 5px;
+  color: #ccc;
+  line-height: 1.3;
+}
+
+.continue-anyway-btn {
+  background: #444;
+  border: 1px solid #666;
+  border-radius: 6px;
+  color: white;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.continue-anyway-btn:hover {
+  background: #555;
+  border-color: #777;
 }
 
 /* Responsive Design */
@@ -271,31 +698,50 @@
   .pronunciation-container {
     padding: 15px;
   }
-  
+
   .pronunciation-card {
     padding: 20px;
   }
-  
+
   .target-verb {
     font-size: 2.5rem;
   }
-  
+
   .pronunciation-details > div {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .pronunciation-details label {
     min-width: auto;
   }
-  
+
   .navigation-buttons {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .nav-btn {
     width: 100%;
     max-width: 200px;
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .accuracy-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .verb-context {
+    flex-direction: column;
+    gap: 8px;
   }
 }

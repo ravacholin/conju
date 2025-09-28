@@ -1,172 +1,48 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
+import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
+import { useProgressTracking } from '../drill/useProgressTracking.js';
+import logger from '../../lib/utils/logger.js';
 import './PronunciationPractice.css';
 
-// Data para práctica de pronunciación con IPA y tips
-const pronunciationData = {
-  pres: {
-    title: 'Pronunciación - Presente',
-    verbs: [
-      { 
-        verb: 'hablar', 
-        form: 'hablo',
-        ipa: '/ˈa.βlo/',
-        pronunciation: 'AH-blo',
-        tip: 'La "h" es muda. Sonido suave de "b"',
-        audioKey: 'hablo'
-      },
-      { 
-        verb: 'comer', 
-        form: 'comes',
-        ipa: '/ˈko.mes/',
-        pronunciation: 'KO-mes',
-        tip: 'Vocal "o" cerrada, "e" clara',
-        audioKey: 'comes'
-      },
-      { 
-        verb: 'vivir', 
-        form: 'vive',
-        ipa: '/ˈbi.βe/',
-        pronunciation: 'BEE-veh',
-        tip: 'Primera "v" fuerte, segunda suave',
-        audioKey: 'vive'
-      },
-      { 
-        verb: 'ser', 
-        form: 'soy',
-        ipa: '/soi̯/',
-        pronunciation: 'soy',
-        tip: 'Diptongo "oy", no separar las vocales',
-        audioKey: 'soy'
-      },
-      { 
-        verb: 'tener', 
-        form: 'tengo',
-        ipa: '/ˈten.go/',
-        pronunciation: 'TEN-go',
-        tip: 'La "g" se pronuncia fuerte antes de "o"',
-        audioKey: 'tengo'
-      }
-    ]
-  },
-  pretIndef: {
-    title: 'Pronunciación - Pretérito Indefinido',
-    verbs: [
-      { 
-        verb: 'hablar', 
-        form: 'hablé',
-        ipa: '/a.ˈβle/',
-        pronunciation: 'ah-BLEH',
-        tip: 'Acento en la última sílaba, "é" cerrada',
-        audioKey: 'hable'
-      },
-      { 
-        verb: 'comer', 
-        form: 'comió',
-        ipa: '/ko.ˈmjo/',
-        pronunciation: 'ko-MEE-oh',
-        tip: 'Acento en "ió", pronunciar las tres vocales',
-        audioKey: 'comio'
-      },
-      { 
-        verb: 'vivir', 
-        form: 'viviste',
-        ipa: '/bi.ˈβis.te/',
-        pronunciation: 'bee-VEES-teh',
-        tip: 'Acento en "vis", "e" final clara',
-        audioKey: 'viviste'
-      },
-      { 
-        verb: 'ir', 
-        form: 'fue',
-        ipa: '/ˈfwe/',
-        pronunciation: 'FWEH',
-        tip: 'Diptongo "ue", una sola sílaba',
-        audioKey: 'fue'
-      }
-    ]
-  },
-  impf: {
-    title: 'Pronunciación - Imperfecto',
-    verbs: [
-      { 
-        verb: 'hablar', 
-        form: 'hablaba',
-        ipa: '/a.ˈβla.βa/',
-        pronunciation: 'ah-BLAH-bah',
-        tip: 'Ambas "b" son suaves, acento en "bla"',
-        audioKey: 'hablaba'
-      },
-      { 
-        verb: 'tener', 
-        form: 'tenía',
-        ipa: '/te.ˈni.a/',
-        pronunciation: 'teh-NEE-ah',
-        tip: 'Tres sílabas separadas, acento en "ní"',
-        audioKey: 'tenia'
-      },
-      { 
-        verb: 'ser', 
-        form: 'era',
-        ipa: '/ˈe.ɾa/',
-        pronunciation: 'EH-rah',
-        tip: 'R suave, no fuerte',
-        audioKey: 'era'
-      }
-    ]
-  },
-  fut: {
-    title: 'Pronunciación - Futuro',
-    verbs: [
-      { 
-        verb: 'hablar', 
-        form: 'hablaré',
-        ipa: '/a.βla.ˈɾe/',
-        pronunciation: 'ah-blah-REH',
-        tip: 'Acento en la última sílaba, "é" cerrada',
-        audioKey: 'hablare'
-      },
-      { 
-        verb: 'tener', 
-        form: 'tendrás',
-        ipa: '/ten.ˈdɾas/',
-        pronunciation: 'ten-DRAHS',
-        tip: 'Grupo consonántico "ndr", acento en "drás"',
-        audioKey: 'tendras'
-      },
-      { 
-        verb: 'hacer', 
-        form: 'hará',
-        ipa: '/a.ˈɾa/',
-        pronunciation: 'ah-RAH',
-        tip: 'R fuerte, acento en la "á"',
-        audioKey: 'hara'
-      }
-    ]
-  }
-};
-
-// Función para crear síntesis de voz básica (fallback si no hay archivos de audio)
-const speakText = (text, lang = 'es-ES') => {
+// Enhanced Text-to-Speech with Spanish voice optimization
+const speakText = (text, lang = 'es-ES', options = {}) => {
   if ('speechSynthesis' in window) {
     const speak = () => {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
-      utterance.rate = 0.8; // Hablar más lento para aprendizaje
-      
-      // Try to find a Spanish voice
+      utterance.rate = options.rate || 0.7; // Slower for learning
+      utterance.pitch = options.pitch || 1;
+      utterance.volume = options.volume || 0.8;
+
+      // Find the best Spanish voice
       const voices = window.speechSynthesis.getVoices();
-      const spanishVoice = voices.find(voice => 
+      const spanishVoices = voices.filter(voice =>
         voice.lang.startsWith('es') || voice.lang.includes('Spanish')
       );
-      if (spanishVoice) {
-        utterance.voice = spanishVoice;
+
+      // Prefer premium voices or specific regional variants
+      const preferredVoice = spanishVoices.find(voice =>
+        voice.lang === lang || voice.name.includes('Spanish')
+      ) || spanishVoices[0];
+
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
       }
-      
+
+      // Event handlers for better UX
+      utterance.onstart = () => options.onStart?.();
+      utterance.onend = () => options.onEnd?.();
+      utterance.onerror = (e) => options.onError?.(e);
+
       window.speechSynthesis.speak(utterance);
     };
-    
-    // Check if voices are loaded, if not wait for them
+
+    // Ensure voices are loaded
     const voices = window.speechSynthesis.getVoices();
     if (voices.length === 0) {
       let hasSpoken = false;
@@ -177,7 +53,6 @@ const speakText = (text, lang = 'es-ES') => {
         }
       };
       window.speechSynthesis.addEventListener('voiceschanged', speakOnce, { once: true });
-      // Fallback timeout in case voiceschanged doesn't fire
       setTimeout(speakOnce, 1000);
     } else {
       speak();
@@ -185,15 +60,197 @@ const speakText = (text, lang = 'es-ES') => {
   }
 };
 
-function PronunciationPractice({ tense, onBack, onContinue }) {
+// Generate pronunciation data from eligible forms
+const generatePronunciationData = (eligibleForms, tense) => {
+  if (!eligibleForms || eligibleForms.length === 0) return null;
+
+  // Select 5-7 representative forms for practice
+  const selectedForms = eligibleForms
+    .filter(form => form.mood === tense?.mood && form.tense === tense?.tense)
+    .slice(0, 7)
+    .map(form => ({
+      verb: form.verb,
+      form: form.value,
+      person: form.person,
+      mood: form.mood,
+      tense: form.tense,
+      // Generate basic pronunciation guidance
+      ipa: generateIPA(form.value),
+      pronunciation: generatePronunciationGuide(form.value),
+      tip: generatePronunciationTip(form.value, form.verb),
+      audioKey: `${form.verb}_${form.tense}_${form.person}`
+    }));
+
+  return selectedForms.length > 0 ? {
+    title: `Pronunciación - ${TENSE_LABELS[tense?.tense] || 'Práctica'}`,
+    verbs: selectedForms
+  } : null;
+};
+
+// Basic IPA generation (simplified)
+const generateIPA = (word) => {
+  // This is a simplified version - in production you'd use a phonetic dictionary
+  return `/${word.replace(/h/g, '').replace(/qu/g, 'k').replace(/c([ei])/g, 'θ$1')}/`;
+};
+
+// Generate pronunciation guide
+const generatePronunciationGuide = (word) => {
+  return word.split('').map(char => {
+    switch(char) {
+      case 'h': return ''; // Silent
+      case 'j': return 'H';
+      case 'rr': return 'RR';
+      case 'ñ': return 'NY';
+      case 'll': return 'LY';
+      default: return char.toUpperCase();
+    }
+  }).join('');
+};
+
+// Generate pronunciation tips
+const generatePronunciationTip = (word, _verb) => {
+  const tips = [];
+  if (word.includes('h')) tips.push('La "h" es muda');
+  if (word.includes('rr')) tips.push('Vibra la "rr" con la lengua');
+  if (word.includes('ñ')) tips.push('Sonido "ny" con la lengua en el paladar');
+  if (word.includes('j')) tips.push('"J" suave desde la garganta');
+  if (word.includes('ll')) tips.push('"Ll" como "y" en la mayoría de regiones');
+
+  return tips.length > 0 ? tips.join('. ') : 'Pronuncia cada sílaba claramente';
+};
+
+function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [showPronunciation, setShowPronunciation] = useState(false);
+  const [speechService] = useState(() => new SpeechRecognitionService());
+  const [analyzer] = useState(() => new PronunciationAnalyzer());
+  const [isSupported, setIsSupported] = useState(true);
+  const [audioWaveform, setAudioWaveform] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showDetailed, setShowDetailed] = useState(false);
+  const [compatibilityInfo, setCompatibilityInfo] = useState(null);
   const audioRef = useRef(null);
+  const waveformRef = useRef(null);
 
-  const exerciseData = tense ? pronunciationData[tense.tense] : null;
+  // Progress tracking integration
+  const { handleResult } = useProgressTracking(null, () => {});
+
+  // Generate dynamic exercise data from eligible forms
+  const exerciseData = useMemo(() => {
+    if (eligibleForms && eligibleForms.length > 0) {
+      return generatePronunciationData(eligibleForms, tense);
+    }
+    return null;
+  }, [eligibleForms, tense]);
+
   const currentVerb = exerciseData?.verbs[currentIndex];
+
+  // Initialize speech recognition on component mount
+  useEffect(() => {
+    const initializeSpeech = async () => {
+      try {
+        const compatibility = await speechService.testCompatibility();
+        setCompatibilityInfo(compatibility);
+        setIsSupported(compatibility.speechRecognition && compatibility.microphone);
+
+        if (compatibility.speechRecognition && compatibility.microphone) {
+          await speechService.initialize({ language: 'es-ES' });
+
+          speechService.setCallbacks({
+            onResult: handleSpeechResult,
+            onError: handleSpeechError,
+            onStart: handleSpeechStart,
+            onEnd: handleSpeechEnd
+          });
+        }
+      } catch (error) {
+        logger.error('Error initializing speech recognition:', error);
+        setIsSupported(false);
+      }
+    };
+
+    initializeSpeech();
+
+    // Cleanup
+    return () => {
+      speechService.destroy();
+    };
+  }, []);
+
+  // Speech recognition event handlers
+  const handleSpeechResult = (result) => {
+    if (result.isFinal && currentVerb) {
+      setIsRecording(false);
+      const analysis = analyzer.analyzePronunciation(
+        currentVerb.form,
+        result.transcript,
+        {
+          confidence: result.confidence,
+          timing: Date.now() - recordingStartTime.current
+        }
+      );
+
+      setRecordingResult({
+        ...analysis,
+        originalTranscript: result.transcript,
+        alternatives: result.alternatives
+      });
+
+      // Track progress
+      if (currentVerb) {
+        handleResult(analysis.accuracy >= 70, analysis.accuracy, {
+          type: 'pronunciation',
+          target: currentVerb.form,
+          recognized: result.transcript,
+          accuracy: analysis.accuracy
+        });
+      }
+    }
+  };
+
+  const handleSpeechError = (error) => {
+    setIsRecording(false);
+    setRecordingResult({
+      accuracy: 0,
+      feedback: error.message,
+      suggestions: error.recoverable ? ['Inténtalo de nuevo'] : ['Verifica tu configuración de micrófono'],
+      error: true
+    });
+  };
+
+  const handleSpeechStart = () => {
+    setIsRecording(true);
+    recordingStartTime.current = Date.now();
+    startWaveformAnimation();
+  };
+
+  const handleSpeechEnd = () => {
+    setIsRecording(false);
+    stopWaveformAnimation();
+  };
+
+  const recordingStartTime = useRef(0);
+
+  // Waveform animation
+  const startWaveformAnimation = () => {
+    const animation = () => {
+      if (isRecording) {
+        const newWaveform = Array.from({ length: 20 }, () => Math.random() * 100);
+        setAudioWaveform(newWaveform);
+        waveformRef.current = requestAnimationFrame(animation);
+      }
+    };
+    animation();
+  };
+
+  const stopWaveformAnimation = () => {
+    if (waveformRef.current) {
+      cancelAnimationFrame(waveformRef.current);
+    }
+    setAudioWaveform([]);
+  };
 
   if (!exerciseData || !currentVerb) {
     return (
@@ -207,7 +264,52 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
               </button>
               <h2>Práctica de Pronunciación</h2>
             </div>
-            <p>No hay datos de pronunciación disponibles para este tiempo verbal.</p>
+            <div className="no-data-message">
+              <p>No hay formas verbales disponibles para practicar pronunciación.</p>
+              <p>Completa primero algunas lecciones para generar contenido de pronunciación.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isSupported) {
+    return (
+      <div className="App">
+        <div className="main-content">
+          <div className="pronunciation-container">
+            <div className="drill-header">
+              <button onClick={onBack} className="back-to-menu-btn">
+                <img src="/back.png" alt="Volver" className="back-icon" />
+                Volver
+              </button>
+              <h2>Práctica de Pronunciación</h2>
+            </div>
+            <div className="compatibility-error">
+              <h3>Reconocimiento de voz no disponible</h3>
+              {compatibilityInfo && (
+                <div className="error-details">
+                  <p><strong>Reconocimiento de voz:</strong> {compatibilityInfo.speechRecognition ? 'Soportado' : 'No soportado'}</p>
+                  <p><strong>Micrófono:</strong> {compatibilityInfo.microphone ? 'Disponible' : 'No disponible'}</p>
+                  <p><strong>Navegador:</strong> {compatibilityInfo.userAgent}</p>
+
+                  {compatibilityInfo.recommendations.length > 0 && (
+                    <div className="recommendations">
+                      <h4>Recomendaciones:</h4>
+                      <ul>
+                        {compatibilityInfo.recommendations.map((rec, i) => (
+                          <li key={i}>{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+              <button onClick={onContinue} className="continue-anyway-btn">
+                Continuar sin práctica de pronunciación
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -215,48 +317,77 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
   }
 
   const handlePlayAudio = () => {
-    // Intentar reproducir audio pregrabado primero
+    if (isPlaying) return;
+
+    setIsPlaying(true);
+
+    // Try prerecorded audio first, fallback to TTS
     const audioFile = `/audio/spanish/${currentVerb.audioKey}.mp3`;
-    
+
     if (audioRef.current) {
       audioRef.current.src = audioFile;
-      audioRef.current.play().catch((error) => {
-        // Si no hay archivo de audio, usar síntesis de voz como fallback
-        console.log('Audio file not found, using text-to-speech fallback:', error.message);
-        speakText(currentVerb.form);
-      });
+      audioRef.current.play()
+        .then(() => {
+          // Audio file played successfully
+        })
+        .catch((error) => {
+          // Fallback to enhanced TTS
+          logger.debug('Audio file not found, using TTS:', error.message);
+          speakText(currentVerb.form, 'es-ES', {
+            rate: 0.7,
+            onStart: () => setIsPlaying(true),
+            onEnd: () => setIsPlaying(false),
+            onError: () => setIsPlaying(false)
+          });
+        });
     } else {
-      // Fallback directo a síntesis de voz
-      console.log('Audio element not available, using text-to-speech');
-      speakText(currentVerb.form);
+      // Direct TTS fallback
+      speakText(currentVerb.form, 'es-ES', {
+        rate: 0.7,
+        onStart: () => setIsPlaying(true),
+        onEnd: () => setIsPlaying(false),
+        onError: () => setIsPlaying(false)
+      });
     }
+  };
+
+  // Audio ended event
+  const handleAudioEnded = () => {
+    setIsPlaying(false);
   };
 
   const handleStartRecording = async () => {
     try {
-      setIsRecording(true);
       setRecordingResult(null);
-      
-      // Simular grabación (en una implementación real usarías Web Speech API)
-      setTimeout(() => {
-        setIsRecording(false);
-        // Simular resultado de reconocimiento
-        const accuracy = Math.random() * 40 + 60; // 60-100%
+      setShowDetailed(false);
+
+      // Start speech recognition
+      const success = await speechService.startListening({
+        language: 'es-ES'
+      });
+
+      if (!success) {
         setRecordingResult({
-          accuracy: Math.round(accuracy),
-          feedback: accuracy > 80 ? '¡Excelente pronunciación!' : 
-                   accuracy > 70 ? 'Muy bien, sigue practicando' :
-                   'Intenta enfocarte en la acentuación'
+          accuracy: 0,
+          feedback: 'No se pudo iniciar el reconocimiento de voz',
+          suggestions: ['Verifica los permisos del micrófono'],
+          error: true
         });
-      }, 3000);
+      }
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      logger.error('Error starting recording:', error);
       setIsRecording(false);
       setRecordingResult({
         accuracy: 0,
-        feedback: 'No se pudo acceder al micrófono. Inténtalo de nuevo.'
+        feedback: 'Error al acceder al micrófono',
+        suggestions: ['Verifica que tu micrófono esté conectado', 'Permite el acceso al micrófono en tu navegador'],
+        error: true
       });
     }
+  };
+
+  const handleStopRecording = () => {
+    speechService.stopListening();
   };
 
   const handleNext = () => {
@@ -264,6 +395,7 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
       setCurrentIndex(currentIndex + 1);
       setRecordingResult(null);
       setShowPronunciation(false);
+      setShowDetailed(false);
     } else {
       onContinue();
     }
@@ -274,7 +406,16 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
       setCurrentIndex(currentIndex - 1);
       setRecordingResult(null);
       setShowPronunciation(false);
+      setShowDetailed(false);
     }
+  };
+
+  const handleRepeatWord = () => {
+    handlePlayAudio();
+  };
+
+  const handleSkipWord = () => {
+    handleNext();
   };
 
   return (
@@ -300,11 +441,29 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
             </div>
 
             <div className="audio-section">
-              <button className="play-audio-btn" onClick={handlePlayAudio}>
-                <span className="audio-icon">🔊</span>
-                Escuchar pronunciación
+              <button
+                className={`play-audio-btn ${isPlaying ? 'playing' : ''}`}
+                onClick={handlePlayAudio}
+                disabled={isPlaying}
+              >
+                <img src="/play.png" alt="Reproducir" className="audio-icon" />
+                {isPlaying ? 'Reproduciendo...' : 'Escuchar pronunciación'}
               </button>
-              <audio ref={audioRef} style={{ display: 'none' }} />
+              <audio
+                ref={audioRef}
+                style={{ display: 'none' }}
+                onEnded={handleAudioEnded}
+                onError={() => setIsPlaying(false)}
+              />
+
+              <div className="verb-context">
+                <span className="verb-person">
+                  {currentVerb.person && `${currentVerb.person} persona`}
+                </span>
+                <span className="verb-mood-tense">
+                  {TENSE_LABELS[currentVerb.tense]} - {currentVerb.mood}
+                </span>
+              </div>
             </div>
 
             <div className="pronunciation-guide">
@@ -334,36 +493,162 @@ function PronunciationPractice({ tense, onBack, onContinue }) {
             </div>
 
             <div className="recording-section">
-              <button 
-                className={`record-btn ${isRecording ? 'recording' : ''}`}
-                onClick={handleStartRecording}
-                disabled={isRecording}
-              >
-                <span className="mic-icon">🎤</span>
-                {isRecording ? 'Grabando...' : 'Grabar mi pronunciación'}
-              </button>
+              <div className="recording-controls">
+                <button
+                  className={`record-btn ${isRecording ? 'recording' : ''}`}
+                  onClick={isRecording ? handleStopRecording : handleStartRecording}
+                  disabled={isPlaying}
+                >
+                  <span className="mic-icon">●</span>
+                  {isRecording ? 'Detener grabación' : 'Grabar mi pronunciación'}
+                </button>
+
+                {isRecording && (
+                  <div className="recording-indicator">
+                    <div className="waveform">
+                      {audioWaveform.map((height, i) => (
+                        <div
+                          key={i}
+                          className="wave-bar"
+                          style={{ height: `${height}%` }}
+                        />
+                      ))}
+                    </div>
+                    <span className="recording-text">Escuchando...</span>
+                  </div>
+                )}
+              </div>
 
               {recordingResult && (
-                <div className={`recording-result ${recordingResult.accuracy > 70 ? 'good' : 'needs-work'}`}>
-                  <div className="accuracy-score">
-                    Precisión: {recordingResult.accuracy}%
-                  </div>
+                <div className={`recording-result ${
+                  recordingResult.error ? 'error' :
+                  recordingResult.accuracy > 80 ? 'excellent' :
+                  recordingResult.accuracy > 70 ? 'good' :
+                  recordingResult.accuracy > 50 ? 'fair' : 'needs-work'
+                }`}>
+                  {!recordingResult.error && (
+                    <div className="accuracy-header">
+                      <div className="accuracy-score">
+                        <span className="score-number">{recordingResult.accuracy}%</span>
+                        <span className="score-label">Precisión</span>
+                      </div>
+                      <div className="accuracy-bar">
+                        <div
+                          className="accuracy-fill"
+                          style={{ width: `${recordingResult.accuracy}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div className="feedback">
                     {recordingResult.feedback}
+                  </div>
+
+                  {recordingResult.originalTranscript && (
+                    <div className="transcript">
+                      <strong>Reconocido:</strong> "{recordingResult.originalTranscript}"
+                    </div>
+                  )}
+
+                  {recordingResult.suggestions && recordingResult.suggestions.length > 0 && (
+                    <div className="suggestions">
+                      <strong>Sugerencias:</strong>
+                      <ul>
+                        {recordingResult.suggestions.slice(0, 2).map((suggestion, i) => (
+                          <li key={i}>{suggestion}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {recordingResult.detailedAnalysis && (
+                    <div className="detailed-toggle">
+                      <button
+                        className="show-detailed-btn"
+                        onClick={() => setShowDetailed(!showDetailed)}
+                      >
+                        {showDetailed ? 'Ocultar' : 'Ver'} análisis detallado
+                      </button>
+
+                      {showDetailed && (
+                        <div className="detailed-analysis">
+                          <div className="analysis-grid">
+                            <div className="analysis-item">
+                              <label>Similitud de texto:</label>
+                              <span>{recordingResult.detailedAnalysis.textSimilarity?.similarity || 0}%</span>
+                            </div>
+                            <div className="analysis-item">
+                              <label>Análisis fonético:</label>
+                              <span>{recordingResult.detailedAnalysis.phoneticAnalysis?.overall_score || 0}%</span>
+                            </div>
+                            <div className="analysis-item">
+                              <label>Vocales:</label>
+                              <span>{recordingResult.detailedAnalysis.phoneticAnalysis?.vowel_accuracy || 0}%</span>
+                            </div>
+                            <div className="analysis-item">
+                              <label>Consonantes:</label>
+                              <span>{recordingResult.detailedAnalysis.phoneticAnalysis?.consonant_accuracy || 0}%</span>
+                            </div>
+                          </div>
+
+                          {recordingResult.phoneticsBreakdown && (
+                            <div className="phonetics-breakdown">
+                              <h4>Análisis fonético de "{recordingResult.phoneticsBreakdown.word}":</h4>
+                              <div className="breakdown-details">
+                                <p><strong>Sílabas:</strong> {recordingResult.phoneticsBreakdown.syllables}</p>
+                                <p><strong>Vocales:</strong> {recordingResult.phoneticsBreakdown.vowels}</p>
+                                <p><strong>Consonantes:</strong> {recordingResult.phoneticsBreakdown.consonants}</p>
+                                <p><strong>Patrón de acento:</strong> {recordingResult.phoneticsBreakdown.stress_pattern}</p>
+                              </div>
+
+                              {recordingResult.phoneticsBreakdown.difficulty_elements?.length > 0 && (
+                                <div className="difficulty-elements">
+                                  <h5>Elementos de dificultad:</h5>
+                                  {recordingResult.phoneticsBreakdown.difficulty_elements.map((element, i) => (
+                                    <div key={i} className="difficulty-item">
+                                      <strong>{element.element}</strong> ({element.type}): {element.tip}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="result-actions">
+                    <button className="action-btn repeat-btn" onClick={handleRepeatWord}>
+                      <span className="action-icon">↻</span>
+                      Repetir ejemplo
+                    </button>
+                    <button className="action-btn try-again-btn" onClick={handleStartRecording}>
+                      <span className="action-icon">●</span>
+                      Intentar de nuevo
+                    </button>
                   </div>
                 </div>
               )}
             </div>
 
             <div className="navigation-buttons">
-              <button 
+              <button
                 className="nav-btn prev-btn"
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
               >
                 ← Anterior
               </button>
-              <button 
+
+              <div className="center-actions">
+                <button className="action-btn skip-btn" onClick={handleSkipWord}>
+                  Saltar palabra
+                </button>
+              </div>
+
+              <button
                 className="nav-btn next-btn"
                 onClick={handleNext}
               >
