@@ -15,6 +15,7 @@ import {
   syncNow
 } from '../../lib/progress/userManager.js'
 import { getSyncAuthHeaderName } from '../../lib/config/syncConfig.js'
+import { getSyncStatus as getCloudSyncStatus } from '../../lib/progress/cloudSync.js'
 // import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
@@ -26,6 +27,7 @@ export default function DataManagementPanel({ onClose }) {
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
   const [syncStatus, setSyncStatus] = useState('idle')
+  const [lastSyncAt, setLastSyncAt] = useState(null)
   
   // Estado para importación
   const [importFile, setImportFile] = useState(null)
@@ -49,6 +51,46 @@ export default function DataManagementPanel({ onClose }) {
   const syncEnabled = isSyncEnabled()
   const localMode = isLocalSyncMode()
 
+  const normalizeDate = (value) => {
+    if (!value) return null
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value
+    }
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? null : parsed
+  }
+
+  const applyCloudSyncStatus = (cloudStatus) => {
+    if (!cloudStatus) {
+      setLastSyncAt(null)
+      setSyncStatus('ready')
+      return
+    }
+
+    const normalized = normalizeDate(cloudStatus.lastSyncTime)
+    setLastSyncAt(normalized)
+
+    if (cloudStatus.isSyncing) {
+      setSyncStatus('syncing')
+    } else if (cloudStatus.syncError) {
+      setSyncStatus('error')
+    } else if (normalized) {
+      setSyncStatus('synced')
+    } else {
+      setSyncStatus('ready')
+    }
+  }
+
+  const checkSyncStatus = async () => {
+    try {
+      const cloudStatus = getCloudSyncStatus?.()
+      applyCloudSyncStatus(cloudStatus)
+    } catch {
+      /* handle silently */
+      setSyncStatus('error')
+    }
+  }
+
   useEffect(() => {
     // Verificar estado de sincronización al cargar
     checkSyncStatus()
@@ -60,16 +102,6 @@ export default function DataManagementPanel({ onClose }) {
       })
     } catch {/* ignore */}
   }, [])
-
-  const checkSyncStatus = async () => {
-    try {
-      // En implementación real, verificaría el estado actual
-      setSyncStatus('ready')
-    } catch {
-      /* handle silently */
-      setSyncStatus('error')
-    }
-  }
 
   const handleExportJSON = async () => {
     setLoading(true)
@@ -162,6 +194,21 @@ export default function DataManagementPanel({ onClose }) {
       const res = await syncNow({ include: [] }) // prueba rápida de conectividad
       if (res && (res.success || res.reason === 'offline_or_disabled')) {
         setStatus(isSyncEnabled() ? '✅ Conectividad OK' : 'ℹ️ Sync deshabilitado, configura URL/token')
+        if (res.success) {
+          const cloudStatus = getCloudSyncStatus?.()
+          if (cloudStatus) {
+            applyCloudSyncStatus(cloudStatus)
+            if (!cloudStatus.lastSyncTime) {
+              const now = new Date()
+              setLastSyncAt(now)
+              setSyncStatus('synced')
+            }
+          } else {
+            const now = new Date()
+            setLastSyncAt(now)
+            setSyncStatus('synced')
+          }
+        }
       } else {
         setStatus('⚠️ No se pudo verificar conectividad')
       }
@@ -188,7 +235,19 @@ export default function DataManagementPanel({ onClose }) {
 
         const statsText = uploadStats.length > 0 ? ` (${uploadStats.join(', ')})` : ''
         setStatus(`✅ Sincronización completada exitosamente${statsText}`)
-        setSyncStatus('synced')
+        const cloudStatus = getCloudSyncStatus?.()
+        if (cloudStatus) {
+          applyCloudSyncStatus(cloudStatus)
+          if (!cloudStatus.lastSyncTime) {
+            const now = new Date()
+            setLastSyncAt(now)
+            setSyncStatus('synced')
+          }
+        } else {
+          const now = new Date()
+          setLastSyncAt(now)
+          setSyncStatus('synced')
+        }
       } else {
         const reason = result.reason === 'not_authenticated' ? 'Usuario no autenticado' :
                       result.reason === 'sync_disabled' ? 'Sync deshabilitado' :
@@ -361,7 +420,10 @@ export default function DataManagementPanel({ onClose }) {
             </div>
             <div className="sync-status">
               <p>Estado: {syncStatus}</p>
-              <p>Última sincronización: {new Date().toLocaleString()}</p>
+              <p>Última sincronización: {lastSyncAt ? lastSyncAt.toLocaleString() : '—'}</p>
+              {!lastSyncAt && (
+                <p className="sync-notice">🔔 Aún no se ha realizado ninguna sincronización.</p>
+              )}
             </div>
           </div>
         )}
