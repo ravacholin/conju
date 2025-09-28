@@ -10,7 +10,7 @@
  * - Double mode support
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getDueItems } from '../../lib/progress/srs.js'
 import { gateDueItemsByCurriculum } from '../../lib/core/curriculumGate.js'
@@ -26,7 +26,8 @@ import {
   matchesSpecific as MATCHES_SPECIFIC,
   allowsPerson as ALLOWS_PERSON,
   allowsLevel as ALLOWS_LEVEL,
-  generateAllFormsForRegion
+  generateAllFormsForRegion,
+  getFormsCacheKey
 } from './DrillFormFilters.js'
 import { 
   validateEligibleForms, 
@@ -54,6 +55,14 @@ export const useDrillGenerator = () => {
   const settings = useSettings()
   const [isGenerating, setIsGenerating] = useState(false)
   const [lastGeneratedItem, setLastGeneratedItem] = useState(null)
+  const formsPoolRef = useRef({ signature: null, forms: null })
+
+  const getNow = () => {
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+      return performance.now()
+    }
+    return Date.now()
+  }
 
   /**
    * Generate next drill item using comprehensive selection algorithms
@@ -91,8 +100,32 @@ export const useDrillGenerator = () => {
       // Trigger smart preloading before form generation for better performance
       // Note: Verb preloading is no longer needed as all verbs are directly imported
 
-      // Generar formas dinámicamente basado en configuración del usuario
-      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      const region = settings.region || 'la_general'
+      const signature = getFormsCacheKey(region, settings)
+      let allFormsForRegion = formsPoolRef.current.forms
+
+      if (!allFormsForRegion || formsPoolRef.current.signature !== signature) {
+        const startTime = getNow()
+        allFormsForRegion = await generateAllFormsForRegion(region, settings)
+        const endTime = getNow()
+        const durationMs = Number((endTime - startTime).toFixed(2))
+
+        logger.debug('generateNextItem', 'Built forms pool for generation', {
+          signature,
+          durationMs,
+          totalForms: allFormsForRegion?.length || 0
+        })
+
+        formsPoolRef.current = {
+          signature,
+          forms: allFormsForRegion
+        }
+      } else {
+        logger.debug('generateNextItem', 'Reusing memoized forms pool', {
+          signature,
+          totalForms: allFormsForRegion.length
+        })
+      }
 
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         logger.error('generateNextItem', 'No forms available for region', settings.region)

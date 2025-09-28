@@ -24,6 +24,48 @@ import { expandSimplifiedGroup } from '../../lib/data/simplifiedFamilyGroups.js'
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
 
+export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
+  `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}:${settings.verbType || 'all'}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
+
+async function buildFormsPool(region = 'la_general', settings = {}) {
+  const normalizeForms = (forms = []) => forms.map(form => ({ ...form }))
+
+  let forms
+
+  if (region === 'global') {
+    const [rioplatense, peninsular] = await Promise.all([
+      getFormsForRegion('rioplatense', settings),
+      getFormsForRegion('peninsular', settings)
+    ])
+    const combined = [...normalizeForms(rioplatense), ...normalizeForms(peninsular)]
+    const dedup = deduplicateForms(combined)
+    forms = dedup
+  } else {
+    forms = normalizeForms(await getFormsForRegion(region, settings))
+  }
+
+  if ((!forms || forms.length === 0) && settings.enableChunks !== false) {
+    console.warn('generateAllFormsForRegion', 'Primary form load returned empty, retrying with chunks disabled')
+    const fallbackSettings = { ...settings, enableChunks: false }
+    const fallbackForms = region === 'global'
+      ? deduplicateForms([
+          ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings)),
+          ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings))
+        ])
+      : normalizeForms(await getFormsForRegion(region, fallbackSettings))
+    if (fallbackForms?.length) {
+      forms = fallbackForms
+    }
+  }
+
+  if (!forms || forms.length === 0) {
+    console.error('generateAllFormsForRegion', 'No forms available after all fallbacks', { region, settings })
+    return []
+  }
+
+  return forms
+}
+
 function deduplicateForms(forms = []) {
   const seen = new Set()
   const out = []
@@ -47,54 +89,43 @@ const lookupVerb = (lemma) => VERB_LOOKUP_MAP.get(lemma)
  * @returns {Array} - Array de formas enriquecidas con lemma
  */
 export async function generateAllFormsForRegion(region = 'la_general', settings = {}) {
-  const cacheKey = `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}:${settings.verbType || 'all'}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
-  
+  const cacheKey = getFormsCacheKey(region, settings)
+
   // Check cache first
   if (formsCache.has(cacheKey)) {
-    return formsCache.get(cacheKey)
-  }
-  
-  const normalizeForms = (forms = []) => forms.map(form => ({ ...form }))
-
-  try {
-    let forms
-    if (region === 'global') {
-      const [rioplatense, peninsular] = await Promise.all([
-        getFormsForRegion('rioplatense', settings),
-        getFormsForRegion('peninsular', settings)
-      ])
-      const combined = [...normalizeForms(rioplatense), ...normalizeForms(peninsular)]
-      const dedup = deduplicateForms(combined)
-      forms = dedup
-    } else {
-      forms = normalizeForms(await getFormsForRegion(region, settings))
-    }
-
-    if ((!forms || forms.length === 0) && settings.enableChunks !== false) {
-      console.warn('generateAllFormsForRegion', 'Primary form load returned empty, retrying with chunks disabled')
-      const fallbackSettings = { ...settings, enableChunks: false }
-      const fallbackForms = region === 'global'
-        ? deduplicateForms([
-            ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings)),
-            ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings))
-          ])
-        : normalizeForms(await getFormsForRegion(region, fallbackSettings))
-      if (fallbackForms?.length) {
-        forms = fallbackForms
+    const cached = formsCache.get(cacheKey)
+    if (cached instanceof Promise) {
+      try {
+        const resolved = await cached
+        formsCache.set(cacheKey, resolved)
+        return resolved
+      } catch (error) {
+        formsCache.delete(cacheKey)
+        console.error('generateAllFormsForRegion', 'Failed to resolve cached promise', { region, settings, error })
+        return []
       }
     }
+    return cached
+  }
 
-    if (!forms || forms.length === 0) {
-      console.error('generateAllFormsForRegion', 'No forms available after all fallbacks', { region, settings })
-      formsCache.set(cacheKey, [])
-      return []
-    }
+  try {
+    const buildingPromise = buildFormsPool(region, settings)
+      .then(forms => {
+        formsCache.set(cacheKey, forms)
+        return forms
+      })
+      .catch(error => {
+        formsCache.delete(cacheKey)
+        console.error('generateAllFormsForRegion', 'Failed to build forms for region', { region, settings, error })
+        return []
+      })
 
-    formsCache.set(cacheKey, forms)
-    return forms
+    formsCache.set(cacheKey, buildingPromise)
+
+    return await buildingPromise
   } catch (error) {
-    console.error('generateAllFormsForRegion', 'Failed to build forms for region', { region, settings, error })
-    formsCache.set(cacheKey, [])
+    console.error('generateAllFormsForRegion', 'Unexpected error while building forms', { region, settings, error })
+    formsCache.delete(cacheKey)
     return []
   }
 }
