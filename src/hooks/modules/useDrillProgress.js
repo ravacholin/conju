@@ -67,6 +67,12 @@ export const useDrillProgress = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const processingRef = useRef(false)
   const [systemReady, setSystemReady] = useState(isProgressSystemReady())
+  const progressModulesRef = useRef({
+    processUserResponse,
+    recordAttempt,
+    updateMastery,
+    scheduleNextReview
+  })
   const [progressStats, setProgressStats] = useState({
     totalAttempts: 0,
     correctAttempts: 0,
@@ -77,6 +83,15 @@ export const useDrillProgress = () => {
   const [momentum, setMomentum] = useState(null)
   const [confidence, setConfidence] = useState(null)
 
+  useEffect(() => {
+    progressModulesRef.current = {
+      processUserResponse,
+      recordAttempt,
+      updateMastery,
+      scheduleNextReview
+    }
+  }, [processUserResponse, recordAttempt, updateMastery, scheduleNextReview])
+
   /**
    * Process a drill response with comprehensive progress tracking
    * @param {Object} item - Current drill item
@@ -85,6 +100,13 @@ export const useDrillProgress = () => {
    * @returns {Promise<Object>} - Processing result
    */
   const handleResponse = useCallback(async (item, response, onResult) => {
+    const {
+      processUserResponse: activeProcessUserResponse,
+      recordAttempt: recordAttemptFn,
+      updateMastery: updateMasteryFn,
+      scheduleNextReview: scheduleNextReviewFn
+    } = progressModulesRef.current
+
     // Check processing lock immediately and return early if locked
     if (processingRef.current) {
       logger.warn('handleResponse', 'Progress processing already in progress')
@@ -104,7 +126,7 @@ export const useDrillProgress = () => {
       }
 
       // Check if progress system is ready using event-based state
-      const progressSystemAvailable = processUserResponse && systemReady
+      const progressSystemAvailable = activeProcessUserResponse && systemReady
       if (!progressSystemAvailable) {
         logger.warn('handleResponse', 'Progress system not ready, using graceful degradation mode')
       }
@@ -144,9 +166,9 @@ export const useDrillProgress = () => {
 
       // Process with main progress tracking system
       let progressResult = null
-      if (progressSystemAvailable && processUserResponse) {
+      if (progressSystemAvailable && activeProcessUserResponse) {
         try {
-          progressResult = await processUserResponse(item, response, {
+          progressResult = await activeProcessUserResponse(item, response, {
             userId,
             timestamp: new Date(),
             sessionContext: {
@@ -162,9 +184,9 @@ export const useDrillProgress = () => {
       }
 
       // Record SRS attempt
-      if (progressSystemAvailable && recordAttempt) {
+      if (progressSystemAvailable && recordAttemptFn) {
         try {
-          await recordAttempt(userId, {
+          await recordAttemptFn(userId, {
             lemma: item.lemma,
             mood: item.mood,
             tense: item.tense,
@@ -176,9 +198,9 @@ export const useDrillProgress = () => {
       }
 
       // Update mastery if needed
-      if (progressSystemAvailable && updateMastery && response.isCorrect) {
+      if (progressSystemAvailable && updateMasteryFn && response.isCorrect) {
         try {
-          await updateMastery(userId, {
+          await updateMasteryFn(userId, {
             lemma: item.lemma,
             mood: item.mood,
             tense: item.tense,
@@ -190,9 +212,9 @@ export const useDrillProgress = () => {
       }
 
       // Schedule next review
-      if (progressSystemAvailable && scheduleNextReview) {
+      if (progressSystemAvailable && scheduleNextReviewFn) {
         try {
-          await scheduleNextReview(userId, {
+          await scheduleNextReviewFn(userId, {
             lemma: item.lemma,
             mood: item.mood,
             tense: item.tense,
@@ -303,7 +325,7 @@ export const useDrillProgress = () => {
       processingRef.current = false
       setIsProcessing(false)
     }
-  }, [isProcessing, progressStats])
+  }, [systemReady, processUserResponse, recordAttempt, updateMastery, scheduleNextReview])
 
   /**
    * Handle hint usage tracking
@@ -314,7 +336,8 @@ export const useDrillProgress = () => {
   const handleHintShown = useCallback(async (item, hintType = 'generic') => {
     try {
       const userId = getCurrentUserId()
-      if (!userId || !processUserResponse || !systemReady) {
+      const { processUserResponse: activeProcessUserResponse } = progressModulesRef.current
+      if (!userId || !activeProcessUserResponse || !systemReady) {
         logger.debug('handleHintShown', 'Progress system not available for hint tracking')
         return
       }
@@ -327,8 +350,8 @@ export const useDrillProgress = () => {
       })
 
       // Record hint usage in progress system
-      if (processUserResponse) {
-        await processUserResponse(item, {
+      if (activeProcessUserResponse) {
+        await activeProcessUserResponse(item, {
           type: 'hint_shown',
           hintType,
           timestamp: new Date()
@@ -344,7 +367,7 @@ export const useDrillProgress = () => {
     } catch (error) {
       logger.warn('handleHintShown', 'Error recording hint usage', error)
     }
-  }, [])
+  }, [systemReady])
 
   /**
    * Get current progress insights
