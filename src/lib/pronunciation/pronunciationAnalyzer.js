@@ -152,14 +152,20 @@ class PronunciationAnalyzer {
    * Calculate text similarity using Levenshtein distance
    */
   analyzeTextSimilarity(target, recognized) {
+    // Check for exact match first (case-insensitive, accent-tolerant)
+    const exactMatch = target === recognized;
+
     const distance = this.levenshteinDistance(target, recognized);
     const maxLength = Math.max(target.length, recognized.length);
     const similarity = maxLength === 0 ? 100 : ((maxLength - distance) / maxLength) * 100;
 
+    // If it's an exact match after normalization, give perfect score
+    const finalSimilarity = exactMatch ? 100 : similarity;
+
     return {
-      similarity: Math.round(similarity),
+      similarity: Math.round(finalSimilarity),
       distance,
-      exact_match: target === recognized,
+      exact_match: exactMatch,
       character_errors: distance,
       target_length: target.length,
       recognized_length: recognized.length
@@ -381,6 +387,11 @@ class PronunciationAnalyzer {
    * Calculate overall accuracy score
    */
   calculateOverallAccuracy(detailedAnalysis) {
+    // If there's an exact text match, give excellent score
+    if (detailedAnalysis.textSimilarity.exact_match) {
+      return 95; // Near perfect for exact match
+    }
+
     const weights = {
       textSimilarity: 0.4,
       phoneticAnalysis: 0.3,
@@ -400,7 +411,12 @@ class PronunciationAnalyzer {
   /**
    * Generate user-friendly feedback
    */
-  generateFeedback(accuracy, _analysis) {
+  generateFeedback(accuracy, analysis) {
+    // Special feedback for exact matches
+    if (analysis.textSimilarity.exact_match) {
+      return '¡Perfecto! Pronunciación exacta y clara.';
+    }
+
     if (accuracy >= this.thresholds.excellent) {
       return '¡Excelente pronunciación! Tu acento es muy claro y natural.';
     } else if (accuracy >= this.thresholds.good) {
