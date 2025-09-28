@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import authService from '../../lib/auth/authService.js'
 import './AuthModal.css'
 
@@ -43,15 +43,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     }
   }, [onSuccess, onClose])
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
     setError('') // Clear error when user types
-  }
+  }, [formData])
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -81,7 +81,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [mode, formData, onSuccess, onClose])
 
   const handleGoogleLogin = async () => {
     setError('')

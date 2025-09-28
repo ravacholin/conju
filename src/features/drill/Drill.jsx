@@ -401,6 +401,7 @@ export default function Drill({
             className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            aria-label="Ingresa la conjugación del verbo"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -477,6 +478,7 @@ export default function Drill({
                 value={input}
                 onChange={(e)=>setInput(e.target.value)}
                 placeholder="Escribí la primera forma..."
+                aria-label="Ingresa la primera forma del verbo"
                 onKeyDown={(e)=>{
                   if(e.key==='Enter'){
                     e.preventDefault();
@@ -497,6 +499,7 @@ export default function Drill({
                 value={secondInput}
                 onChange={(e)=>setSecondInput(e.target.value)}
                 placeholder="Escribí la segunda forma..."
+                aria-label="Ingresa la segunda forma del verbo"
                 onKeyDown={(e)=>{
                   if(e.key==='Enter'){
                     e.preventDefault();

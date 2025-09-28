@@ -60,7 +60,7 @@
  * @see {@link ./QuickSwitchPanel.jsx} - Panel de configuración rápida
  */
 
-import React, { useState, useEffect, Suspense, lazy } from 'react'
+import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
@@ -95,7 +95,7 @@ function DrillMode({
     setShowGames(false)
   }
 
-  const handleToggleQuickSwitch = (show = null) => {
+  const handleToggleQuickSwitch = useCallback((show = null) => {
     const newShow = show !== null ? show : !showQuickSwitch
     if (newShow) {
       closeAllPanels()
@@ -103,9 +103,9 @@ function DrillMode({
     } else {
       setShowQuickSwitch(false)
     }
-  }
+  }, [showQuickSwitch])
 
-  const handleToggleGames = (show = null) => {
+  const handleToggleGames = useCallback((show = null) => {
     const newShow = show !== null ? show : !showGames
     if (newShow) {
       closeAllPanels()
@@ -113,7 +113,7 @@ function DrillMode({
     } else {
       setShowGames(false)
     }
-  }
+  }, [showGames])
 
   const handleToggleAccentKeys = () => {
     setShowAccentKeys(prev => !prev)

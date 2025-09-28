@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
@@ -8,26 +8,27 @@ import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
 
+// Pre-compiled tense patterns for performance
+const TENSE_PATTERNS = {
+  'pres': /\b\w+[oaeáéí]\b|\b(soy|eres|es|somos|sois|son|estoy|estás|está|estamos|estáis|están|voy|vas|va|vamos|vais|van)\b/g,
+  'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b|\b(fui|fuiste|fue|fuimos|fuisteis|fueron|tuve|tuviste|tuvo|tuvimos|tuvisteis|tuvieron)\b/g,
+  'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b|\b(era|eras|éramos|erais|eran|estaba|estabas|estábamos|estabais|estaban)\b/g,
+  'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b|\b(seré|serás|será|seremos|seréis|serán|estaré|estarás|estará|estaremos|estaréis|estarán)\b/g,
+  'pretPerf': /\b(he|has|ha|hemos|habéis|han)\s+\w+ado\b|\b(he|has|ha|hemos|habéis|han)\s+\w+ido\b/g
+};
+
 // Helper function to detect tense usage patterns in conversational text
 function detectTenseUsage(userText, expectedTense) {
   const text = userText.toLowerCase();
 
-  const tensePatterns = {
-    'pres': /\b\w+[oaeáéí]\b|\b(soy|eres|es|somos|sois|son|estoy|estás|está|estamos|estáis|están|voy|vas|va|vamos|vais|van)\b/g,
-    'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b|\b(fui|fuiste|fue|fuimos|fuisteis|fueron|tuve|tuviste|tuvo|tuvimos|tuvisteis|tuvieron)\b/g,
-    'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b|\b(era|eras|éramos|erais|eran|estaba|estabas|estábamos|estabais|estaban)\b/g,
-    'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b|\b(seré|serás|será|seremos|seréis|serán|estaré|estarás|estará|estaremos|estaréis|estarán)\b/g,
-    'pretPerf': /\b(he|has|ha|hemos|habéis|han)\s+\w+ado\b|\b(he|has|ha|hemos|habéis|han)\s+\w+ido\b/g
-  };
-
-  const expectedPattern = tensePatterns[expectedTense];
+  const expectedPattern = TENSE_PATTERNS[expectedTense];
   const wrongTenseUsed = [];
 
   // Check if user used expected tense
   const hasExpectedTense = expectedPattern && expectedPattern.test(text);
 
   // Check for wrong tenses
-  for (const [tense, pattern] of Object.entries(tensePatterns)) {
+  for (const [tense, pattern] of Object.entries(TENSE_PATTERNS)) {
     if (tense !== expectedTense && pattern.test(text)) {
       wrongTenseUsed.push(tense);
     }
@@ -233,13 +234,13 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
 
   const exercise = tense ? chatData[tense.tense] : null;
   
-  // Create a dummy currentItem for progress tracking
-  const currentItem = {
+  // Create a dummy currentItem for progress tracking (memoized)
+  const currentItem = useMemo(() => ({
     id: `communicative-practice-${tense?.tense}`,
     lemma: 'communicative-practice',
     tense: tense?.tense,
     mood: tense?.mood
-  };
+  }), [tense?.tense, tense?.mood]);
   
   const { handleResult } = useProgressTracking(currentItem, (result) => {
     console.log('Communicative practice progress tracking result:', result);
@@ -259,7 +260,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
     }
   }, [exercise]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!inputValue.trim() || !exercise) return;
 
     const currentScriptNode = exercise.script[scriptIndex];
@@ -398,7 +399,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
 
     setMessages(newMessages);
     setInputValue('');
-  };
+  }, [inputValue, exercise, scriptIndex, messages, eligibleForms, tense, currentItem, handleResult]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

@@ -437,8 +437,8 @@ function MeaningfulPractice({
             </button>
           )}
           {onHome && (
-            <button onClick={onHome} className="home-btn" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="home-icon large-icon" />
+            <button onClick={onHome} className="icon-btn" aria-label="Inicio" title="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
             </button>
           )}
         </div>
