@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
-import { useProgressTracking } from '../drill/useProgressTracking.js';
-import logger from '../../lib/utils/logger.js';
+import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
+import { logger } from '../../lib/utils/logger.js';
 import './PronunciationPractice.css';
 
 // Enhanced Text-to-Speech with Spanish voice optimization
