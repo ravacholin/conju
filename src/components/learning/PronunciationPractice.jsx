@@ -60,7 +60,7 @@ const speakText = (text, lang = 'es-ES', options = {}) => {
   }
 };
 
-// Generate pronunciation data from eligible forms
+// Generate pronunciation data from eligible forms or create fallback data
 const generatePronunciationData = (eligibleForms, tense) => {
   console.log('🔍 generatePronunciationData called with:', {
     eligibleFormsLength: eligibleForms?.length,
@@ -68,32 +68,42 @@ const generatePronunciationData = (eligibleForms, tense) => {
     firstForm: eligibleForms?.[0]
   });
 
-  if (!eligibleForms || eligibleForms.length === 0) {
-    console.log('❌ No eligibleForms available');
-    return null;
-  }
-
-  // More permissive filtering - try different approaches
   let selectedForms = [];
 
-  // First attempt: exact match with mood and tense
-  if (tense?.mood && tense?.tense) {
-    selectedForms = eligibleForms.filter(form =>
-      form.mood === tense.mood && form.tense === tense.tense
-    );
-    console.log('🎯 Exact match filter result:', selectedForms.length, 'forms');
+  // Try to use eligible forms if available
+  if (eligibleForms && eligibleForms.length > 0) {
+    // First attempt: exact match with mood and tense
+    if (tense?.mood && tense?.tense) {
+      selectedForms = eligibleForms.filter(form =>
+        form.mood === tense.mood && form.tense === tense.tense
+      );
+      console.log('🎯 Exact match filter result:', selectedForms.length, 'forms');
+    }
+
+    // Second attempt: match by tense only (more permissive)
+    if (selectedForms.length === 0 && tense?.tense) {
+      selectedForms = eligibleForms.filter(form => form.tense === tense.tense);
+      console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
+    }
+
+    // Third attempt: take any forms if still empty (fallback)
+    if (selectedForms.length === 0) {
+      selectedForms = eligibleForms.slice(0, 10); // Take first 10 forms as fallback
+      console.log('🚨 Using fallback - taking first 10 forms:', selectedForms.length);
+    }
   }
 
-  // Second attempt: match by tense only (more permissive)
-  if (selectedForms.length === 0 && tense?.tense) {
-    selectedForms = eligibleForms.filter(form => form.tense === tense.tense);
-    console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
-  }
-
-  // Third attempt: take any forms if still empty (fallback)
+  // Create emergency fallback data if no eligible forms or still empty
   if (selectedForms.length === 0) {
-    selectedForms = eligibleForms.slice(0, 10); // Take first 10 forms as fallback
-    console.log('🚨 Using fallback - taking first 10 forms:', selectedForms.length);
+    console.log('🆘 Creating emergency fallback pronunciation data');
+    const fallbackVerbs = [
+      { lemma: 'hablar', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '1s', value: 'hablo' },
+      { lemma: 'comer', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '2s', value: 'comes' },
+      { lemma: 'vivir', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '3s', value: 'vive' },
+      { lemma: 'ser', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '1p', value: 'somos' },
+      { lemma: 'tener', tense: tense?.tense || 'pres', mood: tense?.mood || 'indicative', person: '2p', value: 'tenéis' }
+    ];
+    selectedForms = fallbackVerbs;
   }
 
   // Select 5-7 representative forms for practice
@@ -183,12 +193,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       hasEligibleForms: eligibleForms && eligibleForms.length > 0
     });
 
-    if (eligibleForms && eligibleForms.length > 0) {
-      return generatePronunciationData(eligibleForms, tense);
-    }
-
-    console.log('❌ No eligibleForms in useMemo, returning null');
-    return null;
+    // Always try to generate pronunciation data, even if eligibleForms is empty
+    // The generatePronunciationData function now has fallback logic
+    return generatePronunciationData(eligibleForms, tense);
   }, [eligibleForms, tense]);
 
   const currentVerb = exerciseData?.verbs[currentIndex];
