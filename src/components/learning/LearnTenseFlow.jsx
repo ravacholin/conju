@@ -316,18 +316,19 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
           sampleForms: basePool.slice(0, 3)
         });
 
-        const learningSettings = {
+        const pronunciationSettings = {
           ...settings,
-          practiceMode: 'specific',
-          specificMood: selectedTense.mood,
-          specificTense: selectedTense.tense,
+          practiceMode: 'theme',           // Less restrictive than 'specific'
+          cameFromTema: true,             // Bypass curriculum level restrictions
+          specificMood: selectedTense.mood,     // Keep for soft filtering
+          specificTense: selectedTense.tense,   // Keep for soft filtering
           verbType: verbType || 'all',
           selectedFamilies
         }
 
-        console.log('⚙️ Learning settings for pronunciation practice:', learningSettings);
+        console.log('⚙️ Pronunciation settings (less restrictive):', pronunciationSettings);
 
-        const gated = getEligibleFormsForSettings(basePool, learningSettings)
+        const gated = getEligibleFormsForSettings(basePool, pronunciationSettings)
 
         console.log('🎯 Eligible forms after gating:', {
           totalEligible: gated.length,
