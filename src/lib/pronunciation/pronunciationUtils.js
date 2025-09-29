@@ -53,7 +53,7 @@ export const generatePronunciationTip = (word, _verb) => {
 export const convertCurrentItemToPronunciation = (currentItem) => {
   if (!currentItem) return null;
 
-  const form = currentItem.value || currentItem.form?.value || '';
+  const form = currentItem.value || currentItem.form?.value || currentItem.expectedValue || '';
   const verb = currentItem.lemma || '';
 
   return {
