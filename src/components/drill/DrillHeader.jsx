@@ -38,13 +38,7 @@ function DrillHeader({
         </button>
 
         <button
-          onClick={() => {
-            if (showPronunciation) {
-              onTogglePronunciation(false)
-            } else {
-              onTogglePronunciation(true)
-            }
-          }}
+          onClick={() => onTogglePronunciation()}
           className="icon-btn"
           title="Práctica de pronunciación"
         >

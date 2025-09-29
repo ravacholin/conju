@@ -111,7 +111,13 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
           accuracy: finalAnalysis.accuracy
         });
 
-        // No auto-advance - keep panel open for feedback
+        // Auto-advance if correct - continue to next drill after 2 seconds
+        if (isCorrect && onContinueRef.current) {
+          setTimeout(() => {
+            onCloseRef.current();
+            onContinueRef.current();
+          }, 2000);
+        }
       }
     }
   }, [pronunciationData, analyzer]); // Solo dependencias estables
@@ -300,14 +306,14 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
           <div className="feedback">
             {recordingResult.feedback}
-            {recordingResult.accuracy >= 60 && (
-              <div className="success-message" style={{
+            {recordingResult.accuracy >= 60 && onContinue && (
+              <div className="auto-continue-message" style={{
                 marginTop: '8px',
                 fontSize: '14px',
                 color: '#28a745',
                 fontWeight: 'bold'
               }}>
-                ✓ ¡Pronunciación correcta!
+                ✓ ¡Pronunciación correcta! Avanzando al siguiente...
               </div>
             )}
           </div>
