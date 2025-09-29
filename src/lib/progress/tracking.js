@@ -411,6 +411,43 @@ export async function trackTenseDrillEnded(tense, results = {}) {
 }
 
 /**
+ * Registra un intento de práctica de pronunciación
+ * @param {Object} context - Datos del intento de pronunciación
+ * @returns {Promise<void>}
+ */
+export async function trackPronunciationAttempt(context = {}) {
+  if (!currentSession) {
+    throw new Error('Sistema de tracking no inicializado')
+  }
+
+  try {
+    const pronunciationEvent = {
+      id: `pronunciation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: 'pronunciation_attempt',
+      userId: currentSession.userId,
+      sessionId: currentSession.id,
+      verbId: context.verbId || null,
+      lemma: context.lemma || null,
+      mood: context.mood || null,
+      tense: context.tense || null,
+      person: context.person || null,
+      target: context.target || null,
+      recognized: context.recognized || null,
+      accuracy: typeof context.accuracy === 'number' ? context.accuracy : null,
+      error: context.error || null,
+      metadata: context.metadata || null,
+      createdAt: new Date()
+    }
+
+    await saveEvent(pronunciationEvent)
+    console.log(`🎙️ Intento de pronunciación registrado: ${pronunciationEvent.id}`)
+  } catch (error) {
+    console.error('❌ Error al registrar intento de pronunciación:', error)
+    throw error
+  }
+}
+
+/**
  * Obtiene las estadísticas actuales del usuario
  * @returns {Promise<Object>} Estadísticas del usuario
  */

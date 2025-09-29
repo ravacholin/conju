@@ -280,7 +280,14 @@ const generatePronunciationTip = (word, _verb) => {
   return tips.length > 0 ? tips.join('. ') : 'Pronuncia cada sílaba claramente';
 };
 
-function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
+function PronunciationPractice({
+  tense,
+  eligibleForms,
+  onBack,
+  onContinue,
+  trackingItem = null,
+  onPronunciationEvent = null
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
@@ -296,7 +303,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const waveformRef = useRef(null);
 
   // Progress tracking integration
-  const { handleResult } = useProgressTracking(null, () => {});
+  const { handlePronunciationAttempt } = useProgressTracking(trackingItem, onPronunciationEvent);
+  const practiceOrigin = trackingItem ? 'drill_panel' : 'learning_flow';
 
   // Generate dynamic exercise data from eligible forms
   const exerciseData = useMemo(() => {
@@ -368,11 +376,19 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
       // Track progress
       if (currentVerb) {
-        handleResult(analysis.accuracy >= 70, analysis.accuracy, {
-          type: 'pronunciation',
-          target: currentVerb.form,
+        handlePronunciationAttempt?.({
+          accuracy: analysis.accuracy,
           recognized: result.transcript,
-          accuracy: analysis.accuracy
+          target: currentVerb.form,
+          verbId: trackingItem?.verbId || trackingItem?.lemma || currentVerb.verb,
+          lemma: currentVerb.verb,
+          mood: currentVerb.mood || tense?.mood || null,
+          tense: currentVerb.tense || tense?.tense || null,
+          person: currentVerb.person,
+          metadata: {
+            origin: practiceOrigin,
+            status: 'completed'
+          }
         });
       }
     }
@@ -386,6 +402,24 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       suggestions: error.recoverable ? ['Inténtalo de nuevo'] : ['Verifica tu configuración de micrófono'],
       error: true
     });
+
+    if (currentVerb) {
+      handlePronunciationAttempt?.({
+        accuracy: 0,
+        recognized: null,
+        target: currentVerb.form,
+        verbId: trackingItem?.verbId || trackingItem?.lemma || currentVerb.verb,
+        lemma: currentVerb.verb,
+        mood: currentVerb.mood || tense?.mood || null,
+        tense: currentVerb.tense || tense?.tense || null,
+        person: currentVerb.person,
+        error: error.message,
+        metadata: {
+          origin: practiceOrigin,
+          status: 'error'
+        }
+      });
+    }
   };
 
   const handleSpeechStart = () => {

@@ -1,13 +1,14 @@
 // Hook personalizado para tracking de progreso en Drill
 
 import { useEffect, useRef, useState } from 'react'
-import { 
-  trackAttemptStarted, 
+import {
+  trackAttemptStarted,
   trackAttemptSubmitted,
   trackHintShown,
   trackStreakIncremented,
   trackTenseDrillStarted,
-  trackTenseDrillEnded
+  trackTenseDrillEnded,
+  trackPronunciationAttempt
 } from './tracking.js'
 import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
 import {
@@ -193,12 +194,40 @@ export function useProgressTracking(currentItem, onResult) {
       logger.debug(`Drill de tiempo ${tense} finalizado (sin tracking)`)
       return
     }
-    
+
     try {
       await trackTenseDrillEnded(tense)
       logger.debug(`Drill de tiempo ${tense} finalizado y registrado`)
     } catch (error) {
       logger.warn('Error al registrar fin de drill:', error)
+    }
+  }
+
+  /**
+   * Registra un intento de práctica de pronunciación
+   * @param {Object} context - Datos adicionales del intento
+   */
+  const handlePronunciationAttempt = async (context = {}) => {
+    if (!progressSystemReady) {
+      logger.debug('Intento de pronunciación (sin tracking)')
+      return
+    }
+
+    try {
+      const payload = {
+        ...context,
+        verbId: context.verbId || currentItem?.verbId || currentItem?.lemma || null,
+        lemma: context.lemma || currentItem?.lemma || null,
+        mood: context.mood || currentItem?.mood || null,
+        tense: context.tense || currentItem?.tense || null,
+        person: context.person || currentItem?.person || null,
+        target: context.target || currentItem?.form?.value || null
+      }
+
+      await trackPronunciationAttempt(payload)
+      logger.debug('Intento de pronunciación registrado', payload)
+    } catch (error) {
+      logger.warn('Error al registrar intento de pronunciación:', error)
     }
   }
 
@@ -208,6 +237,7 @@ export function useProgressTracking(currentItem, onResult) {
     handleStreakIncremented,
     handleTenseDrillStarted,
     handleTenseDrillEnded,
+    handlePronunciationAttempt,
     progressSystemReady
   }
 }

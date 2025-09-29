@@ -1,13 +1,15 @@
 import React from 'react'
 
-function DrillHeader({ 
-  onToggleQuickSwitch, 
-  onToggleAccentKeys, 
-  onToggleGames, 
+function DrillHeader({
+  onToggleQuickSwitch,
+  onToggleAccentKeys,
+  onToggleGames,
+  onTogglePronunciation,
   onNavigateToProgress,
   onHome,
   showQuickSwitch,
-  showGames
+  showGames,
+  showPronunciation
 }) {
 
   return (
@@ -34,7 +36,7 @@ function DrillHeader({
         >
           <img src="/enie.png" alt="Tildes" className="menu-icon" />
         </button>
-        
+
         <button
           onClick={() => {
             if (showGames) {
@@ -48,7 +50,21 @@ function DrillHeader({
         >
           <img src="/dice.png" alt="Juegos" className="menu-icon" />
         </button>
-        
+
+        <button
+          onClick={() => {
+            if (showPronunciation) {
+              onTogglePronunciation(false)
+            } else {
+              onTogglePronunciation(true)
+            }
+          }}
+          className="icon-btn"
+          title="Pronunciación"
+        >
+          <img src="/megaf-imperat.png" alt="Pronunciación" className="menu-icon" />
+        </button>
+
         <button
           onClick={() => onNavigateToProgress()}
           className="icon-btn"

@@ -9,7 +9,8 @@ import {
   trackHintShown,
   trackStreakIncremented,
   trackTenseDrillStarted,
-  trackTenseDrillEnded
+  trackTenseDrillEnded,
+  trackPronunciationAttempt
 } from './tracking.js'
 
 // Mock de IndexedDB para pruebas
@@ -293,6 +294,31 @@ describe('Sistema de Tracking', () => {
           correctAttempts: 12,
           accuracy: 80,
           completed: true
+        })
+      )
+    })
+
+    it('debería registrar eventos de práctica de pronunciación', async () => {
+      const { saveEvent } = await import('./database.js')
+
+      await trackPronunciationAttempt({
+        verbId: 'hablar',
+        lemma: 'hablar',
+        mood: 'indicativo',
+        tense: 'presente',
+        person: '1s',
+        target: 'hablo',
+        recognized: 'ablo',
+        accuracy: 78
+      })
+
+      expect(saveEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'pronunciation_attempt',
+          userId: testUserId,
+          verbId: 'hablar',
+          target: 'hablo',
+          accuracy: 78
         })
       )
     })

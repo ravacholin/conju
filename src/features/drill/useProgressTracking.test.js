@@ -10,7 +10,8 @@ vi.mock('./tracking.js', () => ({
   trackHintShown: vi.fn(),
   trackStreakIncremented: vi.fn(),
   trackTenseDrillStarted: vi.fn(),
-  trackTenseDrillEnded: vi.fn()
+  trackTenseDrillEnded: vi.fn(),
+  trackPronunciationAttempt: vi.fn()
 }))
 
 vi.mock('../../lib/progress/userManager.js', () => ({
@@ -92,5 +93,30 @@ describe('useProgressTracking', () => {
     expect(firstCallItem.id).toBe(firstItem.id)
     expect(secondCallItem.id).toBe(secondItem.id)
     expect(firstCallItem.id).not.toBe(secondCallItem.id)
+  })
+
+  it('exposes pronunciation tracking handler', async () => {
+    const item = generateDrillItem(formsPool[0], settings, formsPool)
+
+    const { result } = renderHook(
+      ({ current }) => useProgressTracking(current, () => {}),
+      { initialProps: { current: item } }
+    )
+
+    await waitFor(() => {
+      expect(result.current.progressSystemReady).toBe(true)
+    })
+
+    await result.current.handlePronunciationAttempt({ accuracy: 82, recognized: 'hablo' })
+
+    const tracking = await import('./tracking.js')
+    expect(tracking.trackPronunciationAttempt).toHaveBeenCalledWith(
+      expect.objectContaining({
+        accuracy: 82,
+        recognized: 'hablo',
+        mood: item.mood,
+        tense: item.tense
+      })
+    )
   })
 })

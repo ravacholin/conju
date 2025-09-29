@@ -64,6 +64,7 @@ import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
+const PronunciationPanel = lazy(() => import('./PronunciationPanel.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
 /**
@@ -89,10 +90,12 @@ function DrillMode({
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
+  const [showPronunciation, setShowPronunciation] = useState(false)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
     setShowGames(false)
+    setShowPronunciation(false)
   }
 
   const handleToggleQuickSwitch = useCallback((show = null) => {
@@ -114,6 +117,16 @@ function DrillMode({
       setShowGames(false)
     }
   }, [showGames])
+
+  const handleTogglePronunciation = useCallback((show = null) => {
+    const newShow = show !== null ? show : !showPronunciation
+    if (newShow) {
+      closeAllPanels()
+      setShowPronunciation(true)
+    } else {
+      setShowPronunciation(false)
+    }
+  }, [showPronunciation])
 
   const handleToggleAccentKeys = () => {
     setShowAccentKeys(prev => !prev)
@@ -188,10 +201,12 @@ function DrillMode({
         onToggleQuickSwitch={handleToggleQuickSwitch}
         onToggleAccentKeys={handleToggleAccentKeys}
         onToggleGames={handleToggleGames}
+        onTogglePronunciation={handleTogglePronunciation}
         onNavigateToProgress={onNavigateToProgress}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
+        showPronunciation={showPronunciation}
       />
 
       {showQuickSwitch && (
@@ -213,6 +228,16 @@ function DrillMode({
             settings={settings}
             onClose={() => handleToggleGames(false)}
             onRegenerateItem={onRegenerateItem}
+          />
+        </Suspense>
+      )}
+
+      {showPronunciation && (
+        <Suspense fallback={<div className="loading">Cargando práctica de pronunciación...</div>}>
+          <PronunciationPanel
+            currentItem={currentItem}
+            onClose={() => handleTogglePronunciation(false)}
+            onContinue={() => handleTogglePronunciation(false)}
           />
         </Suspense>
       )}

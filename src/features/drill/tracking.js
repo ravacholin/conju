@@ -1,6 +1,6 @@
 // Funciones de tracking para el sistema de progreso
 
-import { 
+import {
   trackAttemptStarted as internalTrackAttemptStarted,
   trackAttemptSubmitted as internalTrackAttemptSubmitted,
   trackSessionEnded as internalTrackSessionEnded,
@@ -8,6 +8,7 @@ import {
   trackStreakIncremented as internalTrackStreakIncremented,
   trackTenseDrillStarted as internalTrackTenseDrillStarted,
   trackTenseDrillEnded as internalTrackTenseDrillEnded,
+  trackPronunciationAttempt as internalTrackPronunciationAttempt,
   getUserStats as internalGetUserStats
 } from '../../lib/progress/tracking.js'
 import { classifyError as internalClassifyError } from '../../lib/progress/errorClassification.js'
@@ -109,6 +110,20 @@ export async function trackTenseDrillEnded(tense) {
     console.log(`✅ Drill de tiempo ${tense} finalizado`)
   } catch (error) {
     console.error('❌ Error al finalizar drill de tiempo:', error)
+  }
+}
+
+/**
+ * Registra un intento de práctica de pronunciación
+ * @param {Object} context - Datos del intento de pronunciación
+ * @returns {Promise<void>}
+ */
+export async function trackPronunciationAttempt(context = {}) {
+  try {
+    await internalTrackPronunciationAttempt(context)
+    console.log('🎙️ Intento de pronunciación registrado')
+  } catch (error) {
+    console.error('❌ Error al registrar intento de pronunciación:', error)
   }
 }
 
