@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
 import { convertCurrentItemToPronunciation } from '../../lib/pronunciation/pronunciationUtils.js';
 import { logger } from '../../lib/utils/logger.js';
 
-function PronunciationPanelSafe({
+const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   currentItem,
   onClose,
   handleResult,
   onContinue
-}) {
+}, ref) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [speechService] = useState(() => new SpeechRecognitionService());
@@ -33,6 +33,30 @@ function PronunciationPanelSafe({
     onContinueRef.current = onContinue;
     onCloseRef.current = onClose;
   });
+
+  // Toggle recording function for external control
+  const toggleRecording = useCallback(async () => {
+    if (isRecording) {
+      speechService.stopListening();
+    } else {
+      const success = await speechService.startListening({
+        language: 'es-ES'
+      });
+      if (!success) {
+        setRecordingResult({
+          accuracy: 0,
+          feedback: 'No se pudo iniciar el reconocimiento de voz',
+          suggestions: ['Verifica los permisos del micrófono'],
+          error: true
+        });
+      }
+    }
+  }, [isRecording, speechService]);
+
+  // Expose toggleRecording function via ref
+  useImperativeHandle(ref, () => ({
+    toggleRecording
+  }), [toggleRecording]);
 
   // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
   const pronunciationData = useMemo(() => {
@@ -87,13 +111,7 @@ function PronunciationPanelSafe({
           accuracy: finalAnalysis.accuracy
         });
 
-        // Auto-advance if correct usando refs estables
-        if (isCorrect && onContinueRef.current) {
-          setTimeout(() => {
-            onCloseRef.current();
-            onContinueRef.current();
-          }, 2000);
-        }
+        // No auto-advance - keep panel open for feedback
       }
     }
   }, [pronunciationData, analyzer]); // Solo dependencias estables
@@ -282,14 +300,14 @@ function PronunciationPanelSafe({
 
           <div className="feedback">
             {recordingResult.feedback}
-            {recordingResult.accuracy >= 60 && onContinue && (
-              <div className="auto-continue-message" style={{
+            {recordingResult.accuracy >= 60 && (
+              <div className="success-message" style={{
                 marginTop: '8px',
                 fontSize: '14px',
                 color: '#28a745',
                 fontWeight: 'bold'
               }}>
-                ✓ ¡Pronunciación correcta! Avanzando al siguiente...
+                ✓ ¡Pronunciación correcta!
               </div>
             )}
           </div>
@@ -314,12 +332,18 @@ function PronunciationPanelSafe({
       )}
 
       <div className="setting-group">
-        <button className="btn btn-secondary" onClick={onClose}>
+        <button className="btn btn-secondary" onClick={() => {
+          // Stop recording if active when closing
+          if (isRecording) {
+            speechService.stopListening();
+          }
+          onClose();
+        }}>
           Cerrar
         </button>
       </div>
     </div>
   );
-}
+});
 
 export default PronunciationPanelSafe;

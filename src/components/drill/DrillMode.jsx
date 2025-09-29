@@ -91,6 +91,7 @@ function DrillMode({
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
+  const pronunciationPanelRef = React.useRef(null)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
@@ -119,12 +120,27 @@ function DrillMode({
   }, [showGames])
 
   const handleTogglePronunciation = useCallback((show = null) => {
-    const newShow = show !== null ? show : !showPronunciation
-    if (newShow) {
+    // Si el show es explícito (desde botón cerrar), úsalo
+    if (show !== null) {
+      if (show === false) {
+        setShowPronunciation(false)
+      } else {
+        closeAllPanels()
+        setShowPronunciation(true)
+      }
+      return
+    }
+
+    // Lógica del click en el ícono de boca
+    if (!showPronunciation) {
+      // Panel cerrado → Abrir panel (la grabación se inicia automáticamente en el panel)
       closeAllPanels()
       setShowPronunciation(true)
     } else {
-      setShowPronunciation(false)
+      // Panel abierto → Toggle grabación (NO cerrar panel)
+      if (pronunciationPanelRef.current?.toggleRecording) {
+        pronunciationPanelRef.current.toggleRecording()
+      }
     }
   }, [showPronunciation])
 
@@ -235,6 +251,7 @@ function DrillMode({
       {showPronunciation && (
         <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
           <PronunciationPanel
+            ref={pronunciationPanelRef}
             currentItem={currentItem}
             onClose={() => handleTogglePronunciation(false)}
             handleResult={onDrillResult}
