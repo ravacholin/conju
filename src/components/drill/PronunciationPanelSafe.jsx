@@ -95,6 +95,29 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         };
       }
 
+      // FIX: Si el analyzer está siendo demasiado estricto, usar evaluación simple
+      if (finalAnalysis.accuracy < 60) {
+        const targetLower = pronunciationData.form.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const recognizedLower = result.transcript.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        const isExactMatch = targetLower === recognizedLower;
+        const isSimilar = targetLower.includes(recognizedLower) || recognizedLower.includes(targetLower);
+
+        if (isExactMatch) {
+          finalAnalysis = {
+            accuracy: 95,
+            feedback: '¡Perfecto! Pronunciación exacta.',
+            suggestions: []
+          };
+        } else if (isSimilar) {
+          finalAnalysis = {
+            accuracy: 75,
+            feedback: 'Muy bien, casi perfecto',
+            suggestions: ['Pronuncia más claramente cada sílaba']
+          };
+        }
+      }
+
       setRecordingResult({
         ...finalAnalysis,
         originalTranscript: result.transcript,
