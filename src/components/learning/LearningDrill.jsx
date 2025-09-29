@@ -175,7 +175,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     };
   }, [currentItem])
 
-  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+  const handleDrillResult = async (isCorrect, accuracy, extra = {}) => {
     // Handle pronunciation result similar to typing result
     if (isCorrect) {
       setResult('correct')
@@ -183,17 +183,34 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       setResult('incorrect')
     }
 
-    // Continue to next after delay like normal flow
-    setTimeout(() => {
-      setResult('idle')
-      setInputValue('')
-      handleContinue()
-    }, 1500)
+    // Call the main progress tracking system
+    await handleResult({
+      correct: isCorrect,
+      userAnswer: extra.recognized || '',
+      correctAnswer: currentItem?.value || '',
+      hintsUsed: 0,
+      errorTags: [],
+      latencyMs: 0,
+      isIrregular: currentItem?.type === 'irregular',
+      itemId: currentItem?.id
+    });
+
+    // Update local session stats
+    if (isCorrect) {
+      setCorrectStreak(prev => prev + 1);
+      setCorrectAnswers(prev => prev + 1);
+    } else {
+      setCorrectStreak(0);
+    }
+    setTotalAttempts(prev => prev + 1);
   }
 
   const handleContinueFromPronunciation = () => {
     // This will be called by the pronunciation panel after auto-advance
-    // The pronunciation panel already handles the delay, so we don't need another one here
+    // Reset result state and continue to next item
+    setResult('idle');
+    setInputValue('');
+    handleContinue();
   }
 
   const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {

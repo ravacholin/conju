@@ -278,28 +278,25 @@ function IrregularRootDrill({
       setStatus('incorrect')
     }
 
-    // Continue to next after delay like normal flow
-    setTimeout(() => {
-      setStatus('idle')
-      setInputValue('')
-      setIndex(prev => {
-        const newIndex = prev + 1
-        if (newIndex >= questions.length) {
-          handleFinish({ correct: stats.correct + (isCorrect ? 1 : 0), total: stats.total + 1 })
-        } else {
-          setStats(prev => ({
-            correct: prev.correct + (isCorrect ? 1 : 0),
-            total: prev.total + 1
-          }))
-        }
-        return newIndex
-      })
-    }, 1500)
+    // Update stats immediately
+    const nextStats = {
+      correct: stats.correct + (isCorrect ? 1 : 0),
+      total: stats.total + 1
+    }
+    setStats(nextStats)
   }
 
   const handleContinueFromPronunciation = () => {
     // This will be called by the pronunciation panel after auto-advance
-    // The pronunciation panel already handles the delay, so we don't need another one here
+    // Continue to next question
+    const nextIndex = index + 1
+    if (nextIndex >= questions.length) {
+      handleFinish(stats)
+    } else {
+      setIndex(nextIndex)
+      setInputValue('')
+      setStatus('idle')
+    }
   }
 
   function renderFutureCondDetails(question) {
