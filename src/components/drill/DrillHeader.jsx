@@ -48,7 +48,7 @@ function DrillHeader({
           className="icon-btn"
           title="Práctica de pronunciación"
         >
-          <img src="/mic.svg" alt="Pronunciación" className="menu-icon" />
+          <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
         </button>
         
         <button
