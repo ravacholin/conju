@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback, Suspense, lazy } from 'react'
 import { useSettings } from '../../state/settings.js'
 import {
   FUTURE_CONDITIONAL_ROOTS,
@@ -11,6 +11,8 @@ import { TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { normalize } from '../../lib/utils/accentUtils.js'
 import './LearningDrill.css'
 import './IrregularRootDrill.css'
+
+const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
@@ -63,6 +65,8 @@ function IrregularRootDrill({
   const useVoseo = settings.useVoseo === true
   const containerRef = useRef(null)
   const [entered, setEntered] = useState(false)
+  const [showPronunciation, setShowPronunciation] = useState(false)
+  const pronunciationPanelRef = useRef(null)
 
   const mode = useMemo(() => {
     if (selectedFamilies.includes(ROOT_FAMILY_ID) && (tense?.tense === 'fut' || tense?.tense === 'cond')) {
@@ -206,6 +210,98 @@ function IrregularRootDrill({
     }
   }
 
+  const handleTogglePronunciation = useCallback((show = null) => {
+    // Si el show es explícito (desde botón cerrar), úsalo
+    if (show !== null) {
+      if (show === false) {
+        setShowPronunciation(false)
+      } else {
+        setShowPronunciation(true)
+      }
+      return
+    }
+
+    // Lógica del click en el ícono de boca
+    if (!showPronunciation) {
+      // Panel cerrado → Abrir panel (la grabación se inicia automáticamente en el panel)
+      setShowPronunciation(true)
+    } else {
+      // Panel abierto → Toggle grabación (NO cerrar panel)
+      if (pronunciationPanelRef.current?.toggleRecording) {
+        pronunciationPanelRef.current.toggleRecording()
+      }
+    }
+  }, [showPronunciation])
+
+  // Create current item for pronunciation panel
+  const currentItem = useMemo(() => {
+    if (!currentQuestion) return null;
+
+    // Diferentes formatos según el tipo de ejercicio
+    if (currentQuestion.type === 'future_cond') {
+      const form = buildFutureConditionalForm(currentQuestion.lemma, currentQuestion.displayRoot, currentQuestion.tenseKey, currentQuestion.pronoun);
+      return {
+        verb: currentQuestion.lemma,
+        mood: currentQuestion.tenseKey === 'fut' ? 'indicativo' : 'condicional',
+        tense: currentQuestion.tenseKey,
+        person: currentQuestion.pronoun,
+        expectedValue: form,
+        prompt: `${getPronounLabel(currentQuestion.pronoun, useVoseo)} ${currentQuestion.lemma}`
+      };
+    } else if (currentQuestion.type === 'gerund') {
+      return {
+        verb: currentQuestion.lemma,
+        mood: 'nonfinite',
+        tense: 'ger',
+        person: null,
+        expectedValue: currentQuestion.targetForms[0],
+        prompt: `Gerundio de ${currentQuestion.lemma}`
+      };
+    } else if (currentQuestion.type === 'participle') {
+      return {
+        verb: currentQuestion.lemma,
+        mood: 'nonfinite',
+        tense: 'part',
+        person: null,
+        expectedValue: currentQuestion.targetForms[0],
+        prompt: `Participio de ${currentQuestion.lemma}`
+      };
+    }
+    return null;
+  }, [currentQuestion, useVoseo])
+
+  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+    // Handle pronunciation result similar to typing result
+    if (isCorrect) {
+      setStatus('correct')
+    } else {
+      setStatus('incorrect')
+    }
+
+    // Continue to next after delay like normal flow
+    setTimeout(() => {
+      setStatus('idle')
+      setInputValue('')
+      setIndex(prev => {
+        const newIndex = prev + 1
+        if (newIndex >= questions.length) {
+          handleFinish({ correct: stats.correct + (isCorrect ? 1 : 0), total: stats.total + 1 })
+        } else {
+          setStats(prev => ({
+            correct: prev.correct + (isCorrect ? 1 : 0),
+            total: prev.total + 1
+          }))
+        }
+        return newIndex
+      })
+    }, 1500)
+  }
+
+  const handleContinueFromPronunciation = () => {
+    // This will be called by the pronunciation panel after auto-advance
+    // The pronunciation panel already handles the delay, so we don't need another one here
+  }
+
   function renderFutureCondDetails(question) {
     const label = getPronounLabel(question.pronoun, useVoseo)
     const ending = buildFutureConditionalForm('', question.tenseKey, question.pronoun) || ''
@@ -252,6 +348,13 @@ function IrregularRootDrill({
           <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
             <img src="/back.png" alt="Volver" className="menu-icon" />
           </button>
+          <button
+            onClick={() => handleTogglePronunciation()}
+            className="icon-btn"
+            title="Práctica de pronunciación"
+          >
+            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
+          </button>
           {onGoToProgress && (
             <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
               <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
@@ -264,6 +367,18 @@ function IrregularRootDrill({
           )}
         </div>
       </header>
+
+      {showPronunciation && (
+        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+          <PronunciationPanel
+            ref={pronunciationPanelRef}
+            currentItem={currentItem}
+            onClose={() => handleTogglePronunciation(false)}
+            handleResult={handleDrillResult}
+            onContinue={handleContinueFromPronunciation}
+          />
+        </Suspense>
+      )}
 
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>

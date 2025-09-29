@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from 'react';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
+
+const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 function getPronounsForDialect(settings){
   const arr = [
@@ -196,6 +198,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   const [leaving] = useState(false);
   const settings = useSettings();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
+  const [showPronunciation, setShowPronunciation] = useState(false);
+  const pronunciationPanelRef = useRef(null);
 
   // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
 
@@ -440,6 +444,57 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     if (text) speak(text);
   };
 
+  const handleTogglePronunciation = useCallback((show = null) => {
+    // Si el show es explícito (desde botón cerrar), úsalo
+    if (show !== null) {
+      if (show === false) {
+        setShowPronunciation(false)
+      } else {
+        setShowPronunciation(true)
+      }
+      return
+    }
+
+    // Lógica del click en el ícono de boca
+    if (!showPronunciation) {
+      // Panel cerrado → Abrir panel (la grabación se inicia automáticamente en el panel)
+      setShowPronunciation(true)
+    } else {
+      // Panel abierto → Toggle grabación (NO cerrar panel)
+      if (pronunciationPanelRef.current?.toggleRecording) {
+        pronunciationPanelRef.current.toggleRecording()
+      }
+    }
+  }, [showPronunciation]);
+
+  // Create current item for pronunciation panel
+  const currentItem = useMemo(() => {
+    if (!currentForm || !verb || !tense || !currentPronoun) return null;
+
+    return {
+      verb: verb.lemma,
+      mood: tense.mood,
+      tense: tense.tense,
+      person: currentPronoun.key,
+      expectedValue: currentForm.value,
+      prompt: `${currentPronoun.text} ${verb.lemma}`
+    };
+  }, [currentForm, verb, tense, currentPronoun]);
+
+  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+    // Handle pronunciation result similar to typing result
+    if (isCorrect) {
+      setResult({ correct: true, value: currentForm?.value });
+    } else {
+      setResult({ correct: false, value: currentForm?.value });
+    }
+  };
+
+  const handleContinueFromPronunciation = () => {
+    // Continue to next item like normal drill flow
+    handleContinue();
+  };
+
   const detectRealStem = (verb, tenseKey) => {
     if (!verb || !verbForms.length) return null;
     
@@ -566,6 +621,13 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             <img src="/enie.png" alt="Tildes" className="menu-icon" />
           </button>
           <button
+            onClick={() => handleTogglePronunciation()}
+            className="icon-btn"
+            title="Práctica de pronunciación"
+          >
+            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
+          </button>
+          <button
             onClick={() => { onGoToProgress && onGoToProgress(); }}
             className="icon-btn"
             title="Métricas"
@@ -583,6 +645,19 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
           </button>
         </div>
       </header>
+
+      {showPronunciation && (
+        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+          <PronunciationPanel
+            ref={pronunciationPanelRef}
+            currentItem={currentItem}
+            onClose={() => handleTogglePronunciation(false)}
+            handleResult={handleDrillResult}
+            onContinue={handleContinueFromPronunciation}
+          />
+        </Suspense>
+      )}
+
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
 

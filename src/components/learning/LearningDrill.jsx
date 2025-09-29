@@ -47,7 +47,7 @@
  * @requires learningConfig - Configuración de parámetros de aprendizaje
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SessionSummary from './SessionSummary.jsx';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
@@ -71,6 +71,8 @@ import './LearningDrill.css';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 
 const logger = createLogger('LearningDrill');
+
+const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 const MOOD_CANONICAL_MAP = {
   indicativo: 'indicative',
@@ -132,6 +134,67 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [swapAnim, setSwapAnim] = useState(false);
   const settings = useSettings();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
+  const [showPronunciation, setShowPronunciation] = useState(false);
+  const pronunciationPanelRef = useRef(null);
+
+  // Toggle pronunciation function
+  const handleTogglePronunciation = useCallback((show = null) => {
+    // Si el show es explícito (desde botón cerrar), úsalo
+    if (show !== null) {
+      if (show === false) {
+        setShowPronunciation(false)
+      } else {
+        setShowPronunciation(true)
+      }
+      return
+    }
+
+    // Lógica del click en el ícono de boca
+    if (!showPronunciation) {
+      // Panel cerrado → Abrir panel (la grabación se inicia automáticamente en el panel)
+      setShowPronunciation(true)
+    } else {
+      // Panel abierto → Toggle grabación (NO cerrar panel)
+      if (pronunciationPanelRef.current?.toggleRecording) {
+        pronunciationPanelRef.current.toggleRecording()
+      }
+    }
+  }, [showPronunciation])
+
+  // Create current item for pronunciation panel
+  const currentPronunciationItem = useMemo(() => {
+    if (!currentItem) return null;
+
+    return {
+      verb: currentItem.lemma,
+      mood: currentItem.mood,
+      tense: currentItem.tense,
+      person: currentItem.person,
+      expectedValue: currentItem.value,
+      prompt: `${getPersonText(currentItem.person)} ${currentItem.lemma}`
+    };
+  }, [currentItem])
+
+  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+    // Handle pronunciation result similar to typing result
+    if (isCorrect) {
+      setResult('correct')
+    } else {
+      setResult('incorrect')
+    }
+
+    // Continue to next after delay like normal flow
+    setTimeout(() => {
+      setResult('idle')
+      setInputValue('')
+      handleContinue()
+    }, 1500)
+  }
+
+  const handleContinueFromPronunciation = () => {
+    // This will be called by the pronunciation panel after auto-advance
+    // The pronunciation panel already handles the delay, so we don't need another one here
+  }
 
   const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {
     // Update local session stats based on progress tracking
@@ -766,6 +829,13 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
               <img src="/enie.png" alt="Tildes" className="menu-icon" />
             </button>
+            <button
+              onClick={() => handleTogglePronunciation()}
+              className="icon-btn"
+              title="Práctica de pronunciación"
+            >
+              <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
+            </button>
             <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
               <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
             </button>
@@ -800,6 +870,13 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
             <img src="/enie.png" alt="Tildes" className="menu-icon" />
           </button>
+          <button
+            onClick={() => handleTogglePronunciation()}
+            className="icon-btn"
+            title="Práctica de pronunciación"
+          >
+            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
+          </button>
           <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
             <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
           </button>
@@ -808,6 +885,19 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           </button>
         </div>
       </header>
+
+      {showPronunciation && (
+        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+          <PronunciationPanel
+            ref={pronunciationPanelRef}
+            currentItem={currentPronunciationItem}
+            onClose={() => handleTogglePronunciation(false)}
+            handleResult={handleDrillResult}
+            onContinue={handleContinueFromPronunciation}
+          />
+        </Suspense>
+      )}
+
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
 
