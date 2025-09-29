@@ -32,13 +32,11 @@ import OfflineStatusBanner from './OfflineStatusBanner.jsx'
  * Componente principal del dashboard de progreso
  */
 export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
-  const { region, useVoseo, useTuteo, useVosotros, set } = useSettings((state) => ({
-    region: state.region,
-    useVoseo: state.useVoseo,
-    useTuteo: state.useTuteo,
-    useVosotros: state.useVosotros,
-    set: state.set
-  }))
+  const region = useSettings((state) => state.region)
+  const useVoseo = useSettings((state) => state.useVoseo)
+  const useTuteo = useSettings((state) => state.useTuteo)
+  const useVosotros = useSettings((state) => state.useVosotros)
+  const set = useSettings((state) => state.set)
   const dialectDebugRef = React.useRef({ region, useVoseo, useTuteo, useVosotros })
   const {
     heatMapData,

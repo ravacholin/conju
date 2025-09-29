@@ -148,7 +148,7 @@ function AppRouter() {
       // If dialect not selected yet, force onboarding to start at step 1
       if (!useSettings.getState().region) {
         onboardingFlowRef.current.setOnboardingStep(1, { syncRouter: false })
-        try { router.navigate({ mode: 'onboarding', step: 1 }) } catch { /* Navigation error ignored */ }
+        // Don't call router.navigate here - it will cause a loop with useOnboardingFlow useEffect
       } else if (initialRoute.step) {
         onboardingFlowRef.current.setOnboardingStep(initialRoute.step, { syncRouter: false })
       }

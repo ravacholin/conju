@@ -144,17 +144,15 @@ export function useOnboardingFlow() {
 
   // Initialize browser history state for step 1 on first load
   useEffect(() => {
-    if (onboardingStep === 1) {
-      try {
-        if (import.meta.env.DEV) {
-          console.log('🌟 Setting initial history state for step 1 via router.navigate (replace)');
-        }
-        router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
-      } catch {
-        /* ignore */
+    try {
+      if (import.meta.env.DEV) {
+        console.log('🌟 Setting initial history state for step 1 via router.navigate (replace)');
       }
+      router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
+    } catch {
+      /* ignore */
     }
-  }, []);  // Run only once on mount
+  }, []);  // Run only once on mount - removed onboardingStep dependency
 
   const closeTopPanelsAndFeatures = () => {
     // Function to close all top panels and features - will be defined in parent
