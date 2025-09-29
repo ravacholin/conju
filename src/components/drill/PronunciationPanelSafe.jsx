@@ -60,13 +60,24 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
   const pronunciationData = useMemo(() => {
-    return convertCurrentItemToPronunciation(currentItem);
+    console.log('🎤 CREATING PRONUNCIATION DATA FROM:', currentItem);
+    const result = convertCurrentItemToPronunciation(currentItem);
+    console.log('🎤 PRONUNCIATION DATA RESULT:', result);
+    return result;
   }, [currentItem]);
 
   // Speech recognition event handlers - ESTABLES CON useCallback
   const handleSpeechResult = useCallback((result) => {
     if (result.isFinal && pronunciationData) {
       setIsRecording(false);
+
+      // DEBUG: Log what we're comparing
+      console.log('🎤 PRONUNCIATION DEBUG:');
+      console.log('  Expected:', `"${pronunciationData.form}"`);
+      console.log('  Recognized:', `"${result.transcript}"`);
+      console.log('  Exact match:', pronunciationData.form === result.transcript);
+      console.log('  Lower case match:', pronunciationData.form.toLowerCase() === result.transcript.toLowerCase());
+      console.log('  PronunciationData:', pronunciationData);
 
       const analysis = analyzer.analyzePronunciation(
         pronunciationData.form,

@@ -488,13 +488,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     } else {
       setResult({ correct: false, value: currentForm?.value });
     }
-
-    // Update stats immediately
-    setStats(prev => ({
-      ...prev,
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1
-    }));
+    // Note: EndingsDrill tracks stats internally through other mechanisms
   };
 
   const handleContinueFromPronunciation = () => {
