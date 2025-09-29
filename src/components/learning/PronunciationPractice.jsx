@@ -181,10 +181,18 @@ const generatePronunciationData = (eligibleForms, tense) => {
   if (eligibleForms && eligibleForms.length > 0) {
     // First attempt: exact match with mood and tense
     if (tense?.mood && tense?.tense) {
+      // Normalize mood names: Spanish -> English
+      const normalizedMood = tense.mood === 'indicativo' ? 'indicative' :
+                            tense.mood === 'subjuntivo' ? 'subjunctive' :
+                            tense.mood === 'imperativo' ? 'imperative' :
+                            tense.mood === 'condicional' ? 'conditional' :
+                            tense.mood;
+
       selectedForms = eligibleForms.filter(form =>
-        form.mood === tense.mood && form.tense === tense.tense
+        form.mood === normalizedMood && form.tense === tense.tense
       );
-      console.log('🎯 Exact match filter result:', selectedForms.length, 'forms');
+      console.log('🎯 Exact match filter result:', selectedForms.length, 'forms',
+                 `(normalized ${tense.mood} -> ${normalizedMood})`);
     }
 
     // Second attempt: match by tense only (more permissive)
@@ -199,7 +207,14 @@ const generatePronunciationData = (eligibleForms, tense) => {
     console.log('⚠️ Insufficient forms from eligibleForms, generating guaranteed forms for:', tense);
 
     if (tense?.mood && tense?.tense) {
-      const generatedForms = generateFormsForTense({ mood: tense.mood, tense: tense.tense });
+      // Use the same mood normalization for generated forms
+      const normalizedMood = tense.mood === 'indicativo' ? 'indicative' :
+                            tense.mood === 'subjuntivo' ? 'subjunctive' :
+                            tense.mood === 'imperativo' ? 'imperative' :
+                            tense.mood === 'condicional' ? 'conditional' :
+                            tense.mood;
+
+      const generatedForms = generateFormsForTense({ mood: normalizedMood, tense: tense.tense });
 
       if (generatedForms.length > 0) {
         // Merge with existing selectedForms, avoiding duplicates
@@ -223,18 +238,27 @@ const generatePronunciationData = (eligibleForms, tense) => {
   // Select 5-7 representative forms for practice
   const finalForms = selectedForms
     .slice(0, 7)
-    .map(form => ({
-      verb: form.verb || form.lemma,
-      form: form.value,
-      person: form.person,
-      mood: form.mood,
-      tense: form.tense,
-      // Generate basic pronunciation guidance
-      ipa: generateIPA(form.value),
-      pronunciation: generatePronunciationGuide(form.value),
-      tip: generatePronunciationTip(form.value, form.verb || form.lemma),
-      audioKey: `${form.verb || form.lemma}_${form.tense}_${form.person}`
-    }));
+    .map(form => {
+      console.log('🔍 Processing form for pronunciation:', {
+        verb: form.verb || form.lemma,
+        value: form.value,
+        person: form.person,
+        mood: form.mood,
+        tense: form.tense
+      });
+      return {
+        verb: form.verb || form.lemma,
+        form: form.value,
+        person: form.person,
+        mood: form.mood,
+        tense: form.tense,
+        // Generate basic pronunciation guidance
+        ipa: generateIPA(form.value),
+        pronunciation: generatePronunciationGuide(form.value),
+        tip: generatePronunciationTip(form.value, form.verb || form.lemma),
+        audioKey: `${form.verb || form.lemma}_${form.tense}_${form.person}`
+      };
+    });
 
   console.log('✅ Final pronunciation data:', {
     title: `Pronunciación - ${TENSE_LABELS[tense?.tense] || 'Práctica'}`,
@@ -351,6 +375,13 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     if (result.isFinal && currentVerb) {
       setIsRecording(false);
 
+      console.log('🎤 Speech result received:', {
+        target: currentVerb.form,
+        recognized: result.transcript,
+        currentVerb: currentVerb,
+        currentIndex: currentIndex
+      });
+
       const analysis = analyzer.analyzePronunciation(
         currentVerb.form,
         result.transcript,
@@ -366,9 +397,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         alternatives: result.alternatives
       });
 
-      // Track progress
+      // Track progress - lowered threshold to be more forgiving for correct pronunciations
       if (currentVerb) {
-        handleResult(analysis.accuracy >= 70, analysis.accuracy, {
+        handleResult(analysis.accuracy >= 60, analysis.accuracy, {
           type: 'pronunciation',
           target: currentVerb.form,
           recognized: result.transcript,

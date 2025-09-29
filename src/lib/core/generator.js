@@ -217,8 +217,23 @@ export async function chooseNext({forms, history: _history, currentItem, session
     try {
       const verbFamilies = categorizeVerb(f.lemma, verb)
       const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-      if (!isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
-        return false
+
+      // CRITICAL FIX: Don't apply level filtering for regular verbs when practicing regular verbs
+      // This prevents regular -ir verbs from being filtered out due to irregular family classification
+      const isRegularPracticeMode = verbType === 'regular'
+      const verbIsActuallyRegular = verb?.type === 'regular' || f.type === 'regular'
+      const shouldBypassLevelFiltering = isRegularPracticeMode && verbIsActuallyRegular
+
+      if (!shouldBypassLevelFiltering) {
+        const shouldFilter = !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)
+        if (shouldFilter) {
+          if (f.lemma?.endsWith('ir') && verbType === 'regular') {
+            console.log('❌ IR VERB FILTERED BY LEVEL:', { lemma: f.lemma, level, verbFamilies });
+          }
+          return false
+        }
+      } else {
+        console.log('✅ IR VERB BYPASSED LEVEL FILTERING:', { lemma: f.lemma, type: f.type });
       }
     } catch {
       // If categorization fails for any reason, fall through (no extra exclusion)
@@ -248,8 +263,36 @@ export async function chooseNext({forms, history: _history, currentItem, session
     // Restrict lemmas if configured by level/packs
     // Skip restriction only for Theme, or Specific explicitly coming from Tema
     const shouldBypassLemmaRestrictions = (verbType === 'all') || (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true))
+
+    // DEBUG: Always log the settings to understand what's happening
+    if (verbType === 'regular') {
+      console.log('🔍 SETTINGS CHECK:', {
+        allowedLemmas: allowedLemmas ? `Set with ${allowedLemmas.size} verbs` : 'null',
+        shouldBypass: shouldBypassLemmaRestrictions,
+        verbType,
+        practiceMode,
+        cameFromTema,
+        level,
+        mood: f.mood,
+        tense: f.tense
+      });
+    }
     if (allowedLemmas && !shouldBypassLemmaRestrictions) {
+      // DEBUG: Check what's in allowedLemmas
+      if (verbType === 'regular') {
+        const allowedArray = Array.from(allowedLemmas);
+        const allowedByEnding = {};
+        allowedArray.forEach(lemma => {
+          const ending = lemma?.slice(-2);
+          allowedByEnding[ending] = (allowedByEnding[ending] || 0) + 1;
+        });
+        console.log('🚫 ALLOWED LEMMAS - Verbs by ending:', allowedByEnding);
+        console.log('🚫 ALLOWED LEMMAS - Sample -ir verbs:', allowedArray.filter(l => l?.endsWith('ir')));
+      }
       if (!allowedLemmas.has(f.lemma)) {
+        if (f.lemma?.endsWith('ir') && verbType === 'regular') {
+          console.log('❌ IR VERB BLOCKED BY ALLOWED LEMMAS:', f.lemma);
+        }
         return false
       }
     }
@@ -262,9 +305,16 @@ export async function chooseNext({forms, history: _history, currentItem, session
     
     
     if (verbType === 'regular' && !isMixedPractice) {
-      // CRITICAL FIX: First check if the verb is globally regular (verb.type === 'regular')
-      // This ensures only pure regular verbs are considered, not just regular forms of irregular verbs
-      if (verb.type !== 'regular') {
+      // DEBUG: Log what happens to -ir verbs
+      if (f.lemma?.endsWith('ir')) {
+        console.log('🔍 IR VERB FILTERING:', { lemma: f.lemma, formType: f.type, verbType: verb.type });
+      }
+      // CRITICAL FIX: Use form-level type instead of incomplete VERB_LOOKUP_MAP
+      // This ensures we don't lose verbs that aren't in the incomplete verb map
+      if (f.type !== 'regular') {
+        if (f.lemma?.endsWith('ir')) {
+          console.log('❌ IR VERB FILTERED OUT:', { lemma: f.lemma, formType: f.type });
+        }
         return false
       }
       
@@ -566,6 +616,13 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, allSettings)
 
+  // DEBUG: Check -ir forms after all main filtering
+  if (verbType === 'regular') {
+    const irFormsAfterMainFiltering = eligible.filter(f => f.lemma?.endsWith('ir'));
+    console.log('🔍 AFTER MAIN FILTERING - -ir forms count:', irFormsAfterMainFiltering.length);
+    console.log('🔍 AFTER MAIN FILTERING - Sample -ir forms:', irFormsAfterMainFiltering.slice(0, 3).map(f => ({ lemma: f.lemma, type: f.type })));
+  }
+
   // SAFETY GUARD: In mixed practice by level, ensure we don't get stuck
   // serving only nonfinite forms (gerund/participle). If there are finite
   // options available, prefer them by excluding nonfinite from the pool.
@@ -586,12 +643,32 @@ export async function chooseNext({forms, history: _history, currentItem, session
           .filter(v => v?.type === 'regular')
           .map(v => v.lemma)
       )
+
+      // DEBUG: Log regular verbs in lookup map
+      const regularVerbs = Array.from(VERB_LOOKUP_MAP.values()).filter(v => v?.type === 'regular');
+      const regularByEnding = {};
+      regularVerbs.forEach(v => {
+        const ending = v.lemma?.slice(-2);
+        regularByEnding[ending] = (regularByEnding[ending] || 0) + 1;
+      });
+      console.log('🧩 GENERATOR - Regular verbs in VERB_LOOKUP_MAP by ending:', regularByEnding);
+      console.log('🧩 GENERATOR - Sample regular -ir verbs:', regularVerbs.filter(v => v.lemma?.endsWith('ir')).slice(0, 5).map(v => v.lemma));
+
+      // DEBUG: Check what type values the -ir forms actually have
+      const irForms = eligible.filter(f => f.lemma?.endsWith('ir'));
+      console.log('🔍 FORMS - Sample -ir forms with their type values:', irForms.slice(0, 5).map(f => ({ lemma: f.lemma, type: f.type })));
       const isCompound = (t) => (t === 'pretPerf' || t === 'plusc' || t === 'futPerf' || t === 'condPerf' || t === 'subjPerf' || t === 'subjPlusc')
       
       
+      // DEBUG: Log forms going into filtering
+      const eligibleIrForms = eligible.filter(f => f.lemma?.endsWith('ir'));
+      console.log('🔍 BEFORE FILTER - -ir forms count:', eligibleIrForms.length);
+      console.log('🔍 BEFORE FILTER - Sample -ir forms:', eligibleIrForms.slice(0, 3).map(f => ({ lemma: f.lemma, type: f.type })));
+
       // Keep only pure regular lemmas and forms that are morphologically regular
       const pureRegularForms = eligible.filter(f => {
-        if (!pureRegularSet.has(f.lemma)) {
+        // FIX: Don't filter by incomplete VERB_LOOKUP_MAP, use form-level type instead
+        if (f.type !== 'regular') {
           return false
         }
         if (f.mood === 'nonfinite') return isRegularNonfiniteForm(f.lemma, f.tense, f.value)
@@ -686,12 +763,61 @@ export async function chooseNext({forms, history: _history, currentItem, session
   
   // Fast path for specific practice: simple random selection from eligible pool
   if (practiceMode === 'specific') {
+    // ENHANCED SELECTION: For regular practice, ensure better distribution of verb endings
+    if (verbType === 'regular') {
+      // Group forms by ending to ensure variety
+      const formsByEnding = {
+        'ar': eligible.filter(f => f.lemma?.endsWith('ar')),
+        'er': eligible.filter(f => f.lemma?.endsWith('er')),
+        'ir': eligible.filter(f => f.lemma?.endsWith('ir'))
+      };
+
+      // Enhanced selection: favor underrepresented endings
+      const endingCounts = {
+        'ar': formsByEnding.ar.length,
+        'er': formsByEnding.er.length,
+        'ir': formsByEnding.ir.length
+      };
+
+      // If we have -ir verbs, give them 30% selection chance to ensure they appear
+      const random = Math.random();
+      let selectedEnding;
+      if (formsByEnding.ir.length > 0 && random < 0.3) {
+        selectedEnding = 'ir';
+      } else if (formsByEnding.er.length > 0 && random < 0.6) {
+        selectedEnding = 'er';
+      } else {
+        selectedEnding = 'ar';
+      }
+
+      const selectedForms = formsByEnding[selectedEnding];
+      if (selectedForms.length > 0) {
+        const idx = Math.floor(Math.random() * selectedForms.length);
+        return selectedForms[idx];
+      }
+    }
+
     const idx = Math.floor(Math.random() * eligible.length)
     return eligible[idx]
   }
 
   // Simple selection for mixed practice as well to keep tests fast and deterministic
   const selectedForm = eligible[Math.floor(Math.random() * eligible.length)]
+
+  // DEBUG: Log selection process for regular practice
+  if (verbType === 'regular' && selectedForm) {
+    const eligibleByEnding = {};
+    eligible.forEach(f => {
+      const ending = f.lemma?.slice(-2);
+      eligibleByEnding[ending] = (eligibleByEnding[ending] || 0) + 1;
+    });
+    console.log('🎲 GENERATOR - Eligible forms by ending:', eligibleByEnding);
+    console.log('🎲 GENERATOR - Selected:', {
+      lemma: selectedForm.lemma,
+      ending: selectedForm.lemma?.slice(-2),
+      totalEligible: eligible.length
+    });
+  }
   if (selectedForm) {
     
     // Apply any final transformations (clitics, etc.)
@@ -717,6 +843,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
         
         // Try to find a correct form from eligible forms as last resort
         const correctForms = eligible.filter(f => f.mood === specificMood && (!specificTense || f.tense === specificTense))
+        console.log('🚨 MOOD VALIDATION FALLBACK - Filtering to', correctForms.length, 'forms');
         if (correctForms.length > 0) {
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }
@@ -729,6 +856,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
         
         // Try to find a correct form from eligible forms as last resort
         const correctForms = eligible.filter(f => (!specificMood || f.mood === specificMood) && f.tense === specificTense)
+        console.log('🚨 TENSE VALIDATION FALLBACK - Filtering to', correctForms.length, 'forms');
         if (correctForms.length > 0) {
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }

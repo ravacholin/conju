@@ -17,7 +17,7 @@ const GERUND_STAGE_DEFINITIONS = {
     ar: {
       title: 'Paso 1 · Gerundios regulares (-ar)',
       description: 'Practica la regla base: reemplaza -ar por -ando.',
-      lemmas: ['hablar', 'trabajar', 'estudiar', 'bailar', 'caminar', 'necesitar'],
+      lemmas: ['hablar', 'trabajar', 'estudiar', 'bailar', 'caminar', 'cantar'],
       hint: 'Raíz + ando'
     },
     er: {
@@ -81,7 +81,7 @@ const PARTICIPLE_STAGE_DEFINITIONS = {
     ar: {
       title: 'Paso 1 · Participios regulares (-ar)',
       description: 'Sustituye -ar por -ado.',
-      lemmas: ['hablar', 'trabajar', 'cocinar', 'estudiar', 'viajar', 'necesitar'],
+      lemmas: ['hablar', 'trabajar', 'cocinar', 'estudiar', 'cantar', 'ayudar'],
       hint: 'Raíz + ado'
     },
     er: {
