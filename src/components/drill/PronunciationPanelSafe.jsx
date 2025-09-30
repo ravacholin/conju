@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
-import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
+import { TENSE_LABELS, MOOD_LABELS, PERSON_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
 import { convertCurrentItemToPronunciation, speakText } from '../../lib/pronunciation/pronunciationUtils.js';
@@ -356,8 +356,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         <div className="verb-info">
           <p className="verb-infinitive">Verbo: <strong>{pronunciationData.verb}</strong></p>
           <p className="verb-context">
-            {pronunciationData.person && `${pronunciationData.person} persona`} • {' '}
-            {TENSE_LABELS[pronunciationData.tense]} - {pronunciationData.mood}
+            {pronunciationData.person && `${PERSON_LABELS[pronunciationData.person] || pronunciationData.person}`} • {' '}
+            {TENSE_LABELS[pronunciationData.tense] || pronunciationData.tense} • {' '}
+            {MOOD_LABELS[pronunciationData.mood] || pronunciationData.mood}
           </p>
         </div>
       </div>

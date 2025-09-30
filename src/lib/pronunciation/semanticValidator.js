@@ -12,6 +12,7 @@
  */
 
 import { buildFormsForRegion } from '../core/eligibility.js';
+import { MOOD_LABELS, TENSE_LABELS, PERSON_LABELS } from '../utils/verbLabels.js';
 
 /**
  * Semantic validation engine for verb conjugations
@@ -77,6 +78,27 @@ export class SemanticValidator {
   }
 
   /**
+   * Format context in Spanish for user-friendly messages
+   */
+  _formatContextInSpanish(mood, tense, person) {
+    const moodLabel = MOOD_LABELS[mood] || mood;
+    const tenseLabel = TENSE_LABELS[tense] || tense;
+    const personLabel = PERSON_LABELS[person] || person;
+
+    // Format based on mood
+    if (mood === 'subjunctive' || mood === 'subjuntivo') {
+      return `${tenseLabel} de subjuntivo con ${personLabel}`;
+    } else if (mood === 'imperative' || mood === 'imperativo') {
+      return `imperativo con ${personLabel}`;
+    } else if (mood === 'conditional' || mood === 'condicional') {
+      return `${tenseLabel} con ${personLabel}`;
+    } else {
+      // Indicativo
+      return `${tenseLabel} con ${personLabel}`;
+    }
+  }
+
+  /**
    * Core validation logic
    */
   _performValidation(target, recognized, context) {
@@ -132,13 +154,16 @@ export class SemanticValidator {
       // Check if it's a valid form for the verb but wrong context
       const wrongContextMatch = this._findWrongContextMatch(verbForms, normalizedRecognized, contextKey);
       if (wrongContextMatch) {
+        const wrongContext = this._formatContextInSpanish(...wrongContextMatch.contextKey.split('_'));
+        const correctContext = this._formatContextInSpanish(mood, tense, person);
+
         return {
           isValid: false,
           confidence: 60,
           type: 'wrong_context',
-          message: `Es una conjugación válida de "${verb}" pero para ${wrongContextMatch.context}`,
+          message: `Es una conjugación válida de "${verb}" pero para ${wrongContext}`,
           pedagogicalScore: 20,
-          suggestion: `Para ${mood} ${tense} ${person} debe ser "${normalizedTarget}"`
+          suggestion: `Para ${correctContext} debe ser "${normalizedTarget}"`
         };
       }
 
@@ -199,9 +224,7 @@ export class SemanticValidator {
   _findWrongContextMatch(verbForms, recognized, correctContextKey) {
     for (const [contextKey, forms] of verbForms.entries()) {
       if (contextKey !== correctContextKey && forms.has(recognized)) {
-        const [mood, tense, person] = contextKey.split('_');
         return {
-          context: `${mood} ${tense} ${person}`,
           contextKey
         };
       }
