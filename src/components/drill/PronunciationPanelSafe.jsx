@@ -398,11 +398,6 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
                 borderRadius: '4px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <img
-                    src="/megaf-imperat.png"
-                    alt="Escuchar pronunciación"
-                    style={{ width: '20px', height: '20px' }}
-                  />
                   <span style={{ fontSize: '14px', color: '#e0e0e0', flex: 1 }}>
                     ¿Necesitas escuchar la pronunciación correcta?
                   </span>

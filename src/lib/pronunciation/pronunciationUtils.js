@@ -87,28 +87,59 @@ export const speakText = (text, lang = 'es-ES', options = {}) => {
       utterance.pitch = options.pitch || 1;
       utterance.volume = options.volume || 0.8;
 
-      // Buscar la mejor voz española femenina
+      // Buscar la mejor voz española femenina con alta calidad
       const voices = window.speechSynthesis.getVoices();
       const spanishVoices = voices.filter(voice =>
         voice.lang.startsWith('es') || voice.lang.includes('Spanish')
       );
 
-      // Preferir voces femeninas primero, luego por región
-      const femaleVoices = spanishVoices.filter(voice =>
-        voice.name.toLowerCase().includes('female') ||
-        voice.name.toLowerCase().includes('mujer') ||
-        voice.name.toLowerCase().includes('mónica') ||
-        voice.name.toLowerCase().includes('paloma') ||
-        voice.name.toLowerCase().includes('pilar') ||
-        !voice.name.toLowerCase().includes('male')
-      );
+      // Voces femeninas españolas de alta calidad (prioridad)
+      const highQualityFemaleNames = [
+        'microsoft helena', 'microsoft sabina', 'microsoft lucia',
+        'google español', 'microsoft catalina', 'microsoft paloma',
+        'carmela', 'monica', 'esperanza', 'penelope', 'ines',
+        'verónica', 'paulina', 'lupe', 'claudia'
+      ];
 
+      // Filtrar solo voces femeninas de calidad
+      const qualityFemaleVoices = spanishVoices.filter(voice => {
+        const voiceName = voice.name.toLowerCase();
+        return (
+          // Voces específicamente femeninas de calidad
+          highQualityFemaleNames.some(name => voiceName.includes(name)) ||
+          // Voces que explícitamente dicen "female"
+          voiceName.includes('female') ||
+          // Excluir voces masculinas explícitas
+          (!voiceName.includes('male') && !voiceName.includes('jorge') &&
+           !voiceName.includes('carlos') && !voiceName.includes('diego') &&
+           !voiceName.includes('android'))
+        );
+      });
+
+      // Priorizar por región y calidad
       const preferredVoice =
-        femaleVoices.find(voice => voice.lang === lang) ||
-        femaleVoices.find(voice => voice.lang.startsWith('es')) ||
-        femaleVoices[0] ||
-        spanishVoices.find(voice => voice.lang === lang) ||
+        // 1. Voces de alta calidad para la región específica
+        qualityFemaleVoices.find(voice =>
+          voice.lang === lang && highQualityFemaleNames.some(name =>
+            voice.name.toLowerCase().includes(name)
+          )
+        ) ||
+        // 2. Cualquier voz de calidad para español
+        qualityFemaleVoices.find(voice =>
+          voice.lang.startsWith('es') && highQualityFemaleNames.some(name =>
+            voice.name.toLowerCase().includes(name)
+          )
+        ) ||
+        // 3. Cualquier voz femenina para la región
+        qualityFemaleVoices.find(voice => voice.lang === lang) ||
+        // 4. Cualquier voz femenina española
+        qualityFemaleVoices.find(voice => voice.lang.startsWith('es')) ||
+        // 5. Fallback a primera voz femenina
+        qualityFemaleVoices[0] ||
+        // 6. Último recurso: cualquier voz española
         spanishVoices[0];
+
+      console.log('🔊 Selected voice:', preferredVoice?.name, preferredVoice?.lang);
 
       if (preferredVoice) {
         utterance.voice = preferredVoice;
