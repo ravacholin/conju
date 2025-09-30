@@ -99,6 +99,43 @@ class PronunciationAnalyzer {
     // Minimum threshold to be considered "correct" for SRS purposes
     this.passingThreshold = 90; // Much stricter than previous 80%
 
+    // Enhanced error pattern detection for common Spanish learner mistakes
+    this.commonSpanishErrors = {
+      // Vowel confusion patterns
+      vowelErrors: new Map([
+        ['e', ['i', 'a']], // Common substitutions
+        ['i', ['e']],
+        ['o', ['u']],
+        ['u', ['o']],
+        ['a', ['e']]
+      ]),
+
+      // Consonant confusion patterns
+      consonantErrors: new Map([
+        ['b', ['v', 'p']], // b/v betacism, voicing
+        ['v', ['b', 'f']],
+        ['d', ['t']], // Final d/t confusion
+        ['g', ['k', 'c']],
+        ['r', ['rr', 'l']], // Single vs multiple r
+        ['rr', ['r']],
+        ['ñ', ['n', 'ny']], // Palatalization issues
+        ['j', ['h', 'y']], // Fricative confusion
+        ['ll', ['y', 'ly']], // Yeísmo variations
+        ['c', ['s', 'z']], // Ceceo/seseo
+        ['z', ['s', 'c']]
+      ]),
+
+      // Silent letter patterns
+      silentLetters: ['h'], // h is always silent in Spanish
+
+      // Accent pattern issues
+      accentPatterns: {
+        missingAccents: /[aeiou]/g, // Should have accent but doesn't
+        extraAccents: /[áéíóú]/g,   // Has accent but shouldn't
+        wrongAccentPosition: true    // Accent on wrong syllable
+      }
+    };
+
     // Initialize semantic validator
     this.semanticValidator = semanticValidator;
   }
@@ -239,7 +276,7 @@ class PronunciationAnalyzer {
   }
 
   /**
-   * Generate educational suggestions based on semantic analysis
+   * Generate educational suggestions based on semantic analysis and detailed error detection
    */
   generateEducationalSuggestions(semanticResult, detailedAnalysis) {
     const suggestions = [];
@@ -277,13 +314,59 @@ class PronunciationAnalyzer {
         break;
     }
 
-    // Phonetic suggestions if applicable
+    // Enhanced suggestions based on specific errors detected
+    if (detailedAnalysis.phoneticAnalysis?.common_errors) {
+      const errors = detailedAnalysis.phoneticAnalysis.common_errors;
+
+      // Group errors by type for more targeted suggestions
+      const errorTypes = {
+        vowel_confusion: [],
+        consonant_confusion: [],
+        accent_errors: [],
+        silent_letter_errors: []
+      };
+
+      errors.forEach(error => {
+        if (errorTypes[error.type]) {
+          errorTypes[error.type].push(error);
+        }
+      });
+
+      // Add specific suggestions for each error type
+      if (errorTypes.vowel_confusion.length > 0) {
+        const vowelIssues = errorTypes.vowel_confusion.map(e => e.description).join(', ');
+        suggestions.push(`Problemas con vocales: ${vowelIssues}`);
+        suggestions.push('Practica las 5 vocales españolas: a, e, i, o, u');
+      }
+
+      if (errorTypes.consonant_confusion.length > 0) {
+        const consonantIssues = errorTypes.consonant_confusion;
+        const highSeverity = consonantIssues.filter(e => e.severity === 'high');
+
+        if (highSeverity.length > 0) {
+          suggestions.push(`Errores críticos: ${highSeverity[0].suggestion}`);
+        }
+
+        suggestions.push('Enfócate en consonantes españolas distintivas');
+      }
+
+      if (errorTypes.accent_errors.length > 0) {
+        suggestions.push('Problema de acentuación detectado');
+        suggestions.push('Repasa las reglas: agudas (-án), llanas (ca-SA), esdrújulas (MÉ-di-co)');
+      }
+
+      if (errorTypes.silent_letter_errors.length > 0) {
+        suggestions.push('Recuerda: la "h" es siempre muda en español');
+      }
+    }
+
+    // General phonetic suggestions (improved)
     if (detailedAnalysis.phoneticAnalysis?.vowel_accuracy < 80) {
-      suggestions.push('Enfócate en pronunciar las vocales de forma más clara');
+      suggestions.push('Las vocales españolas son puras: /a/ /e/ /i/ /o/ /u/');
     }
 
     if (detailedAnalysis.phoneticAnalysis?.consonant_accuracy < 70) {
-      suggestions.push('Presta atención a las consonantes, especialmente r, rr, ñ y j');
+      suggestions.push('Practica especialmente: rr (vibrante), ñ (palatal), j (fricativa)');
     }
 
     // Fluency suggestions
@@ -291,7 +374,9 @@ class PronunciationAnalyzer {
       suggestions.push('Habla con más confianza y volumen adecuado');
     }
 
-    return suggestions.length > 0 ? suggestions : ['¡Sigue practicando!'];
+    // Remove duplicates and limit to most relevant suggestions
+    const uniqueSuggestions = [...new Set(suggestions)];
+    return uniqueSuggestions.length > 0 ? uniqueSuggestions.slice(0, 4) : ['¡Sigue practicando!'];
   }
 
   /**
@@ -437,12 +522,64 @@ class PronunciationAnalyzer {
   }
 
   /**
-   * Detect common pronunciation errors
+   * Detect common pronunciation errors with enhanced patterns
    */
   detectCommonErrors(target, recognized) {
     const errors = [];
 
-    // Check vowel confusion patterns
+    // Enhanced vowel error detection
+    for (let i = 0; i < Math.min(target.length, recognized.length); i++) {
+      const targetChar = target[i];
+      const recognizedChar = recognized[i];
+
+      if (targetChar !== recognizedChar) {
+        // Check if it's a known vowel confusion
+        if (this.commonSpanishErrors.vowelErrors.has(targetChar)) {
+          const commonSubstitutions = this.commonSpanishErrors.vowelErrors.get(targetChar);
+          if (commonSubstitutions.includes(recognizedChar)) {
+            errors.push({
+              type: 'vowel_confusion',
+              description: `Confusión ${targetChar}/${recognizedChar}`,
+              severity: 'medium',
+              position: i,
+              suggestion: `Practica la diferencia entre "${targetChar}" y "${recognizedChar}"`
+            });
+          }
+        }
+
+        // Check consonant confusions
+        if (this.commonSpanishErrors.consonantErrors.has(targetChar)) {
+          const commonSubstitutions = this.commonSpanishErrors.consonantErrors.get(targetChar);
+          if (commonSubstitutions.includes(recognizedChar)) {
+            errors.push({
+              type: 'consonant_confusion',
+              description: `Confusión ${targetChar}/${recognizedChar}`,
+              severity: this._getConsonantErrorSeverity(targetChar, recognizedChar),
+              position: i,
+              suggestion: this._getConsonantErrorSuggestion(targetChar, recognizedChar)
+            });
+          }
+        }
+      }
+    }
+
+    // Check for silent letter issues
+    this.commonSpanishErrors.silentLetters.forEach(letter => {
+      if (target.includes(letter) && !recognized.includes(letter)) {
+        errors.push({
+          type: 'silent_letter_error',
+          description: `La "${letter}" es muda en español`,
+          severity: 'low',
+          suggestion: `Recuerda que la "${letter}" no se pronuncia`
+        });
+      }
+    });
+
+    // Check for accent pattern issues
+    const accentErrors = this._detectAccentErrors(target, recognized);
+    errors.push(...accentErrors);
+
+    // Legacy pattern checks for backwards compatibility
     ERROR_PATTERNS.vowel_confusion.forEach(errorPattern => {
       const targetMatches = (target.match(errorPattern.pattern) || []).length;
       const recognizedMatches = (recognized.match(errorPattern.pattern) || []).length;
@@ -456,16 +593,90 @@ class PronunciationAnalyzer {
       }
     });
 
-    // Check consonant issues
-    ERROR_PATTERNS.consonant_issues.forEach(errorPattern => {
-      if (target.match(errorPattern.pattern) && !recognized.match(errorPattern.pattern)) {
+    return errors;
+  }
+
+  /**
+   * Get severity for consonant errors
+   */
+  _getConsonantErrorSeverity(target, recognized) {
+    const highSeverityPairs = [
+      ['r', 'rr'], ['rr', 'r'], // R distinction is crucial
+      ['ñ', 'n'], ['n', 'ñ'],   // Palatalization changes meaning
+      ['ll', 'y'], ['y', 'll']   // Regional but important
+    ];
+
+    const mediumSeverityPairs = [
+      ['b', 'v'], ['v', 'b'],   // Common but meaning usually clear
+      ['c', 's'], ['s', 'c'],   // Regional variation
+      ['z', 's'], ['s', 'z']    // Ceceo/seseo
+    ];
+
+    for (const [t, r] of highSeverityPairs) {
+      if (target === t && recognized === r) return 'high';
+    }
+
+    for (const [t, r] of mediumSeverityPairs) {
+      if (target === t && recognized === r) return 'medium';
+    }
+
+    return 'low';
+  }
+
+  /**
+   * Get specific suggestions for consonant errors
+   */
+  _getConsonantErrorSuggestion(target, recognized) {
+    const suggestions = {
+      'r_rr': 'Practica la diferencia entre r simple y rr múltiple',
+      'rr_r': 'La "rr" requiere vibración múltiple de la lengua',
+      'ñ_n': 'La "ñ" se pronuncia con la lengua en el paladar',
+      'n_ñ': 'La "n" es diferente de "ñ" - sin palatalización',
+      'll_y': 'En muchas regiones "ll" suena como "y"',
+      'y_ll': 'Dependiendo de la región, "y" y "ll" pueden sonar igual',
+      'b_v': 'En español "b" y "v" suenan igual',
+      'v_b': 'No hay diferencia de pronunciación entre "v" y "b"',
+      'c_s': 'En algunas regiones "ce/ci" suena como "se/si"',
+      's_c': 'Distingue entre "s" y "c" según tu región',
+      'j_h': 'La "j" es un sonido fricativo, la "h" es muda'
+    };
+
+    const key = `${target}_${recognized}`;
+    return suggestions[key] || `Practica la diferencia entre "${target}" y "${recognized}"`;
+  }
+
+  /**
+   * Detect accent-related errors
+   */
+  _detectAccentErrors(target, recognized) {
+    const errors = [];
+
+    // Remove accents to compare base words
+    const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const targetNoAccents = removeAccents(target);
+    const recognizedNoAccents = removeAccents(recognized);
+
+    // If base words are the same but accents differ
+    if (targetNoAccents === recognizedNoAccents && target !== recognized) {
+      const targetAccents = target.match(/[áéíóú]/g) || [];
+      const recognizedAccents = recognized.match(/[áéíóú]/g) || [];
+
+      if (targetAccents.length !== recognizedAccents.length) {
         errors.push({
-          type: 'consonant_error',
-          description: errorPattern.common,
-          severity: errorPattern.severity
+          type: 'accent_count_error',
+          description: 'Número incorrecto de acentos',
+          severity: 'medium',
+          suggestion: 'Revisa las reglas de acentuación española'
+        });
+      } else if (targetAccents.join('') !== recognizedAccents.join('')) {
+        errors.push({
+          type: 'accent_position_error',
+          description: 'Acento en posición incorrecta',
+          severity: 'medium',
+          suggestion: 'Practica la acentuación de palabras agudas, llanas y esdrújulas'
         });
       }
-    });
+    }
 
     return errors;
   }

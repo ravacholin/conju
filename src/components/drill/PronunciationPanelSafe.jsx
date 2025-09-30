@@ -3,7 +3,7 @@ import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
 import { convertCurrentItemToPronunciation, speakText } from '../../lib/pronunciation/pronunciationUtils.js';
-import { logger } from '../../lib/utils/logger.js';
+import { createLogger } from '../../lib/utils/logger.js';
 
 const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   currentItem,
@@ -11,9 +11,10 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   handleResult,
   onContinue
 }, ref) {
+  const logger = createLogger('PronunciationPanelSafe');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
-  const [speechService] = useState(() => new SpeechRecognitionService());
+  const [speechService, setSpeechService] = useState(null);
   const [analyzer] = useState(() => new PronunciationAnalyzer());
   const [isSupported, setIsSupported] = useState(true);
   const [audioWaveform, setAudioWaveform] = useState([]);
@@ -49,6 +50,16 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   // Toggle recording function for external control
   const toggleRecording = useCallback(async () => {
+    if (!speechService) {
+      setRecordingResult({
+        accuracy: 0,
+        feedback: 'Servicio de reconocimiento de voz no disponible',
+        suggestions: ['Recarga la página y verifica tu navegador'],
+        error: true
+      });
+      return;
+    }
+
     if (isRecording) {
       speechService.stopListening();
     } else {
@@ -117,6 +128,8 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       // Track progress using STRICT evaluation (90%+ threshold)
       if (pronunciationData) {
         const isCorrect = finalAnalysis.isCorrectForSRS;
+        const timing = Date.now() - recordingStartTime.current;
+
         console.log('🎤 STRICT PRONUNCIATION RESULT TRACKING:', {
           isCorrect,
           accuracy: finalAnalysis.accuracy,
@@ -124,17 +137,31 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
           threshold: '90% (STRICT)',
           semanticType: finalAnalysis.semanticValidation?.type,
           hasOnContinue: !!onContinueRef.current,
-          hasOnClose: !!onCloseRef.current
+          hasOnClose: !!onCloseRef.current,
+          timing
         });
 
-        handleResultRef.current(isCorrect, finalAnalysis.accuracy, {
-          type: 'pronunciation',
-          target: pronunciationData.form,
-          recognized: result.transcript,
-          accuracy: finalAnalysis.accuracy,
-          pedagogicalScore: finalAnalysis.pedagogicalScore,
-          semanticType: finalAnalysis.semanticValidation?.type
-        });
+        // Create proper result object for tracking
+        const trackingResult = {
+          correct: isCorrect,
+          latencyMs: timing,
+          hintsUsed: 0, // Pronunciation doesn't use hints
+          errorTags: finalAnalysis.isCorrectForSRS ? [] : ['pronunciation-error'],
+          userAnswer: result.transcript,
+          correctAnswer: pronunciationData.form,
+          meta: {
+            type: 'pronunciation',
+            target: pronunciationData.form,
+            recognized: result.transcript,
+            accuracy: finalAnalysis.accuracy,
+            pedagogicalScore: finalAnalysis.pedagogicalScore,
+            semanticType: finalAnalysis.semanticValidation?.type,
+            confidence: result.confidence,
+            timing: timing
+          }
+        };
+
+        handleResultRef.current(trackingResult);
 
         // Auto-advance if correct (90%+) - continue to next drill after 2 seconds
         if (isCorrect && onContinueRef.current) {
@@ -209,16 +236,32 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     if (initializeOnceRef.current) return;
     initializeOnceRef.current = true;
 
+    // Only initialize if window is available (client-side)
+    if (typeof window === 'undefined') {
+      setIsSupported(false);
+      setCompatibilityInfo({
+        speechRecognition: false,
+        microphone: false,
+        language: 'unknown',
+        userAgent: 'SSR environment',
+        recommendations: ['Speech recognition not available in server-side environment']
+      });
+      return;
+    }
+
     const initializeAndStart = async () => {
       try {
-        const compatibility = await speechService.testCompatibility();
+        const service = new SpeechRecognitionService();
+        setSpeechService(service);
+
+        const compatibility = await service.testCompatibility();
         setCompatibilityInfo(compatibility);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
 
         if (compatibility.speechRecognition && compatibility.microphone) {
-          await speechService.initialize({ language: 'es-ES' });
+          await service.initialize({ language: 'es-ES' });
 
-          speechService.setCallbacks({
+          service.setCallbacks({
             onResult: handleSpeechResult,
             onError: handleSpeechError,
             onStart: handleSpeechStart,
@@ -226,7 +269,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
           });
 
           // START RECORDING IMMEDIATELY
-          const success = await speechService.startListening({
+          const success = await service.startListening({
             language: 'es-ES'
           });
 
@@ -248,7 +291,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     initializeAndStart();
 
     return () => {
-      speechService.destroy();
+      if (speechService) {
+        speechService.destroy();
+      }
     };
   }, []); // EMPTY DEPS - inicializa solo una vez
 
@@ -409,7 +454,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       <div className="setting-group">
         <button className="btn btn-secondary" onClick={() => {
           // Stop recording if active when closing
-          if (isRecording) {
+          if (isRecording && speechService) {
             speechService.stopListening();
           }
           onClose();

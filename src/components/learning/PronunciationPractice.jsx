@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
-import { logger } from '../../lib/utils/logger.js';
+import { createLogger } from '../../lib/utils/logger.js';
 import './PronunciationPractice.css';
 
 // Enhanced Text-to-Speech with Spanish voice optimization
@@ -305,11 +305,12 @@ const generatePronunciationTip = (word, _verb) => {
 };
 
 function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
+  const logger = createLogger('PronunciationPractice');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [showPronunciation, setShowPronunciation] = useState(false);
-  const [speechService] = useState(() => new SpeechRecognitionService());
+  const [speechService, setSpeechService] = useState(null);
   const [analyzer] = useState(() => new PronunciationAnalyzer());
   const [isSupported, setIsSupported] = useState(true);
   const [audioWaveform, setAudioWaveform] = useState([]);
@@ -319,8 +320,6 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const audioRef = useRef(null);
   const waveformRef = useRef(null);
 
-  // Progress tracking integration
-  const { handleResult } = useProgressTracking(null, () => {});
 
   // Generate dynamic exercise data from eligible forms
   const exerciseData = useMemo(() => {
@@ -338,18 +337,67 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
   const currentVerb = exerciseData?.verbs[currentIndex];
 
+  // Create stable pronunciation item for progress tracking
+  const currentPronunciationItem = useMemo(() => {
+    if (!currentVerb) return null;
+
+    return {
+      id: `${currentVerb.verb}|${currentVerb.tense}|${currentVerb.person}`, // Stable identifier
+      verb: currentVerb.verb,
+      value: currentVerb.form,
+      mood: currentVerb.mood,
+      tense: currentVerb.tense,
+      person: currentVerb.person,
+      type: 'pronunciation', // Mark as pronunciation exercise
+      // Add minimal metadata for tracking
+      meta: {
+        exerciseType: 'pronunciation',
+        targetForm: currentVerb.form,
+        audioKey: currentVerb.audioKey,
+        difficulty: currentVerb.difficulty || 'medium'
+      }
+    };
+  }, [currentVerb]);
+
+  // Progress tracking integration with real handler
+  const handleProgressResult = useCallback((result) => {
+    console.log('🎯 Pronunciation result tracked:', {
+      item: currentPronunciationItem?.id,
+      result: result
+    });
+    // onResult callback if provided (none expected in this component currently)
+  }, [currentPronunciationItem]);
+
+  const { handleResult: trackProgress } = useProgressTracking(currentPronunciationItem, handleProgressResult);
+
   // Initialize speech recognition on component mount
   useEffect(() => {
+    // Only initialize if window is available (client-side)
+    if (typeof window === 'undefined') {
+      setIsSupported(false);
+      setCompatibilityInfo({
+        speechRecognition: false,
+        microphone: false,
+        language: 'unknown',
+        userAgent: 'SSR environment',
+        recommendations: ['Speech recognition not available in server-side environment']
+      });
+      return;
+    }
+
     const initializeSpeech = async () => {
       try {
-        const compatibility = await speechService.testCompatibility();
+        const service = new SpeechRecognitionService();
+        setSpeechService(service);
+
+        const compatibility = await service.testCompatibility();
         setCompatibilityInfo(compatibility);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
 
         if (compatibility.speechRecognition && compatibility.microphone) {
-          await speechService.initialize({ language: 'es-ES' });
+          await service.initialize({ language: 'es-ES' });
 
-          speechService.setCallbacks({
+          service.setCallbacks({
             onResult: handleSpeechResult,
             onError: handleSpeechError,
             onStart: handleSpeechStart,
@@ -366,7 +414,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
     // Cleanup
     return () => {
-      speechService.destroy();
+      if (speechService) {
+        speechService.destroy();
+      }
     };
   }, []);
 
@@ -402,23 +452,40 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       });
 
       // Track progress with STRICT threshold (90%+) for pedagogical excellence
-      if (currentVerb) {
+      if (currentVerb && currentPronunciationItem) {
         const isCorrect = analysis.isCorrectForSRS || analysis.accuracy >= 90;
+        const timing = Date.now() - recordingStartTime.current;
+
         console.log('🎯 STRICT Pronunciation Tracking:', {
           isCorrect,
           accuracy: analysis.accuracy,
           pedagogicalScore: analysis.pedagogicalScore,
-          semanticType: analysis.semanticValidation?.type
+          semanticType: analysis.semanticValidation?.type,
+          item: currentPronunciationItem.id,
+          timing
         });
 
-        handleResult(isCorrect, analysis.accuracy, {
-          type: 'pronunciation',
-          target: currentVerb.form,
-          recognized: result.transcript,
-          accuracy: analysis.accuracy,
-          pedagogicalScore: analysis.pedagogicalScore,
-          semanticType: analysis.semanticValidation?.type
-        });
+        // Create proper result object for useProgressTracking
+        const trackingResult = {
+          correct: isCorrect,
+          latencyMs: timing,
+          hintsUsed: 0, // Pronunciation doesn't use hints
+          errorTags: analysis.isCorrectForSRS ? [] : ['pronunciation-error'],
+          userAnswer: result.transcript,
+          correctAnswer: currentVerb.form,
+          meta: {
+            type: 'pronunciation',
+            target: currentVerb.form,
+            recognized: result.transcript,
+            accuracy: analysis.accuracy,
+            pedagogicalScore: analysis.pedagogicalScore,
+            semanticType: analysis.semanticValidation?.type,
+            confidence: result.confidence,
+            timing: timing
+          }
+        };
+
+        trackProgress(trackingResult);
       }
     }
   };
@@ -570,6 +637,16 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   };
 
   const handleStartRecording = async () => {
+    if (!speechService) {
+      setRecordingResult({
+        accuracy: 0,
+        feedback: 'Servicio de reconocimiento de voz no disponible',
+        suggestions: ['Recarga la página y verifica tu navegador'],
+        error: true
+      });
+      return;
+    }
+
     try {
       setRecordingResult(null);
       setShowDetailed(false);
@@ -600,7 +677,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   };
 
   const handleStopRecording = () => {
-    speechService.stopListening();
+    if (speechService) {
+      speechService.stopListening();
+    }
   };
 
   const handleNext = () => {

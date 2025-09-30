@@ -23,6 +23,9 @@ class SpeechRecognitionService {
    * Check if speech recognition is supported in the current browser
    */
   checkSupport() {
+    if (typeof window === 'undefined') {
+      return false; // SSR environment - no window object
+    }
     return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
   }
 
@@ -32,6 +35,10 @@ class SpeechRecognitionService {
   initialize(options = {}) {
     if (!this.isSupported) {
       throw new Error('Speech recognition not supported in this browser');
+    }
+
+    if (typeof window === 'undefined') {
+      throw new Error('Speech recognition not available in SSR environment');
     }
 
     try {
@@ -264,16 +271,27 @@ class SpeechRecognitionService {
     const results = {
       speechRecognition: this.isSupported,
       microphone: false,
-      language: navigator.language,
-      userAgent: navigator.userAgent,
+      language: typeof navigator !== 'undefined' ? navigator.language : 'unknown',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'SSR environment',
       recommendations: []
     };
 
+    // Early return if no window/navigator (SSR environment)
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      results.recommendations.push('Speech recognition not available in server-side environment');
+      return results;
+    }
+
     // Test microphone access
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      results.microphone = true;
-      stream.getTracks().forEach(track => track.stop());
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        results.microphone = true;
+        stream.getTracks().forEach(track => track.stop());
+      } else {
+        results.microphone = false;
+        results.recommendations.push('Media devices API not available');
+      }
     } catch {
       results.microphone = false;
       results.recommendations.push('Permite el acceso al micrófono para usar esta función');
