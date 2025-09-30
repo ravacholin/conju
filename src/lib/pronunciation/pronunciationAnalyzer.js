@@ -13,7 +13,7 @@
  * - Educational feedback generation
  */
 
-import { semanticValidator } from './semanticValidator.js';
+import { getSemanticValidator } from './semanticValidator.js';
 
 /**
  * Spanish phonetic patterns and rules
@@ -104,10 +104,10 @@ class PronunciationAnalyzer {
       // Vowel confusion patterns
       vowelErrors: new Map([
         ['e', ['i', 'a']], // Common substitutions
-        ['i', ['e']],
-        ['o', ['u']],
-        ['u', ['o']],
-        ['a', ['e']]
+        ['i', ['e', 'a']], // i/e and i/a confusion
+        ['o', ['u', 'a']],
+        ['u', ['o', 'i']],
+        ['a', ['e', 'i', 'o']] // a can be confused with multiple vowels
       ]),
 
       // Consonant confusion patterns
@@ -136,8 +136,18 @@ class PronunciationAnalyzer {
       }
     };
 
-    // Initialize semantic validator
-    this.semanticValidator = semanticValidator;
+    // Initialize semantic validator (lazy)
+    this.semanticValidator = null;
+  }
+
+  /**
+   * Get semantic validator instance (lazy initialization)
+   */
+  getSemanticValidator() {
+    if (!this.semanticValidator) {
+      this.semanticValidator = getSemanticValidator();
+    }
+    return this.semanticValidator;
   }
 
   /**
@@ -169,7 +179,7 @@ class PronunciationAnalyzer {
       });
 
       // Step 1: SEMANTIC VALIDATION (Primary assessment)
-      analysis.semanticValidation = this.semanticValidator.validateConjugation(
+      analysis.semanticValidation = this.getSemanticValidator().validateConjugation(
         target,
         recognized,
         {
@@ -332,11 +342,11 @@ class PronunciationAnalyzer {
         }
       });
 
-      // Add specific suggestions for each error type
+      // Add specific suggestions for each error type (prioritize most specific)
       if (errorTypes.vowel_confusion.length > 0) {
+        suggestions.push('Practica las 5 vocales españolas: a, e, i, o, u');
         const vowelIssues = errorTypes.vowel_confusion.map(e => e.description).join(', ');
         suggestions.push(`Problemas con vocales: ${vowelIssues}`);
-        suggestions.push('Practica las 5 vocales españolas: a, e, i, o, u');
       }
 
       if (errorTypes.consonant_confusion.length > 0) {
@@ -668,13 +678,27 @@ class PronunciationAnalyzer {
           severity: 'medium',
           suggestion: 'Revisa las reglas de acentuación española'
         });
-      } else if (targetAccents.join('') !== recognizedAccents.join('')) {
-        errors.push({
-          type: 'accent_position_error',
-          description: 'Acento en posición incorrecta',
-          severity: 'medium',
-          suggestion: 'Practica la acentuación de palabras agudas, llanas y esdrújulas'
-        });
+      } else {
+        // Check position by finding accent positions in the strings
+        const targetPositions = [];
+        const recognizedPositions = [];
+
+        for (let i = 0; i < target.length; i++) {
+          if (/[áéíóú]/.test(target[i])) targetPositions.push(i);
+        }
+        for (let i = 0; i < recognized.length; i++) {
+          if (/[áéíóú]/.test(recognized[i])) recognizedPositions.push(i);
+        }
+
+        // Compare positions rather than just the accented characters
+        if (JSON.stringify(targetPositions) !== JSON.stringify(recognizedPositions)) {
+          errors.push({
+            type: 'accent_position_error',
+            description: 'Acento en posición incorrecta',
+            severity: 'medium',
+            suggestion: 'Practica la acentuación de palabras agudas, llanas y esdrújulas'
+          });
+        }
       }
     }
 
@@ -709,37 +733,152 @@ class PronunciationAnalyzer {
    * Count syllables in Spanish word
    */
   countSyllables(word) {
-    // Simplified syllable counting for Spanish
-    const vowelGroups = word.toLowerCase().match(/[aeiouáéíóú]+/g) || [];
-    let syllables = vowelGroups.length;
+    // Spanish syllable counting with proper phonological analysis
+    const normalizedWord = word.toLowerCase();
+    let syllables = 0;
+    let i = 0;
 
-    // Adjust for diphthongs
-    vowelGroups.forEach(group => {
-      if (group.length > 1) {
-        // Check if it's a true diphthong or hiatus
-        const isDiphthong = /[iu][aeo]|[aeo][iu]|[iu][iu]/.test(group);
-        if (!isDiphthong) {
-          syllables += group.length - 1;
+    while (i < normalizedWord.length) {
+      const char = normalizedWord[i];
+
+      // Found a vowel - start of potential syllable
+      if (/[aeiouáéíóúüy]/.test(char)) {
+        syllables++;
+        let vowelSequence = char;
+        i++;
+
+        // Collect consecutive vowels
+        while (i < normalizedWord.length && /[aeiouáéíóúüy]/.test(normalizedWord[i])) {
+          vowelSequence += normalizedWord[i];
+          i++;
         }
+
+        // Analyze the vowel sequence for diphthongs/triphthongs
+        const additionalSyllables = this._analyzeVowelSequence(vowelSequence);
+        syllables += additionalSyllables;
+      } else {
+        i++;
       }
-    });
+    }
 
     return Math.max(1, syllables);
+  }
+
+  /**
+   * Analyze a sequence of consecutive vowels to determine syllable count
+   */
+  _analyzeVowelSequence(vowelSequence) {
+    if (vowelSequence.length <= 1) return 0;
+
+    let additionalSyllables = 0;
+    let i = 0;
+
+    while (i < vowelSequence.length - 1) {
+      const current = vowelSequence[i];
+      const next = vowelSequence[i + 1];
+
+      // Check if these two vowels form a diphthong
+      if (this._isSpanishDiphthong(current, next, vowelSequence, i)) {
+        // It's a diphthong, skip the next vowel
+        i += 2;
+      } else {
+        // It's hiatus (separate syllables)
+        additionalSyllables++;
+        i++;
+      }
+    }
+
+    return additionalSyllables;
+  }
+
+  /**
+   * Determine if two vowels form a diphthong in Spanish based on phonological rules
+   */
+  _isSpanishDiphthong(vowel1, vowel2, word, vowelIndex) {
+    // Spanish vowel classification
+    const weakVowels = ['i', 'u', 'í', 'ú'];
+    const strongVowels = ['a', 'e', 'o', 'á', 'é', 'ó'];
+
+    const isWeak1 = weakVowels.includes(vowel1);
+    const isWeak2 = weakVowels.includes(vowel2);
+    const isStrong1 = strongVowels.includes(vowel1);
+    const isStrong2 = strongVowels.includes(vowel2);
+
+    // Rule 1: If either vowel has a written accent and is weak, it breaks the diphthong (hiatus)
+    if ((vowel1 === 'í' || vowel1 === 'ú') && isStrong2) return false;
+    if ((vowel2 === 'í' || vowel2 === 'ú') && isStrong1) return false;
+
+    // Rule 2: Two strong vowels never form a diphthong (hiatus)
+    if (isStrong1 && isStrong2) return false;
+
+    // Rule 3: Weak + Strong or Strong + Weak = diphthong (unless accent on weak)
+    if ((isWeak1 && isStrong2) || (isStrong1 && isWeak2)) {
+      // Special exceptions based on Spanish phonology
+      const pair = vowel1 + vowel2;
+
+      // These combinations are always diphthongs in Spanish
+      const alwaysDiphthongs = [
+        'ai', 'au', 'ei', 'eu', 'oi', 'ou',  // strong + weak
+        'ia', 'ie', 'io', 'ua', 'ue', 'ui', 'uo'  // weak + strong
+      ];
+
+      return alwaysDiphthongs.includes(pair);
+    }
+
+    // Rule 4: Weak + Weak = diphthong
+    if (isWeak1 && isWeak2) {
+      const pair = vowel1 + vowel2;
+      return ['iu', 'ui'].includes(pair);
+    }
+
+    return false;
+  }
+
+  /**
+   * Determine if three vowels form a triphthong in Spanish
+   */
+  _isSpanishTriphthong(vowel1, vowel2, vowel3) {
+    const weakVowels = ['i', 'u'];
+    const strongVowels = ['a', 'e', 'o'];
+
+    // Triphthongs in Spanish: weak + strong + weak (like 'iai', 'uau', etc.)
+    const isPattern = weakVowels.includes(vowel1) &&
+                     strongVowels.includes(vowel2) &&
+                     weakVowels.includes(vowel3);
+
+    // Common Spanish triphthongs
+    const validTriphthongs = ['iai', 'iei', 'uai', 'uei'];
+    const sequence = vowel1 + vowel2 + vowel3;
+
+    return isPattern && validTriphthongs.includes(sequence);
+  }
+
+  // Keep backward compatibility
+  _isDiphthong(vowel1, vowel2) {
+    return this._isSpanishDiphthong(vowel1, vowel2, '', 0);
   }
 
   /**
    * Determine stress type
    */
   getStressType(word) {
-    if (/[áéíóú]/.test(word)) {
-      return 'esdrújula'; // Has written accent
-    }
-
     const syllables = this.countSyllables(word);
     if (syllables === 1) return 'monosílaba';
 
-    if (word.match(/[ns]$/)) {
-      return 'llana'; // Ends in n, s -> stress on penultimate
+    // If word has written accent, determine by position of accent
+    const accentMatch = word.match(/[áéíóú]/);
+    if (accentMatch) {
+      const accentPos = word.indexOf(accentMatch[0]);
+      const vowelsAfterAccent = (word.slice(accentPos + 1).match(/[aeiouáéíóú]/g) || []).length;
+
+      if (vowelsAfterAccent >= 2) return 'esdrújula';
+      if (vowelsAfterAccent === 1) return 'llana';
+      return 'aguda';
+    }
+
+    // No written accent - apply standard rules
+    if (word.match(/[aeiou]$|[ns]$/i)) {
+      return 'llana'; // Ends in vowel, n, or s -> stress on penultimate
     } else {
       return 'aguda'; // Stress on last syllable
     }

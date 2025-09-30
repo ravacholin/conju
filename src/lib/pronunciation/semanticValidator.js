@@ -394,7 +394,21 @@ export class SemanticValidator {
   }
 }
 
-// Singleton instance for global use
-export const semanticValidator = new SemanticValidator();
+// Singleton instance for global use (lazy initialization)
+let semanticValidatorInstance = null;
+
+export function getSemanticValidator() {
+  if (!semanticValidatorInstance) {
+    semanticValidatorInstance = new SemanticValidator();
+  }
+  return semanticValidatorInstance;
+}
+
+// Backwards compatibility - lazy getter
+export const semanticValidator = new Proxy({}, {
+  get(target, prop) {
+    return getSemanticValidator()[prop];
+  }
+});
 
 export default semanticValidator;

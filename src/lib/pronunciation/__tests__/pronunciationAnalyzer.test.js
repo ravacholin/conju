@@ -7,9 +7,13 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import PronunciationAnalyzer from '../pronunciationAnalyzer.js'
 
 // Mock semantic validator
+const mockValidateConjugation = vi.hoisted(() => vi.fn())
 vi.mock('../semanticValidator.js', () => ({
+  getSemanticValidator: () => ({
+    validateConjugation: mockValidateConjugation
+  }),
   semanticValidator: {
-    validateConjugation: vi.fn()
+    validateConjugation: mockValidateConjugation
   }
 }))
 
@@ -44,7 +48,7 @@ describe('PronunciationAnalyzer', () => {
         suggestion: null
       }
 
-      analyzer.semanticValidator.validateConjugation.mockReturnValue(mockSemanticResult)
+      mockValidateConjugation.mockReturnValue(mockSemanticResult)
 
       const result = analyzer.analyzePronunciation('hablo', 'hablo', {
         verb: 'hablar',
@@ -66,7 +70,7 @@ describe('PronunciationAnalyzer', () => {
         suggestion: null
       }
 
-      analyzer.semanticValidator.validateConjugation.mockReturnValue(mockSemanticResult)
+      mockValidateConjugation.mockReturnValue(mockSemanticResult)
 
       const result = analyzer.analyzePronunciation('como', 'como', {})
 
@@ -87,7 +91,7 @@ describe('PronunciationAnalyzer', () => {
         suggestion: 'Practica la acentuación española'
       }
 
-      analyzer.semanticValidator.validateConjugation.mockReturnValue(mockSemanticResult)
+      mockValidateConjugation.mockReturnValue(mockSemanticResult)
 
       const result = analyzer.analyzePronunciation('comí', 'comi', {})
 
@@ -104,7 +108,7 @@ describe('PronunciationAnalyzer', () => {
         suggestion: 'Pronuncia la conjugación correcta'
       }
 
-      analyzer.semanticValidator.validateConjugation.mockReturnValue(mockSemanticResult)
+      mockValidateConjugation.mockReturnValue(mockSemanticResult)
 
       const result = analyzer.analyzePronunciation('hablo', 'como', {})
 
@@ -149,7 +153,7 @@ describe('PronunciationAnalyzer', () => {
     })
 
     it('should detect accent count errors', () => {
-      const errors = analyzer._detectAccentErrors('comió', 'comío')
+      const errors = analyzer._detectAccentErrors('comió', 'comio')
 
       expect(errors.length).toBeGreaterThan(0)
       expect(errors[0].type).toBe('accent_count_error')
@@ -261,7 +265,7 @@ describe('PronunciationAnalyzer', () => {
   describe('Phonetic Analysis', () => {
     it('should calculate vowel accuracy correctly', () => {
       const accuracy1 = analyzer.analyzeVowels('hablo', 'hiblo')
-      expect(accuracy1).toBe(80) // 4/5 vowels correct
+      expect(accuracy1).toBe(50) // 1/2 vowels correct (o matches, a→i doesn't)
 
       const accuracy2 = analyzer.analyzeVowels('como', 'como')
       expect(accuracy2).toBe(100) // Perfect match
@@ -310,7 +314,7 @@ describe('PronunciationAnalyzer', () => {
     })
 
     it('should determine stress types correctly', () => {
-      expect(analyzer.getStressType('habló')).toBe('esdrújula') // Has written accent
+      expect(analyzer.getStressType('habló')).toBe('aguda') // Stress on last syllable (ha-BLÓ)
       expect(analyzer.getStressType('hablo')).toBe('llana') // Ends in vowel
       expect(analyzer.getStressType('amor')).toBe('aguda') // Ends in consonant
     })
@@ -324,7 +328,7 @@ describe('PronunciationAnalyzer', () => {
   describe('Error Handling', () => {
     it('should handle analysis errors gracefully', () => {
       // Mock semantic validator to throw error
-      analyzer.semanticValidator.validateConjugation.mockImplementation(() => {
+      mockValidateConjugation.mockImplementation(() => {
         throw new Error('Validation failed')
       })
 
@@ -342,7 +346,7 @@ describe('PronunciationAnalyzer', () => {
         pedagogicalScore: 0
       }
 
-      analyzer.semanticValidator.validateConjugation.mockReturnValue(mockSemanticResult)
+      mockValidateConjugation.mockReturnValue(mockSemanticResult)
 
       const result = analyzer.analyzePronunciation('', '', {})
 
