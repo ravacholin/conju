@@ -186,6 +186,51 @@ function DrillMode({
           // Start with first activity
           onRegenerateItem()
         }
+        // Handle immediate practice from recommendations
+        else if (detail && detail.type === 'immediate_practice') {
+          console.log('Starting immediate practice:', detail.recommendation)
+
+          // Configure practice based on recommendation
+          if (detail.mood && detail.tense) {
+            // Specific mood/tense practice
+            if (typeof onPracticeModeChange === 'function') {
+              onPracticeModeChange('specific', detail.mood, detail.tense)
+            }
+
+            if (typeof onStartSpecificPractice === 'function') {
+              onStartSpecificPractice()
+            } else {
+              setTimeout(() => onRegenerateItem(), 100)
+            }
+          } else if (detail.focus) {
+            // Focus-based practice
+            const focusSettings = {
+              practiceMode: 'mixed'
+            }
+
+            switch (detail.focus) {
+              case 'weak_areas':
+                focusSettings.verbType = 'irregular' // More challenging
+                break
+              case 'review':
+                focusSettings.practiceMode = 'review'
+                break
+              case 'new_content':
+                focusSettings.verbType = 'regular' // Easier start
+                break
+              case 'balanced':
+              default:
+                // Use current settings
+                break
+            }
+
+            settings.set(focusSettings)
+            onRegenerateItem()
+          } else {
+            // Fallback to general practice
+            onRegenerateItem()
+          }
+        }
         // If we have mood/tense data, set specific practice mode
         else if (detail && detail.mood && detail.tense) {
           // Set specific practice mode

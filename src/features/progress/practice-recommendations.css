@@ -605,4 +605,137 @@
   .session-preview {
     padding: 1rem;
   }
+
+  .recommendation-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .practice-now-btn,
+  .details-btn {
+    min-width: auto;
+    justify-content: center;
+  }
+}
+
+/* Recommendation Action Buttons */
+.recommendation-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(245, 245, 245, 0.08);
+}
+
+.practice-now-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  flex: 1;
+  justify-content: center;
+  min-width: 140px;
+}
+
+.practice-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #7c8df0 0%, #8659b8 100%);
+}
+
+.practice-now-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.practice-now-btn .inline-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+}
+
+.details-btn {
+  background: rgba(245, 245, 245, 0.06);
+  border: 1px solid rgba(245, 245, 245, 0.12);
+  color: rgba(245, 245, 245, 0.8);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.details-btn:hover {
+  background: rgba(245, 245, 245, 0.1);
+  color: rgba(245, 245, 245, 0.95);
+  border-color: rgba(245, 245, 245, 0.2);
+  transform: translateY(-1px);
+}
+
+.details-btn:active {
+  transform: translateY(0);
+  background: rgba(245, 245, 245, 0.08);
+}
+
+/* Priority-based styling for practice buttons */
+.recommendation-card.high .practice-now-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  border-color: rgba(255, 107, 107, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.recommendation-card.high .practice-now-btn:hover {
+  background: linear-gradient(135deg, #ff7979 0%, #fd7e14 100%);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.recommendation-card.medium .practice-now-btn {
+  background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+  border-color: rgba(254, 202, 87, 0.3);
+  box-shadow: 0 4px 12px rgba(254, 202, 87, 0.3);
+  color: #2c2c2c;
+}
+
+.recommendation-card.medium .practice-now-btn:hover {
+  background: linear-gradient(135deg, #ff9f43 0%, #ff6b9d 100%);
+  box-shadow: 0 6px 20px rgba(254, 202, 87, 0.4);
+}
+
+.recommendation-card.medium .practice-now-btn .inline-icon {
+  filter: brightness(0) invert(0);
+}
+
+/* Animation for action buttons */
+@keyframes pulse-practice {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.recommendation-card.high .practice-now-btn {
+  animation: pulse-practice 3s ease-in-out infinite;
+}
+
+/* Focus states for accessibility */
+.practice-now-btn:focus,
+.details-btn:focus {
+  outline: 2px solid rgba(102, 126, 234, 0.6);
+  outline-offset: 2px;
+}
+
+.recommendation-card.high .practice-now-btn:focus {
+  outline-color: rgba(255, 107, 107, 0.6);
+}
+
+.recommendation-card.medium .practice-now-btn:focus {
+  outline-color: rgba(254, 202, 87, 0.6);
 }

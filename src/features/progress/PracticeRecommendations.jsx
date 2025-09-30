@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { AdaptivePracticeEngine } from '../../lib/progress/AdaptivePracticeEngine.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import './practice-recommendations.css'
 
 // Use centralized formatter for consistency
 
@@ -70,6 +71,47 @@ export default function PracticeRecommendations({
   }
 
   const handleRecommendationClick = (recommendation) => {
+    if (onSelectRecommendation) {
+      onSelectRecommendation(recommendation)
+    }
+  }
+
+  const handlePracticeNow = (recommendation) => {
+    // Create immediate practice event based on recommendation
+    const practiceEvent = {
+      type: 'immediate_practice',
+      recommendation: recommendation
+    }
+
+    // If it has a specific mood/tense combination, start specific practice
+    if (recommendation.targetCombination) {
+      practiceEvent.mood = recommendation.targetCombination.mood
+      practiceEvent.tense = recommendation.targetCombination.tense
+    } else {
+      // For general recommendations, set appropriate practice mode
+      switch (recommendation.type) {
+        case 'weak_area_practice':
+          practiceEvent.focus = 'weak_areas'
+          break
+        case 'spaced_review':
+          practiceEvent.focus = 'review'
+          break
+        case 'new_content':
+          practiceEvent.focus = 'new_content'
+          break
+        case 'balanced_practice':
+        default:
+          practiceEvent.focus = 'balanced'
+          break
+      }
+    }
+
+    // Dispatch navigation event to start practice
+    window.dispatchEvent(new CustomEvent('progress:navigate', {
+      detail: practiceEvent
+    }))
+
+    // Also call the original handler if provided
     if (onSelectRecommendation) {
       onSelectRecommendation(recommendation)
     }
@@ -191,10 +233,9 @@ export default function PracticeRecommendations({
             const priorityClass = getPriorityColor(rec.priority)
             
             return (
-              <div 
+              <div
                 key={index}
                 className={`recommendation-card ${priorityClass}`}
-                onClick={() => handleRecommendationClick(rec)}
               >
                 <div className="recommendation-header">
                   <span className="recommendation-icon">
@@ -233,6 +274,28 @@ export default function PracticeRecommendations({
                     </div>
                   </div>
                 )}
+
+                <div className="recommendation-actions">
+                  <button
+                    className="btn btn-primary practice-now-btn"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handlePracticeNow(rec)
+                    }}
+                  >
+                    <img src="/icons/play.png" alt="Practicar" className="inline-icon" />
+                    Practicá ahora
+                  </button>
+                  <button
+                    className="btn btn-secondary details-btn"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRecommendationClick(rec)
+                    }}
+                  >
+                    Ver detalles
+                  </button>
+                </div>
               </div>
             )
           })}
