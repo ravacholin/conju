@@ -11,7 +11,7 @@
  * - Integrates with existing verb database
  */
 
-import { buildFormsForRegion } from '../core/generator.js';
+import { buildFormsForRegion } from '../core/eligibility.js';
 
 /**
  * Semantic validation engine for verb conjugations

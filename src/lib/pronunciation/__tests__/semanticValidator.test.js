@@ -7,11 +7,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { SemanticValidator } from '../semanticValidator.js'
 
 // Mock buildFormsForRegion
-vi.mock('../../core/generator.js', () => ({
+vi.mock('../../core/eligibility.js', () => ({
   buildFormsForRegion: vi.fn()
 }))
 
-import { buildFormsForRegion } from '../../core/generator.js'
+import { buildFormsForRegion } from '../../core/eligibility.js'
 
 describe('SemanticValidator', () => {
   let validator
