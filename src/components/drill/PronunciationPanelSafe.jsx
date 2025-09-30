@@ -409,24 +409,20 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
                   <button
                     onClick={playCorrectPronunciation}
                     style={{
-                      background: '#000',
-                      color: '#fff',
-                      border: '1px solid #333',
-                      borderRadius: '4px',
-                      padding: '6px 12px',
-                      fontSize: '12px',
+                      background: 'transparent',
+                      border: 'none',
+                      padding: '4px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px'
+                      justifyContent: 'center'
                     }}
                   >
                     <img
                       src="/megaf-imperat.png"
-                      alt="Reproducir"
-                      style={{ width: '12px', height: '12px' }}
+                      alt="Reproducir pronunciación correcta"
+                      style={{ width: '24px', height: '24px' }}
                     />
-                    Escuchar
                   </button>
                 </div>
               </div>
