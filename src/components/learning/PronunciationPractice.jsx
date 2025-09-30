@@ -386,6 +386,10 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         currentVerb.form,
         result.transcript,
         {
+          verb: currentVerb.verb,
+          mood: currentVerb.mood,
+          tense: currentVerb.tense,
+          person: currentVerb.person,
           confidence: result.confidence,
           timing: Date.now() - recordingStartTime.current
         }
@@ -397,13 +401,23 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         alternatives: result.alternatives
       });
 
-      // Track progress - stricter threshold to ensure pedagogical accuracy
+      // Track progress with STRICT threshold (90%+) for pedagogical excellence
       if (currentVerb) {
-        handleResult(analysis.accuracy >= 80, analysis.accuracy, {
+        const isCorrect = analysis.isCorrectForSRS || analysis.accuracy >= 90;
+        console.log('🎯 STRICT Pronunciation Tracking:', {
+          isCorrect,
+          accuracy: analysis.accuracy,
+          pedagogicalScore: analysis.pedagogicalScore,
+          semanticType: analysis.semanticValidation?.type
+        });
+
+        handleResult(isCorrect, analysis.accuracy, {
           type: 'pronunciation',
           target: currentVerb.form,
           recognized: result.transcript,
-          accuracy: analysis.accuracy
+          accuracy: analysis.accuracy,
+          pedagogicalScore: analysis.pedagogicalScore,
+          semanticType: analysis.semanticValidation?.type
         });
       }
     }
@@ -613,6 +627,19 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     handlePlayAudio();
   };
 
+  // Function to play correct pronunciation for incorrect answers
+  const playCorrectPronunciation = () => {
+    if (currentVerb?.form) {
+      console.log('🔊 Playing correct pronunciation:', currentVerb.form);
+      speakText(currentVerb.form, 'es-ES', {
+        rate: 0.7,
+        onStart: () => console.log('🔊 Started playing correct pronunciation'),
+        onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
+        onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
+      });
+    }
+  };
+
   const handleSkipWord = () => {
     handleNext();
   };
@@ -721,9 +748,10 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
               {recordingResult && (
                 <div className={`recording-result ${
                   recordingResult.error ? 'error' :
-                  recordingResult.accuracy > 80 ? 'excellent' :
-                  recordingResult.accuracy > 70 ? 'good' :
-                  recordingResult.accuracy > 50 ? 'fair' : 'needs-work'
+                  recordingResult.accuracy >= 100 ? 'perfect' :
+                  recordingResult.accuracy >= 95 ? 'excellent' :
+                  recordingResult.accuracy >= 85 ? 'good' :
+                  recordingResult.accuracy >= 75 ? 'needs-work' : 'incorrect'
                 }`}>
                   {!recordingResult.error && (
                     <div className="accuracy-header">
@@ -742,6 +770,39 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
                   <div className="feedback">
                     {recordingResult.feedback}
+
+                    {/* Show pronunciation help for incorrect answers */}
+                    {recordingResult.accuracy < 90 && !recordingResult.error && (
+                      <div className="pronunciation-help" style={{
+                        marginTop: '12px',
+                        padding: '8px',
+                        backgroundColor: '#f8f9fa',
+                        borderLeft: '4px solid #007bff',
+                        borderRadius: '4px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '16px' }}>🔊</span>
+                          <span style={{ fontSize: '14px', color: '#495057', flex: '1' }}>
+                            ¿Necesitas escuchar la pronunciación correcta?
+                          </span>
+                          <button
+                            onClick={playCorrectPronunciation}
+                            style={{
+                              background: '#007bff',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '6px 12px',
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              minWidth: 'fit-content'
+                            }}
+                          >
+                            ▶️ Escuchar
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {recordingResult.originalTranscript && (

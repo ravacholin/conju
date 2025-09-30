@@ -1,11 +1,19 @@
 /**
- * Pronunciation Analysis Engine for Spanish Language Learning
+ * Enhanced Pronunciation Analysis Engine for Spanish Language Learning
  *
- * Advanced algorithm for assessing Spanish pronunciation accuracy based on
- * speech recognition results. Implements phonetic analysis, stress pattern
- * detection, and linguistic error classification following 2025 research
- * on L2 Spanish pronunciation assessment.
+ * STRICT PEDAGOGICAL ENGINE: Advanced algorithm for assessing Spanish pronunciation
+ * accuracy with semantic validation and pedagogical rigor. Only accepts exact or
+ * near-exact conjugations to ensure learning excellence and precision.
+ *
+ * Key Features:
+ * - Semantic validation of verb conjugations
+ * - Strict pedagogical thresholds (90%+ for "correct")
+ * - Intelligent accent handling
+ * - Context-aware error analysis
+ * - Educational feedback generation
  */
+
+import { semanticValidator } from './semanticValidator.js';
 
 /**
  * Spanish phonetic patterns and rules
@@ -79,52 +87,100 @@ const ERROR_PATTERNS = {
 
 class PronunciationAnalyzer {
   constructor() {
+    // STRICT PEDAGOGICAL THRESHOLDS - Excellence-focused learning
     this.thresholds = {
-      excellent: 95,  // Más estricto para excelente
-      good: 85,       // Más estricto para bueno
-      fair: 75,       // Más estricto para aceptable
-      poor: 60        // Más estricto para pobre
+      perfect: 100,     // Only exact matches
+      excellent: 95,    // Near perfect with minor pronunciation issues
+      good: 85,         // Correct conjugation with accent errors
+      needs_work: 75,   // Major pronunciation issues but correct meaning
+      incorrect: 0      // Wrong conjugation or unrecognizable
     };
+
+    // Minimum threshold to be considered "correct" for SRS purposes
+    this.passingThreshold = 90; // Much stricter than previous 80%
+
+    // Initialize semantic validator
+    this.semanticValidator = semanticValidator;
   }
 
   /**
-   * Main analysis function - evaluates pronunciation accuracy
+   * Main analysis function with STRICT pedagogical evaluation
+   *
+   * @param {string} target - Expected conjugation
+   * @param {string} recognized - Recognized speech
+   * @param {Object} options - Context options (verb, mood, tense, person, confidence, timing)
+   * @returns {Object} Comprehensive analysis with strict scoring
    */
   analyzePronunciation(target, recognized, options = {}) {
     const analysis = {
       accuracy: 0,
+      pedagogicalScore: 0,
+      isCorrectForSRS: false,
       feedback: '',
       detailedAnalysis: {},
       suggestions: [],
       phoneticsBreakdown: {},
+      semanticValidation: null,
       timestamp: Date.now()
     };
 
     try {
-      // Normalize inputs
+      console.log('🎯 STRICT Pronunciation Analysis:', {
+        target,
+        recognized,
+        options
+      });
+
+      // Step 1: SEMANTIC VALIDATION (Primary assessment)
+      analysis.semanticValidation = this.semanticValidator.validateConjugation(
+        target,
+        recognized,
+        {
+          verb: options.verb || options.lemma,
+          mood: options.mood,
+          tense: options.tense,
+          person: options.person
+        }
+      );
+
+      // Step 2: STRICT SCORING based on semantic validation
+      const semanticResult = analysis.semanticValidation;
+      analysis.pedagogicalScore = semanticResult.pedagogicalScore;
+      analysis.accuracy = semanticResult.pedagogicalScore; // Use pedagogical score as accuracy
+
+      // Step 3: PASSING THRESHOLD (90%+ required for SRS "correct")
+      analysis.isCorrectForSRS = analysis.accuracy >= this.passingThreshold;
+
+      // Step 4: PHONETIC ANALYSIS (Secondary - for detailed feedback)
       const normalizedTarget = this.normalizeText(target);
       const normalizedRecognized = this.normalizeText(recognized);
 
-      // Core analysis components
       analysis.detailedAnalysis = {
+        semanticValidation: semanticResult,
         textSimilarity: this.analyzeTextSimilarity(normalizedTarget, normalizedRecognized),
         phoneticAnalysis: this.analyzePhonetics(normalizedTarget, normalizedRecognized),
         stressAnalysis: this.analyzeStressPatterns(normalizedTarget, normalizedRecognized),
         fluentAnalysis: this.analyzeFluency(normalizedTarget, normalizedRecognized, options)
       };
 
-      // Calculate overall accuracy
-      analysis.accuracy = this.calculateOverallAccuracy(analysis.detailedAnalysis);
-
-      // Generate feedback and suggestions
-      analysis.feedback = this.generateFeedback(analysis.accuracy, analysis.detailedAnalysis);
-      analysis.suggestions = this.generateSuggestions(analysis.detailedAnalysis);
+      // Step 5: EDUCATIONAL FEEDBACK
+      analysis.feedback = this.generatePedagogicalFeedback(semanticResult, analysis.accuracy);
+      analysis.suggestions = this.generateEducationalSuggestions(semanticResult, analysis.detailedAnalysis);
       analysis.phoneticsBreakdown = this.generatePhoneticsBreakdown(normalizedTarget, analysis.detailedAnalysis);
+
+      console.log('🎯 STRICT Analysis Result:', {
+        accuracy: analysis.accuracy,
+        isCorrectForSRS: analysis.isCorrectForSRS,
+        semanticType: semanticResult.type,
+        feedback: analysis.feedback
+      });
 
     } catch (error) {
       analysis.accuracy = 0;
+      analysis.pedagogicalScore = 0;
+      analysis.isCorrectForSRS = false;
       analysis.feedback = 'Error en el análisis de pronunciación';
-      analysis.suggestions = ['Inténtalo de nuevo'];
+      analysis.suggestions = ['Inténtalo de nuevo - error técnico'];
       console.error('Pronunciation analysis error:', error);
     }
 
@@ -132,7 +188,8 @@ class PronunciationAnalyzer {
   }
 
   /**
-   * Normalize text for comparison
+   * Conservative text normalization - preserves accent information
+   * Only removes punctuation and normalizes spacing
    */
   normalizeText(text) {
     const normalized = text
@@ -140,15 +197,101 @@ class PronunciationAnalyzer {
       .trim()
       .replace(/[¿¡]/g, '') // Remove question/exclamation marks
       .replace(/[.,;:!?]/g, '') // Remove punctuation
-      .replace(/\s+/g, ' ') // Normalize spaces
-      .replace(/[áàäâ]/g, 'a')
-      .replace(/[éèëê]/g, 'e')
-      .replace(/[íìïî]/g, 'i')
-      .replace(/[óòöô]/g, 'o')
-      .replace(/[úùüû]/g, 'u');
-
+      .replace(/\s+/g, ' '); // Normalize spaces
+      // NOTE: Accent marks are preserved for semantic analysis
 
     return normalized;
+  }
+
+  /**
+   * Generate pedagogical feedback based on semantic validation
+   */
+  generatePedagogicalFeedback(semanticResult, accuracy) {
+    switch (semanticResult.type) {
+      case 'exact_match':
+        return '¡Perfecto! Pronunciación y conjugación exactas.';
+
+      case 'valid_conjugation':
+        return '¡Excelente! Conjugación correcta con buena pronunciación.';
+
+      case 'accent_error':
+        return 'Conjugación correcta, pero presta atención a la acentuación.';
+
+      case 'wrong_context':
+        return `${semanticResult.message}. ${semanticResult.suggestion}`;
+
+      case 'different_verb':
+        return `${semanticResult.message}. ${semanticResult.suggestion}`;
+
+      case 'minor_pronunciation':
+        return `Conjugación correcta pero ${semanticResult.message}. ${semanticResult.suggestion}`;
+
+      case 'incorrect_word':
+        return `"${semanticResult.message}". ${semanticResult.suggestion}`;
+
+      default:
+        return accuracy >= this.thresholds.excellent
+          ? '¡Muy bien! Pronunciación clara y correcta.'
+          : accuracy >= this.thresholds.good
+          ? 'Bien, pero necesita más precisión en la pronunciación.'
+          : 'Inténtalo de nuevo - enfócate en la conjugación exacta.';
+    }
+  }
+
+  /**
+   * Generate educational suggestions based on semantic analysis
+   */
+  generateEducationalSuggestions(semanticResult, detailedAnalysis) {
+    const suggestions = [];
+
+    // Primary suggestions based on semantic validation
+    if (semanticResult.suggestion) {
+      suggestions.push(semanticResult.suggestion);
+    }
+
+    // Additional suggestions based on error type
+    switch (semanticResult.type) {
+      case 'wrong_context':
+        suggestions.push('Revisa el tiempo verbal y la persona gramatical');
+        suggestions.push('Practica las conjugaciones de este verbo específico');
+        break;
+
+      case 'different_verb':
+        suggestions.push('Asegúrate de pronunciar el verbo correcto');
+        suggestions.push('Escucha el audio de ejemplo nuevamente');
+        break;
+
+      case 'accent_error':
+        suggestions.push('Estudia las reglas de acentuación española');
+        suggestions.push('Practica la pronunciación con énfasis en las sílabas tónicas');
+        break;
+
+      case 'minor_pronunciation':
+        suggestions.push('Habla más despacio y articula cada sílaba');
+        suggestions.push('Presta atención a los sonidos específicos del español');
+        break;
+
+      case 'incorrect_word':
+        suggestions.push('Verifica que estés pronunciando la conjugación correcta');
+        suggestions.push('Usa el audio de ejemplo como guía');
+        break;
+    }
+
+    // Phonetic suggestions if applicable
+    if (detailedAnalysis.phoneticAnalysis?.vowel_accuracy < 80) {
+      suggestions.push('Enfócate en pronunciar las vocales de forma más clara');
+    }
+
+    if (detailedAnalysis.phoneticAnalysis?.consonant_accuracy < 70) {
+      suggestions.push('Presta atención a las consonantes, especialmente r, rr, ñ y j');
+    }
+
+    // Fluency suggestions
+    if (detailedAnalysis.fluentAnalysis?.confidence_score < 70) {
+      suggestions.push('Habla con más confianza y volumen adecuado');
+    }
+
+    return suggestions.length > 0 ? suggestions : ['¡Sigue practicando!'];
   }
 
   /**
@@ -407,33 +550,16 @@ class PronunciationAnalyzer {
   }
 
   /**
-   * Calculate overall accuracy score
+   * Legacy method - now handled by semantic validation
+   * Kept for backward compatibility with phonetic analysis
    */
-  calculateOverallAccuracy(detailedAnalysis) {
-    // MUCH MORE STRICT: Only exact matches get high scores
-    const textSim = detailedAnalysis.textSimilarity.similarity;
-
-    // If there's an exact text match, give excellent score
-    if (detailedAnalysis.textSimilarity.exact_match) {
-      return 95; // Near perfect for exact match
-    }
-
-    // STRICTER: Only very high similarities (95%+) get good scores
-    if (textSim >= 98) {
-      return 88; // Reduced from 90
-    }
-
-    // STRICTER: Good similarity threshold raised significantly
-    if (textSim >= 95) {
-      return 82; // Reduced from 80, and raised threshold from 80% to 95%
-    }
-
-    // For lower similarities, use heavily weighted text similarity but with stricter penalties
+  calculateLegacyPhoneticScore(detailedAnalysis) {
+    // This is only used for detailed phonetic breakdown now
     const weights = {
-      textSimilarity: 0.85,  // Even higher emphasis on exact text
-      phoneticAnalysis: 0.1, // Further reduced
-      stressAnalysis: 0.025, // Further reduced
-      fluentAnalysis: 0.025  // Further reduced
+      textSimilarity: 0.4,
+      phoneticAnalysis: 0.3,
+      stressAnalysis: 0.2,
+      fluentAnalysis: 0.1
     };
 
     let totalScore = 0;
@@ -442,78 +568,47 @@ class PronunciationAnalyzer {
     totalScore += detailedAnalysis.stressAnalysis.accuracy * weights.stressAnalysis;
     totalScore += detailedAnalysis.fluentAnalysis.confidence_score * weights.fluentAnalysis;
 
-    // Apply pedagogical penalty for non-exact matches
-    if (textSim < 95) {
-      totalScore *= 0.75; // 25% penalty for inexact pronunciations
-    }
-
     return Math.round(Math.max(0, Math.min(100, totalScore)));
   }
 
   /**
-   * Generate user-friendly feedback
+   * Legacy feedback method - replaced by generatePedagogicalFeedback
+   * Kept for backward compatibility
    */
-  generateFeedback(accuracy, analysis) {
-    // Special feedback for exact matches
-    if (analysis.textSimilarity.exact_match) {
+  generateLegacyFeedback(accuracy, analysis) {
+    console.warn('Using legacy feedback method - consider using generatePedagogicalFeedback');
+
+    if (analysis.textSimilarity?.exact_match) {
       return '¡Perfecto! Pronunciación exacta y clara.';
     }
 
     if (accuracy >= this.thresholds.excellent) {
-      return '¡Excelente pronunciación! Tu conjugación es precisa.';
+      return '¡Excelente pronunciación!';
     } else if (accuracy >= this.thresholds.good) {
-      return '¡Bien! Tu pronunciación es buena, pero verifica la conjugación exacta.';
-    } else if (accuracy >= this.thresholds.fair) {
-      return 'Pronunciación aceptable. Enfócate en la precisión de la conjugación.';
-    } else if (accuracy >= this.thresholds.poor) {
-      return 'Necesitas más práctica. Asegúrate de la conjugación correcta.';
+      return 'Buena pronunciación, pero puede mejorar.';
     } else {
-      return 'Inténtalo de nuevo. Verifica que uses la conjugación exacta.';
+      return 'Necesita más práctica. Inténtalo de nuevo.';
     }
   }
 
   /**
-   * Generate specific suggestions for improvement
+   * Legacy suggestions method - replaced by generateEducationalSuggestions
+   * Kept for backward compatibility
    */
-  generateSuggestions(analysis) {
-    const suggestions = [];
+  generateLegacySuggestions(analysis) {
+    console.warn('Using legacy suggestions method - consider using generateEducationalSuggestions');
 
-    // Text similarity suggestions
-    if (analysis.textSimilarity.similarity < 70) {
-      suggestions.push('Habla más despacio y articula cada palabra claramente');
+    const suggestions = ['Practica más la pronunciación'];
+
+    if (analysis.phoneticAnalysis?.vowel_accuracy < 80) {
+      suggestions.push('Enfócate en las vocales');
     }
 
-    // Phonetic suggestions
-    if (analysis.phoneticAnalysis.vowel_accuracy < 80) {
-      suggestions.push('Enfócate en pronunciar las vocales de forma más clara y diferenciada');
+    if (analysis.phoneticAnalysis?.consonant_accuracy < 70) {
+      suggestions.push('Presta atención a las consonantes');
     }
 
-    if (analysis.phoneticAnalysis.consonant_accuracy < 70) {
-      suggestions.push('Presta atención a las consonantes, especialmente r, rr, ñ y j');
-    }
-
-    // Common error suggestions
-    analysis.phoneticAnalysis.common_errors.forEach(error => {
-      switch (error.type) {
-        case 'vowel_error':
-          suggestions.push('Revisa la pronunciación de las vocales - el español tiene 5 sonidos vocálicos claros');
-          break;
-        case 'consonant_error':
-          suggestions.push(`Practica el sonido: ${error.description}`);
-          break;
-      }
-    });
-
-    // Fluency suggestions
-    if (analysis.fluentAnalysis.confidence_score < 70) {
-      suggestions.push('Habla con más confianza y volumen adecuado');
-    }
-
-    if (analysis.fluentAnalysis.hesitation_detected) {
-      suggestions.push('Intenta hablar de forma más fluida, sin pausas largas');
-    }
-
-    return suggestions.length > 0 ? suggestions : ['¡Sigue practicando!'];
+    return suggestions;
   }
 
   /**
