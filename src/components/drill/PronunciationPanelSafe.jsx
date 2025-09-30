@@ -99,14 +99,14 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         const lengthDiff = Math.abs(targetLower.length - recognizedLower.length);
         const isExactLength = lengthDiff === 0; // Mismo número de caracteres
 
-        // Calcular similitud por caracteres (debe ser >85% similar)
+        // Calcular similitud por caracteres (debe ser >95% similar para mayor rigor pedagógico)
         const minLength = Math.min(targetLower.length, recognizedLower.length);
         let matchingChars = 0;
         for (let i = 0; i < minLength; i++) {
           if (targetLower[i] === recognizedLower[i]) matchingChars++;
         }
         const similarity = minLength > 0 ? (matchingChars / Math.max(targetLower.length, recognizedLower.length)) : 0;
-        const isHighSimilarity = similarity >= 0.85;
+        const isHighSimilarity = similarity >= 0.95;
 
         const isSimilar = isExactLength && isHighSimilarity;
 
@@ -118,21 +118,21 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         console.log('  isExactLength:', isExactLength);
         console.log('  matchingChars:', matchingChars, 'of', Math.max(targetLower.length, recognizedLower.length));
         console.log('  similarity:', `${(similarity * 100).toFixed(1)}%`);
-        console.log('  isHighSimilarity (>85%):', isHighSimilarity);
+        console.log('  isHighSimilarity (>95%):', isHighSimilarity);
         console.log('  isSimilar (VERY strict):', isSimilar);
 
         finalAnalysis = {
-          accuracy: isExactMatch ? 95 : (isSimilar ? 75 : 30),
+          accuracy: isExactMatch ? 95 : (isSimilar ? 60 : 20),
           feedback: isExactMatch ? '¡Perfecto!' :
-                   isSimilar ? 'Muy bien, casi perfecto' :
+                   isSimilar ? 'Casi correcto, pero necesita más precisión' :
                    'Inténtalo de nuevo',
-          suggestions: isExactMatch ? [] : ['Pronuncia más claramente cada sílaba']
+          suggestions: isExactMatch ? [] : ['Pronuncia más claramente cada sílaba', 'Asegúrate de la conjugación exacta']
         };
         console.log('  FALLBACK result accuracy:', finalAnalysis.accuracy);
       }
 
-      // FIX: Si el analyzer está siendo demasiado estricto, usar evaluación simple
-      if (finalAnalysis.accuracy < 60) {
+      // STRICT: Solo permitir recuperación para casos de coincidencia exacta sin acentos
+      if (finalAnalysis.accuracy < 80) {
         const targetLower = pronunciationData.form.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const recognizedLower = result.transcript.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -141,18 +141,18 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         const lengthDiff = Math.abs(targetLower.length - recognizedLower.length);
         const isExactLength = lengthDiff === 0; // Mismo número de caracteres
 
-        // Calcular similitud por caracteres (debe ser >85% similar)
+        // Calcular similitud por caracteres (debe ser >95% similar para mayor rigor pedagógico)
         const minLength = Math.min(targetLower.length, recognizedLower.length);
         let matchingChars = 0;
         for (let i = 0; i < minLength; i++) {
           if (targetLower[i] === recognizedLower[i]) matchingChars++;
         }
         const similarity = minLength > 0 ? (matchingChars / Math.max(targetLower.length, recognizedLower.length)) : 0;
-        const isHighSimilarity = similarity >= 0.85;
+        const isHighSimilarity = similarity >= 0.95;
 
         const isSimilar = isExactLength && isHighSimilarity;
 
-        console.log('🎤 FIX LOGIC (accuracy < 60):');
+        console.log('🎤 STRICT RECOVERY (accuracy < 80):');
         console.log('  targetLower (normalized):', `"${targetLower}"`);
         console.log('  recognizedLower (normalized):', `"${recognizedLower}"`);
         console.log('  isExactMatch:', isExactMatch);
@@ -160,24 +160,19 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         console.log('  isExactLength:', isExactLength);
         console.log('  matchingChars:', matchingChars, 'of', Math.max(targetLower.length, recognizedLower.length));
         console.log('  similarity:', `${(similarity * 100).toFixed(1)}%`);
-        console.log('  isHighSimilarity (>85%):', isHighSimilarity);
+        console.log('  isHighSimilarity (>95%):', isHighSimilarity);
         console.log('  isSimilar (VERY strict):', isSimilar);
 
+        // SOLO permitir recuperación para coincidencias exactas (sin acentos)
         if (isExactMatch) {
           finalAnalysis = {
-            accuracy: 95,
-            feedback: '¡Perfecto! Pronunciación exacta.',
-            suggestions: []
+            accuracy: 85,
+            feedback: '¡Correcto! Pronunciación clara (sin considerar acentos).',
+            suggestions: ['Practica la acentuación para mayor precisión']
           };
-          console.log('  FIX result: EXACT MATCH -> 95%');
-        } else if (isSimilar) {
-          finalAnalysis = {
-            accuracy: 75,
-            feedback: 'Muy bien, casi perfecto',
-            suggestions: ['Pronuncia más claramente cada sílaba']
-          };
-          console.log('  FIX result: SIMILAR -> 75%');
+          console.log('  STRICT RECOVERY: EXACT MATCH without accents -> 85%');
         }
+        // NO recuperar para casos "similares" - mantener evaluación estricta
       }
 
       setRecordingResult({
@@ -188,7 +183,15 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
       // Track progress usando refs estables
       if (pronunciationData) {
-        const isCorrect = finalAnalysis.accuracy >= 60;
+        const isCorrect = finalAnalysis.accuracy >= 80;
+        console.log('🎤 PRONUNCIATION RESULT TRACKING:', {
+          isCorrect,
+          accuracy: finalAnalysis.accuracy,
+          threshold: 80,
+          hasOnContinue: !!onContinueRef.current,
+          hasOnClose: !!onCloseRef.current
+        });
+
         handleResultRef.current(isCorrect, finalAnalysis.accuracy, {
           type: 'pronunciation',
           target: pronunciationData.form,
@@ -198,10 +201,19 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
         // Auto-advance if correct - continue to next drill after 2 seconds
         if (isCorrect && onContinueRef.current) {
+          console.log('🎤 AUTO-ADVANCE TRIGGERED: Will continue in 2 seconds');
           setTimeout(() => {
-            onCloseRef.current();
+            console.log('🎤 EXECUTING AUTO-ADVANCE: Calling onContinue and onClose');
+            // Call continue first to advance to next exercise
             onContinueRef.current();
+            // Then close the pronunciation panel
+            onCloseRef.current();
           }, 2000);
+        } else {
+          console.log('🎤 AUTO-ADVANCE NOT TRIGGERED:', {
+            isCorrect,
+            hasOnContinue: !!onContinueRef.current
+          });
         }
       }
     }
@@ -391,7 +403,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
           <div className="feedback">
             {recordingResult.feedback}
-            {recordingResult.accuracy >= 60 && onContinue && (
+            {recordingResult.accuracy >= 80 && onContinue && (
               <div className="auto-continue-message" style={{
                 marginTop: '8px',
                 fontSize: '14px',

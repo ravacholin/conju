@@ -397,9 +397,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         alternatives: result.alternatives
       });
 
-      // Track progress - lowered threshold to be more forgiving for correct pronunciations
+      // Track progress - stricter threshold to ensure pedagogical accuracy
       if (currentVerb) {
-        handleResult(analysis.accuracy >= 60, analysis.accuracy, {
+        handleResult(analysis.accuracy >= 80, analysis.accuracy, {
           type: 'pronunciation',
           target: currentVerb.form,
           recognized: result.transcript,

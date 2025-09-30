@@ -80,10 +80,10 @@ const ERROR_PATTERNS = {
 class PronunciationAnalyzer {
   constructor() {
     this.thresholds = {
-      excellent: 90,
-      good: 75,
-      fair: 60,
-      poor: 40
+      excellent: 95,  // Más estricto para excelente
+      good: 85,       // Más estricto para bueno
+      fair: 75,       // Más estricto para aceptable
+      poor: 60        // Más estricto para pobre
     };
   }
 
@@ -410,7 +410,7 @@ class PronunciationAnalyzer {
    * Calculate overall accuracy score
    */
   calculateOverallAccuracy(detailedAnalysis) {
-    // PRIORITIZE TEXT SIMILARITY - if recognition is accurate, score should be high
+    // MUCH MORE STRICT: Only exact matches get high scores
     const textSim = detailedAnalysis.textSimilarity.similarity;
 
     // If there's an exact text match, give excellent score
@@ -418,22 +418,22 @@ class PronunciationAnalyzer {
       return 95; // Near perfect for exact match
     }
 
-    // If text similarity is very high (90%+), give excellent score regardless of other factors
-    if (textSim >= 90) {
-      return 90;
+    // STRICTER: Only very high similarities (95%+) get good scores
+    if (textSim >= 98) {
+      return 88; // Reduced from 90
     }
 
-    // If text similarity is good (80%+), give good score
-    if (textSim >= 80) {
-      return 80;
+    // STRICTER: Good similarity threshold raised significantly
+    if (textSim >= 95) {
+      return 82; // Reduced from 80, and raised threshold from 80% to 95%
     }
 
-    // For lower similarities, use weighted approach but boost text similarity importance
+    // For lower similarities, use heavily weighted text similarity but with stricter penalties
     const weights = {
-      textSimilarity: 0.7,  // Increased from 0.4 to 0.7
-      phoneticAnalysis: 0.2, // Reduced from 0.3 to 0.2
-      stressAnalysis: 0.05,  // Reduced from 0.2 to 0.05
-      fluentAnalysis: 0.05   // Reduced from 0.1 to 0.05
+      textSimilarity: 0.85,  // Even higher emphasis on exact text
+      phoneticAnalysis: 0.1, // Further reduced
+      stressAnalysis: 0.025, // Further reduced
+      fluentAnalysis: 0.025  // Further reduced
     };
 
     let totalScore = 0;
@@ -441,6 +441,11 @@ class PronunciationAnalyzer {
     totalScore += detailedAnalysis.phoneticAnalysis.overall_score * weights.phoneticAnalysis;
     totalScore += detailedAnalysis.stressAnalysis.accuracy * weights.stressAnalysis;
     totalScore += detailedAnalysis.fluentAnalysis.confidence_score * weights.fluentAnalysis;
+
+    // Apply pedagogical penalty for non-exact matches
+    if (textSim < 95) {
+      totalScore *= 0.75; // 25% penalty for inexact pronunciations
+    }
 
     return Math.round(Math.max(0, Math.min(100, totalScore)));
   }
@@ -455,15 +460,15 @@ class PronunciationAnalyzer {
     }
 
     if (accuracy >= this.thresholds.excellent) {
-      return '¡Excelente pronunciación! Tu acento es muy claro y natural.';
+      return '¡Excelente pronunciación! Tu conjugación es precisa.';
     } else if (accuracy >= this.thresholds.good) {
-      return '¡Muy bien! Tu pronunciación es buena, con pequeños detalles a mejorar.';
+      return '¡Bien! Tu pronunciación es buena, pero verifica la conjugación exacta.';
     } else if (accuracy >= this.thresholds.fair) {
-      return 'Buena pronunciación. Sigue practicando para mejorar la claridad.';
+      return 'Pronunciación aceptable. Enfócate en la precisión de la conjugación.';
     } else if (accuracy >= this.thresholds.poor) {
-      return 'Necesitas más práctica. Enfócate en pronunciar cada sílaba claramente.';
+      return 'Necesitas más práctica. Asegúrate de la conjugación correcta.';
     } else {
-      return 'Sigue intentando. Escucha el ejemplo y repite despacio.';
+      return 'Inténtalo de nuevo. Verifica que uses la conjugación exacta.';
     }
   }
 

@@ -213,6 +213,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const handleContinueFromPronunciation = () => {
     // This will be called by the pronunciation panel after auto-advance
     // Reset result state and continue to next item
+    console.log('🎤 HANDLE CONTINUE FROM PRONUNCIATION CALLED');
     setResult('idle');
     setInputValue('');
     handleContinue();
@@ -604,14 +605,23 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   };
 
   const handleContinue = () => {
+    console.log('🎤 HANDLE CONTINUE CALLED', {
+      correctStreak,
+      completionThreshold: DRILL_THRESHOLDS.STREAK_FOR_COMPLETION,
+      hasOnPhaseComplete: !!onPhaseComplete,
+      failedItemsQueueLength: failedItemsQueue.length
+    });
+
     if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
+        console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
         setTimeout(() => onPhaseComplete(), 0);
     } else {
         // Verificar si hay ejercicios fallados para reintegrar
         if (failedItemsQueue.length > 0) {
+          console.log('🎤 REINTEGRATING FAILED ITEM');
           const nextFailedItem = failedItemsQueue[0];
           setFailedItemsQueue(prev => prev.slice(1));
-          
+
           // Configurar el ejercicio fallado como siguiente
           setSwapAnim(true);
           setTimeout(() => {
@@ -624,6 +634,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
           }, 250);
         } else {
+          console.log('🎤 GENERATING NEXT ITEM');
           // subtle swap animation when moving to next random item
           setSwapAnim(true);
           // Reset result immediately to enable input
