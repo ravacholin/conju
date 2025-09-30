@@ -161,6 +161,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     }
   }, [showPronunciation])
 
+  // Helper function to get person text
+  const getPersonText = (personCode) => {
+    return PRONOUNS_DISPLAY[personCode] || personCode;
+  }
+
   // Create current item for pronunciation panel
   const currentPronunciationItem = useMemo(() => {
     if (!currentItem) return null;
@@ -755,10 +760,6 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     setInputValue(prev => prev + char);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
-
-  const getPersonText = (personCode) => {
-      return PRONOUNS_DISPLAY[personCode] || personCode;
-  }
 
   // --- Text-to-Speech for learning drills ---
   const getSpeakText = () => {

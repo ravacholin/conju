@@ -4,6 +4,8 @@ import { PROGRESS_CONFIG } from './config.js'
 import { getSyncStatus, hasPendingSyncData } from './cloudSync.js'
 import { getDueItems } from './srs.js'
 import { getCurrentUserId } from './userManager.js'
+import { getAttemptsByUser, getMasteryByUser, getAllFromDB, getLearningSessionsByUser } from './database.js'
+import { STORAGE_CONFIG } from './config.js'
 import logger from './logger.js'
 
 const statusCache = {
@@ -20,19 +22,32 @@ function isNavigatorOffline() {
   return navigator.onLine === false
 }
 
-function collectQueueSize() {
-  if (typeof window === 'undefined') return 0
+async function collectQueueSize() {
   try {
-    const key = PROGRESS_CONFIG.OFFLINE?.STORAGE_KEYS?.OFFLINE_QUEUE
-    if (!key) return 0
-    const raw = window.localStorage.getItem(key)
-    if (!raw) return 0
-    const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) return parsed.length
-    if (parsed && typeof parsed === 'object' && Array.isArray(parsed.queue)) return parsed.queue.length
-    return 0
+    const userId = getCurrentUserId()
+    if (!userId) return 0
+
+    const [attempts, mastery, schedulesStore, sessions] = await Promise.all([
+      getAttemptsByUser(userId),
+      getMasteryByUser(userId),
+      getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES),
+      getLearningSessionsByUser(userId)
+    ])
+
+    const schedules = schedulesStore.filter((item) => item.userId === userId)
+
+    const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
+    const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
+    const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
+    const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
+
+    const totalPending = unsyncedAttempts.length + unsyncedMastery.length + unsyncedSchedules.length + unsyncedSessions.length
+
+    console.log(`🔍 DEBUG collectQueueSize: attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}, total: ${totalPending}`)
+
+    return totalPending
   } catch (error) {
-    logger.warn('No se pudo inspeccionar cola offline', error)
+    logger.warn('No se pudo contar elementos pendientes de sincronización', error)
     return 0
   }
 }
@@ -46,7 +61,7 @@ async function buildStatus(forceRefresh = false) {
 
   const syncStatus = getSyncStatus()
   const pendingSync = await hasPendingSyncData()
-  const queueSize = collectQueueSize()
+  const queueSize = await collectQueueSize()
 
   const status = {
     isOffline: isNavigatorOffline(),
