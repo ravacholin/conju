@@ -23,19 +23,6 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   const recordingStartTime = useRef(0);
   const initializeOnceRef = useRef(false);
 
-  // Function to play correct pronunciation
-  const playCorrectPronunciation = useCallback(() => {
-    if (pronunciationData?.form) {
-      console.log('🔊 Playing correct pronunciation:', pronunciationData.form);
-      speakText(pronunciationData.form, 'es-ES', {
-        rate: 0.7,
-        onStart: () => console.log('🔊 Started playing correct pronunciation'),
-        onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
-        onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
-      });
-    }
-  }, [pronunciationData?.form]);
-
   // Estabilizar props con refs para evitar cambios de dependencias
   const handleResultRef = useRef(handleResult);
   const onContinueRef = useRef(onContinue);
@@ -89,6 +76,19 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     console.log('🎤 PRONUNCIATION DATA RESULT:', result);
     return result;
   }, [currentItem]);
+
+  // Function to play correct pronunciation - DEFINED AFTER pronunciationData
+  const playCorrectPronunciation = useCallback(() => {
+    if (pronunciationData?.form) {
+      console.log('🔊 Playing correct pronunciation:', pronunciationData.form);
+      speakText(pronunciationData.form, 'es-ES', {
+        rate: 0.7,
+        onStart: () => console.log('🔊 Started playing correct pronunciation'),
+        onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
+        onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
+      });
+    }
+  }, [pronunciationData?.form]);
 
   // Speech recognition event handlers - ESTABLES CON useCallback
   const handleSpeechResult = useCallback((result) => {
