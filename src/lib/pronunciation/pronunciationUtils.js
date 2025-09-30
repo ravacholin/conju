@@ -87,16 +87,28 @@ export const speakText = (text, lang = 'es-ES', options = {}) => {
       utterance.pitch = options.pitch || 1;
       utterance.volume = options.volume || 0.8;
 
-      // Buscar la mejor voz española
+      // Buscar la mejor voz española femenina
       const voices = window.speechSynthesis.getVoices();
       const spanishVoices = voices.filter(voice =>
         voice.lang.startsWith('es') || voice.lang.includes('Spanish')
       );
 
-      // Preferir voces premium o variantes regionales específicas
-      const preferredVoice = spanishVoices.find(voice =>
-        voice.lang === lang || voice.name.includes('Spanish')
-      ) || spanishVoices[0];
+      // Preferir voces femeninas primero, luego por región
+      const femaleVoices = spanishVoices.filter(voice =>
+        voice.name.toLowerCase().includes('female') ||
+        voice.name.toLowerCase().includes('mujer') ||
+        voice.name.toLowerCase().includes('mónica') ||
+        voice.name.toLowerCase().includes('paloma') ||
+        voice.name.toLowerCase().includes('pilar') ||
+        !voice.name.toLowerCase().includes('male')
+      );
+
+      const preferredVoice =
+        femaleVoices.find(voice => voice.lang === lang) ||
+        femaleVoices.find(voice => voice.lang.startsWith('es')) ||
+        femaleVoices[0] ||
+        spanishVoices.find(voice => voice.lang === lang) ||
+        spanishVoices[0];
 
       if (preferredVoice) {
         utterance.voice = preferredVoice;

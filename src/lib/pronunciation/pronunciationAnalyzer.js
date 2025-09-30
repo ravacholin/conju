@@ -296,31 +296,31 @@ class PronunciationAnalyzer {
       suggestions.push(semanticResult.suggestion);
     }
 
-    // Additional suggestions based on error type
+    // Additional suggestions based on error type with clearer Spanish
     switch (semanticResult.type) {
       case 'wrong_context':
-        suggestions.push('Revisa el tiempo verbal y la persona gramatical');
-        suggestions.push('Practica las conjugaciones de este verbo específico');
+        suggestions.push('Revisa el tiempo verbal (presente, pasado, futuro) y la persona (yo, tú, él/ella)');
+        suggestions.push('Repasa las terminaciones de este verbo en el tiempo correcto');
         break;
 
       case 'different_verb':
-        suggestions.push('Asegúrate de pronunciar el verbo correcto');
-        suggestions.push('Escucha el audio de ejemplo nuevamente');
+        suggestions.push('Estás pronunciando un verbo diferente. Concéntrate en el verbo que aparece en pantalla');
+        suggestions.push('Escucha el audio de ejemplo para escuchar la pronunciación correcta');
         break;
 
       case 'accent_error':
-        suggestions.push('Estudia las reglas de acentuación española');
-        suggestions.push('Practica la pronunciación con énfasis en las sílabas tónicas');
+        suggestions.push('La conjugación está bien, pero falta poner el acento en la sílaba correcta');
+        suggestions.push('Recuerda: si termina en vocal, el acento va en la penúltima sílaba');
         break;
 
       case 'minor_pronunciation':
-        suggestions.push('Habla más despacio y articula cada sílaba');
-        suggestions.push('Presta atención a los sonidos específicos del español');
+        suggestions.push('Habla más lentamente y pronuncia cada letra con claridad');
+        suggestions.push('Practica la diferencia entre sonidos similares (b/v, d/t, etc.)');
         break;
 
       case 'incorrect_word':
-        suggestions.push('Verifica que estés pronunciando la conjugación correcta');
-        suggestions.push('Usa el audio de ejemplo como guía');
+        suggestions.push('La palabra que pronunciaste no es la conjugación correcta');
+        suggestions.push('Escucha el ejemplo y trata de repetir exactamente lo que oyes');
         break;
     }
 
@@ -344,9 +344,9 @@ class PronunciationAnalyzer {
 
       // Add specific suggestions for each error type (prioritize most specific)
       if (errorTypes.vowel_confusion.length > 0) {
-        suggestions.push('Practica las 5 vocales españolas: a, e, i, o, u');
-        const vowelIssues = errorTypes.vowel_confusion.map(e => e.description).join(', ');
-        suggestions.push(`Problemas con vocales: ${vowelIssues}`);
+        suggestions.push('Practica las 5 vocales españolas: "a" como en "casa", "e" como en "mesa"');
+        const vowelError = errorTypes.vowel_confusion[0];
+        suggestions.push(`Problema específico: ${vowelError.description}. Escucha la diferencia entre estos sonidos`);
       }
 
       if (errorTypes.consonant_confusion.length > 0) {

@@ -392,29 +392,41 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
             {recordingResult.accuracy < 90 && !recordingResult.error && (
               <div className="pronunciation-help" style={{
                 marginTop: '12px',
-                padding: '8px',
-                backgroundColor: '#f8f9fa',
-                borderLeft: '4px solid #007bff',
+                padding: '12px',
+                backgroundColor: '#1a1a1a',
+                border: '1px solid #333',
                 borderRadius: '4px'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '16px' }}>🔊</span>
-                  <span style={{ fontSize: '14px', color: '#495057' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img
+                    src="/megaf-imperat.png"
+                    alt="Escuchar pronunciación"
+                    style={{ width: '20px', height: '20px' }}
+                  />
+                  <span style={{ fontSize: '14px', color: '#e0e0e0', flex: 1 }}>
                     ¿Necesitas escuchar la pronunciación correcta?
                   </span>
                   <button
                     onClick={playCorrectPronunciation}
                     style={{
-                      background: '#007bff',
-                      color: 'white',
-                      border: 'none',
+                      background: '#000',
+                      color: '#fff',
+                      border: '1px solid #333',
                       borderRadius: '4px',
-                      padding: '4px 8px',
+                      padding: '6px 12px',
                       fontSize: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
                     }}
                   >
-                    ▶️ Escuchar
+                    <img
+                      src="/megaf-imperat.png"
+                      alt="Reproducir"
+                      style={{ width: '12px', height: '12px' }}
+                    />
+                    Escuchar
                   </button>
                 </div>
               </div>
@@ -422,9 +434,13 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
             {recordingResult.accuracy >= 90 && onContinue && (
               <div className="auto-continue-message" style={{
-                marginTop: '8px',
+                marginTop: '12px',
+                padding: '8px 12px',
                 fontSize: '14px',
-                color: '#28a745',
+                color: '#4ade80',
+                backgroundColor: '#0a0a0a',
+                border: '1px solid #16a34a',
+                borderRadius: '4px',
                 fontWeight: 'bold'
               }}>
                 ✓ ¡Pronunciación correcta! Avanzando al siguiente...
