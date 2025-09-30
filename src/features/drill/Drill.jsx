@@ -7,8 +7,10 @@ import { useSettings } from '../../state/settings.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 import ReverseInputs from './ReverseInputs.jsx';
 import ResistanceHUD from './ResistanceHUD.jsx';
+import SessionProgressHUD from './SessionProgressHUD.jsx';
 import { useSpeech } from './useSpeech';
 import { useResistanceTimer } from './useResistanceTimer';
+import './session-progress-hud.css';
 
 export default function Drill({ 
   currentItem, 
@@ -591,6 +593,9 @@ export default function Drill({
           )}
         </div>
       )}
+
+      {/* Session Progress HUD - For personalized sessions */}
+      <SessionProgressHUD />
 
       {/* Resistance HUD */}
       {(settings.resistanceActive || showExplosion) && (

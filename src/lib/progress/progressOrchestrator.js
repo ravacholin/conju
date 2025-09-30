@@ -5,6 +5,7 @@ import { FlowStateDetector } from './flowStateDetection.js'
 import { MomentumTracker } from './momentumTracker.js'
 import confidenceEngine from './confidenceEngine.js'
 import temporalIntelligence from './temporalIntelligence.js'
+import { sessionManager } from './sessionManager.js'
 
 // Instancias únicas por sesión de app
 const flowDetector = new FlowStateDetector()
@@ -80,6 +81,15 @@ export function processAttempt(attemptCtx) {
     sessionContext: {}
   })
 
+  // 3.5) Session tracking (if active)
+  if (sessionManager.hasActiveSession()) {
+    sessionManager.recordItemResult({
+      isCorrect: response.correct,
+      latencyMs: response.responseTime,
+      hintsUsed: response.hintsUsed
+    })
+  }
+
   // 4) Temporal: actualizar carga y patrones a nivel de sesión (ligero)
   try {
     temporalIntelligence.processSession({
@@ -142,9 +152,43 @@ export function resetOrchestrator() {
   }
 }
 
+/**
+ * Obtiene el estado completo incluyendo sesión personalizada
+ * @returns {Object} Estado completo del orquestador con datos de sesión
+ */
+export function getCompleteState() {
+  const orchestratorState = getOrchestratorState()
+  const sessionProgress = sessionManager.hasActiveSession() ? sessionManager.getSessionProgress() : null
+
+  return {
+    ...orchestratorState,
+    session: sessionProgress
+  }
+}
+
+/**
+ * Inicia una nueva sesión personalizada
+ * @param {Object} sessionData - Datos de la sesión del AdaptivePracticeEngine
+ * @returns {boolean} Éxito de inicialización
+ */
+export function startPersonalizedSession(sessionData) {
+  return sessionManager.startSession(sessionData)
+}
+
+/**
+ * Finaliza la sesión actual
+ * @returns {Object|null} Métricas finales de la sesión
+ */
+export function endPersonalizedSession() {
+  return sessionManager.endSession()
+}
+
 export default {
   processAttempt,
   getOrchestratorState,
-  resetOrchestrator
+  getCompleteState,
+  resetOrchestrator,
+  startPersonalizedSession,
+  endPersonalizedSession
 }
 

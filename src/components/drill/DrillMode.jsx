@@ -171,13 +171,28 @@ function DrillMode({
         const { detail } = event
         console.log('Progress navigation event received:', detail)
         
+        // Handle personalized session
+        if (detail && detail.type === 'personalized_session' && detail.session) {
+          console.log('Starting personalized session:', detail.session)
+
+          // Initialize session in settings
+          settings.set({
+            practiceMode: 'personalized_session',
+            currentSession: detail.session,
+            currentActivityIndex: 0,
+            sessionStartTime: Date.now()
+          })
+
+          // Start with first activity
+          onRegenerateItem()
+        }
         // If we have mood/tense data, set specific practice mode
-        if (detail && detail.mood && detail.tense) {
+        else if (detail && detail.mood && detail.tense) {
           // Set specific practice mode
           if (typeof onPracticeModeChange === 'function') {
             onPracticeModeChange('specific', detail.mood, detail.tense)
           }
-          
+
           // Start specific practice
           if (typeof onStartSpecificPractice === 'function') {
             onStartSpecificPractice()

@@ -1,0 +1,243 @@
+/* Session Progress HUD Styles */
+
+.session-progress-hud {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  color: white;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.session-progress-hud.completed {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  animation: celebration 0.6s ease-out;
+}
+
+@keyframes celebration {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.session-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-header .btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.hud-header .btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.activity-progress {
+  margin-bottom: 16px;
+}
+
+.activity-info {
+  margin-bottom: 12px;
+}
+
+.activity-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.activity-meta {
+  font-size: 13px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #00d4ff);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+
+.session-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 70px;
+}
+
+.stat-label {
+  font-size: 11px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.focus-areas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.focus-label {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.focus-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.focus-tag {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.session-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summary-stat {
+  text-align: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.summary-stat strong {
+  display: block;
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.session-progress-hud.completed .btn-primary {
+  background: rgba(255, 255, 255, 0.9);
+  color: #4facfe;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.session-progress-hud.completed .btn-primary:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .session-progress-hud {
+    padding: 12px;
+    margin: 8px 0;
+  }
+
+  .session-title {
+    font-size: 16px;
+  }
+
+  .session-stats {
+    gap: 12px;
+  }
+
+  .stat-item {
+    min-width: 60px;
+  }
+
+  .focus-areas {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .session-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+/* Integration with existing drill styles */
+.App .session-progress-hud {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Dark mode compatibility */
+@media (prefers-color-scheme: dark) {
+  .session-progress-hud {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  }
+}

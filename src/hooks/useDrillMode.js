@@ -21,6 +21,7 @@ import { getMotivationalInsights } from '../lib/progress/personalizedCoaching.js
 import { debugLevelPrioritization } from '../lib/core/levelDrivenPrioritizer.js'
 import { getCurrentFlowState } from '../lib/progress/flowStateDetection.js'
 import { createLogger } from '../lib/utils/logger.js'
+import { sessionManager } from '../lib/progress/sessionManager.js'
 
 const logger = createLogger('useDrillMode')
 
@@ -57,6 +58,150 @@ export function useDrillMode() {
   } = useDrillValidation()
 
   /**
+   * Handle session-based item generation
+   * @param {Object} itemToExclude - Previous item to exclude
+   * @param {Function} getAvailableMoodsForLevel - Function to get moods for level
+   * @param {Function} getAvailableTensesForLevelAndMood - Function to get tenses for level/mood
+   * @returns {Promise<void>}
+   */
+  const handleSessionGeneration = async (
+    itemToExclude,
+    getAvailableMoodsForLevel,
+    getAvailableTensesForLevelAndMood
+  ) => {
+    // Initialize session if needed
+    if (!sessionManager.hasActiveSession() && settings.currentSession) {
+      sessionManager.startSession(settings.currentSession)
+    }
+
+    const currentActivity = sessionManager.getCurrentActivity()
+
+    if (!currentActivity) {
+      logger.info('handleSessionGeneration', 'No current activity, session may be completed')
+      // Session completed or no session - fallback to normal generation
+      settings.set({ practiceMode: 'mixed' })
+      return await generateNormalItem(itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    }
+
+    logger.info('handleSessionGeneration', 'Generating item for session activity', {
+      activityType: currentActivity.type,
+      activityTitle: currentActivity.title,
+      targetCombination: currentActivity.targetCombination
+    })
+
+    // Configure settings based on current activity
+    const activitySettings = {
+      verbType: settings.verbType || 'all',
+      selectedFamily: settings.selectedFamily,
+      level: settings.level,
+      useVoseo: settings.useVoseo,
+      useVosotros: settings.useVosotros
+    }
+
+    // Set specific practice mode based on activity
+    if (currentActivity.targetCombination) {
+      activitySettings.practiceMode = 'specific'
+      activitySettings.specificMood = currentActivity.targetCombination.mood
+      activitySettings.specificTense = currentActivity.targetCombination.tense
+    } else {
+      // For non-specific activities, use mixed mode with activity focus
+      activitySettings.practiceMode = 'mixed'
+
+      // Apply activity-specific filters
+      if (currentActivity.type === 'weak_area_practice') {
+        // Focus on areas with lower mastery
+        activitySettings.verbType = 'irregular' // Tend to be more challenging
+      } else if (currentActivity.type === 'spaced_review') {
+        // Focus on review items
+        activitySettings.practiceMode = 'review'
+      } else if (currentActivity.type === 'new_content') {
+        // Focus on appropriate level content
+        activitySettings.verbType = 'regular' // Start with regular verbs for new content
+      }
+    }
+
+    // Temporarily apply activity settings
+    const originalSettings = { ...settings }
+    settings.set(activitySettings)
+
+    try {
+      // Generate item with activity-specific settings
+      const newItem = await generateNextItemInternal(
+        itemToExclude,
+        getAvailableMoodsForLevel,
+        getAvailableTensesForLevelAndMood,
+        history
+      )
+
+      if (newItem) {
+        const validation = validateItem(newItem)
+        if (!validation.valid) {
+          logger.warn('handleSessionGeneration', 'Generated session item failed validation', validation)
+        }
+
+        setCurrentItem(newItem)
+        logger.info('handleSessionGeneration', 'Session item generated successfully', {
+          lemma: newItem.lemma,
+          mood: newItem.mood,
+          tense: newItem.tense,
+          activityType: currentActivity.type
+        })
+      } else {
+        logger.error('handleSessionGeneration', 'Failed to generate session item')
+      }
+    } finally {
+      // Restore original settings (except practiceMode)
+      settings.set({ ...originalSettings, practiceMode: 'personalized_session' })
+    }
+  }
+
+  /**
+   * Generate normal (non-session) item - extracted for reuse
+   */
+  const generateNormalItem = async (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood) => {
+    logger.info('generateNormalItem', 'Starting normal item generation', {
+      verbType: settings.verbType,
+      selectedFamily: settings.selectedFamily,
+      practiceMode: settings.practiceMode,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense,
+      level: settings.level,
+      itemToExclude: itemToExclude?.lemma,
+      dialect: { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros }
+    })
+
+    const newItem = await generateNextItemInternal(
+      itemToExclude,
+      getAvailableMoodsForLevel,
+      getAvailableTensesForLevelAndMood,
+      history
+    )
+
+    if (newItem) {
+      const validation = validateItem(newItem)
+      if (!validation.valid) {
+        logger.warn('generateNormalItem', 'Generated item failed validation', validation)
+      }
+
+      setCurrentItem(newItem)
+
+      // Show coaching insights periodically (10% chance)
+      if (Math.random() < 0.1 && settings.level) {
+        try {
+          const insights = await getMotivationalInsights(settings.level)
+          if (insights.length > 0) {
+            logger.info('generateNormalItem', 'Coaching insight', insights[0])
+          }
+        } catch (error) {
+          logger.warn('generateNormalItem', 'Coaching insights failed', error)
+        }
+      }
+    } else {
+      logger.error('generateNormalItem', 'Failed to generate item')
+    }
+  }
+
+  /**
    * Generate next drill item - updated to use dynamic forms generation
    * @param {Object} itemToExclude - Previous item to exclude
    * @param {Function} getAvailableMoodsForLevel - Function to get moods for level
@@ -68,49 +213,17 @@ export function useDrillMode() {
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
-    logger.info('generateNextItem', 'Starting item generation', {
-      verbType: settings.verbType,
-      selectedFamily: settings.selectedFamily,
-      practiceMode: settings.practiceMode,
-      specificMood: settings.specificMood,
-      specificTense: settings.specificTense,
-      level: settings.level,
-      itemToExclude: itemToExclude?.lemma,
-      dialect: { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros }
-    })
-
-    // Use the specialized generator (now generates forms dynamically)
-    const newItem = await generateNextItemInternal(
-      itemToExclude,
-      getAvailableMoodsForLevel,
-      getAvailableTensesForLevelAndMood,
-      history
-    )
-
-    if (newItem) {
-      // Validate the generated item
-      const validation = validateItem(newItem)
-      if (!validation.valid) {
-        logger.warn('generateNextItem', 'Generated item failed validation', validation)
-        // Item is still set but validation warnings are logged
-      }
-
-      setCurrentItem(newItem)
-      
-      // Show coaching insights periodically (10% chance)
-      if (Math.random() < 0.1 && settings.level) {
-        try {
-          const insights = await getMotivationalInsights(settings.level)
-          if (insights.length > 0) {
-            logger.info('generateNextItem', 'Coaching insight', insights[0])
-          }
-        } catch (error) {
-          logger.warn('generateNextItem', 'Coaching insights failed', error)
-        }
-      }
-    } else {
-      logger.error('generateNextItem', 'Failed to generate item')
+    // Handle personalized session mode
+    if (settings.practiceMode === 'personalized_session') {
+      return await handleSessionGeneration(
+        itemToExclude,
+        getAvailableMoodsForLevel,
+        getAvailableTensesForLevelAndMood
+      )
     }
+
+    // Default to normal generation
+    return await generateNormalItem(itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
 
   /**
@@ -148,6 +261,34 @@ export function useDrillMode() {
         accuracy: normalizedResult.isCorrect ? 1 : 0
       }
     }))
+
+    // Track session progress if in session mode
+    if (settings.practiceMode === 'personalized_session' && sessionManager.hasActiveSession()) {
+      sessionManager.recordItemResult(normalizedResult)
+
+      // Check if should advance to next activity
+      if (sessionManager.shouldAutoAdvance() || sessionManager.shouldConsiderAdvancing()) {
+        const nextActivity = sessionManager.nextActivity()
+        logger.info('handleDrillResult', 'Session activity advanced', {
+          hasNext: !!nextActivity,
+          nextActivityType: nextActivity?.type
+        })
+
+        if (!nextActivity) {
+          // Session completed
+          const finalMetrics = sessionManager.endSession()
+          logger.info('handleDrillResult', 'Session completed', finalMetrics)
+
+          // Reset to normal mode
+          settings.set({
+            practiceMode: 'mixed',
+            currentSession: null,
+            currentActivityIndex: 0,
+            sessionStartTime: null
+          })
+        }
+      }
+    }
 
     // Use the specialized progress handler with normalized result
     await handleResponse(currentItem, normalizedResult, (processedResult) => {
@@ -319,6 +460,11 @@ export function useDrillMode() {
     isGenerating,
     isProcessingProgress,
     isValidating,
+
+    // Session management functions
+    getCurrentSessionProgress: () => sessionManager.getSessionProgress(),
+    hasActiveSession: () => sessionManager.hasActiveSession(),
+    endCurrentSession: () => sessionManager.endSession(),
 
     // Legacy compatibility (these were internal functions but exported)
     // Note: These now delegate to the new modular system
