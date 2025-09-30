@@ -283,7 +283,7 @@ export default function PracticeRecommendations({
                       handlePracticeNow(rec)
                     }}
                   >
-                    <img src="/icons/play.png" alt="Practicar" className="inline-icon" />
+                    <img src="/play.png" alt="Practicar" className="inline-icon" />
                     Practicá ahora
                   </button>
                   <button
