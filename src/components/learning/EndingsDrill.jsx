@@ -622,6 +622,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             <img src="/enie.png" alt="Tildes" className="menu-icon" />
           </button>
           <button
+            onClick={() => { onHome && onHome(); }}
+            className="icon-btn"
+            title="Inicio"
+            aria-label="Inicio"
+          >
+            <img src="/home.png" alt="Inicio" className="menu-icon" />
+          </button>
+          <button
             onClick={() => handleTogglePronunciation()}
             className="icon-btn"
             title="Práctica de pronunciación"
@@ -635,14 +643,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             aria-label="Métricas"
           >
             <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => { onHome && onHome(); }}
-            className="icon-btn"
-            title="Inicio"
-            aria-label="Inicio"
-          >
-            <img src="/home.png" alt="Inicio" className="menu-icon" />
           </button>
         </div>
       </header>

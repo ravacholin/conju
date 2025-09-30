@@ -15,7 +15,7 @@ function DrillHeader({
   return (
     <header className="header">
       <div className="icon-row">
-        <button 
+        <button
           onClick={() => {
             if (showQuickSwitch) {
               onToggleQuickSwitch(false)
@@ -28,7 +28,7 @@ function DrillHeader({
         >
           <img src="/config.png" alt="Config" className="menu-icon" />
         </button>
-        
+
         <button
           onClick={() => onToggleAccentKeys()}
           className="icon-btn"
@@ -38,13 +38,21 @@ function DrillHeader({
         </button>
 
         <button
+          onClick={onHome}
+          className="icon-btn"
+          title="Menú"
+        >
+          <img src="/home.png" alt="Menú" className="menu-icon" />
+        </button>
+
+        <button
           onClick={() => onTogglePronunciation()}
           className="icon-btn"
           title="Práctica de pronunciación"
         >
           <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
         </button>
-        
+
         <button
           onClick={() => {
             if (showGames) {
@@ -58,20 +66,13 @@ function DrillHeader({
         >
           <img src="/dice.png" alt="Juegos" className="menu-icon" />
         </button>
-        
+
         <button
           onClick={() => onNavigateToProgress()}
           className="icon-btn"
           title="Progreso y Analíticas"
         >
           <img src="/icons/chart.png" alt="Progreso" className="menu-icon" />
-        </button>
-        <button 
-          onClick={onHome}
-          className="icon-btn"
-          title="Menú"
-        >
-          <img src="/home.png" alt="Menú" className="menu-icon" />
         </button>
       </div>
     </header>

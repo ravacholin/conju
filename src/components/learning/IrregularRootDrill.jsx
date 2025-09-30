@@ -346,6 +346,19 @@ function IrregularRootDrill({
             <img src="/back.png" alt="Volver" className="menu-icon" />
           </button>
           <button
+            onClick={() => {/* TODO: Add tildes functionality */}}
+            className="icon-btn"
+            title="Tildes"
+            aria-label="Tildes"
+          >
+            <img src="/enie.png" alt="Tildes" className="menu-icon" />
+          </button>
+          {onHome && (
+            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
+              <img src="/home.png" alt="Inicio" className="menu-icon" />
+            </button>
+          )}
+          <button
             onClick={() => handleTogglePronunciation()}
             className="icon-btn"
             title="Práctica de pronunciación"
@@ -355,11 +368,6 @@ function IrregularRootDrill({
           {onGoToProgress && (
             <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
               <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-            </button>
-          )}
-          {onHome && (
-            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
             </button>
           )}
         </div>
