@@ -423,7 +423,7 @@ export const verbLookupCache = new IntelligentCache(500, 10 * 60 * 1000, false, 
 export const formFilterCache = new IntelligentCache(1000, 5 * 60 * 1000, true, 'formFilterCache') // mastery-aware
 
 // Enhanced initialize global maps with redundancy and validation
-export function initializeMaps() {
+export async function initializeMaps() {
   logger.info('initializeMaps', '🚀 Initializing verb lookup maps with enhanced redundancy...')
   const startTime = performance.now()
 

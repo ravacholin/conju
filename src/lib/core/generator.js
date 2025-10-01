@@ -29,10 +29,10 @@ import {
 const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args) }
 
 // Ensure maps are initialized
-function ensureMapsInitialized() {
+async function ensureMapsInitialized() {
   if (VERB_LOOKUP_MAP.size === 0) {
     try {
-      initializeMaps()
+      await initializeMaps()
     } catch (error) {
       console.error('❌ Generator: Failed to initialize verb maps:', error)
       throw new Error('Generator cannot function without initialized verb maps')
@@ -91,7 +91,7 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
 
 export async function chooseNext({forms, history: _history, currentItem, sessionSettings}){
   // Ensure maps are initialized before proceeding
-  ensureMapsInitialized()
+  await ensureMapsInitialized()
 
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()
