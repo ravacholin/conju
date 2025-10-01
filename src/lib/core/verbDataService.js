@@ -309,7 +309,7 @@ export async function getVerbsByLemmas(lemmas) {
 
       // Try to get missing verbs individually with fallbacks
       for (const missingLemma of notFound) {
-        const verb = getVerbByLemma(missingLemma)
+        const verb = await getVerbByLemma(missingLemma)
         if (verb) {
           results.push(verb)
         }
@@ -522,7 +522,7 @@ export async function getFormsForRegion(region, settings = {}) {
 export function getExampleVerbs({ verbType = 'all', families = [], tense = null, region = 'la_general' } = {}) {
   try {
     // Get verbs with fallback protection
-    let candidateVerbs = getAllVerbs()
+    let candidateVerbs = getAllVerbsSync()
 
     if (!candidateVerbs || candidateVerbs.length === 0) {
       logger.error('getExampleVerbs', 'No verbs available for example selection')
@@ -723,7 +723,7 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
 }
 
 // Enhanced get verb forms for display with comprehensive error handling
-export function getVerbForms(lemma, region = 'la_general') {
+export async function getVerbForms(lemma, region = 'la_general') {
   if (!lemma || typeof lemma !== 'string') {
     logger.warn('getVerbForms', 'Invalid lemma parameter', { lemma })
     return []
@@ -736,7 +736,7 @@ export function getVerbForms(lemma, region = 'la_general') {
 
   try {
     // Get verb with comprehensive fallback
-    const verb = getVerbByLemma(lemma)
+    const verb = await getVerbByLemma(lemma)
     if (!verb) {
       logger.warn('getVerbForms', `Verb not found: ${lemma}`)
 

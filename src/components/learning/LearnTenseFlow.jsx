@@ -117,7 +117,7 @@ const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'
 const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
 
-function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
+async function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense, region })
 
   let selectedVerbs = []
@@ -127,10 +127,10 @@ function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
     logger.warn('Fallo al obtener verbos ejemplo desde el servicio centralizado:', error)
   }
 
-  const ensureVerb = lemma => {
+  const ensureVerb = async lemma => {
     if (!lemma) return null
     try {
-      return getVerbByLemma(lemma)
+      return await getVerbByLemma(lemma)
     } catch (error) {
       logger.warn(`No se pudo cargar verbo de fallback ${lemma}`, error)
       return null
@@ -166,7 +166,7 @@ function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
   for (const lemma of candidateLemmas) {
     if (uniqueVerbs.length >= 3) break
     if (seen.has(lemma)) continue
-    const verb = ensureVerb(lemma)
+    const verb = await ensureVerb(lemma)
     if (verb) {
       seen.add(lemma)
       uniqueVerbs.push(verb)
@@ -180,7 +180,7 @@ function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
     for (const lemma of emergencyFallbacks) {
       if (uniqueVerbs.length >= 3) break
       if (seen.has(lemma)) continue
-      const verb = ensureVerb(lemma)
+      const verb = await ensureVerb(lemma)
       if (verb) {
         seen.add(lemma)
         uniqueVerbs.push(verb)
@@ -378,7 +378,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setCurrentStep('type-selection');
   };
   
-  const handleTypeSelection = (type, families = []) => {
+  const handleTypeSelection = async (type, families = []) => {
     logger.debug('Type selection:', { type, families });
     setVerbType(type);
     setSelectedFamilies(families);
@@ -386,7 +386,7 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
     setExampleVerbsLoading(true)
     try {
-      const verbObjects = selectExampleVerbs({
+      const verbObjects = await selectExampleVerbs({
         verbType: type,
         selectedFamilies: families,
         tense: selectedTense?.tense,
@@ -425,11 +425,11 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     setCurrentStep('type-selection');
   };
 
-  const handleStartLearning = () => {
+  const handleStartLearning = async () => {
     if (selectedTense && duration && verbType) {
       setExampleVerbsLoading(true)
       try {
-        const verbObjects = selectExampleVerbs({
+        const verbObjects = await selectExampleVerbs({
           verbType,
           selectedFamilies,
           tense: selectedTense.tense,

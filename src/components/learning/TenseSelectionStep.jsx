@@ -9,22 +9,28 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
   const [referenceForms, setReferenceForms] = useState(new Map())
 
   useEffect(() => {
-    try {
-      const pairs = REFERENCE_LEMMAS.map(lemma => {
-        try {
-          const forms = getVerbForms(lemma, region)
-          return [lemma, forms]
-        } catch (error) {
-          console.warn(`TenseSelectionStep: no se pudieron obtener formas para ${lemma}`, error)
-          return [lemma, []]
-        }
-      })
+    async function loadReferenceForms() {
+      try {
+        const pairs = await Promise.all(
+          REFERENCE_LEMMAS.map(async lemma => {
+            try {
+              const forms = await getVerbForms(lemma, region)
+              return [lemma, forms]
+            } catch (error) {
+              console.warn(`TenseSelectionStep: no se pudieron obtener formas para ${lemma}`, error)
+              return [lemma, []]
+            }
+          })
+        )
 
-      setReferenceForms(new Map(pairs))
-    } catch (error) {
-      console.error('TenseSelectionStep: fallo al cargar verbos de referencia', error)
-      setReferenceForms(new Map())
+        setReferenceForms(new Map(pairs))
+      } catch (error) {
+        console.error('TenseSelectionStep: fallo al cargar verbos de referencia', error)
+        setReferenceForms(new Map())
+      }
     }
+
+    loadReferenceForms()
   }, [region])
 
   const getFormsForLemma = (lemma) => referenceForms.get(lemma) || []
