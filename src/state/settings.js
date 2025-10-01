@@ -5,6 +5,12 @@ import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
 // Niveles disponibles
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
 
+// Practice modes
+export const PRACTICE_MODES = {
+  BY_LEVEL: 'by_level',
+  BY_TOPIC: 'by_topic'
+}
+
 // Inicializar caches al cargar
 if (typeof window !== 'undefined') {
   import('../lib/core/optimizedCache.js').then(({ warmupCaches }) => {
@@ -24,9 +30,15 @@ const useSettings = create(
       useTuteo: false,
       useVosotros: false,
       region: null,
-      
-      // Modo de práctica
-      practiceMode: 'mixed',
+
+      // User level system
+      userLevel: 'A2', // Personal CEFR level (separate from practice level)
+      userLevelProgress: 0, // Progress within current level (0-100%)
+      hasCompletedPlacementTest: false,
+
+      // Practice mode system
+      practiceMode: 'mixed', // Legacy mode
+      levelPracticeMode: PRACTICE_MODES.BY_LEVEL, // New dual mode system
       specificMood: null,
       specificTense: null,
       // Se definirá al elegir variante; sin valor inicial
@@ -79,6 +91,20 @@ const useSettings = create(
       // Métodos para actualizar configuración
       set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
       setLevel: (level) => set({ level }),
+
+      // User level system methods
+      setUserLevel: (userLevel) => set({ userLevel }),
+      setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)) }),
+      setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed }),
+
+      // Practice mode methods
+      setLevelPracticeMode: (mode) => set({ levelPracticeMode: mode }),
+      togglePracticeMode: () => set((state) => ({
+        levelPracticeMode: state.levelPracticeMode === PRACTICE_MODES.BY_LEVEL
+          ? PRACTICE_MODES.BY_TOPIC
+          : PRACTICE_MODES.BY_LEVEL
+      })),
+
       toggleVoseo: () => set((state) => ({ useVoseo: !state.useVoseo })),
       toggleTuteo: () => set((state) => ({ useTuteo: !state.useTuteo })),
       toggleVosotros: () => set((state) => ({ useVosotros: !state.useVosotros })),
@@ -128,6 +154,10 @@ const useSettings = create(
         useVosotros: state.useVosotros,
         region: state.region,
         practiceMode: state.practiceMode,
+        userLevel: state.userLevel,
+        userLevelProgress: state.userLevelProgress,
+        hasCompletedPlacementTest: state.hasCompletedPlacementTest,
+        levelPracticeMode: state.levelPracticeMode,
         specificMood: state.specificMood,
         specificTense: state.specificTense,
         practicePronoun: state.practicePronoun,
@@ -149,4 +179,4 @@ const useSettings = create(
   )
 )
 
-export { useSettings, LEVELS } 
+export { useSettings, LEVELS, PRACTICE_MODES } 

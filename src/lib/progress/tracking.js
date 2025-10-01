@@ -11,6 +11,7 @@ import { ERROR_TAGS } from './dataModels.js'
 import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
 import { updateSchedule } from './srs.js'
 import { notifyNewAttempt } from './incrementalMastery.js'
+import { recordGlobalCompetency, checkUserProgression } from '../levels/levelProgression.js'
 
 // Estado del tracking
 let currentSession = null
@@ -200,6 +201,35 @@ export async function trackAttemptSubmitted(attemptId, result) {
       )
     } catch (error) {
       console.warn('No se pudo actualizar SRS:', error)
+    }
+
+    // Integrar con sistema de niveles - actualizar competencia del usuario
+    try {
+      await recordGlobalCompetency(mood, tense, attempt.correct, attempt.latencyMs)
+
+      // Check for automatic level progression every 10 attempts
+      const shouldCheckProgression = Math.random() < 0.1 // 10% chance
+      if (shouldCheckProgression) {
+        const progressionResult = await checkUserProgression()
+
+        if (progressionResult.promoted) {
+          console.log(`🎉 Usuario promovido automáticamente de ${progressionResult.from} a ${progressionResult.to}`)
+
+          // Dispatch level promotion event
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('level:promotion', {
+              detail: {
+                from: progressionResult.from,
+                to: progressionResult.to,
+                confidence: progressionResult.confidence,
+                automatic: true
+              }
+            }))
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('No se pudo actualizar sistema de niveles:', error)
     }
 
     // Recalcular y guardar mastery de la celda basada en intentos reales del usuario

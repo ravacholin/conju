@@ -1,4 +1,4 @@
-import { useSettings } from '../../state/settings.js'
+import { useSettings, PRACTICE_MODES } from '../../state/settings.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
@@ -101,13 +101,20 @@ export async function chooseNext({forms, history: _history, currentItem, session
     currentBlock, selectedFamily, region: rawRegion, enableFuturoSubjProd, allowedLemmas,
     cameFromTema,
     enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson,
-    nextSecondPerson, cliticsPercent, enableProgressIntegration
+    nextSecondPerson, cliticsPercent, enableProgressIntegration,
+    userLevel, levelPracticeMode
   } = allSettings
 
   const level = VALID_LEVELS.has(rawLevel) ? rawLevel : 'B1'
   const practiceMode = VALID_PRACTICE_MODES.has(rawPracticeMode) ? rawPracticeMode : 'mixed'
   const verbType = VALID_VERB_TYPES.has(rawVerbType) ? rawVerbType : 'all'
   const region = VALID_REGIONS.has(rawRegion) ? rawRegion : 'la_general'
+
+  // Determine effective level filtering based on new practice mode system
+  const effectiveUserLevel = userLevel || 'A2'
+  const effectiveLevelPracticeMode = levelPracticeMode || PRACTICE_MODES.BY_LEVEL
+  const shouldApplyLevelFiltering = effectiveLevelPracticeMode === PRACTICE_MODES.BY_LEVEL
+  const levelForFiltering = shouldApplyLevelFiltering ? effectiveUserLevel : 'ALL'
   
 
 
@@ -128,7 +135,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
     }
   })()
 
-  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|allowed:${allowedSig}`
+  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|allowed:${allowedSig}|levelMode:${effectiveLevelPracticeMode}|userLevel:${effectiveUserLevel}`
 
   // CACHE CLEARING: Force fresh calculation for specific practice navigation from progress module
   if (practiceMode === 'specific' && specificMood && specificTense) {
@@ -225,7 +232,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
       const shouldBypassLevelFiltering = isRegularPracticeMode && verbIsActuallyRegular
 
       if (!shouldBypassLevelFiltering) {
-        const shouldFilter = !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)
+        const shouldFilter = !isPedagogicalDrill && shouldApplyLevelFiltering && shouldFilterVerbByLevel(f.lemma, verbFamilies, levelForFiltering, f.tense)
         if (shouldFilter) {
           if (f.lemma?.endsWith('ir') && verbType === 'regular') {
             console.log('❌ IR VERB FILTERED BY LEVEL:', { lemma: f.lemma, level, verbFamilies });
@@ -388,8 +395,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
         // Level-based filtering for specific verb types
         // Apply level filtering when family is specifically selected, even in theme practice
         const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-        const shouldApplyLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
-        if (shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const shouldApplyThematicLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
+        if (shouldApplyThematicLevelFiltering && shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, levelForFiltering, f.tense)) {
           return false
         }
       } else {
@@ -397,8 +404,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
         // Apply level filtering when family is specifically selected, even in theme practice
         const verbFamilies = categorizeVerb(f.lemma, verb)
         const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-        const shouldApplyLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
-        if (shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, level, f.tense)) {
+        const shouldApplyThematicLevelFiltering = (practiceMode === 'theme' && selectedFamily) || (!cameFromTema && !isPedagogicalDrill)
+        if (shouldApplyThematicLevelFiltering && shouldApplyLevelFiltering && !isPedagogicalDrill && shouldFilterVerbByLevel(f.lemma, verbFamilies, levelForFiltering, f.tense)) {
           return false
         }
       }
