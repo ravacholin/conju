@@ -1,7 +1,8 @@
 // Enhanced verb data service with comprehensive fallback layers and error handling
 // Integrates with redundancy, integrity, and auto-recovery systems
+// PERFORMANCE: Now uses lazy loading to eliminate 4.1MB initial bundle
 
-import { verbs } from '../../data/verbs.js'
+import { getVerbs, getVerbsSync, areVerbsLoaded } from '../../data/verbsLazy.js'
 import { buildNonfiniteFormsForLemma } from './nonfiniteBuilder.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
@@ -13,8 +14,36 @@ import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataService')
 
-// Enhanced get all verbs with comprehensive fallback layers
-export function getAllVerbs() {
+// Synchronous version for backward compatibility (returns cached verbs or empty array)
+export function getAllVerbsSync() {
+  try {
+    // Try redundancy manager first
+    try {
+      const redundantVerbs = getAllVerbsWithRedundancy()
+      if (redundantVerbs && Array.isArray(redundantVerbs) && redundantVerbs.length > 0) {
+        return redundantVerbs
+      }
+    } catch (redundancyError) {
+      logger.warn('getAllVerbsSync', 'Redundancy manager failed, trying sync cache', redundancyError)
+    }
+
+    // Try sync cache
+    const syncVerbs = getVerbsSync()
+    if (syncVerbs && Array.isArray(syncVerbs) && syncVerbs.length > 0) {
+      return syncVerbs
+    }
+
+    // Return empty array if nothing loaded yet
+    logger.warn('getAllVerbsSync', 'No verbs cached yet, consider using getAllVerbs() async version')
+    return []
+  } catch (error) {
+    logger.error('getAllVerbsSync', 'Failed to get verbs synchronously', error)
+    return []
+  }
+}
+
+// Enhanced get all verbs with comprehensive fallback layers - ASYNC VERSION
+export async function getAllVerbs() {
   try {
     // Layer 1: Try redundancy manager first (most reliable)
     try {
@@ -24,13 +53,25 @@ export function getAllVerbs() {
         return redundantVerbs
       }
     } catch (redundancyError) {
-      logger.warn('getAllVerbs', 'Redundancy manager failed, trying direct import', redundancyError)
+      logger.warn('getAllVerbs', 'Redundancy manager failed, trying lazy loading', redundancyError)
     }
 
-    // Layer 2: Direct import fallback
-    if (verbs && Array.isArray(verbs) && verbs.length > 0) {
-      logger.debug('getAllVerbs', `Retrieved ${verbs.length} verbs from direct import`)
-      return verbs
+    // Layer 2: Lazy loading fallback
+    try {
+      const lazyVerbs = await getVerbs()
+      if (lazyVerbs && Array.isArray(lazyVerbs) && lazyVerbs.length > 0) {
+        logger.debug('getAllVerbs', `Retrieved ${lazyVerbs.length} verbs from lazy loading`)
+        return lazyVerbs
+      }
+    } catch (lazyError) {
+      logger.warn('getAllVerbs', 'Lazy loading failed, trying sync fallback', lazyError)
+    }
+
+    // Layer 3: Sync fallback if already loaded
+    const syncVerbs = getVerbsSync()
+    if (syncVerbs && Array.isArray(syncVerbs) && syncVerbs.length > 0) {
+      logger.debug('getAllVerbs', `Retrieved ${syncVerbs.length} verbs from sync cache`)
+      return syncVerbs
     }
 
     // Layer 3: Emergency fallback through redundancy manager
@@ -1238,4 +1279,10 @@ export function clearVerbDataCaches() {
       error: error.message
     }
   }
+}
+
+// Preload function for progressive enhancement
+export function preloadVerbData() {
+  // Start loading verbs in background
+  getAllVerbs().catch(() => {})
 }
