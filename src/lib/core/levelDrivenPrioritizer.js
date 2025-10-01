@@ -829,7 +829,7 @@ export class LevelDrivenPrioritizer {
   getProgressionPath(userLevel, userProgress = null) {
     const masteryMap = this.createMasteryMap(userProgress)
     const levelProgression = this.curriculumData.levelOrder[userLevel] || []
-    
+
     // Filter to tenses that are ready to learn (prerequisites met)
     const readyTenses = levelProgression.filter(tense => {
       const readiness = this.assessReadiness(tense, masteryMap)
@@ -843,7 +843,7 @@ export class LevelDrivenPrioritizer {
         ...tense,
         mastery: masteryMap.get(tense.key) || 0,
         readiness: this.assessReadiness(tense, masteryMap),
-        learningPriority: this.calculateLearningPriority(tense, masteryMap)
+        learningPriority: this.calculateLearningPriority(tense, masteryMap, userLevel)
       }))
       .sort((a, b) => {
         // 1. Readiness first (must have prerequisites)
@@ -861,17 +861,26 @@ export class LevelDrivenPrioritizer {
   /**
    * Calculate learning priority for progression path
    */
-  calculateLearningPriority(tense, masteryMap) {
+  calculateLearningPriority(tense, masteryMap, userLevel = null) {
     let priority = 50
 
-    // Foundation tenses get higher priority
+    // Foundation tenses get higher priority, but with balanced distribution for C2
     const foundationBonus = {
       'indicative|pres': 30,
       'subjunctive|subjPres': 25,
       'indicative|pretPerf': 20,
       'indicative|pretIndef': 15
     }
-    priority += foundationBonus[tense.key] || 0
+
+    // Apply foundation bonus with universal balance adjustment
+    const isAdvancedLevel = ['B2', 'C1', 'C2'].includes(userLevel)
+    if (isAdvancedLevel) {
+      // For advanced levels, reduce foundation bonus dominance to ensure balanced mix
+      const balancedBonus = Math.min(10, foundationBonus[tense.key] || 0)
+      priority += balancedBonus
+    } else {
+      priority += foundationBonus[tense.key] || 0
+    }
 
     // Current mastery adjustment (prioritize partially learned)
     const mastery = masteryMap.get(tense.key) || 0
@@ -1150,12 +1159,102 @@ export class LevelDrivenPrioritizer {
 
     // Apply consolidation weighting if needed
     if (weights.consolidation > 0.7) {
-      // High consolidation need - boost review and reduce exploration  
+      // High consolidation need - boost review and reduce exploration
       const consolidationBoost = Math.round(categorizedForms.review.length * weights.consolidation)
       for (let i = 0; i < consolidationBoost; i++) {
         weightedForms.push(...categorizedForms.review)
       }
       debug(`  🔄 Consolidation boost: +${consolidationBoost * categorizedForms.review.length} review forms`)
+    }
+
+    // UNIVERSAL BALANCE SYSTEM: Prevent any single tense from dominating at ANY level
+    if (weightedForms.length > 10) { // Only apply if we have enough forms to analyze
+      // Analyze tense distribution in ALL weighted forms
+      const tenseDistribution = {}
+      weightedForms.forEach(form => {
+        const key = `${form.mood}|${form.tense}`
+        tenseDistribution[key] = (tenseDistribution[key] || 0) + 1
+      })
+
+      // Calculate dominance thresholds based on level
+      const levelThresholds = {
+        'A1': 0.6,  // A1 can have 60% dominance (learning basics)
+        'A2': 0.5,  // A2 can have 50% dominance
+        'B1': 0.45, // B1 can have 45% dominance
+        'B2': 0.4,  // B2 can have 40% dominance
+        'C1': 0.35, // C1 can have 35% dominance
+        'C2': 0.3   // C2 can have 30% dominance (most balanced)
+      }
+
+      const levelMaxCaps = {
+        'A1': 0.5,  // A1 max cap per tense: 50%
+        'A2': 0.4,  // A2 max cap per tense: 40%
+        'B1': 0.35, // B1 max cap per tense: 35%
+        'B2': 0.3,  // B2 max cap per tense: 30%
+        'C1': 0.28, // C1 max cap per tense: 28%
+        'C2': 0.25  // C2 max cap per tense: 25%
+      }
+
+      // Find maximum frequency
+      const frequencies = Object.values(tenseDistribution)
+      const maxFreq = Math.max(...frequencies)
+      const totalWeighted = weightedForms.length
+      const dominanceThreshold = totalWeighted * (levelThresholds[userLevel] || 0.4)
+
+      if (maxFreq > dominanceThreshold) {
+        const dominancePercent = Math.round(maxFreq/totalWeighted*100)
+        debug(`  ⚖️  ${userLevel} BALANCE: Detected dominance (${dominancePercent}%), rebalancing...`)
+
+        // Create balanced selection with level-appropriate caps
+        const targetMaxPerTense = Math.max(1, Math.floor(totalWeighted * (levelMaxCaps[userLevel] || 0.3)))
+
+        // Rebalance ALL categories, not just review
+        const rebalanceCategory = (forms, categoryName) => {
+          const balancedForms = []
+          const usedCounts = {}
+
+          forms.forEach(form => {
+            const key = `${form.mood}|${form.tense}`
+            const currentCount = usedCounts[key] || 0
+
+            if (currentCount < targetMaxPerTense) {
+              balancedForms.push(form)
+              usedCounts[key] = currentCount + 1
+            }
+          })
+
+          // If we removed too many, add back in rotation
+          while (balancedForms.length < Math.min(forms.length, forms.length * 0.8)) {
+            const remainingForms = forms.filter(form => {
+              const key = `${form.mood}|${form.tense}`
+              return (usedCounts[key] || 0) < targetMaxPerTense + 1
+            })
+
+            if (remainingForms.length === 0) break
+
+            remainingForms.forEach(form => {
+              const key = `${form.mood}|${form.tense}`
+              balancedForms.push(form)
+              usedCounts[key] = (usedCounts[key] || 0) + 1
+            })
+          }
+
+          return balancedForms
+        }
+
+        // Apply balanced weighting to all categories
+        weightedForms.length = 0
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.prerequisiteGaps, 'prerequisiteGaps'), 1.0, 6, 'prerequisite_gaps')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.familyCompletion, 'familyCompletion'), weights.core, 4, 'family_completion')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.coreReady, 'coreReady'), weights.core, 3, 'core_ready')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.progression, 'progression'), weights.core, 3, 'progression_path')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.review, 'review'), weights.review, 2, 'review')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.coreNotReady, 'coreNotReady'), weights.core, 1, 'core_not_ready')
+        addCurriculumWeightedForms(rebalanceCategory(categorizedForms.exploration, 'exploration'), weights.exploration, 1, 'exploration')
+        addCurriculumWeightedForms(categorizedForms.other, 0.05, 1, 'other') // Other category doesn't need rebalancing
+
+        debug(`  ✅ ${userLevel} BALANCED: All categories rebalanced with ${targetMaxPerTense} max per tense`)
+      }
     }
 
     debug(`⚖️  Enhanced weighted selection for ${userLevel}:`, {
