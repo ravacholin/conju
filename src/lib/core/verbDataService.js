@@ -140,7 +140,7 @@ export async function getAllVerbs() {
 }
 
 // Enhanced get single verb by lemma with comprehensive fallback
-export function getVerbByLemma(lemma) {
+export async function getVerbByLemma(lemma) {
   if (!lemma || typeof lemma !== 'string') {
     logger.warn('getVerbByLemma', 'Invalid lemma provided', { lemma })
     return null
@@ -148,7 +148,7 @@ export function getVerbByLemma(lemma) {
 
   try {
     // Layer 1: Try from current verb set (most efficient)
-    const allVerbs = getAllVerbs()
+    const allVerbs = await getAllVerbs()
     const verb = allVerbs.find(v => v.lemma === lemma)
 
     if (verb) {
@@ -264,7 +264,7 @@ function createMinimalVerb(lemma) {
 }
 
 // Enhanced get multiple verbs by lemmas with comprehensive error handling
-export function getVerbsByLemmas(lemmas) {
+export async function getVerbsByLemmas(lemmas) {
   if (!Array.isArray(lemmas)) {
     logger.warn('getVerbsByLemmas', 'Invalid lemmas parameter - not an array', { lemmas })
     return []
@@ -279,7 +279,7 @@ export function getVerbsByLemmas(lemmas) {
     const notFound = []
 
     // Get all verbs once
-    const allVerbs = getAllVerbs()
+    const allVerbs = await getAllVerbs()
     const lemmaSet = new Set(lemmas)
 
     // Filter efficiently
@@ -361,7 +361,7 @@ export function getVerbsByLemmas(lemmas) {
 }
 
 // Enhanced build forms for a specific region with comprehensive error handling
-export function getFormsForRegion(region, settings = {}) {
+export async function getFormsForRegion(region, settings = {}) {
   if (!region || typeof region !== 'string') {
     logger.warn('getFormsForRegion', 'Invalid region parameter', { region })
     return []
@@ -374,7 +374,7 @@ export function getFormsForRegion(region, settings = {}) {
     let errorCount = 0
 
     // Get verbs with fallback protection
-    const allVerbs = getAllVerbs()
+    const allVerbs = await getAllVerbs()
 
     if (!allVerbs || allVerbs.length === 0) {
       logger.error('getFormsForRegion', 'No verbs available for form generation')
@@ -1137,10 +1137,10 @@ export function getVerbMetadata(lemma) {
 }
 
 // Enhanced cache stats with comprehensive error handling
-export function getVerbDataCacheStats() {
+export async function getVerbDataCacheStats() {
   try {
     // Get verbs with fallback protection
-    const allVerbs = getAllVerbs()
+    const allVerbs = await getAllVerbs()
 
     const baseStats = {
       totalVerbs: allVerbs ? allVerbs.length : 0,

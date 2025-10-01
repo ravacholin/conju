@@ -230,9 +230,16 @@ function hasDifferentEnding(user, correct) {
 function hasIrregularStemIssue(item, user, correct) {
   // Esta es una implementación simplificada
   // En una implementación completa, se verificaría contra las familias irregulares
-  
+
   // Check if the verb is irregular in this specific tense for stem error detection
   const verbs = getAllVerbs()
+
+  // Fix: Add defensive check to ensure verbs is an array
+  if (!verbs || !Array.isArray(verbs)) {
+    console.warn('hasIrregularStemIssue: getAllVerbs() did not return an array:', verbs)
+    return false
+  }
+
   const verb = verbs.find(v => v.lemma === item.lemma)
   const isIrregularForTense = verb && isIrregularInTense(verb, item.tense)
   

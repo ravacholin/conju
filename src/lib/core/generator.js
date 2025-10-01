@@ -451,8 +451,14 @@ export async function chooseNext({forms, history: _history, currentItem, session
   })
   
   
-    // Guardar en cache para futuros usos
-    formFilterCache.set(filterKey, eligible)
+    // Guardar en cache para futuros usos - ensure we only cache arrays
+    if (Array.isArray(eligible)) {
+      formFilterCache.set(filterKey, eligible)
+    } else {
+      console.warn('⚠️ chooseNext: Not caching non-array eligible value:', eligible)
+      eligible = []
+      formFilterCache.set(filterKey, eligible)
+    }
   }
 
 
@@ -485,6 +491,13 @@ export async function chooseNext({forms, history: _history, currentItem, session
         eligible = filteredEligible
       }
     }
+  }
+
+  // Defensive check: ensure eligible is an array before calling .map()
+  if (!Array.isArray(eligible)) {
+    console.warn('⚠️ chooseNext: eligible is not an array:', eligible)
+    // Reset to empty array to prevent crash
+    eligible = []
   }
 
   // Show which persons were included

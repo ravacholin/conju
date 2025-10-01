@@ -66,6 +66,57 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     }
   }
 
+  // Helper function to normalize tense keys to handle variations
+  const normalizeTenseKey = (tenseKey) => {
+    const normalizationMap = {
+      'Imp–': 'impf',
+      'imp': 'impf',
+      'pres': 'pres',
+      'fut': 'fut',
+      'pretIndef': 'pretIndef',
+      'pretPerf': 'pretPerf',
+      'plusc': 'plusc',
+      'futPerf': 'futPerf',
+      'subjPres': 'subjPres',
+      'subjImpf': 'subjImpf',
+      'subjPerf': 'subjPerf',
+      'subjPlusc': 'subjPlusc',
+      'cond': 'cond',
+      'condPerf': 'condPerf',
+      'impAff': 'impAff',
+      'impNeg': 'impNeg',
+      'inf': 'inf',
+      'ger': 'ger',
+      'part': 'part'
+    }
+    return normalizationMap[tenseKey] || tenseKey
+  }
+
+  // Helper function to get proper tense label
+  const getTenseLabel = (normalizedKey, originalKey) => {
+    const labelMap = {
+      'impf': 'Pretérito imperfecto',
+      'pres': 'Presente',
+      'fut': 'Futuro simple',
+      'pretIndef': 'Pretérito indefinido',
+      'pretPerf': 'Pretérito perfecto compuesto',
+      'plusc': 'Pretérito pluscuamperfecto',
+      'futPerf': 'Futuro perfecto',
+      'subjPres': 'Presente',
+      'subjImpf': 'Pretérito imperfecto',
+      'subjPerf': 'Pretérito perfecto',
+      'subjPlusc': 'Pretérito pluscuamperfecto',
+      'cond': 'Condicional simple',
+      'condPerf': 'Condicional compuesto',
+      'impAff': 'Imperativo afirmativo',
+      'impNeg': 'Imperativo negativo',
+      'inf': 'Infinitivo',
+      'ger': 'Gerundio',
+      'part': 'Participio'
+    }
+    return labelMap[normalizedKey] || originalKey
+  }
+
   // Agrupar datos SOLO por formas que realmente han sido practicadas (count > 0)
   const masteryByMode = useMemo(() => {
     const result = {}
@@ -82,34 +133,56 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         }
         result[cell.mood] = {
           ...moodInfo,
-          tenses: [],
+          tenses: new Map(), // Use Map to consolidate by normalized key
           avgScore: 0,
           totalAttempts: 0,
           hasAnyData: true
         }
       }
 
+      // Normalizar clave de tiempo para manejar variaciones (ej: "Imp–" -> "impf")
+      const normalizedTenseKey = normalizeTenseKey(cell.tense)
+
       // Encontrar la configuración del tiempo o usar default
-      const tenseConfig = moodConfig[cell.mood]?.tenses.find(t => t.key === cell.tense) || {
-        key: cell.tense,
-        label: cell.tense,
+      const tenseConfig = moodConfig[cell.mood]?.tenses.find(t => t.key === normalizedTenseKey) || {
+        key: normalizedTenseKey,
+        label: getTenseLabel(normalizedTenseKey, cell.tense),
         group: 'simple'
       }
 
-      result[cell.mood].tenses.push({
-        ...tenseConfig,
-        score: cell.score,
-        count: cell.count,
-        hasData: true
-      })
+      // Check if this normalized tense already exists
+      const existingTense = result[cell.mood].tenses.get(normalizedTenseKey)
+
+      if (existingTense) {
+        // Consolidate: combine scores and counts
+        const combinedCount = existingTense.count + cell.count
+        const weightedScore = ((existingTense.score * existingTense.count) + (cell.score * cell.count)) / combinedCount
+
+        result[cell.mood].tenses.set(normalizedTenseKey, {
+          ...existingTense,
+          score: Math.round(weightedScore),
+          count: combinedCount
+        })
+      } else {
+        // Add new tense entry
+        result[cell.mood].tenses.set(normalizedTenseKey, {
+          ...tenseConfig,
+          score: cell.score,
+          count: cell.count,
+          hasData: true
+        })
+      }
 
       result[cell.mood].totalAttempts += cell.count
     })
     
-    // Calcular promedios para cada modo
+    // Convert Maps back to arrays and calculate averages
     Object.keys(result).forEach(mood => {
-      const tenseScores = result[mood].tenses.map(t => t.score)
-      result[mood].avgScore = tenseScores.length > 0 
+      const tensesArray = Array.from(result[mood].tenses.values())
+      result[mood].tenses = tensesArray
+
+      const tenseScores = tensesArray.map(t => t.score)
+      result[mood].avgScore = tenseScores.length > 0
         ? Math.round(tenseScores.reduce((sum, score) => sum + score, 0) / tenseScores.length)
         : 0
     })

@@ -68,7 +68,13 @@ class IntelligentCache {
       this.handleMemoryPressure()
     }
 
-    return entry.value
+    // Decompress value if it was compressed
+    let returnValue = entry.value
+    if (entry.compressed && entry.value && entry.value.__compressed) {
+      returnValue = this._decompress(entry.value)
+    }
+
+    return returnValue
   }
 
   set(key, value, masteryScore) {

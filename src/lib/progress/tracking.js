@@ -11,7 +11,8 @@ import { ERROR_TAGS } from './dataModels.js'
 import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
 import { updateSchedule } from './srs.js'
 import { notifyNewAttempt } from './incrementalMastery.js'
-import { recordGlobalCompetency, checkUserProgression } from '../levels/levelProgression.js'
+import { recordGlobalCompetency } from '../levels/userLevelProfile.js'
+import { checkUserProgression } from '../levels/levelProgression.js'
 
 // Estado del tracking
 let currentSession = null

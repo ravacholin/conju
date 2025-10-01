@@ -179,4 +179,4 @@ const useSettings = create(
   )
 )
 
-export { useSettings, LEVELS, PRACTICE_MODES } 
+export { useSettings, LEVELS } 
