@@ -2,7 +2,6 @@
 // Manages automatic level advancement and progression logic
 
 import { getCurrentUserProfile, AVAILABLE_LEVELS } from './userLevelProfile.js'
-import { ContinuousAssessment } from './levelAssessment.js'
 
 // Level requirements based on curriculum.json structure
 export const LEVEL_REQUIREMENTS = {
@@ -263,30 +262,45 @@ export class LevelProgressionEngine {
   }
 
   async suggestLevelAdjustment() {
-    const assessment = await ContinuousAssessment.evaluateUserProgress()
     const profile = await getCurrentUserProfile()
+    const eligibility = await this.evaluateProgressionEligibility()
 
-    if (assessment.recommendation === 'promote' && assessment.confidence > 0.8) {
+    // Simple recommendation based on progression eligibility
+    if (eligibility.eligible && eligibility.confidence > 0.8) {
       return {
         suggestion: 'promote',
-        confidence: assessment.confidence,
+        confidence: eligibility.confidence,
         message: 'Considera avanzar al siguiente nivel'
       }
     }
 
-    if (assessment.recommendation === 'consider_demotion' && assessment.confidence > 0.8) {
+    // Check if user is struggling (low accuracy in current level)
+    const stats = profile.competencyStats
+    const overallAccuracy = this.calculateOverallAccuracy(stats)
+
+    if (overallAccuracy < 0.5 && profile.getCurrentLevel() !== 'A1') {
       return {
         suggestion: 'demote',
-        confidence: assessment.confidence,
+        confidence: 1 - overallAccuracy,
         message: 'Considera practicar en un nivel más básico'
       }
     }
 
     return {
       suggestion: 'maintain',
-      confidence: assessment.confidence,
+      confidence: Math.max(0.6, overallAccuracy),
       message: 'Continúa en tu nivel actual'
     }
+  }
+
+  calculateOverallAccuracy(stats) {
+    const statValues = Object.values(stats)
+    if (statValues.length === 0) return 0
+
+    const totalCorrect = statValues.reduce((sum, stat) => sum + (stat.correct || 0), 0)
+    const totalAttempts = statValues.reduce((sum, stat) => sum + (stat.attempts || 0), 0)
+
+    return totalAttempts > 0 ? totalCorrect / totalAttempts : 0
   }
 
   async updateLevelProgress() {
