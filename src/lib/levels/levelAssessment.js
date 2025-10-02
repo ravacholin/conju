@@ -198,30 +198,170 @@ function generateProfessionalQuestionPool() {
       testsFocus: 'conditional_perfect'
     },
 
-    // C1 Level - Complex syntax and advanced irregulars
+    // A2 Additional questions
     {
-      id: 'c1_pluperfect_subjunctive',
-      targetLevel: 'C1',
-      difficulty: 5,
-      prompt: 'Si ____ estudiado más, habría aprobado.',
-      options: ['hubiera', 'había', 'hube', 'habré'],
-      expectedAnswer: 'hubiera',
-      explanation: 'Subjuntivo pluscuamperfecto en condicionales de pasado',
-      verb: 'haber',
-      tense: 'subjuntivo_pluscuamperfecto',
-      testsFocus: 'complex_conditionals'
+      id: 'a2_irregular_poder',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: 'No ____ venir ayer porque estaba enfermo.',
+      options: ['podía', 'pude', 'puedo', 'podré'],
+      expectedAnswer: 'pude',
+      explanation: 'Pretérito indefinido de "poder" para expresar imposibilidad específica',
+      verb: 'poder',
+      tense: 'pretérito_indefinido',
+      testsFocus: 'irregular_preterite'
     },
     {
-      id: 'c1_advanced_irregular',
+      id: 'a2_conocer_saber',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: '¿____ dónde está la estación de tren?',
+      options: ['Sabes', 'Conoces', 'Tienes', 'Puedes'],
+      expectedAnswer: 'Sabes',
+      explanation: 'Usamos "saber" para información específica',
+      verb: 'saber',
+      tense: 'presente',
+      testsFocus: 'saber_vs_conocer'
+    },
+
+    // B1 Additional questions
+    {
+      id: 'b1_imperative_negative',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'No ____ tan fuerte, por favor.',
+      options: ['hablas', 'hables', 'habla', 'hablaste'],
+      expectedAnswer: 'hables',
+      explanation: 'Imperativo negativo usa subjuntivo presente',
+      verb: 'hablar',
+      tense: 'imperativo_negativo',
+      testsFocus: 'imperative_forms'
+    },
+    {
+      id: 'b1_present_perfect_experience',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: '¿Alguna vez ____ paella?',
+      options: ['comiste', 'comías', 'has comido', 'comerás'],
+      expectedAnswer: 'has comido',
+      explanation: 'Pretérito perfecto para experiencias pasadas con relevancia presente',
+      verb: 'comer',
+      tense: 'pretérito_perfecto',
+      testsFocus: 'perfect_tenses_experience'
+    },
+    {
+      id: 'b1_subjunctive_emotion',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'Me alegra que ____ tiempo para visitarnos.',
+      options: ['tienes', 'tengas', 'tenías', 'tendrás'],
+      expectedAnswer: 'tengas',
+      explanation: 'Subjuntivo presente después de expresiones de emoción',
+      verb: 'tener',
+      tense: 'subjuntivo_presente',
+      testsFocus: 'subjunctive_emotion'
+    },
+
+    // B2 Additional questions
+    {
+      id: 'b2_conditional_courtesy',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: '¿____ ayudarme con este problema?',
+      options: ['Puedes', 'Podrías', 'Pudiste', 'Puedas'],
+      expectedAnswer: 'Podrías',
+      explanation: 'Condicional para peticiones corteses',
+      verb: 'poder',
+      tense: 'condicional',
+      testsFocus: 'conditional_courtesy'
+    },
+    {
+      id: 'b2_pluperfect_subjunctive',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: 'Si ____ llegado antes, habríamos cenado juntos.',
+      options: ['hubieras', 'habrías', 'habías', 'hubieses'],
+      expectedAnswer: 'hubieras',
+      explanation: 'Subjuntivo pluscuamperfecto en oraciones condicionales',
+      verb: 'haber',
+      tense: 'subjuntivo_pluscuamperfecto',
+      testsFocus: 'pluperfect_subjunctive'
+    },
+    {
+      id: 'b2_reported_speech',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: 'María dijo que ____ al médico la semana siguiente.',
+      options: ['va', 'iría', 'fue', 'vaya'],
+      expectedAnswer: 'iría',
+      explanation: 'Condicional en estilo indirecto para futuro del pasado',
+      verb: 'ir',
+      tense: 'condicional',
+      testsFocus: 'reported_speech'
+    },
+
+    // C1 Level - Complex syntax and advanced irregulars
+    {
+      id: 'c1_advanced_subjunctive',
       targetLevel: 'C1',
       difficulty: 5,
-      prompt: 'El texto ____ que la situación es compleja.',
-      options: ['conduce', 'conduzca', 'condujo', 'conducía'],
-      expectedAnswer: 'conduce',
-      explanation: 'Verbo "conducir" en sentido figurado (llevar a una conclusión)',
-      verb: 'conducir',
-      tense: 'presente',
-      testsFocus: 'advanced_verb_meanings'
+      prompt: 'Aunque ____ mucho dinero, no sería feliz.',
+      options: ['tuviera', 'tenía', 'tenga', 'tendría'],
+      expectedAnswer: 'tuviera',
+      explanation: 'Subjuntivo imperfecto con "aunque" para situaciones hipotéticas',
+      verb: 'tener',
+      tense: 'subjuntivo_imperfecto',
+      testsFocus: 'concessive_clauses'
+    },
+    {
+      id: 'c1_future_subjunctive',
+      targetLevel: 'C1',
+      difficulty: 5,
+      prompt: 'Quien ____ interesado, que se ponga en contacto.',
+      options: ['esté', 'está', 'estuviere', 'estaría'],
+      expectedAnswer: 'esté',
+      explanation: 'Subjuntivo presente en oraciones de relativo con antecedente indefinido',
+      verb: 'estar',
+      tense: 'subjuntivo_presente',
+      testsFocus: 'relative_clauses'
+    },
+    {
+      id: 'c1_gerund_perfect',
+      targetLevel: 'C1',
+      difficulty: 5,
+      prompt: '____ terminado el trabajo, se fue a casa.',
+      options: ['Habiendo', 'Haber', 'Había', 'Ha'],
+      expectedAnswer: 'Habiendo',
+      explanation: 'Gerundio compuesto para acciones anteriores',
+      verb: 'haber',
+      tense: 'gerundio_compuesto',
+      testsFocus: 'perfect_gerund'
+    },
+
+    // C2 Level - Highly advanced
+    {
+      id: 'c2_archaic_subjunctive',
+      targetLevel: 'C2',
+      difficulty: 6,
+      prompt: 'Si ____ sabido la verdad, no habría venido.',
+      options: ['hubiera', 'hubiese', 'habría', 'había'],
+      expectedAnswer: 'hubiese',
+      explanation: 'Forma alternativa del subjuntivo pluscuamperfecto (registro culto)',
+      verb: 'haber',
+      tense: 'subjuntivo_pluscuamperfecto',
+      testsFocus: 'archaic_forms'
+    },
+    {
+      id: 'c2_literary_inversion',
+      targetLevel: 'C2',
+      difficulty: 6,
+      prompt: 'Apenas ____ el sol cuando empezó a llover.',
+      options: ['salió', 'había salido', 'hubo salido', 'salía'],
+      expectedAnswer: 'hubo salido',
+      explanation: 'Pretérito anterior en construcciones temporales literarias',
+      verb: 'salir',
+      tense: 'pretérito_anterior',
+      testsFocus: 'literary_tenses'
     }
   ]
 
@@ -590,19 +730,28 @@ export class LevelAssessment {
   selectOptimalQuestion(availableQuestions) {
     if (availableQuestions.length === 0) return null
 
-    // For first question, select medium difficulty
+    // Filter out already used questions to prevent repetition
+    const usedQuestionIds = this.currentTest ? this.currentTest.results.map(r => r.questionId) : []
+    const unusedQuestions = availableQuestions.filter(q => !usedQuestionIds.includes(q.id))
+
+    // If all questions used, allow reuse (shouldn't happen with enough questions)
+    const questionsToConsider = unusedQuestions.length > 0 ? unusedQuestions : availableQuestions
+
+    // For first question, select medium difficulty from A1/A2
     if (!this.currentTest || this.currentTest.currentIndex === 0) {
-      const mediumQuestions = availableQuestions.filter(q => q.difficulty >= 2 && q.difficulty <= 3)
-      return mediumQuestions.length > 0
-        ? mediumQuestions[Math.floor(Math.random() * mediumQuestions.length)]
-        : availableQuestions[Math.floor(Math.random() * availableQuestions.length)]
+      const startingQuestions = questionsToConsider.filter(q =>
+        (q.targetLevel === 'A1' || q.targetLevel === 'A2') && q.difficulty >= 1 && q.difficulty <= 2
+      )
+      return startingQuestions.length > 0
+        ? startingQuestions[Math.floor(Math.random() * startingQuestions.length)]
+        : questionsToConsider[Math.floor(Math.random() * questionsToConsider.length)]
     }
 
-    // Calculate information function for each question
+    // Calculate information function for each unused question
     let bestQuestion = null
     let maxInformation = -1
 
-    availableQuestions.forEach(question => {
+    questionsToConsider.forEach(question => {
       const information = this.calculateItemInformation(question, this.abilityEstimate)
       if (information > maxInformation) {
         maxInformation = information
@@ -610,7 +759,7 @@ export class LevelAssessment {
       }
     })
 
-    return bestQuestion || availableQuestions[0]
+    return bestQuestion || questionsToConsider[0]
   }
 
   // Calculate Fisher Information for an item at given ability level
