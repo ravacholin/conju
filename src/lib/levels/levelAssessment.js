@@ -6,108 +6,227 @@ import { verbs } from '../../data/verbs.js'
 import { IRREGULAR_FAMILIES } from '../data/irregularFamilies.js'
 import { buildFormsForRegion } from '../core/eligibility.js'
 
-// Advanced question pool generator based on verbs database and curriculum
-function generateAdvancedQuestionPool() {
-  const questionPool = []
-  const region = 'la_general' // Use neutral region for level testing
+// Professional CEFR-aligned placement test questions based on Cervantes Institute standards
+function generateProfessionalQuestionPool() {
+  // Curated professional questions following CEFR standards
+  const professionalQuestions = [
+    // A1 Level - Basic present tense and high-frequency verbs
+    {
+      id: 'a1_ser_1',
+      targetLevel: 'A1',
+      difficulty: 1,
+      prompt: '¿Cuál es la forma correcta? María ____ profesora.',
+      options: ['es', 'está', 'tiene', 'hace'],
+      expectedAnswer: 'es',
+      explanation: 'Usamos "ser" para profesiones permanentes',
+      verb: 'ser',
+      tense: 'presente',
+      testsFocus: 'ser_vs_estar'
+    },
+    {
+      id: 'a1_estar_1',
+      targetLevel: 'A1',
+      difficulty: 1,
+      prompt: '¿Dónde está Juan? Juan ____ en casa.',
+      options: ['es', 'está', 'tiene', 'va'],
+      expectedAnswer: 'está',
+      explanation: 'Usamos "estar" para ubicación',
+      verb: 'estar',
+      tense: 'presente',
+      testsFocus: 'ser_vs_estar'
+    },
+    {
+      id: 'a1_tener_1',
+      targetLevel: 'A1',
+      difficulty: 1,
+      prompt: 'Complete: Nosotros ____ hambre.',
+      options: ['tenemos', 'somos', 'estamos', 'hacemos'],
+      expectedAnswer: 'tenemos',
+      explanation: 'Expresión idiomática con "tener"',
+      verb: 'tener',
+      tense: 'presente',
+      testsFocus: 'expressions_with_tener'
+    },
+    {
+      id: 'a1_regular_ar',
+      targetLevel: 'A1',
+      difficulty: 1,
+      prompt: 'Conjugación: Yo ____ español todos los días.',
+      options: ['hablo', 'habla', 'hablas', 'hablan'],
+      expectedAnswer: 'hablo',
+      explanation: 'Primera persona singular de verbos -ar',
+      verb: 'hablar',
+      tense: 'presente',
+      testsFocus: 'regular_ar_conjugation'
+    },
 
-  // Level-based configurations with verb priorities and tenses
-  const levelConfigs = {
-    A1: {
-      verbs: ['ser', 'estar', 'tener', 'haber', 'ir', 'venir', 'hablar', 'comer', 'vivir', 'trabajar', 'estudiar'],
-      tenses: [
-        { mood: 'indicative', tense: 'pres', difficulty: 1 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+    // A2 Level - Past tenses and irregular verbs
+    {
+      id: 'a2_preterite_1',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: 'Ayer Juan ____ al cine.',
+      options: ['va', 'fue', 'iba', 'iría'],
+      expectedAnswer: 'fue',
+      explanation: 'Pretérito indefinido para acciones terminadas',
+      verb: 'ir',
+      tense: 'pretérito_indefinido',
+      testsFocus: 'preterite_vs_imperfect'
     },
-    A2: {
-      verbs: ['hacer', 'decir', 'poder', 'querer', 'poner', 'dar', 'saber', 'ver', 'salir', 'valer', 'hablar', 'comer', 'vivir'],
-      tenses: [
-        { mood: 'indicative', tense: 'pretIndef', difficulty: 2 },
-        { mood: 'indicative', tense: 'impf', difficulty: 2 },
-        { mood: 'indicative', tense: 'fut', difficulty: 2 },
-        { mood: 'imperative', tense: 'impAff', difficulty: 2 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+    {
+      id: 'a2_imperfect_1',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: 'Cuando era niño, yo ____ mucho.',
+      options: ['jugué', 'jugaba', 'juego', 'jugaré'],
+      expectedAnswer: 'jugaba',
+      explanation: 'Imperfecto para acciones habituales del pasado',
+      verb: 'jugar',
+      tense: 'imperfecto',
+      testsFocus: 'preterite_vs_imperfect'
     },
-    B1: {
-      verbs: ['hacer', 'decir', 'poder', 'querer', 'poner', 'venir', 'tener', 'haber', 'conocer', 'producir', 'traducir', 'ofrecer'],
-      tenses: [
-        { mood: 'indicative', tense: 'pretPerf', difficulty: 3 },
-        { mood: 'indicative', tense: 'plusc', difficulty: 3 },
-        { mood: 'indicative', tense: 'futPerf', difficulty: 3 },
-        { mood: 'subjunctive', tense: 'subjPres', difficulty: 3 },
-        { mood: 'subjunctive', tense: 'subjPerf', difficulty: 3 },
-        { mood: 'conditional', tense: 'cond', difficulty: 3 },
-        { mood: 'imperative', tense: 'impNeg', difficulty: 3 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+    {
+      id: 'a2_future_1',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: 'Mañana nosotros ____ a Madrid.',
+      options: ['viajamos', 'viajábamos', 'viajaremos', 'viajamos'],
+      expectedAnswer: 'viajaremos',
+      explanation: 'Futuro simple para planes futuros',
+      verb: 'viajar',
+      tense: 'futuro',
+      testsFocus: 'future_tense'
     },
-    B2: {
-      verbs: ['decir', 'hacer', 'haber', 'tener', 'venir', 'poner', 'saber', 'poder', 'traer', 'oír', 'caer', 'leer', 'creer'],
-      tenses: [
-        { mood: 'subjunctive', tense: 'subjImpf', difficulty: 4 },
-        { mood: 'subjunctive', tense: 'subjPlusc', difficulty: 4 },
-        { mood: 'conditional', tense: 'condPerf', difficulty: 4 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+    {
+      id: 'a2_stem_change',
+      targetLevel: 'A2',
+      difficulty: 2,
+      prompt: '¿A qué hora ____ el restaurante?',
+      options: ['cierra', 'ciera', 'cierre', 'cerrará'],
+      expectedAnswer: 'cierra',
+      explanation: 'Cambio vocálico e→ie en presente',
+      verb: 'cerrar',
+      tense: 'presente',
+      testsFocus: 'stem_changing_verbs'
     },
-    C1: {
-      verbs: ['distinguir', 'conducir', 'traducir', 'producir', 'construir', 'destruir', 'huir', 'incluir', 'concluir', 'yacer'],
-      tenses: [
-        { mood: 'subjunctive', tense: 'subjFut', difficulty: 5 },
-        { mood: 'subjunctive', tense: 'subjFutPerf', difficulty: 5 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+
+    // B1 Level - Perfect tenses and subjunctive introduction
+    {
+      id: 'b1_perfect_1',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'Este año nosotros ____ tres veces a París.',
+      options: ['fuimos', 'íbamos', 'hemos ido', 'iremos'],
+      expectedAnswer: 'hemos ido',
+      explanation: 'Pretérito perfecto para experiencias con relevancia presente',
+      verb: 'ir',
+      tense: 'pretérito_perfecto',
+      testsFocus: 'perfect_tenses'
     },
-    C2: {
-      verbs: ['yacer', 'abolir', 'balbucir', 'blandir', 'colorir', 'empedernir', 'argüir', 'erguir', 'aullar', 'gruñir'],
-      tenses: [
-        { mood: 'subjunctive', tense: 'subjFut', difficulty: 6 },
-        { mood: 'subjunctive', tense: 'subjFutPerf', difficulty: 6 }
-      ],
-      persons: ['1s', '2s_tu', '3s', '1p', '3p']
+    {
+      id: 'b1_subjunctive_1',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'Es importante que tú ____ temprano.',
+      options: ['llegas', 'llegues', 'llegabas', 'llegarás'],
+      expectedAnswer: 'llegues',
+      explanation: 'Subjuntivo presente después de expresiones de necesidad',
+      verb: 'llegar',
+      tense: 'subjuntivo_presente',
+      testsFocus: 'subjunctive_present'
+    },
+    {
+      id: 'b1_conditional_1',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'En tu lugar, yo ____ con el jefe.',
+      options: ['hablo', 'hablé', 'hablaría', 'hable'],
+      expectedAnswer: 'hablaría',
+      explanation: 'Condicional para consejos y situaciones hipotéticas',
+      verb: 'hablar',
+      tense: 'condicional',
+      testsFocus: 'conditional_mood'
+    },
+    {
+      id: 'b1_pluperfect',
+      targetLevel: 'B1',
+      difficulty: 3,
+      prompt: 'Cuando llegué, ellos ya ____.',
+      options: ['se fueron', 'se iban', 'se habían ido', 'se van'],
+      expectedAnswer: 'se habían ido',
+      explanation: 'Pluscuamperfecto para acciones anteriores a otra del pasado',
+      verb: 'irse',
+      tense: 'pluscuamperfecto',
+      testsFocus: 'pluperfect_tense'
+    },
+
+    // B2 Level - Advanced subjunctive and complex tenses
+    {
+      id: 'b2_subjunctive_past',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: 'Si yo ____ más dinero, viajaría por el mundo.',
+      options: ['tengo', 'tenía', 'tuviera', 'tendré'],
+      expectedAnswer: 'tuviera',
+      explanation: 'Subjuntivo imperfecto en oraciones condicionales irreales',
+      verb: 'tener',
+      tense: 'subjuntivo_imperfecto',
+      testsFocus: 'conditional_sentences'
+    },
+    {
+      id: 'b2_perfect_subjunctive',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: 'Dudo que él ____ la verdad.',
+      options: ['dijo', 'decía', 'haya dicho', 'dirá'],
+      expectedAnswer: 'haya dicho',
+      explanation: 'Subjuntivo perfecto para acciones pasadas con duda',
+      verb: 'decir',
+      tense: 'subjuntivo_perfecto',
+      testsFocus: 'perfect_subjunctive'
+    },
+    {
+      id: 'b2_conditional_perfect',
+      targetLevel: 'B2',
+      difficulty: 4,
+      prompt: 'Con más tiempo, ____ terminado el proyecto.',
+      options: ['habría', 'habríamos', 'habremos', 'hemos'],
+      expectedAnswer: 'habríamos',
+      explanation: 'Condicional perfecto para situaciones hipotéticas del pasado',
+      verb: 'haber',
+      tense: 'condicional_perfecto',
+      testsFocus: 'conditional_perfect'
+    },
+
+    // C1 Level - Complex syntax and advanced irregulars
+    {
+      id: 'c1_pluperfect_subjunctive',
+      targetLevel: 'C1',
+      difficulty: 5,
+      prompt: 'Si ____ estudiado más, habría aprobado.',
+      options: ['hubiera', 'había', 'hube', 'habré'],
+      expectedAnswer: 'hubiera',
+      explanation: 'Subjuntivo pluscuamperfecto en condicionales de pasado',
+      verb: 'haber',
+      tense: 'subjuntivo_pluscuamperfecto',
+      testsFocus: 'complex_conditionals'
+    },
+    {
+      id: 'c1_advanced_irregular',
+      targetLevel: 'C1',
+      difficulty: 5,
+      prompt: 'El texto ____ que la situación es compleja.',
+      options: ['conduce', 'conduzca', 'condujo', 'conducía'],
+      expectedAnswer: 'conduce',
+      explanation: 'Verbo "conducir" en sentido figurado (llevar a una conclusión)',
+      verb: 'conducir',
+      tense: 'presente',
+      testsFocus: 'advanced_verb_meanings'
     }
-  }
+  ]
 
-  // Generate questions for each level
-  Object.entries(levelConfigs).forEach(([level, config]) => {
-    config.verbs.forEach(verbLemma => {
-      // Find verb in database
-      const verb = verbs.find(v => v.lemma === verbLemma)
-      if (!verb) return
-
-      config.tenses.forEach(tenseConfig => {
-        config.persons.forEach(person => {
-          // Find the form for this verb/tense/person combination
-          const form = findVerbForm(verb, tenseConfig.mood, tenseConfig.tense, person, region)
-          if (!form) return
-
-          // Create question with contextual prompt
-          const question = createQuestionFromForm(verb, form, tenseConfig, level, person)
-          if (question) {
-            questionPool.push(question)
-          }
-        })
-      })
-    })
-  })
-
-  // Add questions from irregular families for better coverage
-  addIrregularFamilyQuestions(questionPool)
-
-  // Filter out null questions and validate each question has required properties
-  const validQuestions = questionPool.filter(q =>
-    q &&
-    q.id &&
-    q.expectedAnswer &&
-    q.prompt &&
-    q.difficulty &&
-    q.targetLevel
-  )
-
-  console.log(`Question pool generated: ${questionPool.length} total, ${validQuestions.length} valid`)
-  return validQuestions
+  console.log(`Professional question pool generated: ${professionalQuestions.length} questions`)
+  return professionalQuestions
 }
 
 function findVerbForm(verb, mood, tense, person, region) {
@@ -458,11 +577,11 @@ export class LevelAssessment {
     this.convergenceThreshold = 0.1 // Ability change threshold for convergence
   }
 
-  // Initialize the advanced question pool
+  // Initialize the professional question pool
   initializeQuestionPool() {
     if (!this.questionPool) {
-      this.questionPool = generateAdvancedQuestionPool()
-      console.log(`Initialized question pool with ${this.questionPool.length} questions`)
+      this.questionPool = generateProfessionalQuestionPool()
+      console.log(`Initialized professional question pool with ${this.questionPool.length} questions`)
     }
     return this.questionPool
   }

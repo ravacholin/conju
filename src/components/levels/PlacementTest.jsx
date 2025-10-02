@@ -9,9 +9,10 @@ function PlacementTest({ onComplete, onCancel }) {
   const [assessment] = useState(() => getGlobalAssessment())
   const [currentTest, setCurrentTest] = useState(null)
   const [currentQuestion, setCurrentQuestion] = useState(null)
-  const [userAnswer, setUserAnswer] = useState('')
+  const [selectedOption, setSelectedOption] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [testStarted, setTestStarted] = useState(false)
+  const [showExplanation, setShowExplanation] = useState(false)
 
   useEffect(() => {
     if (assessment.isTestActive()) {
@@ -33,25 +34,33 @@ function PlacementTest({ onComplete, onCancel }) {
   }
 
   const handleSubmitAnswer = async () => {
-    if (!userAnswer.trim() || !currentQuestion || isSubmitting) return
+    if (!selectedOption || !currentQuestion || isSubmitting) return
 
     try {
       setIsSubmitting(true)
-      const result = await assessment.submitAnswer(currentQuestion.id, userAnswer.trim())
+      const result = await assessment.submitAnswer(currentQuestion.id, selectedOption)
 
-      if (result.completed) {
-        // Test completed
-        settings.setUserLevel(result.determinedLevel)
-        settings.setPlacementTestCompleted(true)
-        onComplete && onComplete(result)
-      } else {
-        // Move to next question
-        setCurrentQuestion(result.nextQuestion)
-        setUserAnswer('')
-      }
+      // Show explanation briefly
+      setShowExplanation(true)
+
+      // Wait 2 seconds to show explanation, then proceed
+      setTimeout(async () => {
+        setShowExplanation(false)
+
+        if (result.completed) {
+          // Test completed
+          settings.setUserLevel(result.determinedLevel)
+          settings.setPlacementTestCompleted(true)
+          onComplete && onComplete(result)
+        } else {
+          // Move to next question
+          setCurrentQuestion(result.nextQuestion)
+          setSelectedOption('')
+        }
+        setIsSubmitting(false)
+      }, 2000)
     } catch (error) {
       console.error('Failed to submit answer:', error)
-    } finally {
       setIsSubmitting(false)
     }
   }
@@ -61,10 +70,9 @@ function PlacementTest({ onComplete, onCancel }) {
     onCancel && onCancel()
   }
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !isSubmitting) {
-      e.preventDefault()
-      handleSubmitAnswer()
+  const handleOptionSelect = (option) => {
+    if (!isSubmitting && !showExplanation) {
+      setSelectedOption(option)
     }
   }
 
@@ -202,18 +210,31 @@ function PlacementTest({ onComplete, onCancel }) {
         <div className="question-content">
           <div className="question-prompt">{currentQuestion.prompt}</div>
 
-          <div className="answer-input-section">
-            <input
-              type="text"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Escribe tu respuesta..."
-              className="answer-input"
-              autoFocus
-              disabled={isSubmitting}
-            />
+          <div className="answer-options">
+            {currentQuestion.options?.map((option, index) => (
+              <ClickableCard
+                key={index}
+                className={`option-button ${selectedOption === option ? 'selected' : ''} ${
+                  showExplanation && option === currentQuestion.expectedAnswer ? 'correct' : ''
+                } ${
+                  showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
+                }`}
+                onClick={() => handleOptionSelect(option)}
+                title={`Seleccionar opción: ${option}`}
+                disabled={isSubmitting || showExplanation}
+              >
+                <span className="option-letter">{String.fromCharCode(65 + index)}.</span>
+                <span className="option-text">{option}</span>
+              </ClickableCard>
+            ))}
           </div>
+
+          {showExplanation && currentQuestion.explanation && (
+            <div className="explanation-box">
+              <div className="explanation-label">Explicación:</div>
+              <div className="explanation-text">{currentQuestion.explanation}</div>
+            </div>
+          )}
         </div>
 
         <div className="question-actions">
@@ -226,18 +247,18 @@ function PlacementTest({ onComplete, onCancel }) {
           </ClickableCard>
 
           <ClickableCard
-            className={`submit-button ${!userAnswer.trim() || isSubmitting ? 'disabled' : ''}`}
+            className={`submit-button ${!selectedOption || isSubmitting || showExplanation ? 'disabled' : ''}`}
             onClick={handleSubmitAnswer}
             title="Enviar respuesta"
           >
-            {isSubmitting ? 'Enviando...' : 'Enviar'}
+            {isSubmitting ? 'Procesando...' : showExplanation ? 'Siguiente...' : 'Confirmar'}
           </ClickableCard>
         </div>
       </div>
 
       <div className="test-hints">
         <div className="hint-text">
-          Escribe la forma verbal que complete la oración correctamente
+          Selecciona la opción que complete correctamente la oración
         </div>
         <div className="adaptive-info">
           <span className="adaptive-badge">Test Adaptativo</span>
