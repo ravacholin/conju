@@ -78,7 +78,7 @@ export default function useProgressDashboardData() {
                 if (item.mood && item.tense) {
                   const key = `${item.mood}-${item.tense}`
                   heatMapObject[key] = {
-                    mastery: item.score / 100, // Convert score to 0-1 range
+                    mastery: item.score / 100, // Convert score from 0-100 to 0-1 range
                     attempts: item.count || 0,
                     lastAttempt: Date.now() // Use current time as placeholder
                   }
