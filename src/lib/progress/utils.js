@@ -10,13 +10,18 @@ export function generateId() {
 
 /**
  * Formatea un número como porcentaje
- * @param {number} value - Valor a formatear
+ * @param {number} value - Valor a formatear (puede ser 0-1 decimal o 0-100 entero)
  * @param {number} decimals - Número de decimales
  * @returns {string} Valor formateado como porcentaje
  */
 export function formatPercentage(value, decimals = 0) {
   if (value === null || value === undefined) return 'N/A'
-  return `${value.toFixed(decimals)}%`
+
+  // Si el valor es menor o igual a 1, asumimos que es un decimal (0-1) y lo convertimos a porcentaje
+  // Si es mayor a 1, asumimos que ya está en formato de porcentaje (0-100)
+  const percentage = value <= 1 ? value * 100 : value
+
+  return `${percentage.toFixed(decimals)}%`
 }
 
 /**
