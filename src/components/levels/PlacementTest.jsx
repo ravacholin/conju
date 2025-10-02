@@ -16,8 +16,6 @@ function PlacementTest({ onComplete, onCancel }) {
 
   useEffect(() => {
     if (assessment.isTestActive()) {
-      setCurrentTest(assessment.currentTest)
-      setCurrentQuestion(assessment.getCurrentQuestion())
       setTestStarted(true)
     }
   }, [assessment])
@@ -80,9 +78,9 @@ function PlacementTest({ onComplete, onCancel }) {
     return (
       <div className="placement-test-intro">
         <div className="test-header">
-          <h2>Test de Nivel Adaptativo</h2>
+          <h2>Test de Nivel de Conjugación</h2>
           <p className="test-description">
-            Test profesional con algoritmo CAT (Computerized Adaptive Testing) que determina tu nivel CEFR automáticamente.
+            Test profesional que determina tu nivel CEFR en conjugación verbal española automáticamente.
           </p>
         </div>
 
@@ -90,43 +88,30 @@ function PlacementTest({ onComplete, onCancel }) {
           <ClickableCard
             className="test-option"
             onClick={() => handleStartTest(12)}
-            title="Test adaptativo estándar"
+            title="Iniciar test de nivel"
           >
-            <div className="option-title">Test Estándar</div>
-            <div className="option-description">8-12 preguntas • Adaptativo • ~6 minutos</div>
+            <div className="option-title">Test de Nivel</div>
+            <div className="option-description">8-12 preguntas • Adaptativo • ~5 minutos</div>
             <div className="option-features">
-              <div className="feature">Algoritmo CAT profesional</div>
-              <div className="feature">Selección inteligente de preguntas</div>
-              <div className="feature">Termina cuando converge</div>
-            </div>
-          </ClickableCard>
-
-          <ClickableCard
-            className="test-option"
-            onClick={() => handleStartTest(8)}
-            title="Test adaptativo rápido"
-          >
-            <div className="option-title">Test Rápido</div>
-            <div className="option-description">6-8 preguntas • Adaptativo • ~4 minutos</div>
-            <div className="option-features">
-              <div className="feature">Evaluación eficiente</div>
-              <div className="feature">Resultado aproximado</div>
+              <div className="feature">Progresión automática por niveles</div>
+              <div className="feature">Preguntas curadas profesionalmente</div>
+              <div className="feature">Resultado preciso y rápido</div>
             </div>
           </ClickableCard>
         </div>
 
         <div className="test-info">
           <div className="info-item">
-            <div className="info-label">Metodología:</div>
-            <div className="info-text">IRT + Estimación bayesiana • Estándar CEFR 2025</div>
-          </div>
-          <div className="info-item">
             <div className="info-label">Evalúa:</div>
-            <div className="info-text">Presente, pasados, subjuntivo, condicional • Verbos regulares e irregulares</div>
+            <div className="info-text">Presente, pretéritos, subjuntivo, condicional, tiempos compuestos</div>
           </div>
           <div className="info-item">
-            <div className="info-label">Precisión:</div>
-            <div className="info-text">±1 subnivel CEFR • Confianza estadística 85%+</div>
+            <div className="info-label">Niveles:</div>
+            <div className="info-text">A1 (básico) hasta C1 (avanzado) según estándar CEFR</div>
+          </div>
+          <div className="info-item">
+            <div className="info-label">Metodología:</div>
+            <div className="info-text">Adaptativo simple • 50 preguntas curadas • Sin repeticiones</div>
           </div>
         </div>
 
@@ -262,7 +247,7 @@ function PlacementTest({ onComplete, onCancel }) {
         </div>
         <div className="adaptive-info">
           <span className="adaptive-badge">Test Adaptativo</span>
-          El algoritmo selecciona las preguntas más informativas para tu nivel
+          El test progresa automáticamente según tu nivel de conjugación
         </div>
       </div>
     </div>
