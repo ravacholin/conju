@@ -114,7 +114,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const effectiveUserLevel = userLevel || 'A2'
   const effectiveLevelPracticeMode = levelPracticeMode || PRACTICE_MODES.BY_LEVEL
   const shouldApplyLevelFiltering = effectiveLevelPracticeMode === PRACTICE_MODES.BY_LEVEL
-  const levelForFiltering = shouldApplyLevelFiltering ? effectiveUserLevel : 'ALL'
+  const levelForFiltering = shouldApplyLevelFiltering ? level : 'ALL'
   
 
 
