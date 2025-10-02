@@ -70,10 +70,26 @@ export default function useProgressDashboardData() {
               'heatMap'
             )
             if (signal.aborted) throw new Error('Cancelled')
-            return Array.isArray(result) ? result : []
+
+            // Transform array format to object format expected by new components
+            if (Array.isArray(result) && result.length > 0) {
+              const heatMapObject = {}
+              result.forEach(item => {
+                if (item.mood && item.tense) {
+                  const key = `${item.mood}-${item.tense}`
+                  heatMapObject[key] = {
+                    mastery: item.score / 100, // Convert score to 0-1 range
+                    attempts: item.count || 0,
+                    lastAttempt: Date.now() // Use current time as placeholder
+                  }
+                }
+              })
+              return { heatMap: heatMapObject }
+            }
+            return { heatMap: {} }
           } catch (e) {
             if (!signal.aborted) console.warn('Failed to load heat map data:', e)
-            return []
+            return { heatMap: {} }
           }
         },
 
