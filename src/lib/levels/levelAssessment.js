@@ -146,38 +146,57 @@ function createQuestionFromForm(verb, form, tenseConfig, level, person) {
 }
 
 function generateContextualPrompts(lemma, form, person, tense, mood) {
-  const prompts = []
+  // ALWAYS include the verb infinitive in the prompt for clarity
+  const verbInstruction = `Conjugá el verbo "${lemma}"`
 
-  // Context templates based on person and common verbs
+  // Context templates that ALWAYS show the verb being tested
   const templates = {
     '1s': {
-      'ser': ['Yo ____ estudiante.', 'Yo ____ de Argentina.'],
-      'estar': ['Yo ____ en casa.', 'Yo ____ muy cansado/a.'],
-      'tener': ['Yo ____ hambre.', 'Yo ____ 25 años.'],
-      'hablar': ['Yo ____ español.', 'Yo ____ con mi familia.'],
-      'default': [`Yo ____ ${getContextForVerb(lemma)}.`]
+      'ser': [`${verbInstruction}: Yo ____ estudiante.`, `${verbInstruction}: Yo ____ de Argentina.`],
+      'estar': [`${verbInstruction}: Yo ____ en casa.`, `${verbInstruction}: Yo ____ muy cansado/a.`],
+      'tener': [`${verbInstruction}: Yo ____ hambre.`, `${verbInstruction}: Yo ____ 25 años.`],
+      'haber': [`${verbInstruction}: Yo ____ estado aquí antes.`],
+      'hacer': [`${verbInstruction}: Yo ____ ejercicio todos los días.`],
+      'ir': [`${verbInstruction}: Yo ____ al trabajo en colectivo.`],
+      'venir': [`${verbInstruction}: Yo ____ de muy lejos.`],
+      'decir': [`${verbInstruction}: Yo siempre ____ la verdad.`],
+      'poder': [`${verbInstruction}: Yo ____ ayudarte con eso.`],
+      'querer': [`${verbInstruction}: Yo ____ viajar a Europa.`],
+      'default': [`${verbInstruction}: Yo ____ ${getContextForVerb(lemma)}.`]
     },
     '2s_tu': {
-      'ser': ['Tú ____ muy inteligente.', '¿Tú ____ médico?'],
-      'estar': ['Tú ____ en el trabajo.', '¿Tú ____ bien?'],
-      'tener': ['Tú ____ razón.', '¿Tú ____ tiempo?'],
-      'default': [`Tú ____ ${getContextForVerb(lemma)}.`]
+      'ser': [`${verbInstruction}: Tú ____ muy inteligente.`, `${verbInstruction}: ¿Tú ____ médico?`],
+      'estar': [`${verbInstruction}: Tú ____ en el trabajo.`, `${verbInstruction}: ¿Tú ____ bien?`],
+      'tener': [`${verbInstruction}: Tú ____ razón.`, `${verbInstruction}: ¿Tú ____ tiempo?`],
+      'hacer': [`${verbInstruction}: Tú ____ muy buen trabajo.`],
+      'ir': [`${verbInstruction}: ¿Tú ____ al cine esta noche?`],
+      'venir': [`${verbInstruction}: Tú ____ conmigo, ¿verdad?`],
+      'default': [`${verbInstruction}: Tú ____ ${getContextForVerb(lemma)}.`]
     },
     '3s': {
-      'ser': ['Él ____ profesor.', 'Ella ____ muy simpática.'],
-      'estar': ['Él ____ en el parque.', 'Ella ____ estudiando.'],
-      'haber': ['____ muchas personas aquí.', 'No ____ problemas.'],
-      'default': [`Él/Ella ____ ${getContextForVerb(lemma)}.`]
+      'ser': [`${verbInstruction}: Él ____ profesor.`, `${verbInstruction}: Ella ____ muy simpática.`],
+      'estar': [`${verbInstruction}: Él ____ en el parque.`, `${verbInstruction}: Ella ____ estudiando.`],
+      'haber': [`${verbInstruction}: ____ muchas personas aquí.`, `${verbInstruction}: No ____ problemas.`],
+      'tener': [`${verbInstruction}: Él ____ mucha experiencia.`],
+      'hacer': [`${verbInstruction}: Ella ____ la tarea todas las noches.`],
+      'ir': [`${verbInstruction}: Él ____ a la universidad.`],
+      'default': [`${verbInstruction}: Él/Ella ____ ${getContextForVerb(lemma)}.`]
     },
     '1p': {
-      'ser': ['Nosotros ____ amigos.', 'Nosotras ____ estudiantes.'],
-      'estar': ['Nosotros ____ listos.', 'Nosotras ____ aquí.'],
-      'default': [`Nosotros ____ ${getContextForVerb(lemma)}.`]
+      'ser': [`${verbInstruction}: Nosotros ____ amigos.`, `${verbInstruction}: Nosotras ____ estudiantes.`],
+      'estar': [`${verbInstruction}: Nosotros ____ listos.`, `${verbInstruction}: Nosotras ____ aquí.`],
+      'tener': [`${verbInstruction}: Nosotros ____ que estudiar.`],
+      'hacer': [`${verbInstruction}: Nosotros ____ deportes los fines de semana.`],
+      'ir': [`${verbInstruction}: Nosotros ____ de vacaciones en enero.`],
+      'default': [`${verbInstruction}: Nosotros ____ ${getContextForVerb(lemma)}.`]
     },
     '3p': {
-      'ser': ['Ellos ____ hermanos.', 'Ellas ____ profesoras.'],
-      'estar': ['Ellos ____ cansados.', 'Ellas ____ trabajando.'],
-      'default': [`Ellos/Ellas ____ ${getContextForVerb(lemma)}.`]
+      'ser': [`${verbInstruction}: Ellos ____ hermanos.`, `${verbInstruction}: Ellas ____ profesoras.`],
+      'estar': [`${verbInstruction}: Ellos ____ cansados.`, `${verbInstruction}: Ellas ____ trabajando.`],
+      'tener': [`${verbInstruction}: Ellos ____ muchos libros.`],
+      'hacer': [`${verbInstruction}: Ellas ____ la cena juntas.`],
+      'ir': [`${verbInstruction}: Ellos ____ al mercado.`],
+      'default': [`${verbInstruction}: Ellos/Ellas ____ ${getContextForVerb(lemma)}.`]
     }
   }
 
