@@ -199,14 +199,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
             return cellData.attempts > 0 || cellData.srsStatus === 'due'
           })
 
-          // For empty progress, show at least the most basic forms
-          const basicForms = ['pres', 'pretIndef', 'impf', 'subjPres', 'cond', 'imper']
+          // Only show tenses that actually have data
           let tensesToShow = tensesWithData
-
-          // If no data, show basic forms for main moods
-          if (tensesWithData.length === 0 && ['indicative', 'subjunctive', 'conditional', 'imperative'].includes(mood)) {
-            tensesToShow = config.tenses.filter(tense => basicForms.includes(tense.key))
-          }
 
           // Only show mood section if it has tenses to show
           if (tensesToShow.length === 0) return null
