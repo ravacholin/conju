@@ -13,7 +13,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
   const moodConfig = {
     indicative: {
       label: 'Indicativo',
-      icon: '/hechos-indicativo.png',
       description: 'Modo de la realidad y la objetividad',
       tenses: [
         { key: 'pres', label: 'Presente', group: 'simple' },
@@ -27,7 +26,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     },
     subjunctive: {
       label: 'Subjuntivo',
-      icon: '/posib-subj.png',
       description: 'Modo de la subjetividad y la irrealidad',
       tenses: [
         { key: 'subjPres', label: 'Presente', group: 'simple' },
@@ -38,7 +36,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     },
     conditional: {
       label: 'Condicional',
-      icon: '/posib-condic.png',
       description: 'Modo de la probabilidad y la cortesía',
       tenses: [
         { key: 'cond', label: 'Condicional simple', group: 'simple' },
@@ -47,7 +44,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     },
     imperative: {
       label: 'Imperativo',
-      icon: '/megaf-imperat.png',
       description: 'Modo del mandato y la exhortación',
       tenses: [
         { key: 'impAff', label: 'Imperativo afirmativo', group: 'simple' },
@@ -56,7 +52,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
     },
     nonfinite: {
       label: 'Formas no personales',
-      icon: '/no-finitas-infinite.png',
       description: 'Formas verbales sin flexión personal',
       tenses: [
         { key: 'inf', label: 'Infinitivo', group: 'simple' },
@@ -128,7 +123,6 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
       if (!result[cell.mood]) {
         const moodInfo = moodConfig[cell.mood] || {
           label: cell.mood,
-          icon: '📝',
           description: 'Modo verbal'
         }
         result[cell.mood] = {
@@ -282,11 +276,13 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
           </div>
         ) : (
           Object.entries(masteryByMode).map(([moodKey, mood]) => {
+            // Don't show moods that have no tenses with data
+            if (!mood.tenses || mood.tenses.length === 0) return null
+
             return (
             <div key={moodKey} className="mood-section">
               <div className="mood-header">
                 <div className="mood-title">
-                  <span className="mood-icon">{typeof mood.icon === 'string' && mood.icon.startsWith('/') ? (<img src={mood.icon} alt="" className="inline-icon" />) : mood.icon}</span>
                   <div className="mood-info">
                     <h3>{mood.label}</h3>
                     <p className="mood-description">{mood.description}</p>
