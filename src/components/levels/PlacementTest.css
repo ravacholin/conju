@@ -1,0 +1,247 @@
+/* PlacementTest.css - Estilos para el test de nivel adaptativo */
+
+/* Mantener tema oscuro sin gradientes según requisitos del usuario */
+
+.placement-test-intro .test-options {
+  gap: 1rem;
+}
+
+.test-option .option-features {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.test-option .feature {
+  margin: 0.2rem 0;
+  color: var(--text-muted);
+}
+
+/* Progress section mejorada */
+.test-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--surface-variant);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Estimación actual */
+.current-estimate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.estimate-level {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.estimate-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.level-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.level-badge.level-a1 { background: #4a5568; color: #e2e8f0; }
+.level-badge.level-a2 { background: #2d3748; color: #cbd5e0; }
+.level-badge.level-b1 { background: #2a69ac; color: #e6f3ff; }
+.level-badge.level-b2 { background: #1a365d; color: #bee3f8; }
+.level-badge.level-c1 { background: #744210; color: #fef5e7; }
+.level-badge.level-c2 { background: #553c0e; color: #fffff0; }
+
+.estimate-confidence {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confidence-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--surface-variant);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: var(--success);
+  transition: width 0.3s ease;
+}
+
+.confidence-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Question header mejorado */
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.question-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.question-level {
+  padding: 0.25rem 0.5rem;
+  background: var(--surface-variant);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.question-difficulty {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.difficulty-label {
+  font-size: 0.75rem;
+}
+
+.irregularity-info {
+  display: flex;
+  align-items: center;
+}
+
+.pattern-badge {
+  padding: 0.2rem 0.5rem;
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Test hints section */
+.test-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--surface-variant);
+  border-radius: 6px;
+}
+
+.hint-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.adaptive-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.adaptive-badge {
+  padding: 0.15rem 0.4rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Level test card styling */
+.level-test-card {
+  border: 2px solid var(--primary);
+  position: relative;
+}
+
+.level-test-card::before {
+  content: "NUEVO";
+  position: absolute;
+  top: -8px;
+  right: 1rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .current-estimate {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .progress-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .question-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .question-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

@@ -81,6 +81,7 @@ import MoodTenseSelection from './MoodTenseSelection.jsx'
 import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
+import PlacementTest from '../levels/PlacementTest.jsx'
 
 /**
  * Componente principal del flujo de configuración inicial
@@ -114,6 +115,7 @@ function OnboardingFlow({
 }) {
 
   const [toast, setToast] = React.useState(null)
+  const [showLevelTest, setShowLevelTest] = React.useState(false)
   const showToast = (message, type = 'success') => setToast({ message, type })
   const dialectLabel = (d) => ({ rioplatense: 'Rioplatense', la_general: 'Latinoamericano', peninsular: 'Peninsular', both: 'Todos' }[d] || 'Configurado')
 
@@ -139,12 +141,32 @@ function OnboardingFlow({
   const handleSelectFamily = (familyId, onStart) => {
     try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch { /* ignore errors */ }
   }
+
+  // Level test handlers
+  const handleStartLevelTest = () => {
+    setShowLevelTest(true)
+    showToast('Iniciando test de nivel adaptativo')
+  }
+
+  const handleLevelTestComplete = (result) => {
+    setShowLevelTest(false)
+    if (result && result.determinedLevel) {
+      selectLevel(result.determinedLevel)
+      showToast(`Nivel ${result.determinedLevel} determinado automáticamente`)
+    }
+  }
+
+  const handleLevelTestCancel = () => {
+    setShowLevelTest(false)
+    showToast('Test de nivel cancelado', 'info')
+  }
+
   // Unified back behavior: use browser history for both UI and hardware back
   const handleBack = () => {
-    try { 
-      window.history.back() 
-    } catch { 
-      /* ignore */ 
+    try {
+      window.history.back()
+    } catch {
+      /* ignore */
     }
   }
 
@@ -152,10 +174,18 @@ function OnboardingFlow({
     <div className="App">
       <div className="onboarding">
         <div className="center-column">
-          {/* Header with logo */}
-          <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
-            <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-          </ClickableCard>
+          {/* Show level test if active */}
+          {showLevelTest ? (
+            <PlacementTest
+              onComplete={handleLevelTestComplete}
+              onCancel={handleLevelTestCancel}
+            />
+          ) : (
+            <>
+              {/* Header with logo */}
+              <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
+                <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
+              </ClickableCard>
           
           {/* Step 1: Dialect Selection */}
           {onboardingStep === 1 && (
@@ -164,7 +194,7 @@ function OnboardingFlow({
 
           {/* Step 2: Level Selection Mode */}
           {onboardingStep === 2 && (
-            <LevelSelection 
+            <LevelSelection
               onSelectLevel={handleSelectLevel}
               onSelectPracticeMode={handleSelectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
@@ -172,17 +202,19 @@ function OnboardingFlow({
               showLevelDetails={false}
               onGoToProgress={onGoToProgress}
               onStartLearningNewTense={onStartLearningNewTense}
+              onStartLevelTest={handleStartLevelTest}
             />
           )}
 
           {/* Step 3: Specific Level Selection */}
           {onboardingStep === 3 && (
-            <LevelSelection 
+            <LevelSelection
               onSelectLevel={handleSelectLevel}
               onSelectPracticeMode={handleSelectPracticeMode}
               onGoToLevelDetails={goToLevelDetails}
               onBack={handleBack}
               showLevelDetails={true}
+              onStartLevelTest={handleStartLevelTest}
             />
           )}
 
@@ -259,6 +291,8 @@ function OnboardingFlow({
               onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
               onBack={handleBack}
             />
+          )}
+            </>
           )}
         </div>
         {toast?.message && (

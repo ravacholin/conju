@@ -1,7 +1,7 @@
 import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress, onStartLearningNewTense }) {
+function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress, onStartLearningNewTense, onStartLevelTest }) {
   if (showLevelDetails) {
     // Step 3: Specific level selection
     return (
@@ -57,15 +57,27 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             <p className="example">Todas las formas verbales</p>
           </ClickableCard>
           
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('C2')} 
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('C2')}
             title="Seleccionar nivel C2 - Superior"
           >
             <h3><img src="/c2.png" alt="C2" className="option-icon" /> Superior</h3>
             <p>Usás recursos idiomáticos y tonos variados, dominás matices culturales y resolvés situaciones con soltura casi nativa.</p>
             <p className="example">Todas las formas verbales</p>
           </ClickableCard>
+
+          {onStartLevelTest && (
+            <ClickableCard
+              className="option-card level-test-card"
+              onClick={onStartLevelTest}
+              title="Test de nivel adaptativo - Determina tu nivel automáticamente"
+            >
+              <h3><img src="/icons/brain.png" alt="Test" className="option-icon" /> Test de Nivel</h3>
+              <p>Determina tu nivel automáticamente con un test adaptativo profesional.</p>
+              <p className="example">8-12 preguntas • Algoritmo CAT • Resultado inmediato</p>
+            </ClickableCard>
+          )}
         </div>
         
         {/* Hint text that includes navigation keywords for test expectations */}
