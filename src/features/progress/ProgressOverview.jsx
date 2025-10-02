@@ -1,5 +1,6 @@
 import React from 'react'
 import AccountButton from '../../components/auth/AccountButton.jsx'
+import { useSettings } from '../../state/settings.js'
 
 /**
  * Progress Overview - Clean header with essential stats and navigation
@@ -14,20 +15,49 @@ export default function ProgressOverview({
   syncEnabled,
   onRefresh
 }) {
+  const settings = useSettings()
   const stats = userStats || {}
   const streak = stats.streakDays || 0
   const masteryLevel = stats.overallMastery || 0
   const itemsDue = stats.itemsDue || 0
   const totalAttempts = stats.totalAttempts || 0
 
-  const getMasteryLevel = (mastery) => {
-    if (mastery >= 0.8) return { level: 'Avanzado', color: 'var(--mastery-high)' }
-    if (mastery >= 0.6) return { level: 'Intermedio', color: 'var(--mastery-medium)' }
-    if (mastery >= 0.3) return { level: 'Básico', color: 'var(--mastery-low)' }
-    return { level: 'Principiante', color: 'var(--mastery-no-data)' }
+  const getDominanceLevel = (userLevel, masteryScore) => {
+    // Primary level is user's CEFR level
+    const cefrLevel = userLevel || 'A1'
+
+    // Get CEFR level colors and descriptions
+    const cefrInfo = {
+      'A1': { label: 'A1 - Principiante', color: '#4a5568', description: 'Nivel básico inicial' },
+      'A2': { label: 'A2 - Elemental', color: '#2d3748', description: 'Nivel básico consolidado' },
+      'B1': { label: 'B1 - Intermedio', color: '#2a69ac', description: 'Nivel intermedio' },
+      'B2': { label: 'B2 - Intermedio alto', color: '#1a365d', description: 'Nivel intermedio avanzado' },
+      'C1': { label: 'C1 - Avanzado', color: '#744210', description: 'Nivel avanzado' },
+      'C2': { label: 'C2 - Superior', color: '#553c0e', description: 'Nivel de dominio nativo' }
+    }
+
+    const baseInfo = cefrInfo[cefrLevel] || cefrInfo['A1']
+
+    // Add mastery qualifier based on performance within level
+    let qualifier = ''
+    if (masteryScore >= 0.85) {
+      qualifier = ' (Sólido)'
+    } else if (masteryScore >= 0.7) {
+      qualifier = ' (En progreso)'
+    } else if (masteryScore >= 0.4) {
+      qualifier = ' (Inicial)'
+    } else if (totalAttempts >= 10) {
+      qualifier = ' (En desarrollo)'
+    }
+
+    return {
+      level: baseInfo.label + qualifier,
+      color: baseInfo.color,
+      description: baseInfo.description
+    }
   }
 
-  const masteryInfo = getMasteryLevel(masteryLevel)
+  const masteryInfo = getDominanceLevel(settings.userLevel, masteryLevel)
 
   return (
     <div className="progress-overview">
@@ -40,7 +70,7 @@ export default function ProgressOverview({
               onClick={() => window.history.back()}
               title="Volver atrás"
             >
-              <img src="/icons/back.png" alt="Volver" className="nav-icon" />
+              <img src="/back.png" alt="Volver" className="nav-icon" />
             </button>
 
             <button

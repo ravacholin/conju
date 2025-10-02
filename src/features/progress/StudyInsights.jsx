@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react'
  * Replaces: AdvancedAnalyticsPanel, CommunityPulse, DailyChallengesPanel
  */
 export default function StudyInsights({ userStats, heatMapData }) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   // Calculate useful insights
   const insights = useMemo(() => {
