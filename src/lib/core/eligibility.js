@@ -559,7 +559,7 @@ export function getAllowedTensesForMood(settings, mood) {
 }
 
 // Enhanced build canonical pool of forms for a given region with comprehensive error handling
-export function buildFormsForRegion(region, settings = {}) {
+export async function buildFormsForRegion(region, settings = {}) {
   if (!region || typeof region !== 'string') {
     logger.warn('buildFormsForRegion', 'Invalid region parameter', { region, settings })
     return []
@@ -580,7 +580,7 @@ export function buildFormsForRegion(region, settings = {}) {
 
       // Get rioplatense forms with error handling
       try {
-        rioplatenseForms = getFormsForRegion('rioplatense', settings)
+        rioplatenseForms = await getFormsForRegion('rioplatense', settings)
         if (!Array.isArray(rioplatenseForms)) {
           logger.error('buildFormsForRegion', 'Invalid rioplatense forms result', {
             result: typeof rioplatenseForms
@@ -605,7 +605,7 @@ export function buildFormsForRegion(region, settings = {}) {
 
       // Get peninsular forms with error handling
       try {
-        peninsularForms = getFormsForRegion('peninsular', settings)
+        peninsularForms = await getFormsForRegion('peninsular', settings)
         if (!Array.isArray(peninsularForms)) {
           logger.error('buildFormsForRegion', 'Invalid peninsular forms result', {
             result: typeof peninsularForms
@@ -725,7 +725,7 @@ export function buildFormsForRegion(region, settings = {}) {
 
     // Single region handling with error handling
     try {
-      const forms = getFormsForRegion(region, settings)
+      const forms = await getFormsForRegion(region, settings)
 
       if (!Array.isArray(forms)) {
         logger.error('buildFormsForRegion', `Invalid forms result for region ${region}`, {

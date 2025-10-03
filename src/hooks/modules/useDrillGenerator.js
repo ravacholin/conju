@@ -218,8 +218,11 @@ export const useDrillGenerator = () => {
             setLastGeneratedItem(mixedFallbackItem)
             return mixedFallbackItem
           }
-          // If even mixed fallback failed, abort
-          return null
+          // If even mixed fallback failed, use emergency fallback
+          console.log('🆘 useDrillGenerator: Mixed fallback failed, using emergency fallback')
+          const emergencyItem = await createEmergencyFallbackItem(settings)
+          setLastGeneratedItem(emergencyItem)
+          return emergencyItem
         }
       }
 
@@ -344,8 +347,16 @@ export const useDrillGenerator = () => {
           // Last resort: mixed practice fallback
           logger.warn('generateNextItem', 'All fallbacks failed, using mixed practice fallback')
           const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
-          setLastGeneratedItem(mixedFallbackItem)
-          return mixedFallbackItem
+          if (mixedFallbackItem) {
+            setLastGeneratedItem(mixedFallbackItem)
+            return mixedFallbackItem
+          } else {
+            // Even mixed fallback failed - use emergency
+            console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
+            const emergencyItem = await createEmergencyFallbackItem(settings)
+            setLastGeneratedItem(emergencyItem)
+            return emergencyItem
+          }
         }
       }
 
@@ -375,7 +386,12 @@ export const useDrillGenerator = () => {
         setLastGeneratedItem(mixedFallbackItem)
         return mixedFallbackItem
       }
-      return null
+
+      // NEVER return null - use emergency fallback as absolute last resort
+      console.log('🆘 useDrillGenerator: All fallbacks failed, using emergency fallback')
+      const emergencyItem = await createEmergencyFallbackItem(settings)
+      setLastGeneratedItem(emergencyItem)
+      return emergencyItem
 
     } catch (error) {
       console.error('💥 CRITICAL ERROR in useDrillGenerator:', error)
@@ -390,7 +406,12 @@ export const useDrillGenerator = () => {
         enableChunks: settings.enableChunks
       })
       logger.error('generateNextItem', 'Error during item generation', error)
-      return null
+
+      // NEVER return null - always provide an emergency fallback
+      console.log('🆘 useDrillGenerator: Creating emergency fallback after critical error')
+      const emergencyItem = await createEmergencyFallbackItem(settings)
+      setLastGeneratedItem(emergencyItem)
+      return emergencyItem
     } finally {
       setIsGenerating(false)
     }
@@ -483,5 +504,145 @@ export const useDrillGenerator = () => {
     getGenerationStats,
     isGenerating,
     lastGeneratedItem
+  }
+}
+
+/**
+ * Creates an emergency fallback drill item when all else fails
+ * This ensures the generator NEVER returns null
+ * @param {Object} settings - User settings for context
+ * @returns {Object} A valid drill item that always works
+ */
+async function createEmergencyFallbackItem(settings) {
+  console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense)
+
+  try {
+    // STEP 1: Try to get forms directly from database, bypassing all caching
+    const { getAllVerbs } = await import('../../lib/core/verbDataService.js')
+    const allVerbs = await getAllVerbs()
+
+    console.log('📚 Direct database access: got', allVerbs.length, 'verbs')
+
+    // STEP 2: Extract ALL forms from all verbs that match the requested mood/tense
+    const targetMood = settings.specificMood || 'indicative'
+    const targetTense = settings.specificTense || 'pres'
+
+    console.log('🎯 Looking for forms with mood:', targetMood, 'tense:', targetTense)
+
+    const matchingForms = []
+
+    for (const verb of allVerbs) {
+      if (!verb.paradigms) continue
+
+      for (const paradigm of verb.paradigms) {
+        if (!paradigm.forms) continue
+
+        for (const form of paradigm.forms) {
+          // EXACT MATCH for requested mood and tense
+          if (form.mood === targetMood && form.tense === targetTense && form.value) {
+            matchingForms.push({
+              lemma: verb.lemma,
+              mood: form.mood,
+              tense: form.tense,
+              person: form.person,
+              value: form.value,
+              type: verb.type || 'regular'
+            })
+          }
+        }
+      }
+    }
+
+    console.log('✅ Found', matchingForms.length, 'REAL forms for', targetMood, targetTense)
+
+    // STEP 3: If we found real forms, use one randomly
+    if (matchingForms.length > 0) {
+      const selectedForm = matchingForms[Math.floor(Math.random() * matchingForms.length)]
+
+      console.log('🎉 Using REAL form:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, selectedForm.value)
+
+      const realItem = {
+        id: `real_fallback_${Date.now()}`,
+        lemma: selectedForm.lemma,
+        mood: selectedForm.mood,
+        tense: selectedForm.tense,
+        person: selectedForm.person,
+        value: selectedForm.value,
+        type: selectedForm.type,
+        isEmergencyFallback: false, // This is NOT emergency, it's REAL
+        prompt: `Conjugar ${selectedForm.lemma} en ${selectedForm.person}`,
+        answer: selectedForm.value,
+        selectionMethod: 'direct_database_fallback'
+      }
+
+      return realItem
+    }
+
+    // STEP 4: If no exact match, try relaxing tense but keeping mood
+    if (targetTense !== 'pres') {
+      console.log('⚠️ No exact match found, trying', targetMood, 'presente as fallback')
+
+      const moodForms = []
+      for (const verb of allVerbs) {
+        if (!verb.paradigms) continue
+
+        for (const paradigm of verb.paradigms) {
+          if (!paradigm.forms) continue
+
+          for (const form of paradigm.forms) {
+            if (form.mood === targetMood && form.tense === 'pres' && form.value) {
+              moodForms.push({
+                lemma: verb.lemma,
+                mood: form.mood,
+                tense: form.tense,
+                person: form.person,
+                value: form.value,
+                type: verb.type || 'regular'
+              })
+            }
+          }
+        }
+      }
+
+      if (moodForms.length > 0) {
+        const selectedForm = moodForms[Math.floor(Math.random() * moodForms.length)]
+
+        console.log('🔄 Using mood fallback:', selectedForm.lemma, selectedForm.mood, selectedForm.tense)
+
+        return {
+          id: `mood_fallback_${Date.now()}`,
+          lemma: selectedForm.lemma,
+          mood: selectedForm.mood,
+          tense: selectedForm.tense,
+          person: selectedForm.person,
+          value: selectedForm.value,
+          type: selectedForm.type,
+          isEmergencyFallback: false,
+          prompt: `Conjugar ${selectedForm.lemma} en ${selectedForm.person}`,
+          answer: selectedForm.value,
+          selectionMethod: 'mood_fallback'
+        }
+      }
+    }
+
+  } catch (error) {
+    console.error('❌ Error in real fallback system:', error)
+  }
+
+  // STEP 5: Only if everything fails, show clear error message
+  console.error(`💥 CRITICAL: No forms found for ${targetMood}/${targetTense}. Database may be corrupted.`)
+
+  return {
+    id: `critical_error_${Date.now()}`,
+    lemma: 'ERROR',
+    mood: 'ERROR',
+    tense: 'ERROR',
+    person: 'ERROR',
+    value: `No ${targetTense} forms available`,
+    type: 'error',
+    isEmergencyFallback: true,
+    prompt: `ERROR: No ${targetMood} ${targetTense} forms found`,
+    answer: 'ERROR',
+    selectionMethod: 'critical_error'
   }
 }

@@ -157,6 +157,7 @@ export function useDrillMode() {
 
   /**
    * Generate normal (non-session) item - extracted for reuse
+   * Enhanced with timeout and defensive validation
    */
   const generateNormalItem = async (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood) => {
     logger.info('generateNormalItem', 'Starting normal item generation', {
@@ -170,34 +171,61 @@ export function useDrillMode() {
       dialect: { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros }
     })
 
-    const newItem = await generateNextItemInternal(
-      itemToExclude,
-      getAvailableMoodsForLevel,
-      getAvailableTensesForLevelAndMood,
-      history
-    )
+    let newItem = null
 
-    if (newItem) {
-      const validation = validateItem(newItem)
-      if (!validation.valid) {
-        logger.warn('generateNormalItem', 'Generated item failed validation', validation)
-      }
+    try {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Item generation timeout after 5 seconds')), 5000)
+      )
 
-      setCurrentItem(newItem)
+      const generationPromise = generateNextItemInternal(
+        itemToExclude,
+        getAvailableMoodsForLevel,
+        getAvailableTensesForLevelAndMood,
+        history
+      )
 
-      // Show coaching insights periodically (10% chance)
-      if (Math.random() < 0.1 && settings.level) {
-        try {
-          const insights = await getMotivationalInsights(settings.level)
-          if (insights.length > 0) {
-            logger.info('generateNormalItem', 'Coaching insight', insights[0])
-          }
-        } catch (error) {
-          logger.warn('generateNormalItem', 'Coaching insights failed', error)
+      newItem = await Promise.race([generationPromise, timeoutPromise])
+    } catch (error) {
+      logger.error('generateNormalItem', 'Generation failed or timed out', error)
+
+      // Create emergency fallback when generation fails completely
+      newItem = await createEmergencyFallbackItem(settings)
+      logger.warn('generateNormalItem', 'Using emergency fallback due to generation failure')
+    }
+
+    // DEFENSIVE VALIDATION: Ensure we always have a valid item
+    if (!newItem || typeof newItem !== 'object' || !newItem.lemma || !newItem.value) {
+      logger.error('generateNormalItem', 'Invalid item generated, using emergency fallback', newItem)
+      newItem = await createEmergencyFallbackItem(settings)
+    }
+
+    // Validate the item
+    const validation = validateItem(newItem)
+    if (!validation.valid) {
+      logger.warn('generateNormalItem', 'Generated item failed validation', validation)
+      // Continue anyway - better to have an imperfect item than no item
+    }
+
+    setCurrentItem(newItem)
+    logger.info('generateNormalItem', 'Item generation completed', {
+      lemma: newItem.lemma,
+      mood: newItem.mood,
+      tense: newItem.tense,
+      isEmergency: newItem.isEmergencyFallback
+    })
+
+    // Show coaching insights periodically (10% chance)
+    if (Math.random() < 0.1 && settings.level) {
+      try {
+        const insights = await getMotivationalInsights(settings.level)
+        if (insights.length > 0) {
+          logger.info('generateNormalItem', 'Coaching insight', insights[0])
         }
+      } catch (error) {
+        logger.warn('generateNormalItem', 'Coaching insights failed', error)
       }
-    } else {
-      logger.error('generateNormalItem', 'Failed to generate item')
     }
   }
 
@@ -480,4 +508,115 @@ export function useDrillMode() {
       return fallbackToMixedPractice(allForms, settings)
     }
   }
+}
+
+/**
+ * Creates an emergency fallback item for useDrillMode by searching for real forms
+ * This is used when the generator completely fails
+ */
+async function createEmergencyFallbackItem(settings = {}) {
+  console.log('🔍 useDrillMode: REAL FALLBACK - Looking for actual forms for:', settings.specificMood, settings.specificTense)
+
+  try {
+    // Import the main verb database
+    const { getVerbs } = await import('../data/verbsLazy.js')
+    const allVerbs = await getVerbs()
+
+    // Try to find forms matching the requested mood/tense
+    let targetForms = []
+
+    if (settings.specificMood && settings.specificTense) {
+      // Search for the specific mood/tense combination
+      for (const verb of allVerbs) {
+        for (const paradigm of verb.paradigms || []) {
+          for (const form of paradigm.forms || []) {
+            if (form.mood === settings.specificMood && form.tense === settings.specificTense) {
+              targetForms.push({
+                ...form,
+                lemma: verb.lemma,
+                id: verb.id,
+                type: verb.type || 'regular'
+              })
+            }
+          }
+        }
+      }
+    }
+
+    // If no forms found for specific mood/tense, try just mood
+    if (targetForms.length === 0 && settings.specificMood) {
+      for (const verb of allVerbs) {
+        for (const paradigm of verb.paradigms || []) {
+          for (const form of paradigm.forms || []) {
+            if (form.mood === settings.specificMood) {
+              targetForms.push({
+                ...form,
+                lemma: verb.lemma,
+                id: verb.id,
+                type: verb.type || 'regular'
+              })
+            }
+          }
+        }
+      }
+    }
+
+    // If still no forms, get any available form
+    if (targetForms.length === 0) {
+      for (const verb of allVerbs.slice(0, 5)) { // Just check first 5 verbs
+        for (const paradigm of verb.paradigms || []) {
+          for (const form of paradigm.forms || []) {
+            if (form.value && form.mood && form.tense) {
+              targetForms.push({
+                ...form,
+                lemma: verb.lemma,
+                id: verb.id,
+                type: verb.type || 'regular'
+              })
+            }
+          }
+        }
+      }
+    }
+
+    if (targetForms.length > 0) {
+      const selectedForm = targetForms[Math.floor(Math.random() * targetForms.length)]
+      const emergencyItem = {
+        id: `drill_emergency_${Date.now()}`,
+        lemma: selectedForm.lemma,
+        mood: selectedForm.mood,
+        tense: selectedForm.tense,
+        person: selectedForm.person,
+        value: selectedForm.value,
+        type: selectedForm.type,
+        isEmergencyFallback: false, // This is NOT emergency, it's REAL
+        prompt: `Conjugar ${selectedForm.lemma} en ${selectedForm.mood} ${selectedForm.tense}`,
+        answer: selectedForm.value,
+        selectionMethod: 'drill_real_fallback'
+      }
+
+      console.log('✅ useDrillMode: REAL fallback found:', selectedForm.lemma, selectedForm.mood, selectedForm.tense)
+      return emergencyItem
+    }
+  } catch (error) {
+    console.error('❌ useDrillMode: Error searching for real forms:', error)
+  }
+
+  // Only if absolutely everything fails, use minimal fallback
+  const emergencyItem = {
+    id: `drill_emergency_${Date.now()}`,
+    lemma: 'ser',
+    mood: 'indicative',
+    tense: 'pres',
+    person: '1s',
+    value: 'soy',
+    type: 'irregular',
+    isEmergencyFallback: true,
+    prompt: 'Conjugar ser en primera persona singular',
+    answer: 'soy',
+    selectionMethod: 'drill_absolute_fallback'
+  }
+
+  console.log('🆘 useDrillMode: Absolute fallback used')
+  return emergencyItem
 }

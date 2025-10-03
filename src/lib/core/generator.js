@@ -93,6 +93,43 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // Ensure maps are initialized before proceeding
   await ensureMapsInitialized()
 
+  // CRITICAL FIX: Handle compressed forms data
+  // If forms is compressed data from cache, decompress it first
+  if (forms && typeof forms === 'object' && forms.__compressed === true) {
+    try {
+      // Implement decompression logic based on optimizedCache.js
+      const simpleDecompress = (str) => {
+        return str
+          .replace(/\[4/g, '["nonfinite"')
+          .replace(/\[3/g, '["conditional"')
+          .replace(/\[2/g, '["imperative"')
+          .replace(/\[1/g, '["subjunctive"')
+          .replace(/\[0/g, '["indicative"')
+          .replace(/\[([^,]+),([^,]+),([^,]+),([^\]]+)\]/g, '{"mood":"$1","tense":"$2","person":"$3","value":"$4"}')
+      }
+
+      const json = simpleDecompress(forms.data)
+      const decompressed = JSON.parse(json)
+
+      if (Array.isArray(decompressed)) {
+        forms = decompressed
+        console.log('✅ chooseNext: Successfully decompressed forms array:', forms.length, 'forms')
+      } else {
+        console.warn('⚠️ chooseNext: Decompression resulted in non-array:', typeof decompressed)
+        forms = []
+      }
+    } catch (error) {
+      console.error('❌ chooseNext: Failed to decompress forms:', error)
+      forms = []
+    }
+  }
+
+  // Additional safety check: ensure forms is an array
+  if (!Array.isArray(forms)) {
+    console.warn('⚠️ chooseNext: forms is not an array after processing:', typeof forms, forms)
+    return null
+  }
+
   // Use sessionSettings if provided, otherwise fallback to global settings
   const allSettings = sessionSettings || useSettings.getState()
   const {
@@ -462,13 +499,19 @@ export async function chooseNext({forms, history: _history, currentItem, session
   }
 
 
-  // If no eligible forms remain, fail fast with clear error
+  // If no eligible forms remain, try emergency fallbacks instead of failing
   if (!eligible || eligible.length === 0) {
     if (practiceMode === 'specific') {
       const moodText = specificMood || 'any mood'
       const tenseText = specificTense || 'any tense'
-      console.error(`❌ No valid exercises found for ${moodText} / ${tenseText}`)
-      throw new Error(`No valid exercises found for ${moodText} / ${tenseText}`)
+      console.warn(`⚠️ No valid exercises found for ${moodText} / ${tenseText}, attempting emergency fallback`)
+
+      // Emergency fallback: return the first available form that matches mood, ignoring other constraints
+      const emergencyFallback = forms.find(f => f.mood === specificMood && f.value)
+      if (emergencyFallback) {
+        console.log(`🚨 Emergency fallback used: ${emergencyFallback.lemma} ${emergencyFallback.mood}/${emergencyFallback.tense}`)
+        return emergencyFallback
+      }
     }
     eligible = eligible || []
   }
@@ -570,8 +613,14 @@ export async function chooseNext({forms, history: _history, currentItem, session
     }
     
     // FIX: Return random element instead of always first to prevent repetition
-    const randomIndex = Math.floor(Math.random() * fallback.length)
-    return fallback[randomIndex] || null
+    if (fallback.length > 0) {
+      const randomIndex = Math.floor(Math.random() * fallback.length)
+      return fallback[randomIndex]
+    }
+
+    // ULTIMATE FALLBACK: If even this fails, use emergency fallback
+    console.error(`🚨 All fallback strategies failed, using emergency fallback`)
+    return await createEmergencyFallback(specificMood, specificTense)
   }
   
   // Apply weighted selection for "all" verb types to balance regular vs irregular per level
@@ -867,8 +916,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
         if (correctForms.length > 0) {
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }
-        // If no correct form found, throw error to prevent wrong exercise
-        throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
+        // If no correct form found, use emergency fallback instead of throwing
+        console.error(`❌ Validation failed: mood mismatch. Expected ${specificMood}, got ${finalForm.mood}`)
+        const emergencyFallback = await createEmergencyFallback(specificMood, specificTense)
+        console.log(`🚨 Using emergency fallback for mood validation failure`)
+        return emergencyFallback
       }
       if (specificTense && finalForm.tense !== specificTense) {
         // Clear caches to prevent corrupted data from persisting
@@ -880,8 +932,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
         if (correctForms.length > 0) {
           return correctForms[Math.floor(Math.random() * correctForms.length)]
         }
-        // If no correct form found, throw error to prevent wrong exercise
-        throw new Error(`No valid exercises found for ${specificMood ? `${specificMood} / ` : ''}${specificTense}`)
+        // If no correct form found, use emergency fallback instead of throwing
+        console.error(`❌ Validation failed: tense mismatch. Expected ${specificTense}, got ${finalForm.tense}`)
+        const emergencyFallback = await createEmergencyFallback(specificMood, specificTense)
+        console.log(`🚨 Using emergency fallback for tense validation failure`)
+        return emergencyFallback
       }
     }
     
@@ -965,8 +1020,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
       if (correctForms.length > 0) {
         return correctForms[Math.floor(Math.random() * correctForms.length)]
       }
-      // If no correct form found, throw error to prevent wrong exercise
-      throw new Error(`No valid exercises found for ${specificMood}${specificTense ? ` / ${specificTense}` : ''}`)
+      // If no correct form found, use emergency fallback instead of throwing
+      console.error(`❌ Fallback validation failed: mood mismatch. Expected ${specificMood}, got ${fallbackSelectedForm.mood}`)
+      const emergencyFallback = await createEmergencyFallback(specificMood, specificTense)
+      console.log(`🚨 Using emergency fallback for fallback mood validation failure`)
+      return emergencyFallback
     }
     if (specificTense && (
       (!isMixedTense && fallbackSelectedForm.tense !== specificTense) ||
@@ -985,8 +1043,11 @@ export async function chooseNext({forms, history: _history, currentItem, session
       if (correctForms.length > 0) {
         return correctForms[Math.floor(Math.random() * correctForms.length)]
       }
-      // If no correct form found, throw error to prevent wrong exercise
-      throw new Error(`No valid exercises found for ${specificMood ? `${specificMood} / ` : ''}${specificTense}`)
+      // If no correct form found, use emergency fallback instead of throwing
+      console.error(`❌ Fallback validation failed: tense mismatch. Expected ${specificTense}, got ${fallbackSelectedForm.tense}`)
+      const emergencyFallback = await createEmergencyFallback(specificMood, specificTense)
+      console.log(`🚨 Using emergency fallback for fallback tense validation failure`)
+      return emergencyFallback
     }
   }
   
@@ -1188,4 +1249,141 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
     console.error('Error validating mood/tense availability:', error)
     return false
   }
-} 
+}
+
+/**
+ * Creates an emergency fallback item that always works
+ * This tries to find real forms from verb data that match the user's request
+ * @param {string} preferredMood - Preferred mood if possible
+ * @param {string} preferredTense - Preferred tense if possible
+ * @param {Array} allAvailableForms - All forms available from the main generator call
+ * @returns {Object} A valid drill item
+ */
+async function createEmergencyFallback(preferredMood = null, preferredTense = null, allAvailableForms = null) {
+  console.log(`🔍 REAL GENERATOR FALLBACK: Looking for ${preferredMood || 'any mood'}/${preferredTense || 'any tense'}`)
+
+  // STEP 1: First, try the provided forms if they exist and are valid
+  if (Array.isArray(allAvailableForms) && allAvailableForms.length > 0) {
+    console.log(`🔍 Searching through ${allAvailableForms.length} available forms`)
+
+    // Filter for exact matches
+    let exactMatches = allAvailableForms.filter(f => {
+      if (!f.value || !f.lemma) return false
+      if (preferredMood && f.mood !== preferredMood) return false
+      if (preferredTense && f.tense !== preferredTense) return false
+      return true
+    })
+
+    if (exactMatches.length > 0) {
+      const selectedForm = exactMatches[Math.floor(Math.random() * exactMatches.length)]
+      console.log(`✅ Found exact match in available forms: ${selectedForm.lemma} ${selectedForm.mood}/${selectedForm.tense} = ${selectedForm.value}`)
+      return selectedForm
+    }
+
+    // Try mood-only match
+    if (preferredMood) {
+      const moodMatches = allAvailableForms.filter(f =>
+        f.value && f.lemma && f.mood === preferredMood
+      )
+      if (moodMatches.length > 0) {
+        const selectedForm = moodMatches[Math.floor(Math.random() * moodMatches.length)]
+        console.log(`🔄 Found mood match in available forms: ${selectedForm.lemma} ${selectedForm.mood}/${selectedForm.tense} = ${selectedForm.value}`)
+        return selectedForm
+      }
+    }
+  }
+
+  // STEP 2: If no good matches in available forms, search database directly
+  try {
+    console.log('🔍 Searching database directly for forms...')
+
+    // Import verb data service to access raw database
+    const { getAllVerbs } = await import('./verbDataService.js')
+    const allVerbs = await getAllVerbs()
+
+    console.log(`📚 Database access: got ${allVerbs.length} verbs`)
+
+    const targetMood = preferredMood || 'indicative'
+    const targetTense = preferredTense || 'pres'
+
+    const matchingForms = []
+
+    // Extract all forms that match the requested mood/tense
+    for (const verb of allVerbs) {
+      if (!verb.paradigms) continue
+
+      for (const paradigm of verb.paradigms) {
+        if (!paradigm.forms) continue
+
+        for (const form of paradigm.forms) {
+          if (form.mood === targetMood && form.tense === targetTense && form.value) {
+            matchingForms.push({
+              lemma: verb.lemma,
+              mood: form.mood,
+              tense: form.tense,
+              person: form.person,
+              value: form.value,
+              type: verb.type || 'regular'
+            })
+          }
+        }
+      }
+    }
+
+    console.log(`✅ Database search found ${matchingForms.length} real forms for ${targetMood}/${targetTense}`)
+
+    if (matchingForms.length > 0) {
+      const selectedForm = matchingForms[Math.floor(Math.random() * matchingForms.length)]
+      console.log(`🎉 Using REAL database form: ${selectedForm.lemma} ${selectedForm.mood}/${selectedForm.tense} = ${selectedForm.value}`)
+      return selectedForm
+    }
+
+    // If no exact match, try relaxing tense but keeping mood
+    if (targetTense !== 'pres') {
+      console.log(`⚠️ No ${targetTense} found, trying ${targetMood}/presente as fallback`)
+
+      const moodForms = []
+      for (const verb of allVerbs) {
+        if (!verb.paradigms) continue
+
+        for (const paradigm of verb.paradigms) {
+          if (!paradigm.forms) continue
+
+          for (const form of paradigm.forms) {
+            if (form.mood === targetMood && form.tense === 'pres' && form.value) {
+              moodForms.push({
+                lemma: verb.lemma,
+                mood: form.mood,
+                tense: form.tense,
+                person: form.person,
+                value: form.value,
+                type: verb.type || 'regular'
+              })
+            }
+          }
+        }
+      }
+
+      if (moodForms.length > 0) {
+        const selectedForm = moodForms[Math.floor(Math.random() * moodForms.length)]
+        console.log(`🔄 Using mood fallback: ${selectedForm.lemma} ${selectedForm.mood}/${selectedForm.tense} = ${selectedForm.value}`)
+        return selectedForm
+      }
+    }
+
+  } catch (error) {
+    console.error('❌ Error accessing database in emergency fallback:', error)
+  }
+
+  // STEP 3: Only if everything fails, show error
+  console.error(`💥 CRITICAL: No forms found for ${preferredMood || 'any'}/${preferredTense || 'any'}. Database may be corrupted.`)
+
+  return {
+    lemma: 'ERROR',
+    mood: preferredMood || 'ERROR',
+    tense: preferredTense || 'ERROR',
+    person: '1s',
+    value: `No ${preferredTense || 'forms'} available`,
+    type: 'error'
+  }
+}

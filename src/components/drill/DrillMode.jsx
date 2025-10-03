@@ -91,7 +91,10 @@ function DrillMode({
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
+  const [loadingError, setLoadingError] = useState(null)
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
   const pronunciationPanelRef = React.useRef(null)
+  const loadingTimeoutRef = React.useRef(null)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
@@ -154,13 +157,48 @@ function DrillMode({
     setShowQuickSwitch(false)
   }
 
-  // Safety net: if no item is present shortly after mount or filter changes, trigger regeneration
+  // Enhanced safety net: if no item is present, trigger regeneration with escalating timeouts
   useEffect(() => {
     if (!currentItem && typeof onRegenerateItem === 'function') {
-      const id = setTimeout(() => {
-        try { onRegenerateItem() } catch { /* Generation error ignored */ }
+      // Clear any previous error states
+      setLoadingError(null)
+      setLoadingTimeout(false)
+
+      // First attempt after 300ms (quick retry)
+      const quickRetryId = setTimeout(() => {
+        try {
+          console.log('🔄 DrillMode: Quick retry for missing currentItem')
+          onRegenerateItem()
+        } catch (error) {
+          console.error('🚨 DrillMode: Quick retry failed', error)
+        }
       }, 300)
-      return () => clearTimeout(id)
+
+      // Timeout warning after 8 seconds
+      const timeoutWarningId = setTimeout(() => {
+        if (!currentItem) {
+          console.warn('⏰ DrillMode: Item generation taking longer than expected')
+          setLoadingTimeout(true)
+        }
+      }, 8000)
+
+      // Final timeout and error after 15 seconds
+      const finalTimeoutId = setTimeout(() => {
+        if (!currentItem) {
+          console.error('💥 DrillMode: Item generation failed - timeout after 15 seconds')
+          setLoadingError('La generación de ejercicios está tardando más de lo esperado. Esto puede deberse a una configuración muy restrictiva.')
+        }
+      }, 15000)
+
+      return () => {
+        clearTimeout(quickRetryId)
+        clearTimeout(timeoutWarningId)
+        clearTimeout(finalTimeoutId)
+      }
+    } else {
+      // Clear error states when we have an item
+      setLoadingError(null)
+      setLoadingTimeout(false)
     }
   }, [currentItem, onRegenerateItem])
 
@@ -322,14 +360,59 @@ function DrillMode({
 
       <main className="main-content">
         {currentItem ? (
-          <Drill 
+          <Drill
             currentItem={currentItem}
             onResult={onDrillResult}
             onContinue={onContinue}
             showAccentKeys={showAccentKeys}
           />
+        ) : loadingError ? (
+          <div className="loading-error">
+            <div className="error-message">
+              <h3>⚠️ Error de generación</h3>
+              <p>{loadingError}</p>
+              <div className="error-actions">
+                <button
+                  onClick={() => {
+                    setLoadingError(null)
+                    setLoadingTimeout(false)
+                    onRegenerateItem()
+                  }}
+                  className="retry-button"
+                >
+                  🔄 Intentar de nuevo
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="reload-button"
+                >
+                  🔄 Recargar página
+                </button>
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className="loading">Cargando próxima conjugación...</div>
+          <div className="loading">
+            {loadingTimeout ? (
+              <div>
+                <div>⏳ Generando ejercicio...</div>
+                <div style={{ fontSize: '0.9em', marginTop: '10px', opacity: 0.7 }}>
+                  Esto está tardando más de lo esperado. Si el problema persiste, intenta cambiar la configuración.
+                </div>
+                <button
+                  onClick={() => {
+                    console.log('🔄 DrillMode: Manual retry triggered by user')
+                    onRegenerateItem()
+                  }}
+                  style={{ marginTop: '15px', padding: '8px 16px' }}
+                >
+                  Forzar regeneración
+                </button>
+              </div>
+            ) : (
+              'Cargando próxima conjugación...'
+            )}
+          </div>
         )}
       </main>
     </div>
