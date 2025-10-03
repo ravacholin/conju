@@ -20,14 +20,17 @@ function PlacementTest({ onComplete, onCancel }) {
     }
   }, [assessment])
 
-  const handleStartTest = async (questionCount = 15) => {
+  const handleStartTest = async () => {
     try {
-      const test = await assessment.startPlacementTest(questionCount)
+      console.log('🚀 Starting placement test...')
+      const test = await assessment.startTest()
+      console.log('✅ Test started:', test)
       setCurrentTest(test)
       setCurrentQuestion(test.currentQuestion)
       setTestStarted(true)
     } catch (error) {
-      console.error('Failed to start placement test:', error)
+      console.error('❌ Failed to start placement test:', error)
+      alert('Error al iniciar el test. Por favor, recarga la página e intenta de nuevo.')
     }
   }
 
@@ -74,6 +77,41 @@ function PlacementTest({ onComplete, onCancel }) {
     }
   }
 
+  const handleKeyDown = (event, option) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleOptionSelect(option)
+    }
+  }
+
+  const handleKeyNavigation = (event) => {
+    if (isSubmitting || showExplanation) return
+
+    const options = currentQuestion?.options || []
+    const currentIndex = options.indexOf(selectedOption)
+
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault()
+        const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0
+        setSelectedOption(options[nextIndex])
+        break
+      }
+      case 'ArrowUp': {
+        event.preventDefault()
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1
+        setSelectedOption(options[prevIndex])
+        break
+      }
+      case 'Enter':
+        event.preventDefault()
+        if (selectedOption) {
+          handleSubmitAnswer()
+        }
+        break
+    }
+  }
+
   if (!testStarted) {
     return (
       <div className="placement-test-intro">
@@ -87,31 +125,22 @@ function PlacementTest({ onComplete, onCancel }) {
         <div className="test-options">
           <ClickableCard
             className="test-option"
-            onClick={() => handleStartTest(12)}
+            onClick={() => handleStartTest()}
             title="Iniciar test de nivel"
           >
-            <div className="option-title">Test de Nivel</div>
-            <div className="option-description">8-12 preguntas • Adaptativo • ~5 minutos</div>
-            <div className="option-features">
-              <div className="feature">Progresión automática por niveles</div>
-              <div className="feature">Preguntas curadas profesionalmente</div>
-              <div className="feature">Resultado preciso y rápido</div>
-            </div>
+            <div className="option-title">🧠 Iniciar Test de Nivel</div>
+            <div className="option-description">Determina tu nivel automáticamente</div>
           </ClickableCard>
         </div>
 
         <div className="test-info">
           <div className="info-item">
-            <div className="info-label">Evalúa:</div>
-            <div className="info-text">Presente, pretéritos, subjuntivo, condicional, tiempos compuestos</div>
+            <div className="info-label">Duración:</div>
+            <div className="info-text">3-12 preguntas • ~5 minutos</div>
           </div>
           <div className="info-item">
             <div className="info-label">Niveles:</div>
-            <div className="info-text">A1 (básico) hasta C1 (avanzado) según estándar CEFR</div>
-          </div>
-          <div className="info-item">
-            <div className="info-label">Metodología:</div>
-            <div className="info-text">Adaptativo simple • 50 preguntas curadas • Sin repeticiones</div>
+            <div className="info-text">A1 (básico) hasta C1 (avanzado)</div>
           </div>
         </div>
 
@@ -140,7 +169,7 @@ function PlacementTest({ onComplete, onCancel }) {
   const currentEstimate = assessment.getCurrentEstimate()
 
   return (
-    <div className="placement-test-active">
+    <div className="placement-test-active" onKeyDown={handleKeyNavigation} tabIndex="0">
       <div className="test-progress">
         <div className="progress-info">
           <div className="progress-bar">
@@ -150,7 +179,7 @@ function PlacementTest({ onComplete, onCancel }) {
             />
           </div>
           <div className="progress-text">
-            Pregunta {currentTest?.currentIndex + 1} de máx. {currentTest?.maxQuestions}
+            Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 12}
           </div>
         </div>
 
@@ -181,8 +210,8 @@ function PlacementTest({ onComplete, onCancel }) {
             <div className="question-level">{currentQuestion.targetLevel}</div>
             <div className="question-difficulty">
               <span className="difficulty-label">Dificultad:</span>
-              {'●'.repeat(currentQuestion.difficulty)}
-              {'○'.repeat(6 - currentQuestion.difficulty)}
+              {'●'.repeat(currentQuestion.difficulty || 1)}
+              {'○'.repeat(6 - (currentQuestion.difficulty || 1))}
             </div>
           </div>
           {currentQuestion.irregularityInfo && (
@@ -195,7 +224,7 @@ function PlacementTest({ onComplete, onCancel }) {
         <div className="question-content">
           <div className="question-prompt">{currentQuestion.prompt}</div>
 
-          <div className="answer-options">
+          <div className="answer-options" role="radiogroup" aria-label="Opciones de respuesta">
             {currentQuestion.options?.map((option, index) => (
               <ClickableCard
                 key={index}
@@ -205,10 +234,15 @@ function PlacementTest({ onComplete, onCancel }) {
                   showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
                 }`}
                 onClick={() => handleOptionSelect(option)}
+                onKeyDown={(e) => handleKeyDown(e, option)}
                 title={`Seleccionar opción: ${option}`}
                 disabled={isSubmitting || showExplanation}
+                tabIndex={0}
+                role="radio"
+                aria-checked={selectedOption === option}
+                aria-label={`Opción ${String.fromCharCode(65 + index)}: ${option}`}
               >
-                <span className="option-letter">{String.fromCharCode(65 + index)}.</span>
+                <span className="option-letter" aria-hidden="true">{String.fromCharCode(65 + index)}.</span>
                 <span className="option-text">{option}</span>
               </ClickableCard>
             ))}

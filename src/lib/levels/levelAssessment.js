@@ -379,11 +379,12 @@ class SimpleLevelTest {
     this.results = []
     this.isActive = false
     this.questionsUsed = new Set()
-    this.maxQuestionsPerLevel = 2
+    this.maxQuestionsPerLevel = 3
     this.levelProgression = ['A1', 'A2', 'B1', 'B2', 'C1']
     this.currentLevelIndex = 0
     this.questionsInCurrentLevel = 0
     this.consecutiveFailures = 0
+    this.maxTotalQuestions = 12
   }
 
   startTest() {
@@ -401,6 +402,8 @@ class SimpleLevelTest {
     return {
       active: true,
       currentQuestion: firstQuestion,
+      currentIndex: this.currentQuestionIndex - 1,
+      maxQuestions: this.maxTotalQuestions,
       progress: this.getProgress(),
       currentEstimate: this.getCurrentEstimate()
     }
@@ -409,12 +412,25 @@ class SimpleLevelTest {
   getNextQuestion() {
     if (!this.isActive) return null
 
+    // Safety check: prevent infinite loops
+    if (this.currentQuestionIndex >= this.maxTotalQuestions) {
+      console.log('🛑 Reached maximum questions, completing test')
+      return null
+    }
+
     const levelQuestions = QUESTION_POOL[this.currentLevel]
+    if (!levelQuestions || levelQuestions.length === 0) {
+      console.log('🛑 No questions available for level', this.currentLevel)
+      return null
+    }
+
     const availableQuestions = levelQuestions.filter(q => !this.questionsUsed.has(q.id))
 
     if (availableQuestions.length === 0) {
       // No more questions in this level, move to next
-      return this.moveToNextLevel()
+      console.log('📚 No more questions in level', this.currentLevel, 'moving to next')
+      const nextResult = this.moveToNextLevel()
+      return nextResult?.nextQuestion || null
     }
 
     // Select random question from available ones
@@ -431,7 +447,8 @@ class SimpleLevelTest {
       expectedAnswer: question.correct,
       explanation: question.explanation,
       targetLevel: this.currentLevel,
-      questionNumber: this.currentQuestionIndex
+      questionNumber: this.currentQuestionIndex,
+      difficulty: Math.min(this.currentLevelIndex + 1, 5)
     }
   }
 
@@ -462,15 +479,16 @@ class SimpleLevelTest {
       }
     } else {
       this.consecutiveFailures++
-      // If failed twice consecutively or failed first question of a level, determine level
-      if (this.consecutiveFailures >= 2 ||
-          (this.questionsInCurrentLevel === 1 && this.currentLevelIndex > 0)) {
+      // More forgiving failure logic - complete test only after 3 consecutive failures
+      // or after failing 2 questions in the first level (A1)
+      if (this.consecutiveFailures >= 3 ||
+          (this.currentLevel === 'A1' && this.questionsInCurrentLevel >= 2 && this.consecutiveFailures >= 2)) {
         return this.completeTest()
       }
     }
 
-    // Check if we've reached maximum questions (12)
-    if (this.currentQuestionIndex >= 12) {
+    // Check if we've reached maximum questions
+    if (this.currentQuestionIndex >= this.maxTotalQuestions) {
       return this.completeTest()
     }
 
@@ -482,6 +500,8 @@ class SimpleLevelTest {
     return {
       completed: false,
       nextQuestion,
+      currentIndex: this.currentQuestionIndex - 1,
+      maxQuestions: this.maxTotalQuestions,
       progress: this.getProgress(),
       currentEstimate: this.getCurrentEstimate(),
       feedback: {
@@ -494,6 +514,13 @@ class SimpleLevelTest {
   moveToNextLevel() {
     if (this.currentLevelIndex >= this.levelProgression.length - 1) {
       // Reached highest level
+      console.log('🏆 Reached highest level, completing test')
+      return this.completeTest()
+    }
+
+    // Safety check: prevent infinite loops
+    if (this.currentQuestionIndex >= this.maxTotalQuestions) {
+      console.log('🛑 Max questions reached during level move, completing test')
       return this.completeTest()
     }
 
@@ -502,14 +529,19 @@ class SimpleLevelTest {
     this.questionsInCurrentLevel = 0
     this.consecutiveFailures = 0
 
+    console.log('📈 Moved to level', this.currentLevel, 'question', this.currentQuestionIndex + 1)
+
     const nextQuestion = this.getNextQuestion()
     if (!nextQuestion) {
+      console.log('🛑 No next question available, completing test')
       return this.completeTest()
     }
 
     return {
       completed: false,
       nextQuestion,
+      currentIndex: this.currentQuestionIndex - 1,
+      maxQuestions: this.maxTotalQuestions,
       progress: this.getProgress(),
       currentEstimate: this.getCurrentEstimate()
     }
@@ -573,7 +605,7 @@ class SimpleLevelTest {
   }
 
   getProgress() {
-    return Math.min((this.currentQuestionIndex / 12) * 100, 100)
+    return Math.min((this.currentQuestionIndex / this.maxTotalQuestions) * 100, 100)
   }
 
   getCurrentEstimate() {
