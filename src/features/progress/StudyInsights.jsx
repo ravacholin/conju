@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 
 /**
  * Study Insights - Minimal, collapsible analytics for users who want detail
@@ -56,17 +57,7 @@ export default function StudyInsights({ userStats, heatMapData }) {
 
   const getMoodTenseLabel = (combo) => {
     const [mood, tense] = combo.split('-')
-    const labels = {
-      'indicative-pres': 'Presente',
-      'indicative-pretIndef': 'Pretérito Indefinido',
-      'indicative-impf': 'Pretérito Imperfecto',
-      'indicative-fut': 'Futuro Simple',
-      'subjunctive-subjPres': 'Presente de Subjuntivo',
-      'subjunctive-subjImpf': 'Imperfecto de Subjuntivo',
-      'conditional-cond': 'Condicional',
-      'imperative-imper': 'Imperativo'
-    }
-    return labels[combo] || combo
+    return formatMoodTense(mood, tense)
   }
 
   if (insights.totalSessions === 0) {

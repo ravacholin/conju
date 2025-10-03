@@ -131,6 +131,24 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     }
   }
 
+  // Handle SRS click for specific mood/tense combination
+  const handleSRSClick = (mood, tense, event) => {
+    event.stopPropagation() // Prevent cell click
+    if (onNavigateToDrill) {
+      // Set SRS review mode with specific filter
+      settings.set({
+        practiceMode: 'review',
+        reviewSessionType: 'specific',
+        reviewSessionFilter: {
+          mood: mood,
+          tense: tense,
+          urgency: 'all'
+        }
+      })
+      onNavigateToDrill()
+    }
+  }
+
   // Handle SRS practice
   const handleSRSPractice = () => {
     if (onNavigateToDrill) {
@@ -220,7 +238,11 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
                     >
                       <div className="cell-content">
                         {cellData.srsStatus === 'due' && (
-                          <div className="srs-indicator">
+                          <div
+                            className="srs-indicator clickable"
+                            onClick={(e) => handleSRSClick(mood, tense.key, e)}
+                            title={`Practicar SRS: ${config.label} - ${tense.label}`}
+                          >
                             <img src="/icons/timer.png" alt="SRS" className="srs-badge" />
                           </div>
                         )}

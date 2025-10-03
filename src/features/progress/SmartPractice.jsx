@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 
 /**
  * Smart Practice Panel - Intelligent, actionable practice recommendations
@@ -10,40 +11,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
 
   // Get user-friendly labels for mood/tense combinations
   const getMoodTenseLabel = (mood, tense) => {
-    const moodLabels = {
-      'indicative': 'Indicativo',
-      'subjunctive': 'Subjuntivo',
-      'conditional': 'Condicional',
-      'imperative': 'Imperativo',
-      'nonfinite': 'Formas no personales'
-    }
-    
-    const tenseLabels = {
-      'pres': 'Presente',
-      'pretIndef': 'Pretérito Indefinido',
-      'impf': 'Pretérito Imperfecto',
-      'fut': 'Futuro Simple',
-      'pretPerf': 'Pretérito Perfecto Compuesto',
-      'plusc': 'Pretérito Pluscuamperfecto',
-      'futPerf': 'Futuro Perfecto',
-      'subjPres': 'Presente de Subjuntivo',
-      'subjImpf': 'Pretérito Imperfecto de Subjuntivo',
-      'subjPerf': 'Pretérito Perfecto de Subjuntivo',
-      'subjPlusc': 'Pretérito Pluscuamperfecto de Subjuntivo',
-      'cond': 'Condicional Simple',
-      'condPerf': 'Condicional Compuesto',
-      'imper': 'Imperativo',
-      'impAff': 'Imperativo Afirmativo',
-      'impNeg': 'Imperativo Negativo',
-      'inf': 'Infinitivo',
-      'ger': 'Gerundio',
-      'part': 'Participio'
-    }
-    
-    const moodLabel = moodLabels[mood] || mood
-    const tenseLabel = tenseLabels[tense] || tense
-    
-    return `${tenseLabel} de ${moodLabel}`
+    return formatMoodTense(mood, tense)
   }
 
   // Analyze user data to generate smart recommendations
