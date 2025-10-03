@@ -10,18 +10,40 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
 
   // Get user-friendly labels for mood/tense combinations
   const getMoodTenseLabel = (mood, tense) => {
-    const labels = {
-      'indicative-pres': 'Presente de Indicativo',
-      'indicative-pretIndef': 'Pretérito Indefinido',
-      'indicative-impf': 'Pretérito Imperfecto',
-      'indicative-fut': 'Futuro Simple',
-      'indicative-pretPerf': 'Pretérito Perfecto',
-      'subjunctive-subjPres': 'Presente de Subjuntivo',
-      'subjunctive-subjImpf': 'Imperfecto de Subjuntivo',
-      'conditional-cond': 'Condicional Simple',
-      'imperative-imper': 'Imperativo'
+    const moodLabels = {
+      'indicative': 'Indicativo',
+      'subjunctive': 'Subjuntivo',
+      'conditional': 'Condicional',
+      'imperative': 'Imperativo',
+      'nonfinite': 'Formas no personales'
     }
-    return labels[`${mood}-${tense}`] || `${mood} - ${tense}`
+    
+    const tenseLabels = {
+      'pres': 'Presente',
+      'pretIndef': 'Pretérito Indefinido',
+      'impf': 'Pretérito Imperfecto',
+      'fut': 'Futuro Simple',
+      'pretPerf': 'Pretérito Perfecto Compuesto',
+      'plusc': 'Pretérito Pluscuamperfecto',
+      'futPerf': 'Futuro Perfecto',
+      'subjPres': 'Presente de Subjuntivo',
+      'subjImpf': 'Pretérito Imperfecto de Subjuntivo',
+      'subjPerf': 'Pretérito Perfecto de Subjuntivo',
+      'subjPlusc': 'Pretérito Pluscuamperfecto de Subjuntivo',
+      'cond': 'Condicional Simple',
+      'condPerf': 'Condicional Compuesto',
+      'imper': 'Imperativo',
+      'impAff': 'Imperativo Afirmativo',
+      'impNeg': 'Imperativo Negativo',
+      'inf': 'Infinitivo',
+      'ger': 'Gerundio',
+      'part': 'Participio'
+    }
+    
+    const moodLabel = moodLabels[mood] || mood
+    const tenseLabel = tenseLabels[tense] || tense
+    
+    return `${tenseLabel} de ${moodLabel}`
   }
 
   // Analyze user data to generate smart recommendations
@@ -91,8 +113,11 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     // Find completely new areas
     const allCombos = [
       'indicative-pres', 'indicative-pretIndef', 'indicative-impf', 'indicative-fut',
-      'subjunctive-subjPres', 'subjunctive-subjImpf',
-      'conditional-cond', 'imperative-imper'
+      'indicative-pretPerf', 'indicative-plusc', 'indicative-futPerf',
+      'subjunctive-subjPres', 'subjunctive-subjImpf', 'subjunctive-subjPerf', 'subjunctive-subjPlusc',
+      'conditional-cond', 'conditional-condPerf',
+      'imperative-imper', 'imperative-impAff', 'imperative-impNeg',
+      'nonfinite-inf', 'nonfinite-ger', 'nonfinite-part'
     ]
 
     const unexploredCombos = allCombos.filter(combo => !heatMap[combo] || heatMap[combo].attempts === 0)
