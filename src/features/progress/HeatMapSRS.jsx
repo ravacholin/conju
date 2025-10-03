@@ -63,7 +63,6 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     if (!data?.heatMap) return {}
 
     // Apply time range filter if needed
-    let filtered = data.heatMap
     if (selectedTimeRange !== 'all') {
       const now = Date.now()
       const timeRanges = {
@@ -73,18 +72,14 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
       }
       const cutoff = now - timeRanges[selectedTimeRange]
 
-      filtered = Object.fromEntries(
-        Object.entries(data.heatMap).map(([key, value]) => [
-          key,
-          {
-            ...value,
-            lastAttempt: value.lastAttempt > cutoff ? value.lastAttempt : null
-          }
-        ]).filter(([, value]) => value.lastAttempt !== null)
+      return Object.fromEntries(
+        Object.entries(data.heatMap).filter(([, value]) => {
+          return value.lastAttempt && value.lastAttempt > cutoff
+        })
       )
     }
 
-    return filtered
+    return data.heatMap
   }, [data, selectedTimeRange])
 
   // Get mastery level and SRS status for a cell
