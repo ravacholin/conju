@@ -1,35 +1,41 @@
 import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel } from './curriculumGate.js'
 import { getFormsForRegion } from './verbDataService.js'
+import { createLogger } from '../utils/logger.js'
 
-// Enhanced error handling imports
-let logger, handleErrorWithRecovery, getIntegrityGuard
+// Create logger directly
+const logger = createLogger('Eligibility')
 
-try {
-  const autoRecoveryModule = await import('./AutoRecoverySystem.js')
-  logger = autoRecoveryModule.logger
-  handleErrorWithRecovery = autoRecoveryModule.handleErrorWithRecovery
-} catch (error) {
-  // Fallback logger
-  logger = {
-    debug: (component, message, data) => console.debug(`[${component}] ${message}`, data),
-    info: (component, message, data) => console.info(`[${component}] ${message}`, data),
-    warn: (component, message, data) => console.warn(`[${component}] ${message}`, data),
-    error: (component, message, data) => console.error(`[${component}] ${message}`, data)
-  }
+// Enhanced error handling imports - initialize properly
+let handleErrorWithRecovery, getIntegrityGuard
 
-  // Fallback error handler
-  handleErrorWithRecovery = (error, context) => {
-    console.warn('[eligibility] Error occurred:', error.message, context)
+// Initialize error handling asynchronously
+function initializeErrorHandling() {
+  if (!handleErrorWithRecovery) {
+    import('./AutoRecoverySystem.js').then(module => {
+      handleErrorWithRecovery = module.handleErrorWithRecovery
+    }).catch(() => {
+      handleErrorWithRecovery = (error, context) => {
+        logger.warn('handleErrorWithRecovery', 'AutoRecovery not available, using fallback', { error: error.message, context })
+      }
+    })
   }
 }
 
-try {
-  const integrityModule = await import('./DataIntegrityGuard.js')
-  getIntegrityGuard = integrityModule.getIntegrityGuard
-} catch (error) {
-  console.warn('[eligibility] DataIntegrityGuard not available:', error.message)
-  getIntegrityGuard = () => null
+// Initialize on first use
+initializeErrorHandling()
+
+// Initialize DataIntegrityGuard asynchronously
+function initializeIntegrityGuard() {
+  if (!getIntegrityGuard) {
+    import('./DataIntegrityGuard.js').then(module => {
+      getIntegrityGuard = module.getIntegrityGuard
+    }).catch(() => {
+      getIntegrityGuard = () => null
+    })
+  }
 }
+
+initializeIntegrityGuard()
 
 // Enhanced returns forms eligible for the given settings and precomputed region forms
 export function getEligibleFormsForSettings(allFormsForRegion, settings) {

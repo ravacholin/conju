@@ -716,6 +716,18 @@ if (typeof window !== 'undefined') {
           formCount: initResult.formCount
         })
 
+        // Notify CacheOrchestrator that intelligent caches are ready
+        try {
+          const { getOrchestrator } = await import('./CacheOrchestrator.js')
+          const orchestrator = getOrchestrator()
+          if (orchestrator.registerIntelligentCaches) {
+            orchestrator.registerIntelligentCaches()
+          }
+        } catch (error) {
+          // Ignore if orchestrator isn't available yet
+          logger.debug('auto-init', 'CacheOrchestrator not available yet for registration')
+        }
+
         // Expose debug functions globally
         window.verbCacheDebug = {
           getCacheStats,

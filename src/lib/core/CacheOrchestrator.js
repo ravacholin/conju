@@ -11,7 +11,7 @@
  * - Circuit breaker patterns
  */
 
-import { verbLookupCache, formFilterCache, VERB_LOOKUP_MAP, FORM_LOOKUP_MAP } from './optimizedCache.js'
+import { VERB_LOOKUP_MAP, FORM_LOOKUP_MAP } from './optimizedCache.js'
 import { getRedundancyManager } from './VerbDataRedundancyManager.js'
 import { getIntegrityGuard } from './DataIntegrityGuard.js'
 import { createLogger } from '../utils/logger.js'
@@ -68,7 +68,7 @@ class CacheOrchestrator {
     this.monitoringInterval = null
     this.isInitialized = false
 
-    this.initialize()
+    // Don't call initialize() here to avoid temporal dead zone
   }
 
   /**
@@ -78,11 +78,12 @@ class CacheOrchestrator {
     logger.info('initialize', '🎼 Initializing CacheOrchestrator...')
 
     try {
-      // Register all available caches
-      this.registerCache('verbLookup', verbLookupCache, CACHE_LEVELS.L2_INTELLIGENT, 10)
-      this.registerCache('formFilter', formFilterCache, CACHE_LEVELS.L2_INTELLIGENT, 20)
+      // Register static caches first
       this.registerCache('verbMap', { size: () => VERB_LOOKUP_MAP.size }, CACHE_LEVELS.L1_MEMORY, 5)
       this.registerCache('formMap', { size: () => FORM_LOOKUP_MAP.size }, CACHE_LEVELS.L1_MEMORY, 5)
+
+      // Defer intelligent cache registration until they're needed
+      this._deferredCacheRegistration = true
 
       // Initialize circuit breakers
       this.initializeCircuitBreakers()
@@ -126,6 +127,31 @@ class CacheOrchestrator {
     })
 
     logger.debug('registerCache', `Cache "${name}" registered`, { level, priority })
+  }
+
+  /**
+   * Register intelligent caches when they're available
+   */
+  registerIntelligentCaches() {
+    if (this._deferredCacheRegistration) {
+      try {
+        // Import and register intelligent caches dynamically
+        import('./optimizedCache.js').then(module => {
+          if (module.verbLookupCache) {
+            this.registerCache('verbLookup', module.verbLookupCache, CACHE_LEVELS.L2_INTELLIGENT, 10)
+          }
+          if (module.formFilterCache) {
+            this.registerCache('formFilter', module.formFilterCache, CACHE_LEVELS.L2_INTELLIGENT, 20)
+          }
+          this._deferredCacheRegistration = false
+          logger.info('registerIntelligentCaches', '🎯 Intelligent caches registered successfully')
+        }).catch(error => {
+          logger.warn('registerIntelligentCaches', 'Failed to register intelligent caches', error)
+        })
+      } catch (error) {
+        logger.warn('registerIntelligentCaches', 'Failed to register intelligent caches', error)
+      }
+    }
   }
 
   /**
@@ -832,11 +858,21 @@ class CacheOrchestrator {
   }
 
   checkSystemHealth() {
-    const memoryUsage = verbLookupCache._getMemoryUsage()
-    return {
-      memoryOk: !verbLookupCache.isMemoryPressureHigh(),
-      memoryUsage,
-      timestamp: Date.now()
+    // Get verbLookup cache from registry instead of direct import
+    const verbCache = this.cacheRegistry.get('verbLookup')
+    if (verbCache && verbCache.cache && verbCache.cache._getMemoryUsage) {
+      const memoryUsage = verbCache.cache._getMemoryUsage()
+      return {
+        memoryOk: !verbCache.cache.isMemoryPressureHigh(),
+        memoryUsage,
+        timestamp: Date.now()
+      }
+    } else {
+      return {
+        memoryOk: true,
+        memoryUsage: 0,
+        timestamp: Date.now()
+      }
     }
   }
 
@@ -937,8 +973,9 @@ export async function performGlobalHealthCheck() {
   return orchestrator.performHealthCheck()
 }
 
-// Auto-initialize in browser environment
-if (typeof window !== 'undefined') {
+// Auto-initialize in browser environment - disabled to prevent temporal dead zone issues
+// The orchestrator will be initialized on-demand when caches are ready
+if (typeof window !== 'undefined' && false) {
   initializeOrchestrator().catch(error => {
     console.error('Failed to auto-initialize CacheOrchestrator:', error)
   })

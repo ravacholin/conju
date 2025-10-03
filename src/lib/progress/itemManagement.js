@@ -1,6 +1,6 @@
 // Gestión de ítems de práctica en el sistema de progreso
 
-import { getAllVerbs } from '../core/verbDataService.js'
+import { getAllVerbsSync } from '../core/verbDataService.js'
 
 /**
  * Tamaño del lote para procesamiento no bloqueante
@@ -257,7 +257,17 @@ export async function initializeItemsBatched(options = {}) {
     let batchCount = 0
 
     // Obtener todos los verbos
-    const verbs = getAllVerbs() // Now synchronous
+    const verbs = getAllVerbsSync() // Now synchronous
+
+    // Validar que verbs sea un array
+    if (!Array.isArray(verbs)) {
+      throw new Error(`getAllVerbsSync did not return an array, got: ${typeof verbs}`)
+    }
+
+    if (verbs.length === 0) {
+      console.warn('No verbs available for batch initialization')
+      return { totalCreated: 0, totalSkipped: 0, batchCount: 0 }
+    }
 
     // Crear generador de lotes
     const batchGenerator = createFormsBatchGenerator(verbs, batchSize)
