@@ -325,11 +325,31 @@ function AppRouter() {
   }
 
   const handlePracticeModeChange = (mode, mood = null, tense = null) => {
-    settings.set({
+    // Ensure mood names are in data format (English) for consistent filtering
+    // The forms in data use English names, so settings should match
+    let normalizedMood = mood
+    if (mood === 'subjuntivo') normalizedMood = 'subjunctive'
+    if (mood === 'indicativo') normalizedMood = 'indicative'
+    if (mood === 'imperativo') normalizedMood = 'imperative'
+    if (mood === 'condicional') normalizedMood = 'conditional'
+    // If already in English format, keep as-is
+
+    // CRITICAL: Ensure level is set when navigating from progress
+    // If level is null but userLevel exists, sync them for proper exercise generation
+    const currentSettings = useSettings.getState()
+    const updates = {
       practiceMode: mode,
-      specificMood: mood,
+      specificMood: normalizedMood,
       specificTense: tense
-    })
+    }
+
+    // Fix level inconsistency: if level is null but userLevel exists, use userLevel
+    if (!currentSettings.level && currentSettings.userLevel) {
+      updates.level = currentSettings.userLevel
+      console.log(`🔧 AppRouter: Auto-setting level=${currentSettings.userLevel} from userLevel for progress navigation`)
+    }
+
+    settings.set(updates)
     drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
   }
 
