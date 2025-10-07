@@ -37,7 +37,7 @@ if (typeof window !== 'undefined') {
         import('./lib/progress/cloudSync.js')
       ])
 
-      const { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName, syncNow } = userManager
+      const { setSyncEndpoint, SET_SYNC_AUTH_TOKEN, SET_SYNC_AUTH_HEADER_NAME, syncNow } = userManager
       const { scheduleAutoSync } = cloudSync
       const { getCurrentUserId: getUID } = userManager
 
@@ -51,21 +51,21 @@ if (typeof window !== 'undefined') {
         (isLocalSync ? 'X-User-Id' : 'Authorization')
 
       if (syncUrl) setSyncEndpoint(syncUrl)
-      if (syncHeader) setSyncAuthHeaderName(syncHeader)
+      if (syncHeader) SET_SYNC_AUTH_HEADER_NAME(syncHeader)
 
       if (syncToken) {
-        setSyncAuthToken(syncToken, { persist: false })
+        SET_SYNC_AUTH_TOKEN(syncToken, { persist: false })
       } else if (syncHeader.toLowerCase() !== 'authorization') {
         const uid = getUID()
-        if (uid) setSyncAuthToken(uid, { persist: false })
+        if (uid) SET_SYNC_AUTH_TOKEN(uid, { persist: false })
       }
 
       // Setup auth login handler
       window.addEventListener('auth-login', async () => {
         console.log('🔄 Iniciando sincronización automática después del login...')
         try {
-          setSyncAuthHeaderName('Authorization')
-          const authService = await import('./lib/auth/authService.js')
+          SET_SYNC_AUTH_HEADER_NAME('Authorization')
+          const AUTH_SERVICE = await import('./lib/auth/authService.js')
           if (typeof authService.default.ensureAnonymousProgressMigration === 'function') {
             await authService.default.ensureAnonymousProgressMigration()
           }
@@ -126,7 +126,7 @@ if (typeof window !== 'undefined') {
 
         // Configure sync with fallback
         if (userManager && cloudSync) {
-          const { setSyncEndpoint, setSyncAuthToken, setSyncAuthHeaderName, syncNow } = userManager
+          const { setSyncEndpoint, SET_SYNC_AUTH_TOKEN, SET_SYNC_AUTH_HEADER_NAME, syncNow } = userManager
           const { scheduleAutoSync } = cloudSync
 
           const DEFAULT_SYNC_URL = 'https://conju.onrender.com/api'

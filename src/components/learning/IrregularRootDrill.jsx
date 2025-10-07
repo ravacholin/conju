@@ -270,7 +270,7 @@ function IrregularRootDrill({
     return null;
   }, [currentQuestion, useVoseo])
 
-  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+  const handleDrillResult = (isCorrect, accuracy, _extra = {}) => {
     // Handle pronunciation result similar to typing result
     if (isCorrect) {
       setStatus('correct')

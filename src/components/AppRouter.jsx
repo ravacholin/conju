@@ -48,7 +48,7 @@ import { buildFormsForRegion } from '../lib/core/eligibility.js'
 import router from '../lib/routing/Router.js'
 
 // Conditional logging - only in development
-const debugLog = (message, ...args) => {
+const DEBUG_LOG = (message, ...args) => {
   if (import.meta.env?.DEV && !import.meta?.vitest) {
     console.log(message, ...args)
   }
@@ -118,7 +118,7 @@ function AppRouter() {
 
   // Stable route handler function
   // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
-  const handleRouteChange = useCallback((route, type) => {
+  const handleRouteChange = useCallback((route, _type) => {
     setCurrentMode(route.mode)
 
     if (route.mode === 'onboarding' && route.step) {
@@ -203,7 +203,7 @@ function AppRouter() {
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem && !drillMode.isGenerating) {
         // Get the LATEST settings at generation time to avoid stale closure values
-        const latestSettings = useSettings.getState();
+        const LATEST_SETTINGS = useSettings.getState();
 
         // Add a small delay to ensure settings have propagated
         setTimeout(() => {

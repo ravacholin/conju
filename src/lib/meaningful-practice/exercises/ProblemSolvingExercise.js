@@ -174,7 +174,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
     };
   }
 
-  async analyzeDecisionResponse(response, decisionPoint) {
+  async analyzeDecisionResponse(response, _decisionPoint) {
     const analysis = {
       elementsPresent: [],
       elementsMissing: [],
@@ -233,7 +233,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
     // Calcular métricas cualitativas
     analysis.detailLevel = this.calculateDetailLevel(response);
     analysis.creativity = this.calculateCreativity(response);
-    analysis.feasibility = this.calculateFeasibility(response, decisionPoint);
+    analysis.feasibility = this.calculateFeasibility(response, _decisionPoint);
     analysis.reasoning = this.calculateReasoning(response);
 
     // Determinar si cumple requisitos
@@ -248,7 +248,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
                                analysis.wordCount >= 100;
 
     // Generar sugerencias
-    analysis.suggestions = this.generateDecisionSuggestions(analysis, decisionPoint);
+    analysis.suggestions = this.generateDecisionSuggestions(analysis, _decisionPoint);
 
     return analysis;
   }
@@ -382,7 +382,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
     return Math.min(score, 1);
   }
 
-  calculateFeasibility(response, decisionPoint) {
+  calculateFeasibility(response, _decisionPoint) {
     // Evaluar viabilidad práctica de las propuestas
     let score = 0.6; // Base score
 
@@ -456,7 +456,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
     this.analysis.reasoning += decisionAnalysis.reasoning * weight;
   }
 
-  generateDecisionSuggestions(analysis, decisionPoint) {
+  generateDecisionSuggestions(analysis, _decisionPoint) {
     const suggestions = [];
 
     if (analysis.elementsMissing.length > 0) {
@@ -482,7 +482,7 @@ export class ProblemSolvingExercise extends ExerciseBase {
     return suggestions;
   }
 
-  generateDecisionFeedback(analysis, decisionPoint) {
+  generateDecisionFeedback(analysis, _decisionPoint) {
     let feedback = '';
 
     if (analysis.meetsRequirements) {

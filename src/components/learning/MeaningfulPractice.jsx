@@ -3,7 +3,7 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
-import { grade } from '../../lib/core/grader.js';
+import { grade as GRADE } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 
 // Importar el nuevo sistema de práctica significativa

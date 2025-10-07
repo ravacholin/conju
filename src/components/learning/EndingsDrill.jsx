@@ -481,7 +481,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     };
   }, [currentForm, verb, tense, currentPronoun]);
 
-  const handleDrillResult = (isCorrect, accuracy, extra = {}) => {
+  const handleDrillResult = (isCorrect, accuracy, _extra = {}) => {
     // Handle pronunciation result similar to typing result
     if (isCorrect) {
       setResult({ correct: true, value: currentForm?.value });

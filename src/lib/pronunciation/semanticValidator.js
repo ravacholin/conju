@@ -81,7 +81,7 @@ export class SemanticValidator {
    * Format context in Spanish for user-friendly messages
    */
   _formatContextInSpanish(mood, tense, person) {
-    const moodLabel = MOOD_LABELS[mood] || mood;
+    const MOOD_LABEL = MOOD_LABELS[mood] || mood;
     const tenseLabel = TENSE_LABELS[tense] || tense;
     const personLabel = PERSON_LABELS[person] || person;
 

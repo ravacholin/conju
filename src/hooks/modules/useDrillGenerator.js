@@ -516,16 +516,16 @@ export const useDrillGenerator = () => {
 async function createEmergencyFallbackItem(settings) {
   console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense)
 
+  // Define target mood/tense outside try block so it's available throughout function
+  const targetMood = settings.specificMood || 'indicative'
+  const targetTense = settings.specificTense || 'pres'
+
   try {
     // STEP 1: Try to get forms directly from database, bypassing all caching
     const { getAllVerbs } = await import('../../lib/core/verbDataService.js')
     const allVerbs = await getAllVerbs()
 
     console.log('📚 Direct database access: got', allVerbs.length, 'verbs')
-
-    // STEP 2: Extract ALL forms from all verbs that match the requested mood/tense
-    const targetMood = settings.specificMood || 'indicative'
-    const targetTense = settings.specificTense || 'pres'
 
     console.log('🎯 Looking for forms with mood:', targetMood, 'tense:', targetTense)
 

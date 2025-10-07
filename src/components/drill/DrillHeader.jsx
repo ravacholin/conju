@@ -9,7 +9,7 @@ function DrillHeader({
   onHome,
   showQuickSwitch,
   showGames,
-  showPronunciation
+  showPronunciation: _showPronunciation
 }) {
 
   return (

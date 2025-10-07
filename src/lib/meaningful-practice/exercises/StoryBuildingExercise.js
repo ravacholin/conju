@@ -179,7 +179,7 @@ export class StoryBuildingExercise extends ExerciseBase {
   }
 
   async analyzeStory(story) {
-    const storyLower = story.toLowerCase();
+    const STORY_LOWER = story.toLowerCase();
     const normalizedStory = this.normalizeText(story);
 
     const analysis = {

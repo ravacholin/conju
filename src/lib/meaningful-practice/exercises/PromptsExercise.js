@@ -184,7 +184,7 @@ export class PromptsExercise extends ExerciseBase {
    * @param {Object} prompt - Prompt correspondiente
    * @returns {Object} Análisis de la respuesta
    */
-  async analyzeResponse(response, prompt) {
+  async analyzeResponse(response, _prompt) {
     const userText = response.toLowerCase();
     const expectedVerbs = prompt.expected || [];
     const foundVerbs = [];
@@ -250,11 +250,11 @@ export class PromptsExercise extends ExerciseBase {
    * @param {Object} prompt - Prompt correspondiente
    * @returns {string} Mensaje de feedback
    */
-  generateFeedback(analysis, prompt) {
+  generateFeedback(analysis, _prompt) {
     if (analysis.isCorrect) {
-      return this.getPositiveFeedback(analysis, prompt);
+      return this.getPositiveFeedback(analysis, _prompt);
     } else {
-      return this.getCorrectiveFeedback(analysis, prompt);
+      return this.getCorrectiveFeedback(analysis, _prompt);
     }
   }
 
@@ -264,7 +264,7 @@ export class PromptsExercise extends ExerciseBase {
    * @param {Object} prompt - Prompt correspondiente
    * @returns {string} Feedback positivo
    */
-  getPositiveFeedback(analysis, prompt) {
+  getPositiveFeedback(analysis, _prompt) {
     const messages = [
       '¡Excelente! Has completado el prompt correctamente.',
       '¡Muy bien! Tu respuesta usa el tiempo verbal adecuado.',
@@ -292,7 +292,7 @@ export class PromptsExercise extends ExerciseBase {
    * @param {Object} prompt - Prompt correspondiente
    * @returns {string} Feedback correctivo
    */
-  getCorrectiveFeedback(analysis, prompt) {
+  getCorrectiveFeedback(analysis, _prompt) {
     let feedback = '';
 
     if (analysis.missingVerbs.length > 0) {

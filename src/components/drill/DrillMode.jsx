@@ -94,7 +94,7 @@ function DrillMode({
   const [loadingError, setLoadingError] = useState(null)
   const [loadingTimeout, setLoadingTimeout] = useState(false)
   const pronunciationPanelRef = React.useRef(null)
-  const loadingTimeoutRef = React.useRef(null)
+  const LOADING_TIMEOUT_REF = React.useRef(null)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)

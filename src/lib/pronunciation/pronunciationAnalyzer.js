@@ -794,7 +794,7 @@ class PronunciationAnalyzer {
   /**
    * Determine if two vowels form a diphthong in Spanish based on phonological rules
    */
-  _isSpanishDiphthong(vowel1, vowel2, word, vowelIndex) {
+  _isSpanishDiphthong(vowel1, vowel2, word, _vowelIndex) {
     // Spanish vowel classification
     const weakVowels = ['i', 'u', 'í', 'ú'];
     const strongVowels = ['a', 'e', 'o', 'á', 'é', 'ó'];

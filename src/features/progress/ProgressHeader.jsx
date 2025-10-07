@@ -33,13 +33,13 @@ if (typeof document !== 'undefined' && !document.querySelector('#dashboard-refre
 export default function ProgressHeader({
   onNavigateHome,
   onNavigateToDrill,
-  loading,
-  refreshing,
-  onRefresh,
+  _loading,
+  _refreshing,
+  _onRefresh,
   syncing = false,
-  onSync,
+  _onSync,
   syncEnabled = true,
-  onOpenDataPanel
+  _onOpenDataPanel
 }) {
   return (
     <header className="dashboard-header">

@@ -10,10 +10,10 @@ export default function ProgressOverview({
   userStats,
   onNavigateHome,
   onNavigateToDrill,
-  syncing,
-  onSync,
-  syncEnabled,
-  onRefresh
+  _syncing,
+  _onSync,
+  _syncEnabled,
+  _onRefresh
 }) {
   const settings = useSettings()
   const stats = userStats || {}

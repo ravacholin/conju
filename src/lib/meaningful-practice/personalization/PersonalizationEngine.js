@@ -346,7 +346,7 @@ export class PersonalizationEngine {
       score -= recentUsage * PERSONALIZATION_CONFIG.VARIETY_WEIGHT;
 
       // Bonus por compatibilidad con tiempo verbal
-      score += this.getTypeCompatibilityBonus(type, tense, mood);
+      score += this.getTypeCompatibilityBonus(type, tense, _mood);
 
       recommendations.push({ type, score });
     });
@@ -381,7 +381,7 @@ export class PersonalizationEngine {
    * @param {string} mood - Modo verbal
    * @returns {number} Bonus de compatibilidad
    */
-  getTypeCompatibilityBonus(type, tense, mood) {
+  getTypeCompatibilityBonus(type, tense, _mood) {
     const compatibilityMap = {
       [EXERCISE_TYPES.DAILY_ROUTINE]: ['pres'],
       [EXERCISE_TYPES.TIMELINE]: ['pretIndef', 'impf'],

@@ -30,7 +30,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     }
 
     const heatMap = heatMapData.heatMap
-    const stats = userStats
+    const STATS = userStats
 
     // Find weakest areas (low mastery, high attempts)
     const weakAreas = Object.entries(heatMap)
@@ -150,17 +150,12 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
 
   // Get error insights if available
   const errorInsights = useMemo(() => {
-    try {
-      // For now, return null since we're streamlining the interface
-      // If error insights are needed, they'll be integrated into recommendations
-      return null
-    } catch (e) {
-      console.warn('Error getting error stats:', e)
-      return null
-    }
+    // For now, return null since we're streamlining the interface
+    // If error insights are needed, they'll be integrated into recommendations
+    return null
   }, [userStats])
 
-  const getErrorTypeLabel = (type) => {
+  const GET_ERROR_TYPE_LABEL = (type) => {
     const labels = {
       'stem_change': 'Cambios de raíz',
       'orthographic': 'Cambios ortográficos',

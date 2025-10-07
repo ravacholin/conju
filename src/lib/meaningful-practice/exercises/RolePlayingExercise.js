@@ -223,7 +223,7 @@ export class RolePlayingExercise extends ExerciseBase {
     };
   }
 
-  async analyzePhaseResponse(response, phase) {
+  async analyzePhaseResponse(response, _phase) {
     const analysis = {
       elementsPresent: [],
       elementsMissing: [],
@@ -279,7 +279,7 @@ export class RolePlayingExercise extends ExerciseBase {
                             analysis.appropriatenessScore >= 0.6;
 
     // Generar sugerencias
-    analysis.suggestions = this.generatePhaseSuggestions(analysis, phase);
+    analysis.suggestions = this.generatePhaseSuggestions(analysis, _phase);
 
     return analysis;
   }
@@ -403,7 +403,7 @@ export class RolePlayingExercise extends ExerciseBase {
     let score = 1.0;
 
     // Penalizar errores obvios
-    const errors = [
+    const ERRORS = [
       /\b(soy|eres|es|somos|son)\s+(trabajando|comiendo|viviendo)\b/gi, // Error ser + gerundio
       /\b(tengo|tienes|tiene|tenemos|tienen)\s+\d+\s+años?\b/gi, // Buen uso de tener edad
       /\bme llamo\s+\w+/gi // Uso correcto de presentación
@@ -418,7 +418,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return Math.max(score, 0.2);
   }
 
-  generateNPCResponse(userResponse, analysis, phase) {
+  generateNPCResponse(userResponse, analysis, _phase) {
     if (this.currentPhase >= this.phases.length) {
       return null; // No más respuestas, ejercicio completo
     }
@@ -454,7 +454,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return npcResponse;
   }
 
-  generatePhaseSuggestions(analysis, phase) {
+  generatePhaseSuggestions(analysis, _phase) {
     const suggestions = [];
 
     if (analysis.elementsMissing.length > 0) {
@@ -476,7 +476,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return suggestions;
   }
 
-  generatePhaseFeedback(analysis, phase) {
+  generatePhaseFeedback(analysis, _phase) {
     let feedback = '';
 
     if (analysis.meetsCriteria) {
@@ -582,7 +582,7 @@ export class RolePlayingExercise extends ExerciseBase {
   }
 
   validateResponse(response) {
-    const errors = [];
+    const ERRORS = [];
 
     if (!response || typeof response !== 'string') {
       errors.push('La respuesta debe ser un texto válido');

@@ -34,7 +34,7 @@ export async function initializeItems() {
     let itemCount = 0
     let skippedCount = 0
     
-    const verbs = getAllVerbs() // Now synchronous
+    const verbs = getAllVerbsSync() // Now synchronous
 
     // Procesar cada verbo
     for (const verb of verbs) {

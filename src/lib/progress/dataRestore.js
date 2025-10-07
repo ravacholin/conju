@@ -198,7 +198,7 @@ export async function importFromFile(file, options = {}) {
       text = await file.text()
     } else if (file && typeof file.arrayBuffer === 'function') {
       const buffer = await file.arrayBuffer()
-      text = Buffer.from(buffer).toString('utf8')
+      text = new TextDecoder('utf-8').decode(buffer)
     } else if (typeof file?.content === 'string') {
       text = file.content
     } else if (typeof file === 'string') {
