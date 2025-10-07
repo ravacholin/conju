@@ -9,6 +9,12 @@ import { generatePersonalizedStudyPlan, invalidateStudyPlan, onStudyPlanUpdated 
 import { getCommunitySnapshot, onCommunitySnapshot, clearCommunityCache } from '../../lib/progress/social.js'
 import { getOfflineStatus, onOfflineStatusChange, clearOfflineCache } from '../../lib/progress/offlineSupport.js'
 import { getExpertModeSettings, onExpertModeChange } from '../../lib/progress/expertMode.js'
+import {
+  getGlobalDynamicEvaluation,
+  getGlobalDynamicProgress,
+  getGlobalDynamicLevelInfo,
+  checkGlobalLevelRecommendation
+} from '../../lib/levels/userLevelProfile.js'
 
 export default function useProgressDashboardData() {
   const [heatMapData, setHeatMapData] = useState([])
@@ -23,6 +29,10 @@ export default function useProgressDashboardData() {
   const [communitySnapshot, setCommunitySnapshot] = useState(null)
   const [offlineStatus, setOfflineStatus] = useState(null)
   const [expertModeSettings, setExpertModeSettings] = useState(null)
+  const [dynamicLevelEvaluation, setDynamicLevelEvaluation] = useState(null)
+  const [dynamicLevelProgress, setDynamicLevelProgress] = useState(null)
+  const [dynamicLevelInfo, setDynamicLevelInfo] = useState(null)
+  const [levelRecommendation, setLevelRecommendation] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
@@ -246,6 +256,50 @@ export default function useProgressDashboardData() {
             if (!signal.aborted) console.warn('Failed to retrieve expert mode settings:', e)
             return null
           }
+        },
+
+        dynamicLevelEvaluation: async (signal) => {
+          try {
+            const evaluation = await getGlobalDynamicEvaluation()
+            if (signal.aborted) throw new Error('Cancelled')
+            return evaluation || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load dynamic level evaluation:', e)
+            return null
+          }
+        },
+
+        dynamicLevelProgress: async (signal) => {
+          try {
+            const progress = await getGlobalDynamicProgress()
+            if (signal.aborted) throw new Error('Cancelled')
+            return progress || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load dynamic level progress:', e)
+            return null
+          }
+        },
+
+        dynamicLevelInfo: async (signal) => {
+          try {
+            const info = await getGlobalDynamicLevelInfo()
+            if (signal.aborted) throw new Error('Cancelled')
+            return info || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load dynamic level info:', e)
+            return null
+          }
+        },
+
+        levelRecommendation: async (signal) => {
+          try {
+            const recommendation = await checkGlobalLevelRecommendation()
+            if (signal.aborted) throw new Error('Cancelled')
+            return recommendation || null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to check level recommendation:', e)
+            return null
+          }
         }
       }
 
@@ -265,6 +319,10 @@ export default function useProgressDashboardData() {
       setCommunitySnapshot(results.community || null)
       setOfflineStatus(results.offlineStatus || null)
       setExpertModeSettings(results.expertMode || getExpertModeSettings(userId))
+      setDynamicLevelEvaluation(results.dynamicLevelEvaluation || null)
+      setDynamicLevelProgress(results.dynamicLevelProgress || null)
+      setDynamicLevelInfo(results.dynamicLevelInfo || null)
+      setLevelRecommendation(results.levelRecommendation || null)
 
       setError(null)
       setLoading(false)
@@ -434,6 +492,11 @@ export default function useProgressDashboardData() {
     communitySnapshot,
     offlineStatus,
     expertModeSettings,
+    // Dynamic level system data
+    dynamicLevelEvaluation,
+    dynamicLevelProgress,
+    dynamicLevelInfo,
+    levelRecommendation,
     loading,
     error,
     refreshing,

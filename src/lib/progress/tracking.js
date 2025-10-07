@@ -11,7 +11,7 @@ import { ERROR_TAGS } from './dataModels.js'
 import { processAttempt as processAttemptOrchestrated } from './progressOrchestrator.js'
 import { updateSchedule } from './srs.js'
 import { notifyNewAttempt } from './incrementalMastery.js'
-import { recordGlobalCompetency } from '../levels/userLevelProfile.js'
+import { recordGlobalCompetency, refreshGlobalDynamicEvaluations } from '../levels/userLevelProfile.js'
 import { checkUserProgression } from '../levels/levelProgression.js'
 
 // Estado del tracking
@@ -208,22 +208,53 @@ export async function trackAttemptSubmitted(attemptId, result) {
     try {
       await recordGlobalCompetency(mood, tense, attempt.correct, attempt.latencyMs)
 
-      // Check for automatic level progression every 10 attempts
-      const shouldCheckProgression = Math.random() < 0.1 // 10% chance
-      if (shouldCheckProgression) {
-        const progressionResult = await checkUserProgression()
+      // Trigger dynamic evaluation refresh every 5-10 attempts for responsive feedback
+      const shouldRefreshDynamic = Math.random() < 0.15 // 15% chance
+      if (shouldRefreshDynamic) {
+        // Don't await to avoid blocking - refresh in background
+        refreshGlobalDynamicEvaluations().catch(error => {
+          console.warn('Error refreshing dynamic evaluations:', error)
+        })
+      }
 
+      // Check for automatic level progression with dynamic system
+      const shouldCheckProgression = Math.random() < 0.08 // 8% chance (slightly less frequent)
+      if (shouldCheckProgression) {
+        const { checkGlobalLevelRecommendation } = await import('../levels/userLevelProfile.js')
+        const recommendation = await checkGlobalLevelRecommendation()
+
+        if (recommendation.shouldChange && recommendation.confidence > 0.85) {
+          console.log(`🔄 Recomendación de cambio de nivel: ${recommendation.currentLevel} → ${recommendation.recommendedLevel} (confianza: ${recommendation.confidence})`)
+
+          // Dispatch dynamic level recommendation event
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('level:recommendation', {
+              detail: {
+                currentLevel: recommendation.currentLevel,
+                recommendedLevel: recommendation.recommendedLevel,
+                confidence: recommendation.confidence,
+                reason: recommendation.reason,
+                evaluation: recommendation.evaluation,
+                automatic: true
+              }
+            }))
+          }
+        }
+
+        // Also check traditional progression for compatibility
+        const progressionResult = await checkUserProgression()
         if (progressionResult.promoted) {
           console.log(`🎉 Usuario promovido automáticamente de ${progressionResult.from} a ${progressionResult.to}`)
 
-          // Dispatch level promotion event
+          // Dispatch traditional level promotion event
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('level:promotion', {
               detail: {
                 from: progressionResult.from,
                 to: progressionResult.to,
                 confidence: progressionResult.confidence,
-                automatic: true
+                automatic: true,
+                type: 'traditional'
               }
             }))
           }

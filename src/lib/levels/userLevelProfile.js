@@ -1,7 +1,9 @@
 // User Level Profile System
-// Manages personalized CEFR level progression and statistics
+// Manages personalized CEFR level progression and statistics with dynamic evaluation
 
 import { openDB } from 'idb'
+import { getDynamicLevelEvaluator } from './DynamicLevelEvaluator.js'
+import { getLevelProgressCalculator } from './LevelProgressCalculator.js'
 
 const LEVEL_ORDER = {
   'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6
@@ -35,11 +37,15 @@ export class UserLevelProfile {
   constructor(userId = 'default') {
     this.userId = userId
     this.currentLevel = 'A2' // Default starting level
-    this.levelProgress = 0 // 0-100%
+    this.levelProgress = 0 // 0-100% (legacy, will be calculated dynamically)
     this.levelHistory = []
     this.competencyStats = {}
     this.lastAssessment = null
+    this.lastDynamicEvaluation = null // Cache for dynamic evaluation
+    this.lastProgressCalculation = null // Cache for progress calculation
+    this.placementTestBaseline = null // Baseline from placement test
     this.manualOverride = false
+    this.evaluationEnabled = true // Enable/disable dynamic evaluation
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }
@@ -79,7 +85,52 @@ export class UserLevelProfile {
   }
 
   getLevelProgress() {
+    // Return cached dynamic progress if available and recent
+    if (this.lastProgressCalculation &&
+        (Date.now() - this.lastProgressCalculation.timestamp) < 5 * 60 * 1000) {
+      return this.lastProgressCalculation.overall
+    }
+
+    // Fallback to static progress for immediate response
     return this.levelProgress
+  }
+
+  /**
+   * Gets dynamic level progress (async)
+   */
+  async getDynamicLevelProgress() {
+    try {
+      const calculator = getLevelProgressCalculator()
+      const progress = await calculator.calculateLevelProgress(this.userId, this.currentLevel)
+
+      // Cache the result
+      this.lastProgressCalculation = progress
+      await this.save()
+
+      return progress
+    } catch (error) {
+      console.warn('Error calculating dynamic progress:', error)
+      return {
+        level: this.currentLevel,
+        userId: this.userId,
+        overall: this.levelProgress, // Fallback to static
+        components: {
+          competencies: { score: 0, details: 'Error loading data' },
+          mastery: { score: 0, details: 'Error loading data' },
+          coverage: { score: 0, details: 'Error loading data' },
+          consistency: { score: 0, details: 'Error loading data' }
+        },
+        details: {
+          totalCompetencies: 0,
+          completedCompetencies: 0,
+          missingCompetencies: [],
+          strongestAreas: [],
+          weakestAreas: [],
+          nextMilestones: []
+        },
+        timestamp: Date.now()
+      }
+    }
   }
 
   getLevelNumber() {
@@ -124,7 +175,31 @@ export class UserLevelProfile {
 
   async updateProgress(newProgress) {
     this.levelProgress = Math.max(0, Math.min(100, newProgress))
+
+    // Clear cached dynamic calculations when static progress is updated
+    this.lastProgressCalculation = null
+
     await this.save()
+  }
+
+  /**
+   * Updates progress dynamically based on performance
+   */
+  async updateDynamicProgress() {
+    if (!this.evaluationEnabled) return
+
+    try {
+      const dynamicProgress = await this.getDynamicLevelProgress()
+
+      // Update static progress to match dynamic (for compatibility)
+      this.levelProgress = Math.round(dynamicProgress.overall)
+
+      await this.save()
+
+      return dynamicProgress
+    } catch (error) {
+      console.warn('Error updating dynamic progress:', error)
+    }
   }
 
   async addToHistory(entry) {
@@ -181,7 +256,64 @@ export class UserLevelProfile {
     stats.avgResponseTime = (stats.avgResponseTime * (stats.attempts - 1) + responseTime) / stats.attempts
     stats.lastPracticed = new Date().toISOString()
 
+    // Clear cached calculations to trigger refresh
+    this.lastDynamicEvaluation = null
+    this.lastProgressCalculation = null
+
     this.save()
+  }
+
+  /**
+   * Sets placement test baseline for future evaluations
+   */
+  setPlacementTestBaseline(testResult) {
+    this.placementTestBaseline = {
+      level: testResult.determinedLevel,
+      accuracy: testResult.correctAnswers / testResult.totalQuestions,
+      competencies: testResult.competencyBaseline || {},
+      timestamp: Date.now(),
+      testId: testResult.testId || 'placement_test'
+    }
+
+    this.save()
+  }
+
+  /**
+   * Gets placement test baseline
+   */
+  getPlacementTestBaseline() {
+    return this.placementTestBaseline
+  }
+
+  /**
+   * Enables or disables dynamic evaluation
+   */
+  setDynamicEvaluationEnabled(enabled) {
+    this.evaluationEnabled = enabled
+
+    if (!enabled) {
+      // Clear cached evaluations when disabled
+      this.lastDynamicEvaluation = null
+      this.lastProgressCalculation = null
+    }
+
+    this.save()
+  }
+
+  /**
+   * Forces refresh of dynamic evaluations
+   */
+  async refreshDynamicEvaluations() {
+    this.lastDynamicEvaluation = null
+    this.lastProgressCalculation = null
+
+    if (this.evaluationEnabled) {
+      // Trigger fresh calculations
+      await Promise.all([
+        this.getDynamicLevelProgress(),
+        this.getDynamicEvaluation()
+      ])
+    }
   }
 
   getCompetencyForMoodTense(mood, tense) {
@@ -197,14 +329,104 @@ export class UserLevelProfile {
     return totalAccuracy / stats.length
   }
 
+  /**
+   * Gets effective level based on performance analysis
+   */
+  async getEffectiveLevel() {
+    if (!this.evaluationEnabled) {
+      return this.currentLevel
+    }
+
+    try {
+      // Use cached evaluation if recent
+      if (this.lastDynamicEvaluation &&
+          (Date.now() - this.lastDynamicEvaluation.timestamp) < 10 * 60 * 1000) {
+        return this.lastDynamicEvaluation.effectiveLevel
+      }
+
+      const evaluator = getDynamicLevelEvaluator()
+      const evaluation = await evaluator.evaluateEffectiveLevel(this.userId, this.currentLevel)
+
+      // Cache the result
+      this.lastDynamicEvaluation = evaluation
+      await this.save()
+
+      return evaluation.effectiveLevel
+    } catch (error) {
+      console.warn('Error getting effective level:', error)
+      return this.currentLevel
+    }
+  }
+
+  /**
+   * Gets full dynamic evaluation
+   */
+  async getDynamicEvaluation() {
+    if (!this.evaluationEnabled) {
+      return null
+    }
+
+    try {
+      const evaluator = getDynamicLevelEvaluator()
+      const evaluation = await evaluator.evaluateEffectiveLevel(this.userId, this.currentLevel)
+
+      // Cache the result
+      this.lastDynamicEvaluation = evaluation
+      await this.save()
+
+      return evaluation
+    } catch (error) {
+      console.warn('Error getting dynamic evaluation:', error)
+      return null
+    }
+  }
+
   isReadyForPromotion() {
     if (this.manualOverride) return false
 
+    // Use cached dynamic progress if available
+    const currentProgress = this.lastProgressCalculation?.overall || this.levelProgress
     const overallCompetency = this.getOverallCompetency()
+
     const progressThreshold = 85 // 85% progress required
     const competencyThreshold = 0.80 // 80% accuracy required
 
-    return this.levelProgress >= progressThreshold && overallCompetency >= competencyThreshold
+    return currentProgress >= progressThreshold && overallCompetency >= competencyThreshold
+  }
+
+  /**
+   * Async version that uses dynamic evaluation for promotion readiness
+   */
+  async isReadyForPromotionDynamic() {
+    if (this.manualOverride) return false
+
+    try {
+      const [dynamicProgress, dynamicEvaluation] = await Promise.all([
+        this.getDynamicLevelProgress(),
+        this.getDynamicEvaluation()
+      ])
+
+      const progressReady = dynamicProgress.overall >= 85
+      const evaluationReady = dynamicEvaluation && dynamicEvaluation.confidence >= 0.80
+      const missingCompetencies = dynamicProgress.details.missingCompetencies.length === 0
+
+      return {
+        ready: progressReady && evaluationReady && missingCompetencies,
+        progress: dynamicProgress.overall,
+        confidence: dynamicEvaluation?.confidence || 0,
+        missingCompetencies: dynamicProgress.details.missingCompetencies.length,
+        recommendations: dynamicEvaluation?.recommendations || []
+      }
+    } catch (error) {
+      console.warn('Error checking dynamic promotion readiness:', error)
+      return {
+        ready: this.isReadyForPromotion(),
+        progress: this.levelProgress,
+        confidence: 0.5,
+        missingCompetencies: 0,
+        recommendations: []
+      }
+    }
   }
 
   canAccessLevel(targetLevel) {
@@ -224,13 +446,55 @@ export class UserLevelProfile {
   }
 
   getLevelDisplayInfo() {
+    const dynamicProgress = this.lastProgressCalculation?.overall || this.levelProgress
+
     return {
       current: this.currentLevel,
-      progress: this.levelProgress,
+      effective: this.lastDynamicEvaluation?.effectiveLevel || this.currentLevel,
+      progress: dynamicProgress,
+      dynamicAvailable: this.evaluationEnabled && this.lastDynamicEvaluation !== null,
       next: this.getNextLevel(),
       isMaxLevel: this.currentLevel === 'C2',
       readyForPromotion: this.isReadyForPromotion(),
-      overallCompetency: Math.round(this.getOverallCompetency() * 100)
+      overallCompetency: Math.round(this.getOverallCompetency() * 100),
+      confidence: this.lastDynamicEvaluation?.confidence || 0.5,
+      lastEvaluated: this.lastDynamicEvaluation?.timestamp
+    }
+  }
+
+  /**
+   * Gets comprehensive level display info with dynamic data
+   */
+  async getDynamicLevelDisplayInfo() {
+    try {
+      const [dynamicProgress, dynamicEvaluation] = await Promise.all([
+        this.getDynamicLevelProgress(),
+        this.getDynamicEvaluation()
+      ])
+
+      const promotionReadiness = await this.isReadyForPromotionDynamic()
+
+      return {
+        current: this.currentLevel,
+        effective: dynamicEvaluation.effectiveLevel,
+        progress: dynamicProgress.overall,
+        progressDetails: dynamicProgress,
+        evaluation: dynamicEvaluation,
+        next: this.getNextLevel(),
+        isMaxLevel: this.currentLevel === 'C2',
+        readyForPromotion: promotionReadiness,
+        overallCompetency: Math.round(this.getOverallCompetency() * 100),
+        confidence: dynamicEvaluation.confidence,
+        stability: dynamicEvaluation.stability,
+        recommendations: dynamicEvaluation.recommendations,
+        nextMilestones: dynamicProgress.details.nextMilestones,
+        strongestAreas: dynamicProgress.details.strongestAreas,
+        weakestAreas: dynamicProgress.details.weakestAreas,
+        lastEvaluated: Date.now()
+      }
+    } catch (error) {
+      console.warn('Error getting dynamic level display info:', error)
+      return this.getLevelDisplayInfo()
     }
   }
 
@@ -277,6 +541,78 @@ export async function updateGlobalLevelProgress(progress) {
 export async function recordGlobalCompetency(mood, tense, accuracy, responseTime) {
   const profile = await getCurrentUserProfile()
   profile.updateCompetencyStats(mood, tense, accuracy, responseTime)
+
+  // Trigger dynamic progress update if enabled
+  if (profile.evaluationEnabled) {
+    // Don't await to avoid blocking the main flow
+    profile.updateDynamicProgress().catch(err =>
+      console.warn('Error updating dynamic progress after competency record:', err)
+    )
+  }
+
+  return profile
+}
+
+/**
+ * Gets user's dynamic level evaluation
+ */
+export async function getGlobalDynamicEvaluation() {
+  const profile = await getCurrentUserProfile()
+  return await profile.getDynamicEvaluation()
+}
+
+/**
+ * Gets user's dynamic level progress
+ */
+export async function getGlobalDynamicProgress() {
+  const profile = await getCurrentUserProfile()
+  return await profile.getDynamicLevelProgress()
+}
+
+/**
+ * Gets comprehensive level info with dynamic data
+ */
+export async function getGlobalDynamicLevelInfo() {
+  const profile = await getCurrentUserProfile()
+  return await profile.getDynamicLevelDisplayInfo()
+}
+
+/**
+ * Sets placement test baseline for the global user
+ */
+export async function setGlobalPlacementTestBaseline(testResult) {
+  const profile = await getCurrentUserProfile()
+  profile.setPlacementTestBaseline(testResult)
+  return profile
+}
+
+/**
+ * Checks if user should change level based on performance
+ */
+export async function checkGlobalLevelRecommendation() {
+  try {
+    const { shouldUserChangeLevel } = await import('./DynamicLevelEvaluator.js')
+    const profile = await getCurrentUserProfile()
+    return await shouldUserChangeLevel(profile.userId)
+  } catch (error) {
+    console.warn('Error checking level recommendation:', error)
+    return {
+      shouldChange: false,
+      confidence: 0,
+      currentLevel: 'A2',
+      recommendedLevel: 'A2',
+      reason: 'error',
+      evaluation: null
+    }
+  }
+}
+
+/**
+ * Forces refresh of all dynamic evaluations
+ */
+export async function refreshGlobalDynamicEvaluations() {
+  const profile = await getCurrentUserProfile()
+  await profile.refreshDynamicEvaluations()
   return profile
 }
 

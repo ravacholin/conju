@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getGlobalAssessment } from '../../lib/levels/levelAssessment.js'
+import { setGlobalPlacementTestBaseline } from '../../lib/levels/userLevelProfile.js'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import './PlacementTest.css'
 
@@ -49,7 +50,9 @@ function PlacementTest({ onComplete, onCancel }) {
         setShowExplanation(false)
 
         if (result.completed) {
-          // Test completed
+          // Test completed - process results and establish baseline
+          await processTestCompletion(result)
+
           settings.setUserLevel(result.determinedLevel)
           settings.setPlacementTestCompleted(true)
           onComplete && onComplete(result)
@@ -64,6 +67,171 @@ function PlacementTest({ onComplete, onCancel }) {
       console.error('Failed to submit answer:', error)
       setIsSubmitting(false)
     }
+  }
+
+  // Process test completion and establish competency baseline
+  const processTestCompletion = async (result) => {
+    try {
+      // Analyze test results to create competency baseline
+      const competencyBaseline = analyzeTestResults(result)
+
+      // Enhanced result object with baseline data
+      const enhancedResult = {
+        ...result,
+        testId: `placement-${Date.now()}`,
+        competencyBaseline,
+        testMetadata: {
+          totalQuestions: result.totalQuestions,
+          correctAnswers: result.correctAnswers,
+          accuracy: result.correctAnswers / result.totalQuestions,
+          levelDistribution: getLevelDistribution(result.results),
+          timestamp: Date.now()
+        }
+      }
+
+      // Set baseline in user profile for future dynamic evaluations
+      await setGlobalPlacementTestBaseline(enhancedResult)
+
+      console.log('✅ Placement test baseline established:', competencyBaseline)
+    } catch (error) {
+      console.warn('⚠️ Error establishing test baseline:', error)
+    }
+  }
+
+  // Analyze test results to extract competency insights
+  const analyzeTestResults = (result) => {
+    const competencies = {}
+    const levelAccuracy = {}
+
+    // Process each answer to build competency profile
+    result.results.forEach(answer => {
+      const level = answer.level
+
+      if (!levelAccuracy[level]) {
+        levelAccuracy[level] = { correct: 0, total: 0 }
+      }
+
+      levelAccuracy[level].total += 1
+      if (answer.isCorrect) {
+        levelAccuracy[level].correct += 1
+      }
+
+      // Extract competency info if available in question metadata
+      if (answer.competencyInfo) {
+        const { mood, tense } = answer.competencyInfo
+        const key = `${mood}_${tense}`
+
+        if (!competencies[key]) {
+          competencies[key] = { correct: 0, total: 0, level }
+        }
+
+        competencies[key].total += 1
+        if (answer.isCorrect) {
+          competencies[key].correct += 1
+        }
+      }
+    })
+
+    // Calculate accuracy per level and competency
+    Object.keys(levelAccuracy).forEach(level => {
+      const data = levelAccuracy[level]
+      data.accuracy = data.correct / data.total
+    })
+
+    Object.keys(competencies).forEach(key => {
+      const data = competencies[key]
+      data.accuracy = data.correct / data.total
+    })
+
+    return {
+      levelAccuracy,
+      competencies,
+      overallAccuracy: result.correctAnswers / result.totalQuestions,
+      strongestLevel: findStrongestLevel(levelAccuracy),
+      weakestLevel: findWeakestLevel(levelAccuracy),
+      estimatedLevelRange: calculateLevelRange(levelAccuracy, result.determinedLevel)
+    }
+  }
+
+  // Helper function to find strongest level
+  const findStrongestLevel = (levelAccuracy) => {
+    let bestLevel = null
+    let bestAccuracy = 0
+
+    Object.entries(levelAccuracy).forEach(([level, data]) => {
+      if (data.total >= 2 && data.accuracy > bestAccuracy) {
+        bestLevel = level
+        bestAccuracy = data.accuracy
+      }
+    })
+
+    return { level: bestLevel, accuracy: bestAccuracy }
+  }
+
+  // Helper function to find weakest level
+  const findWeakestLevel = (levelAccuracy) => {
+    let worstLevel = null
+    let worstAccuracy = 1
+
+    Object.entries(levelAccuracy).forEach(([level, data]) => {
+      if (data.total >= 2 && data.accuracy < worstAccuracy) {
+        worstLevel = level
+        worstAccuracy = data.accuracy
+      }
+    })
+
+    return { level: worstLevel, accuracy: worstAccuracy }
+  }
+
+  // Calculate estimated level range based on performance
+  const calculateLevelRange = (levelAccuracy, determinedLevel) => {
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+    const determinedIndex = levels.indexOf(determinedLevel)
+
+    let minLevel = determinedLevel
+    let maxLevel = determinedLevel
+
+    // Check levels below - if high accuracy, user could be underestimated
+    for (let i = determinedIndex - 1; i >= 0; i--) {
+      const level = levels[i]
+      const data = levelAccuracy[level]
+      if (data && data.accuracy >= 0.9 && data.total >= 2) {
+        minLevel = level
+      } else {
+        break
+      }
+    }
+
+    // Check levels above - if moderate accuracy, user could handle higher
+    for (let i = determinedIndex + 1; i < levels.length; i++) {
+      const level = levels[i]
+      const data = levelAccuracy[level]
+      if (data && data.accuracy >= 0.6 && data.total >= 2) {
+        maxLevel = level
+      } else {
+        break
+      }
+    }
+
+    return { min: minLevel, max: maxLevel, confidence: 0.8 }
+  }
+
+  // Get distribution of questions by level
+  const getLevelDistribution = (results) => {
+    const distribution = {}
+
+    results.forEach(answer => {
+      const level = answer.level
+      if (!distribution[level]) {
+        distribution[level] = { total: 0, correct: 0 }
+      }
+      distribution[level].total += 1
+      if (answer.isCorrect) {
+        distribution[level].correct += 1
+      }
+    })
+
+    return distribution
   }
 
   const handleCancel = () => {

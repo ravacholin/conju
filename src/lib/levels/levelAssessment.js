@@ -1,7 +1,9 @@
 // Simple Level Test for Spanish Verb Conjugation
 // Professional but simple implementation - no complex CAT algorithms
+// Enhanced with dynamic evaluation integration
 
-import { getCurrentUserProfile } from './userLevelProfile.js'
+import { getCurrentUserProfile, setGlobalPlacementTestBaseline } from './userLevelProfile.js'
+import { trackAttemptStarted, trackAttemptSubmitted } from '../progress/tracking.js'
 
 // Curated question pool: 10 questions per CEFR level (A1-C1)
 const QUESTION_POOL = {
@@ -385,6 +387,9 @@ class SimpleLevelTest {
     this.questionsInCurrentLevel = 0
     this.consecutiveFailures = 0
     this.maxTotalQuestions = 12
+    this.trackingEnabled = true // Enable tracking integration
+    this.currentAttemptId = null // Track current attempt for progress system
+    this.testStartTime = null // Track test duration
   }
 
   startTest() {
@@ -396,8 +401,14 @@ class SimpleLevelTest {
     this.questionsUsed = new Set()
     this.questionsInCurrentLevel = 0
     this.consecutiveFailures = 0
+    this.testStartTime = Date.now()
 
     const firstQuestion = this.getNextQuestion()
+
+    // Start tracking for the first question if tracking is enabled
+    if (this.trackingEnabled && firstQuestion) {
+      this.startQuestionTracking(firstQuestion)
+    }
 
     return {
       active: true,
@@ -448,7 +459,10 @@ class SimpleLevelTest {
       explanation: question.explanation,
       targetLevel: this.currentLevel,
       questionNumber: this.currentQuestionIndex,
-      difficulty: Math.min(this.currentLevelIndex + 1, 5)
+      difficulty: Math.min(this.currentLevelIndex + 1, 5),
+      // Enhanced metadata for dynamic evaluation
+      competencyInfo: this.extractCompetencyInfo(question),
+      startTime: Date.now()
     }
   }
 
@@ -459,14 +473,27 @@ class SimpleLevelTest {
     if (!question) return { error: 'Question not found' }
 
     const isCorrect = userAnswer === question.correct
+    const responseTime = Date.now() - (question.startTime || Date.now())
 
-    this.results.push({
+    // Enhanced result with tracking metadata
+    const result = {
       questionId,
       userAnswer,
       correctAnswer: question.correct,
       isCorrect,
-      level: this.currentLevel
-    })
+      level: this.currentLevel,
+      responseTime,
+      competencyInfo: this.extractCompetencyInfo(question),
+      difficulty: question.difficulty || Math.min(this.currentLevelIndex + 1, 5),
+      timestamp: Date.now()
+    }
+
+    this.results.push(result)
+
+    // Track with progress system if enabled
+    if (this.trackingEnabled && this.currentAttemptId) {
+      this.completeQuestionTracking(result)
+    }
 
     this.questionsInCurrentLevel++
 
@@ -497,6 +524,11 @@ class SimpleLevelTest {
       return this.completeTest()
     }
 
+    // Start tracking for next question
+    if (this.trackingEnabled && nextQuestion) {
+      this.startQuestionTracking(nextQuestion)
+    }
+
     return {
       completed: false,
       nextQuestion,
@@ -506,7 +538,8 @@ class SimpleLevelTest {
       currentEstimate: this.getCurrentEstimate(),
       feedback: {
         isCorrect,
-        explanation: question.explanation
+        explanation: question.explanation,
+        responseTime
       }
     }
   }
@@ -634,6 +667,7 @@ class SimpleLevelTest {
     this.isActive = false
     this.results = []
     this.questionsUsed = new Set()
+    this.currentAttemptId = null
   }
 
   isTestActive() {
@@ -642,6 +676,145 @@ class SimpleLevelTest {
 
   getTestProgress() {
     return this.getProgress()
+  }
+
+  /**
+   * Extracts competency information from a question for tracking
+   */
+  extractCompetencyInfo(question) {
+    // For placement test questions, we'll infer competency from the question content
+    // This is a simplified extraction - could be enhanced with more sophisticated analysis
+
+    if (!question || !question.prompt) return null
+
+    const prompt = question.prompt.toLowerCase()
+
+    // Basic patterns to identify competencies
+    const competencyPatterns = {
+      // Present indicative patterns
+      present_indicative: /\b(soy|estoy|tengo|es|está|tiene|somos|estamos|tenemos|son|están|tienen)\b/,
+      // Preterite patterns
+      preterite: /\b(fui|fue|fuimos|fueron|tuve|tuvo|tuvimos|tuvieron|iba|íbamos|iban|era|eras|éramos|eran)\b/,
+      // Subjunctive patterns
+      subjunctive: /\b(espero que|es importante que|no creo que|dudo que|me alegra que|aunque|ojalá)\b/,
+      // Conditional patterns
+      conditional: /\b(si tuviera|habría|podrías|sería|haría|en tu lugar)\b/,
+      // Future patterns
+      future: /\b(mañana|iremos|será|haremos|tendremos)\b/,
+      // Imperative patterns
+      imperative: /\b(no|afirmativo|negativo|mandato)\b/
+    }
+
+    // Determine mood and tense based on patterns
+    let mood = 'indicative'
+    let tense = 'pres'
+
+    if (competencyPatterns.subjunctive.test(prompt)) {
+      mood = 'subjunctive'
+      tense = 'subjPres'
+    } else if (competencyPatterns.conditional.test(prompt)) {
+      mood = 'conditional'
+      tense = 'cond'
+    } else if (competencyPatterns.imperative.test(prompt)) {
+      mood = 'imperative'
+      tense = 'impAff'
+    } else if (competencyPatterns.preterite.test(prompt)) {
+      mood = 'indicative'
+      tense = 'pretIndef'
+    } else if (competencyPatterns.future.test(prompt)) {
+      mood = 'indicative'
+      tense = 'fut'
+    }
+
+    return {
+      mood,
+      tense,
+      inferredFrom: 'question_pattern_analysis',
+      confidence: 0.7 // Moderate confidence in pattern-based inference
+    }
+  }
+
+  /**
+   * Starts tracking for a question using the progress system
+   */
+  startQuestionTracking(question) {
+    if (!this.trackingEnabled) return
+
+    try {
+      const competencyInfo = this.extractCompetencyInfo(question)
+
+      if (competencyInfo) {
+        // Create a mock item for tracking purposes
+        const mockItem = {
+          id: `placement-test-${question.id}`,
+          mood: competencyInfo.mood,
+          tense: competencyInfo.tense,
+          person: '3s', // Default person for placement test
+          verbId: 'placement_test',
+          lemma: 'placement_test',
+          form: {
+            mood: competencyInfo.mood,
+            tense: competencyInfo.tense,
+            person: '3s',
+            lemma: 'placement_test'
+          }
+        }
+
+        this.currentAttemptId = trackAttemptStarted(mockItem)
+      }
+    } catch (error) {
+      console.warn('Error starting question tracking:', error)
+      this.currentAttemptId = null
+    }
+  }
+
+  /**
+   * Completes tracking for a question using the progress system
+   */
+  async completeQuestionTracking(result) {
+    if (!this.trackingEnabled || !this.currentAttemptId) return
+
+    try {
+      const competencyInfo = result.competencyInfo
+
+      if (competencyInfo) {
+        // Create tracking result
+        const trackingResult = {
+          correct: result.isCorrect,
+          latencyMs: result.responseTime,
+          hintsUsed: 0, // Placement test doesn't use hints
+          userAnswer: result.userAnswer,
+          correctAnswer: result.correctAnswer,
+          item: {
+            mood: competencyInfo.mood,
+            tense: competencyInfo.tense,
+            person: '3s',
+            verbId: 'placement_test',
+            lemma: 'placement_test',
+            form: {
+              mood: competencyInfo.mood,
+              tense: competencyInfo.tense,
+              person: '3s',
+              lemma: 'placement_test'
+            }
+          },
+          errorTags: result.isCorrect ? [] : ['placement_test_error']
+        }
+
+        await trackAttemptSubmitted(this.currentAttemptId, trackingResult)
+      }
+    } catch (error) {
+      console.warn('Error completing question tracking:', error)
+    } finally {
+      this.currentAttemptId = null
+    }
+  }
+
+  /**
+   * Enables or disables tracking integration
+   */
+  setTrackingEnabled(enabled) {
+    this.trackingEnabled = enabled
   }
 }
 
