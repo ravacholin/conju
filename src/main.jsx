@@ -65,7 +65,7 @@ if (typeof window !== 'undefined') {
         console.log('🔄 Iniciando sincronización automática después del login...')
         try {
           SET_SYNC_AUTH_HEADER_NAME('Authorization')
-          const AUTH_SERVICE = await import('./lib/auth/authService.js')
+          const authService = await import('./lib/auth/authService.js')
           if (typeof authService.default.ensureAnonymousProgressMigration === 'function') {
             await authService.default.ensureAnonymousProgressMigration()
           }

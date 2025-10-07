@@ -223,7 +223,7 @@ export class RolePlayingExercise extends ExerciseBase {
     };
   }
 
-  async analyzePhaseResponse(response, _phase) {
+  async analyzePhaseResponse(response, phase) {
     const analysis = {
       elementsPresent: [],
       elementsMissing: [],
@@ -279,7 +279,7 @@ export class RolePlayingExercise extends ExerciseBase {
                             analysis.appropriatenessScore >= 0.6;
 
     // Generar sugerencias
-    analysis.suggestions = this.generatePhaseSuggestions(analysis, _phase);
+    analysis.suggestions = this.generatePhaseSuggestions(analysis, phase);
 
     return analysis;
   }
@@ -418,7 +418,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return Math.max(score, 0.2);
   }
 
-  generateNPCResponse(userResponse, analysis, _phase) {
+  generateNPCResponse(userResponse, analysis, phase) {
     if (this.currentPhase >= this.phases.length) {
       return null; // No más respuestas, ejercicio completo
     }
@@ -454,7 +454,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return npcResponse;
   }
 
-  generatePhaseSuggestions(analysis, _phase) {
+  generatePhaseSuggestions(analysis, phase) {
     const suggestions = [];
 
     if (analysis.elementsMissing.length > 0) {
@@ -476,7 +476,7 @@ export class RolePlayingExercise extends ExerciseBase {
     return suggestions;
   }
 
-  generatePhaseFeedback(analysis, _phase) {
+  generatePhaseFeedback(analysis, phase) {
     let feedback = '';
 
     if (analysis.meetsCriteria) {

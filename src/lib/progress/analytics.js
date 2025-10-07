@@ -520,7 +520,7 @@ export async function getAdvancedAnalytics(userId) {
   const config = PROGRESS_CONFIG.ADVANCED_ANALYTICS_CONFIG || {}
   const retentionWindow = config.RETENTION_WINDOW_DAYS || 30
   const engagementWindow = config.ENGAGEMENT_WINDOW_DAYS || 14
-  const DAY_MS = 24 * 60 * 60 * 1000
+  const dayMs = 24 * 60 * 60 * 1000
 
   try {
     const [attempts, mastery] = await Promise.all([
@@ -628,7 +628,7 @@ function hourInSegment(hour, segment) {
 }
 
 function buildRetentionSeries(dailyStats, windowSize) {
-  const DAY_MS = 24 * 60 * 60 * 1000
+  const dayMs = 24 * 60 * 60 * 1000
   const series = []
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -706,7 +706,7 @@ function computeActivityStreaks(activeDaysSet) {
   if (!activeDaysSet || activeDaysSet.size === 0) {
     return { current: 0, best: 0 }
   }
-  const DAY_MS = 24 * 60 * 60 * 1000
+  const dayMs = 24 * 60 * 60 * 1000
   const sortedDates = Array.from(activeDaysSet)
     .map(dayKey => new Date(dayKey))
     .sort((a, b) => a - b)
