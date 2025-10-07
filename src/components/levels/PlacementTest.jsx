@@ -304,7 +304,7 @@ function PlacementTest({ onComplete, onCancel }) {
         <div className="test-info">
           <div className="info-item">
             <div className="info-label">Duración:</div>
-            <div className="info-text">3-12 preguntas • ~5 minutos</div>
+            <div className="info-text">3-15 preguntas • ~5 minutos</div>
           </div>
           <div className="info-item">
             <div className="info-label">Niveles:</div>
@@ -347,7 +347,7 @@ function PlacementTest({ onComplete, onCancel }) {
             />
           </div>
           <div className="progress-text">
-            Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 12}
+            Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 15}
           </div>
         </div>
 

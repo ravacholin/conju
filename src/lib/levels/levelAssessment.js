@@ -386,7 +386,7 @@ class SimpleLevelTest {
     this.currentLevelIndex = 0
     this.questionsInCurrentLevel = 0
     this.consecutiveFailures = 0
-    this.maxTotalQuestions = 12
+    this.maxTotalQuestions = 15
     this.trackingEnabled = true // Enable tracking integration
     this.currentAttemptId = null // Track current attempt for progress system
     this.testStartTime = null // Track test duration
@@ -500,6 +500,13 @@ class SimpleLevelTest {
     // Simple adaptive logic
     if (isCorrect) {
       this.consecutiveFailures = 0
+
+      // Special case: if in highest level (C1) and answered 2 questions correctly, complete test
+      if (this.currentLevel === 'C1' && this.questionsInCurrentLevel >= 2) {
+        console.log('🏆 Completed C1 level with 2+ correct answers, finishing test')
+        return this.completeTest()
+      }
+
       // If answered enough questions in this level correctly, try next level
       if (this.questionsInCurrentLevel >= this.maxQuestionsPerLevel) {
         return this.moveToNextLevel()
@@ -546,8 +553,8 @@ class SimpleLevelTest {
 
   moveToNextLevel() {
     if (this.currentLevelIndex >= this.levelProgression.length - 1) {
-      // Reached highest level
-      console.log('🏆 Reached highest level, completing test')
+      // Reached highest level - should complete after demonstrating competency
+      console.log('🏆 Already at highest level (C1), completing test')
       return this.completeTest()
     }
 
