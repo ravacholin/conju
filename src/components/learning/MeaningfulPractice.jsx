@@ -5,6 +5,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade as GRADE } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
+import { getVerbByLemma } from '../../lib/core/verbDataService.js';
 
 // Importar el nuevo sistema de práctica significativa
 import exerciseFactory from '../../lib/meaningful-practice/exercises/ExerciseFactory.js';
@@ -13,75 +14,137 @@ import { EXERCISE_TYPES } from '../../lib/meaningful-practice/core/constants.js'
 
 import './MeaningfulPractice.css';
 
+const FALLBACK_LEMMAS_BY_TENSE = {
+  pres: ['ser', 'estar', 'tener', 'hacer', 'decir', 'ver'],
+  pretIndef: ['ir', 'hacer', 'decir', 'ver', 'dar', 'saber'],
+  impf: ['ser', 'estar', 'tener', 'hacer', 'ir', 'ver'],
+  fut: ['ser', 'estar', 'tener', 'hacer', 'ir', 'poder'],
+  cond: ['ser', 'estar', 'tener', 'hacer', 'poder', 'querer'],
+  default: ['ser', 'estar', 'tener']
+};
+
+const TENSE_NAMES = {
+  pres: 'presente',
+  pretIndef: 'pretérito indefinido',
+  impf: 'imperfecto',
+  fut: 'futuro',
+  cond: 'condicional',
+  pretPerf: 'pretérito perfecto'
+};
+
+function normalizeVerbText(text = '') {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .trim();
+}
+
+function uniqueList(values = []) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function buildEligibleLemmaMap(forms = []) {
+  const map = new Map();
+
+  forms.forEach(form => {
+    if (!form || !form.lemma) {
+      return;
+    }
+
+    const lemma = form.lemma;
+    const candidates = [form.value, form.display, form.example];
+
+    candidates
+      .filter(candidate => typeof candidate === 'string' && candidate.length > 0)
+      .forEach(candidate => {
+        map.set(normalizeVerbText(candidate), lemma);
+      });
+  });
+
+  return map;
+}
+
+async function resolveFallbackLemmas(tense) {
+  const candidateLemmas = FALLBACK_LEMMAS_BY_TENSE[tense] || FALLBACK_LEMMAS_BY_TENSE.default;
+
+  const resolved = await Promise.all(
+    candidateLemmas.map(async lemma => {
+      try {
+        const verb = await getVerbByLemma(lemma);
+        return verb?.lemma || null;
+      } catch (error) {
+        console.warn(`No se pudo recuperar el verbo ${lemma} desde el servicio auxiliar`, error);
+        return null;
+      }
+    })
+  );
+
+  const filtered = uniqueList(resolved);
+  return filtered.length > 0 ? filtered : candidateLemmas;
+}
+
 /**
  * Extrae los verbos requeridos del ejercicio y eligibleForms
  * @param {Object} exercise - Ejercicio actual
  * @param {Array} eligibleForms - Formas verbales elegibles del SRS
  * @param {string} tense - Tiempo verbal
  * @param {string} mood - Modo verbal
- * @returns {Object} Objeto con verbos requeridos y ejemplos
+ * @returns {Promise<Object>} Objeto con verbos requeridos y ejemplos
  */
-function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
+async function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
   const result = {
     lemmas: [],
     conjugatedExamples: [],
     instructions: ''
   };
 
-  // 1. Intentar obtener verbos del ejercicio
+  const formsWithLemma = Array.isArray(eligibleForms)
+    ? eligibleForms.filter(form => form?.lemma)
+    : [];
+
+  const lemmaMap = buildEligibleLemmaMap(formsWithLemma);
+
   if (exercise?.expectedVerbs?.length > 0) {
     result.conjugatedExamples = exercise.expectedVerbs;
-    result.lemmas = exercise.expectedVerbs.map(verb => {
-      // Extraer lemma básico removiendo terminaciones comunes
-      return verb.replace(/ó$/, 'ar').replace(/ió$/, 'ir').replace(/aron$/, 'ar').replace(/ieron$/, 'er');
-    });
+
+    const lemmasFromExpected = exercise.expectedVerbs
+      .map(verb => lemmaMap.get(normalizeVerbText(verb)))
+      .filter(Boolean);
+
+    if (lemmasFromExpected.length > 0) {
+      result.lemmas = uniqueList(lemmasFromExpected).slice(0, 8);
+    }
   }
 
-  // 1.1. Si hay instrucciones específicas de verbos, usarlas
+  if (result.lemmas.length === 0 && formsWithLemma.length > 0) {
+    result.lemmas = uniqueList(formsWithLemma.map(form => form.lemma)).slice(0, 8);
+
+    if (result.conjugatedExamples.length === 0) {
+      result.conjugatedExamples = formsWithLemma
+        .filter(form => form.tense === tense && form.mood === mood && form.value)
+        .map(form => form.value)
+        .slice(0, 8);
+    }
+  }
+
+  if (result.lemmas.length === 0) {
+    // Último recurso: lista de emergencia documentada para cuando el SRS no tiene datos.
+    result.lemmas = await resolveFallbackLemmas(tense);
+  }
+
+  const tenseName = TENSE_NAMES[tense] || tense;
+
+  if (result.lemmas.length > 0 && result.conjugatedExamples.length > 0) {
+    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.lemmas.join(', ')} (por ejemplo: ${result.conjugatedExamples.join(', ')})`;
+  } else if (result.lemmas.length > 0) {
+    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.lemmas.join(', ')}`;
+  } else if (result.conjugatedExamples.length > 0) {
+    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.conjugatedExamples.join(', ')}`;
+  }
+
   if (exercise?.verbInstructions) {
     result.instructions = exercise.verbInstructions;
-  }
-
-  // 2. Si no hay verbos del ejercicio, extraer de eligibleForms
-  if (result.lemmas.length === 0 && eligibleForms?.length > 0) {
-    const uniqueLemmas = [...new Set(eligibleForms.map(form => form.lemma))];
-    result.lemmas = uniqueLemmas.slice(0, 8); // Limitar a 8 verbos máximo
-
-    // Obtener ejemplos conjugados del tense/mood actual
-    result.conjugatedExamples = eligibleForms
-      .filter(form => form.tense === tense && form.mood === mood)
-      .map(form => form.value)
-      .slice(0, 8);
-  }
-
-  // 3. Si aún no hay verbos, usar verbos comunes para el tiempo verbal
-  if (result.lemmas.length === 0) {
-    const commonVerbsByTense = {
-      'pres': ['ser', 'estar', 'tener', 'hacer', 'decir', 'ver'],
-      'pretIndef': ['ir', 'hacer', 'decir', 'ver', 'dar', 'saber'],
-      'impf': ['ser', 'estar', 'tener', 'hacer', 'ir', 'ver'],
-      'fut': ['ser', 'estar', 'tener', 'hacer', 'ir', 'poder'],
-      'cond': ['ser', 'estar', 'tener', 'hacer', 'poder', 'querer']
-    };
-    result.lemmas = commonVerbsByTense[tense] || ['ser', 'estar', 'tener'];
-  }
-
-  // 4. Generar instrucciones claras
-  const tenseNames = {
-    'pres': 'presente',
-    'pretIndef': 'pretérito indefinido',
-    'impf': 'imperfecto',
-    'fut': 'futuro',
-    'cond': 'condicional',
-    'pretPerf': 'pretérito perfecto'
-  };
-
-  const tenseName = tenseNames[tense] || tense;
-
-  if (result.conjugatedExamples.length > 0) {
-    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.conjugatedExamples.join(', ')}`;
-  } else {
-    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.lemmas.join(', ')}`;
   }
 
   return result;
@@ -476,7 +539,48 @@ function MeaningfulPractice({
 
 // Componente para mostrar el encabezado del ejercicio
 function ExerciseHeader({ exercise, step, tense, mood, eligibleForms }) {
-  const requiredVerbs = extractRequiredVerbs(exercise, eligibleForms, tense, mood);
+  const [requiredVerbs, setRequiredVerbs] = useState({
+    lemmas: [],
+    conjugatedExamples: [],
+    instructions: ''
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!exercise) {
+      setRequiredVerbs({
+        lemmas: [],
+        conjugatedExamples: [],
+        instructions: ''
+      });
+      return;
+    }
+
+    async function loadRequiredVerbs() {
+      try {
+        const verbs = await extractRequiredVerbs(exercise, eligibleForms, tense, mood);
+        if (isMounted) {
+          setRequiredVerbs(verbs);
+        }
+      } catch (error) {
+        console.error('No se pudieron extraer los verbos requeridos', error);
+        if (isMounted) {
+          setRequiredVerbs({
+            lemmas: [],
+            conjugatedExamples: [],
+            instructions: ''
+          });
+        }
+      }
+    }
+
+    loadRequiredVerbs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [exercise, eligibleForms, tense, mood]);
 
   return (
     <div className="exercise-header">
@@ -874,3 +978,5 @@ function ExerciseProgress({ results, currentStep, totalSteps }) {
 }
 
 export default MeaningfulPractice;
+
+export { extractRequiredVerbs };
