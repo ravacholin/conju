@@ -175,9 +175,13 @@ export function useDrillMode() {
 
     try {
       // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Item generation timeout after 5 seconds')), 5000)
-      )
+      let timeoutId
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error('Item generation timeout after 5 seconds')),
+          5000
+        )
+      })
 
       const generationPromise = generateNextItemInternal(
         itemToExclude,
@@ -186,7 +190,11 @@ export function useDrillMode() {
         history
       )
 
-      newItem = await Promise.race([generationPromise, timeoutPromise])
+      newItem = await Promise.race([generationPromise, timeoutPromise]).finally(() => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId)
+        }
+      })
     } catch (error) {
       logger.error('generateNormalItem', 'Generation failed or timed out', error)
 
