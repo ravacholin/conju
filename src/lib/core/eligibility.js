@@ -155,6 +155,10 @@ export function getAllowedMoods(settings) {
 
     try {
       combos = getAllowedCombosForLevel(effectiveLevel)
+      // Convert Set to Array if needed
+      if (combos instanceof Set) {
+        combos = Array.from(combos)
+      }
     } catch (combosError) {
       logger.error('getAllowedMoods', `Error getting combinations for level ${effectiveLevel}`, combosError)
 
@@ -170,6 +174,10 @@ export function getAllowedMoods(settings) {
       logger.warn('getAllowedMoods', 'Falling back to A1 level combinations')
       try {
         combos = getAllowedCombosForLevel('A1')
+        // Convert Set to Array if needed
+        if (combos instanceof Set) {
+          combos = Array.from(combos)
+        }
       } catch (fallbackError) {
         logger.error('getAllowedMoods', 'Failed to get even A1 combinations', fallbackError)
 
@@ -369,6 +377,10 @@ export function getAllowedTensesForMood(settings, mood) {
 
     try {
       combos = getAllowedCombosForLevel(effectiveLevel)
+      // Convert Set to Array if needed
+      if (combos instanceof Set) {
+        combos = Array.from(combos)
+      }
     } catch (combosError) {
       logger.error('getAllowedTensesForMood', `Error getting combinations for level ${effectiveLevel}`, combosError)
 
@@ -385,6 +397,10 @@ export function getAllowedTensesForMood(settings, mood) {
       logger.warn('getAllowedTensesForMood', 'Falling back to A1 level combinations')
       try {
         combos = getAllowedCombosForLevel('A1')
+        // Convert Set to Array if needed
+        if (combos instanceof Set) {
+          combos = Array.from(combos)
+        }
       } catch (fallbackError) {
         logger.error('getAllowedTensesForMood', 'Failed to get even A1 combinations', fallbackError)
 

@@ -382,7 +382,13 @@ export function useOnboardingFlow() {
     }
     closeTopPanelsAndFeatures()
     // Apply level-specific policies
-    const updates = { level }
+    const updates = {
+      level,
+      practiceMode: 'specific',
+      cameFromTema: false,
+      specificMood: null,
+      specificTense: null
+    }
     if (level === 'A1') {
       updates.strict = false
       updates.accentTolerance = 'accept'
@@ -478,7 +484,7 @@ export function useOnboardingFlow() {
       updates.allowedLemmas = getAllowedLemmasForLevel('C2')
     }
     settings.set(updates)
-    setOnboardingStep(4) // Go to practice mode selection
+    setOnboardingStep(5) // Go directly to mood selection
   }
 
   const selectPracticeMode = (mode) => {
