@@ -307,9 +307,12 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
     let cancelled = false
 
-    function loadEligibleForms() {
+    async function loadEligibleForms() {
       try {
-        const basePool = buildFormsForRegion(settings.region || 'la_general', settings)
+        const basePool = await buildFormsForRegion(settings.region || 'la_general', settings)
+        if (cancelled) {
+          return
+        }
         console.log('📊 BasePool for pronunciation practice:', {
           region: settings.region || 'la_general',
           totalForms: basePool.length,
@@ -329,6 +332,10 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
         console.log('⚙️ Pronunciation settings (less restrictive):', pronunciationSettings);
 
         const gated = getEligibleFormsForSettings(basePool, pronunciationSettings)
+
+        if (cancelled) {
+          return
+        }
 
         console.log('🎯 Eligible forms after gating:', {
           totalEligible: gated.length,
