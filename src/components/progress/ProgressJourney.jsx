@@ -237,7 +237,7 @@ export default function ProgressJourney({ compact = false }) {
     <div className="progress-journey full">
       <div className="journey-header">
         <h3>
-          <img src="/icons/journey.png" alt="Viaje" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
+          <img src="/icons/map.png" alt="Viaje" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
           Tu Viaje de Aprendizaje
         </h3>
         <div className="journey-subtitle">

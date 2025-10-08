@@ -164,7 +164,7 @@ export default function GamificationDisplay({ compact = false, showBadges = true
 
           <div className="streak-card perfect">
             <div className="streak-icon-wrapper">
-              <img src="/icons/target.png" alt="Sin lapsos" className="streak-icon" />
+              <img src="/diana.png" alt="Sin lapsos" className="streak-icon" />
             </div>
             <div className="streak-info">
               <span className="streak-number">{streaks.lapseFree}</span>

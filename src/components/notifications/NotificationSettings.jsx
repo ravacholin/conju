@@ -179,7 +179,7 @@ export default function NotificationSettings({ compact = false }) {
     <div className="notification-settings full">
       <div className="settings-header">
         <h3>
-          <img src="/icons/bell.png" alt="Notificaciones" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
+          <img src="/icons/sparks.png" alt="Notificaciones" className="section-icon" onError={(e) => e.target.style.display = 'none'} />
           Notificaciones Inteligentes
         </h3>
         <p className="settings-subtitle">

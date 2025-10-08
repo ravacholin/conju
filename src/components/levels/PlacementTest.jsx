@@ -282,44 +282,75 @@ function PlacementTest({ onComplete, onCancel }) {
 
   if (!testStarted) {
     return (
-      <div className="placement-test-intro">
-        <div className="test-header">
-          <h2>Test de Nivel de Conjugación</h2>
-          <p className="test-description">
-            Test profesional que determina tu nivel CEFR en conjugación verbal española automáticamente.
-          </p>
-        </div>
-
-        <div className="test-options">
-          <ClickableCard
-            className="test-option"
-            onClick={() => handleStartTest()}
-            title="Iniciar test de nivel"
-          >
-            <div className="option-title">🧠 Iniciar Test de Nivel</div>
-            <div className="option-description">Determina tu nivel automáticamente</div>
-          </ClickableCard>
-        </div>
-
-        <div className="test-info">
-          <div className="info-item">
-            <div className="info-label">Duración:</div>
-            <div className="info-text">3-15 preguntas • ~5 minutos</div>
+      <div className="placement-test-container">
+        <div className="placement-test-intro page-transition page-in">
+          <div className="test-header">
+            <div className="header-icon">
+              <img src="/icons/brain.png" alt="Test de nivel" className="inline-icon lg" />
+            </div>
+            <h2 className="test-title">Test de Nivel de Conjugación</h2>
+            <p className="test-subtitle">
+              Test profesional que determina tu nivel CEFR en conjugación verbal española automáticamente.
+            </p>
           </div>
-          <div className="info-item">
-            <div className="info-label">Niveles:</div>
-            <div className="info-text">A1 (básico) hasta C1 (avanzado)</div>
-          </div>
-        </div>
 
-        <div className="test-actions">
-          <ClickableCard
-            className="btn-secondary"
-            onClick={handleCancel}
-            title="Cancelar test"
-          >
-            Cancelar
-          </ClickableCard>
+          <div className="test-options">
+            <div
+              className="test-start-card"
+              onClick={() => handleStartTest()}
+              title="Iniciar test de nivel"
+            >
+              <div className="start-card-content">
+                <div className="start-icon-wrapper">
+                  <img src="/play.png" alt="Comenzar" className="start-icon" />
+                </div>
+                <div className="start-text">
+                  <div className="start-title">Iniciar Test Adaptativo</div>
+                  <div className="start-description">Determina tu nivel automáticamente</div>
+                </div>
+                <div className="start-arrow">
+                  <img src="/next.png" alt="Continuar" className="arrow-icon" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="test-info-grid">
+            <div className="info-card">
+              <img src="/crono.png" alt="Tiempo" className="inline-icon" />
+              <div className="info-content">
+                <div className="info-label">Duración</div>
+                <div className="info-value">3-15 preguntas</div>
+                <div className="info-sub">~5 minutos</div>
+              </div>
+            </div>
+            <div className="info-card">
+              <img src="/icons/chart.png" alt="Preguntas" className="inline-icon" />
+              <div className="info-content">
+                <div className="info-label">Niveles</div>
+                <div className="info-value">A1 - C1</div>
+                <div className="info-sub">CEFR oficial</div>
+              </div>
+            </div>
+            <div className="info-card">
+              <img src="/diana.png" alt="Precisión" className="inline-icon" />
+              <div className="info-content">
+                <div className="info-label">Precisión</div>
+                <div className="info-value">Adaptativo</div>
+                <div className="info-sub">IA avanzada</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="test-actions">
+            <div
+              className="btn-secondary-modern"
+              onClick={handleCancel}
+              title="Cancelar test"
+            >
+              <span className="btn-text">Cancelar</span>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -327,8 +358,21 @@ function PlacementTest({ onComplete, onCancel }) {
 
   if (!currentQuestion) {
     return (
-      <div className="placement-test loading">
-        <div className="loading-text">Cargando pregunta...</div>
+      <div className="placement-test-container">
+        <div className="placement-test-loading page-transition page-in">
+          <div className="loading-content">
+            <div className="loading-animation">
+              <div className="loading-spinner"></div>
+              <div className="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div className="loading-text">Generando pregunta adaptativa...</div>
+            <div className="loading-subtitle">Analizando tu progreso</div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -337,119 +381,200 @@ function PlacementTest({ onComplete, onCancel }) {
   const currentEstimate = assessment.getCurrentEstimate()
 
   return (
-    <div className="placement-test-active" onKeyDown={handleKeyNavigation} tabIndex="0">
-      <div className="test-progress">
-        <div className="progress-info">
-          <div className="progress-bar">
+    <div className="placement-test-container">
+      <div className="placement-test-active page-transition page-in" onKeyDown={handleKeyNavigation} tabIndex="0">
+        <div className="test-progress-section">
+          <div className="progress-header">
+            <div className="progress-title">
+              <img src="/icons/chart.png" alt="Progreso" className="inline-icon" />
+              <span>Progreso del Test</span>
+            </div>
+            <div className="adaptive-badge">
+              <img src="/icons/sparks.png" alt="Adaptativo" className="inline-icon" />
+              <span>Adaptativo</span>
+            </div>
+          </div>
+
+          <div className="progress-info">
+            <div className="progress-bar-container">
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${progress}%` }}
+                />
+                <div className="progress-glow" style={{ width: `${progress}%` }} />
+              </div>
+              <div className="progress-text">
+                Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 15}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="current-estimate">
+            <div className="estimate-level">
+              <span className="estimate-label">Nivel estimado</span>
+              <div className="level-badge-container">
+                <span className={`level-badge level-${currentEstimate.level.toLowerCase()}`}>
+                  <span className="level-text">{currentEstimate.level}</span>
+                  <span className="level-shine"></span>
+                </span>
+              </div>
+            </div>
+            <div className="estimate-confidence">
+              <div className="confidence-wrapper">
+                <div className="confidence-bar">
+                  <div
+                    className="confidence-fill"
+                    style={{ width: `${currentEstimate.confidence}%` }}
+                  />
+                  <div className="confidence-glow" style={{ width: `${currentEstimate.confidence}%` }} />
+                </div>
+                <span className="confidence-text">
+                  {Math.round(currentEstimate.confidence)}% confianza
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="question-card">
+          <div className="question-header">
+            <div className="question-meta">
+              <div className="question-level-badge">
+                <img src="/diana.png" alt="Nivel" className="inline-icon" />
+                <span>{currentQuestion.targetLevel}</span>
+              </div>
+              <div className="question-difficulty">
+                <span className="difficulty-label">Dificultad</span>
+                <div className="difficulty-dots">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span
+                      key={i}
+                      className={`difficulty-dot ${
+                        i < (currentQuestion.difficulty || 1) ? 'active' : 'inactive'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            {currentQuestion.irregularityInfo && (
+              <div className="irregularity-info">
+                <div className="pattern-badge">
+                  <img src="/icons/bolt.png" alt="Patrón" className="inline-icon" />
+                  <span>{currentQuestion.irregularityInfo.family}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="question-content">
+            <div className="question-prompt-container">
+              <div className="question-prompt">{currentQuestion.prompt}</div>
+              <div className="prompt-decoration"></div>
+            </div>
+
+            <div className="answer-options" role="radiogroup" aria-label="Opciones de respuesta">
+              {currentQuestion.options?.map((option, index) => (
+                <div
+                  key={index}
+                  className={`option-card ${
+                    selectedOption === option ? 'selected' : ''
+                  } ${
+                    showExplanation && option === currentQuestion.expectedAnswer ? 'correct' : ''
+                  } ${
+                    showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
+                  }`}
+                  onClick={() => handleOptionSelect(option)}
+                  onKeyDown={(e) => handleKeyDown(e, option)}
+                  title={`Seleccionar opción: ${option}`}
+                  tabIndex={0}
+                  role="radio"
+                  aria-checked={selectedOption === option}
+                  aria-label={`Opción ${String.fromCharCode(65 + index)}: ${option}`}
+                >
+                  <div className="option-content">
+                    <div className="option-letter-container">
+                      <span className="option-letter" aria-hidden="true">{String.fromCharCode(65 + index)}</span>
+                    </div>
+                    <span className="option-text">{option}</span>
+                    <div className="option-indicator">
+                      {selectedOption === option && !showExplanation && (
+                        <img src="/next.png" alt="Seleccionado" className="option-icon" />
+                      )}
+                      {showExplanation && option === currentQuestion.expectedAnswer && (
+                        <img src="/next.png" alt="Correcto" className="option-icon correct" />
+                      )}
+                      {showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer && (
+                        <img src="/back.png" alt="Incorrecto" className="option-icon incorrect" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {showExplanation && currentQuestion.explanation && (
+              <div className="explanation-container">
+                <div className="explanation-box">
+                  <div className="explanation-header">
+                    <img src="/icons/lightbulb.png" alt="Explicación" className="inline-icon" />
+                    <span className="explanation-label">Explicación</span>
+                  </div>
+                  <div className="explanation-text">{currentQuestion.explanation}</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="question-actions">
             <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="progress-text">
-            Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 15}
-          </div>
-        </div>
-
-        <div className="current-estimate">
-          <div className="estimate-level">
-            <span className="estimate-label">Nivel estimado:</span>
-            <span className={`level-badge level-${currentEstimate.level.toLowerCase()}`}>
-              {currentEstimate.level}
-            </span>
-          </div>
-          <div className="estimate-confidence">
-            <div className="confidence-bar">
-              <div
-                className="confidence-fill"
-                style={{ width: `${currentEstimate.confidence}%` }}
-              />
+              className="btn-secondary-modern"
+              onClick={handleCancel}
+              title="Cancelar test"
+            >
+              <img src="/back.png" alt="Volver" className="btn-icon" />
+              <span className="btn-text">Cancelar</span>
             </div>
-            <span className="confidence-text">
-              Confianza: {Math.round(currentEstimate.confidence)}%
-            </span>
-          </div>
-        </div>
-      </div>
 
-      <div className="question-card">
-        <div className="question-header">
-          <div className="question-meta">
-            <div className="question-level">{currentQuestion.targetLevel}</div>
-            <div className="question-difficulty">
-              <span className="difficulty-label">Dificultad:</span>
-              {'●'.repeat(currentQuestion.difficulty || 1)}
-              {'○'.repeat(6 - (currentQuestion.difficulty || 1))}
+            <div
+              className={`submit-button-modern ${
+                !selectedOption || isSubmitting || showExplanation ? 'disabled' : 'enabled'
+              }`}
+              onClick={handleSubmitAnswer}
+              title="Enviar respuesta"
+            >
+              <div className="submit-content">
+                {isSubmitting && (
+                  <div className="loading-spinner"></div>
+                )}
+                <span className="submit-text">
+                  {isSubmitting ? 'Procesando...' : showExplanation ? 'Siguiente' : 'Confirmar'}
+                </span>
+                {!isSubmitting && !showExplanation && (
+                  <img src="/next.png" alt="Continuar" className="submit-icon" />
+                )}
+              </div>
             </div>
           </div>
-          {currentQuestion.irregularityInfo && (
-            <div className="irregularity-info">
-              <span className="pattern-badge">{currentQuestion.irregularityInfo.family}</span>
-            </div>
-          )}
         </div>
 
-        <div className="question-content">
-          <div className="question-prompt">{currentQuestion.prompt}</div>
-
-          <div className="answer-options" role="radiogroup" aria-label="Opciones de respuesta">
-            {currentQuestion.options?.map((option, index) => (
-              <ClickableCard
-                key={index}
-                className={`option-button ${selectedOption === option ? 'selected' : ''} ${
-                  showExplanation && option === currentQuestion.expectedAnswer ? 'correct' : ''
-                } ${
-                  showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
-                }`}
-                onClick={() => handleOptionSelect(option)}
-                onKeyDown={(e) => handleKeyDown(e, option)}
-                title={`Seleccionar opción: ${option}`}
-                disabled={isSubmitting || showExplanation}
-                tabIndex={0}
-                role="radio"
-                aria-checked={selectedOption === option}
-                aria-label={`Opción ${String.fromCharCode(65 + index)}: ${option}`}
-              >
-                <span className="option-letter" aria-hidden="true">{String.fromCharCode(65 + index)}.</span>
-                <span className="option-text">{option}</span>
-              </ClickableCard>
-            ))}
+        <div className="test-hints">
+          <div className="hint-card">
+            <img src="/openbook.png" alt="Consejos" className="inline-icon" />
+            <div className="hint-content">
+              <div className="hint-text">
+                Selecciona la opción que complete correctamente la oración
+              </div>
+              <div className="adaptive-info">
+                <img src="/icons/sparks.png" alt="Adaptativo" className="inline-icon" />
+                <span className="adaptive-text">
+                  El test se adapta automáticamente a tu nivel de conjugación
+                </span>
+              </div>
+            </div>
           </div>
-
-          {showExplanation && currentQuestion.explanation && (
-            <div className="explanation-box">
-              <div className="explanation-label">Explicación:</div>
-              <div className="explanation-text">{currentQuestion.explanation}</div>
-            </div>
-          )}
-        </div>
-
-        <div className="question-actions">
-          <ClickableCard
-            className="btn-secondary"
-            onClick={handleCancel}
-            title="Cancelar test"
-          >
-            Cancelar
-          </ClickableCard>
-
-          <ClickableCard
-            className={`submit-button ${!selectedOption || isSubmitting || showExplanation ? 'disabled' : ''}`}
-            onClick={handleSubmitAnswer}
-            title="Enviar respuesta"
-          >
-            {isSubmitting ? 'Procesando...' : showExplanation ? 'Siguiente...' : 'Confirmar'}
-          </ClickableCard>
-        </div>
-      </div>
-
-      <div className="test-hints">
-        <div className="hint-text">
-          Selecciona la opción que complete correctamente la oración
-        </div>
-        <div className="adaptive-info">
-          <span className="adaptive-badge">Test Adaptativo</span>
-          El test progresa automáticamente según tu nivel de conjugación
         </div>
       </div>
     </div>
