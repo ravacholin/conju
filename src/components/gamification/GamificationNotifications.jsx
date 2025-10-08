@@ -1,8 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './GamificationNotifications.css'
+import useTimeouts from '../../hooks/useTimeouts'
 
 export default function GamificationNotifications() {
   const [notifications, setNotifications] = useState([])
+  const { scheduleTimeout, cancelTimeout } = useTimeouts()
+
+  const removeNotification = useCallback((id) => {
+    cancelTimeout(id)
+    setNotifications(prev => prev.filter(n => n.id !== id))
+  }, [cancelTimeout])
+
+  const addNotification = useCallback((notification) => {
+    const id = Date.now() + Math.random()
+    const newNotification = { ...notification, id, timestamp: Date.now() }
+
+    setNotifications(prev => [...prev, newNotification])
+
+    const duration = notification.duration || 4000
+
+    scheduleTimeout(id, () => {
+      removeNotification(id)
+    }, duration)
+  }, [removeNotification, scheduleTimeout])
 
   useEffect(() => {
     // Escuchar eventos de gamificación
@@ -72,23 +92,7 @@ export default function GamificationNotifications() {
       window.removeEventListener('gamification:badges-awarded', handleBadgesAwarded)
       window.removeEventListener('gamification:streak-updated', handleStreakUpdated)
     }
-  }, [])
-
-  const addNotification = (notification) => {
-    const id = Date.now() + Math.random()
-    const newNotification = { ...notification, id, timestamp: Date.now() }
-
-    setNotifications(prev => [...prev, newNotification])
-
-    // Auto-remover después de la duración especificada
-    setTimeout(() => {
-      removeNotification(id)
-    }, notification.duration || 4000)
-  }
-
-  const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
-  }
+  }, [addNotification])
 
   const getXPMessage = (reason) => {
     switch (reason) {
