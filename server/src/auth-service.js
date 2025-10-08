@@ -70,9 +70,10 @@ async function verifyGoogleCredential(credential) {
 // Account management
 export async function createAccount(data) {
   const { email, password, name, deviceName } = registerSchema.parse(data)
+  const normalizedEmail = email.toLowerCase()
 
   // Check if email already exists
-  const existing = db.prepare('SELECT id FROM accounts WHERE email = ?').get(email)
+  const existing = db.prepare('SELECT id FROM accounts WHERE email = ? COLLATE NOCASE').get(normalizedEmail)
   if (existing) {
     throw new Error('Email already registered')
   }
@@ -90,7 +91,7 @@ export async function createAccount(data) {
     db.prepare(`
       INSERT INTO accounts (id, email, password_hash, name, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(accountId, email, hashedPassword, name || null, now, now)
+    `).run(accountId, normalizedEmail, hashedPassword, name || null, now, now)
 
     // Create device
     db.prepare(`
@@ -117,12 +118,13 @@ export async function createAccount(data) {
 
 export async function authenticateAccount(email, password) {
   const { email: validEmail, password: validPassword } = loginSchema.parse({ email, password })
+  const normalizedEmail = validEmail.toLowerCase()
 
   const account = db.prepare(`
     SELECT id, email, name, password_hash, created_at
     FROM accounts
-    WHERE email = ?
-  `).get(validEmail)
+    WHERE email = ? COLLATE NOCASE
+  `).get(normalizedEmail)
 
   if (!account) {
     throw new Error('Invalid email or password')

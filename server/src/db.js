@@ -14,14 +14,14 @@ export function migrate() {
     -- Accounts table for authentication
     CREATE TABLE IF NOT EXISTS accounts (
       id TEXT PRIMARY KEY,
-      email TEXT UNIQUE,
+      email TEXT UNIQUE COLLATE NOCASE,
       password_hash TEXT,
       google_id TEXT UNIQUE,
       name TEXT,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
-    CREATE INDEX IF NOT EXISTS idx_accounts_email ON accounts(email);
+    CREATE INDEX IF NOT EXISTS idx_accounts_email_nocase ON accounts(email COLLATE NOCASE);
     CREATE INDEX IF NOT EXISTS idx_accounts_google ON accounts(google_id);
 
     -- User devices linked to accounts
