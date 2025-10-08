@@ -5,7 +5,12 @@ import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
 import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
-import { generatePersonalizedStudyPlan, invalidateStudyPlan, onStudyPlanUpdated } from '../../lib/progress/studyPlans.js'
+import {
+  generatePersonalizedStudyPlan,
+  getCachedStudyPlan,
+  invalidateStudyPlan,
+  onStudyPlanUpdated
+} from '../../lib/progress/studyPlans.js'
 import { getCommunitySnapshot, onCommunitySnapshot, clearCommunityCache } from '../../lib/progress/social.js'
 import { getOfflineStatus, onOfflineStatusChange, clearOfflineCache } from '../../lib/progress/offlineSupport.js'
 import { getExpertModeSettings, onExpertModeChange } from '../../lib/progress/expertMode.js'
@@ -205,7 +210,16 @@ export default function useProgressDashboardData() {
 
         studyPlan: async (signal) => {
           try {
-            const plan = await generatePersonalizedStudyPlan(userId)
+            if (!isRefresh) {
+              const cachedPlan = getCachedStudyPlan(userId)
+              if (cachedPlan) {
+                return cachedPlan
+              }
+            }
+
+            const plan = await generatePersonalizedStudyPlan(userId, {
+              forceRefresh: Boolean(isRefresh)
+            })
             if (signal.aborted) throw new Error('Cancelled')
             return plan || null
           } catch (e) {

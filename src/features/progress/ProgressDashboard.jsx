@@ -10,6 +10,7 @@ import ProgressOverview from './ProgressOverview.jsx'
 import HeatMapSRS from './HeatMapSRS.jsx'
 import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
+import PersonalizedStudyPlan from './PersonalizedStudyPlan.jsx'
 
 import './progress-streamlined.css'
 
@@ -25,6 +26,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const {
     heatMapData,
     userStats,
+    studyPlan,
     loading,
     error,
     systemReady,
@@ -127,6 +129,10 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           data={heatMapData}
           onNavigateToDrill={onNavigateToDrill}
         />
+      </SafeComponent>
+
+      <SafeComponent name="Plan Personalizado">
+        <PersonalizedStudyPlan plan={studyPlan} />
       </SafeComponent>
 
       <SafeComponent name="Smart Practice">

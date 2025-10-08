@@ -199,6 +199,259 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
+/* Personalized Study Plan */
+.personalized-plan {
+  background: rgba(18, 18, 18, 0.78);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.personalized-plan.empty-state {
+  align-items: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.plan-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.plan-header p {
+  color: var(--muted);
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.plan-cta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.cta-button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.65rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.cta-button.primary {
+  background: linear-gradient(135deg, rgba(58, 120, 242, 0.9), rgba(58, 120, 242, 0.6));
+  border-color: rgba(58, 120, 242, 0.8);
+  color: #fff;
+}
+
+.cta-button.secondary {
+  border-color: rgba(245, 245, 245, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.plan-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+.plan-timeline,
+.plan-micro-goals {
+  background: rgba(12, 12, 12, 0.7);
+  border: 1px solid rgba(245, 245, 245, 0.06);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.timeline-summary h3,
+.plan-micro-goals h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.timeline-weeks {
+  display: grid;
+  gap: 1rem;
+}
+
+.timeline-placeholder {
+  color: var(--muted);
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px dashed rgba(245, 245, 245, 0.08);
+}
+
+.week-card {
+  background: rgba(21, 21, 21, 0.75);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.week-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.week-number {
+  color: rgba(58, 120, 242, 0.9);
+}
+
+.week-focus {
+  font-size: 0.95rem;
+}
+
+.week-goal {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.week-targets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.week-targets li {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.micro-goals-empty {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.micro-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.micro-goal-card {
+  background: rgba(18, 18, 18, 0.8);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.micro-goal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.micro-goal-index {
+  font-weight: 700;
+  color: rgba(58, 120, 242, 0.9);
+}
+
+.micro-goal-description {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.micro-goal-progress {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.predicted-sequence {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.predicted-sequence h4 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.sequence-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sequence-tag {
+  background: rgba(58, 120, 242, 0.12);
+  border: 1px solid rgba(58, 120, 242, 0.35);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(198, 220, 255, 0.95);
+}
+
+@media (max-width: 720px) {
+  .plan-header {
+    flex-direction: column;
+  }
+
+  .plan-cta {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .cta-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 .stat-card.primary-action {
   cursor: pointer;
   border-color: rgba(125, 233, 184, 0.2);
