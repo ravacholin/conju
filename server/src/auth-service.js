@@ -31,12 +31,17 @@ const deviceInfoSchema = z
   })
   .passthrough()
 
-const registerSchema = z.object({
+const baseRegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().nullable().optional(),
   deviceName: z.string().optional(),
-  deviceInfo: deviceInfoSchema.optional().default({})
+})
+
+const registerSchema = baseRegisterSchema.extend({
+  deviceInfo: z
+    .union([z.undefined(), z.null(), deviceInfoSchema])
+    .transform((value) => value ?? {})
 })
 
 function normalizeDeviceInfo(deviceInfo) {
