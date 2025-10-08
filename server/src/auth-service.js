@@ -16,12 +16,44 @@ const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || process.env.GOOGLE_C
 const googleOAuthClient = GOOGLE_CLIENT_IDS.length ? new OAuth2Client() : null
 
 // Validation schemas
+const deviceInfoSchema = z
+  .object({
+    userAgent: z
+      .string({ invalid_type_error: 'deviceInfo.userAgent must be a string' })
+      .trim()
+      .min(1, 'deviceInfo.userAgent cannot be empty')
+      .optional(),
+    ip: z
+      .string({ invalid_type_error: 'deviceInfo.ip must be a string' })
+      .trim()
+      .min(1, 'deviceInfo.ip cannot be empty')
+      .optional()
+  })
+  .passthrough()
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().nullable().optional(),
-  deviceName: z.string().optional()
+  deviceName: z.string().optional(),
+  deviceInfo: deviceInfoSchema.optional().default({})
 })
+
+function normalizeDeviceInfo(deviceInfo) {
+  const normalized = {}
+
+  for (const [key, value] of Object.entries(deviceInfo)) {
+    if (value !== undefined && value !== null && value !== '') {
+      normalized[key] = value
+    }
+  }
+
+  if (!normalized.userAgent) {
+    normalized.userAgent = 'unknown'
+  }
+
+  return normalized
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -69,7 +101,9 @@ async function verifyGoogleCredential(credential) {
 
 // Account management
 export async function createAccount(data) {
-  const { email, password, name, deviceName } = registerSchema.parse(data)
+  const { email, password, name, deviceName, deviceInfo } = registerSchema.parse(data)
+  const normalizedDeviceInfo = normalizeDeviceInfo(deviceInfo)
+  const resolvedDeviceName = deviceName || 'Unknown Device'
 
   // Check if email already exists
   const existing = db.prepare('SELECT id FROM accounts WHERE email = ?').get(email)
@@ -96,13 +130,13 @@ export async function createAccount(data) {
     db.prepare(`
       INSERT INTO user_devices (id, account_id, device_name, device_info, created_at)
       VALUES (?, ?, ?, ?, ?)
-    `).run(deviceId, accountId, deviceName || 'Unknown Device', JSON.stringify({ userAgent: 'unknown' }), now)
+    `).run(deviceId, accountId, resolvedDeviceName, JSON.stringify(normalizedDeviceInfo), now)
 
     // Create user
     db.prepare(`
       INSERT INTO users (id, account_id, device_id, device_name, created_at, last_seen_at)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(userId, accountId, deviceId, deviceName || 'Unknown Device', now, now)
+    `).run(userId, accountId, deviceId, resolvedDeviceName, now, now)
   })()
 
   const account = db.prepare('SELECT id, email, name, created_at FROM accounts WHERE id = ?').get(accountId)
@@ -110,7 +144,7 @@ export async function createAccount(data) {
 
   return {
     account,
-    user: { id: userId, deviceId, deviceName },
+    user: { id: userId, deviceId, deviceName: resolvedDeviceName, deviceInfo: normalizedDeviceInfo },
     token
   }
 }

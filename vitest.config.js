@@ -11,7 +11,8 @@ export default defineConfig({
     hookTimeout: 30000,
     include: [
       'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
-      'tests/**/*.{test,spec}.{js,jsx,ts,tsx}'
+      'tests/**/*.{test,spec}.{js,jsx,ts,tsx}',
+      'server/**/*.{test,spec}.{js,jsx,ts,tsx}'
     ],
     exclude: [
       'node_modules',
