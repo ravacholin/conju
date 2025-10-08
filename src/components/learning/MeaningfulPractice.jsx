@@ -111,15 +111,25 @@ function MeaningfulPractice({
   const [exerciseResults, setExerciseResults] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Usar el hook de seguimiento de progreso
-  const { handleResult, handleHintShown } = useProgressTracking(
-    currentStep ? {
-      verb: currentStep.title || 'meaningful_practice',
+  const currentTrackingItem = useMemo(() => {
+    if (!currentStep && !currentExercise) return null;
+
+    const trackingId = `meaningful_${tense}_${mood}`;
+    const verbTitle = currentStep?.title || currentExercise?.title || 'meaningful_practice';
+
+    return {
+      id: trackingId,
+      verb: verbTitle,
       form: `${mood}_${tense}`,
       mood,
       tense,
       type: 'meaningful_practice'
-    } : null,
+    };
+  }, [currentStep, currentExercise, mood, tense]);
+
+  // Usar el hook de seguimiento de progreso
+  const { handleResult, handleHintShown } = useProgressTracking(
+    currentTrackingItem,
     onComplete
   );
 
@@ -257,8 +267,8 @@ function MeaningfulPractice({
 
       // Simular item para el sistema SRS
       const mockItem = {
-        id: `meaningful_practice_${tense}_${mood}`,
-        verb: currentExercise.title,
+        id: currentTrackingItem?.id || `meaningful_${tense}_${mood}`,
+        verb: currentTrackingItem?.verb || currentExercise?.title || 'meaningful_practice',
         form: `${mood}_${tense}`,
         mood,
         tense,
