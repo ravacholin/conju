@@ -2,6 +2,70 @@
 import { useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
 
+type SpeechPreferences = {
+  preferredLang: string
+  preferOrder: string[]
+}
+
+const SPAIN_PREFERENCES: SpeechPreferences = {
+  preferredLang: 'es-ES',
+  preferOrder: ['es-es', 'es-us', 'es-mx', 'es-419', 'es-ar']
+}
+
+const RIOPLATENSE_PREFERENCES: SpeechPreferences = {
+  preferredLang: 'es-AR',
+  preferOrder: ['es-ar', 'es-uy', 'es-419', 'es-mx', 'es-es', 'es-us']
+}
+
+const LATAM_PREFERENCES: SpeechPreferences = {
+  preferredLang: 'es-419',
+  preferOrder: ['es-419', 'es-mx', 'es-ar', 'es-es', 'es-us']
+}
+
+const MEXICO_PREFERENCES: SpeechPreferences = {
+  preferredLang: 'es-MX',
+  preferOrder: ['es-mx', 'es-419', 'es-us', 'es-es', 'es-ar']
+}
+
+const resolveSpeechPreferences = (
+  region: string | null | undefined,
+  useTuteo?: boolean,
+  useVosotros?: boolean
+): SpeechPreferences => {
+  const normalizedRegion = region ?? undefined
+
+  if (normalizedRegion === 'peninsular' || useVosotros) {
+    return SPAIN_PREFERENCES
+  }
+
+  if (normalizedRegion === 'rioplatense') {
+    return RIOPLATENSE_PREFERENCES
+  }
+
+  if (normalizedRegion === 'la_general') {
+    if (useTuteo === false) {
+      return RIOPLATENSE_PREFERENCES
+    }
+    if (useTuteo) {
+      return MEXICO_PREFERENCES
+    }
+    return LATAM_PREFERENCES
+  }
+
+  if (normalizedRegion === 'global') {
+    if (useTuteo) {
+      return MEXICO_PREFERENCES
+    }
+    return LATAM_PREFERENCES
+  }
+
+  if (useTuteo) {
+    return MEXICO_PREFERENCES
+  }
+
+  return LATAM_PREFERENCES
+}
+
 type SpeakArgs = {
   currentItem?: any
   result?: any
@@ -9,6 +73,18 @@ type SpeakArgs = {
   isDouble?: boolean
 }
 
+/**
+ * Hook that exposes drill-friendly SpeechSynthesis helpers.
+ *
+ * The preferred BCP-47 locale for the utterance (and the voice selection order)
+ * is derived from the user's region plus the tuteo/vosotros toggles:
+ *
+ * - `rioplatense` → `es-AR`
+ * - `peninsular` or `useVosotros` → `es-ES`
+ * - `la_general` mixes `es-MX`, `es-419` or `es-AR` depending on the toggles
+ * - unknown/undefined regions fall back to a neutral Latin American locale
+ *   (`es-419`) before enumerating other Spanish voices
+ */
 export function useSpeech() {
   const settings = useSettings()
 
@@ -17,8 +93,11 @@ export function useSpeech() {
       if (!text || typeof window === 'undefined' || !window.speechSynthesis) return
       const synth = window.speechSynthesis
       const utter = new SpeechSynthesisUtterance(text)
-      // Use the same clear Rioplatense female voice for every region
-      const preferredLang = 'es-AR'
+      const { preferredLang, preferOrder } = resolveSpeechPreferences(
+        settings?.region,
+        settings?.useTuteo,
+        settings?.useVosotros
+      )
       utter.lang = preferredLang
       utter.rate = 0.95
 
@@ -39,7 +118,6 @@ export function useSpeech() {
           'microsoft sabina',
           'microsoft helena'
         ]
-        const preferOrder = ['es-ar', 'es-419', 'es-mx', 'es-es', 'es-us']
         const byLangExact = spanish.find((v) => lower(v.lang) === lower(preferredLang))
         if (byLangExact) return byLangExact
         for (const lang of preferOrder) {
@@ -104,7 +182,6 @@ export function useSpeech() {
       speak,
       getSpeakText
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [settings?.region]
+    [settings?.region, settings?.useTuteo, settings?.useVosotros]
   )
 }
