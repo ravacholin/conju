@@ -22,6 +22,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   const waveformRef = useRef(null);
   const recordingStartTime = useRef(0);
   const initializeOnceRef = useRef(false);
+  const initializationPromiseRef = useRef(null);
 
   // Estabilizar props con refs para evitar cambios de dependencias
   const handleResultRef = useRef(handleResult);
@@ -36,6 +37,66 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   });
 
   // Toggle recording function for external control
+  const beginRecording = useCallback(async () => {
+    if (!speechService) {
+      setRecordingResult({
+        accuracy: 0,
+        feedback: 'Servicio de reconocimiento de voz no disponible',
+        suggestions: ['Recarga la página y verifica tu navegador'],
+        error: true
+      });
+      return false;
+    }
+
+    if (!isSupported) {
+      setRecordingResult({
+        accuracy: 0,
+        feedback: 'Tu navegador no admite reconocimiento de voz o no tiene micrófono disponible',
+        suggestions: ['Verifica tu navegador o la configuración del dispositivo'],
+        error: true
+      });
+      return false;
+    }
+
+    try {
+      if (!initializationPromiseRef.current) {
+        initializationPromiseRef.current = speechService
+          .initialize({ language: 'es-ES' })
+          .catch((error) => {
+            initializationPromiseRef.current = null;
+            throw error;
+          });
+      }
+
+      await initializationPromiseRef.current;
+
+      const success = await speechService.startListening({
+        language: 'es-ES'
+      });
+
+      if (!success) {
+        setRecordingResult({
+          accuracy: 0,
+          feedback: 'No se pudo iniciar el reconocimiento de voz',
+          suggestions: ['Verifica los permisos del micrófono'],
+          error: true
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      logger.error('Error al iniciar la grabación:', error);
+      setRecordingResult({
+        accuracy: 0,
+        feedback: 'Ocurrió un error al inicializar el reconocimiento de voz',
+        suggestions: ['Recarga la página e inténtalo de nuevo'],
+        error: true
+      });
+      return false;
+    }
+  }, [isSupported, logger, speechService]);
+
   const toggleRecording = useCallback(async () => {
     if (!speechService) {
       setRecordingResult({
@@ -50,24 +111,15 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     if (isRecording) {
       speechService.stopListening();
     } else {
-      const success = await speechService.startListening({
-        language: 'es-ES'
-      });
-      if (!success) {
-        setRecordingResult({
-          accuracy: 0,
-          feedback: 'No se pudo iniciar el reconocimiento de voz',
-          suggestions: ['Verifica los permisos del micrófono'],
-          error: true
-        });
-      }
+      await beginRecording();
     }
-  }, [isRecording, speechService]);
+  }, [beginRecording, isRecording, speechService]);
 
   // Expose toggleRecording function via ref
   useImperativeHandle(ref, () => ({
-    toggleRecording
-  }), [toggleRecording]);
+    toggleRecording,
+    beginRecording
+  }), [beginRecording, toggleRecording]);
 
   // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
   const pronunciationData = useMemo(() => {
@@ -249,53 +301,45 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       return;
     }
 
-    const initializeAndStart = async () => {
-      try {
-        const service = new SpeechRecognitionService();
-        setSpeechService(service);
+    const service = new SpeechRecognitionService();
+    setSpeechService(service);
 
+    let isMounted = true;
+
+    const evaluateCompatibility = async () => {
+      try {
         const compatibility = await service.testCompatibility();
+        if (!isMounted) return;
+
         setCompatibilityInfo(compatibility);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
-
-        if (compatibility.speechRecognition && compatibility.microphone) {
-          await service.initialize({ language: 'es-ES' });
-
-          service.setCallbacks({
-            onResult: handleSpeechResult,
-            onError: handleSpeechError,
-            onStart: handleSpeechStart,
-            onEnd: handleSpeechEnd
-          });
-
-          // START RECORDING IMMEDIATELY
-          const success = await service.startListening({
-            language: 'es-ES'
-          });
-
-          if (!success) {
-            setRecordingResult({
-              accuracy: 0,
-              feedback: 'No se pudo iniciar el reconocimiento de voz',
-              suggestions: ['Verifica los permisos del micrófono'],
-              error: true
-            });
-          }
-        }
       } catch (error) {
         logger.error('Error initializing speech recognition:', error);
-        setIsSupported(false);
+        if (isMounted) {
+          setIsSupported(false);
+        }
       }
     };
 
-    initializeAndStart();
+    evaluateCompatibility();
 
     return () => {
-      if (speechService) {
-        speechService.destroy();
-      }
+      isMounted = false;
+      initializationPromiseRef.current = null;
+      service.destroy();
     };
-  }, []); // EMPTY DEPS - inicializa solo una vez
+  }, [logger]);
+
+  useEffect(() => {
+    if (!speechService) return;
+
+    speechService.setCallbacks({
+      onResult: handleSpeechResult,
+      onError: handleSpeechError,
+      onStart: handleSpeechStart,
+      onEnd: handleSpeechEnd
+    });
+  }, [handleSpeechEnd, handleSpeechError, handleSpeechResult, handleSpeechStart, speechService]);
 
   // No mostrar panel si no hay item actual
   if (!currentItem || !pronunciationData) {
