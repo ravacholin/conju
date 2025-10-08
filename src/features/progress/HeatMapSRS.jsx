@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
-import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 
 /**
@@ -185,7 +184,11 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
 
       {/* Time range selector */}
       <div className="heat-map-controls">
-        <div className="time-range-selector">
+        <div
+          className="time-range-selector"
+          role="toolbar"
+          aria-label="Seleccionar rango temporal"
+        >
           {[
             { key: 'all', label: 'Todo' },
             { key: '3months', label: '3 meses' },
@@ -195,6 +198,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
             <button
               key={range.key}
               className={selectedTimeRange === range.key ? 'active' : ''}
+              type="button"
+              aria-pressed={selectedTimeRange === range.key}
               onClick={() => setSelectedTimeRange(range.key)}
             >
               {range.label}
