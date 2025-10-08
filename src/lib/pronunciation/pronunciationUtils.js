@@ -16,16 +16,45 @@ export const generateIPA = (word) => {
  * @returns {string} Guía de pronunciación simplificada
  */
 export const generatePronunciationGuide = (word) => {
-  return word.split('').map(char => {
-    switch(char) {
-      case 'h': return ''; // Silent
-      case 'j': return 'H';
-      case 'rr': return 'RR';
-      case 'ñ': return 'NY';
-      case 'll': return 'LY';
-      default: return char.toUpperCase();
+  const digraphMap = {
+    rr: 'RR',
+    ll: 'LY',
+    ch: 'CH'
+  };
+
+  let result = '';
+  let index = 0;
+
+  while (index < word.length) {
+    const digraph = word.slice(index, index + 2).toLowerCase();
+
+    if (digraphMap[digraph]) {
+      result += digraphMap[digraph];
+      index += 2;
+      continue;
     }
-  }).join('');
+
+    const char = word[index];
+    const lowerChar = char.toLowerCase();
+
+    switch (lowerChar) {
+      case 'h':
+        break; // Silent
+      case 'j':
+        result += 'H';
+        break;
+      case 'ñ':
+        result += 'NY';
+        break;
+      default:
+        result += char.toUpperCase();
+        break;
+    }
+
+    index += 1;
+  }
+
+  return result;
 };
 
 /**
