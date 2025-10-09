@@ -12,20 +12,50 @@ export const generateIPA = (word) => {
 
 /**
  * Genera guía de pronunciación visual
+ * Detecta digramas españoles (rr, ll, ch, ñ) antes de procesar caracteres individuales
  * @param {string} word - Palabra a procesar
  * @returns {string} Guía de pronunciación simplificada
  */
 export const generatePronunciationGuide = (word) => {
-  return word.split('').map(char => {
-    switch(char) {
-      case 'h': return ''; // Silent
-      case 'j': return 'H';
-      case 'rr': return 'RR';
-      case 'ñ': return 'NY';
-      case 'll': return 'LY';
-      default: return char.toUpperCase();
+  const result = [];
+  let i = 0;
+
+  while (i < word.length) {
+    const char = word[i];
+    const nextChar = word[i + 1];
+    const twoChar = (char + (nextChar || '')).toLowerCase();
+
+    // Detectar digramas de dos letras primero (case-insensitive)
+    if (twoChar === 'rr') {
+      result.push('RR');
+      i += 2; // Avanzar dos posiciones
+    } else if (twoChar === 'll') {
+      result.push('LY');
+      i += 2;
+    } else if (twoChar === 'ch') {
+      result.push('CH');
+      i += 2;
+    } else {
+      // Procesar caracteres individuales
+      const lowerChar = char.toLowerCase();
+      switch(lowerChar) {
+        case 'h':
+          result.push(''); // Silent
+          break;
+        case 'j':
+          result.push('H');
+          break;
+        case 'ñ':
+          result.push('NY');
+          break;
+        default:
+          result.push(char.toUpperCase());
+      }
+      i += 1; // Avanzar una posición
     }
-  }).join('');
+  }
+
+  return result.join('');
 };
 
 /**
