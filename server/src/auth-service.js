@@ -16,11 +16,19 @@ const GOOGLE_CLIENT_IDS = (process.env.GOOGLE_CLIENT_IDS || process.env.GOOGLE_C
 const googleOAuthClient = GOOGLE_CLIENT_IDS.length ? new OAuth2Client() : null
 
 // Validation schemas
+const deviceInfoSchema = z.object({
+  userAgent: z.string().optional(),
+  ip: z.string().optional(),
+  platform: z.string().optional(),
+  browser: z.string().optional()
+}).optional()
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string().nullable().optional(),
-  deviceName: z.string().optional()
+  deviceName: z.string().optional(),
+  deviceInfo: deviceInfoSchema
 })
 
 const loginSchema = z.object({
@@ -69,10 +77,13 @@ async function verifyGoogleCredential(credential) {
 
 // Account management
 export async function createAccount(data) {
-  const { email, password, name, deviceName } = registerSchema.parse(data)
+  const { email, password, name, deviceName, deviceInfo } = registerSchema.parse(data)
 
-  // Check if email already exists
-  const existing = db.prepare('SELECT id FROM accounts WHERE email = ?').get(email)
+  // Normalize email to lowercase
+  const normalizedEmail = email.toLowerCase()
+
+  // Check if email already exists (case-insensitive)
+  const existing = db.prepare('SELECT id FROM accounts WHERE LOWER(email) = ?').get(normalizedEmail)
   if (existing) {
     throw new Error('Email already registered')
   }
@@ -84,19 +95,22 @@ export async function createAccount(data) {
 
   const hashedPassword = await bcrypt.hash(password, 12)
 
+  // Use provided deviceInfo or create default
+  const finalDeviceInfo = deviceInfo || { userAgent: 'unknown' }
+
   // Create account, device, and user in transaction
   db.transaction(() => {
     // Create account
     db.prepare(`
       INSERT INTO accounts (id, email, password_hash, name, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).run(accountId, email, hashedPassword, name || null, now, now)
+    `).run(accountId, normalizedEmail, hashedPassword, name || null, now, now)
 
-    // Create device
+    // Create device with actual deviceInfo
     db.prepare(`
       INSERT INTO user_devices (id, account_id, device_name, device_info, created_at)
       VALUES (?, ?, ?, ?, ?)
-    `).run(deviceId, accountId, deviceName || 'Unknown Device', JSON.stringify({ userAgent: 'unknown' }), now)
+    `).run(deviceId, accountId, deviceName || 'Unknown Device', JSON.stringify(finalDeviceInfo), now)
 
     // Create user
     db.prepare(`
@@ -118,11 +132,14 @@ export async function createAccount(data) {
 export async function authenticateAccount(email, password) {
   const { email: validEmail, password: validPassword } = loginSchema.parse({ email, password })
 
+  // Normalize email to lowercase for case-insensitive lookup
+  const normalizedEmail = validEmail.toLowerCase()
+
   const account = db.prepare(`
     SELECT id, email, name, password_hash, created_at
     FROM accounts
-    WHERE email = ?
-  `).get(validEmail)
+    WHERE LOWER(email) = ?
+  `).get(normalizedEmail)
 
   if (!account) {
     throw new Error('Invalid email or password')

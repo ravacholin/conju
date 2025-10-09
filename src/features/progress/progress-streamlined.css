@@ -954,3 +954,231 @@
     justify-content: center;
   }
 }
+
+/* Daily Challenges Section */
+.dashboard-section {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 24px;
+  padding: 2rem;
+}
+
+.dashboard-section h2 {
+  color: var(--text);
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(245, 245, 245, 0.08);
+  padding-bottom: 1rem;
+}
+
+.daily-challenges-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(245, 245, 245, 0.06);
+  border-radius: 12px;
+}
+
+.summary-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(21, 21, 21, 0.8);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.daily-challenges-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.challenge-card {
+  background: rgba(21, 21, 21, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.challenge-card:hover {
+  background: rgba(21, 21, 21, 0.9);
+  border-color: rgba(245, 245, 245, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.challenge-card.completed {
+  border-color: rgba(125, 233, 184, 0.3);
+  background: rgba(125, 233, 184, 0.05);
+}
+
+.challenge-card.ready {
+  border-color: rgba(142, 180, 227, 0.3);
+  background: rgba(142, 180, 227, 0.05);
+  box-shadow: 0 0 0 1px rgba(142, 180, 227, 0.2);
+}
+
+.challenge-card-header {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.challenge-icon {
+  width: 32px;
+  height: 32px;
+  filter: grayscale(100%);
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.challenge-card-header h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.challenge-card-header p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.challenge-progress {
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(125, 233, 184, 0.6), rgba(125, 233, 184, 0.9));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--muted-2);
+}
+
+.challenge-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.challenge-reward {
+  font-size: 0.85rem;
+  color: var(--accent-gold, rgba(245, 214, 136, 0.9));
+  font-weight: 500;
+}
+
+.challenge-status {
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.challenge-status.completed {
+  background: rgba(125, 233, 184, 0.15);
+  color: rgba(125, 233, 184, 0.95);
+  border: 1px solid rgba(125, 233, 184, 0.3);
+}
+
+.challenge-status.in-progress {
+  background: rgba(142, 180, 227, 0.15);
+  color: rgba(142, 180, 227, 0.95);
+  border: 1px solid rgba(142, 180, 227, 0.3);
+}
+
+.challenge-action {
+  background: rgba(142, 180, 227, 0.15);
+  color: rgba(142, 180, 227, 0.95);
+  border: 1px solid rgba(142, 180, 227, 0.3);
+  border-radius: 20px;
+  padding: 0.4rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.challenge-action:hover {
+  background: rgba(142, 180, 227, 0.25);
+  border-color: rgba(142, 180, 227, 0.4);
+  transform: translateY(-1px);
+}
+
+.empty-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Mobile Responsive for Daily Challenges */
+@media (max-width: 768px) {
+  .daily-challenges-summary {
+    flex-direction: column;
+  }
+
+  .summary-pill {
+    min-width: unset;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .challenge-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .challenge-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}

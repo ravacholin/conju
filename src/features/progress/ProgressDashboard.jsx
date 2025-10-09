@@ -10,6 +10,7 @@ import ProgressOverview from './ProgressOverview.jsx'
 import HeatMapSRS from './HeatMapSRS.jsx'
 import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
+import DailyChallengesPanel from './DailyChallengesPanel.jsx'
 
 import './progress-streamlined.css'
 
@@ -25,10 +26,12 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const {
     heatMapData,
     userStats,
+    dailyChallenges,
     loading,
     error,
     systemReady,
-    refresh
+    refresh,
+    completeChallenge
   } = useProgressDashboardData()
 
   const handleSync = async () => {
@@ -119,6 +122,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           onSync={handleSync}
           syncEnabled={syncAvailable}
           onRefresh={refresh}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Daily Challenges">
+        <DailyChallengesPanel
+          dailyChallenges={dailyChallenges}
+          onCompleteChallenge={completeChallenge}
         />
       </SafeComponent>
 
