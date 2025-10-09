@@ -412,6 +412,7 @@ export async function getFormsForRegion(region, settings = {}) {
                   type: verb.type || 'regular',
                   verbType: verb.type || 'regular'
                 }
+
                 forms.push(enrichedForm)
                 formsGenerated++
               } catch (formError) {
