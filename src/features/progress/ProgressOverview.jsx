@@ -18,9 +18,20 @@ export default function ProgressOverview({
   const settings = useSettings()
   const stats = userStats || {}
   const streak = stats.streakDays || 0
-  const masteryLevel = stats.overallMastery || 0
-  const itemsDue = stats.itemsDue || 0
   const totalAttempts = stats.totalAttempts || 0
+  const itemsDue = stats.itemsDue || 0
+
+  const totalMastery =
+    stats.totalMastery ??
+    stats.overallMastery ??
+    stats.averageMastery ??
+    stats.accuracy ??
+    0
+
+  const masteryRatio = Math.min(
+    1,
+    Math.max(0, totalMastery > 1 ? totalMastery / 100 : totalMastery)
+  )
 
   const getDominanceLevel = (userLevel, masteryScore) => {
     // Primary level is user's CEFR level
@@ -57,7 +68,7 @@ export default function ProgressOverview({
     }
   }
 
-  const masteryInfo = getDominanceLevel(settings.userLevel, masteryLevel)
+  const masteryInfo = getDominanceLevel(settings.userLevel, masteryRatio)
 
   return (
     <div className="progress-overview">
