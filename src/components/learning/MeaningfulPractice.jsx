@@ -111,15 +111,23 @@ function MeaningfulPractice({
   const [exerciseResults, setExerciseResults] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Usar el hook de seguimiento de progreso
-  const { handleResult, handleHintShown } = useProgressTracking(
-    currentStep ? {
+  // Crear item estable con id para tracking
+  const currentTrackingItem = useMemo(() => {
+    if (!currentStep) return null;
+
+    return {
+      id: `meaningful_${tense}_${mood}`,
       verb: currentStep.title || 'meaningful_practice',
       form: `${mood}_${tense}`,
       mood,
       tense,
       type: 'meaningful_practice'
-    } : null,
+    };
+  }, [currentStep, tense, mood]);
+
+  // Usar el hook de seguimiento de progreso
+  const { handleResult, handleHintShown } = useProgressTracking(
+    currentTrackingItem,
     onComplete
   );
 
@@ -181,7 +189,7 @@ function MeaningfulPractice({
     }
   }
 
-  function determineExerciseType(tense, mood) {
+  function determineExerciseType(tense, _mood) {
     // Mapeo inteligente de tiempos verbales a tipos de ejercicio
     const tenseToExerciseMap = {
       'pres': EXERCISE_TYPES.DAILY_ROUTINE,
@@ -253,38 +261,39 @@ function MeaningfulPractice({
   async function handleProgressUpdate(result) {
     try {
       const userId = getCurrentUserId();
-      if (!userId) return;
-
-      // Simular item para el sistema SRS
-      const mockItem = {
-        id: `meaningful_practice_${tense}_${mood}`,
-        verb: currentExercise.title,
-        form: `${mood}_${tense}`,
-        mood,
-        tense,
-        type: 'meaningful_practice'
-      };
+      if (!userId || !currentTrackingItem) return;
 
       // Calcular puntuación para el sistema de progreso
       const score = calculateProgressScore(result);
       const isCorrect = score >= 0.7;
 
-      // Actualizar SRS
-      await updateSchedule(userId, mockItem.id, isCorrect);
+      // Actualizar SRS usando el mismo id que el tracking item
+      await updateSchedule(userId, currentTrackingItem.id, isCorrect);
 
-      // Registrar con el sistema de seguimiento
-      await handleResult(mockItem, {
+      // Construir objeto de resultado para el hook de tracking
+      const trackingResult = {
+        correct: isCorrect,
         userAnswer: result.userResponse,
-        isCorrect,
+        correctAnswer: result.expectedResponse || 'N/A', // Respuesta esperada si está disponible
+        errorTags: extractErrorTags(result.assessment),
+        hintsUsed: 0, // MeaningfulPractice no usa hints del mismo modo
         score,
         timeSpent: Date.now() - (result.timestamp || Date.now()),
-        errorTags: extractErrorTags(result.assessment),
+        // Metadata adicional para análisis
         metadata: {
           exerciseType: currentExercise.type,
           difficulty: currentExercise.difficulty,
-          wordCount: result.userResponse.split(/\s+/).length
+          wordCount: result.userResponse.split(/\s+/).length,
+          assessmentScores: result.assessment ? {
+            grammar: result.assessment.grammarScore,
+            creativity: result.assessment.creativityScore,
+            content: result.assessment.contentScore
+          } : null
         }
-      });
+      };
+
+      // Registrar con el sistema de seguimiento (un solo argumento)
+      await handleResult(trackingResult);
 
     } catch (err) {
       console.error('❌ Error al actualizar progreso:', err);
@@ -466,7 +475,6 @@ function MeaningfulPractice({
       {exerciseResults.length > 0 && (
         <ExerciseProgress
           results={exerciseResults}
-          currentStep={currentStep}
           totalSteps={currentExercise.getTotalSteps()}
         />
       )}
@@ -854,7 +862,7 @@ function DefaultStepContent({ step, userResponse, onResponseChange, onKeyPress }
 }
 
 // Componente para mostrar el progreso del ejercicio
-function ExerciseProgress({ results, currentStep, totalSteps }) {
+function ExerciseProgress({ results, totalSteps }) {
   const completedSteps = results.length;
   const progressPercentage = (completedSteps / totalSteps) * 100;
 
