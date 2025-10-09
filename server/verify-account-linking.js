@@ -140,11 +140,16 @@ async function testMergeAccountData() {
     throw new Error('mergeAccountData should return schedules array with data')
   }
 
+  if (!Array.isArray(mergedData.sessions)) {
+    throw new Error('mergeAccountData should return sessions array')
+  }
+
   console.log('✅ mergeAccountData test complete - data retrieved successfully')
   console.log('📊 Merged data summary:', {
     attempts: mergedData.attempts.length,
     mastery: mergedData.mastery.length,
-    schedules: mergedData.schedules.length
+    schedules: mergedData.schedules.length,
+    sessions: mergedData.sessions.length
   })
 
   return mergedData

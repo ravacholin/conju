@@ -322,7 +322,8 @@ export function createAuthRoutes() {
       console.log(`📥 Sync download for account ${accountId}: ${JSON.stringify({
         attempts: accountData.attempts?.length || 0,
         mastery: accountData.mastery?.length || 0,
-        schedules: accountData.schedules?.length || 0
+        schedules: accountData.schedules?.length || 0,
+        sessions: accountData.sessions?.length || 0
       })}`)
 
       res.json({

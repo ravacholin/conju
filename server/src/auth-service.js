@@ -359,7 +359,7 @@ export function mergeAccountData(accountId) {
   const users = db.prepare('SELECT id FROM users WHERE account_id = ?').all(accountId)
   const userIds = users.map(u => u.id)
 
-  if (userIds.length === 0) return { attempts: [], mastery: [], schedules: [] }
+  if (userIds.length === 0) return { attempts: [], mastery: [], schedules: [], sessions: [] }
 
   const placeholders = userIds.map(() => '?').join(',')
 
@@ -373,6 +373,10 @@ export function mergeAccountData(accountId) {
 
   const schedules = db.prepare(`
     SELECT payload FROM schedules WHERE user_id IN (${placeholders})
+  `).all(...userIds).map(r => JSON.parse(r.payload))
+
+  const sessions = db.prepare(`
+    SELECT payload FROM sessions WHERE user_id IN (${placeholders})
   `).all(...userIds).map(r => JSON.parse(r.payload))
 
   const mergedMastery = new Map()
@@ -391,9 +395,18 @@ export function mergeAccountData(accountId) {
     }
   })
 
+  const mergedSessions = new Map()
+  sessions.forEach(s => {
+    const key = s.sessionId || s.id
+    if (!mergedSessions.has(key) || new Date(s.updatedAt) > new Date(mergedSessions.get(key).updatedAt)) {
+      mergedSessions.set(key, s)
+    }
+  })
+
   return {
     attempts,
     mastery: Array.from(mergedMastery.values()),
-    schedules: Array.from(mergedSchedules.values())
+    schedules: Array.from(mergedSchedules.values()),
+    sessions: Array.from(mergedSessions.values())
   }
 }
