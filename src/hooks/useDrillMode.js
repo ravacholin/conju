@@ -344,13 +344,13 @@ export function useDrillMode() {
 
   /**
    * Clear history and regenerate current item
-   * @param {Array} allFormsForRegion - All available forms
+   * @param {Array|null} [_allFormsForRegion=null] - All available forms (deprecated; kept for compatibility)
    * @param {Function} getAvailableMoodsForLevel - Function to get moods for level
    * @param {Function} getAvailableTensesForLevelAndMood - Function to get tenses for level/mood
    * @returns {Promise<void>}
    */
   const clearHistoryAndRegenerate = async (
-    _allFormsForRegion,
+    _allFormsForRegion = null,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
