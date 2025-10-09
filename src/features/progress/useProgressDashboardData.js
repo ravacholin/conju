@@ -412,7 +412,10 @@ export default function useProgressDashboardData() {
   }, [personFilter, systemReady])
 
   useEffect(() => {
-    const unsubscribePlan = onStudyPlanUpdated(({ plan }) => setStudyPlan(plan))
+    const unsubscribePlan = onStudyPlanUpdated(
+      ({ plan }) => setStudyPlan(plan || null),
+      { immediate: true }
+    )
     const unsubscribeCommunity = onCommunitySnapshot(({ snapshot }) => setCommunitySnapshot(snapshot))
     const unsubscribeOffline = onOfflineStatusChange(status => setOfflineStatus(status))
     const unsubscribeExpert = onExpertModeChange(({ settings }) => setExpertModeSettings(settings))
