@@ -316,12 +316,20 @@ function AppRouter() {
       onboardingFlow.selectDialect(dialect)
     }
 
-    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handleLevelChange = (level) => {
     onboardingFlow.selectLevel(level)
-    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handlePracticeModeChange = (mode, mood = null, tense = null) => {
@@ -350,20 +358,32 @@ function AppRouter() {
     }
 
     settings.set(updates)
-    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handlePronounPracticeChange = (pronoun) => {
     settings.set({ practicePronoun: pronoun })
-    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handleVerbTypeChange = (verbType, selectedFamily) => {
-    settings.set({ 
+    settings.set({
       verbType,
       selectedFamily: verbType !== 'irregular' ? null : selectedFamily
     })
-    drillMode.clearHistoryAndRegenerate(onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+    drillMode.clearHistoryAndRegenerate(
+      null,
+      onboardingFlow.getAvailableMoodsForLevel,
+      onboardingFlow.getAvailableTensesForLevelAndMood
+    )
   }
 
   const handleStartSpecificPractice = () => {
