@@ -9,22 +9,50 @@ import { ERROR_TAGS } from './dataModels.js'
 /**
  * Obtiene datos para el mapa de calor
  * @param {string} userId - ID del usuario
+ * @param {string|null} person - Filtro de persona (opcional)
+ * @param {string} timeRange - Rango de tiempo: 'last_7_days', 'last_30_days', 'last_90_days', o 'all_time' (default: 'all_time')
  * @returns {Promise<Array>} Datos para el mapa de calor
  */
-export async function getHeatMapData(userId, person = null) {
+export async function getHeatMapData(userId, person = null, timeRange = 'all_time') {
   try {
+    // Calcular fecha de corte basada en el rango de tiempo
+    const now = Date.now()
+    let cutoffDate = 0
+
+    switch (timeRange) {
+      case 'last_7_days':
+        cutoffDate = now - (7 * 24 * 60 * 60 * 1000)
+        break
+      case 'last_30_days':
+        cutoffDate = now - (30 * 24 * 60 * 60 * 1000)
+        break
+      case 'last_90_days':
+        cutoffDate = now - (90 * 24 * 60 * 60 * 1000)
+        break
+      case 'all_time':
+      default:
+        cutoffDate = 0
+        break
+    }
+
     // Obtener mastery y distribución de intentos para ponderar promedios
     const [masteryRecords, attempts] = await Promise.all([
       getMasteryByUser(userId),
       getAttemptsByUser(userId)
     ])
-    
+
+    // Filtrar intentos por rango de tiempo
+    const filteredAttempts = attempts.filter(a => {
+      const timestamp = new Date(a?.createdAt || 0).getTime()
+      return timestamp >= cutoffDate
+    })
+
     // Agrupar por modo y tiempo
     const groupedData = {}
-    
+
     // Precompute attempt counts per mood|tense|person
     const attemptCounts = new Map()
-    attempts.forEach(a => {
+    filteredAttempts.forEach(a => {
       if (!a || !a.mood || !a.tense) return
       if (person && a.person && a.person !== person) return
       const key = `${a.mood}|${a.tense}|${a.person || ''}`

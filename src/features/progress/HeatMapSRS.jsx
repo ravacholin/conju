@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
-import { getSRSStats } from '../../lib/progress/analytics.js'
+import { getSRSStats, getHeatMapData } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
+import { getCurrentUserId } from '../../lib/progress/userManager.js'
 
 /**
  * Combined Heat Map + SRS - Unified mastery visualization with SRS indicators
@@ -11,7 +12,59 @@ import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 export default function HeatMapSRS({ data, onNavigateToDrill }) {
   const settings = useSettings()
   const [selectedTimeRange, setSelectedTimeRange] = useState('all')
+  const [heatMapData, setHeatMapData] = useState(null)
+  const [loading, setLoading] = useState(false)
   const { queue, stats: srsStats } = useSRSQueue()
+
+  // Fetch heat map data when time range changes
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        const userId = getCurrentUserId()
+        if (!userId) {
+          setLoading(false)
+          return
+        }
+
+        // Map UI range keys to API range keys
+        const timeRangeMap = {
+          'all': 'all_time',
+          'week': 'last_7_days',
+          'month': 'last_30_days',
+          '3months': 'last_90_days'
+        }
+
+        const apiTimeRange = timeRangeMap[selectedTimeRange] || 'all_time'
+        const rawData = await getHeatMapData(userId, null, apiTimeRange)
+
+        // Transform array format to object format
+        if (Array.isArray(rawData) && rawData.length > 0) {
+          const heatMapObject = {}
+          rawData.forEach(item => {
+            if (item.mood && item.tense) {
+              const key = `${item.mood}-${item.tense}`
+              heatMapObject[key] = {
+                mastery: item.score / 100, // Convert score from 0-100 to 0-1 range
+                attempts: item.count || 0,
+                lastAttempt: Date.now() // Use current time as placeholder
+              }
+            }
+          })
+          setHeatMapData({ heatMap: heatMapObject })
+        } else {
+          setHeatMapData({ heatMap: {} })
+        }
+      } catch (error) {
+        console.error('Error fetching heat map data:', error)
+        setHeatMapData({ heatMap: {} })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [selectedTimeRange])
 
   // Mood configuration with PNG icons
   const moodConfig = {
@@ -58,29 +111,13 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   // SRS stats summary
   const srsData = srsStats || { dueNow: 0, dueToday: 0, total: 0 }
 
-  // Filter data based on time range and prepare heat map
+  // Use fetched data or fallback to prop data
   const filteredData = useMemo(() => {
-    if (!data?.heatMap) return {}
+    const dataSource = heatMapData || data
+    if (!dataSource?.heatMap) return {}
 
-    // Apply time range filter if needed
-    if (selectedTimeRange !== 'all') {
-      const now = Date.now()
-      const timeRanges = {
-        'week': 7 * 24 * 60 * 60 * 1000,
-        'month': 30 * 24 * 60 * 60 * 1000,
-        '3months': 90 * 24 * 60 * 60 * 1000
-      }
-      const cutoff = now - timeRanges[selectedTimeRange]
-
-      return Object.fromEntries(
-        Object.entries(data.heatMap).filter(([, value]) => {
-          return value.lastAttempt && value.lastAttempt > cutoff
-        })
-      )
-    }
-
-    return data.heatMap
-  }, [data, selectedTimeRange])
+    return dataSource.heatMap
+  }, [heatMapData, data])
 
   // Get mastery level and SRS status for a cell
   const getCellData = (mood, tense) => {
@@ -166,6 +203,12 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         </h2>
         <p>Haz clic en cualquier celda para practicar esa combinación</p>
       </div>
+
+      {loading && (
+        <div className="loading-indicator" style={{ padding: '1rem', textAlign: 'center', opacity: 0.7 }}>
+          Cargando datos...
+        </div>
+      )}
 
       {/* SRS Summary */}
       {srsData.dueNow > 0 && (
