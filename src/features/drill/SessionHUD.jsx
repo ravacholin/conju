@@ -10,27 +10,44 @@ export default function SessionHUD() {
   const settings = useSettings()
 
   useEffect(() => {
-    (async () => {
+    let isActive = true
+
+    const loadSessionData = async () => {
       try {
         const uid = getCurrentUserId()
         const s = await getRealUserStats(uid)
+        if (!isActive) return
         setStats({
           accuracy: s.accuracy || 0,
           avgLatency: s.avgLatency || 0,
           currentSessionStreak: s.currentSessionStreak || 0
         })
+
         const attempts = await getAttemptsByUser(uid)
+        if (!isActive) return
         const recent = attempts.slice(-50)
         const freq = new Map()
         recent.forEach(a => {
           ;(a.errorTags || []).forEach(tag => freq.set(tag, (freq.get(tag) || 0) + 1))
         })
-        const top = Array.from(freq.entries()).sort((a,b)=>b[1]-a[1]).slice(0,3)
+        const top = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3)
         setTopErrors(top)
       } catch {
         /* ignore error */
       }
-    })()
+    }
+
+    const handleProgressUpdate = () => {
+      loadSessionData()
+    }
+
+    loadSessionData()
+    window.addEventListener('progress:dataUpdated', handleProgressUpdate)
+
+    return () => {
+      isActive = false
+      window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+    }
   }, [])
 
   const msToSec = (ms) => Math.round((ms || 0) / 100) / 10
