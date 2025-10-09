@@ -9,6 +9,7 @@ import {
 } from '../../lib/data/irregularPatterns.js'
 import { TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { normalize } from '../../lib/utils/accentUtils.js'
+import AccentKeypad from '../shared/AccentKeypad.jsx'
 import './LearningDrill.css'
 import './IrregularRootDrill.css'
 
@@ -64,8 +65,10 @@ function IrregularRootDrill({
   const settings = useSettings()
   const useVoseo = settings.useVoseo === true
   const containerRef = useRef(null)
+  const inputRef = useRef(null)
   const [entered, setEntered] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
+  const [showAccentKeypad, setShowAccentKeypad] = useState(false)
   const pronunciationPanelRef = useRef(null)
 
   const mode = useMemo(() => {
@@ -346,8 +349,8 @@ function IrregularRootDrill({
             <img src="/back.png" alt="Volver" className="menu-icon" />
           </button>
           <button
-            onClick={() => {/* TODO: Add tildes functionality */}}
-            className="icon-btn"
+            onClick={() => setShowAccentKeypad(prev => !prev)}
+            className={`icon-btn ${showAccentKeypad ? 'active' : ''}`}
             title="Tildes"
             aria-label="Tildes"
           >
@@ -409,6 +412,7 @@ function IrregularRootDrill({
             <form className="root-form" onSubmit={handleSubmit}>
               <label htmlFor="irregular-answer" className="sr-only">Tu respuesta</label>
               <input
+                ref={inputRef}
                 id="irregular-answer"
                 className={`conjugation-input ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}
                 value={inputValue}
@@ -416,6 +420,15 @@ function IrregularRootDrill({
                 placeholder="Escribe la forma correcta"
                 autoFocus
               />
+
+              {/* Teclado de tildes */}
+              {showAccentKeypad && (
+                <AccentKeypad
+                  targetRef={inputRef}
+                  onValueChange={setInputValue}
+                />
+              )}
+
               <div className="action-buttons">
                 <button type="submit" className="btn" disabled={!inputValue.trim()}>Validar</button>
                 {onBack && <button type="button" className="btn secondary" onClick={onBack}>Volver</button>}
