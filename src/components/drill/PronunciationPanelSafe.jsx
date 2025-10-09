@@ -14,7 +14,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   const logger = createLogger('PronunciationPanelSafe');
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
-  const [speechService, setSpeechService] = useState(null);
+  const serviceRef = useRef(null);
   const [analyzer] = useState(() => new PronunciationAnalyzer());
   const [isSupported, setIsSupported] = useState(true);
   const [audioWaveform, setAudioWaveform] = useState([]);
@@ -37,7 +37,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   // Toggle recording function for external control
   const toggleRecording = useCallback(async () => {
-    if (!speechService) {
+    const service = serviceRef.current;
+
+    if (!service) {
       setRecordingResult({
         accuracy: 0,
         feedback: 'Servicio de reconocimiento de voz no disponible',
@@ -48,9 +50,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     }
 
     if (isRecording) {
-      speechService.stopListening();
+      service.stopListening();
     } else {
-      const success = await speechService.startListening({
+      const success = await service.startListening({
         language: 'es-ES'
       });
       if (!success) {
@@ -62,7 +64,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         });
       }
     }
-  }, [isRecording, speechService]);
+  }, [isRecording]);
 
   // Expose toggleRecording function via ref
   useImperativeHandle(ref, () => ({
@@ -252,7 +254,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     const initializeAndStart = async () => {
       try {
         const service = new SpeechRecognitionService();
-        setSpeechService(service);
+        serviceRef.current = service;
 
         const compatibility = await service.testCompatibility();
         setCompatibilityInfo(compatibility);
@@ -291,8 +293,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     initializeAndStart();
 
     return () => {
-      if (speechService) {
-        speechService.destroy();
+      if (serviceRef.current) {
+        serviceRef.current.destroy();
+        serviceRef.current = null;
       }
     };
   }, []); // EMPTY DEPS - inicializa solo una vez
@@ -462,8 +465,8 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       <div className="setting-group">
         <button className="btn btn-secondary" onClick={() => {
           // Stop recording if active when closing
-          if (isRecording && speechService) {
-            speechService.stopListening();
+          if (isRecording && serviceRef.current) {
+            serviceRef.current.stopListening();
           }
           onClose();
         }}>

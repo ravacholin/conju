@@ -61,6 +61,7 @@ const DEBUG_LOG = (message, ...args) => {
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
   const settings = useSettings()
+  const { region } = settings
   
   // Import hooks
   const drillMode = useDrillMode()
@@ -77,13 +78,31 @@ function AppRouter() {
 
 
   const [formsForRegion, setFormsForRegion] = useState([])
+  const previousRegionRef = useRef()
 
   useEffect(() => {
+    // Skip fetching if region hasn't been selected yet
+    if (!region) {
+      DEBUG_LOG('AppRouter: skipping forms load because region is not set')
+      setFormsForRegion([])
+      previousRegionRef.current = region
+      return
+    }
+
     let cancelled = false
     async function loadForms() {
       setFormsForRegion([])
       try {
-        const forms = await buildFormsForRegion(settings.region, settings)
+        const latestSettingsSnapshot = useSettings.getState()
+        const previousRegion = previousRegionRef.current
+        DEBUG_LOG('AppRouter: region change detected, reloading forms', {
+          from: previousRegion,
+          to: region,
+          reason: previousRegion == null ? 'initial-load' : 'region-change'
+        })
+        previousRegionRef.current = region
+
+        const forms = await buildFormsForRegion(region, latestSettingsSnapshot)
         if (!cancelled) {
           setFormsForRegion(forms)
         }
@@ -99,7 +118,7 @@ function AppRouter() {
     return () => {
       cancelled = true
     }
-  }, [settings])
+  }, [region])
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 

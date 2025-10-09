@@ -310,7 +310,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [showPronunciation, setShowPronunciation] = useState(false);
-  const [speechService, setSpeechService] = useState(null);
+  const serviceRef = useRef(null);
   const [analyzer] = useState(() => new PronunciationAnalyzer());
   const [isSupported, setIsSupported] = useState(true);
   const [audioWaveform, setAudioWaveform] = useState([]);
@@ -388,7 +388,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     const initializeSpeech = async () => {
       try {
         const service = new SpeechRecognitionService();
-        setSpeechService(service);
+        serviceRef.current = service;
 
         const compatibility = await service.testCompatibility();
         setCompatibilityInfo(compatibility);
@@ -414,8 +414,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
     // Cleanup
     return () => {
-      if (speechService) {
-        speechService.destroy();
+      if (serviceRef.current) {
+        serviceRef.current.destroy();
+        serviceRef.current = null;
       }
     };
   }, []);
@@ -637,7 +638,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   };
 
   const handleStartRecording = async () => {
-    if (!speechService) {
+    const service = serviceRef.current;
+
+    if (!service) {
       setRecordingResult({
         accuracy: 0,
         feedback: 'Servicio de reconocimiento de voz no disponible',
@@ -652,7 +655,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       setShowDetailed(false);
 
       // Start speech recognition
-      const success = await speechService.startListening({
+      const success = await service.startListening({
         language: 'es-ES'
       });
 
@@ -677,8 +680,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   };
 
   const handleStopRecording = () => {
-    if (speechService) {
-      speechService.stopListening();
+    if (serviceRef.current) {
+      serviceRef.current.stopListening();
     }
   };
 

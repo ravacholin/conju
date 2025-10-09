@@ -9,6 +9,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useDrillMode } from './useDrillMode.js'
 
+const mockGenerateNextItem = vi.fn()
+
 // Mock the settings store
 vi.mock('../state/settings.js', () => ({
   useSettings: vi.fn(() => ({
@@ -22,7 +24,7 @@ vi.mock('../state/settings.js', () => ({
 // Mock the specialized hooks
 vi.mock('./modules/useDrillGenerator.js', () => ({
   useDrillGenerator: vi.fn(() => ({
-    generateNextItem: vi.fn(),
+    generateNextItem: mockGenerateNextItem,
     isGenerationViable: vi.fn(() => true),
     getGenerationStats: vi.fn(() => ({})),
     isGenerating: false
@@ -76,6 +78,7 @@ vi.mock('../lib/utils/logger.js', () => ({
 describe('useDrillMode result normalization', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockGenerateNextItem.mockReset()
   })
 
   it('should normalize result.correct to result.isCorrect for progress tracking', async () => {
@@ -206,6 +209,33 @@ describe('useDrillMode result normalization', () => {
       }),
       expect.any(Function)
     )
+  })
+
+  it('should not log console errors when generation resolves before the timeout', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const mathRandomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.5)
+
+    mockGenerateNextItem.mockResolvedValueOnce({
+      id: 'fast-item',
+      lemma: 'cantar',
+      mood: 'indicative',
+      tense: 'pres',
+      person: '1s',
+      value: 'canto'
+    })
+
+    try {
+      const { result } = renderHook(() => useDrillMode())
+
+      await act(async () => {
+        await result.current.generateNextItem()
+      })
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
+    } finally {
+      consoleErrorSpy.mockRestore()
+      mathRandomSpy.mockRestore()
+    }
   })
 
   it('should update history with normalized accuracy tracking', async () => {

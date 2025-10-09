@@ -209,6 +209,7 @@ Incluye un servidor Express simple para sincronización local.
   - `POST /progress/schedules/bulk`
   - `GET  /progress/export`
 - Auth admitida: `Authorization: Bearer <token>`, `X-API-Key: <token>` o `X-User-Id: <user>`.
+- Emails de cuentas se normalizan automáticamente a minúsculas en el servidor; los inicios de sesión y el registro son insensibles a mayúsculas.
 - Almacenamiento: SQLite en `.data/progress-sync.db` con tablas `users`, `attempts`, `mastery`, `schedules`.
 
 ### Cero configuración (dev)
