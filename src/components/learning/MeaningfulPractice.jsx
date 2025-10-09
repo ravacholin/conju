@@ -5,6 +5,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade as GRADE } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
+import { getAllVerbsSync } from '../../lib/core/verbDataService.js';
 
 // Importar el nuevo sistema de práctica significativa
 import exerciseFactory from '../../lib/meaningful-practice/exercises/ExerciseFactory.js';
@@ -14,48 +15,149 @@ import { EXERCISE_TYPES } from '../../lib/meaningful-practice/core/constants.js'
 import './MeaningfulPractice.css';
 
 /**
- * Extrae los verbos requeridos del ejercicio y eligibleForms
+ * Obtiene el lemma (infinitivo) de una forma conjugada usando datos morfológicos reales
+ * @param {string} conjugatedForm - Forma verbal conjugada
+ * @returns {string|null} - Lemma del verbo o null si no se encuentra
+ */
+export function getLemmaFromConjugatedForm(conjugatedForm) {
+  if (!conjugatedForm || typeof conjugatedForm !== 'string') {
+    return null;
+  }
+
+  try {
+    // Buscar en todos los verbos disponibles
+    const allVerbs = getAllVerbsSync();
+
+    for (const verb of allVerbs) {
+      if (!verb.paradigms) continue;
+
+      // Buscar en todos los paradigmas
+      for (const paradigm of verb.paradigms) {
+        if (!paradigm.forms) continue;
+
+        // Buscar si alguna forma coincide con la forma conjugada
+        const matchingForm = paradigm.forms.find(
+          form => form.value && form.value.toLowerCase() === conjugatedForm.toLowerCase()
+        );
+
+        if (matchingForm) {
+          return verb.lemma;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Error al buscar lemma para forma conjugada:', conjugatedForm, error);
+  }
+
+  return null;
+}
+
+/**
+ * Fallback para derivar lemma usando regex (SOLO para casos extremos)
+ * @param {string} conjugatedForm - Forma verbal conjugada
+ * @returns {string} - Lemma estimado (puede ser incorrecto para verbos irregulares)
+ */
+export function deriveLemmaFallback(conjugatedForm) {
+  // ADVERTENCIA: Este método es impreciso y solo se usa como último recurso
+  // cuando no hay datos morfológicos disponibles
+
+  let lemma = conjugatedForm;
+
+  // Remover terminaciones de pretérito (orden importa: más específico primero)
+  if (lemma.endsWith('ieron')) {
+    // Puede ser -ir (vivieron -> vivir) o -er (comieron -> comer)
+    // Heurística: si la raíz termina en vocal + consonante, probablemente es -er
+    const root = lemma.substring(0, lemma.length - 5); // Quitar "ieron"
+    if (root.length > 0 && /[aeiou][^aeiou]$/i.test(root)) {
+      // comieron -> com + er = comer
+      lemma = root + 'er';
+    } else {
+      // vivieron -> viv + ir = vivir
+      lemma = root + 'ir';
+    }
+  } else if (lemma.endsWith('ió')) {
+    // vivió -> vivir
+    lemma = lemma.replace(/ió$/, 'ir');
+  } else if (lemma.endsWith('ó')) {
+    // cantó -> cantar
+    lemma = lemma.replace(/ó$/, 'ar');
+  } else if (lemma.endsWith('aron')) {
+    // cantaron -> cantar
+    lemma = lemma.replace(/aron$/, 'ar');
+  } else if (lemma.endsWith('ía')) {
+    // vivía -> vivir
+    lemma = lemma.replace(/ía$/, 'ir');
+  } else if (lemma.endsWith('an')) {
+    // cantan -> cantar
+    lemma = lemma.replace(/an$/, 'ar');
+  } else if (lemma.endsWith('en')) {
+    // comen -> comer
+    lemma = lemma.replace(/en$/, 'er');
+  }
+
+  return lemma;
+}
+
+/**
+ * Extrae los verbos requeridos del ejercicio y eligibleForms usando datos morfológicos reales
  * @param {Object} exercise - Ejercicio actual
  * @param {Array} eligibleForms - Formas verbales elegibles del SRS
  * @param {string} tense - Tiempo verbal
  * @param {string} mood - Modo verbal
  * @returns {Object} Objeto con verbos requeridos y ejemplos
  */
-function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
+export function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
   const result = {
     lemmas: [],
     conjugatedExamples: [],
     instructions: ''
   };
 
-  // 1. Intentar obtener verbos del ejercicio
-  if (exercise?.expectedVerbs?.length > 0) {
+  // 1. PRIORIDAD: Extraer de eligibleForms (ya tienen lemma correcto)
+  if (eligibleForms?.length > 0) {
+    // Obtener lemmas únicos de eligibleForms
+    const uniqueLemmas = [...new Set(
+      eligibleForms
+        .filter(form => form.lemma) // Solo formas con lemma
+        .map(form => form.lemma)
+    )];
+
+    if (uniqueLemmas.length > 0) {
+      result.lemmas = uniqueLemmas.slice(0, 8); // Limitar a 8 verbos máximo
+
+      // Obtener ejemplos conjugados del tense/mood actual
+      result.conjugatedExamples = eligibleForms
+        .filter(form => form.tense === tense && form.mood === mood)
+        .map(form => form.value)
+        .slice(0, 8);
+    }
+  }
+
+  // 2. Si el ejercicio tiene expectedVerbs pero no hay lemmas aún,
+  //    intentar obtener lemmas reales usando datos morfológicos
+  if (result.lemmas.length === 0 && exercise?.expectedVerbs?.length > 0) {
     result.conjugatedExamples = exercise.expectedVerbs;
+
     result.lemmas = exercise.expectedVerbs.map(verb => {
-      // Extraer lemma básico removiendo terminaciones comunes
-      return verb.replace(/ó$/, 'ar').replace(/ió$/, 'ir').replace(/aron$/, 'ar').replace(/ieron$/, 'er');
-    });
+      // Intentar buscar lemma real en la base de datos
+      const realLemma = getLemmaFromConjugatedForm(verb);
+
+      if (realLemma) {
+        return realLemma;
+      }
+
+      // FALLBACK: Solo usar regex si no se encuentra en datos morfológicos
+      console.warn(
+        `⚠️ No se encontró lemma morfológico para "${verb}", usando fallback regex (puede ser incorrecto para irregulares)`
+      );
+      return deriveLemmaFallback(verb);
+    }).filter(Boolean); // Remover nulls
   }
 
-  // 1.1. Si hay instrucciones específicas de verbos, usarlas
-  if (exercise?.verbInstructions) {
-    result.instructions = exercise.verbInstructions;
-  }
-
-  // 2. Si no hay verbos del ejercicio, extraer de eligibleForms
-  if (result.lemmas.length === 0 && eligibleForms?.length > 0) {
-    const uniqueLemmas = [...new Set(eligibleForms.map(form => form.lemma))];
-    result.lemmas = uniqueLemmas.slice(0, 8); // Limitar a 8 verbos máximo
-
-    // Obtener ejemplos conjugados del tense/mood actual
-    result.conjugatedExamples = eligibleForms
-      .filter(form => form.tense === tense && form.mood === mood)
-      .map(form => form.value)
-      .slice(0, 8);
-  }
-
-  // 3. Si aún no hay verbos, usar verbos comunes para el tiempo verbal
+  // 3. ÚLTIMO RECURSO: Si aún no hay verbos, usar verbos comunes para el tiempo verbal
   if (result.lemmas.length === 0) {
+    console.warn('⚠️ Usando verbos comunes como último recurso - no hay datos de SRS disponibles');
+
     const commonVerbsByTense = {
       'pres': ['ser', 'estar', 'tener', 'hacer', 'decir', 'ver'],
       'pretIndef': ['ir', 'hacer', 'decir', 'ver', 'dar', 'saber'],
@@ -67,21 +169,27 @@ function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
   }
 
   // 4. Generar instrucciones claras
-  const tenseNames = {
-    'pres': 'presente',
-    'pretIndef': 'pretérito indefinido',
-    'impf': 'imperfecto',
-    'fut': 'futuro',
-    'cond': 'condicional',
-    'pretPerf': 'pretérito perfecto'
-  };
-
-  const tenseName = tenseNames[tense] || tense;
-
-  if (result.conjugatedExamples.length > 0) {
-    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.conjugatedExamples.join(', ')}`;
+  // PRIORIDAD 1: Si hay instrucciones específicas de verbos, usarlas
+  if (exercise?.verbInstructions) {
+    result.instructions = exercise.verbInstructions;
   } else {
-    result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.lemmas.join(', ')}`;
+    // PRIORIDAD 2: Generar instrucciones automáticamente
+    const tenseNames = {
+      'pres': 'presente',
+      'pretIndef': 'pretérito indefinido',
+      'impf': 'imperfecto',
+      'fut': 'futuro',
+      'cond': 'condicional',
+      'pretPerf': 'pretérito perfecto'
+    };
+
+    const tenseName = tenseNames[tense] || tense;
+
+    if (result.conjugatedExamples.length > 0) {
+      result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.conjugatedExamples.join(', ')}`;
+    } else {
+      result.instructions = `Usa ESTOS verbos en ${tenseName}: ${result.lemmas.join(', ')}`;
+    }
   }
 
   return result;
