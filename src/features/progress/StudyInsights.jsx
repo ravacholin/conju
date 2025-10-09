@@ -1,12 +1,112 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
+import { generatePersonalizedStudyPlan } from '../../lib/progress/studyPlans.js'
+
+function StudyPlanSection({ plan, onGeneratePlan, generating, error }) {
+  const timeline = plan?.timeline || {}
+  const weeks = Array.isArray(timeline.weeks) ? timeline.weeks : []
+
+  if (!plan) {
+    return (
+      <div className="study-plan-section empty">
+        <div className="section-subheader">
+          <h3>Plan de estudio personalizado</h3>
+          <p>Generá un plan guiado con sesiones recomendadas para tu nivel.</p>
+        </div>
+        <button
+          type="button"
+          className="primary-button"
+          onClick={onGeneratePlan}
+          disabled={generating}
+        >
+          {generating ? 'Generando…' : 'Generar plan'}
+        </button>
+        {error && <p className="error-text">{error}</p>}
+      </div>
+    )
+  }
+
+  return (
+    <div className="study-plan-section">
+      <div className="section-subheader">
+        <h3>Plan de estudio personalizado</h3>
+        <p>
+          {`Duración sugerida: ${timeline.durationWeeks || weeks.length || 0} semanas · `}
+          {`${timeline.sessionsPerWeek || '3-4'} sesiones/semana · `}
+          {`Sesiones de ${timeline.sessionLength || '15-20 minutos'}`}
+        </p>
+      </div>
+
+      <div className="study-plan-weeks">
+        {weeks.length === 0 && (
+          <p className="muted-text">
+            Todavía no hay semanas detalladas en tu plan. Generá uno nuevo para obtener recomendaciones.
+          </p>
+        )}
+
+        {weeks.map((week, index) => {
+          const title = week?.title || week?.name || `Semana ${index + 1}`
+          const focus = week?.focus || week?.objective || week?.goal || null
+          const sessions = Array.isArray(week?.sessions) ? week.sessions : []
+
+          return (
+            <div key={title || index} className="study-plan-week-card">
+              <div className="week-header">
+                <strong>{title}</strong>
+                {focus && <span className="week-focus">{focus}</span>}
+              </div>
+
+              {sessions.length > 0 ? (
+                <ul className="session-list">
+                  {sessions.map((session, sessionIndex) => {
+                    const label = session?.focus || session?.title || `Sesión ${sessionIndex + 1}`
+                    const duration = session?.duration || timeline.sessionLength || '15-20 minutos'
+                    const type = session?.type || session?.mode || null
+
+                    return (
+                      <li key={`${title}-${sessionIndex}`} className="session-item">
+                        <div className="session-main">{label}</div>
+                        <div className="session-meta">
+                          <span>{duration}</span>
+                          {type && <span className="session-type">{type}</span>}
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : (
+                <p className="muted-text">
+                  No hay sesiones detalladas para esta semana. Intentá regenerar tu plan.
+                </p>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="study-plan-footer">
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={onGeneratePlan}
+          disabled={generating}
+        >
+          {generating ? 'Actualizando…' : 'Regenerar plan'}
+        </button>
+        {error && <p className="error-text">{error}</p>}
+      </div>
+    </div>
+  )
+}
 
 /**
  * Study Insights - Minimal, collapsible analytics for users who want detail
  * Replaces: AdvancedAnalyticsPanel, CommunityPulse, DailyChallengesPanel
  */
-export default function StudyInsights({ userStats, heatMapData }) {
+export default function StudyInsights({ userStats, heatMapData, studyPlan }) {
   const [isExpanded, setIsExpanded] = useState(true)
+  const [generatingPlan, setGeneratingPlan] = useState(false)
+  const [planError, setPlanError] = useState(null)
 
   // Calculate useful insights
   const insights = useMemo(() => {
@@ -60,6 +160,20 @@ export default function StudyInsights({ userStats, heatMapData }) {
     return formatMoodTense(mood, tense)
   }
 
+  const handleGeneratePlan = useCallback(async () => {
+    if (generatingPlan) return
+    setPlanError(null)
+    try {
+      setGeneratingPlan(true)
+      await generatePersonalizedStudyPlan(null, { forceRefresh: true })
+    } catch (error) {
+      console.error('No se pudo generar el plan de estudio', error)
+      setPlanError('No pudimos generar el plan. Intentá nuevamente en unos segundos.')
+    } finally {
+      setGeneratingPlan(false)
+    }
+  }, [generatingPlan])
+
   if (insights.totalSessions === 0) {
     return (
       <div className="study-insights empty">
@@ -72,6 +186,12 @@ export default function StudyInsights({ userStats, heatMapData }) {
         <div className="empty-state">
           <img src="/icons/chart.png" alt="Sin datos" className="empty-icon" />
           <p>Completa algunos ejercicios para ver tus estadísticas de progreso.</p>
+          <StudyPlanSection
+            plan={studyPlan}
+            onGeneratePlan={handleGeneratePlan}
+            generating={generatingPlan}
+            error={planError}
+          />
         </div>
       </div>
     )
@@ -182,6 +302,13 @@ export default function StudyInsights({ userStats, heatMapData }) {
               </div>
             </div>
           </div>
+
+          <StudyPlanSection
+            plan={studyPlan}
+            onGeneratePlan={handleGeneratePlan}
+            generating={generatingPlan}
+            error={planError}
+          />
         </div>
       )}
     </div>

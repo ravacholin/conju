@@ -25,6 +25,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const {
     heatMapData,
     userStats,
+    studyPlan,
     loading,
     error,
     systemReady,
@@ -141,6 +142,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         <StudyInsights
           userStats={userStats}
           heatMapData={heatMapData}
+          studyPlan={studyPlan}
         />
       </SafeComponent>
     </div>
