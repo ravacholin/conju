@@ -87,10 +87,19 @@ export default function useProgressDashboardData() {
               result.forEach(item => {
                 if (item.mood && item.tense) {
                   const key = `${item.mood}-${item.tense}`
+                  const rawLastAttempt = item.lastAttempt ?? null
+                  let normalizedLastAttempt = null
+                  if (typeof rawLastAttempt === 'number') {
+                    normalizedLastAttempt = rawLastAttempt
+                  } else if (typeof rawLastAttempt === 'string') {
+                    const parsed = new Date(rawLastAttempt).getTime()
+                    normalizedLastAttempt = Number.isFinite(parsed) ? parsed : null
+                  }
+
                   heatMapObject[key] = {
                     mastery: item.score / 100, // Convert score from 0-100 to 0-1 range
                     attempts: item.count || 0,
-                    lastAttempt: Date.now() // Use current time as placeholder
+                    lastAttempt: normalizedLastAttempt
                   }
                 }
               })

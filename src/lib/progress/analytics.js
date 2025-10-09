@@ -43,44 +43,80 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
 
     // Filtrar intentos por rango de tiempo
     const filteredAttempts = attempts.filter(a => {
-      const timestamp = new Date(a?.createdAt || 0).getTime()
+      const timestamp = new Date(a?.createdAt || a?.timestamp || 0).getTime()
       return timestamp >= cutoffDate
     })
+
+    const isAllTimeRange = timeRange === 'all_time'
 
     // Agrupar por modo y tiempo
     const groupedData = {}
 
-    // Precompute attempt counts per mood|tense|person
+    const ensureGroup = (mood, tense) => {
+      const groupKey = `${mood}|${tense}`
+      if (!groupedData[groupKey]) {
+        groupedData[groupKey] = {
+          mood,
+          tense,
+          weightedSum: 0,
+          weight: 0,
+          count: 0,
+          lastAttempt: 0
+        }
+      }
+      return groupedData[groupKey]
+    }
+
+    // Precompute attempt counts and last attempt per mood|tense|person
     const attemptCounts = new Map()
+    const attemptLatest = new Map()
     filteredAttempts.forEach(a => {
       if (!a || !a.mood || !a.tense) return
       if (person && a.person && a.person !== person) return
+      const timestamp = new Date(a?.createdAt || a?.timestamp || 0).getTime()
+      if (!Number.isFinite(timestamp) || timestamp <= 0) return
       const key = `${a.mood}|${a.tense}|${a.person || ''}`
       attemptCounts.set(key, (attemptCounts.get(key) || 0) + 1)
+      const latest = attemptLatest.get(key) || 0
+      if (timestamp > latest) {
+        attemptLatest.set(key, timestamp)
+      }
+      ensureGroup(a.mood, a.tense)
     })
 
     for (const record of masteryRecords) {
       if (person && record.person && record.person !== person) continue
-      const key = `${record.mood}|${record.tense}`
-      if (!groupedData[key]) {
-        groupedData[key] = {
-          mood: record.mood,
-          tense: record.tense,
-          weightedSum: 0,
-          weight: 0,
-          count: 0 // total attempts contributing
-        }
-      }
+      const group = ensureGroup(record.mood, record.tense)
       // Determine weight for this person cell: attempts in window (fallback to 1)
       const wKey = `${record.mood}|${record.tense}|${record.person || ''}`
-      const w = attemptCounts.get(wKey) || 1
-      groupedData[key].weightedSum += record.score * w
-      groupedData[key].weight += w
-      groupedData[key].count += attemptCounts.get(wKey) || 0
+      const w = attemptCounts.get(wKey) || 0
+      if (w > 0) {
+        group.weightedSum += record.score * w
+        group.weight += w
+      } else if (isAllTimeRange) {
+        // For all-time range, include baseline mastery even without recent attempts
+        group.weightedSum += record.score
+        group.weight += 1
+      }
     }
-    
+
+    // Incorporate attempt aggregates (counts and lastAttempt) per mood|tense
+    for (const [key, count] of attemptCounts.entries()) {
+      const [mood, tense] = key.split('|')
+      const group = ensureGroup(mood, tense)
+      group.count += count
+    }
+
+    for (const [key, timestamp] of attemptLatest.entries()) {
+      const [mood, tense] = key.split('|')
+      const group = ensureGroup(mood, tense)
+      group.lastAttempt = Math.max(group.lastAttempt, timestamp || 0)
+    }
+
     // Calcular promedios
-    const heatMapData = Object.values(groupedData).map(group => {
+    const heatMapData = Object.values(groupedData)
+      .filter(group => isAllTimeRange || group.count > 0)
+      .map(group => {
       const score = group.weight > 0
         ? (group.weightedSum / group.weight)
         : 0
@@ -89,10 +125,11 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
         tense: group.tense,
         score,
         count: group.count, // total attempts across persons (0 if no attempt yet)
-        colorClass: getMasteryColorClass(score)
+        colorClass: getMasteryColorClass(score),
+        lastAttempt: group.lastAttempt || null
       }
     })
-    
+
     return heatMapData
   } catch (error) {
     console.error('Error al obtener datos para el mapa de calor:', error)
