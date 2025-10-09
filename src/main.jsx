@@ -37,9 +37,14 @@ if (typeof window !== 'undefined') {
         import('./lib/progress/cloudSync.js')
       ])
 
-      const { setSyncEndpoint, SET_SYNC_AUTH_TOKEN, SET_SYNC_AUTH_HEADER_NAME, syncNow } = userManager
+      const {
+        setSyncEndpoint,
+        setSyncAuthToken,
+        setSyncAuthHeaderName,
+        syncNow,
+        getCurrentUserId: getUID
+      } = userManager
       const { scheduleAutoSync } = cloudSync
-      const { getCurrentUserId: getUID } = userManager
 
       // Configure sync
       const DEFAULT_SYNC_URL = 'https://conju.onrender.com/api'
@@ -51,20 +56,20 @@ if (typeof window !== 'undefined') {
         (isLocalSync ? 'X-User-Id' : 'Authorization')
 
       if (syncUrl) setSyncEndpoint(syncUrl)
-      if (syncHeader) SET_SYNC_AUTH_HEADER_NAME(syncHeader)
+      if (syncHeader) setSyncAuthHeaderName(syncHeader)
 
       if (syncToken) {
-        SET_SYNC_AUTH_TOKEN(syncToken, { persist: false })
+        setSyncAuthToken(syncToken, { persist: false })
       } else if (syncHeader.toLowerCase() !== 'authorization') {
         const uid = getUID()
-        if (uid) SET_SYNC_AUTH_TOKEN(uid, { persist: false })
+        if (uid) setSyncAuthToken(uid, { persist: false })
       }
 
       // Setup auth login handler
       window.addEventListener('auth-login', async () => {
         console.log('🔄 Iniciando sincronización automática después del login...')
         try {
-          SET_SYNC_AUTH_HEADER_NAME('Authorization')
+          setSyncAuthHeaderName('Authorization')
           const authService = await import('./lib/auth/authService.js')
           if (typeof authService.default.ensureAnonymousProgressMigration === 'function') {
             await authService.default.ensureAnonymousProgressMigration()
@@ -126,13 +131,32 @@ if (typeof window !== 'undefined') {
 
         // Configure sync with fallback
         if (userManager && cloudSync) {
-          const { setSyncEndpoint, SET_SYNC_AUTH_TOKEN, SET_SYNC_AUTH_HEADER_NAME, syncNow } = userManager
+          const {
+            setSyncEndpoint,
+            setSyncAuthToken,
+            setSyncAuthHeaderName,
+            syncNow,
+            getCurrentUserId
+          } = userManager
           const { scheduleAutoSync } = cloudSync
 
           const DEFAULT_SYNC_URL = 'https://conju.onrender.com/api'
           const syncUrl = import.meta.env?.VITE_PROGRESS_SYNC_URL || DEFAULT_SYNC_URL
+          const isLocalSync = /(?:^|\/\/)(?:localhost|127\.0\.0\.1|0\.0\.0\.0)/.test(syncUrl)
+          const syncHeader =
+            import.meta.env?.VITE_PROGRESS_SYNC_AUTH_HEADER_NAME ||
+            (isLocalSync ? 'X-User-Id' : 'Authorization')
+          const syncToken = import.meta.env?.VITE_PROGRESS_SYNC_TOKEN || null
 
           if (syncUrl) setSyncEndpoint(syncUrl)
+          if (syncHeader) setSyncAuthHeaderName(syncHeader)
+
+          if (syncToken) {
+            setSyncAuthToken(syncToken, { persist: false })
+          } else if (syncHeader.toLowerCase() !== 'authorization') {
+            const uid = typeof getCurrentUserId === 'function' ? getCurrentUserId() : null
+            if (uid) setSyncAuthToken(uid, { persist: false })
+          }
 
           try {
             scheduleAutoSync(5 * 60 * 1000)
