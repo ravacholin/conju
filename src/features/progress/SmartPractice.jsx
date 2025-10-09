@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
+import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
 
 /**
  * Smart Practice Panel - Intelligent, actionable practice recommendations
@@ -30,10 +31,13 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     }
 
     const heatMap = heatMapData.heatMap
-    const STATS = userStats
+
+    const supportedEntries = Object.entries(heatMap).filter(([combo]) =>
+      SUPPORTED_HEATMAP_COMBO_SET.has(combo)
+    )
 
     // Find weakest areas (low mastery, high attempts)
-    const weakAreas = Object.entries(heatMap)
+    const weakAreas = supportedEntries
       .filter(([, data]) => data.attempts >= 3 && data.mastery < 0.6)
       .sort((a, b) => a[1].mastery - b[1].mastery)
       .slice(0, 3)
@@ -55,7 +59,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     }
 
     // Find areas with no recent practice
-    const staleCombos = Object.entries(heatMap)
+    const staleCombos = supportedEntries
       .filter(([, data]) => data.attempts > 0 && data.mastery >= 0.7)
       .filter(([, data]) => {
         const daysSinceLastAttempt = (Date.now() - data.lastAttempt) / (1000 * 60 * 60 * 24)
@@ -79,16 +83,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     }
 
     // Find completely new areas
-    const allCombos = [
-      'indicative-pres', 'indicative-pretIndef', 'indicative-impf', 'indicative-fut',
-      'indicative-pretPerf', 'indicative-plusc', 'indicative-futPerf',
-      'subjunctive-subjPres', 'subjunctive-subjImpf', 'subjunctive-subjPerf', 'subjunctive-subjPlusc',
-      'conditional-cond', 'conditional-condPerf',
-      'imperative-imper', 'imperative-impAff', 'imperative-impNeg',
-      'nonfinite-inf', 'nonfinite-ger', 'nonfinite-part'
-    ]
-
-    const unexploredCombos = allCombos.filter(combo => !heatMap[combo] || heatMap[combo].attempts === 0)
+    const unexploredCombos = SUPPORTED_HEATMAP_COMBOS.filter(combo => !heatMap[combo] || heatMap[combo].attempts === 0)
 
     if (unexploredCombos.length > 0) {
       const nextCombo = unexploredCombos[0]

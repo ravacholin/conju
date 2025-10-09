@@ -4,6 +4,7 @@ import { formatPercentage } from '../../lib/progress/utils.js'
 import { getSRSStats, getHeatMapData } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
 
 /**
  * Combined Heat Map + SRS - Unified mastery visualization with SRS indicators
@@ -75,46 +76,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   }, [selectedTimeRange])
 
   // Mood configuration with PNG icons
-  const moodConfig = {
-    indicative: {
-      label: 'Indicativo',
-      icon: '/hechos-indicativo.png',
-      tenses: [
-        { key: 'pres', label: 'Presente' },
-        { key: 'pretIndef', label: 'Pretérito indefinido' },
-        { key: 'impf', label: 'Pretérito imperfecto' },
-        { key: 'fut', label: 'Futuro simple' },
-        { key: 'pretPerf', label: 'Pretérito perfecto' },
-        { key: 'plusc', label: 'Pluscuamperfecto' },
-        { key: 'futPerf', label: 'Futuro perfecto' }
-      ]
-    },
-    subjunctive: {
-      label: 'Subjuntivo',
-      icon: '/posib-subj.png',
-      tenses: [
-        { key: 'subjPres', label: 'Presente' },
-        { key: 'subjImpf', label: 'Pretérito imperfecto' },
-        { key: 'subjPerf', label: 'Pretérito perfecto' },
-        { key: 'subjPlusc', label: 'Pluscuamperfecto' }
-      ]
-    },
-    conditional: {
-      label: 'Condicional',
-      icon: '/posib-condic.png',
-      tenses: [
-        { key: 'cond', label: 'Condicional simple' },
-        { key: 'condPerf', label: 'Condicional compuesto' }
-      ]
-    },
-    imperative: {
-      label: 'Imperativo',
-      icon: '/megaf-imperat.png',
-      tenses: [
-        { key: 'imper', label: 'Imperativo' }
-      ]
-    }
-  }
+  const moodConfig = HEATMAP_MOOD_CONFIG
 
   // SRS stats summary
   const srsData = srsStats || { dueNow: 0, dueToday: 0, total: 0 }
