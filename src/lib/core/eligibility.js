@@ -6,19 +6,33 @@ import { createLogger } from '../utils/logger.js'
 const logger = createLogger('Eligibility')
 
 // Enhanced error handling imports - initialize properly
-let handleErrorWithRecovery, getIntegrityGuard
+const fallbackRecoveryHandler = (error, context) => {
+  logger.warn(
+    'handleErrorWithRecovery',
+    'AutoRecovery not available, using fallback',
+    { error: error?.message, context }
+  )
+}
+
+let handleErrorWithRecovery = () => {}
+let recoveryInitPromise
+let getIntegrityGuard
 
 // Initialize error handling asynchronously
 function initializeErrorHandling() {
-  if (!handleErrorWithRecovery) {
-    import('./AutoRecoverySystem.js').then(module => {
-      handleErrorWithRecovery = module.handleErrorWithRecovery
-    }).catch(() => {
-      handleErrorWithRecovery = (error, context) => {
-        logger.warn('handleErrorWithRecovery', 'AutoRecovery not available, using fallback', { error: error.message, context })
-      }
-    })
+  if (!recoveryInitPromise) {
+    handleErrorWithRecovery = fallbackRecoveryHandler
+    recoveryInitPromise = import('./AutoRecoverySystem.js')
+      .then(module => {
+        handleErrorWithRecovery = module.handleErrorWithRecovery
+        return handleErrorWithRecovery
+      })
+      .catch(() => {
+        handleErrorWithRecovery = fallbackRecoveryHandler
+        return handleErrorWithRecovery
+      })
   }
+  return recoveryInitPromise
 }
 
 // Initialize on first use
