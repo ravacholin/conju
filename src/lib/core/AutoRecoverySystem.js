@@ -89,6 +89,12 @@ class AutoRecoverySystem {
     this.lastHealthCheck = null
     this.monitoringInterval = null
 
+    this.isInitialized = false
+    this.initializationPromise = null
+    this.errorListenersRegistered = false
+    this.boundGlobalErrorHandler = null
+    this.boundUnhandledRejectionHandler = null
+
     this.initialize()
   }
 
@@ -96,31 +102,50 @@ class AutoRecoverySystem {
    * Initialize the auto-recovery system
    */
   async initialize() {
-    logger.info('initialize', '🔄 Initializing AutoRecoverySystem...')
-
-    try {
-      // Setup error classifiers
-      this.setupErrorClassifiers()
-
-      // Setup recovery strategies
-      this.setupRecoveryStrategies()
-
-      // Initialize circuit breakers
-      this.initializeCircuitBreakers()
-
-      // Setup error listeners
-      this.setupErrorListeners()
-
-      // Start monitoring
-      this.startMonitoring()
-
-      logger.info('initialize', '✅ AutoRecoverySystem initialized successfully')
-
-    } catch (error) {
-      logger.error('initialize', 'Failed to initialize AutoRecoverySystem', error)
-      this.currentState = SYSTEM_STATES.CRITICAL
-      throw error
+    if (this.isInitialized) {
+      logger.debug('initialize', 'Initialization skipped - already initialized')
+      return
     }
+
+    if (this.initializationPromise) {
+      return this.initializationPromise
+    }
+
+    this.initializationPromise = (async () => {
+      logger.info('initialize', '🔄 Initializing AutoRecoverySystem...')
+
+      try {
+        // Setup error classifiers
+        this.setupErrorClassifiers()
+
+        // Setup recovery strategies
+        this.setupRecoveryStrategies()
+
+        // Initialize circuit breakers
+        this.initializeCircuitBreakers()
+
+        // Setup error listeners
+        this.setupErrorListeners()
+
+        // Start monitoring
+        this.startMonitoring()
+
+        this.isInitialized = true
+
+        logger.info('initialize', '✅ AutoRecoverySystem initialized successfully')
+
+      } catch (error) {
+        this.isInitialized = false
+        logger.error('initialize', 'Failed to initialize AutoRecoverySystem', error)
+        this.currentState = SYSTEM_STATES.CRITICAL
+        throw error
+
+      } finally {
+        this.initializationPromise = null
+      }
+    })()
+
+    return this.initializationPromise
   }
 
   /**
@@ -624,25 +649,34 @@ class AutoRecoverySystem {
    * Setup global error listeners
    */
   setupErrorListeners() {
-    if (typeof window !== 'undefined') {
-      // Global error handler
-      window.addEventListener('error', (event) => {
-        this.handleError(event.error || new Error(event.message), {
-          type: 'global_error',
-          filename: event.filename,
-          lineno: event.lineno,
-          colno: event.colno
-        })
-      })
+    if (this.errorListenersRegistered || typeof window === 'undefined') {
+      return
+    }
 
-      // Unhandled promise rejections
-      window.addEventListener('unhandledrejection', (event) => {
-        this.handleError(new Error(event.reason), {
-          type: 'unhandled_rejection',
-          promise: true
-        })
+    this.boundGlobalErrorHandler = (event) => {
+      this.handleError(event.error || new Error(event.message), {
+        type: 'global_error',
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno
       })
     }
+
+    this.boundUnhandledRejectionHandler = (event) => {
+      const reason = event.reason instanceof Error
+        ? event.reason
+        : new Error(event.reason)
+
+      this.handleError(reason, {
+        type: 'unhandled_rejection',
+        promise: true
+      })
+    }
+
+    window.addEventListener('error', this.boundGlobalErrorHandler)
+    window.addEventListener('unhandledrejection', this.boundUnhandledRejectionHandler)
+
+    this.errorListenersRegistered = true
   }
 
   /**
@@ -908,6 +942,17 @@ class AutoRecoverySystem {
     this.recoveryStrategies.clear()
     this.errorClassifiers.clear()
 
+    if (typeof window !== 'undefined' && this.errorListenersRegistered) {
+      window.removeEventListener('error', this.boundGlobalErrorHandler)
+      window.removeEventListener('unhandledrejection', this.boundUnhandledRejectionHandler)
+      this.errorListenersRegistered = false
+      this.boundGlobalErrorHandler = null
+      this.boundUnhandledRejectionHandler = null
+    }
+
+    this.isInitialized = false
+    this.initializationPromise = null
+
     logger.info('destroy', 'AutoRecoverySystem destroyed')
   }
 }
@@ -930,7 +975,9 @@ export function getRecoverySystem() {
  */
 export async function initializeRecoverySystem() {
   const recovery = getRecoverySystem()
-  await recovery.initialize()
+  if (!recovery.isInitialized) {
+    await recovery.initialize()
+  }
   return recovery
 }
 
@@ -960,7 +1007,10 @@ export async function activateEmergencyMode() {
 
 // Auto-initialize in browser environment
 if (typeof window !== 'undefined') {
-  initializeRecoverySystem().catch(error => {
-    console.error('Failed to auto-initialize AutoRecoverySystem:', error)
-  })
+  const recovery = getRecoverySystem()
+  if (!recovery.isInitialized) {
+    initializeRecoverySystem().catch(error => {
+      console.error('Failed to auto-initialize AutoRecoverySystem:', error)
+    })
+  }
 }
