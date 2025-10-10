@@ -92,11 +92,19 @@ export function buildGerund(lemma) {
   const endsWith = (s) => lemma.endsWith(s)
   const stem = lemma.slice(0, -2)
   const lastStemChar = stem.slice(-1)
-  // Nota: incluir 'u' explícitamente para casos como secuencias con vocal simple
-  if ((endsWith('er') || endsWith('ir')) && /[aeiouáéíóú]/i.test(lastStemChar)) {
-    return stem + 'yendo'
+  // Nota: incluir 'u' y 'ü' explícitamente para casos como secuencias con vocal simple
+  // La regla de -yendo se aplica si la raíz termina en vocal.
+  // Se excluyen los dígrafos 'gu' y 'qu' donde la 'u' no forma diptongo.
+  if ((endsWith('er') || endsWith('ir')) && /[aeiouáéíóúü]/i.test(lastStemChar)) {
+    const prevChar = stem.slice(-2, -1)
+    if (lastStemChar === 'u' && (prevChar === 'g' || prevChar === 'q')) {
+      // No hacer nada, dejar que caiga a la regla de -iendo (ej. distinguir -> distinguiendo)
+    } else {
+      // Para raíces terminadas en vocal (leer, construir, argüir)
+      return stem + 'yendo'
+    }
   }
-  if (lemma.endsWith('uir') && !lemma.endsWith('guir')) {
+  if (lemma.endsWith('uir') && !lemma.endsWith('guir') && !lemma.endsWith('quir')) {
     return stem + 'yendo'
   }
   // Regulares
