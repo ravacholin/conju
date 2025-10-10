@@ -11,6 +11,25 @@ import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
 import { getAllVerbs } from '../core/verbDataService.js'
 import { cleanupMasteryCache } from './incrementalMastery.js'
 
+const MINIMAL_EMERGENCY_VERBS = [
+  {
+    lemma: 'ser',
+    type: 'irregular',
+    paradigms: [{
+      regionTags: ['la_general'],
+      forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'soy' }]
+    }]
+  },
+  {
+    lemma: 'estar',
+    type: 'irregular',
+    paradigms: [{
+      regionTags: ['la_general'],
+      forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'estoy' }]
+    }]
+  }
+]
+
 // Estado del sistema
 let isInitialized = false
 let currentUserId = null
@@ -133,16 +152,36 @@ export async function initProgressSystem(userId = null) {
 
         // Inyectar verbos en el metadata provider para motores emocionales
         try {
-          let verbs = getAllVerbs() // Now synchronous
-          if (!verbs || verbs.length === 0) {
-            console.warn('verbMetadataProvider', 'Servicio devolvió 0 verbos, intentando fallback estático')
-            try {
-              const fallback = await import('../../data/verbs.js')
-              verbs = fallback.verbs || []
-            } catch (fallbackError) {
-              console.warn('Fallback estático de verbos también falló', fallbackError)
-              verbs = []
+          let verbs = []
+          try {
+            const serviceVerbs = await getAllVerbs()
+            if (Array.isArray(serviceVerbs) && serviceVerbs.length > 0) {
+              verbs = serviceVerbs
+            } else {
+              console.warn('verbMetadataProvider', 'Servicio devolvió 0 verbos, intentando fallback estático')
             }
+          } catch (serviceError) {
+            console.warn('verbMetadataProvider', 'Servicio de verbos falló, intentando fallback estático', serviceError)
+          }
+
+          if (verbs.length === 0) {
+            const fallbackModule = await import('../../data/verbs.js').catch((fallbackError) => {
+              console.warn('Fallback estático de verbos también falló', fallbackError)
+              return null
+            })
+            if (fallbackModule) {
+              const fallbackVerbs = fallbackModule.verbs || fallbackModule.default || []
+              if (Array.isArray(fallbackVerbs) && fallbackVerbs.length > 0) {
+                verbs = fallbackVerbs
+              } else {
+                console.warn('Fallback estático de verbos devolvió 0 elementos, usando conjunto de emergencia')
+              }
+            }
+          }
+
+          if (verbs.length === 0) {
+            console.warn('Metadata provider usando conjunto de emergencia mínimo para continuar')
+            verbs = MINIMAL_EMERGENCY_VERBS
           }
 
           if (verbs.length > 0) {
