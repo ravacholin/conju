@@ -10,14 +10,65 @@ import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
  * Combined Heat Map + SRS - Unified mastery visualization with SRS indicators
  * Replaces: VerbMasteryMap, SRSPanel, SRSReviewQueueModal
  */
+
+const DEFAULT_TIME_RANGE = 'all'
+
+function buildHeatMapPayload(rawData, rangeKey = DEFAULT_TIME_RANGE) {
+  const timestamp = Date.now()
+
+  if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && rawData.heatMap) {
+    return {
+      heatMap: rawData.heatMap || {},
+      range: rawData.range || rangeKey,
+      updatedAt: rawData.updatedAt || timestamp
+    }
+  }
+
+  if (!Array.isArray(rawData) || rawData.length === 0) {
+    return { heatMap: {}, range: rangeKey, updatedAt: timestamp }
+  }
+
+  const heatMapObject = {}
+
+  rawData.forEach(item => {
+    if (item.mood && item.tense) {
+      const key = `${item.mood}-${item.tense}`
+      const rawLastAttempt = item.lastAttempt ?? null
+      let normalizedLastAttempt = null
+      if (typeof rawLastAttempt === 'number') {
+        normalizedLastAttempt = rawLastAttempt
+      } else if (typeof rawLastAttempt === 'string') {
+        const parsed = new Date(rawLastAttempt).getTime()
+        normalizedLastAttempt = Number.isFinite(parsed) ? parsed : null
+      }
+      heatMapObject[key] = {
+        mastery: item.score / 100,
+        attempts: item.count || 0,
+        lastAttempt: normalizedLastAttempt
+      }
+    }
+  })
+
+  return { heatMap: heatMapObject, range: rangeKey, updatedAt: timestamp }
+}
+
 export default function HeatMapSRS({ data, onNavigateToDrill }) {
   const settings = useSettings()
-  const [selectedTimeRange, setSelectedTimeRange] = useState('all')
-  const [heatMapData, setHeatMapData] = useState(null)
+  const initialRange = data?.range || DEFAULT_TIME_RANGE
+  const initialPayloadRef = useRef(null)
+  const [selectedTimeRange, setSelectedTimeRange] = useState(initialRange)
+  const [heatMapData, setHeatMapData] = useState(() => {
+    if (data?.heatMap) {
+      const payload = buildHeatMapPayload(data, initialRange)
+      initialPayloadRef.current = payload
+      return payload
+    }
+    return null
+  })
   const [loading, setLoading] = useState(false)
   const [manualRefreshRange, setManualRefreshRange] = useState(null)
   const { queue, stats: srsStats } = useSRSQueue()
-  const rangeCacheRef = useRef({})
+  const rangeCacheRef = useRef(initialPayloadRef.current ? { [initialPayloadRef.current.range]: initialPayloadRef.current } : {})
 
   const timeRangeMap = useMemo(() => ({
     'all': 'all_time',
@@ -26,54 +77,44 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     '3months': 'last_90_days'
   }), [])
 
-  const buildHeatMapPayload = (rawData, rangeKey) => {
-    const timestamp = Date.now()
+  useEffect(() => {
+    if (!data?.heatMap) return
 
-    if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && rawData.heatMap) {
-      return {
-        heatMap: rawData.heatMap || {},
-        range: rawData.range || rangeKey,
-        updatedAt: rawData.updatedAt || timestamp
-      }
+    const normalizedRange = data.range || DEFAULT_TIME_RANGE
+    const payload = buildHeatMapPayload(data, normalizedRange)
+    rangeCacheRef.current[normalizedRange] = payload
+
+    if (normalizedRange === selectedTimeRange && manualRefreshRange !== normalizedRange) {
+      setHeatMapData(payload)
+      setLoading(false)
     }
-
-    if (!Array.isArray(rawData) || rawData.length === 0) {
-      return { heatMap: {}, range: rangeKey, updatedAt: timestamp }
-    }
-
-    const heatMapObject = {}
-
-    rawData.forEach(item => {
-      if (item.mood && item.tense) {
-        const key = `${item.mood}-${item.tense}`
-        const rawLastAttempt = item.lastAttempt ?? null
-        let normalizedLastAttempt = null
-        if (typeof rawLastAttempt === 'number') {
-          normalizedLastAttempt = rawLastAttempt
-        } else if (typeof rawLastAttempt === 'string') {
-          const parsed = new Date(rawLastAttempt).getTime()
-          normalizedLastAttempt = Number.isFinite(parsed) ? parsed : null
-        }
-        heatMapObject[key] = {
-          mastery: item.score / 100,
-          attempts: item.count || 0,
-          lastAttempt: normalizedLastAttempt
-        }
-      }
-    })
-
-    return { heatMap: heatMapObject, range: rangeKey, updatedAt: timestamp }
-  }
+  }, [data, manualRefreshRange, selectedTimeRange])
 
   // Fetch heat map data when time range changes
   useEffect(() => {
     const rangeKey = selectedTimeRange
     const cachedData = rangeCacheRef.current[rangeKey]
     const forceRefresh = manualRefreshRange === rangeKey
+    const propRange = data?.range || DEFAULT_TIME_RANGE
+    const hasPropDataForRange = Boolean(data?.heatMap) && propRange === rangeKey
 
     if (cachedData && !forceRefresh) {
       setHeatMapData(cachedData)
       setLoading(false)
+      return
+    }
+
+    if (hasPropDataForRange && !forceRefresh) {
+      const payload = buildHeatMapPayload(data, rangeKey)
+      rangeCacheRef.current[rangeKey] = payload
+      setHeatMapData(payload)
+      setLoading(false)
+      return
+    }
+
+    const shouldFetch = forceRefresh || !cachedData
+
+    if (!shouldFetch) {
       return
     }
 
@@ -121,19 +162,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     return () => {
       cancelled = true
     }
-  }, [selectedTimeRange, manualRefreshRange, timeRangeMap])
-
-  useEffect(() => {
-    if (data?.heatMap) {
-      const normalizedRange = data.range || 'all'
-      const payload = buildHeatMapPayload(data, normalizedRange)
-      rangeCacheRef.current[normalizedRange] = payload
-      if (normalizedRange === selectedTimeRange && manualRefreshRange !== normalizedRange) {
-        setHeatMapData(payload)
-        setLoading(false)
-      }
-    }
-  }, [data, manualRefreshRange, selectedTimeRange])
+  }, [selectedTimeRange, manualRefreshRange, timeRangeMap, data])
 
   // Mood configuration with PNG icons
   const moodConfig = HEATMAP_MOOD_CONFIG
