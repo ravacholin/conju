@@ -86,10 +86,140 @@ function buildMicroGoals(goalsState) {
   return activeGoals.slice(0, maxGoals)
 }
 
+/**
+ * Convierte recomendaciones ML en sesiones ejecutables con drillConfig
+ */
+function convertRecommendationsToExecutableSessions(recommendations, predictedSequence) {
+  const sessions = []
+  const maxSessions = PROGRESS_CONFIG.PERSONALIZATION.STUDY_PLAN.MAX_SESSION_RECOMMENDATIONS
+
+  // Mapeo de íconos por tipo de recomendación
+  const iconMap = {
+    'confidence_building': '/openbook.png',
+    'focus_weakness': '/diana.png',
+    'maintain_mastery': '/icons/refresh.png',
+    'explore_new': '/play.png',
+    'mixed_practice': '/dice.png',
+    'flow_maintenance': '/icons/sparks.png',
+    'challenge_practice': '/diana.png',
+    'review': '/icons/timer.png'
+  }
+
+  // Mapeo de dificultad
+  const difficultyMap = {
+    'easy': 'Fácil',
+    'medium': 'Medio',
+    'hard': 'Difícil'
+  }
+
+  // Procesar recomendaciones ML
+  recommendations.slice(0, maxSessions).forEach((rec, index) => {
+    let drillConfig = {
+      practiceMode: 'mixed',
+      duration: 20
+    }
+
+    let title = rec.title || rec.message || `Sesión ${index + 1}`
+    let description = rec.description || rec.suggestedApproach || 'Práctica personalizada'
+
+    // Determinar configuración ejecutable basada en tipo de recomendación
+    if (rec.type === 'focus_weakness' || rec.type === 'maintain_mastery' || rec.type === 'explore_new') {
+      if (rec.targetAreas && Array.isArray(rec.targetAreas)) {
+        // Si hay áreas específicas, usar la primera
+        const firstArea = rec.targetAreas[0]
+        if (typeof firstArea === 'string' && firstArea.includes('/')) {
+          const [mood, tense] = firstArea.split('/')
+          drillConfig = {
+            practiceMode: 'specific',
+            specificMood: mood.trim(),
+            specificTense: tense.trim(),
+            duration: 20
+          }
+        }
+      }
+    } else if (rec.type === 'mixed_practice' || rec.type === 'challenge_practice') {
+      drillConfig = {
+        practiceMode: 'mixed',
+        duration: rec.adjustments?.duration || 20
+      }
+    } else if (rec.type === 'review' || rec.type === 'srs_optimization') {
+      drillConfig = {
+        practiceMode: 'review',
+        reviewSessionType: 'due',
+        duration: 15
+      }
+    }
+
+    sessions.push({
+      id: `session-${Date.now()}-${index}`,
+      title,
+      description,
+      drillConfig,
+      icon: iconMap[rec.type] || '/play.png',
+      difficulty: difficultyMap[rec.difficulty] || difficultyMap[rec.adjustments?.difficulty] || 'Medio',
+      estimatedDuration: `${drillConfig.duration || 20} min`,
+      type: rec.type,
+      priority: rec.priority || 0.5,
+      targetAttempts: drillConfig.duration ? Math.floor(drillConfig.duration * 0.75) : 15 // ~0.75 intentos por minuto
+    })
+  })
+
+  // Si no hay suficientes sesiones, agregar desde predictedSequence
+  if (sessions.length < 3 && Array.isArray(predictedSequence) && predictedSequence.length > 0) {
+    const remaining = Math.min(3 - sessions.length, predictedSequence.length)
+
+    predictedSequence.slice(0, remaining).forEach((combo, index) => {
+      const sessionIndex = sessions.length
+      sessions.push({
+        id: `session-predicted-${Date.now()}-${index}`,
+        title: `Práctica: ${combo.mood} - ${combo.tense}`,
+        description: `Sesión enfocada en ${combo.mood} ${combo.tense}`,
+        drillConfig: {
+          practiceMode: 'specific',
+          specificMood: combo.mood,
+          specificTense: combo.tense,
+          duration: 20
+        },
+        icon: '/play.png',
+        difficulty: combo.difficulty || 'Medio',
+        estimatedDuration: '20 min',
+        type: 'predicted',
+        priority: combo.predictionScore || 0.5,
+        targetAttempts: 15
+      })
+    })
+  }
+
+  // Si aún no hay sesiones, agregar sesión por defecto
+  if (sessions.length === 0) {
+    sessions.push({
+      id: `session-default-${Date.now()}`,
+      title: 'Práctica general',
+      description: 'Sesión de práctica mixta para mejorar en todas las áreas',
+      drillConfig: {
+        practiceMode: 'mixed',
+        duration: 20
+      },
+      icon: '/dice.png',
+      difficulty: 'Medio',
+      estimatedDuration: '20 min',
+      type: 'mixed_practice',
+      priority: 0.5,
+      targetAttempts: 15
+    })
+  }
+
+  return sessions
+}
+
 function buildSessionBlueprints(mlPlan, predictedSequence) {
   const recommendations = Array.isArray(mlPlan?.recommendations) ? mlPlan.recommendations : []
+
+  // Convertir recomendaciones en sesiones ejecutables
+  const executableSessions = convertRecommendationsToExecutableSessions(recommendations, predictedSequence)
+
   return {
-    sessions: recommendations,
+    sessions: executableSessions,
     predictedSequence: Array.isArray(predictedSequence) ? predictedSequence : [],
     sessionPlan: mlPlan?.sessionPlan || null
   }

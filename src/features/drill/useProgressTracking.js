@@ -1,8 +1,8 @@
 // Hook personalizado para tracking de progreso en Drill
 
 import { useEffect, useRef, useState } from 'react'
-import { 
-  trackAttemptStarted, 
+import {
+  trackAttemptStarted,
   trackAttemptSubmitted,
   trackHintShown,
   trackStreakIncremented,
@@ -15,6 +15,8 @@ import {
   onProgressSystemReady
 } from '../../lib/progress/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { incrementSessionAttempts } from '../../lib/progress/planTracking.js'
+import { useSettings } from '../../state/settings.js'
 
 /**
  * Hook personalizado para tracking de progreso en Drill
@@ -28,6 +30,7 @@ export function useProgressTracking(currentItem, onResult) {
   const itemStartTimeRef = useRef(null)
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
+  const settings = useSettings()
 
   // Verificar si el sistema de progreso está listo usando eventos
   useEffect(() => {
@@ -100,12 +103,22 @@ export function useProgressTracking(currentItem, onResult) {
     if (onResult) {
       onResult(result)
     }
-    
+
+    // Si hay una sesión de plan activa, incrementar el contador
+    if (settings.activeSessionId && settings.activePlanId) {
+      try {
+        incrementSessionAttempts(settings.activeSessionId, result.correct)
+        logger.debug(`Plan session attempt tracked: ${result.correct ? 'correct' : 'incorrect'}`)
+      } catch (error) {
+        logger.warn('Error al rastrear intento de sesión de plan:', error)
+      }
+    }
+
     // Registrar el resultado del intento solo si el sistema está listo
     if (progressSystemReady && attemptIdRef.current && itemStartTimeRef.current) {
       try {
         const latencyMs = Date.now() - itemStartTimeRef.current
-        
+
         // Registrar intento completado
         await trackAttemptSubmitted(attemptIdRef.current, {
           correct: result.correct,
@@ -116,7 +129,7 @@ export function useProgressTracking(currentItem, onResult) {
           correctAnswer: result.correctAnswer,
           item: currentItem
         })
-        
+
         logger.debug(`Intento ${attemptIdRef.current} registrado`)
       } catch (error) {
         logger.warn('Error al registrar resultado del intento:', error)

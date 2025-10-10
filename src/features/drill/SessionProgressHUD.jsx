@@ -11,24 +11,42 @@
 import React, { useEffect, useState } from 'react'
 import { getCurrentSessionProgress, hasActiveSession } from '../../lib/progress/sessionManager.js'
 import { useSettings } from '../../state/settings.js'
+import { getActivePlan, getSessionStatus, markSessionAsCompleted, getSessionAttemptProgress } from '../../lib/progress/planTracking.js'
 
 export default function SessionProgressHUD() {
   const [sessionProgress, setSessionProgress] = useState(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
+  const [planSession, setPlanSession] = useState(null)
   const settings = useSettings()
 
   // Actualizar progreso de sesión
   useEffect(() => {
     const updateProgress = () => {
+      // Verificar si hay sesión de plan activa
+      if (settings.activeSessionId && settings.activePlanId) {
+        const activePlan = getActivePlan()
+        if (activePlan) {
+          const session = activePlan.sessions.find(s => s.sessionId === settings.activeSessionId)
+          if (session) {
+            setPlanSession(session)
+            setSessionProgress(null) // Limpiar progreso de sesión normal
+            return
+          }
+        }
+      }
+
+      // Verificar sesión personalizada normal
       if (settings.practiceMode === 'personalized_session' && hasActiveSession()) {
         const progress = getCurrentSessionProgress()
         setSessionProgress(progress)
+        setPlanSession(null) // Limpiar sesión de plan
 
         if (progress && progress.sessionActive) {
           setTimeElapsed(progress.elapsedMinutes)
         }
       } else {
         setSessionProgress(null)
+        setPlanSession(null)
         setTimeElapsed(0)
       }
     }
@@ -41,7 +59,13 @@ export default function SessionProgressHUD() {
       updateProgress()
     }
 
+    // Escuchar eventos de plan
+    const handlePlanUpdate = (event) => {
+      updateProgress()
+    }
+
     window.addEventListener('session-progress-update', handleSessionUpdate)
+    window.addEventListener('progress:plan-updated', handlePlanUpdate)
 
     // Timer para actualizar tiempo transcurrido cada minuto
     const timer = setInterval(() => {
@@ -52,12 +76,13 @@ export default function SessionProgressHUD() {
 
     return () => {
       window.removeEventListener('session-progress-update', handleSessionUpdate)
+      window.removeEventListener('progress:plan-updated', handlePlanUpdate)
       clearInterval(timer)
     }
-  }, [settings.practiceMode, sessionProgress?.sessionActive])
+  }, [settings.practiceMode, settings.activeSessionId, settings.activePlanId, sessionProgress?.sessionActive])
 
-  // No mostrar si no hay sesión activa
-  if (!sessionProgress || !sessionProgress.sessionActive) {
+  // No mostrar si no hay sesión activa (ni plan ni personalizada)
+  if (!planSession && (!sessionProgress || !sessionProgress.sessionActive)) {
     return null
   }
 
@@ -84,23 +109,29 @@ export default function SessionProgressHUD() {
 
   const getActivityIcon = (activityType) => {
     const icons = {
-      weak_area_practice: '🎯',
-      spaced_review: '🔄',
-      new_content: '📚',
-      core_focus: '⭐',
-      balanced_practice: '⚖️'
+      weak_area_practice: '/diana.png',
+      spaced_review: '/icons/refresh.png',
+      new_content: '/openbook.png',
+      core_focus: '/icons/sparks.png',
+      balanced_practice: '/icons/chart.png'
     }
-    return icons[activityType] || '📝'
+    return icons[activityType] || '/play.png'
   }
 
   const handleEndSession = () => {
-    if (window.confirm('¿Estás seguro de que querés terminar la sesión personalizada?')) {
+    const confirmMessage = planSession
+      ? '¿Estás seguro de que querés terminar la sesión del plan?'
+      : '¿Estás seguro de que querés terminar la sesión personalizada?'
+
+    if (window.confirm(confirmMessage)) {
       // Finalizar sesión y volver a modo normal
       settings.set({
         practiceMode: 'mixed',
         currentSession: null,
         currentActivityIndex: 0,
-        sessionStartTime: null
+        sessionStartTime: null,
+        activeSessionId: null,
+        activePlanId: null
       })
 
       // Dispatch event para notificar finalización
@@ -110,11 +141,88 @@ export default function SessionProgressHUD() {
     }
   }
 
+  // Renderizar HUD para sesión de plan
+  if (planSession) {
+    const activePlan = getActivePlan()
+    const planProgress = activePlan
+      ? {
+          completed: activePlan.sessions.filter(s => s.status === 'completed').length,
+          total: activePlan.sessions.length
+        }
+      : { completed: 0, total: 0 }
+
+    const attemptProgress = getSessionAttemptProgress(settings.activeSessionId)
+
+    return (
+      <div className="session-progress-hud active plan-session">
+        <div className="hud-header">
+          <span className="session-title">
+            <img src={planSession.config?.icon || '/play.png'} alt="" style={{ width: '18px', height: '18px', marginRight: '6px', opacity: 0.8 }} />
+            Sesión del plan
+          </span>
+          <button
+            className="btn btn-small btn-secondary"
+            onClick={handleEndSession}
+            title="Terminar sesión anticipadamente"
+          >
+            Terminar
+          </button>
+        </div>
+
+        <div className="activity-progress">
+          <div className="activity-info">
+            <div className="activity-title">
+              {planSession.config?.title || 'Práctica de plan de estudio'}
+            </div>
+            <div className="activity-meta">
+              Sesión {planProgress.completed + 1} de {planProgress.total}
+              {planSession.config?.estimatedDuration && (
+                <span> • ~{planSession.config.estimatedDuration}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="progress-bar-container">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${attemptProgress.percentage}%` }}
+              />
+            </div>
+            <span className="progress-text">
+              {attemptProgress.attempts} / {attemptProgress.target} ejercicios
+            </span>
+          </div>
+        </div>
+
+        <div className="session-stats">
+          <div className="stat-item">
+            <span className="stat-label">Progreso plan:</span>
+            <span className="stat-value">
+              {planProgress.completed} / {planProgress.total} sesiones
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Precisión:</span>
+            <span className="stat-value">{Math.round(attemptProgress.accuracy * 100)}%</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Dificultad:</span>
+            <span className="stat-value">{planSession.config?.difficulty || 'Medio'}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (isCompleted) {
     return (
       <div className="session-progress-hud completed">
         <div className="hud-header">
-          <span className="session-title">🎉 ¡Sesión Completada!</span>
+          <span className="session-title">
+            <img src="/icons/trophy.png" alt="" style={{ width: '18px', height: '18px', marginRight: '6px', opacity: 0.8 }} />
+            ¡Sesión Completada!
+          </span>
         </div>
         <div className="session-summary">
           <div className="summary-stat">
@@ -144,7 +252,8 @@ export default function SessionProgressHUD() {
     <div className="session-progress-hud active">
       <div className="hud-header">
         <span className="session-title">
-          {getActivityIcon(currentActivity?.type)} Sesión Personalizada
+          <img src={getActivityIcon(currentActivity?.type)} alt="" style={{ width: '18px', height: '18px', marginRight: '6px', opacity: 0.8 }} />
+          Sesión Personalizada
         </span>
         <button
           className="btn btn-small btn-secondary"

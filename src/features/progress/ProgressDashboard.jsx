@@ -143,6 +143,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           userStats={userStats}
           heatMapData={heatMapData}
           studyPlan={studyPlan}
+          onNavigateToDrill={onNavigateToDrill}
         />
       </SafeComponent>
     </div>

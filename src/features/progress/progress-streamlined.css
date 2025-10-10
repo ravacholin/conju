@@ -620,6 +620,17 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
+.recommendation-card.priority-urgent {
+  border-color: rgba(142, 180, 227, 0.3);
+  background: rgba(142, 180, 227, 0.05);
+  box-shadow: 0 0 0 1px rgba(142, 180, 227, 0.2);
+}
+
+.recommendation-card.priority-urgent:hover {
+  border-color: rgba(142, 180, 227, 0.5);
+  box-shadow: 0 0 0 2px rgba(142, 180, 227, 0.3);
+}
+
 .recommendation-card.priority-high {
   border-color: rgba(125, 233, 184, 0.2);
 }
