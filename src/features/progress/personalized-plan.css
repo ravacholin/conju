@@ -9,6 +9,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .plan-actions {
@@ -21,25 +22,28 @@
 .plan-refresh {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  background: rgba(18, 18, 18, 0.9);
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 0.5rem;
-  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  font-weight: 450;
+  transition: all 0.2s ease;
 }
 
 .plan-refresh:hover {
-  background: rgba(22, 22, 22, 0.95);
+  background: rgba(255, 255, 255, 0.1);
   border-color: rgba(245, 245, 245, 0.2);
+  transform: translateY(-1px);
 }
 
 .plan-refresh img {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
+  filter: grayscale(100%);
   opacity: 0.8;
 }
 
@@ -53,8 +57,9 @@
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: rgba(12, 12, 12, 0.85);
-  border: 1px solid rgba(245, 245, 245, 0.06);
+  background: rgba(21, 21, 21, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -98,12 +103,17 @@
 }
 
 .plan-goal-card {
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
   padding: 1rem;
-  background: rgba(14, 14, 14, 0.9);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.plan-goal-card:hover {
+  border-color: rgba(245, 245, 245, 0.15);
+  transform: translateY(-1px);
 }
 
 .plan-goal-header {
@@ -140,11 +150,17 @@
 }
 
 .plan-week {
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
   padding: 1rem;
-  background: rgba(18, 18, 18, 0.92);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.plan-week:hover {
+  border-color: rgba(245, 245, 245, 0.15);
+  transform: translateY(-1px);
 }
 
 .plan-week-header {
@@ -178,11 +194,17 @@
 }
 
 .plan-session-block {
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
   padding: 1rem;
-  background: rgba(14, 14, 14, 0.88);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.plan-session-block:hover {
+  border-color: rgba(245, 245, 245, 0.15);
+  transform: translateY(-1px);
 }
 
 .plan-session-block p,
@@ -192,19 +214,19 @@
 }
 
 .plan-scheduling {
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0.75rem;
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
   padding: 1rem;
-  background: rgba(12, 12, 12, 0.92);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
 }
 
 .plan-placeholder {
   padding: 1rem;
-  border-radius: 0.75rem;
-  background: rgba(18, 18, 18, 0.85);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
-  border: 1px solid rgba(245, 245, 245, 0.06);
+  border: 1px solid rgba(245, 245, 245, 0.08);
 }
 
 /* Nuevos estilos para plan interactivo */
@@ -263,6 +285,7 @@
 .inline-icon {
   width: 20px;
   height: 20px;
+  filter: grayscale(100%);
   opacity: 0.8;
 }
 
