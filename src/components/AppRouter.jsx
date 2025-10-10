@@ -31,13 +31,14 @@
  * @requires router - Sistema de enrutamiento interno
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import LearnTenseFlowContainer from './learning/LearnTenseFlow.jsx';
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
+import { useShallow } from 'zustand/react/shallow'
 
 const ProgressDashboard = lazy(lazyWithRetry(
   () => import('../features/progress/ProgressDashboard.jsx')
@@ -60,8 +61,21 @@ const DEBUG_LOG = (message, ...args) => {
  */
 function AppRouter() {
   const [currentMode, setCurrentMode] = useState('onboarding')
-  const settings = useSettings()
-  
+  const settings = useSettings(
+    useShallow((state) => ({
+      region: state.region,
+      useVoseo: state.useVoseo,
+      useVosotros: state.useVosotros,
+      practiceMode: state.practiceMode,
+      specificMood: state.specificMood,
+      specificTense: state.specificTense,
+      verbType: state.verbType,
+      selectedFamily: state.selectedFamily,
+      level: state.level,
+      set: state.set
+    }))
+  )
+
   // Import hooks
   const drillMode = useDrillMode()
   const onboardingFlow = useOnboardingFlow()
@@ -77,15 +91,56 @@ function AppRouter() {
 
 
   const [formsForRegion, setFormsForRegion] = useState([])
+  const formsCacheRef = useRef(new Map())
+
+  const formsSettings = useMemo(
+    () => ({
+      region: settings.region,
+      useVoseo: settings.useVoseo,
+      useVosotros: settings.useVosotros,
+      practiceMode: settings.practiceMode,
+      specificMood: settings.specificMood,
+      specificTense: settings.specificTense,
+      verbType: settings.verbType,
+      selectedFamily: settings.selectedFamily
+    }),
+    [
+      settings.region,
+      settings.useVoseo,
+      settings.useVosotros,
+      settings.practiceMode,
+      settings.specificMood,
+      settings.specificTense,
+      settings.verbType,
+      settings.selectedFamily
+    ]
+  )
+
+  const formsSettingsKey = useMemo(() => JSON.stringify(formsSettings), [formsSettings])
 
   useEffect(() => {
+    if (!formsSettings.region) {
+      setFormsForRegion([])
+      return
+    }
+
+    const cachedEntry = formsCacheRef.current.get(formsSettings.region)
+    if (cachedEntry && cachedEntry.key === formsSettingsKey) {
+      setFormsForRegion(cachedEntry.forms)
+      return
+    }
+
     let cancelled = false
     async function loadForms() {
       setFormsForRegion([])
       try {
-        const forms = await buildFormsForRegion(settings.region, settings)
+        const forms = await buildFormsForRegion(formsSettings.region, formsSettings)
         if (!cancelled) {
           setFormsForRegion(forms)
+          formsCacheRef.current.set(formsSettings.region, {
+            key: formsSettingsKey,
+            forms
+          })
         }
       } catch (error) {
         if (!cancelled) {
@@ -99,7 +154,7 @@ function AppRouter() {
     return () => {
       cancelled = true
     }
-  }, [settings])
+  }, [formsSettings.region, formsSettingsKey, formsSettings])
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 
