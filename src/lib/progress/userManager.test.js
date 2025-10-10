@@ -73,3 +73,92 @@ describe('wakeUpServer URL handling', () => {
     expect(successLogs.length).toBe(0)
   })
 })
+
+describe('userManager logging sanitization', () => {
+  beforeEach(() => {
+    vi.resetModules()
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('redacts tokens and emails from metadata', async () => {
+    const { __testing } = await import('./userManager.js')
+    const { sanitizeLogMetadata } = __testing
+
+    const metadata = {
+      token: 'secret-token',
+      nested: {
+        authToken: 'Bearer abc123',
+        email: 'user@example.com',
+        userId: 'user-12345'
+      },
+      count: 3
+    }
+
+    expect(sanitizeLogMetadata(metadata)).toEqual({
+      token: '[REDACTED]',
+      nested: {
+        authToken: '[REDACTED]',
+        email: '[REDACTED]',
+        userId: '[REDACTED]'
+      },
+      count: 3
+    })
+  })
+
+  it('returns sanitized metadata in development mode', async () => {
+    vi.stubEnv('DEV', 'true')
+    vi.stubEnv('PROD', 'false')
+
+    const { __testing } = await import('./userManager.js')
+    const { sanitizeLogMetadata, prepareLogMetadata } = __testing
+
+    const metadata = {
+      status: 200,
+      info: 'details',
+      token: 'abc',
+      nested: { email: 'dev@example.com' }
+    }
+
+    expect(sanitizeLogMetadata(metadata)).toEqual({
+      status: 200,
+      info: 'details',
+      token: '[REDACTED]',
+      nested: { email: '[REDACTED]' }
+    })
+
+    expect(prepareLogMetadata(metadata)).toEqual({
+      status: 200,
+      info: 'details',
+      token: '[REDACTED]',
+      nested: { email: '[REDACTED]' }
+    })
+  })
+
+  it('limits production metadata to generic status fields', async () => {
+    vi.stubEnv('DEV', '')
+    vi.stubEnv('PROD', 'true')
+
+    const { __testing } = await import('./userManager.js')
+    const { prepareLogMetadata, isProdEnvironment, isDevEnvironment } = __testing
+
+    const metadata = {
+      status: 500,
+      statusText: 'Server Error',
+      message: 'Request failed',
+      detail: 'Sensitive info',
+      token: 'abc'
+    }
+
+    expect(isProdEnvironment()).toBe(true)
+    expect(isDevEnvironment()).toBe(false)
+
+    expect(prepareLogMetadata(metadata)).toEqual({
+      status: 500,
+      statusText: 'Server Error',
+      message: 'Request failed'
+    })
+  })
+})

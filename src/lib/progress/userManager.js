@@ -19,6 +19,133 @@ import { PROGRESS_CONFIG, STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
 import { progressDataCache } from '../cache/ProgressDataCache.js'
 import { getSyncApiBase, getSyncAuthHeaderName, getSyncConfigDebug } from '../config/syncConfig.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('ProgressUserManager')
+
+const SENSITIVE_KEY_PATTERNS = ['token', 'secret', 'authorization', 'auth', 'email', 'useremail', 'userid']
+const SENSITIVE_VALUE_PATTERNS = [
+  /bearer\s+\S+/i,
+  /\S+@\S+/, // email
+  /eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/ // JWT-like
+]
+const ALLOWED_PROD_KEYS = ['status', 'statusCode', 'statusText', 'code', 'reason', 'message', 'success']
+
+function toBooleanEnv(value) {
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true'
+  }
+  return Boolean(value)
+}
+
+function sanitizeLogValue(key, value) {
+  if (value === null || value === undefined) return value
+
+  if (typeof value === 'string') {
+    const lowerKey = key.toLowerCase()
+    if (SENSITIVE_KEY_PATTERNS.some(pattern => lowerKey.includes(pattern))) {
+      return '[REDACTED]'
+    }
+
+    if (SENSITIVE_VALUE_PATTERNS.some(regex => regex.test(value))) {
+      return '[REDACTED]'
+    }
+
+    return value
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry, index) => sanitizeLogValue(`${key}[${index}]`, entry))
+  }
+
+  if (typeof value === 'object') {
+    return sanitizeLogMetadata(value)
+  }
+
+  return value
+}
+
+function sanitizeLogMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object') return metadata
+
+  const sanitized = Array.isArray(metadata) ? [] : {}
+
+  Object.entries(metadata).forEach(([key, value]) => {
+    sanitized[key] = sanitizeLogValue(key, value)
+  })
+
+  return sanitized
+}
+
+function filterProductionMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object') return undefined
+
+  const filtered = {}
+
+  Object.entries(metadata).forEach(([key, value]) => {
+    const lowerKey = key.toLowerCase()
+    const isAllowed =
+      ALLOWED_PROD_KEYS.includes(key) ||
+      lowerKey === 'code' ||
+      lowerKey === 'reason' ||
+      lowerKey === 'message' ||
+      lowerKey.includes('status')
+
+    if (!isAllowed) {
+      return
+    }
+
+    if (value && typeof value === 'object') {
+      return
+    }
+
+    filtered[key] = value
+  })
+
+  return Object.keys(filtered).length > 0 ? filtered : undefined
+}
+
+function isDevEnvironment() {
+  return toBooleanEnv(import.meta?.env?.DEV)
+}
+
+function isProdEnvironment() {
+  return toBooleanEnv(import.meta?.env?.PROD)
+}
+
+function prepareLogMetadata(metadata) {
+  if (metadata === undefined) return undefined
+
+  const sanitized = sanitizeLogMetadata(metadata)
+  if (!sanitized || typeof sanitized !== 'object') {
+    return sanitized
+  }
+
+  const prod = isProdEnvironment()
+  const dev = isDevEnvironment()
+
+  if (prod && !dev) {
+    return filterProductionMetadata(sanitized)
+  }
+
+  return sanitized
+}
+
+function logWith(level, message, metadata) {
+  const prepared = prepareLogMetadata(metadata)
+  if (prepared !== undefined) {
+    logger[level](message, prepared)
+  } else {
+    logger[level](message)
+  }
+}
+
+const log = {
+  debug: (message, metadata) => logWith('debug', message, metadata),
+  info: (message, metadata) => logWith('info', message, metadata),
+  warn: (message, metadata) => logWith('warn', message, metadata),
+  error: (message, metadata) => logWith('error', message, metadata)
+}
 
 const LS_KEY = 'progress-user-settings'
 const USER_ID_STORAGE_KEY = 'progress-system-user-id'
@@ -34,7 +161,7 @@ function resolveSyncBaseUrl() {
     if (typeof window !== 'undefined') {
       const override = window.localStorage.getItem(SYNC_ENDPOINT_KEY)
       if (override) {
-        console.log('🔧 Using sync URL override from localStorage:', override)
+        log.debug('Using sync URL override from localStorage', { override })
         return override
       }
     }
@@ -177,7 +304,10 @@ export function getUserSettings(userId) {
     const userCfg = store[key] || {}
     return { ...defaultSettings(), ...userCfg }
   } catch (error) {
-    console.warn('Fallo leyendo user settings; usando valores por defecto', error)
+    log.warn('Fallo leyendo user settings; usando valores por defecto', {
+      message: error?.message,
+      name: error?.name
+    })
     return defaultSettings()
   }
 }
@@ -244,12 +374,18 @@ export function updateUserSettings(userId, updater) {
         detail: { userId: key, settings: persisted }
       }))
     } catch (eventError) {
-      console.warn('No se pudo emitir evento de actualización de settings:', eventError)
+      log.warn('No se pudo emitir evento de actualización de settings', {
+        message: eventError?.message,
+        name: eventError?.name
+      })
     }
 
     return persisted
   } catch (error) {
-    console.warn('Fallo actualizando user settings; conservando valores actuales', error)
+    log.warn('Fallo actualizando user settings; conservando valores actuales', {
+      message: error?.message,
+      name: error?.name
+    })
     return defaultSettings()
   }
 }
@@ -361,7 +497,7 @@ async function postJSON(path, body, timeoutMs = 30000) {
 
   const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null
   const t = ctrl ? setTimeout(() => {
-    console.log(`⏰ Timeout de ${timeoutMs}ms alcanzado para ${path}`)
+    log.warn('Timeout alcanzado para solicitud de sincronización', { path, timeoutMs })
     ctrl.abort()
   }, timeoutMs) : null
 
@@ -375,13 +511,13 @@ async function postJSON(path, body, timeoutMs = 30000) {
       (typeof authService?.getUser === 'function' && authService.getUser()?.id) ||
       getCurrentUserId()
 
-    console.log(`🔍 DEBUG postJSON: Configurando headers para ${path}`, {
+    log.debug(`Configurando headers para ${path}`, {
+      path,
       hasToken: !!token,
       tokenLength: token ? token.length : 0,
       headerName,
-      tokenPreview: token ? `${token.slice(0, 15)}...` : 'NO_TOKEN',
       hasJwt: isJwt,
-      userIdPreview: resolvedUserId ? `${resolvedUserId}` : 'NO_USER_ID'
+      hasUserId: !!resolvedUserId
     })
 
     if (isJwt) {
@@ -407,11 +543,13 @@ async function postJSON(path, body, timeoutMs = 30000) {
       }
     } else if (resolvedUserId) {
       headers['X-User-Id'] = resolvedUserId
-      console.log(`🔍 DEBUG postJSON: Sin token, usando X-User-Id: ${resolvedUserId}`)
+      log.debug('Sin token, usando encabezado X-User-Id', {
+        hasUserId: !!resolvedUserId
+      })
     }
 
-    console.log(`📡 Enviando ${path} con timeout ${timeoutMs}ms`)
-    console.log(`🔍 DEBUG postJSON: Headers finales:`, Object.keys(headers))
+    log.debug('Enviando solicitud de sincronización', { path, timeoutMs })
+    log.debug('Encabezados finales de la solicitud', { keys: Object.keys(headers) })
 
     const startTime = Date.now()
 
@@ -423,26 +561,33 @@ async function postJSON(path, body, timeoutMs = 30000) {
     })
 
     const elapsed = Date.now() - startTime
-    console.log(`✅ ${path} completado en ${elapsed}ms con status ${res.status}`)
+    log.info('Solicitud de sincronización completada', { path, status: res.status, elapsed })
 
     if (!res.ok) {
       const text = await res.text().catch(() => '')
-      console.log(`🔍 DEBUG postJSON: Error response:`, {
+      log.warn('Respuesta no exitosa del servicio de sincronización', {
+        path,
         status: res.status,
         statusText: res.statusText,
-        responseText: text,
-        url: `${SYNC_BASE_URL}${path}`
+        bodyLength: text?.length || 0
       })
       throw new Error(`HTTP ${res.status}: ${text}`)
     }
 
     const jsonResponse = await res.json().catch(() => ({}))
-    console.log(`🔍 DEBUG postJSON: Success response keys:`, Object.keys(jsonResponse))
+    log.debug('Respuesta JSON del servicio recibida', {
+      path,
+      keys: Object.keys(jsonResponse || {})
+    })
 
     return jsonResponse
   } catch (error) {
-    console.error(`❌ Error en ${path}:`, error.message)
-    console.log(`🔍 DEBUG postJSON: Error detalles:`, {
+    log.error('Error en solicitud de sincronización', {
+      path,
+      message: error?.message,
+      status: error?.status
+    })
+    log.debug('Detalles del error en postJSON', {
       url: `${SYNC_BASE_URL}${path}`,
       errorName: error?.name,
       errorMessage: error?.message,
@@ -482,7 +627,10 @@ async function markSynced(storeName, ids) {
       await tx.done
     }
   } catch (e) {
-    console.warn('No se pudo marcar como sincronizado:', e)
+    log.warn('No se pudo marcar como sincronizado', {
+      storeName,
+      message: e?.message
+    })
   }
 }
 
@@ -492,7 +640,9 @@ async function markSynced(storeName, ids) {
 async function wakeUpServer() {
   if (!SYNC_BASE_URL) return false
   try {
-    console.log('☁️ Despertando servidor...')
+    log.debug('Intentando despertar servidor de sincronización', {
+      baseUrl: SYNC_BASE_URL
+    })
     let requestUrl = SYNC_BASE_URL
 
     try {
@@ -515,7 +665,9 @@ async function wakeUpServer() {
         requestUrl = requestUrl.slice(0, -1)
       }
     } catch (urlError) {
-      console.warn('⚠️ URL de sincronización inválida, usando fallback:', urlError?.message)
+      log.warn('URL de sincronización inválida, usando fallback', {
+        message: urlError?.message
+      })
       requestUrl = SYNC_BASE_URL.replace(/\/api\/?$/, '')
     }
 
@@ -531,21 +683,27 @@ async function wakeUpServer() {
     clearTimeout(timeoutId)
 
     if (response.status === 404) {
-      console.warn('❌ El servidor de sincronización respondió 404 (no encontrado).', {
-        url: requestUrl
+      log.warn('Servidor de sincronización respondió 404', {
+        url: requestUrl,
+        status: 404
       })
       return false
     }
 
     if (response.ok) {
-      console.log('✅ Servidor despierto')
+      log.info('Servidor de sincronización despierto')
       return true
     }
 
-    console.warn('⚠️ No se pudo despertar el servidor. Estado:', response.status, response.statusText)
+    log.warn('No se pudo despertar el servidor', {
+      status: response.status,
+      statusText: response.statusText
+    })
     return false
   } catch (error) {
-    console.warn('⚠️ No se pudo despertar el servidor:', error.message)
+    log.warn('Excepción al despertar el servidor', {
+      message: error?.message
+    })
     // Even if wake-up fails, continue with sync attempt
     return false
   }
@@ -555,11 +713,11 @@ async function wakeUpServer() {
  * Downloads and merges data from all devices of the authenticated account
  */
 export async function syncAccountData() {
-  console.log('🔍 DEBUG: Iniciando syncAccountData()')
+  log.debug('Iniciando syncAccountData')
 
   // Debug sync configuration
   const syncConfig = getSyncConfigDebug()
-  console.log('🔍 DEBUG: Configuración de sync:', syncConfig)
+  log.debug('Configuración de sincronización resuelta', syncConfig)
 
   // Debug authentication state
   const isAuthenticated = authService.isLoggedIn()
@@ -567,51 +725,59 @@ export async function syncAccountData() {
   const user = authService.getUser()
   const account = authService.getAccount()
 
-  console.log('🔍 DEBUG: Estado de autenticación:', {
+  log.debug('Estado de autenticación para sync', {
     isAuthenticated,
     hasToken: !!token,
     tokenLength: token ? token.length : 0,
     hasUser: !!user,
     hasAccount: !!account,
-    userEmail: account?.email || 'N/A',
+    hasAccountEmail: !!account?.email,
     syncApiBase: syncConfig.apiBase,
     environment: syncConfig.isDev ? 'development' : (syncConfig.isProd ? 'production' : 'unknown')
   })
 
   if (!isAuthenticated) {
-    console.log('❌ Account sync failed: user not authenticated')
-    console.log('🔍 DEBUG: Detalles de auth fallida:', { token: !!token, user: !!user, account: !!account })
+    log.warn('Account sync failed: user not authenticated')
+    log.debug('Detalles de autenticación fallida', {
+      hasToken: !!token,
+      hasUser: !!user,
+      hasAccount: !!account
+    })
     return { success: false, reason: 'not_authenticated' }
   }
 
   if (!isSyncEnabled()) {
-    console.log('❌ Account sync failed: not enabled. URL:', SYNC_BASE_URL)
+    log.warn('Account sync failed: sync not enabled', {
+      hasEndpoint: !!SYNC_BASE_URL
+    })
     return { success: false, reason: 'sync_disabled' }
   }
 
   if (!isBrowserOnline()) {
-    console.log('❌ Account sync failed: browser offline')
+    log.warn('Account sync failed: browser offline')
     return { success: false, reason: 'offline' }
   }
 
-  console.log('🔄 Iniciando sincronización de cuenta multi-dispositivo...')
-  console.log('🔍 DEBUG: Configuración sync:', {
-    syncUrl: SYNC_BASE_URL,
-    tokenPreview: token ? `${token.slice(0, 20)}...` : 'NO_TOKEN'
+  log.info('Iniciando sincronización de cuenta multi-dispositivo')
+  log.debug('Resumen de configuración de sync', {
+    hasEndpoint: !!SYNC_BASE_URL,
+    tokenLength: token ? token.length : 0
   })
 
   // Wake up server first
   await wakeUpServer()
 
   try {
-    console.log('🔍 DEBUG: Llamando a /auth/sync/download...')
+    log.debug('Llamando a /auth/sync/download')
 
     // Get merged data from all account devices (POST preferred, fallback to GET)
     let response = null
     try {
       response = await postJSON('/auth/sync/download', {})
     } catch (err) {
-      console.warn('⚠️ POST /auth/sync/download falló, intentando GET...', err?.message || err)
+      log.warn('POST /auth/sync/download falló, intentando GET', {
+        message: err?.message
+      })
       try {
         const headers = { 'Accept': 'application/json' }
         const authToken = authService.getToken?.()
@@ -625,12 +791,14 @@ export async function syncAccountData() {
         }
         response = await res.json().catch(() => ({}))
       } catch (fallbackErr) {
-        console.error('❌ Fallback GET /auth/sync/download también falló:', fallbackErr?.message || fallbackErr)
+        log.error('Fallback GET /auth/sync/download también falló', {
+          message: fallbackErr?.message
+        })
         throw fallbackErr
       }
     }
 
-    console.log('🔍 DEBUG: Respuesta del servidor:', {
+    log.debug('Respuesta del servidor para syncAccountData', {
       success: response?.success || false,
       hasData: !!response?.data,
       responseKeys: Object.keys(response || {})
@@ -638,14 +806,14 @@ export async function syncAccountData() {
 
     const accountData = response.data || {}
 
-    console.log('📥 Datos recibidos de la cuenta:', {
+    log.debug('Datos recibidos de la cuenta', {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
       schedules: accountData.schedules?.length || 0,
       sessions: accountData.sessions?.length || 0
     })
 
-    console.log('🔍 DEBUG: Estructura de accountData:', {
+    log.debug('Estructura de accountData', {
       hasAttempts: Array.isArray(accountData.attempts),
       hasMastery: Array.isArray(accountData.mastery),
       hasSchedules: Array.isArray(accountData.schedules),
@@ -668,10 +836,12 @@ export async function syncAccountData() {
         }
       }
     } catch (cacheError) {
-      console.warn('No se pudo invalidar el caché tras la sync:', cacheError?.message || cacheError)
+      log.warn('No se pudo invalidar el caché tras la sync', {
+        message: cacheError?.message
+      })
     }
 
-    console.log('✅ Sincronización de cuenta completada:', mergeResults)
+    log.info('Sincronización de cuenta completada', mergeResults)
 
     const finalResult = {
       success: true,
@@ -684,11 +854,14 @@ export async function syncAccountData() {
       }
     }
 
-    console.log('🔍 DEBUG: Resultado final de sync:', finalResult)
+    log.debug('Resultado final de sync', finalResult)
     return finalResult
   } catch (error) {
-    console.error('❌ Error en sincronización de cuenta:', error)
-    console.log('🔍 DEBUG: Error detalles:', {
+    log.error('Error en sincronización de cuenta', {
+      message: error?.message,
+      status: error?.status
+    })
+    log.debug('Detalles del error de syncAccountData', {
       message: error?.message || 'No message',
       stack: error?.stack || 'No stack',
       name: error?.name || 'No name',
@@ -697,7 +870,7 @@ export async function syncAccountData() {
 
     // Si es error de autenticación, limpiar auth state
     if (error?.status === 401 || error?.message?.includes('401') || error?.message?.includes('Unauthorized')) {
-      console.log('🔍 DEBUG: Error 401 detectado, limpiando auth state...')
+      log.debug('Error 401 detectado, limpiando auth state')
       authService.clearAuth()
     }
 
@@ -777,7 +950,9 @@ async function mergeAccountDataLocally(accountData) {
           results.attempts++
         }
       } catch (error) {
-        console.warn('Error merging attempt:', error)
+        log.warn('Error merging attempt', {
+          message: error?.message
+        })
         results.conflicts++
       }
     }
@@ -815,7 +990,9 @@ async function mergeAccountDataLocally(accountData) {
           results.sessions++
         }
       } catch (error) {
-        console.warn('Error merging session:', error)
+        log.warn('Error merging session', {
+          message: error?.message
+        })
         results.conflicts++
       }
     }
@@ -854,7 +1031,9 @@ async function mergeAccountDataLocally(accountData) {
           results.mastery++
         }
       } catch (error) {
-        console.warn('Error merging mastery:', error)
+        log.warn('Error merging mastery', {
+          message: error?.message
+        })
         results.conflicts++
       }
     }
@@ -893,7 +1072,9 @@ async function mergeAccountDataLocally(accountData) {
           results.schedules++
         }
       } catch (error) {
-        console.warn('Error merging schedule:', error)
+        log.warn('Error merging schedule', {
+          message: error?.message
+        })
         results.conflicts++
       }
     }
@@ -909,30 +1090,30 @@ async function mergeAccountDataLocally(accountData) {
 export async function syncNow({ include = ['attempts','mastery','schedules','sessions'] } = {}) {
   const userId = getCurrentUserId()
 
-  console.log('🔍 DEBUG syncNow: Iniciando proceso de sincronización...')
-  console.log('🔍 DEBUG syncNow: getCurrentUserId() retornó:', userId)
+  log.debug('syncNow: iniciando proceso de sincronización')
+  log.debug('syncNow: resultado de getCurrentUserId', { hasUserId: !!userId })
 
   if (!userId) {
-    console.log('❌ Sync failed: no user ID')
+    log.warn('Sync failed: no user ID disponible')
     return { success: false, reason: 'no_user' }
   }
 
   if (!isSyncEnabled()) {
-    console.log('❌ Sync failed: not enabled. URL:', SYNC_BASE_URL)
+    log.warn('Sync failed: not enabled', { hasEndpoint: !!SYNC_BASE_URL })
     return { success: false, reason: 'sync_disabled' }
   }
 
   if (!isBrowserOnline()) {
-    console.log('❌ Sync failed: browser offline')
+    log.warn('Sync failed: browser offline')
     return { success: false, reason: 'offline' }
   }
 
-  console.log(`🔄 Iniciando sincronización para usuario: ${userId}`)
-  console.log(`🌐 URL del servidor: ${SYNC_BASE_URL}`)
-  console.log(`📊 Colecciones a sincronizar: ${include.join(', ')}`)
+  log.info('Iniciando sincronización para usuario actual')
+  log.debug('URL del servidor de sincronización', { syncUrl: SYNC_BASE_URL })
+  log.debug('Colecciones a sincronizar', { include })
 
   // Wake up server first (Render free tier issue)
-  console.log('⏰ Despertando servidor antes de sincronizar...')
+  log.debug('Despertando servidor antes de sincronizar')
   await wakeUpServer()
 
   // Track what we actually push to la nube; defaults remain en cero hasta que haya cambios
@@ -950,7 +1131,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
 
   // Try account sync first if user is authenticated
   if (authService.isLoggedIn()) {
-    console.log('🔑 Usuario autenticado: intentando sincronización de cuenta multi-dispositivo')
+    log.debug('Usuario autenticado: intentando sincronización de cuenta multi-dispositivo')
     syncStrategy = 'account'
 
     try {
@@ -963,103 +1144,105 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
                                 (downloadedCounts.mastery || 0) +
                                 (downloadedCounts.schedules || 0)
         if (totalDownloaded > 0) {
-          console.log('✅ Account sync exitoso con datos:', accountSyncResult.downloaded)
+          log.info('Account sync exitoso con datos', accountSyncResult.downloaded)
         } else {
-          console.log('ℹ️ Account sync exitoso pero sin datos nuevos. Continuando para subir cambios locales.')
+          log.info('Account sync exitoso sin datos nuevos; continuando con sincronización local')
         }
       } else {
-        console.warn('⚠️ Account sync falló:', accountSyncResult.reason || accountSyncResult.error)
-        console.log('🔄 Fallback: intentando legacy sync...')
+        log.warn('Account sync falló', {
+          reason: accountSyncResult.reason || accountSyncResult.error
+        })
+        log.info('Fallback: intentando legacy sync')
         syncStrategy = 'legacy-fallback'
       }
     } catch (error) {
-      console.warn('⚠️ Error en account sync:', error.message)
-      console.log('🔄 Fallback: intentando legacy sync...')
+      log.warn('Error en account sync', { message: error?.message })
+      log.info('Fallback: intentando legacy sync tras error')
       accountSyncResult = { success: false, error: error.message }
       syncStrategy = 'legacy-fallback'
     }
   } else {
-    console.log('🔓 Usuario no autenticado: usando legacy sync')
+    log.debug('Usuario no autenticado: usando legacy sync')
   }
 
   try {
     if (include.includes('attempts')) {
-      console.log(`🔍 DEBUG: Obteniendo attempts para userId: ${userId}`)
+      log.debug('Obteniendo attempts para sincronización', { hasUserId: !!userId })
       const all = await getAttemptsByUser(userId)
-      console.log(`🔍 DEBUG: Encontrados ${all.length} attempts totales para userId: ${userId}`)
+      log.debug('Total de attempts del usuario', { count: all.length })
 
       let unsynced = all.filter(a => !a.syncedAt)
       // Prioritize migrated records
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
-      console.log(`🔍 DEBUG: Attempts sin sincronizar: ${unsynced.length}`)
+      log.debug('Attempts sin sincronizar', { count: unsynced.length })
 
       if (unsynced.length > 0) {
-        console.log(`📤 Subiendo ${unsynced.length} attempts al servidor...`)
+        log.debug('Subiendo attempts al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('attempts', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced.map(a => a.id))
         results.attempts = { uploaded: unsynced.length, server: res }
-        console.log(`✅ Attempts subidos exitosamente: ${unsynced.length}`)
+        log.info('Attempts subidos exitosamente', { count: unsynced.length })
       } else {
-        console.log(`ℹ️ No hay attempts sin sincronizar para userId: ${userId}`)
+        log.debug('No hay attempts sin sincronizar')
       }
     }
 
     if (include.includes('mastery')) {
-      console.log(`🔍 DEBUG: Obteniendo mastery para userId: ${userId}`)
+      log.debug('Obteniendo mastery para sincronización', { hasUserId: !!userId })
       const all = await getMasteryByUser(userId)
-      console.log(`🔍 DEBUG: Encontrados ${all.length} mastery totales para userId: ${userId}`)
+      log.debug('Total de registros mastery del usuario', { count: all.length })
 
       let unsynced = all.filter(m => !m.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
-      console.log(`🔍 DEBUG: Mastery sin sincronizar: ${unsynced.length}`)
+      log.debug('Mastery sin sincronizar', { count: unsynced.length })
 
       if (unsynced.length > 0) {
-        console.log(`📤 Subiendo ${unsynced.length} mastery al servidor...`)
+        log.debug('Subiendo mastery al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('mastery', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced.map(m => m.id))
         results.mastery = { uploaded: unsynced.length, server: res }
-        console.log(`✅ Mastery subidos exitosamente: ${unsynced.length}`)
+        log.info('Mastery subidos exitosamente', { count: unsynced.length })
       } else {
-        console.log(`ℹ️ No hay mastery sin sincronizar para userId: ${userId}`)
+        log.debug('No hay mastery sin sincronizar')
       }
     }
 
     if (include.includes('schedules')) {
-      console.log(`🔍 DEBUG: Obteniendo schedules para userId: ${userId}`)
+      log.debug('Obteniendo schedules para sincronización', { hasUserId: !!userId })
       // Without a direct getter by user for all schedules, fetch all and filter
       const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
       const userSchedules = allSchedules.filter(s => s.userId === userId)
-      console.log(`🔍 DEBUG: Encontrados ${userSchedules.length} schedules totales para userId: ${userId}`)
+      log.debug('Total de schedules del usuario', { count: userSchedules.length })
 
       let unsynced = userSchedules.filter(s => !s.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
-      console.log(`🔍 DEBUG: Schedules sin sincronizar: ${unsynced.length}`)
+      log.debug('Schedules sin sincronizar', { count: unsynced.length })
 
       if (unsynced.length > 0) {
-        console.log(`📤 Subiendo ${unsynced.length} schedules al servidor...`)
+        log.debug('Subiendo schedules al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('schedules', unsynced)
         await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced.map(s => s.id))
         results.schedules = { uploaded: unsynced.length, server: res }
-        console.log(`✅ Schedules subidos exitosamente: ${unsynced.length}`)
+        log.info('Schedules subidos exitosamente', { count: unsynced.length })
       } else {
-        console.log(`ℹ️ No hay schedules sin sincronizar para userId: ${userId}`)
+        log.debug('No hay schedules sin sincronizar')
       }
     }
 
     if (include.includes('sessions')) {
-      console.log(`🔍 DEBUG: Obteniendo sesiones para userId: ${userId}`)
+      log.debug('Obteniendo sesiones para sincronización', { hasUserId: !!userId })
       const allSessions = await getLearningSessionsByUser(userId)
-      console.log(`🔍 DEBUG: Encontradas ${allSessions.length} sesiones totales para userId: ${userId}`)
+      log.debug('Total de sesiones del usuario', { count: allSessions.length })
 
       let unsynced = allSessions.filter((s) => !s.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
-      console.log(`🔍 DEBUG: Sesiones sin sincronizar: ${unsynced.length}`)
+      log.debug('Sesiones sin sincronizar', { count: unsynced.length })
 
       if (unsynced.length > 0) {
-        console.log(`📤 Subiendo ${unsynced.length} sesiones al servidor...`)
+        log.debug('Subiendo sesiones al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('sessions', unsynced)
         await markSynced(
@@ -1067,9 +1250,9 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
           unsynced.map((s) => s.sessionId || s.id)
         )
         results.sessions = { uploaded: unsynced.length, server: res }
-        console.log(`✅ Sesiones subidas exitosamente: ${unsynced.length}`)
+        log.info('Sesiones subidas exitosamente', { count: unsynced.length })
       } else {
-        console.log(`ℹ️ No hay sesiones sin sincronizar para userId: ${userId}`)
+        log.debug('No hay sesiones sin sincronizar')
       }
     }
 
@@ -1082,7 +1265,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
       syncStrategy = 'account'
     }
 
-    console.log(`🎯 Sync completado usando estrategia: ${syncStrategy}`)
+    log.info('Sync completado', { strategy: syncStrategy })
 
     const response = {
       success: true,
@@ -1099,10 +1282,12 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
       }
     }
 
-    console.log('🔍 DEBUG: Respuesta final de syncNow:', response)
+    log.debug('Respuesta final de syncNow', response)
     return response
   } catch (error) {
-    console.warn('Fallo de sincronización, encolando para más tarde:', error?.message)
+    log.warn('Fallo de sincronización, encolando para más tarde', {
+      message: error?.message
+    })
     // Encolar lotes para reintentar
     return { success: false, error: String(error) }
   }
@@ -1162,5 +1347,10 @@ export default {
 }
 
 export const __testing = {
-  wakeUpServer
+  wakeUpServer,
+  sanitizeLogMetadata,
+  filterProductionMetadata,
+  prepareLogMetadata,
+  isDevEnvironment,
+  isProdEnvironment
 }
