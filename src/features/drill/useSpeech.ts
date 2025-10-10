@@ -1,6 +1,7 @@
 // Lightweight TypeScript hook for Text-to-Speech logic
 import { useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { getSpeechLanguagePreferences } from '../../lib/pronunciation/languagePreferences.js'
 
 type SpeakArgs = {
   currentItem?: any
@@ -11,14 +12,16 @@ type SpeakArgs = {
 
 export function useSpeech() {
   const settings = useSettings()
+  const { locale: preferredLang, voiceOrder } = useMemo(
+    () => getSpeechLanguagePreferences(settings?.region),
+    [settings?.region]
+  )
 
   const speak = (text?: string) => {
     try {
       if (!text || typeof window === 'undefined' || !window.speechSynthesis) return
       const synth = window.speechSynthesis
       const utter = new SpeechSynthesisUtterance(text)
-      // Use the same clear Rioplatense female voice for every region
-      const preferredLang = 'es-AR'
       utter.lang = preferredLang
       utter.rate = 0.95
 
@@ -39,7 +42,10 @@ export function useSpeech() {
           'microsoft sabina',
           'microsoft helena'
         ]
-        const preferOrder = ['es-ar', 'es-419', 'es-mx', 'es-es', 'es-us']
+        const preferOrder = (voiceOrder && voiceOrder.length > 0
+          ? voiceOrder
+          : [preferredLang]
+        ).map((lang) => lower(lang))
         const byLangExact = spanish.find((v) => lower(v.lang) === lower(preferredLang))
         if (byLangExact) return byLangExact
         for (const lang of preferOrder) {
