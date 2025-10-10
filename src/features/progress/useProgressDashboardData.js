@@ -81,6 +81,8 @@ export default function useProgressDashboardData() {
 
   // AsyncController for managing cancellable operations
   const asyncController = useRef(new AsyncController())
+  const hasInitialLoad = useRef(false)
+  const lastPersonFilterRef = useRef(personFilter)
 
   const loadData = useCallback(async (isRefresh = false) => {
     try {
@@ -408,6 +410,7 @@ export default function useProgressDashboardData() {
       const userId = getCurrentUserId()
       if (userId) {
         setSystemReady(true)
+        hasInitialLoad.current = true
         loadData()
         return
       }
@@ -419,7 +422,10 @@ export default function useProgressDashboardData() {
         const userId = getCurrentUserId()
         if (userId) {
           setSystemReady(true)
-          loadData()
+          if (!hasInitialLoad.current) {
+            hasInitialLoad.current = true
+            loadData()
+          }
         } else {
           setError('Sistema de progreso inicializado pero usuario no disponible.')
           setLoading(false)
@@ -431,10 +437,20 @@ export default function useProgressDashboardData() {
   }, [loadData])
 
   useEffect(() => {
-    if (systemReady) {
-      loadData()
+    if (!systemReady) {
+      return
     }
-  }, [personFilter, systemReady])
+
+    const personFilterChanged = lastPersonFilterRef.current !== personFilter
+    lastPersonFilterRef.current = personFilter
+
+    if (!personFilterChanged && hasInitialLoad.current) {
+      return
+    }
+
+    hasInitialLoad.current = true
+    loadData()
+  }, [personFilter, systemReady, loadData])
 
   useEffect(() => {
     const unsubscribePlan = onStudyPlanUpdated(
