@@ -196,7 +196,8 @@ export function useDrillMode() {
     }
 
     // DEFENSIVE VALIDATION: Ensure we always have a valid item
-    if (!newItem || typeof newItem !== 'object' || !newItem.lemma || !newItem.value) {
+    // Note: drill items have structure { lemma, mood, tense, person, form: { value, ... } }
+    if (!newItem || typeof newItem !== 'object' || !newItem.lemma || !newItem.form?.value) {
       logger.error('generateNormalItem', 'Invalid item generated, using emergency fallback', newItem)
       newItem = await createEmergencyFallbackItem(settings)
     }
@@ -513,16 +514,23 @@ export function useDrillMode() {
 /**
  * Creates an emergency fallback item for useDrillMode by searching for real forms
  * This is used when the generator completely fails
+ * IMPORTANT: Respects regional filtering to ensure correct person forms
  */
 async function createEmergencyFallbackItem(settings = {}) {
-  console.log('🔍 useDrillMode: REAL FALLBACK - Looking for actual forms for:', settings.specificMood, settings.specificTense)
+  console.log('🔍 useDrillMode: REAL FALLBACK - Looking for actual forms for:', settings.specificMood, settings.specificTense, 'region:', settings.region)
 
   try {
+    // Import regional filtering function
+    const { getAllowedPersonsForRegion } = await import('../lib/core/curriculumGate.js')
+    const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
+
+    console.log('🌍 Emergency fallback: filtering by region', settings.region, 'allowed persons:', Array.from(allowedPersons))
+
     // Import the main verb database
     const { getVerbs } = await import('../data/verbsLazy.js')
     const allVerbs = await getVerbs()
 
-    // Try to find forms matching the requested mood/tense
+    // Try to find forms matching the requested mood/tense AND regional constraints
     let targetForms = []
 
     if (settings.specificMood && settings.specificTense) {
@@ -531,12 +539,16 @@ async function createEmergencyFallbackItem(settings = {}) {
         for (const paradigm of verb.paradigms || []) {
           for (const form of paradigm.forms || []) {
             if (form.mood === settings.specificMood && form.tense === settings.specificTense) {
-              targetForms.push({
-                ...form,
-                lemma: verb.lemma,
-                id: verb.id,
-                type: verb.type || 'regular'
-              })
+              // CRITICAL FIX: Only include forms with persons allowed for this region
+              // For nonfinite forms (infinitive, gerund, participle), person filtering doesn't apply
+              if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
+                targetForms.push({
+                  ...form,
+                  lemma: verb.lemma,
+                  id: verb.id,
+                  type: verb.type || 'regular'
+                })
+              }
             }
           }
         }
@@ -549,30 +561,36 @@ async function createEmergencyFallbackItem(settings = {}) {
         for (const paradigm of verb.paradigms || []) {
           for (const form of paradigm.forms || []) {
             if (form.mood === settings.specificMood) {
-              targetForms.push({
-                ...form,
-                lemma: verb.lemma,
-                id: verb.id,
-                type: verb.type || 'regular'
-              })
+              // CRITICAL FIX: Only include forms with persons allowed for this region
+              if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
+                targetForms.push({
+                  ...form,
+                  lemma: verb.lemma,
+                  id: verb.id,
+                  type: verb.type || 'regular'
+                })
+              }
             }
           }
         }
       }
     }
 
-    // If still no forms, get any available form
+    // If still no forms, get any available form (but still respecting regional constraints!)
     if (targetForms.length === 0) {
       for (const verb of allVerbs.slice(0, 5)) { // Just check first 5 verbs
         for (const paradigm of verb.paradigms || []) {
           for (const form of paradigm.forms || []) {
             if (form.value && form.mood && form.tense) {
-              targetForms.push({
-                ...form,
-                lemma: verb.lemma,
-                id: verb.id,
-                type: verb.type || 'regular'
-              })
+              // CRITICAL FIX: Only include forms with persons allowed for this region
+              if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
+                targetForms.push({
+                  ...form,
+                  lemma: verb.lemma,
+                  id: verb.id,
+                  type: verb.type || 'regular'
+                })
+              }
             }
           }
         }

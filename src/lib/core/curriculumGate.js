@@ -83,6 +83,18 @@ export function getAllowedPersonsForRegion(region) {
 export function gateFormsByCurriculumAndDialect(forms, settings) {
   const { level, region, practiceMode, cameFromTema, specificMood, specificTense } = settings || {};
   const allowedPersons = getAllowedPersonsForRegion(region);
+
+  // Debug logging for regional filtering issues
+  if (import.meta.env.DEV && region && region !== 'global') {
+    const allowedPersonsArray = Array.from(allowedPersons);
+    console.log(`🌍 Regional filtering active:`, {
+      region,
+      level,
+      allowedPersons: allowedPersonsArray,
+      totalForms: forms.length
+    });
+  }
+
   const enforceCurriculumLevel = !(practiceMode === 'specific' && cameFromTema === true) && practiceMode !== 'theme';
   const allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null;
   const enforceSelection = practiceMode === 'specific' && cameFromTema !== true;

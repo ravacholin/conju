@@ -510,17 +510,24 @@ export const useDrillGenerator = () => {
 /**
  * Creates an emergency fallback drill item when all else fails
  * This ensures the generator NEVER returns null
+ * IMPORTANT: Respects regional filtering to ensure correct person forms
  * @param {Object} settings - User settings for context
  * @returns {Object} A valid drill item that always works
  */
 async function createEmergencyFallbackItem(settings) {
-  console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense)
+  console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense, 'region:', settings.region)
 
   // Define target mood/tense outside try block so it's available throughout function
   const targetMood = settings.specificMood || 'indicative'
   const targetTense = settings.specificTense || 'pres'
 
   try {
+    // Import regional filtering function
+    const { getAllowedPersonsForRegion } = await import('../../lib/core/curriculumGate.js')
+    const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
+
+    console.log('🌍 Emergency fallback: filtering by region', settings.region, 'allowed persons:', Array.from(allowedPersons))
+
     // STEP 1: Try to get forms directly from database, bypassing all caching
     const { getAllVerbs } = await import('../../lib/core/verbDataService.js')
     const allVerbs = await getAllVerbs()
@@ -540,20 +547,24 @@ async function createEmergencyFallbackItem(settings) {
         for (const form of paradigm.forms) {
           // EXACT MATCH for requested mood and tense
           if (form.mood === targetMood && form.tense === targetTense && form.value) {
-            matchingForms.push({
-              lemma: verb.lemma,
-              mood: form.mood,
-              tense: form.tense,
-              person: form.person,
-              value: form.value,
-              type: verb.type || 'regular'
-            })
+            // CRITICAL FIX: Only include forms with persons allowed for this region
+            // For nonfinite forms (infinitive, gerund, participle), person filtering doesn't apply
+            if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
+              matchingForms.push({
+                lemma: verb.lemma,
+                mood: form.mood,
+                tense: form.tense,
+                person: form.person,
+                value: form.value,
+                type: verb.type || 'regular'
+              })
+            }
           }
         }
       }
     }
 
-    console.log('✅ Found', matchingForms.length, 'REAL forms for', targetMood, targetTense)
+    console.log('✅ Found', matchingForms.length, 'REAL forms for', targetMood, targetTense, 'respecting regional constraints')
 
     // STEP 3: If we found real forms, use one randomly
     if (matchingForms.length > 0) {
@@ -591,14 +602,17 @@ async function createEmergencyFallbackItem(settings) {
 
           for (const form of paradigm.forms) {
             if (form.mood === targetMood && form.tense === 'pres' && form.value) {
-              moodForms.push({
-                lemma: verb.lemma,
-                mood: form.mood,
-                tense: form.tense,
-                person: form.person,
-                value: form.value,
-                type: verb.type || 'regular'
-              })
+              // CRITICAL FIX: Only include forms with persons allowed for this region
+              if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
+                moodForms.push({
+                  lemma: verb.lemma,
+                  mood: form.mood,
+                  tense: form.tense,
+                  person: form.person,
+                  value: form.value,
+                  type: verb.type || 'regular'
+                })
+              }
             }
           }
         }
@@ -607,7 +621,7 @@ async function createEmergencyFallbackItem(settings) {
       if (moodForms.length > 0) {
         const selectedForm = moodForms[Math.floor(Math.random() * moodForms.length)]
 
-        console.log('🔄 Using mood fallback:', selectedForm.lemma, selectedForm.mood, selectedForm.tense)
+        console.log('🔄 Using mood fallback:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, 'respecting regional constraints')
 
         return {
           id: `mood_fallback_${Date.now()}`,
