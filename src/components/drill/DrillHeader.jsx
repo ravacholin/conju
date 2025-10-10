@@ -7,6 +7,7 @@ function DrillHeader({
   onTogglePronunciation,
   onNavigateToProgress,
   onHome,
+  onNavigateToStory = () => {},
   showQuickSwitch,
   showGames,
   showPronunciation: _showPronunciation
@@ -65,6 +66,14 @@ function DrillHeader({
           title="Juegos"
         >
           <img src="/dice.png" alt="Juegos" className="menu-icon" />
+        </button>
+
+        <button
+          onClick={() => onNavigateToStory()}
+          className="icon-btn"
+          title="Modo historias"
+        >
+          <img src="/openbook.png" alt="Historias" className="menu-icon" />
         </button>
 
         <button

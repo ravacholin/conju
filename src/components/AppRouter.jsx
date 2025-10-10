@@ -36,6 +36,7 @@ import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
 import DrillMode from './drill/DrillMode.jsx'
 import LearnTenseFlowContainer from './learning/LearnTenseFlow.jsx';
+import StoryMode from '../features/story/StoryMode.jsx'
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
 import { useShallow } from 'zustand/react/shallow'
@@ -221,6 +222,10 @@ function AppRouter() {
 
   const handleStartPractice = () => {
     router.navigate({ mode: 'drill' })
+  }
+
+  const handleStartStoryMode = () => {
+    router.navigate({ mode: 'story' })
   }
 
   const handleHome = () => {
@@ -523,6 +528,16 @@ function AppRouter() {
         getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
         getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
         onNavigateToProgress={handleGoToProgress}
+        onNavigateToStory={handleStartStoryMode}
+      />
+    )
+  }
+
+  if (currentMode === 'story') {
+    return (
+      <StoryMode
+        onBack={handleStartPractice}
+        onHome={handleHome}
       />
     )
   }
