@@ -77,12 +77,15 @@ export default function useProgressDashboardData() {
   const [error, setError] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
   const [systemReady, setSystemReady] = useState(false)
+  const [advancedLoading, setAdvancedLoading] = useState(false)
   const [personFilter] = useState('')
 
   // AsyncController for managing cancellable operations
   const asyncController = useRef(new AsyncController())
   const hasInitialLoad = useRef(false)
   const lastPersonFilterRef = useRef(personFilter)
+  const advancedRequestDataRef = useRef(null)
+  const [advancedRequestToken, setAdvancedRequestToken] = useState(0)
 
   const loadData = useCallback(async (isRefresh = false) => {
     try {
@@ -92,6 +95,9 @@ export default function useProgressDashboardData() {
         setLoading(true)
         setError(null)
       }
+
+      setAdvancedLoading(false)
+      advancedRequestDataRef.current = null
 
       // Cancel every tracked dashboard request so prior keyed operations stop mutating state
       asyncController.current.cancelAll()
@@ -111,8 +117,8 @@ export default function useProgressDashboardData() {
         progressDataCache.warmup(userId, warmupLoaders)
       }
 
-      // Define operations with cache integration
-      const operations = {
+      // Define basic operations with cache integration
+      const basicOperations = {
         heatMap: async (signal) => {
           try {
             const cacheKey = `${userId}:heatMap:${personFilter || 'all'}`
@@ -128,29 +134,6 @@ export default function useProgressDashboardData() {
           } catch (e) {
             if (!signal.aborted) console.warn('Failed to load heat map data:', e)
             return normalizeHeatMapResult(null, 'all')
-          }
-        },
-
-        errorIntel: async (signal) => {
-          try {
-            const cacheKey = `${userId}:errorIntel`
-            const result = await progressDataCache.get(
-              cacheKey,
-              async ({ signal: cacheSignal }) => {
-                if (cacheSignal?.aborted) {
-                  throw new Error('Operation was cancelled')
-                }
-                const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
-                return getErrorIntelligence(userId, cacheSignal)
-              },
-              'errorIntel',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return result && typeof result === 'object' ? result : null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
-            return null
           }
         },
 
@@ -185,6 +168,72 @@ export default function useProgressDashboardData() {
           } catch (e) {
             if (!signal.aborted) console.warn('Failed to load weekly goals:', e)
             return {}
+          }
+        }
+      }
+
+      // Execute basic operations with proper cancellation and timeout
+      const basicResults = await asyncController.current.executeAll(basicOperations, 10000)
+
+      // Update state with basic results
+      setHeatMapData(
+        basicResults.heatMap
+          ? normalizeHeatMapResult(basicResults.heatMap, 'all')
+          : normalizeHeatMapResult(null, 'all')
+      )
+      setUserStats(basicResults.userStats || {})
+      setWeeklyGoals(basicResults.weeklyGoals || {})
+
+      setError(null)
+      setLoading(false)
+      setRefreshing(false)
+
+      advancedRequestDataRef.current = { userId }
+      setAdvancedRequestToken(token => token + 1)
+    } catch (err) {
+      console.error('Error al cargar datos del dashboard:', err)
+      setError(err.message || 'Error desconocido al cargar datos')
+      setLoading(false)
+      setRefreshing(false)
+      setAdvancedLoading(false)
+    }
+  }, [personFilter]) // Only depend on personFilter since other state setters are stable
+
+  useEffect(() => {
+    if (!advancedRequestToken || !advancedRequestDataRef.current) {
+      return
+    }
+
+    let cancelled = false
+    let idleHandle = null
+    let timeoutHandle = null
+    const { userId } = advancedRequestDataRef.current
+
+    const runAdvancedPhase = async () => {
+      if (cancelled) return
+      setAdvancedLoading(true)
+
+      const advancedOperations = {
+        errorIntel: async (signal) => {
+          try {
+            const cacheKey = `${userId}:errorIntel`
+            const result = await progressDataCache.get(
+              cacheKey,
+              async ({ signal: cacheSignal }) => {
+                if (cacheSignal?.aborted) {
+                  throw new Error('Operation was cancelled')
+                }
+                const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
+                return getErrorIntelligence(userId, cacheSignal)
+              },
+              'errorIntel',
+              { signal }
+            )
+            if (signal.aborted) throw new Error('Cancelled')
+            return result && typeof result === 'object' ? result : null
+          } catch (e) {
+            if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
+            return null
           }
         },
 
@@ -341,37 +390,59 @@ export default function useProgressDashboardData() {
         }
       }
 
-      // Execute all operations with proper cancellation and timeout
-      const results = await asyncController.current.executeAll(operations, 10000)
+      try {
+        const results = await asyncController.current.executeAll(advancedOperations, 10000)
+        if (cancelled) return
 
-      // Update state with results
-      setHeatMapData(results.heatMap ? normalizeHeatMapResult(results.heatMap, 'all') : normalizeHeatMapResult(null, 'all'))
-      setErrorIntel(results.errorIntel || null)
-      setUserStats(results.userStats || {})
-      setWeeklyGoals(results.weeklyGoals || {})
-      setWeeklyProgress(results.weeklyProgress || {})
-      setRecommendations(results.recommendations || [])
-      setDailyChallenges(results.dailyChallenges || { date: null, metrics: {}, challenges: [] })
-      setStudyPlan(results.studyPlan || null)
-      setAdvancedAnalytics(results.advancedAnalytics || null)
-      setCommunitySnapshot(results.community || null)
-      setOfflineStatus(results.offlineStatus || null)
-      setExpertModeSettings(results.expertMode || getExpertModeSettings(userId))
-      setDynamicLevelEvaluation(results.dynamicLevelEvaluation || null)
-      setDynamicLevelProgress(results.dynamicLevelProgress || null)
-      setDynamicLevelInfo(results.dynamicLevelInfo || null)
-      setLevelRecommendation(results.levelRecommendation || null)
-
-      setError(null)
-      setLoading(false)
-      setRefreshing(false)
-    } catch (err) {
-      console.error('Error al cargar datos del dashboard:', err)
-      setError(err.message || 'Error desconocido al cargar datos')
-      setLoading(false)
-      setRefreshing(false)
+        setErrorIntel(results.errorIntel || null)
+        setWeeklyProgress(results.weeklyProgress || {})
+        setRecommendations(results.recommendations || [])
+        setDailyChallenges(results.dailyChallenges || { date: null, metrics: {}, challenges: [] })
+        setStudyPlan(results.studyPlan || null)
+        setAdvancedAnalytics(results.advancedAnalytics || null)
+        setCommunitySnapshot(results.community || null)
+        setOfflineStatus(results.offlineStatus || null)
+        setExpertModeSettings(results.expertMode || getExpertModeSettings(userId))
+        setDynamicLevelEvaluation(results.dynamicLevelEvaluation || null)
+        setDynamicLevelProgress(results.dynamicLevelProgress || null)
+        setDynamicLevelInfo(results.dynamicLevelInfo || null)
+        setLevelRecommendation(results.levelRecommendation || null)
+      } catch (advancedError) {
+        if (!cancelled) {
+          console.error('Error al cargar datos avanzados del dashboard:', advancedError)
+        }
+      } finally {
+        if (!cancelled) {
+          setAdvancedLoading(false)
+        }
+      }
     }
-  }, [personFilter]) // Only depend on personFilter since other state setters are stable
+
+    const scheduleAdvancedPhase = () => {
+      if (cancelled) return
+      if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+        idleHandle = window.requestIdleCallback(() => {
+          runAdvancedPhase()
+        })
+      } else {
+        timeoutHandle = setTimeout(() => {
+          runAdvancedPhase()
+        }, 0)
+      }
+    }
+
+    scheduleAdvancedPhase()
+
+    return () => {
+      cancelled = true
+      if (idleHandle !== null && typeof window !== 'undefined' && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleHandle)
+      }
+      if (timeoutHandle !== null) {
+        clearTimeout(timeoutHandle)
+      }
+    }
+  }, [advancedRequestToken])
 
   const completeChallenge = async (challengeId) => {
     try {
@@ -555,6 +626,7 @@ export default function useProgressDashboardData() {
     loading,
     error,
     refreshing,
+    advancedLoading,
     systemReady,
     // actions
     loadData,
