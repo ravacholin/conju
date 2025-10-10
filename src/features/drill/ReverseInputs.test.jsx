@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import ReverseInputs from './ReverseInputs.jsx'
 
 describe('ReverseInputs', () => {
@@ -46,5 +46,46 @@ describe('ReverseInputs', () => {
     expect(btn).not.toBeDisabled()
     fireEvent.click(btn)
     expect(onSubmit).toHaveBeenCalled()
+  })
+
+  it('uses readable tense labels without triggering warnings', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    try {
+      render(
+        <ReverseInputs
+          currentItem={baseItem}
+          inSpecific={false}
+          showAccentKeys={false}
+          onSubmit={() => {}}
+          onContinue={() => {}}
+          result={null}
+        />
+      )
+
+      fireEvent.change(screen.getByPlaceholderText(/infinitivo/i), {
+        target: { value: 'hablar' }
+      })
+
+      const personSelect = screen.getAllByRole('combobox')[0]
+      fireEvent.change(personSelect, { target: { value: '1s' } })
+
+      const moodSelect = screen.getAllByRole('combobox')[1]
+      fireEvent.change(moodSelect, { target: { value: 'indicative' } })
+
+      const tenseSelect = screen.getAllByRole('combobox')[2]
+      const tenseOptions = within(tenseSelect).getAllByRole('option')
+      const readableOptions = tenseOptions.filter((option) => option.value)
+
+      expect(readableOptions.length).toBeGreaterThan(0)
+      readableOptions.forEach((option) => {
+        expect(option.textContent).toBeTruthy()
+        expect(option.textContent?.startsWith('[')).toBe(false)
+      })
+
+      expect(warnSpy).not.toHaveBeenCalled()
+    } finally {
+      warnSpy.mockRestore()
+    }
   })
 })

@@ -61,7 +61,18 @@ export default function ReverseInputs({
     nonfinite: ['ger', 'part', 'nonfiniteMixed']
   }
 
-  const getTenseLabel = (tense) => getSafeMoodTenseLabels('dummy', tense).tenseLabel
+  const resolveMoodForLabels = (moodOverride) => {
+    if (moodOverride) return moodOverride
+    if (showMoodField) {
+      return moodGuess || currentItem?.mood || ''
+    }
+    return currentItem?.mood || ''
+  }
+
+  const getTenseLabel = (tense, moodOverride) => {
+    const moodForLabel = resolveMoodForLabels(moodOverride)
+    return getSafeMoodTenseLabels(moodForLabel, tense).tenseLabel
+  }
 
   const handleReverseKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -203,7 +214,7 @@ export default function ReverseInputs({
               <option value="">Seleccioná tiempo...</option>
               {(tenseOptionsByMood[moodGuess] || []).map((t) => (
                 <option key={t} value={t}>
-                  {getTenseLabel(t)}
+                  {getTenseLabel(t, moodGuess)}
                 </option>
               ))}
             </select>
