@@ -31,10 +31,19 @@ class ProgressDataCache {
    * @param {string} dataType - Tipo de dato para TTL específico
    * @returns {Promise} - Los datos solicitados
    */
-  async get(key, loadFn, dataType = 'default') {
+  async get(key, loadFn, dataType = 'default', options = {}) {
+    const { signal } = options || {}
+
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+
     // Verificar caché
     const cached = this.cache.get(key)
     if (cached && !this.isExpired(cached, dataType)) {
+      if (signal?.aborted) {
+        throw new Error('Operation was cancelled')
+      }
       this.stats.hits++
       return cached.data
     }
@@ -47,9 +56,9 @@ class ProgressDataCache {
     
     // Crear nueva request
     this.stats.misses++
-    const requestPromise = this.executeLoadFunction(key, loadFn, dataType)
+    const requestPromise = this.executeLoadFunction(key, loadFn, dataType, signal)
     this.pendingRequests.set(key, requestPromise)
-    
+
     try {
       const data = await requestPromise
       return data
@@ -58,9 +67,44 @@ class ProgressDataCache {
     }
   }
   
-  async executeLoadFunction(key, loadFn, dataType) {
-    const data = await loadFn()
-    
+  async executeLoadFunction(key, loadFn, dataType, signal) {
+    const abortError = new Error('Operation was cancelled')
+
+    if (signal?.aborted) {
+      throw abortError
+    }
+
+    const loadPromise = Promise.resolve().then(() => loadFn({ signal }))
+
+    let abortListener = null
+    const racePromise = signal
+      ? new Promise((_, reject) => {
+          abortListener = () => {
+            reject(abortError)
+          }
+          signal.addEventListener('abort', abortListener, { once: true })
+        })
+      : null
+
+    let data
+
+    try {
+      data = await (racePromise ? Promise.race([loadPromise, racePromise]) : loadPromise)
+    } catch (error) {
+      if (signal?.aborted) {
+        throw abortError
+      }
+      throw error
+    } finally {
+      if (signal && abortListener) {
+        signal.removeEventListener('abort', abortListener)
+      }
+    }
+
+    if (signal?.aborted) {
+      throw abortError
+    }
+
     // Cache los datos con timestamp
     this.cache.set(key, {
       data,

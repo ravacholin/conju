@@ -127,9 +127,13 @@ function computeUserMetrics(metrics) {
   }
 }
 
-export async function getCommunitySnapshot(userId = null) {
+export async function getCommunitySnapshot(userId = null, { signal } = {}) {
   if (!PROGRESS_CONFIG.FEATURE_FLAGS.SOCIAL_CHALLENGES) {
     return null
+  }
+
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
   }
 
   const resolvedUserId = userId || getCurrentUserId()
@@ -138,7 +142,10 @@ export async function getCommunitySnapshot(userId = null) {
   }
 
   const today = new Date().toISOString().slice(0, 10)
-  const challengeSnapshot = await getDailyChallengeSnapshot(resolvedUserId)
+  const challengeSnapshot = await getDailyChallengeSnapshot(resolvedUserId, { signal })
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const userMetrics = computeUserMetrics(challengeSnapshot?.metrics)
   const stored = loadState(resolvedUserId)
 
@@ -163,6 +170,10 @@ export async function getCommunitySnapshot(userId = null) {
 
   persistState(resolvedUserId, snapshot)
   notify(resolvedUserId, snapshot)
+
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
 
   return snapshot
 }

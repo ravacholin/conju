@@ -10,11 +10,20 @@ import { getUserSettings } from './userManager.js'
  * @param {string} userId - ID del usuario
  * @returns {Promise<Object>} Estadísticas detalladas del usuario
  */
-export async function getRealUserStats(userId) {
+export async function getRealUserStats(userId, signal) {
   try {
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const masteryRecords = await getMasteryByUser(userId)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const userSettings = getUserSettings(userId)
     const attempts = await getAttemptsByUser(userId)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     if (masteryRecords.length === 0) {
       return {
@@ -94,6 +103,10 @@ export async function getRealUserStats(userId) {
     const avgLatency = totalAttempts > 0 ? totalLatency / totalAttempts : 0
     const accuracy = totalAttempts > 0 ? (correctAttempts / totalAttempts) * 100 : 0
     
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+
     return {
       totalMastery: Math.round(avgScore),
       masteredCells: mastered,
@@ -109,6 +122,10 @@ export async function getRealUserStats(userId) {
     }
   } catch (error) {
     console.error('Error al obtener estadísticas reales del usuario:', error)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+
     return {
       totalMastery: 0,
       masteredCells: 0,
@@ -243,10 +260,19 @@ export async function getRealCompetencyRadarData(userId) {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Array>} Lista de recomendaciones personalizadas
  */
-export async function getIntelligentRecommendations(userId) {
+export async function getIntelligentRecommendations(userId, signal) {
   try {
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const masteryRecords = await getMasteryByUser(userId)
-    const userStats = await getRealUserStats(userId)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+    const userStats = await getRealUserStats(userId, signal)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const recommendations = []
     
     if (masteryRecords.length === 0) {
@@ -256,6 +282,9 @@ export async function getIntelligentRecommendations(userId) {
         description: 'Realizá algunas conjugaciones para empezar a generar datos de progreso',
         priority: 'high'
       })
+      if (signal?.aborted) {
+        throw new Error('Operation was cancelled')
+      }
       return recommendations
     }
     
@@ -335,6 +364,10 @@ export async function getIntelligentRecommendations(userId) {
       })
     }
     
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+
     return recommendations.slice(0, 4) // Limitar a 4 recomendaciones máximo
   } catch (error) {
     console.error('Error al generar recomendaciones inteligentes:', error)

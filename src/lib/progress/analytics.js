@@ -6,6 +6,12 @@ import { PROGRESS_CONFIG } from './config.js'
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
 
+const ensureNotCancelled = (signal) => {
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
+}
+
 /**
  * Obtiene datos para el mapa de calor
  * @param {string} userId - ID del usuario
@@ -13,8 +19,9 @@ import { ERROR_TAGS } from './dataModels.js'
  * @param {string} timeRange - Rango de tiempo: 'last_7_days', 'last_30_days', 'last_90_days', o 'all_time' (default: 'all_time')
  * @returns {Promise<Array>} Datos para el mapa de calor
  */
-export async function getHeatMapData(userId, person = null, timeRange = 'all_time') {
+export async function getHeatMapData(userId, person = null, timeRange = 'all_time', signal) {
   try {
+    ensureNotCancelled(signal)
     // Calcular fecha de corte basada en el rango de tiempo
     const now = Date.now()
     let cutoffDate = 0
@@ -40,6 +47,8 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
       getMasteryByUser(userId),
       getAttemptsByUser(userId)
     ])
+
+    ensureNotCancelled(signal)
 
     // Filtrar intentos por rango de tiempo
     const filteredAttempts = attempts.filter(a => {
@@ -86,6 +95,7 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
 
     for (const record of masteryRecords) {
       if (person && record.person && record.person !== person) continue
+      ensureNotCancelled(signal)
       const group = ensureGroup(record.mood, record.tense)
       // Determine weight for this person cell: attempts in window (fallback to 1)
       const wKey = `${record.mood}|${record.tense}|${record.person || ''}`
@@ -129,6 +139,8 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
         lastAttempt: group.lastAttempt || null
       }
     })
+
+    ensureNotCancelled(signal)
 
     return heatMapData
   } catch (error) {
@@ -235,12 +247,14 @@ export async function getErrorRadarData(userId) {
 /**
  * Genera dataset de Inteligencia de Errores (tags, heatmap, leeches)
  */
-export async function getErrorIntelligence(userId) {
+export async function getErrorIntelligence(userId, signal) {
   try {
+    ensureNotCancelled(signal)
     const [attempts, mastery] = await Promise.all([
       getAttemptsByUser(userId),
       getMasteryByUser(userId)
     ])
+    ensureNotCancelled(signal)
     const DECAY_TAU = 10
     const now = Date.now()
     const byDay = new Map()
@@ -419,6 +433,8 @@ export async function getErrorIntelligence(userId) {
       trend
     }
 
+    ensureNotCancelled(signal)
+
     return { tags, heatmap: { moods, tenses, cells }, leeches, summary }
   } catch (error) {
     console.warn('Error intelligence unavailable:', error)
@@ -513,8 +529,9 @@ export const getUserStats = getRealUserStats
  * @param {string} userId
  * @returns {Promise<{ attemptsToday: number, correctToday: number, accuracyToday: number, bestStreakToday: number, focusMinutesToday: number }>}
  */
-export async function getDailyChallengeMetrics(userId) {
+export async function getDailyChallengeMetrics(userId, signal) {
   try {
+    ensureNotCancelled(signal)
     const attempts = await getAttemptsByUser(userId)
     const startOfDay = new Date().setHours(0, 0, 0, 0)
 
@@ -545,6 +562,8 @@ export async function getDailyChallengeMetrics(userId) {
 
     const accuracyToday = attemptsToday > 0 ? (correctToday / attemptsToday) * 100 : 0
     const focusMinutesToday = latencyTotal > 0 ? Math.round((latencyTotal / 60000) * 10) / 10 : 0
+
+    ensureNotCancelled(signal)
 
     return {
       attemptsToday,
@@ -581,17 +600,20 @@ export const getRecommendations = getIntelligentRecommendations
  * @param {string} userId
  * @returns {Promise<Object>} Conjunto de métricas avanzadas
  */
-export async function getAdvancedAnalytics(userId) {
+export async function getAdvancedAnalytics(userId, signal) {
   const config = PROGRESS_CONFIG.ADVANCED_ANALYTICS_CONFIG || {}
   const retentionWindow = config.RETENTION_WINDOW_DAYS || 30
   const engagementWindow = config.ENGAGEMENT_WINDOW_DAYS || 14
   const dayMs = 24 * 60 * 60 * 1000
 
   try {
+    ensureNotCancelled(signal)
     const [attempts, mastery] = await Promise.all([
       getAttemptsByUser(userId),
       getMasteryByUser(userId)
     ])
+
+    ensureNotCancelled(signal)
 
     const dailyStats = new Map()
     const segmentStats = prepareSegments(config.TIME_OF_DAY_SEGMENTS)
@@ -635,6 +657,8 @@ export async function getAdvancedAnalytics(userId) {
       sessions.set(sessionKey, sessionEntry)
     })
 
+    ensureNotCancelled(signal)
+
     const retentionSeries = buildRetentionSeries(dailyStats, retentionWindow)
     const retentionTrend = computeRetentionTrend(retentionSeries)
     const engagementMetrics = computeEngagementMetrics(sessions, activeDays, engagementWindow, totalLatency)
@@ -646,6 +670,8 @@ export async function getAdvancedAnalytics(userId) {
       accuracy: segment.total ? Math.round((segment.correct / segment.total) * 100) : 0,
       averageLatency: segment.total ? Math.round(segment.latency / segment.total) : 0
     }))
+
+    ensureNotCancelled(signal)
 
     return {
       retention: {

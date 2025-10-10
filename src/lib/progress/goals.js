@@ -17,11 +17,14 @@ const DEFAULT_WEEKLY_GOALS = {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Object>} Objetivos semanales
  */
-export async function getWeeklyGoals(userId) {
+export async function getWeeklyGoals(userId, signal) {
   try {
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     // Obtener configuraciones del usuario desde localStorage
     const userSettings = getUserSettings(userId)
-    
+
     // Devolver objetivos guardados o usar predeterminados
     return userSettings.weeklyGoals || DEFAULT_WEEKLY_GOALS
   } catch (error) {
@@ -35,11 +38,20 @@ export async function getWeeklyGoals(userId) {
  * @param {string} userId - ID del usuario
  * @returns {Promise<Object>} Progreso hacia los objetivos
  */
-export async function checkWeeklyProgress(userId) {
+export async function checkWeeklyProgress(userId, signal) {
   try {
-    const goals = await getWeeklyGoals(userId)
+    const goals = await getWeeklyGoals(userId, signal)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const masteryRecords = await getMasteryByUser(userId)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const attempts = await getAttemptsByUser(userId)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     // Calcular progreso real de los últimos 7 días
     const now = Date.now()
@@ -53,6 +65,10 @@ export async function checkWeeklyProgress(userId) {
     // Celdas que superan el umbral de dominio
     const masteredCells = masteryRecords.filter(r => r.score >= goals.MIN_SCORE).length
     const cellsToImprove = Math.max(0, goals.CELLS_TO_IMPROVE - masteredCells)
+
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     return {
       cellsToImprove,
