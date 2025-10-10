@@ -4,6 +4,8 @@ import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
 import { convertCurrentItemToPronunciation, speakText } from '../../lib/pronunciation/pronunciationUtils.js';
 import { createLogger } from '../../lib/utils/logger.js';
+import { useSettings } from '../../state/settings.js';
+import { getSpeechLanguagePreferences } from '../../lib/pronunciation/languagePreferences.js';
 
 const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   currentItem,
@@ -11,7 +13,12 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   handleResult,
   onContinue
 }, ref) {
-  const logger = createLogger('PronunciationPanelSafe');
+  const settings = useSettings();
+  const { locale: speechLocale, dialect } = useMemo(
+    () => getSpeechLanguagePreferences(settings?.region),
+    [settings?.region]
+  );
+  const logger = useMemo(() => createLogger('PronunciationPanelSafe'), []);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [speechService, setSpeechService] = useState(null);
@@ -21,7 +28,6 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   const [_compatibilityInfo, setCompatibilityInfo] = useState(null);
   const waveformRef = useRef(null);
   const recordingStartTime = useRef(0);
-  const initializeOnceRef = useRef(false);
 
   // Estabilizar props con refs para evitar cambios de dependencias
   const handleResultRef = useRef(handleResult);
@@ -51,7 +57,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       speechService.stopListening();
     } else {
       const success = await speechService.startListening({
-        language: 'es-ES'
+        language: speechLocale
       });
       if (!success) {
         setRecordingResult({
@@ -62,7 +68,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         });
       }
     }
-  }, [isRecording, speechService]);
+  }, [isRecording, speechService, speechLocale]);
 
   // Expose toggleRecording function via ref
   useImperativeHandle(ref, () => ({
@@ -81,14 +87,14 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   const playCorrectPronunciation = useCallback(() => {
     if (pronunciationData?.form) {
       console.log('🔊 Playing correct pronunciation:', pronunciationData.form);
-      speakText(pronunciationData.form, 'es-ES', {
+      speakText(pronunciationData.form, speechLocale, {
         rate: 0.7,
         onStart: () => console.log('🔊 Started playing correct pronunciation'),
         onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
         onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
       });
     }
-  }, [pronunciationData?.form]);
+  }, [pronunciationData?.form, speechLocale]);
 
   // Speech recognition event handlers - ESTABLES CON useCallback
   const handleSpeechResult = useCallback((result) => {
@@ -249,11 +255,8 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     handleSpeechEnd
   ]);
 
-  // Initialize ONLY ONCE
+  // Initialize speech recognition based on dialect preferences
   useEffect(() => {
-    if (initializeOnceRef.current) return;
-    initializeOnceRef.current = true;
-
     // Only initialize if window is available (client-side)
     if (typeof window === 'undefined') {
       setIsSupported(false);
@@ -261,10 +264,11 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         speechRecognition: false,
         microphone: false,
         language: 'unknown',
+        dialect,
         userAgent: 'SSR environment',
         recommendations: ['Speech recognition not available in server-side environment']
       });
-      return;
+      return () => {};
     }
 
     const service = new SpeechRecognitionService();
@@ -277,15 +281,21 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         const compatibility = await service.testCompatibility();
         if (!isMounted) return;
 
-        setCompatibilityInfo(compatibility);
+        const compatibilityWithLanguage = {
+          ...compatibility,
+          language: speechLocale,
+          dialect
+        };
+
+        setCompatibilityInfo(compatibilityWithLanguage);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
 
         if (compatibility.speechRecognition && compatibility.microphone) {
-          await service.initialize({ language: 'es-ES' });
+          await service.initialize({ language: speechLocale });
 
           // START RECORDING IMMEDIATELY
           const success = await service.startListening({
-            language: 'es-ES'
+            language: speechLocale
           });
 
           if (!success && isMounted) {
@@ -310,8 +320,9 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     return () => {
       isMounted = false;
       service.destroy?.();
+      setSpeechService((prev) => (prev === service ? null : prev));
     };
-  }, []); // EMPTY DEPS - inicializa solo una vez
+  }, [speechLocale, dialect, logger]);
 
   // No mostrar panel si no hay item actual
   if (!currentItem || !pronunciationData) {

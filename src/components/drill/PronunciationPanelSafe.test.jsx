@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor, act, cleanup } from '@testing-library/react';
+import { useSettings } from '../../state/settings.js';
 
 const {
   setCallbacksMock,
@@ -84,15 +85,26 @@ const getMockService = () => getServiceInstance();
 import PronunciationPanelSafe from './PronunciationPanelSafe.jsx';
 
 describe('PronunciationPanelSafe', () => {
+  const initialRegion = useSettings.getState().region;
+
   beforeAll(() => {
     vi.stubGlobal('requestAnimationFrame', (cb) => setTimeout(() => cb(Date.now()), 16));
     vi.stubGlobal('cancelAnimationFrame', (id) => clearTimeout(id));
+  });
+
+  beforeEach(() => {
+    act(() => {
+      useSettings.setState({ region: initialRegion });
+    });
   });
 
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
     setServiceInstance(undefined);
+    act(() => {
+      useSettings.setState({ region: initialRegion });
+    });
   });
 
   afterAll(() => {
@@ -161,5 +173,49 @@ describe('PronunciationPanelSafe', () => {
     const lastCall = handleResult.mock.calls.at(-1)[0];
     expect(lastCall.correctAnswer).toBe('habla');
     expect(lastCall.userAnswer).toBe('habla');
+  });
+
+  it('usa el dialecto rioplatense cuando la región es rioplatense', async () => {
+    act(() => {
+      useSettings.setState({ region: 'rioplatense' });
+    });
+
+    render(
+      <PronunciationPanelSafe
+        currentItem={createItem('hablo')}
+        handleResult={vi.fn()}
+        onClose={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(getMockService()?.initialize).toHaveBeenCalledWith({ language: 'es-AR' });
+    });
+
+    await waitFor(() => {
+      expect(getMockService()?.startListening).toHaveBeenCalledWith({ language: 'es-AR' });
+    });
+  });
+
+  it('usa el dialecto peninsular cuando la región es peninsular', async () => {
+    act(() => {
+      useSettings.setState({ region: 'peninsular' });
+    });
+
+    render(
+      <PronunciationPanelSafe
+        currentItem={createItem('hablo')}
+        handleResult={vi.fn()}
+        onClose={vi.fn()}
+      />
+    );
+
+    await waitFor(() => {
+      expect(getMockService()?.initialize).toHaveBeenCalledWith({ language: 'es-ES' });
+    });
+
+    await waitFor(() => {
+      expect(getMockService()?.startListening).toHaveBeenCalledWith({ language: 'es-ES' });
+    });
   });
 });
