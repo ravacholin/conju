@@ -655,6 +655,22 @@ export async function syncAccountData() {
     // Merge with local data
     const mergeResults = await mergeAccountDataLocally(accountData)
 
+    if (mergeResults?.aborted) {
+      console.warn('⚠️ Account sync abortado: no se pudo obtener un userId confiable')
+      return {
+        success: false,
+        reason: mergeResults.reason || 'missing_user_id',
+        message: mergeResults.message,
+        merged: mergeResults,
+        downloaded: {
+          attempts: accountData.attempts?.length || 0,
+          mastery: accountData.mastery?.length || 0,
+          schedules: accountData.schedules?.length || 0,
+          sessions: accountData.sessions?.length || 0
+        }
+      }
+    }
+
     // Invalidate cached dashboard data so UI reflects freshly merged records
     try {
       if (mergeResults.userId) {
@@ -705,6 +721,96 @@ export async function syncAccountData() {
   }
 }
 
+const TEMP_USER_ID_PATTERN = /^user-temp-/i
+
+function isReliableUserId(userId) {
+  return typeof userId === 'string' && userId.trim().length > 0 && !TEMP_USER_ID_PATTERN.test(userId)
+}
+
+function extractUserIdFromAccountData(accountData) {
+  if (!accountData || typeof accountData !== 'object') return null
+
+  const directCandidates = [
+    accountData.userId,
+    accountData.user?.id,
+    accountData.account?.id,
+    accountData.account?.userId,
+    accountData.profile?.id,
+    accountData.metadata?.userId,
+    accountData.meta?.userId
+  ]
+
+  for (const candidate of directCandidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate
+    }
+  }
+
+  const collectionKeys = ['attempts', 'mastery', 'schedules', 'sessions']
+  for (const key of collectionKeys) {
+    const collection = Array.isArray(accountData[key]) ? accountData[key] : []
+    for (const item of collection) {
+      const candidate = item?.userId || item?.ownerId || item?.accountId
+      if (typeof candidate === 'string' && candidate.trim()) {
+        return candidate
+      }
+    }
+  }
+
+  return null
+}
+
+function resolveMergeUserId(accountData) {
+  const authenticatedId = authService.getUser?.()?.id || null
+  if (isReliableUserId(authenticatedId)) {
+    return { userId: authenticatedId, source: 'auth', attempted: { authenticatedId } }
+  }
+
+  const remoteId = extractUserIdFromAccountData(accountData)
+  if (isReliableUserId(remoteId)) {
+    return {
+      userId: remoteId,
+      source: 'remote',
+      attempted: { authenticatedId, remoteId }
+    }
+  }
+
+  const fallbackId = getCurrentUserId()
+  if (isReliableUserId(fallbackId)) {
+    return {
+      userId: fallbackId,
+      source: 'fallback',
+      attempted: { authenticatedId, remoteId, fallbackId }
+    }
+  }
+
+  return {
+    userId: null,
+    source: null,
+    attempted: { authenticatedId, remoteId, fallbackId }
+  }
+}
+
+function notifySyncIssue(reason, message) {
+  if (typeof window === 'undefined' || typeof window.dispatchEvent !== 'function') {
+    return
+  }
+
+  try {
+    window.dispatchEvent(
+      new CustomEvent('progress:syncError', {
+        detail: {
+          reason,
+          message,
+          timestamp: new Date().toISOString()
+        }
+      })
+    )
+  } catch (error) {
+    console.warn('No se pudo notificar al usuario sobre el fallo de sincronización:', error)
+  }
+}
+
 /**
  * Merges account data with local data, resolving conflicts intelligently
  *
@@ -716,7 +822,22 @@ export async function syncAccountData() {
  */
 async function mergeAccountDataLocally(accountData) {
   const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, conflicts: 0 }
-  const currentUserId = getCurrentUserId()
+  const resolution = resolveMergeUserId(accountData)
+  const currentUserId = resolution.userId
+
+  if (!currentUserId) {
+    const warningMessage = 'No pudimos determinar un usuario fiable para fusionar los datos. Inicia sesión nuevamente e intenta sincronizar.'
+    console.warn('⚠️ mergeAccountDataLocally: Abortando por falta de userId confiable', resolution.attempted)
+    notifySyncIssue('missing_user_id', warningMessage)
+    return {
+      ...results,
+      userId: null,
+      aborted: true,
+      reason: 'missing_user_id',
+      message: warningMessage,
+      attempted: resolution.attempted
+    }
+  }
 
   // Pre-load all local collections once to avoid repeated queries
   const allAttempts = await getAllFromDB(STORAGE_CONFIG.STORES.ATTEMPTS)
@@ -899,7 +1020,7 @@ async function mergeAccountDataLocally(accountData) {
     }
   }
 
-  return { ...results, userId: currentUserId }
+  return { ...results, userId: currentUserId, source: resolution.source, attempted: resolution.attempted }
 }
 
 /**
@@ -1162,5 +1283,8 @@ export default {
 }
 
 export const __testing = {
-  wakeUpServer
+  wakeUpServer,
+  mergeAccountDataLocally,
+  resolveMergeUserId,
+  isReliableUserId
 }
