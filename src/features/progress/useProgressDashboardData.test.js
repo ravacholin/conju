@@ -1,7 +1,8 @@
 import { vi } from 'vitest'
 import { renderHook, waitFor, act } from '@testing-library/react'
 import useProgressDashboardData from './useProgressDashboardData.js'
-import { getHeatMapData } from '../../lib/progress/analytics.js'
+import { getHeatMapData, getAdvancedAnalytics } from '../../lib/progress/analytics.js'
+import { generatePersonalizedStudyPlan } from '../../lib/progress/studyPlans.js'
 import { __triggerReady, onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
 
 vi.mock('../../lib/progress/analytics.js', () => ({
@@ -23,7 +24,12 @@ vi.mock('../../lib/progress/userManager.js', () => ({
 vi.mock('../../lib/cache/ProgressDataCache.js', () => ({
   progressDataCache: {
     warmup: vi.fn(),
-    get: vi.fn(async (_key, loader) => loader()),
+    get: vi.fn(async (_key, loader, _type, options = {}) => {
+      const invocationArg = options && Object.prototype.hasOwnProperty.call(options, 'signal')
+        ? { signal: options.signal }
+        : {}
+      return loader(invocationArg)
+    }),
     invalidate: vi.fn(),
     invalidateUser: vi.fn(),
     getStats: vi.fn(() => ({}))
@@ -144,5 +150,95 @@ describe('useProgressDashboardData', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(getHeatMapData).toHaveBeenCalledTimes(1)
+  })
+
+  it('usa refreshFromEvent para cambios acotados sin disparar analíticas pesadas', async () => {
+    renderHook(() => useProgressDashboardData())
+
+    await waitFor(() => {
+      expect(onProgressSystemReady).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      __triggerReady(true)
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
+    })
+
+    const initialHeatMapCalls = getHeatMapData.mock.calls.length
+    const initialAdvancedCalls = getAdvancedAnalytics.mock.calls.length
+    const initialStudyPlanCalls = generatePersonalizedStudyPlan.mock.calls.length
+
+    await act(async () => {
+      window.dispatchEvent(
+        new CustomEvent('progress:dataUpdated', {
+          detail: { attemptId: 'attempt-1', userId: 'user-123' }
+        })
+      )
+      await new Promise(resolve => setTimeout(resolve, 600))
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalledTimes(initialHeatMapCalls + 1)
+    })
+
+    expect(getAdvancedAnalytics).toHaveBeenCalledTimes(initialAdvancedCalls)
+    expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(initialStudyPlanCalls)
+  })
+
+  it('recarga todo el dashboard cuando el evento indica una sincronización', async () => {
+    renderHook(() => useProgressDashboardData())
+
+    await waitFor(() => {
+      expect(onProgressSystemReady).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      __triggerReady(true)
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
+    })
+
+    getHeatMapData.mockClear()
+    getAdvancedAnalytics.mockClear()
+    generatePersonalizedStudyPlan.mockClear()
+
+    await act(async () => {
+      window.dispatchEvent(
+        new CustomEvent('progress:dataUpdated', {
+          detail: { type: 'sync', userId: 'user-123' }
+        })
+      )
+      await new Promise(resolve => setTimeout(resolve, 600))
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalledTimes(1)
+    })
+
+    expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
+    expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
   })
 })
