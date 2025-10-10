@@ -18,6 +18,17 @@ export function createRoutes() {
 
       const now = Date.now()
       let uploaded = 0, updated = 0
+      const normalizeDate = (value, fieldName, recordId, { useNowWhenMissing = false } = {}) => {
+        if (value === null || value === undefined) {
+          return useNowWhenMissing ? now : null
+        }
+        const timestamp = new Date(value).getTime()
+        if (Number.isFinite(timestamp)) return timestamp
+        console.warn(
+          `[sync:${table}] Invalid ${fieldName} value for record ${recordId}; using current timestamp.`
+        )
+        return now
+      }
       db.transaction(() => {
         for (const rec of records) {
           if (!rec) continue
@@ -28,7 +39,9 @@ export function createRoutes() {
           const payload = JSON.stringify({ ...rec, userId })
           switch (table) {
             case 'attempts': {
-              const createdAt = rec.createdAt ? new Date(rec.createdAt).getTime() : now
+              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+                useNowWhenMissing: true
+              })
               const stmt = db.prepare('INSERT INTO attempts (id, user_id, created_at, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, payload=excluded.payload')
               const info = stmt.run(id, userId, createdAt, now, payload)
               if (info.changes === 1) uploaded++
@@ -43,7 +56,7 @@ export function createRoutes() {
               break
             }
             case 'schedules': {
-              const nextDue = rec.nextDue ? new Date(rec.nextDue).getTime() : null
+              const nextDue = normalizeDate(rec.nextDue, 'nextDue', id)
               const stmt = db.prepare('INSERT INTO schedules (id, user_id, next_due, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, next_due=excluded.next_due, updated_at=excluded.updated_at, payload=excluded.payload')
               const info = stmt.run(id, userId, nextDue, now, payload)
               if (info.changes === 1) uploaded++
@@ -51,8 +64,12 @@ export function createRoutes() {
               break
             }
             case 'sessions': {
-              const updatedAt = rec.updatedAt ? new Date(rec.updatedAt).getTime() : now
-              const timestamp = rec.timestamp ? new Date(rec.timestamp).getTime() : updatedAt
+              const updatedAt = normalizeDate(rec.updatedAt, 'updatedAt', id, {
+                useNowWhenMissing: true
+              })
+              const timestamp = rec.timestamp === null || rec.timestamp === undefined
+                ? updatedAt
+                : normalizeDate(rec.timestamp, 'timestamp', id)
               const stmt = db.prepare('INSERT INTO sessions (id, user_id, updated_at, timestamp, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, timestamp=excluded.timestamp, payload=excluded.payload')
               const info = stmt.run(id, userId, updatedAt, timestamp, payload)
               if (info.changes === 1) uploaded++
