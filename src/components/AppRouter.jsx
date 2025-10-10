@@ -48,10 +48,12 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
 import router from '../lib/routing/Router.js'
 
-// Conditional logging - only in development
-const DEBUG_LOG = (message, ...args) => {
-  if (import.meta.env?.DEV && !import.meta?.vitest) {
-    console.log(message, ...args)
+// Centralized logger for development-only debug output
+const logger = {
+  debug(message, ...args) {
+    if (import.meta.env?.DEV && !import.meta?.vitest) {
+      console.log(message, ...args)
+    }
   }
 }
 
@@ -409,7 +411,9 @@ function AppRouter() {
     // Fix level inconsistency: if level is null but userLevel exists, use userLevel
     if (!currentSettings.level && currentSettings.userLevel) {
       updates.level = currentSettings.userLevel
-      console.log(`🔧 AppRouter: Auto-setting level=${currentSettings.userLevel} from userLevel for progress navigation`)
+      logger.debug(
+        `🔧 AppRouter: Auto-setting level=${currentSettings.userLevel} from userLevel for progress navigation`
+      )
     }
 
     settings.set(updates)
