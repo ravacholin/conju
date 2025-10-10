@@ -67,6 +67,14 @@ const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
 const PronunciationPanel = lazy(() => import('./PronunciationPanelSafe.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
+const logger = {
+  debug(message, ...args) {
+    if (import.meta.env?.DEV && !import.meta?.vitest) {
+      console.log(message, ...args)
+    }
+  }
+}
+
 /**
  * Componente principal del modo práctica rápida
  * 
@@ -167,7 +175,7 @@ function DrillMode({
       // First attempt after 300ms (quick retry)
       const quickRetryId = setTimeout(() => {
         try {
-          console.log('🔄 DrillMode: Quick retry for missing currentItem')
+          logger.debug('🔄 DrillMode: Quick retry for missing currentItem')
           onRegenerateItem()
         } catch (error) {
           console.error('🚨 DrillMode: Quick retry failed', error)
@@ -207,11 +215,11 @@ function DrillMode({
     const handler = (event) => {
       try {
         const { detail } = event
-        console.log('Progress navigation event received:', detail)
+        logger.debug('Progress navigation event received:', detail)
         
         // Handle personalized session
         if (detail && detail.type === 'personalized_session' && detail.session) {
-          console.log('Starting personalized session:', detail.session)
+          logger.debug('Starting personalized session:', detail.session)
 
           // Initialize session in settings
           settings.set({
@@ -226,7 +234,7 @@ function DrillMode({
         }
         // Handle immediate practice from recommendations
         else if (detail && detail.type === 'immediate_practice') {
-          console.log('Starting immediate practice:', detail.recommendation)
+          logger.debug('Starting immediate practice:', detail.recommendation)
 
           // Configure practice based on recommendation
           if (detail.mood && detail.tense) {
@@ -285,10 +293,10 @@ function DrillMode({
           }
         } else if (detail && detail.micro) {
           // Handle micro-drill navigation
-          console.log('Micro-drill navigation:', detail.micro)
+          logger.debug('Micro-drill navigation:', detail.micro)
           onRegenerateItem()
         } else if (detail && detail.focus === 'review') {
-          console.log('SRS review navigation', detail.filter)
+          logger.debug('SRS review navigation', detail.filter)
           // Don't pass filter object to onPracticeModeChange - it expects strings
           // Instead, handle review mode setup directly
           settings.set({
@@ -401,7 +409,7 @@ function DrillMode({
                 </div>
                 <button
                   onClick={() => {
-                    console.log('🔄 DrillMode: Manual retry triggered by user')
+                    logger.debug('🔄 DrillMode: Manual retry triggered by user')
                     onRegenerateItem()
                   }}
                   style={{ marginTop: '15px', padding: '8px 16px' }}
