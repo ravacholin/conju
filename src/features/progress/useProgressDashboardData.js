@@ -16,8 +16,48 @@ import {
   checkGlobalLevelRecommendation
 } from '../../lib/levels/userLevelProfile.js'
 
+const normalizeHeatMapResult = (rawData, rangeKey = 'all') => {
+  const timestamp = Date.now()
+
+  if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && rawData.heatMap) {
+    return {
+      heatMap: rawData.heatMap || {},
+      range: rawData.range || rangeKey,
+      updatedAt: rawData.updatedAt || timestamp
+    }
+  }
+
+  if (!Array.isArray(rawData) || rawData.length === 0) {
+    return { heatMap: {}, range: rangeKey, updatedAt: timestamp }
+  }
+
+  const heatMapObject = {}
+
+  rawData.forEach(item => {
+    if (item.mood && item.tense) {
+      const key = `${item.mood}-${item.tense}`
+      const rawLastAttempt = item.lastAttempt ?? null
+      let normalizedLastAttempt = null
+      if (typeof rawLastAttempt === 'number') {
+        normalizedLastAttempt = rawLastAttempt
+      } else if (typeof rawLastAttempt === 'string') {
+        const parsed = new Date(rawLastAttempt).getTime()
+        normalizedLastAttempt = Number.isFinite(parsed) ? parsed : null
+      }
+
+      heatMapObject[key] = {
+        mastery: item.score / 100,
+        attempts: item.count || 0,
+        lastAttempt: normalizedLastAttempt
+      }
+    }
+  })
+
+  return { heatMap: heatMapObject, range: rangeKey, updatedAt: timestamp }
+}
+
 export default function useProgressDashboardData() {
-  const [heatMapData, setHeatMapData] = useState([])
+  const [heatMapData, setHeatMapData] = useState(null)
   const [errorIntel, setErrorIntel] = useState(null)
   const [userStats, setUserStats] = useState({})
   const [weeklyGoals, setWeeklyGoals] = useState({})
@@ -81,34 +121,10 @@ export default function useProgressDashboardData() {
             )
             if (signal.aborted) throw new Error('Cancelled')
 
-            // Transform array format to object format expected by new components
-            if (Array.isArray(result) && result.length > 0) {
-              const heatMapObject = {}
-              result.forEach(item => {
-                if (item.mood && item.tense) {
-                  const key = `${item.mood}-${item.tense}`
-                  const rawLastAttempt = item.lastAttempt ?? null
-                  let normalizedLastAttempt = null
-                  if (typeof rawLastAttempt === 'number') {
-                    normalizedLastAttempt = rawLastAttempt
-                  } else if (typeof rawLastAttempt === 'string') {
-                    const parsed = new Date(rawLastAttempt).getTime()
-                    normalizedLastAttempt = Number.isFinite(parsed) ? parsed : null
-                  }
-
-                  heatMapObject[key] = {
-                    mastery: item.score / 100, // Convert score from 0-100 to 0-1 range
-                    attempts: item.count || 0,
-                    lastAttempt: normalizedLastAttempt
-                  }
-                }
-              })
-              return { heatMap: heatMapObject }
-            }
-            return { heatMap: {} }
+            return normalizeHeatMapResult(result, 'all')
           } catch (e) {
             if (!signal.aborted) console.warn('Failed to load heat map data:', e)
-            return { heatMap: {} }
+            return normalizeHeatMapResult(null, 'all')
           }
         },
 
@@ -316,7 +332,7 @@ export default function useProgressDashboardData() {
       const results = await asyncController.current.executeAll(operations, 10000)
 
       // Update state with results
-      setHeatMapData(results.heatMap || [])
+      setHeatMapData(results.heatMap ? normalizeHeatMapResult(results.heatMap, 'all') : normalizeHeatMapResult(null, 'all'))
       setErrorIntel(results.errorIntel || null)
       setUserStats(results.userStats || {})
       setWeeklyGoals(results.weeklyGoals || {})
