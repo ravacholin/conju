@@ -24,7 +24,12 @@ export async function initializeVerbs() {
     let orthographicChangeCount = 0
     let errorCount = 0
 
-    const verbs = getAllVerbs() // Now synchronous
+    const verbs = await getAllVerbs()
+
+    if (!Array.isArray(verbs) || verbs.length === 0) {
+      console.warn('⚠️ No se encontraron verbos para inicializar.')
+      return
+    }
 
     // Procesar cada verbo
     for (const verb of verbs) {
