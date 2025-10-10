@@ -73,3 +73,91 @@ describe('wakeUpServer URL handling', () => {
     expect(successLogs.length).toBe(0)
   })
 })
+
+describe('mergeAccountDataLocally safeguards', () => {
+  const originalDispatch = window.dispatchEvent
+
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    window.dispatchEvent = originalDispatch
+  })
+
+  it('aborts merge when only a temporary user id is available', async () => {
+    const saveAttempt = vi.fn()
+    const saveMastery = vi.fn()
+    const saveSchedule = vi.fn()
+    const saveLearningSession = vi.fn()
+    const updateLearningSession = vi.fn()
+    const updateInDB = vi.fn()
+    const getAllFromDB = vi.fn().mockResolvedValue([])
+
+    const mockAuthService = {
+      getUser: vi.fn(() => null),
+      getToken: vi.fn(() => null),
+      isLoggedIn: vi.fn(() => true),
+      clearAuth: vi.fn()
+    }
+
+    vi.doMock('./index.js', () => ({
+      getCurrentUserId: vi.fn(() => 'user-temp-12345')
+    }))
+
+    vi.doMock('./database.js', () => ({
+      getAttemptsByUser: vi.fn(),
+      getMasteryByUser: vi.fn(),
+      updateInDB,
+      getFromDB: vi.fn(),
+      getAllFromDB,
+      initDB: vi.fn(),
+      saveAttempt,
+      saveMastery,
+      saveSchedule,
+      saveLearningSession,
+      updateLearningSession,
+      getLearningSessionsByUser: vi.fn()
+    }))
+
+    vi.doMock('../auth/authService.js', () => ({
+      default: mockAuthService
+    }))
+
+    const dispatchSpy = vi.fn()
+    window.dispatchEvent = dispatchSpy
+
+    const module = await import('./userManager.js')
+
+    const mergeResult = await module.__testing.mergeAccountDataLocally({
+      attempts: [
+        {
+          id: 'remote-attempt-1',
+          verbId: 'hablar',
+          mood: 'indicative',
+          tense: 'present',
+          person: 'yo',
+          createdAt: new Date().toISOString()
+        }
+      ]
+    })
+
+    expect(mergeResult).toMatchObject({
+      aborted: true,
+      reason: 'missing_user_id',
+      userId: null
+    })
+
+    expect(saveAttempt).not.toHaveBeenCalled()
+    expect(saveMastery).not.toHaveBeenCalled()
+    expect(saveSchedule).not.toHaveBeenCalled()
+    expect(saveLearningSession).not.toHaveBeenCalled()
+    expect(updateLearningSession).not.toHaveBeenCalled()
+    expect(updateInDB).not.toHaveBeenCalled()
+
+    const dispatchedEvent = dispatchSpy.mock.calls.find(([event]) => event?.type === 'progress:syncError')
+    expect(dispatchedEvent).toBeDefined()
+    expect(dispatchedEvent[0].detail.reason).toBe('missing_user_id')
+  })
+})
