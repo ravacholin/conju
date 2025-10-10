@@ -14,6 +14,32 @@ import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataService')
 
+let directDatasetCache = null
+let directDatasetPromise = null
+
+async function loadDirectDataset() {
+  if (directDatasetCache) {
+    return directDatasetCache
+  }
+
+  if (directDatasetPromise) {
+    return directDatasetPromise
+  }
+
+  directDatasetPromise = import('../../data/verbs.js')
+    .then(module => {
+      const dataset = module?.verbs || module?.default || []
+      directDatasetCache = dataset
+      return dataset
+    })
+    .catch(error => {
+      directDatasetPromise = null
+      throw error
+    })
+
+  return directDatasetPromise
+}
+
 // Synchronous version for backward compatibility (returns cached verbs or empty array)
 export function getAllVerbsSync() {
   try {
@@ -182,8 +208,9 @@ export async function getVerbByLemma(lemma) {
 
     // Layer 2: Try direct search in original dataset
     try {
-      if (verbs && Array.isArray(verbs)) {
-        const directVerb = verbs.find(v => v.lemma === lemma)
+      const verbsDataset = await loadDirectDataset()
+      if (Array.isArray(verbsDataset)) {
+        const directVerb = verbsDataset.find(v => v.lemma === lemma)
         if (directVerb) {
           logger.debug('getVerbByLemma', `Found verb in direct dataset: ${lemma}`)
           return directVerb
