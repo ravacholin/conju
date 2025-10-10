@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { getHeatMapData, getUserStats, getWeeklyGoals, checkWeeklyProgress, getRecommendations, getAdvancedAnalytics } from '../../lib/progress/analytics.js'
+import {
+  getHeatMapData,
+  getUserStats,
+  getWeeklyGoals,
+  checkWeeklyProgress,
+  getRecommendations,
+  getAdvancedAnalytics
+} from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
@@ -15,6 +22,56 @@ import {
   getGlobalDynamicLevelInfo,
   checkGlobalLevelRecommendation
 } from '../../lib/levels/userLevelProfile.js'
+
+const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges']
+
+const HEAVY_ANALYTICS_KEYS = [
+  'errorIntel',
+  'studyPlan',
+  'advancedAnalytics',
+  'community',
+  'offlineStatus',
+  'expertMode',
+  'dynamicLevelEvaluation',
+  'dynamicLevelProgress',
+  'dynamicLevelInfo',
+  'levelRecommendation'
+]
+
+const EVENT_TYPE_TO_KEYS = {
+  challenge_completed: ['dailyChallenges', 'weeklyGoals', 'weeklyProgress', 'userStats'],
+  drill_result: CORE_DATA_KEYS,
+  practice_session: CORE_DATA_KEYS,
+  mastery_update: ['heatMap', 'userStats', 'recommendations'],
+  error_logged: ['errorIntel', 'recommendations'],
+  settings_change: ['recommendations', 'heatMap']
+}
+
+const resolveKeysFromDetail = (detail = {}) => {
+  if (!detail || detail.forceFullRefresh || detail.fullRefresh) {
+    return null
+  }
+
+  const { type, attemptId, challengeId, mood, tense, person } = detail
+
+  if (type === 'sync') {
+    return null
+  }
+
+  if (type && EVENT_TYPE_TO_KEYS[type]) {
+    return EVENT_TYPE_TO_KEYS[type]
+  }
+
+  if (attemptId || mood || tense || person) {
+    return CORE_DATA_KEYS
+  }
+
+  if (challengeId) {
+    return ['dailyChallenges']
+  }
+
+  return null
+}
 
 const normalizeHeatMapResult = (rawData, rangeKey = 'all') => {
   const timestamp = Date.now()
@@ -84,6 +141,338 @@ export default function useProgressDashboardData() {
   const hasInitialLoad = useRef(false)
   const lastPersonFilterRef = useRef(personFilter)
 
+  const getOperationDefinitions = (userId) => ({
+    heatMap: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:heatMap:${personFilter || 'all'}`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getHeatMapData(userId, personFilter || null, 'all_time', cacheSignal),
+            'heatMap',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+
+          return normalizeHeatMapResult(result, 'all')
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load heat map data:', e)
+          return normalizeHeatMapResult(null, 'all')
+        }
+      },
+      apply: (value) => {
+        setHeatMapData(value || normalizeHeatMapResult(null, 'all'))
+      }
+    },
+    errorIntel: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:errorIntel`
+          const result = await progressDataCache.get(
+            cacheKey,
+            async ({ signal: cacheSignal }) => {
+              if (cacheSignal?.aborted) {
+                throw new Error('Operation was cancelled')
+              }
+              const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
+              return getErrorIntelligence(userId, cacheSignal)
+            },
+            'errorIntel',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          return result && typeof result === 'object' ? result : null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setErrorIntel(value || null)
+      }
+    },
+    userStats: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:userStats`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getUserStats(userId, cacheSignal),
+            'userStats',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          return result && typeof result === 'object' ? result : {}
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load user stats:', e)
+          return {}
+        }
+      },
+      apply: (value) => {
+        setUserStats(value || {})
+      }
+    },
+    weeklyGoals: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:weeklyGoals`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getWeeklyGoals(userId, cacheSignal),
+            'weeklyGoals',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          return result && typeof result === 'object' ? result : {}
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load weekly goals:', e)
+          return {}
+        }
+      },
+      apply: (value) => {
+        setWeeklyGoals(value || {})
+      }
+    },
+    weeklyProgress: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:weeklyProgress`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => checkWeeklyProgress(userId, cacheSignal),
+            'weeklyProgress',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          return result && typeof result === 'object' ? result : {}
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load weekly progress:', e)
+          return {}
+        }
+      },
+      apply: (value) => {
+        setWeeklyProgress(value || {})
+      }
+    },
+    recommendations: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:recommendations`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getRecommendations(userId, cacheSignal),
+            'recommendations',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          return Array.isArray(result) ? result : []
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load recommendations:', e)
+          return []
+        }
+      },
+      apply: (value) => {
+        setRecommendations(Array.isArray(value) ? value : [])
+      }
+    },
+    dailyChallenges: {
+      loader: async (signal) => {
+        try {
+          const cacheKey = `${userId}:dailyChallenges`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getDailyChallengeSnapshot(userId, { signal: cacheSignal }),
+            'dailyChallenges',
+            { signal }
+          )
+          if (signal.aborted) throw new Error('Cancelled')
+          if (!result || typeof result !== 'object') return { date: null, metrics: {}, challenges: [] }
+          return result
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load daily challenges:', e)
+          return { date: null, metrics: {}, challenges: [] }
+        }
+      },
+      apply: (value) => {
+        setDailyChallenges(value || { date: null, metrics: {}, challenges: [] })
+      }
+    },
+    studyPlan: {
+      loader: async (signal) => {
+        try {
+          const plan = await generatePersonalizedStudyPlan(userId, { signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return plan || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to generate study plan:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setStudyPlan(value || null)
+      }
+    },
+    advancedAnalytics: {
+      loader: async (signal) => {
+        try {
+          const analytics = await getAdvancedAnalytics(userId, signal)
+          if (signal.aborted) throw new Error('Cancelled')
+          return analytics || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load advanced analytics:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setAdvancedAnalytics(value || null)
+      }
+    },
+    community: {
+      loader: async (signal) => {
+        try {
+          const snapshot = await getCommunitySnapshot(userId, { signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return snapshot || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load community snapshot:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setCommunitySnapshot(value || null)
+      }
+    },
+    offlineStatus: {
+      loader: async (signal) => {
+        try {
+          const status = await getOfflineStatus(true, { signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return status ?? null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to determine offline status:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setOfflineStatus(value ?? null)
+      }
+    },
+    expertMode: {
+      loader: async (signal) => {
+        try {
+          if (signal.aborted) throw new Error('Cancelled')
+          const settings = getExpertModeSettings(userId)
+          if (signal.aborted) throw new Error('Cancelled')
+          return settings
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to retrieve expert mode settings:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setExpertModeSettings(value ?? getExpertModeSettings(userId))
+      }
+    },
+    dynamicLevelEvaluation: {
+      loader: async (signal) => {
+        try {
+          const evaluation = await getGlobalDynamicEvaluation({ signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return evaluation || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load dynamic level evaluation:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setDynamicLevelEvaluation(value || null)
+      }
+    },
+    dynamicLevelProgress: {
+      loader: async (signal) => {
+        try {
+          const progress = await getGlobalDynamicProgress({ signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return progress || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load dynamic level progress:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setDynamicLevelProgress(value || null)
+      }
+    },
+    dynamicLevelInfo: {
+      loader: async (signal) => {
+        try {
+          const info = await getGlobalDynamicLevelInfo({ signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return info || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load dynamic level info:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setDynamicLevelInfo(value || null)
+      }
+    },
+    levelRecommendation: {
+      loader: async (signal) => {
+        try {
+          const recommendation = await checkGlobalLevelRecommendation({ signal })
+          if (signal.aborted) throw new Error('Cancelled')
+          return recommendation || null
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to check level recommendation:', e)
+          return null
+        }
+      },
+      apply: (value) => {
+        setLevelRecommendation(value || null)
+      }
+    }
+  })
+
+  const runOperations = useCallback(
+    async (keys, { userId, timeout = 10000 } = {}) => {
+      if (!Array.isArray(keys) || keys.length === 0) {
+        return {}
+      }
+
+      const definitions = getOperationDefinitions(userId)
+      const uniqueKeys = Array.from(new Set(keys.filter(Boolean)))
+      const operations = {}
+      const applicable = []
+
+      uniqueKeys.forEach((key) => {
+        const definition = definitions[key]
+        if (definition?.loader) {
+          operations[key] = definition.loader
+          applicable.push([key, definition])
+        }
+      })
+
+      if (applicable.length === 0) {
+        return {}
+      }
+
+      const results = await asyncController.current.executeAll(operations, timeout)
+
+      applicable.forEach(([key, definition]) => {
+        try {
+          definition.apply?.(results[key])
+        } catch (applyError) {
+          console.warn(`Failed to apply result for ${key}:`, applyError)
+        }
+      })
+
+      return results
+    },
+    [personFilter]
+  )
+
   const loadData = useCallback(async (isRefresh = false) => {
     try {
       if (isRefresh) {
@@ -93,16 +482,13 @@ export default function useProgressDashboardData() {
         setError(null)
       }
 
-      // Cancel every tracked dashboard request so prior keyed operations stop mutating state
       asyncController.current.cancelAll()
 
-      // Get current user ID
       const userId = getCurrentUserId()
       if (!userId) {
         throw new Error('Usuario no inicializado. Espera un momento y reintenta.')
       }
 
-      // Cache warmup for commonly used data
       if (!isRefresh) {
         const warmupLoaders = {
           userStats: () => getUserStats(userId),
@@ -111,267 +497,49 @@ export default function useProgressDashboardData() {
         progressDataCache.warmup(userId, warmupLoaders)
       }
 
-      // Define operations with cache integration
-      const operations = {
-        heatMap: async (signal) => {
-          try {
-            const cacheKey = `${userId}:heatMap:${personFilter || 'all'}`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => getHeatMapData(userId, personFilter || null, 'all_time', cacheSignal),
-              'heatMap',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-
-            return normalizeHeatMapResult(result, 'all')
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load heat map data:', e)
-            return normalizeHeatMapResult(null, 'all')
-          }
-        },
-
-        errorIntel: async (signal) => {
-          try {
-            const cacheKey = `${userId}:errorIntel`
-            const result = await progressDataCache.get(
-              cacheKey,
-              async ({ signal: cacheSignal }) => {
-                if (cacheSignal?.aborted) {
-                  throw new Error('Operation was cancelled')
-                }
-                const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
-                return getErrorIntelligence(userId, cacheSignal)
-              },
-              'errorIntel',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return result && typeof result === 'object' ? result : null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
-            return null
-          }
-        },
-
-        userStats: async (signal) => {
-          try {
-            const cacheKey = `${userId}:userStats`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => getUserStats(userId, cacheSignal),
-              'userStats',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return result && typeof result === 'object' ? result : {}
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load user stats:', e)
-            return {}
-          }
-        },
-
-        weeklyGoals: async (signal) => {
-          try {
-            const cacheKey = `${userId}:weeklyGoals`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => getWeeklyGoals(userId, cacheSignal),
-              'weeklyGoals',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return result && typeof result === 'object' ? result : {}
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load weekly goals:', e)
-            return {}
-          }
-        },
-
-        weeklyProgress: async (signal) => {
-          try {
-            const cacheKey = `${userId}:weeklyProgress`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => checkWeeklyProgress(userId, cacheSignal),
-              'weeklyProgress',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return result && typeof result === 'object' ? result : {}
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load weekly progress:', e)
-            return {}
-          }
-        },
-
-        recommendations: async (signal) => {
-          try {
-            const cacheKey = `${userId}:recommendations`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => getRecommendations(userId, cacheSignal),
-              'recommendations',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            return Array.isArray(result) ? result : []
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load recommendations:', e)
-            return []
-          }
-        },
-
-        dailyChallenges: async (signal) => {
-          try {
-            const cacheKey = `${userId}:dailyChallenges`
-            const result = await progressDataCache.get(
-              cacheKey,
-              ({ signal: cacheSignal }) => getDailyChallengeSnapshot(userId, { signal: cacheSignal }),
-              'dailyChallenges',
-              { signal }
-            )
-            if (signal.aborted) throw new Error('Cancelled')
-            if (!result || typeof result !== 'object') return { date: null, metrics: {}, challenges: [] }
-            return result
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load daily challenges:', e)
-            return { date: null, metrics: {}, challenges: [] }
-          }
-        },
-
-        studyPlan: async (signal) => {
-          try {
-            const plan = await generatePersonalizedStudyPlan(userId, { signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return plan || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to generate study plan:', e)
-            return null
-          }
-        },
-
-        advancedAnalytics: async (signal) => {
-          try {
-            const analytics = await getAdvancedAnalytics(userId, signal)
-            if (signal.aborted) throw new Error('Cancelled')
-            return analytics || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load advanced analytics:', e)
-            return null
-          }
-        },
-
-        community: async (signal) => {
-          try {
-            const snapshot = await getCommunitySnapshot(userId, { signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return snapshot || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load community snapshot:', e)
-            return null
-          }
-        },
-
-        offlineStatus: async (signal) => {
-          try {
-            const status = await getOfflineStatus(true, { signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return status
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to determine offline status:', e)
-            return null
-          }
-        },
-
-        expertMode: async (signal) => {
-          try {
-            if (signal.aborted) throw new Error('Cancelled')
-            const settings = getExpertModeSettings(userId)
-            if (signal.aborted) throw new Error('Cancelled')
-            return settings
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to retrieve expert mode settings:', e)
-            return null
-          }
-        },
-
-        dynamicLevelEvaluation: async (signal) => {
-          try {
-            const evaluation = await getGlobalDynamicEvaluation({ signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return evaluation || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load dynamic level evaluation:', e)
-            return null
-          }
-        },
-
-        dynamicLevelProgress: async (signal) => {
-          try {
-            const progress = await getGlobalDynamicProgress({ signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return progress || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load dynamic level progress:', e)
-            return null
-          }
-        },
-
-        dynamicLevelInfo: async (signal) => {
-          try {
-            const info = await getGlobalDynamicLevelInfo({ signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return info || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to load dynamic level info:', e)
-            return null
-          }
-        },
-
-        levelRecommendation: async (signal) => {
-          try {
-            const recommendation = await checkGlobalLevelRecommendation({ signal })
-            if (signal.aborted) throw new Error('Cancelled')
-            return recommendation || null
-          } catch (e) {
-            if (!signal.aborted) console.warn('Failed to check level recommendation:', e)
-            return null
-          }
-        }
-      }
-
-      // Execute all operations with proper cancellation and timeout
-      const results = await asyncController.current.executeAll(operations, 10000)
-
-      // Update state with results
-      setHeatMapData(results.heatMap ? normalizeHeatMapResult(results.heatMap, 'all') : normalizeHeatMapResult(null, 'all'))
-      setErrorIntel(results.errorIntel || null)
-      setUserStats(results.userStats || {})
-      setWeeklyGoals(results.weeklyGoals || {})
-      setWeeklyProgress(results.weeklyProgress || {})
-      setRecommendations(results.recommendations || [])
-      setDailyChallenges(results.dailyChallenges || { date: null, metrics: {}, challenges: [] })
-      setStudyPlan(results.studyPlan || null)
-      setAdvancedAnalytics(results.advancedAnalytics || null)
-      setCommunitySnapshot(results.community || null)
-      setOfflineStatus(results.offlineStatus || null)
-      setExpertModeSettings(results.expertMode || getExpertModeSettings(userId))
-      setDynamicLevelEvaluation(results.dynamicLevelEvaluation || null)
-      setDynamicLevelProgress(results.dynamicLevelProgress || null)
-      setDynamicLevelInfo(results.dynamicLevelInfo || null)
-      setLevelRecommendation(results.levelRecommendation || null)
+      await runOperations([...CORE_DATA_KEYS, ...HEAVY_ANALYTICS_KEYS], { userId })
 
       setError(null)
-      setLoading(false)
-      setRefreshing(false)
     } catch (err) {
       console.error('Error al cargar datos del dashboard:', err)
       setError(err.message || 'Error desconocido al cargar datos')
+    } finally {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [personFilter]) // Only depend on personFilter since other state setters are stable
+  }, [runOperations])
+
+  const refreshFromEvent = useCallback(
+    async (detail = {}, operationKeysOverride) => {
+      const userId = getCurrentUserId()
+
+      if (!userId) {
+        return loadData(true)
+      }
+
+      const operationKeys = Array.isArray(operationKeysOverride)
+        ? operationKeysOverride
+        : resolveKeysFromDetail(detail)
+
+      if (!operationKeys || operationKeys.length === 0) {
+        return loadData(true)
+      }
+
+      setRefreshing(true)
+
+      try {
+        return await runOperations(operationKeys, { userId })
+      } catch (error) {
+        console.warn('Partial dashboard refresh failed, falling back to full reload', error)
+        await loadData(true)
+      } finally {
+        setRefreshing(false)
+      }
+
+      return undefined
+    },
+    [loadData, runOperations]
+  )
 
   const completeChallenge = async (challengeId) => {
     try {
@@ -482,23 +650,41 @@ export default function useProgressDashboardData() {
   // Escuchar eventos de actualización de progreso para refrescar automáticamente
   useEffect(() => {
     let refreshTimeoutId = null
+    let pendingAction = null
     let mounted = true
 
-    const scheduleRefresh = () => {
+    const scheduleRefresh = (action) => {
       if (!mounted) return
       if (refreshTimeoutId) {
         clearTimeout(refreshTimeoutId)
       }
+      pendingAction = action
       refreshTimeoutId = setTimeout(() => {
         if (!mounted) return
-        loadData(true)
+        const task = pendingAction
+        pendingAction = null
         refreshTimeoutId = null
-      }, 500)
+        if (typeof task === 'function') {
+          Promise.resolve(task()).catch(error => {
+            console.warn('Dashboard refresh task failed', error)
+          })
+        }
+      }, 400)
     }
 
     const handleProgressUpdate = (event) => {
-      console.log('🔄 Datos de progreso actualizados, refrescando dashboard...', event.detail)
-      scheduleRefresh()
+      const detail = event?.detail || {}
+      const operationKeys = resolveKeysFromDetail(detail)
+
+      if (import.meta.env?.DEV) {
+        console.log('🔄 Datos de progreso actualizados', { detail, operationKeys })
+      }
+
+      if (!operationKeys || operationKeys.length === 0) {
+        scheduleRefresh(() => loadData(true))
+      } else {
+        scheduleRefresh(() => refreshFromEvent(detail, operationKeys))
+      }
     }
 
     window.addEventListener('progress:dataUpdated', handleProgressUpdate)
@@ -510,7 +696,7 @@ export default function useProgressDashboardData() {
       }
       window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
-  }, [personFilter, loadData])
+  }, [loadData, refreshFromEvent])
 
   // Cleanup async operations on component unmount
   useEffect(() => {
@@ -559,6 +745,7 @@ export default function useProgressDashboardData() {
     // actions
     loadData,
     refresh,
+    refreshFromEvent,
     completeChallenge
   }
 }
