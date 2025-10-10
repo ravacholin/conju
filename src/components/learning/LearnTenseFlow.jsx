@@ -298,22 +298,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   const durationOptions = useMemo(() => getSessionDurationOptions(), []);
 
   const [eligibleForms, setEligibleForms] = useState([]);
+  const [eligibleFormsLoading, setEligibleFormsLoading] = useState(false);
 
   useEffect(() => {
     if (!selectedTense?.tense || !selectedTense?.mood) {
       setEligibleForms([])
+      setEligibleFormsLoading(false)
       return
     }
 
     let cancelled = false
 
-    function loadEligibleForms() {
+    async function loadEligibleForms() {
+      if (!cancelled) {
+        setEligibleFormsLoading(true)
+      }
       try {
-        const basePool = buildFormsForRegion(settings.region || 'la_general', settings)
+        const basePool = await buildFormsForRegion(settings.region || 'la_general', settings)
+        const safeBasePool = Array.isArray(basePool) ? basePool : []
         console.log('📊 BasePool for pronunciation practice:', {
           region: settings.region || 'la_general',
-          totalForms: basePool.length,
-          sampleForms: basePool.slice(0, 3)
+          totalForms: safeBasePool.length,
+          sampleForms: safeBasePool.slice(0, 3)
         });
 
         const pronunciationSettings = {
@@ -328,23 +334,28 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
         console.log('⚙️ Pronunciation settings (less restrictive):', pronunciationSettings);
 
-        const gated = getEligibleFormsForSettings(basePool, pronunciationSettings)
+        const gated = getEligibleFormsForSettings(safeBasePool, pronunciationSettings)
+        const safeEligibleForms = Array.isArray(gated) ? gated : []
 
         console.log('🎯 Eligible forms after gating:', {
-          totalEligible: gated.length,
+          totalEligible: safeEligibleForms.length,
           targetTense: selectedTense.tense,
           targetMood: selectedTense.mood,
-          formsOfTargetTense: gated.filter(f => f.tense === selectedTense.tense).length,
-          sampleForms: gated.filter(f => f.tense === selectedTense.tense).slice(0, 5)
+          formsOfTargetTense: safeEligibleForms.filter(f => f.tense === selectedTense.tense).length,
+          sampleForms: safeEligibleForms.filter(f => f.tense === selectedTense.tense).slice(0, 5)
         });
 
         if (!cancelled) {
-          setEligibleForms(gated)
+          setEligibleForms(safeEligibleForms)
         }
       } catch (error) {
         logger.error('No se pudieron generar formas elegibles para el flujo de aprendizaje', error)
         if (!cancelled) {
           setEligibleForms([])
+        }
+      } finally {
+        if (!cancelled) {
+          setEligibleFormsLoading(false)
         }
       }
     }
@@ -583,10 +594,18 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     )
   }
 
+  if (eligibleFormsLoading) {
+    return (
+      <div className="learning-flow-loading">
+        <p>Cargando actividades de práctica…</p>
+      </div>
+    )
+  }
+
   if (currentStep === 'introduction') {
     return (
       <ErrorBoundary>
-        <NarrativeIntroduction 
+        <NarrativeIntroduction
           tense={selectedTense}
           exampleVerbs={exampleVerbs}
           verbType={verbType}
