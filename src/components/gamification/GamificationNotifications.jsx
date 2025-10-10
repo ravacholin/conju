@@ -3,6 +3,7 @@ import './GamificationNotifications.css'
 
 export default function GamificationNotifications() {
   const [notifications, setNotifications] = useState([])
+  const MAX_NOTIFICATIONS = 4
 
   useEffect(() => {
     // Escuchar eventos de gamificación
@@ -15,7 +16,11 @@ export default function GamificationNotifications() {
         title: `+${amount} XP`,
         message: getXPMessage(reason),
         icon: '/icons/star.png',
-        duration: 3000
+        duration: 3000,
+        meta: {
+          amount,
+          reason
+        }
       })
 
       // Notificación de subida de nivel
@@ -75,15 +80,54 @@ export default function GamificationNotifications() {
   }, [])
 
   const addNotification = (notification) => {
-    const id = Date.now() + Math.random()
-    const newNotification = { ...notification, id, timestamp: Date.now() }
+    const timestamp = Date.now()
+    let merged = false
+    let newId
 
-    setNotifications(prev => [...prev, newNotification])
+    setNotifications(prev => {
+      if (notification.type === 'xp') {
+        const lastNotification = prev[prev.length - 1]
+        if (
+          lastNotification &&
+          lastNotification.type === 'xp' &&
+          lastNotification.meta?.reason === notification.meta?.reason
+        ) {
+          merged = true
+          const accumulatedAmount = (lastNotification.meta?.amount || 0) + (notification.meta?.amount || 0)
+          const collapsedCount = (lastNotification.collapsedCount || 1) + 1
+          const mergedNotification = {
+            ...lastNotification,
+            title: `+${accumulatedAmount} XP`,
+            meta: {
+              ...lastNotification.meta,
+              amount: accumulatedAmount
+            },
+            collapsedCount,
+            timestamp
+          }
 
-    // Auto-remover después de la duración especificada
-    setTimeout(() => {
-      removeNotification(id)
-    }, notification.duration || 4000)
+          return [...prev.slice(0, -1), mergedNotification]
+        }
+      }
+
+      newId = Date.now() + Math.random()
+      const newNotification = {
+        ...notification,
+        id: newId,
+        timestamp,
+        collapsedCount: notification.collapsedCount || 1
+      }
+
+      const updatedNotifications = [...prev, newNotification]
+      return updatedNotifications.slice(-MAX_NOTIFICATIONS)
+    })
+
+    if (!merged && newId) {
+      // Auto-remover después de la duración especificada
+      setTimeout(() => {
+        removeNotification(newId)
+      }, notification.duration || 4000)
+    }
   }
 
   const removeNotification = (id) => {
@@ -134,6 +178,14 @@ export default function GamificationNotifications() {
           className={`notification ${notification.type} ${notification.priority ? 'priority' : ''}`}
           onClick={() => removeNotification(notification.id)}
         >
+          {notification.collapsedCount > 1 && (
+            <div
+              className="notification-badge"
+              aria-label={`${notification.collapsedCount} eventos combinados`}
+            >
+              ×{notification.collapsedCount}
+            </div>
+          )}
           <div className="notification-content">
             <div className="notification-icon">
               <img
