@@ -109,6 +109,11 @@ function buildMetrics(analytics, momentumInsights, confidenceState) {
 }
 
 export async function generatePersonalizedStudyPlan(userId = null, options = {}) {
+  const { signal, ...restOptions } = options
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
+
   if (!PROGRESS_CONFIG.FEATURE_FLAGS.PERSONALIZED_STUDY_PLANS) {
     return null
   }
@@ -118,7 +123,7 @@ export async function generatePersonalizedStudyPlan(userId = null, options = {})
     throw new Error('Usuario no disponible para generar plan de estudio')
   }
 
-  if (!options.forceRefresh) {
+  if (!restOptions.forceRefresh) {
     const cached = getCacheEntry(resolvedUserId)
     if (isCacheValid(cached)) {
       return clonePlan(cached.plan)
@@ -126,39 +131,55 @@ export async function generatePersonalizedStudyPlan(userId = null, options = {})
   }
 
   try {
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const userSettings = getUserSettings(resolvedUserId)
     const profile = userSettings?.personalizationProfile || { style: 'balanced', intensity: 'standard' }
     const level = userSettings?.level || 'B1'
 
     const coach = new PersonalizedCoach(resolvedUserId)
     const analysis = await coach.getCoachingAnalysis(level)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     const goalsState = typeof getCurrentGoalsState === 'function'
       ? getCurrentGoalsState()
       : dynamicGoalsSystem?.getCurrentGoalsState?.() || null
 
-    const sessionDuration = options.sessionDuration || 20
-    const difficulty = options.preferredDifficulty || (profile.intensity === 'intense' ? 'hard' : 'medium')
+    const sessionDuration = restOptions.sessionDuration || 20
+    const difficulty = restOptions.preferredDifficulty || (profile.intensity === 'intense' ? 'hard' : 'medium')
 
     const mlPlan = await mlRecommendationEngine.generateSessionRecommendations({
       duration: sessionDuration,
       preferredDifficulty: difficulty,
-      includeNewContent: options.includeNewContent ?? true
+      includeNewContent: restOptions.includeNewContent ?? true
     })
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     const predictedSequence = await learningPathPredictor.predictNextOptimalCombinations({
       sessionLength: sessionDuration,
       maxCombinations: PROGRESS_CONFIG.PERSONALIZATION.STUDY_PLAN.MAX_SESSION_RECOMMENDATIONS,
       difficultyTolerance: difficulty
     })
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     const scheduling = temporalIntelligence.getSRSSchedulingRecommendations()
     const momentumInsights = momentumTracker.getMomentumInsights?.() || null
     const confidenceState = confidenceEngine.getCurrentConfidenceState?.() || {}
 
     const analytics = PROGRESS_CONFIG.FEATURE_FLAGS.ADVANCED_ANALYTICS
-      ? await getAdvancedAnalytics(resolvedUserId)
+      ? await getAdvancedAnalytics(resolvedUserId, signal)
       : null
+
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
 
     const plan = {
       userId: resolvedUserId,

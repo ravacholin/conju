@@ -118,8 +118,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:heatMap:${personFilter || 'all'}`
             const result = await progressDataCache.get(
               cacheKey,
-              () => getHeatMapData(userId, personFilter || null),
-              'heatMap'
+              ({ signal: cacheSignal }) => getHeatMapData(userId, personFilter || null, 'all_time', cacheSignal),
+              'heatMap',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
 
@@ -135,11 +136,15 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:errorIntel`
             const result = await progressDataCache.get(
               cacheKey,
-              async () => {
+              async ({ signal: cacheSignal }) => {
+                if (cacheSignal?.aborted) {
+                  throw new Error('Operation was cancelled')
+                }
                 const { getErrorIntelligence } = await import('../../lib/progress/analytics.js')
-                return getErrorIntelligence(userId)
+                return getErrorIntelligence(userId, cacheSignal)
               },
-              'errorIntel'
+              'errorIntel',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : null
@@ -154,8 +159,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:userStats`
             const result = await progressDataCache.get(
               cacheKey,
-              () => getUserStats(userId),
-              'userStats'
+              ({ signal: cacheSignal }) => getUserStats(userId, cacheSignal),
+              'userStats',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
@@ -170,8 +176,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:weeklyGoals`
             const result = await progressDataCache.get(
               cacheKey,
-              () => getWeeklyGoals(userId),
-              'weeklyGoals'
+              ({ signal: cacheSignal }) => getWeeklyGoals(userId, cacheSignal),
+              'weeklyGoals',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
@@ -186,8 +193,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:weeklyProgress`
             const result = await progressDataCache.get(
               cacheKey,
-              () => checkWeeklyProgress(userId),
-              'weeklyProgress'
+              ({ signal: cacheSignal }) => checkWeeklyProgress(userId, cacheSignal),
+              'weeklyProgress',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             return result && typeof result === 'object' ? result : {}
@@ -202,8 +210,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:recommendations`
             const result = await progressDataCache.get(
               cacheKey,
-              () => getRecommendations(userId),
-              'recommendations'
+              ({ signal: cacheSignal }) => getRecommendations(userId, cacheSignal),
+              'recommendations',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             return Array.isArray(result) ? result : []
@@ -218,8 +227,9 @@ export default function useProgressDashboardData() {
             const cacheKey = `${userId}:dailyChallenges`
             const result = await progressDataCache.get(
               cacheKey,
-              () => getDailyChallengeSnapshot(userId),
-              'dailyChallenges'
+              ({ signal: cacheSignal }) => getDailyChallengeSnapshot(userId, { signal: cacheSignal }),
+              'dailyChallenges',
+              { signal }
             )
             if (signal.aborted) throw new Error('Cancelled')
             if (!result || typeof result !== 'object') return { date: null, metrics: {}, challenges: [] }
@@ -232,7 +242,7 @@ export default function useProgressDashboardData() {
 
         studyPlan: async (signal) => {
           try {
-            const plan = await generatePersonalizedStudyPlan(userId)
+            const plan = await generatePersonalizedStudyPlan(userId, { signal })
             if (signal.aborted) throw new Error('Cancelled')
             return plan || null
           } catch (e) {
@@ -243,7 +253,7 @@ export default function useProgressDashboardData() {
 
         advancedAnalytics: async (signal) => {
           try {
-            const analytics = await getAdvancedAnalytics(userId)
+            const analytics = await getAdvancedAnalytics(userId, signal)
             if (signal.aborted) throw new Error('Cancelled')
             return analytics || null
           } catch (e) {
@@ -254,7 +264,7 @@ export default function useProgressDashboardData() {
 
         community: async (signal) => {
           try {
-            const snapshot = await getCommunitySnapshot(userId)
+            const snapshot = await getCommunitySnapshot(userId, { signal })
             if (signal.aborted) throw new Error('Cancelled')
             return snapshot || null
           } catch (e) {
@@ -265,7 +275,7 @@ export default function useProgressDashboardData() {
 
         offlineStatus: async (signal) => {
           try {
-            const status = await getOfflineStatus(true)
+            const status = await getOfflineStatus(true, { signal })
             if (signal.aborted) throw new Error('Cancelled')
             return status
           } catch (e) {
@@ -276,6 +286,7 @@ export default function useProgressDashboardData() {
 
         expertMode: async (signal) => {
           try {
+            if (signal.aborted) throw new Error('Cancelled')
             const settings = getExpertModeSettings(userId)
             if (signal.aborted) throw new Error('Cancelled')
             return settings
@@ -287,7 +298,7 @@ export default function useProgressDashboardData() {
 
         dynamicLevelEvaluation: async (signal) => {
           try {
-            const evaluation = await getGlobalDynamicEvaluation()
+            const evaluation = await getGlobalDynamicEvaluation({ signal })
             if (signal.aborted) throw new Error('Cancelled')
             return evaluation || null
           } catch (e) {
@@ -298,7 +309,7 @@ export default function useProgressDashboardData() {
 
         dynamicLevelProgress: async (signal) => {
           try {
-            const progress = await getGlobalDynamicProgress()
+            const progress = await getGlobalDynamicProgress({ signal })
             if (signal.aborted) throw new Error('Cancelled')
             return progress || null
           } catch (e) {
@@ -309,7 +320,7 @@ export default function useProgressDashboardData() {
 
         dynamicLevelInfo: async (signal) => {
           try {
-            const info = await getGlobalDynamicLevelInfo()
+            const info = await getGlobalDynamicLevelInfo({ signal })
             if (signal.aborted) throw new Error('Cancelled')
             return info || null
           } catch (e) {
@@ -320,7 +331,7 @@ export default function useProgressDashboardData() {
 
         levelRecommendation: async (signal) => {
           try {
-            const recommendation = await checkGlobalLevelRecommendation()
+            const recommendation = await checkGlobalLevelRecommendation({ signal })
             if (signal.aborted) throw new Error('Cancelled')
             return recommendation || null
           } catch (e) {

@@ -90,8 +90,14 @@ function notify(status) {
   })
 }
 
-export async function getOfflineStatus(forceRefresh = false) {
+export async function getOfflineStatus(forceRefresh = false, { signal } = {}) {
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const status = await buildStatus(forceRefresh)
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   return { ...status }
 }
 

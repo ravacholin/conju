@@ -114,15 +114,23 @@ function buildPersistedChallenges(definitions, existing = []) {
   })
 }
 
-export async function getDailyChallengeSnapshot(userId) {
+export async function getDailyChallengeSnapshot(userId, { signal } = {}) {
   if (!userId) {
     throw new Error('Se requiere userId para obtener desafíos diarios')
   }
 
-  const metrics = await getDailyChallengeMetrics(userId)
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
+
+  const metrics = await getDailyChallengeMetrics(userId, signal)
   const date = todayKey()
   const recordId = `${userId}|${date}`
   const existing = await getFromDB(CHALLENGE_STORE, recordId)
+
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const baseChallenges = existing?.date === date ? existing?.challenges : []
 
   let persisted = buildPersistedChallenges(CHALLENGE_DEFINITIONS, baseChallenges)
@@ -159,6 +167,9 @@ export async function getDailyChallengeSnapshot(userId) {
       date,
       challenges: persisted,
       createdAt: existing?.date === date ? existing?.createdAt : nowIso
+    }
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
     }
     await saveToDB(CHALLENGE_STORE, payload)
   }

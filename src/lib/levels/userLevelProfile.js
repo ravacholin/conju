@@ -556,24 +556,42 @@ export async function recordGlobalCompetency(mood, tense, accuracy, responseTime
 /**
  * Gets user's dynamic level evaluation
  */
-export async function getGlobalDynamicEvaluation() {
+export async function getGlobalDynamicEvaluation({ signal } = {}) {
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const profile = await getCurrentUserProfile()
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   return await profile.getDynamicEvaluation()
 }
 
 /**
  * Gets user's dynamic level progress
  */
-export async function getGlobalDynamicProgress() {
+export async function getGlobalDynamicProgress({ signal } = {}) {
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const profile = await getCurrentUserProfile()
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   return await profile.getDynamicLevelProgress()
 }
 
 /**
  * Gets comprehensive level info with dynamic data
  */
-export async function getGlobalDynamicLevelInfo() {
+export async function getGlobalDynamicLevelInfo({ signal } = {}) {
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   const profile = await getCurrentUserProfile()
+  if (signal?.aborted) {
+    throw new Error('Operation was cancelled')
+  }
   return await profile.getDynamicLevelDisplayInfo()
 }
 
@@ -589,10 +607,16 @@ export async function setGlobalPlacementTestBaseline(testResult) {
 /**
  * Checks if user should change level based on performance
  */
-export async function checkGlobalLevelRecommendation() {
+export async function checkGlobalLevelRecommendation({ signal } = {}) {
   try {
     const { shouldUserChangeLevel } = await import('./DynamicLevelEvaluator.js')
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     const profile = await getCurrentUserProfile()
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
     return await shouldUserChangeLevel(profile.userId)
   } catch (error) {
     console.warn('Error checking level recommendation:', error)
