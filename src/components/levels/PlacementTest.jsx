@@ -57,7 +57,12 @@ function PlacementTest({ onComplete, onCancel }) {
           settings.setPlacementTestCompleted(true)
           onComplete && onComplete(result)
         } else {
-          // Move to next question
+          // Move to next question and update test state
+          setCurrentTest({
+            ...currentTest,
+            currentIndex: result.currentIndex,
+            maxQuestions: result.maxQuestions
+          })
           setCurrentQuestion(result.nextQuestion)
           setSelectedOption('')
         }
