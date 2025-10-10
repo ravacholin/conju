@@ -19,7 +19,7 @@ vi.mock('./PracticeRecommendations.jsx', () => ({ default: () => <div data-testi
 
 vi.mock('./useProgressDashboardData.js', () => ({
   default: () => ({
-    heatMapData: [],
+    heatMapData: { heatMap: {}, range: 'all' },
     errorIntel: null,
     userStats: { totalMastery: 0 },
     weeklyGoals: { CELLS_TO_IMPROVE: 3, MIN_SCORE: 75, SESSIONS: 5 },
