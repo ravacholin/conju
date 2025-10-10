@@ -3,7 +3,7 @@
 import { ERROR_TAGS } from './dataModels.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
 import { VERB_LOOKUP_MAP } from '../core/optimizedCache.js'
-import { getAllVerbs } from '../core/verbDataService.js'
+import { getAllVerbsSync } from '../core/verbDataService.js'
 
 /**
  * Clasifica errores en la conjugación de verbos
@@ -232,11 +232,10 @@ function hasIrregularStemIssue(item, user, correct) {
   // En una implementación completa, se verificaría contra las familias irregulares
 
   // Check if the verb is irregular in this specific tense for stem error detection
-  const verbs = getAllVerbs()
+  const verbs = getAllVerbsSync()
 
-  // Fix: Add defensive check to ensure verbs is an array
-  if (!verbs || !Array.isArray(verbs)) {
-    console.warn('hasIrregularStemIssue: getAllVerbs() did not return an array:', verbs)
+  if (!Array.isArray(verbs)) {
+    console.warn('hasIrregularStemIssue: getAllVerbsSync() did not return an array:', verbs)
     return false
   }
 

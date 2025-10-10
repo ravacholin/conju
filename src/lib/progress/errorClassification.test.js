@@ -1,8 +1,41 @@
 // Test para verificar la clasificación de errores
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest'
 import { classifyError } from './errorClassification.js'
 import { ERROR_TAGS } from './dataModels.js'
+import { VERB_LOOKUP_MAP } from '../core/optimizedCache.js'
+
+const getAllVerbsSyncMock = vi.hoisted(() => vi.fn())
+
+vi.mock('../core/verbDataService.js', () => ({
+  getAllVerbsSync: getAllVerbsSyncMock
+}))
+
+const originalHablarEntry = VERB_LOOKUP_MAP.get('hablar')
+const originalHasHablar = VERB_LOOKUP_MAP.has('hablar')
+
+beforeEach(() => {
+  getAllVerbsSyncMock.mockReset()
+  getAllVerbsSyncMock.mockReturnValue([])
+  VERB_LOOKUP_MAP.set('hablar', {
+    paradigms: [
+      {
+        forms: [
+          { mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
+          { mood: 'subjunctive', tense: 'pres', person: '1s', value: 'hable' }
+        ]
+      }
+    ]
+  })
+})
+
+afterAll(() => {
+  if (originalHasHablar) {
+    VERB_LOOKUP_MAP.set('hablar', originalHablarEntry)
+  } else {
+    VERB_LOOKUP_MAP.delete('hablar')
+  }
+})
 
 describe('Error Classification', () => {
   it('should classify accent errors correctly', () => {
@@ -40,7 +73,14 @@ describe('Error Classification', () => {
   })
 
   it('should classify irregular stem errors correctly', () => {
-    const item = { lemma: 'tener', person: '1s', tense: 'pres', verbType: 'irregular' }
+    getAllVerbsSyncMock.mockReturnValueOnce([
+      {
+        lemma: 'tener',
+        type: 'irregular',
+        irregularityMatrix: { pres: true }
+      }
+    ])
+    const item = { lemma: 'tener', person: '1s', tense: 'pres', verbType: 'regular' }
     const errors = classifyError('teno', 'tengo', item) // Error en raíz irregular
     expect(errors).toContain(ERROR_TAGS.IRREGULAR_STEM)
   })
