@@ -231,6 +231,24 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     setAudioWaveform([]);
   }, []);
 
+  // Mantener los callbacks sincronizados con los handlers actuales
+  useEffect(() => {
+    if (!speechService) return;
+
+    speechService.setCallbacks({
+      onResult: handleSpeechResult,
+      onError: handleSpeechError,
+      onStart: handleSpeechStart,
+      onEnd: handleSpeechEnd
+    });
+  }, [
+    speechService,
+    handleSpeechResult,
+    handleSpeechError,
+    handleSpeechStart,
+    handleSpeechEnd
+  ]);
+
   // Initialize ONLY ONCE
   useEffect(() => {
     if (initializeOnceRef.current) return;
@@ -249,31 +267,28 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       return;
     }
 
+    const service = new SpeechRecognitionService();
+    setSpeechService(service);
+
+    let isMounted = true;
+
     const initializeAndStart = async () => {
       try {
-        const service = new SpeechRecognitionService();
-        setSpeechService(service);
-
         const compatibility = await service.testCompatibility();
+        if (!isMounted) return;
+
         setCompatibilityInfo(compatibility);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
 
         if (compatibility.speechRecognition && compatibility.microphone) {
           await service.initialize({ language: 'es-ES' });
 
-          service.setCallbacks({
-            onResult: handleSpeechResult,
-            onError: handleSpeechError,
-            onStart: handleSpeechStart,
-            onEnd: handleSpeechEnd
-          });
-
           // START RECORDING IMMEDIATELY
           const success = await service.startListening({
             language: 'es-ES'
           });
 
-          if (!success) {
+          if (!success && isMounted) {
             setRecordingResult({
               accuracy: 0,
               feedback: 'No se pudo iniciar el reconocimiento de voz',
@@ -284,16 +299,17 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         }
       } catch (error) {
         logger.error('Error initializing speech recognition:', error);
-        setIsSupported(false);
+        if (isMounted) {
+          setIsSupported(false);
+        }
       }
     };
 
     initializeAndStart();
 
     return () => {
-      if (speechService) {
-        speechService.destroy();
-      }
+      isMounted = false;
+      service.destroy?.();
     };
   }, []); // EMPTY DEPS - inicializa solo una vez
 
