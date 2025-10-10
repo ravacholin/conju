@@ -35,18 +35,22 @@ export default function SessionProgressHUD() {
         }
       }
 
+      // Si no hay plan session, limpiar
+      if (!settings.activeSessionId || !settings.activePlanId) {
+        setPlanSession(null)
+      }
+
       // Verificar sesión personalizada normal
       if (settings.practiceMode === 'personalized_session' && hasActiveSession()) {
         const progress = getCurrentSessionProgress()
         setSessionProgress(progress)
-        setPlanSession(null) // Limpiar sesión de plan
 
         if (progress && progress.sessionActive) {
           setTimeElapsed(progress.elapsedMinutes)
         }
-      } else {
+      } else if (!settings.activeSessionId && !settings.activePlanId) {
+        // Solo limpiar sessionProgress si NO hay plan session
         setSessionProgress(null)
-        setPlanSession(null)
         setTimeElapsed(0)
       }
     }
@@ -80,23 +84,6 @@ export default function SessionProgressHUD() {
       clearInterval(timer)
     }
   }, [settings.practiceMode, settings.activeSessionId, settings.activePlanId, sessionProgress?.sessionActive])
-
-  // No mostrar si no hay sesión activa (ni plan ni personalizada)
-  if (!planSession && (!sessionProgress || !sessionProgress.sessionActive)) {
-    return null
-  }
-
-  const {
-    currentActivity,
-    currentActivityIndex,
-    totalActivities,
-    progressPercentage,
-    plannedDuration,
-    completedActivities,
-    metrics,
-    focusAreas,
-    isCompleted
-  } = sessionProgress
 
   const formatTime = (minutes) => {
     if (minutes < 60) {
@@ -141,7 +128,12 @@ export default function SessionProgressHUD() {
     }
   }
 
-  // Renderizar HUD para sesión de plan
+  // EARLY RETURN 1: No mostrar si no hay ninguna sesión activa
+  if (!planSession && (!sessionProgress || !sessionProgress.sessionActive)) {
+    return null
+  }
+
+  // EARLY RETURN 2: Renderizar HUD para sesión de plan
   if (planSession) {
     const activePlan = getActivePlan()
     const planProgress = activePlan
@@ -215,6 +207,26 @@ export default function SessionProgressHUD() {
     )
   }
 
+  // Si llegamos aquí, es una sesión personalizada normal (NO plan)
+  // sessionProgress DEBE existir porque pasó el primer guard
+  // PERO por timing de React, puede ser null durante la transición a plan session
+  if (!sessionProgress) {
+    return null
+  }
+
+  const {
+    currentActivity,
+    currentActivityIndex,
+    totalActivities,
+    progressPercentage,
+    plannedDuration,
+    completedActivities,
+    metrics,
+    focusAreas,
+    isCompleted
+  } = sessionProgress
+
+  // EARLY RETURN 3: Sesión completada
   if (isCompleted) {
     return (
       <div className="session-progress-hud completed">
@@ -248,6 +260,7 @@ export default function SessionProgressHUD() {
     )
   }
 
+  // RENDER FINAL: Sesión personalizada en progreso
   return (
     <div className="session-progress-hud active">
       <div className="hud-header">
