@@ -390,9 +390,9 @@ export function useOnboardingFlow() {
     }
     closeTopPanelsAndFeatures()
     // Apply level-specific policies
+    // DON'T set practiceMode here - let user choose in next step
     const updates = {
       level,
-      practiceMode: 'specific',
       cameFromTema: false,
       specificMood: null,
       specificTense: null
@@ -490,20 +490,26 @@ export function useOnboardingFlow() {
       updates.burstSize = 16
       updates.c2RareBoostLemmas = ['argüir','delinquir','henchir','agorar','cocer','esparcir','distinguir','tañer']
       updates.allowedLemmas = getAllowedLemmasForLevel('C2')
+      // C2: Override region to 'global' to practice ALL dialect forms (tú, vos, vosotros)
+      updates.region = 'global'
+      updates.useTuteo = true
+      updates.useVoseo = true
+      updates.useVosotros = true
+      updates.practicePronoun = 'all'
     }
     settings.set(updates)
-    setOnboardingStep(5) // Go directly to mood selection
+    setOnboardingStep(4) // Go to practice mode selection (mixed vs specific)
   }
 
-  const selectPracticeMode = (mode) => {
+  const selectPracticeMode = (mode, onStartPractice) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectPracticeMode', mode);
     }
     closeTopPanelsAndFeatures()
-    
+
     if (mode === 'theme') {
       // Theme-based practice setup
-      settings.set({ 
+      settings.set({
         practiceMode: 'theme',
         // Do not bind to a specific level for theme mode
         level: null,
@@ -525,24 +531,40 @@ export function useOnboardingFlow() {
         allowedLemmas: null
       })
       setOnboardingStep(5) // Go to mood selection
-    } else {
-      // For other practice modes, reset theme-based practice settings
-      settings.set({ 
-        practiceMode: mode,
+    } else if (mode === 'mixed') {
+      // Mixed practice - if we already have a level, start practice directly
+      settings.set({
+        practiceMode: 'mixed',
+        cameFromTema: false,
+        specificMood: null,
+        specificTense: null,
+        verbType: 'all', // Default to all verbs for mixed practice
+        selectedFamily: null
+      })
+
+      if (settings.level) {
+        // Level already selected - start practice immediately
+        if (onStartPractice) {
+          onStartPractice()
+        }
+      } else {
+        // No level selected - go to verb type selection
+        setOnboardingStep(5)
+      }
+    } else if (mode === 'specific') {
+      // Specific practice - go to mood/tense selection
+      settings.set({
+        practiceMode: 'specific',
         cameFromTema: false,
         specificMood: null,
         specificTense: null
       })
-      
-      if (mode === 'mixed') {
-        setOnboardingStep(5) // Go to verb type selection for mixed practice
-      } else if (mode === 'specific') {
-        // For specific practice without level, set to C2 to show all forms
-        if (!settings.level) {
-          settings.set({ level: 'C2' })
-        }
-        setOnboardingStep(5) // Go to mood selection for specific practice
+
+      // For specific practice without level, set to C2 to show all forms
+      if (!settings.level) {
+        settings.set({ level: 'C2' })
       }
+      setOnboardingStep(5) // Go to mood selection for specific practice
     }
   }
 

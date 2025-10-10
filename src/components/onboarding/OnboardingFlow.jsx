@@ -127,7 +127,10 @@ function OnboardingFlow({
     try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch { /* ignore errors */ }
   }
   const handleSelectPracticeMode = (mode) => {
-    try { selectPracticeMode(mode); showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : 'Específica'}`) } catch { /* ignore errors */ }
+    try {
+      selectPracticeMode(mode, onStartPractice);
+      showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : mode === 'specific' ? 'Específica' : mode}`)
+    } catch { /* ignore errors */ }
   }
   const handleSelectMood = (mood) => {
     try { selectMood(mood); showToast(`Modo seleccionado`) } catch { /* ignore errors */ }
