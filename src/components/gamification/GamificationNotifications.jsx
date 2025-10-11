@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './GamificationNotifications.css'
 
 export default function GamificationNotifications() {
   const [notifications, setNotifications] = useState([])
+  const timeoutsRef = useRef(new Map())
   const MAX_NOTIFICATIONS = 4
 
   useEffect(() => {
@@ -76,6 +77,10 @@ export default function GamificationNotifications() {
       window.removeEventListener('gamification:xp-awarded', handleXPAwarded)
       window.removeEventListener('gamification:badges-awarded', handleBadgesAwarded)
       window.removeEventListener('gamification:streak-updated', handleStreakUpdated)
+      timeoutsRef.current.forEach(timeoutId => {
+        clearTimeout(timeoutId)
+      })
+      timeoutsRef.current.clear()
     }
   }, [])
 
@@ -119,18 +124,43 @@ export default function GamificationNotifications() {
       }
 
       const updatedNotifications = [...prev, newNotification]
+      const overflowCount = updatedNotifications.length - MAX_NOTIFICATIONS
+
+      if (overflowCount > 0) {
+        const removedNotifications = updatedNotifications.slice(0, overflowCount)
+        removedNotifications.forEach(notificationToRemove => {
+          const timeoutId = timeoutsRef.current.get(notificationToRemove.id)
+          if (timeoutId) {
+            clearTimeout(timeoutId)
+            timeoutsRef.current.delete(notificationToRemove.id)
+          }
+        })
+      }
+
       return updatedNotifications.slice(-MAX_NOTIFICATIONS)
     })
 
     if (!merged && newId) {
       // Auto-remover después de la duración especificada
-      setTimeout(() => {
-        removeNotification(newId)
+      const timeoutId = setTimeout(() => {
+        removeNotification(newId, { skipTimerClear: true })
       }, notification.duration || 4000)
+
+      timeoutsRef.current.set(newId, timeoutId)
     }
   }
 
-  const removeNotification = (id) => {
+  const removeNotification = (id, options = {}) => {
+    const { skipTimerClear = false } = options
+
+    if (!skipTimerClear) {
+      const timeoutId = timeoutsRef.current.get(id)
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+
+    timeoutsRef.current.delete(id)
     setNotifications(prev => prev.filter(n => n.id !== id))
   }
 
