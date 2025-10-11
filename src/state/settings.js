@@ -37,6 +37,7 @@ const useSettings = create(
       userLevel: 'A2', // Personal CEFR level (separate from practice level)
       userLevelProgress: 0, // Progress within current level (0-100%)
       hasCompletedPlacementTest: false,
+      placementTestReport: null,
 
       // Practice mode system
       practiceMode: 'mixed', // Legacy mode
@@ -107,6 +108,7 @@ const useSettings = create(
       setUserLevel: (userLevel) => set({ userLevel }),
       setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)) }),
       setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed }),
+      setPlacementTestReport: (report) => set({ placementTestReport: report }),
 
       // Practice mode methods
       setLevelPracticeMode: (mode) => set({ levelPracticeMode: mode }),
@@ -215,6 +217,7 @@ const useSettings = create(
         userLevel: state.userLevel,
         userLevelProgress: state.userLevelProgress,
         hasCompletedPlacementTest: state.hasCompletedPlacementTest,
+        placementTestReport: state.placementTestReport,
         levelPracticeMode: state.levelPracticeMode,
         specificMood: state.specificMood,
         specificTense: state.specificTense,

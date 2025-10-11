@@ -51,11 +51,20 @@ function PlacementTest({ onComplete, onCancel }) {
 
         if (result.completed) {
           // Test completed - process results and establish baseline
-          await processTestCompletion(result)
+          const enhancedResult = await processTestCompletion(result)
 
-          settings.setUserLevel(result.determinedLevel)
-          settings.setPlacementTestCompleted(true)
-          onComplete && onComplete(result)
+          if (enhancedResult) {
+            settings.setUserLevel(enhancedResult.determinedLevel)
+            settings.setPlacementTestCompleted(true)
+            if (settings.setPlacementTestReport && enhancedResult.report) {
+              settings.setPlacementTestReport(enhancedResult.report)
+            }
+            onComplete && onComplete(enhancedResult)
+          } else {
+            settings.setUserLevel(result.determinedLevel)
+            settings.setPlacementTestCompleted(true)
+            onComplete && onComplete(result)
+          }
         } else {
           // Move to next question and update test state
           setCurrentTest({
@@ -80,26 +89,33 @@ function PlacementTest({ onComplete, onCancel }) {
       // Analyze test results to create competency baseline
       const competencyBaseline = analyzeTestResults(result)
 
+      const generatedAt = Date.now()
+      const testId = `placement-${generatedAt}`
+      const placementReport = buildPlacementReport(result, competencyBaseline, { generatedAt, testId })
+
       // Enhanced result object with baseline data
       const enhancedResult = {
         ...result,
-        testId: `placement-${Date.now()}`,
+        testId,
         competencyBaseline,
         testMetadata: {
           totalQuestions: result.totalQuestions,
           correctAnswers: result.correctAnswers,
           accuracy: result.correctAnswers / result.totalQuestions,
           levelDistribution: getLevelDistribution(result.results),
-          timestamp: Date.now()
-        }
+          timestamp: generatedAt
+        },
+        report: placementReport
       }
 
       // Set baseline in user profile for future dynamic evaluations
       await setGlobalPlacementTestBaseline(enhancedResult)
 
       console.log('✅ Placement test baseline established:', competencyBaseline)
+      return enhancedResult
     } catch (error) {
       console.warn('⚠️ Error establishing test baseline:', error)
+      return null
     }
   }
 
@@ -237,6 +253,109 @@ function PlacementTest({ onComplete, onCancel }) {
     })
 
     return distribution
+  }
+
+  const buildPlacementReport = (result, competencyBaseline, { generatedAt, testId }) => {
+    const responseTimes = (result.results || []).map(answer => answer.responseTime || 0)
+    const totalResponseTime = responseTimes.reduce((sum, time) => sum + time, 0)
+    const averageResponseTime = responseTimes.length ? totalResponseTime / responseTimes.length : 0
+    const sortedTimes = [...responseTimes].sort((a, b) => a - b)
+    const medianResponseTime = sortedTimes.length
+      ? sortedTimes[Math.floor(sortedTimes.length / 2)]
+      : 0
+
+    const accuracyByLevel = Object.entries(competencyBaseline.levelAccuracy || {}).map(([level, data]) => ({
+      level,
+      correct: data.correct,
+      total: data.total,
+      accuracy: data.accuracy || 0
+    }))
+
+    const focusAreas = identifyFocusAreas(competencyBaseline.competencies || {})
+    const recommendations = generateRecommendations(competencyBaseline, focusAreas, averageResponseTime)
+
+    return {
+      testId,
+      generatedAt,
+      determinedLevel: result.determinedLevel,
+      summary: {
+        totalQuestions: result.totalQuestions,
+        correctAnswers: result.correctAnswers,
+        incorrectAnswers: (result.totalQuestions || 0) - result.correctAnswers,
+        accuracy: result.totalQuestions ? result.correctAnswers / result.totalQuestions : 0,
+        estimatedRange: competencyBaseline.estimatedLevelRange,
+        strongestLevel: competencyBaseline.strongestLevel,
+        weakestLevel: competencyBaseline.weakestLevel
+      },
+      timings: {
+        averageMs: Math.round(averageResponseTime),
+        medianMs: Math.round(medianResponseTime),
+        fastestMs: sortedTimes.length ? sortedTimes[0] : 0,
+        slowestMs: sortedTimes.length ? sortedTimes[sortedTimes.length - 1] : 0
+      },
+      accuracyByLevel,
+      focusAreas,
+      recommendations,
+      responses: (result.results || []).map((answer, index) => ({
+        index: index + 1,
+        level: answer.level,
+        isCorrect: answer.isCorrect,
+        responseTime: answer.responseTime,
+        competency: answer.competencyInfo || null
+      }))
+    }
+  }
+
+  const identifyFocusAreas = (competencies) => {
+    const entries = Object.entries(competencies).map(([key, data]) => ({
+      key,
+      correct: data.correct,
+      total: data.total,
+      accuracy: data.accuracy || 0,
+      level: data.level
+    }))
+
+    const weaknesses = entries
+      .filter(entry => entry.total >= 2 && entry.accuracy < 0.6)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 5)
+
+    const strengths = entries
+      .filter(entry => entry.accuracy >= 0.8)
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 5)
+
+    return { strengths, weaknesses }
+  }
+
+  const generateRecommendations = (baseline, focusAreas, averageResponseTime) => {
+    const recommendations = []
+
+    if (baseline.overallAccuracy < 0.6) {
+      recommendations.push('Consolidá los tiempos más básicos antes de avanzar a nuevos niveles.')
+    }
+
+    if (baseline.weakestLevel?.level) {
+      recommendations.push(`Reforzá ejercicios del nivel ${baseline.weakestLevel.level} para apuntalar tu base.`)
+    }
+
+    if (focusAreas.weaknesses.length > 0) {
+      const area = focusAreas.weaknesses[0]
+      if (area && area.key) {
+        const [mood, tense] = area.key.split('_')
+        recommendations.push(`Dedicá prácticas específicas al ${tense} del modo ${mood} (precisión ${(area.accuracy * 100).toFixed(0)}%).`)
+      }
+    }
+
+    if (averageResponseTime > 12000) {
+      recommendations.push('Tus tiempos de respuesta son altos; practicá en sesiones cortas para ganar velocidad.')
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('Excelente desempeño. Podés avanzar gradualmente a ejercicios más desafiantes.')
+    }
+
+    return recommendations
   }
 
   const handleCancel = () => {

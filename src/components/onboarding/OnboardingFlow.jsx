@@ -116,6 +116,9 @@ function OnboardingFlow({
 
   const [toast, setToast] = React.useState(null)
   const [showLevelTest, setShowLevelTest] = React.useState(false)
+  const [showPlacementSummary, setShowPlacementSummary] = React.useState(false)
+  const [lastPlacementResult, setLastPlacementResult] = React.useState(null)
+  const [reportSaved, setReportSaved] = React.useState(false)
   const showToast = (message, type = 'success') => setToast({ message, type })
   const dialectLabel = (d) => ({ rioplatense: 'Rioplatense', la_general: 'Latinoamericano', peninsular: 'Peninsular', both: 'Todos' }[d] || 'Configurado')
 
@@ -153,15 +156,41 @@ function OnboardingFlow({
 
   const handleLevelTestComplete = (result) => {
     setShowLevelTest(false)
+    if (result) {
+      setLastPlacementResult(result)
+      setShowPlacementSummary(Boolean(result.report))
+      setReportSaved(Boolean(result.report && settings.placementTestReport && settings.placementTestReport.testId === result.report.testId))
+    }
     if (result && result.determinedLevel) {
       selectLevel(result.determinedLevel)
       showToast(`Nivel ${result.determinedLevel} determinado automáticamente`)
+    }
+    if (result?.report) {
+      showToast('Informe del test de nivel listo para revisar', 'info')
     }
   }
 
   const handleLevelTestCancel = () => {
     setShowLevelTest(false)
     showToast('Test de nivel cancelado', 'info')
+  }
+
+  const handleSavePlacementReport = () => {
+    if (!lastPlacementResult?.report) return
+    if (typeof settings.setPlacementTestReport === 'function') {
+      settings.setPlacementTestReport(lastPlacementResult.report)
+      setReportSaved(true)
+      showToast('Informe guardado en tus ajustes')
+    }
+  }
+
+  const handleRetakePlacementTest = () => {
+    setShowPlacementSummary(false)
+    setShowLevelTest(true)
+  }
+
+  const handleClosePlacementSummary = () => {
+    setShowPlacementSummary(false)
   }
 
   // Unified back behavior: use browser history for both UI and hardware back
@@ -177,6 +206,16 @@ function OnboardingFlow({
     <div className="App">
       <div className="onboarding">
         <div className="center-column">
+          {showPlacementSummary && lastPlacementResult?.report && (
+            <PlacementReportModal
+              result={lastPlacementResult}
+              reportSaved={reportSaved}
+              onClose={handleClosePlacementSummary}
+              onRetake={handleRetakePlacementTest}
+              onSave={handleSavePlacementReport}
+            />
+          )}
+
           {/* Show level test if active */}
           {showLevelTest ? (
             <PlacementTest
@@ -310,6 +349,86 @@ function OnboardingFlow({
       </div>
     </div>
   );
+}
+
+function PlacementReportModal({ result, reportSaved, onClose, onRetake, onSave }) {
+  const report = result.report
+  const accuracy = report?.summary?.accuracy ? Math.round(report.summary.accuracy * 100) : 0
+  const averageSeconds = report?.timings?.averageMs ? Math.round(report.timings.averageMs / 100) / 10 : 0
+  const medianSeconds = report?.timings?.medianMs ? Math.round(report.timings.medianMs / 100) / 10 : 0
+
+  return (
+    <div className="placement-report-overlay" role="dialog" aria-modal="true">
+      <div className="placement-report-modal">
+        <header className="placement-report-header">
+          <h3>Resumen del Test de Nivel</h3>
+          <p>Revisá tu desempeño y decidí los próximos pasos.</p>
+        </header>
+
+        <section className="placement-report-summary">
+          <div className="summary-card">
+            <span className="summary-label">Nivel estimado</span>
+            <span className="summary-value">{result.determinedLevel}</span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Precisión</span>
+            <span className="summary-value">{accuracy}%</span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Promedio de respuesta</span>
+            <span className="summary-value">{averageSeconds}s</span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Mediana</span>
+            <span className="summary-value">{medianSeconds}s</span>
+          </div>
+        </section>
+
+        {report?.recommendations?.length > 0 && (
+          <section className="placement-report-section">
+            <h4>Recomendaciones</h4>
+            <ul>
+              {report.recommendations.map((recommendation, index) => (
+                <li key={`${report.testId}-rec-${index}`}>{recommendation}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {report?.focusAreas?.weaknesses?.length > 0 && (
+          <section className="placement-report-section">
+            <h4>Áreas a reforzar</h4>
+            <ul>
+              {report.focusAreas.weaknesses.map(area => {
+                const [mood, tense] = area.key.split('_')
+                return (
+                  <li key={`${report.testId}-${area.key}`}>
+                    {`${tense} (${mood}) • Precisión ${(area.accuracy * 100).toFixed(0)}%`}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        )}
+
+        <footer className="placement-report-actions">
+          <button type="button" className="placement-report-button secondary" onClick={onRetake}>
+            Repetir test
+          </button>
+          <button
+            type="button"
+            className={`placement-report-button primary ${reportSaved ? 'saved' : ''}`}
+            onClick={onSave}
+          >
+            {reportSaved ? 'Actualizar guardado' : 'Guardar en ajustes'}
+          </button>
+          <button type="button" className="placement-report-button ghost" onClick={onClose}>
+            Cerrar
+          </button>
+        </footer>
+      </div>
+    </div>
+  )
 }
 
 export default OnboardingFlow;
