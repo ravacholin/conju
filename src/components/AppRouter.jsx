@@ -171,6 +171,7 @@ function AppRouter() {
   // Create stable refs for hooks to avoid dependency issues
   const onboardingFlowRef = useRef(onboardingFlow)
   const drillModeRef = useRef(drillMode)
+  const forceFullResetRef = useRef(false)
   
   // Update refs when hooks change
   useEffect(() => {
@@ -297,17 +298,28 @@ function AppRouter() {
   const cleanupStateForStep = (targetStep) => {
     const currentSettings = useSettings.getState()
 
-    // IMPORTANT: If user has valid specific practice settings, preserve them
-    // This handles navigation from drill → menu → progress correctly
-    const hasValidSpecificSettings = currentSettings.practiceMode === 'specific' &&
-                                     currentSettings.specificMood &&
-                                     currentSettings.specificTense
-    const hasValidThemeSettings = currentSettings.practiceMode === 'theme' &&
-                                  currentSettings.specificMood &&
-                                  currentSettings.specificTense
+    if (targetStep === 1) {
+      forceFullResetRef.current = true
+    }
 
-    if (hasValidSpecificSettings || hasValidThemeSettings) {
-      return // Don't reset anything
+    const isFullResetFlow = forceFullResetRef.current || targetStep === 1
+    const shouldPreserveMenuSelections = targetStep === 2 && !isFullResetFlow
+
+    if (!isFullResetFlow) {
+      // IMPORTANT: If user has valid specific practice settings, preserve them
+      // This handles navigation from drill → menu → progress correctly
+      const hasValidSpecificSettings =
+        currentSettings.practiceMode === 'specific' &&
+        currentSettings.specificMood &&
+        currentSettings.specificTense
+      const hasValidThemeSettings =
+        currentSettings.practiceMode === 'theme' &&
+        currentSettings.specificMood &&
+        currentSettings.specificTense
+
+      if (hasValidSpecificSettings || hasValidThemeSettings) {
+        return // Don't reset anything
+      }
     }
 
     const updates = {}
@@ -317,25 +329,29 @@ function AppRouter() {
     if (targetStep < 1) {
       updates.region = null
     }
-    if (targetStep < 3) {
+    if (!shouldPreserveMenuSelections && targetStep < 3) {
       updates.level = null
     }
-    if (targetStep < 4) {
+    if (!shouldPreserveMenuSelections && targetStep < 4) {
       updates.practiceMode = null
     }
-    if (targetStep <= 5) {
+    if (!shouldPreserveMenuSelections && targetStep <= 5) {
       updates.specificMood = null
       updates.specificTense = null
     }
-    if (targetStep < 6) {
+    if (!shouldPreserveMenuSelections && targetStep < 6) {
       updates.verbType = null
     }
-    if (targetStep < 7) {
+    if (!shouldPreserveMenuSelections && targetStep < 7) {
       updates.selectedFamily = null
     }
 
     if (Object.keys(updates).length > 0) {
       settings.set(updates)
+    }
+
+    if (targetStep >= 2 && forceFullResetRef.current) {
+      forceFullResetRef.current = false
     }
   }
 
