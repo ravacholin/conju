@@ -2,11 +2,10 @@ import React, { useMemo } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
-import { getActivePlan, getNextPendingSession, getPlanProgress, markSessionAsStarted } from '../../lib/progress/planTracking.js'
 
 /**
  * Smart Practice Panel - Intelligent, actionable practice recommendations
- * Replaces: 8 error components + 2 recommendation systems
+ * Focuses on heatmap-based recommendations when no personalized plan is active
  */
 export default function SmartPractice({ heatMapData, userStats, onNavigateToDrill }) {
   const settings = useSettings()
@@ -20,38 +19,16 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const recommendations = useMemo(() => {
     const recs = []
 
-    // Check for active plan and prioritize next session
-    const activePlan = getActivePlan()
-    const nextSession = getNextPendingSession()
-
-    if (activePlan && nextSession) {
-      const planProgress = getPlanProgress()
-      recs.push({
-        type: 'plan-session',
-        title: nextSession.config?.title || 'Continuar plan de estudio',
-        description: nextSession.config?.description || 'Próxima sesión recomendada de tu plan personalizado',
-        action: 'Continuar plan',
-        priority: 'urgent',
-        icon: nextSession.config?.icon || '/icons/map.png',
-        session: nextSession,
-        planProgress: `${planProgress.completed}/${planProgress.total} sesiones completadas`,
-        estimatedDuration: nextSession.config?.estimatedDuration || '20 min'
-      })
-    }
-
     if (!heatMapData?.heatMap || !userStats) {
-      // Si no hay datos, solo mostrar plan o get-started
-      if (recs.length === 0) {
-        return [{
-          type: 'get-started',
-          title: 'Comenzar a practicar',
-          description: 'Inicia tu primer ejercicio para generar recomendaciones personalizadas',
-          action: 'Empezar',
-          priority: 'high',
-          icon: '/play.png'
-        }]
-      }
-      return recs
+      // Si no hay datos suficientes, sugerir empezar
+      return [{
+        type: 'get-started',
+        title: 'Comenzar a practicar',
+        description: 'Inicia tu primer ejercicio para generar recomendaciones personalizadas',
+        action: 'Empezar',
+        priority: 'high',
+        icon: '/play.png'
+      }]
     }
 
     const heatMap = heatMapData.heatMap
@@ -143,24 +120,9 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const handleRecommendationClick = (rec) => {
     if (!onNavigateToDrill) return
 
-    const settingsUpdate = {}
+    let settingsUpdate = {}
 
     switch (rec.type) {
-      case 'plan-session': {
-        // Launch plan session
-        const session = rec.session
-        if (session && session.config?.drillConfig) {
-          markSessionAsStarted(session.sessionId)
-
-          const activePlan = getActivePlan()
-          settingsUpdate = {
-            ...session.config.drillConfig,
-            activeSessionId: session.sessionId,
-            activePlanId: activePlan?.planId
-          }
-        }
-        break
-      }
       case 'focus-weakness':
       case 'maintain-mastery':
       case 'explore-new':
