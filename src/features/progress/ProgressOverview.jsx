@@ -77,6 +77,7 @@ export default function ProgressOverview({
         <div className="nav-actions">
           <div className="nav-left">
             <button
+              type="button"
               className="nav-btn"
               onClick={() => window.history.back()}
               title="Volver atrás"
@@ -85,6 +86,7 @@ export default function ProgressOverview({
             </button>
 
             <button
+              type="button"
               className="nav-btn"
               onClick={onNavigateHome}
               title="Inicio"
@@ -93,6 +95,7 @@ export default function ProgressOverview({
             </button>
 
             <button
+              type="button"
               className="nav-btn logo-btn"
               onClick={onNavigateToDrill}
               title="Practicar"
