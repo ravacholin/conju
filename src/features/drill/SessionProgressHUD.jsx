@@ -9,9 +9,9 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { getCurrentSessionProgress, hasActiveSession } from '../../lib/progress/sessionManager.js'
+import sessionManager, { getCurrentSessionProgress, hasActiveSession } from '../../lib/progress/sessionManager.js'
 import { useSettings } from '../../state/settings.js'
-import { getActivePlan, getSessionStatus, markSessionAsCompleted, getSessionAttemptProgress } from '../../lib/progress/planTracking.js'
+import { getActivePlan, markSessionAsCompleted, getSessionAttemptProgress } from '../../lib/progress/planTracking.js'
 
 export default function SessionProgressHUD() {
   const [sessionProgress, setSessionProgress] = useState(null)
@@ -105,12 +105,26 @@ export default function SessionProgressHUD() {
     return icons[activityType] || '/play.png'
   }
 
-  const handleEndSession = () => {
+  const handleEndSession = async () => {
     const confirmMessage = planSession
       ? '¿Estás seguro de que querés terminar la sesión del plan?'
       : '¿Estás seguro de que querés terminar la sesión personalizada?'
 
     if (window.confirm(confirmMessage)) {
+      const finalMetrics = sessionManager.endSession({ manualEnd: true })
+
+      if (planSession && settings.activeSessionId) {
+        const attemptProgress = getSessionAttemptProgress(settings.activeSessionId)
+        const stats = {
+          attempts: attemptProgress.attempts,
+          accuracy: attemptProgress.accuracy,
+          duration: finalMetrics?.totalDuration || 0,
+          manualEnd: true
+        }
+
+        await markSessionAsCompleted(settings.activeSessionId, stats, { manualEnd: true })
+      }
+
       // Finalizar sesión y volver a modo normal
       settings.set({
         practiceMode: 'mixed',
@@ -123,7 +137,7 @@ export default function SessionProgressHUD() {
 
       // Dispatch event para notificar finalización
       window.dispatchEvent(new CustomEvent('session-progress-update', {
-        detail: { type: 'session_ended', manual: true }
+        detail: { type: 'session_ended', manual: true, manualEnd: true, data: finalMetrics }
       }))
     }
   }
