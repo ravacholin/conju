@@ -47,6 +47,98 @@ import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('useDrillGenerator')
 
+const computeUrgencyLevel = (nextDue, now) => {
+  if (!nextDue) return 1
+  const dueDate = new Date(nextDue)
+  const diffHours = (dueDate - now) / (1000 * 60 * 60)
+
+  if (Number.isNaN(diffHours)) return 1
+  if (diffHours < 0) return 4
+  if (diffHours < 6) return 3
+  if (diffHours < 24) return 2
+  return 1
+}
+
+const applyReviewSessionFilter = (
+  dueCells,
+  reviewSessionType,
+  reviewSessionFilter,
+  now
+) => {
+  if (!Array.isArray(dueCells) || dueCells.length === 0) return []
+
+  const filter = reviewSessionFilter || {}
+  let filtered = dueCells.filter(Boolean)
+
+  const targetMood = filter.mood
+  const targetTense = filter.tense
+  const targetPerson = filter.person
+
+  if (targetMood) {
+    filtered = filtered.filter(cell => cell?.mood === targetMood)
+  }
+
+  if (targetTense) {
+    filtered = filtered.filter(cell => cell?.tense === targetTense)
+  }
+
+  if (targetPerson) {
+    filtered = filtered.filter(cell => cell?.person === targetPerson)
+  }
+
+  const urgencyFilter = filter.urgency
+  if (urgencyFilter && urgencyFilter !== 'all') {
+    filtered = filtered.filter(cell => {
+      const urgency = computeUrgencyLevel(cell?.nextDue, now)
+
+      if (urgencyFilter === 'urgent') return urgency >= 3
+      if (urgencyFilter === 'overdue') return urgency === 4
+
+      const numericUrgency = Number(urgencyFilter)
+      if (!Number.isNaN(numericUrgency)) {
+        return urgency === numericUrgency
+      }
+
+      return true
+    })
+  }
+
+  const limit = filter.limit
+  if (limit === 'light') {
+    filtered = filtered.slice(0, Math.max(1, filter.limitCount || 10))
+  } else if (typeof limit === 'number' && limit > 0) {
+    filtered = filtered.slice(0, Math.floor(limit))
+  }
+
+  // Specific review sessions should still honour mood/tense even if filter removed all
+  if (reviewSessionType === 'specific' && filtered.length === 0) {
+    filtered = dueCells.filter(cell => {
+      if (!cell) return false
+      if (targetMood && cell.mood !== targetMood) return false
+      if (targetTense && cell.tense !== targetTense) return false
+      if (targetPerson && cell.person !== targetPerson) return false
+      return true
+    })
+  }
+
+  return filtered
+}
+
+const selectDueCandidate = (dueCells, reviewSessionType) => {
+  if (!Array.isArray(dueCells) || dueCells.length === 0) return null
+
+  switch (reviewSessionType) {
+    case 'specific':
+    case 'urgent':
+    case 'light':
+    case 'due':
+    case 'today':
+      return dueCells.find(Boolean) || null
+    default:
+      return dueCells.find(Boolean) || null
+  }
+}
+
 /**
  * Specialized hook for drill item generation
  * @returns {Object} - Generator functions and state
@@ -86,12 +178,17 @@ export const useDrillGenerator = () => {
     setIsGenerating(true)
     
     try {
+      const reviewSessionType = settings.reviewSessionType || 'due'
+      const reviewSessionFilter = settings.reviewSessionFilter || {}
+
       logger.info('generateNextItem', 'Starting item generation', {
         verbType: settings.verbType,
         selectedFamily: settings.selectedFamily,
         practiceMode: settings.practiceMode,
         specificMood: settings.specificMood,
         specificTense: settings.specificTense,
+        reviewSessionType,
+        reviewSessionFilter,
         level: settings.level,
         excludedItem: itemToExclude?.lemma,
         doubleActive: settings.doubleActive
@@ -172,12 +269,29 @@ export const useDrillGenerator = () => {
       }
 
       // Set up specific practice constraints
-      const isSpecific = (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
-                        settings.specificMood && settings.specificTense
+      const isPracticeSpecificActive = Boolean(
+        (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
+        settings.specificMood &&
+        settings.specificTense
+      )
+      const isReviewSpecificActive = Boolean(
+        settings.practiceMode === 'review' &&
+        reviewSessionType === 'specific' &&
+        reviewSessionFilter?.mood &&
+        reviewSessionFilter?.tense
+      )
+
+      const isSpecific = isPracticeSpecificActive || isReviewSpecificActive
+      const resolvedMood = isReviewSpecificActive
+        ? reviewSessionFilter.mood
+        : (isPracticeSpecificActive ? settings.specificMood : null)
+      const resolvedTense = isReviewSpecificActive
+        ? reviewSessionFilter.tense
+        : (isPracticeSpecificActive ? settings.specificTense : null)
       const specificConstraints = {
         isSpecific,
-        specificMood: isSpecific ? settings.specificMood : null,
-        specificTense: isSpecific ? settings.specificTense : null
+        specificMood: isSpecific ? resolvedMood : null,
+        specificTense: isSpecific ? resolvedTense : null
       }
 
       // Apply comprehensive filtering
@@ -232,11 +346,21 @@ export const useDrillGenerator = () => {
       // Tier 1: SRS due items
       const userId = getCurrentUserId()
       if (userId) {
-        let dueCells = await getDueItems(userId, new Date())
+        const now = new Date()
+        let dueCells = await getDueItems(userId, now)
         dueCells = gateDueItemsByCurriculum(dueCells, settings)
         dueCells = filterDueForSpecific(dueCells, specificConstraints)
-        
-        const pickFromDue = dueCells.find(Boolean)
+
+        if (settings.practiceMode === 'review') {
+          dueCells = applyReviewSessionFilter(
+            dueCells,
+            reviewSessionType,
+            reviewSessionFilter,
+            now
+          )
+        }
+
+        const pickFromDue = selectDueCandidate(dueCells, reviewSessionType)
         if (pickFromDue) {
           // In práctica específica (tema fijo), NO fijar la persona desde SRS.
           // Queremos variedad de pronombres dentro del mismo modo/tiempo.
