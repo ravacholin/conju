@@ -70,7 +70,9 @@ function AppRouter() {
       useVoseo: state.useVoseo,
       useTuteo: state.useTuteo,
       useVosotros: state.useVosotros,
-      strict: state.strict ?? true,
+      strict:
+        state.strict ??
+        !(state.useTuteo && state.useVoseo && state.useVosotros),
       practiceMode: state.practiceMode,
       specificMood: state.specificMood,
       specificTense: state.specificTense,
@@ -104,7 +106,9 @@ function AppRouter() {
       useVoseo: settings.useVoseo,
       useTuteo: settings.useTuteo,
       useVosotros: settings.useVosotros,
-      strict: settings.strict ?? true,
+      strict:
+        settings.strict ??
+        !(settings.useTuteo && settings.useVoseo && settings.useVosotros),
       practiceMode: settings.practiceMode,
       specificMood: settings.specificMood,
       specificTense: settings.specificTense,
