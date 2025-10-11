@@ -8,36 +8,213 @@ import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { classifyError } from '../../features/drill/tracking.js';
 import './CommunicativePractice.css';
 
+const PARTICIPLE_SUFFIXES = ['ado', 'ido', 'to', 'so', 'cho'];
+
+const removeDiacritics = (text) =>
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+const buildEndingRegex = (endings) => {
+  if (!endings.length) return null;
+  const uniqueEndings = Array.from(new Set(endings));
+  return new RegExp(`\\b[a-z]{2,}(?:${uniqueEndings.join('|')})\\b`, 'g');
+};
+
+const buildWordRegex = (words) => {
+  if (!words.length) return null;
+  const sanitized = Array.from(new Set(words.map(removeDiacritics)));
+  return new RegExp(`\\b(?:${sanitized.join('|')})\\b`, 'g');
+};
+
+const buildCompoundRegex = (auxiliaries, participleSuffixes = PARTICIPLE_SUFFIXES) => {
+  if (!auxiliaries.length) return null;
+  const auxPattern = auxiliaries.map(removeDiacritics).join('|');
+  const suffixPattern = participleSuffixes.join('|');
+  return new RegExp(`\\b(?:${auxPattern})\\b\\s+\\b[a-z]+(?:${suffixPattern})\\b`, 'g');
+};
+
+const buildTriggeredRegex = (triggers, endings) => {
+  if (!triggers.length || !endings.length) return null;
+  const triggerPattern = triggers
+    .map(trigger => trigger.replace(/\s+/g, '\\s+'))
+    .join('|');
+  const endingPattern = endings.join('|');
+  return new RegExp(`(?:${triggerPattern})[a-z]{2,}(?:${endingPattern})\\b`, 'g');
+};
+
+const createPatternEntry = (mood, regexes) => ({
+  mood,
+  patterns: regexes.filter(Boolean)
+});
+
 // Pre-compiled tense patterns for performance
 const TENSE_PATTERNS = {
-  'pres': /\b\w+[oaeáéí]\b|\b(soy|eres|es|somos|sois|son|estoy|estás|está|estamos|estáis|están|voy|vas|va|vamos|vais|van)\b/g,
-  'pretIndef': /\b\w+[óé]\b|\b\w+(aste|aron|ieron|amos|asteis)\b|\b(fui|fuiste|fue|fuimos|fuisteis|fueron|tuve|tuviste|tuvo|tuvimos|tuvisteis|tuvieron)\b/g,
-  'impf': /\b\w+(aba|ías|ía|íamos|íais|aban)\b|\b(era|eras|éramos|erais|eran|estaba|estabas|estábamos|estabais|estaban)\b/g,
-  'fut': /\b\w+(ré|rás|rá|remos|réis|rán)\b|\b(seré|serás|será|seremos|seréis|serán|estaré|estarás|estará|estaremos|estaréis|estarán)\b/g,
-  'pretPerf': /\b(he|has|ha|hemos|habéis|han)\s+\w+ado\b|\b(he|has|ha|hemos|habéis|han)\s+\w+ido\b/g
+  pres: createPatternEntry('indicative', [
+    buildEndingRegex(['o', 'as', 'a', 'amos', 'ais', 'an', 'es', 'e', 'emos', 'eis', 'en']),
+    buildWordRegex(['soy', 'eres', 'es', 'somos', 'sois', 'son', 'estoy', 'estas', 'esta', 'estamos', 'estais', 'estan', 'voy', 'vas', 'va', 'vamos', 'vais', 'van'])
+  ]),
+  pretIndef: createPatternEntry('indicative', [
+    buildEndingRegex(['e', 'aste', 'o', 'amos', 'asteis', 'aron', 'i', 'iste', 'io', 'imos', 'isteis', 'ieron']),
+    buildWordRegex([
+      'fui', 'fuiste', 'fue', 'fuimos', 'fuisteis', 'fueron',
+      'tuve', 'tuviste', 'tuvo', 'tuvimos', 'tuvisteis', 'tuvieron',
+      'hice', 'hiciste', 'hizo', 'hicimos', 'hicisteis', 'hicieron',
+      'dije', 'dijiste', 'dijo', 'dijimos', 'dijisteis', 'dijeron',
+      'estuve', 'estuviste', 'estuvo', 'estuvimos', 'estuvisteis', 'estuvieron',
+      'pude', 'pudiste', 'pudo', 'pudimos', 'pudisteis', 'pudieron',
+      'quise', 'quisiste', 'quiso', 'quisimos', 'quisisteis', 'quisieron',
+      'vine', 'viniste', 'vino', 'vinimos', 'vinisteis', 'vinieron',
+      'supe', 'supiste', 'supo', 'supimos', 'supisteis', 'supieron'
+    ])
+  ]),
+  impf: createPatternEntry('indicative', [
+    buildEndingRegex(['aba', 'abas', 'abamos', 'abais', 'aban', 'ia', 'ias', 'iamos', 'iais', 'ian']),
+    buildWordRegex([
+      'era', 'eras', 'eramos', 'erais', 'eran',
+      'iba', 'ibas', 'ibamos', 'ibais', 'iban',
+      'veia', 'veias', 'veiamos', 'veiais', 'veian',
+      'estaba', 'estabas', 'estabamos', 'estabais', 'estaban'
+    ])
+  ]),
+  fut: createPatternEntry('indicative', [
+    buildEndingRegex(['re', 'ras', 'ra', 'remos', 'reis', 'ran']),
+    buildWordRegex([
+      'sere', 'seras', 'sera', 'seremos', 'sereis', 'seran',
+      'estare', 'estaras', 'estara', 'estaremos', 'estareis', 'estaran',
+      'hare', 'haras', 'hara', 'haremos', 'hareis', 'haran',
+      'podre', 'podras', 'podra', 'podremos', 'podreis', 'podran',
+      'ire', 'iras', 'ira', 'iremos', 'ireis', 'iran'
+    ])
+  ]),
+  pretPerf: createPatternEntry('indicative', [
+    buildCompoundRegex(['he', 'has', 'ha', 'hemos', 'habeis', 'han'])
+  ]),
+  cond: createPatternEntry('conditional', [
+    buildEndingRegex(['ria', 'rias', 'ria', 'riamos', 'riais', 'rian']),
+    buildWordRegex(['seria', 'haria', 'podria', 'iria', 'daria', 'vendria', 'saldria', 'tendria', 'querria'])
+  ]),
+  plusc: createPatternEntry('indicative', [
+    buildCompoundRegex(['habia', 'habias', 'habia', 'habiamos', 'habiais', 'habian'])
+  ]),
+  futPerf: createPatternEntry('indicative', [
+    buildCompoundRegex(['habre', 'habras', 'habra', 'habremos', 'habreis', 'habran'])
+  ]),
+  subjPres: createPatternEntry('subjunctive', [
+    buildTriggeredRegex(
+      [
+        'que\\s+',
+        'ojala(?:\\s+que)?\\s+',
+        'espero\\s+que\\s+',
+        'quiero\\s+que\\s+',
+        'necesito\\s+que\\s+',
+        'sugiero\\s+que\\s+',
+        'dudo\\s+que\\s+',
+        'para\\s+que\\s+',
+        'antes\\s+de\\s+que\\s+',
+        'tal\\s+vez\\s+',
+        'quizas\\s+'
+      ],
+      ['e', 'es', 'emos', 'eis', 'en', 'a', 'as', 'amos', 'ais', 'an']
+    ),
+    buildWordRegex([
+      'sea', 'seas', 'seamos', 'seais', 'sean',
+      'vaya', 'vayas', 'vayamos', 'vayais', 'vayan',
+      'haya', 'hayas', 'hayamos', 'hayais', 'hayan',
+      'de', 'des', 'demos', 'deis', 'den',
+      'este', 'estes', 'estemos', 'esteis', 'esten',
+      'haga', 'hagas', 'hagamos', 'hagais', 'hagan',
+      'traiga', 'traigas', 'traigamos', 'traigais', 'traigan',
+      'venga', 'vengas', 'vengamos', 'vengais', 'vengan'
+    ])
+  ]),
+  subjImpf: createPatternEntry('subjunctive', [
+    buildTriggeredRegex(
+      [
+        'si\\s+',
+        'ojala\\s+',
+        'como\\s+si\\s+',
+        'queria\\s+que\\s+',
+        'esperaba\\s+que\\s+',
+        'necesitaba\\s+que\\s+',
+        'dudaba\\s+que\\s+'
+      ],
+      ['ra', 'ras', 'ra', 'ramos', 'rais', 'ran', 'se', 'ses', 'se', 'semos', 'seis', 'sen']
+    ),
+    buildWordRegex([
+      'fuera', 'fueras', 'fueramos', 'fuerais', 'fueran',
+      'tuviera', 'tuvieras', 'tuvieramos', 'tuvierais', 'tuvieran',
+      'pudiera', 'pudieras', 'pudieramos', 'pudierais', 'pudieran',
+      'supiera', 'supieras', 'supieramos', 'supierais', 'supieran',
+      'hiciera', 'hicieras', 'hicieramos', 'hicierais', 'hicieran',
+      'dijera', 'dijeras', 'dijeramos', 'dijerais', 'dijeran',
+      'viviera', 'vivieras', 'vivieramos', 'vivierais', 'vivieran',
+      'volara', 'volaras', 'volaramos', 'volarais', 'volaran'
+    ])
+  ]),
+  condPerf: createPatternEntry('conditional', [
+    buildCompoundRegex(['habria', 'habrias', 'habria', 'habriamos', 'habriais', 'habrian'])
+  ]),
+  subjPerf: createPatternEntry('subjunctive', [
+    buildCompoundRegex(['haya', 'hayas', 'haya', 'hayamos', 'hayais', 'hayan'])
+  ]),
+  subjPlusc: createPatternEntry('subjunctive', [
+    buildCompoundRegex([
+      'hubiera', 'hubieras', 'hubiera', 'hubieramos', 'hubierais', 'hubieran',
+      'hubiese', 'hubieses', 'hubiese', 'hubiesemos', 'hubieseis', 'hubiesen'
+    ])
+  ])
 };
 
 // Helper function to detect tense usage patterns in conversational text
+function collectMatches(patterns, text) {
+  if (!patterns?.length) return [];
+  const matches = new Set();
+
+  for (const pattern of patterns) {
+    const regex = new RegExp(pattern.source, pattern.flags);
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      matches.add(match[0].trim());
+    }
+  }
+
+  return Array.from(matches);
+}
+
 function detectTenseUsage(userText, expectedTense) {
-  const text = userText.toLowerCase();
+  const normalizedText = removeDiacritics(userText.toLowerCase());
 
-  const expectedPattern = TENSE_PATTERNS[expectedTense];
-  const wrongTenseUsed = [];
+  const expectedEntry = TENSE_PATTERNS[expectedTense];
+  const expectedMatches = collectMatches(expectedEntry?.patterns, normalizedText);
 
-  // Check if user used expected tense
-  const hasExpectedTense = expectedPattern && expectedPattern.test(text);
+  const wrongTenses = new Set();
 
-  // Check for wrong tenses
-  for (const [tense, pattern] of Object.entries(TENSE_PATTERNS)) {
-    if (tense !== expectedTense && pattern.test(text)) {
-      wrongTenseUsed.push(tense);
+  const isCoveredByExpected = (candidate) => {
+    if (!expectedMatches.length) return false;
+    return expectedMatches.some(expected =>
+      expected === candidate ||
+      expected.includes(candidate) ||
+      candidate.includes(expected)
+    );
+  };
+
+  const expectedHasMatches = expectedMatches.length > 0;
+
+  for (const [tense, entry] of Object.entries(TENSE_PATTERNS)) {
+    if (!entry || tense === expectedTense) continue;
+    if (expectedHasMatches) continue;
+    const matches = collectMatches(entry.patterns, normalizedText);
+    if (!matches.length) continue;
+
+    const hasDistinctMatch = matches.some(match => !isCoveredByExpected(match));
+    if (hasDistinctMatch) {
+      wrongTenses.add(tense);
     }
   }
 
   return {
-    hasExpectedTense,
-    wrongTenseUsed: wrongTenseUsed.length > 0,
-    wrongTenses: wrongTenseUsed
+    hasExpectedTense: expectedMatches.length > 0,
+    wrongTenseUsed: wrongTenses.size > 0,
+    wrongTenses: Array.from(wrongTenses)
   };
 }
 
@@ -461,4 +638,5 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
   );
 }
 
+export { detectTenseUsage, TENSE_PATTERNS };
 export default CommunicativePractice;
