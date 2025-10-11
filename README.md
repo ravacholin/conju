@@ -5,6 +5,7 @@ Resumen del sistema de progreso/analíticas del conjugador, centrado en pendient
 ## Estado
 - Base operativa activa: tracking de intentos, mastery por celda (con decaimiento), SRS por celda, orquestador emocional (flow/momentum/confianza/temporal) y UI de indicador en Drill.
 - **Filtrado robusto**: Sistema de validación de nivel y dialecto completamente operativo con guardias de integridad
+- **Modo global unificado**: El pool "todos los dialectos" combina rioplatense, peninsular y latinoamericano general para cubrir formas exclusivas de cada región
 - Para detalles técnicos de arquitectura ver `src/lib/progress/README.md`.
 
 ## Mejoras recientes (algoritmo, UX y estética)
