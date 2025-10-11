@@ -5,7 +5,8 @@ import {
   getWeeklyGoals,
   checkWeeklyProgress,
   getRecommendations,
-  getAdvancedAnalytics
+  getAdvancedAnalytics,
+  getPronunciationStats
 } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
@@ -23,7 +24,7 @@ import {
   checkGlobalLevelRecommendation
 } from '../../lib/levels/userLevelProfile.js'
 
-const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges']
+const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
 
 const HEAVY_ANALYTICS_KEYS = [
   'errorIntel',
@@ -121,6 +122,7 @@ export default function useProgressDashboardData() {
   const [weeklyProgress, setWeeklyProgress] = useState({})
   const [recommendations, setRecommendations] = useState([])
   const [dailyChallenges, setDailyChallenges] = useState({ date: null, metrics: {}, challenges: [] })
+  const [pronunciationStats, setPronunciationStats] = useState({ totalAttempts: 0, recentAttempts: [] })
   const [studyPlan, setStudyPlan] = useState(null)
   const [advancedAnalytics, setAdvancedAnalytics] = useState(null)
   const [communitySnapshot, setCommunitySnapshot] = useState(null)
@@ -295,6 +297,72 @@ export default function useProgressDashboardData() {
       },
       apply: (value) => {
         setDailyChallenges(value || { date: null, metrics: {}, challenges: [] })
+      }
+    },
+    pronunciationStats: {
+      loader: async (signal) => {
+        const emptyStats = {
+          totalAttempts: 0,
+          successRate: 0,
+          averageAccuracy: 0,
+          averagePedagogicalScore: 0,
+          averageConfidence: 0,
+          recentAttempts: []
+        }
+
+        try {
+          const cacheKey = `${userId}:pronunciationStats`
+          const result = await progressDataCache.get(
+            cacheKey,
+            ({ signal: cacheSignal }) => getPronunciationStats(userId, cacheSignal),
+            'pronunciationStats',
+            { signal }
+          )
+
+          if (signal.aborted) throw new Error('Cancelled')
+
+          if (!result || typeof result !== 'object') {
+            return emptyStats
+          }
+
+          return {
+            totalAttempts: Number.isFinite(result.totalAttempts) ? result.totalAttempts : Number(result.totalAttempts) || 0,
+            successRate: Number.isFinite(result.successRate) ? result.successRate : Number(result.successRate) || 0,
+            averageAccuracy: Number.isFinite(result.averageAccuracy) ? result.averageAccuracy : Number(result.averageAccuracy) || 0,
+            averagePedagogicalScore: Number.isFinite(result.averagePedagogicalScore)
+              ? result.averagePedagogicalScore
+              : Number(result.averagePedagogicalScore) || 0,
+            averageConfidence: Number.isFinite(result.averageConfidence) ? result.averageConfidence : Number(result.averageConfidence) || 0,
+            recentAttempts: Array.isArray(result.recentAttempts) ? result.recentAttempts : []
+          }
+        } catch (e) {
+          if (!signal.aborted) console.warn('Failed to load pronunciation stats:', e)
+          return emptyStats
+        }
+      },
+      apply: (value) => {
+        if (!value || typeof value !== 'object') {
+          setPronunciationStats({
+            totalAttempts: 0,
+            successRate: 0,
+            averageAccuracy: 0,
+            averagePedagogicalScore: 0,
+            averageConfidence: 0,
+            recentAttempts: []
+          })
+          return
+        }
+
+        setPronunciationStats({
+          totalAttempts: Number.isFinite(value.totalAttempts) ? value.totalAttempts : Number(value.totalAttempts) || 0,
+          successRate: Number.isFinite(value.successRate) ? value.successRate : Number(value.successRate) || 0,
+          averageAccuracy: Number.isFinite(value.averageAccuracy) ? value.averageAccuracy : Number(value.averageAccuracy) || 0,
+          averagePedagogicalScore: Number.isFinite(value.averagePedagogicalScore)
+            ? value.averagePedagogicalScore
+            : Number(value.averagePedagogicalScore) || 0,
+          averageConfidence: Number.isFinite(value.averageConfidence) ? value.averageConfidence : Number(value.averageConfidence) || 0,
+          recentAttempts: Array.isArray(value.recentAttempts) ? value.recentAttempts : []
+        })
       }
     },
     studyPlan: {
@@ -842,6 +910,7 @@ export default function useProgressDashboardData() {
     weeklyProgress,
     recommendations,
     dailyChallenges,
+    pronunciationStats,
     studyPlan,
     advancedAnalytics,
     communitySnapshot,

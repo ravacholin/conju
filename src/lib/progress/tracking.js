@@ -160,6 +160,10 @@ export async function trackAttemptSubmitted(attemptId, result) {
       syncedAt: null
     }
 
+    const attemptMeta = result.meta && typeof result.meta === 'object' ? { ...result.meta } : null
+    const rawPracticeType = result.practiceType || attemptMeta?.type || null
+    const practiceType = rawPracticeType === 'pronunciation' ? 'pronunciation' : (rawPracticeType || 'conjugation')
+
     // Ejecutar orquestador emocional y adjuntar al intento antes de guardar
     let orchestrated = null
     try {
@@ -182,9 +186,41 @@ export async function trackAttemptSubmitted(attemptId, result) {
       momentumType: orchestrated?.momentumType,
       momentumScore: orchestrated?.momentumScore,
       confidenceOverall: orchestrated?.confidenceOverall,
-      confidenceCategory: orchestrated?.confidenceCategory
+      confidenceCategory: orchestrated?.confidenceCategory,
+      practiceType
     }
-    
+
+    if (attemptMeta) {
+      attempt.meta = attemptMeta
+    }
+
+    if (practiceType === 'pronunciation') {
+      const accuracy = toFiniteNumber(attemptMeta?.accuracy)
+      const pedagogicalScore = toFiniteNumber(attemptMeta?.pedagogicalScore)
+      const confidence = toFiniteNumber(attemptMeta?.confidence)
+      const timingMs = toFiniteNumber(attemptMeta?.timing ?? result.latencyMs)
+      const recognizedFallback = (() => {
+        const flattened = flattenAnswerStructure(result.userAnswer).join(' ').trim()
+        return flattened.length > 0 ? flattened : null
+      })()
+      const targetFallback = (() => {
+        if (typeof result.correctAnswer === 'string') {
+          return result.correctAnswer
+        }
+        const flattened = flattenAnswerStructure(result.correctAnswer)
+        return flattened.length > 0 ? flattened[0] : null
+      })()
+      attempt.pronunciation = {
+        accuracy: accuracy === null ? null : Math.round(accuracy * 100) / 100,
+        pedagogicalScore: pedagogicalScore === null ? null : Math.round(pedagogicalScore * 100) / 100,
+        confidence: confidence === null ? null : Math.round(confidence * 100) / 100,
+        semanticType: attemptMeta?.semanticType || null,
+        recognized: attemptMeta?.recognized ?? recognizedFallback,
+        target: attemptMeta?.target ?? targetFallback,
+        timingMs: timingMs === null ? null : Math.round(timingMs)
+      }
+    }
+
     // Guardar intento en la base de datos
     await saveAttempt(attempt)
 
@@ -335,6 +371,19 @@ function dedupeErrorTags(tags) {
   if (!tags) return []
   const normalized = Array.isArray(tags) ? tags : [tags]
   return Array.from(new Set(normalized.filter(Boolean)))
+}
+
+function toFiniteNumber(value) {
+  if (value === undefined || value === null) {
+    return null
+  }
+
+  const numeric = typeof value === 'string' && value.trim() !== '' ? Number(value) : value
+  if (typeof numeric === 'number' && Number.isFinite(numeric)) {
+    return numeric
+  }
+
+  return null
 }
 
 function flattenAnswerStructure(answer) {

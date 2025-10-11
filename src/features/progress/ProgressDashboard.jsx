@@ -11,6 +11,7 @@ import HeatMapSRS from './HeatMapSRS.jsx'
 import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
+import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
 
 import './progress-streamlined.css'
 
@@ -31,7 +32,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     error,
     systemReady,
     refresh,
-    practiceReminders
+    practiceReminders,
+    pronunciationStats
   } = useProgressDashboardData()
 
   const handleShowToast = React.useCallback((toastConfig) => {
@@ -142,6 +144,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           userStats={userStats}
           onNavigateToDrill={onNavigateToDrill}
           onShowToast={handleShowToast}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Pronunciation Lab">
+        <PronunciationStatsWidget
+          stats={pronunciationStats}
+          onNavigateToDrill={onNavigateToDrill}
         />
       </SafeComponent>
 
