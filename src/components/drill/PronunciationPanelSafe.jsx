@@ -158,6 +158,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
           errorTags: finalAnalysis.isCorrectForSRS ? [] : ['pronunciation-error'],
           userAnswer: result.transcript,
           correctAnswer: pronunciationData.form,
+          practiceType: 'pronunciation',
           meta: {
             type: 'pronunciation',
             target: pronunciationData.form,

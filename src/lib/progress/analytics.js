@@ -12,6 +12,18 @@ const ensureNotCancelled = (signal) => {
   }
 }
 
+const getFirstFinite = (values) => {
+  if (!Array.isArray(values)) return null
+  for (const value of values) {
+    if (value === undefined || value === null || value === '') continue
+    const numeric = typeof value === 'string' ? Number(value) : value
+    if (typeof numeric === 'number' && Number.isFinite(numeric)) {
+      return numeric
+    }
+  }
+  return null
+}
+
 /**
  * Obtiene datos para el mapa de calor
  * @param {string} userId - ID del usuario
@@ -241,6 +253,112 @@ export async function getErrorRadarData(userId) {
   } catch (error) {
     console.warn('Error radar unavailable:', error)
     return { axes: [] }
+  }
+}
+
+export async function getPronunciationStats(userId, signal) {
+  try {
+    ensureNotCancelled(signal)
+    const attempts = await getAttemptsByUser(userId)
+    ensureNotCancelled(signal)
+
+    const pronunciationAttempts = attempts.filter(attempt => {
+      if (!attempt) return false
+      if (attempt.practiceType === 'pronunciation') return true
+      if (attempt.meta && typeof attempt.meta === 'object' && attempt.meta.type === 'pronunciation') return true
+      return Boolean(attempt.pronunciation && typeof attempt.pronunciation === 'object')
+    })
+
+    if (pronunciationAttempts.length === 0) {
+      return {
+        totalAttempts: 0,
+        successRate: 0,
+        averageAccuracy: 0,
+        averagePedagogicalScore: 0,
+        averageConfidence: 0,
+        recentAttempts: []
+      }
+    }
+
+    let accuracySum = 0
+    let accuracyCount = 0
+    let pedagogicalSum = 0
+    let pedagogicalCount = 0
+    let confidenceSum = 0
+    let confidenceCount = 0
+    let correctCount = 0
+
+    const attemptsWithMetadata = pronunciationAttempts.map(attempt => {
+      const stats = attempt.pronunciation || {}
+      const meta = attempt.meta && typeof attempt.meta === 'object' ? attempt.meta : {}
+      const accuracy = getFirstFinite([stats.accuracy, meta.accuracy])
+      const pedagogical = getFirstFinite([stats.pedagogicalScore, meta.pedagogicalScore])
+      const confidence = getFirstFinite([stats.confidence, meta.confidence])
+
+      if (accuracy !== null) {
+        accuracySum += accuracy
+        accuracyCount += 1
+      }
+      if (pedagogical !== null) {
+        pedagogicalSum += pedagogical
+        pedagogicalCount += 1
+      }
+      if (confidence !== null) {
+        confidenceSum += confidence
+        confidenceCount += 1
+      }
+      if (attempt.correct) {
+        correctCount += 1
+      }
+
+      const timestamp = new Date(attempt.createdAt || attempt.timestamp || Date.now())
+      const timingValue = typeof stats.timingMs === 'number' ? stats.timingMs : getFirstFinite([meta.timing, attempt.latencyMs])
+
+      return {
+        id: attempt.id,
+        correct: Boolean(attempt.correct),
+        accuracy,
+        pedagogicalScore: pedagogical,
+        confidence,
+        semanticType: stats.semanticType || meta.semanticType || null,
+        recognized: stats.recognized || meta.recognized || attempt.userAnswer || null,
+        target: stats.target || meta.target || attempt.correctAnswer || null,
+        createdAt: timestamp.toISOString(),
+        createdAtMs: timestamp.getTime(),
+        timingMs: Number.isFinite(timingValue) ? timingValue : null
+      }
+    })
+
+    const recentAttempts = attemptsWithMetadata
+      .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0))
+      .slice(0, 8)
+      .map(({ createdAtMs, ...rest }) => rest)
+
+    const toAverage = (sum, count) => (count > 0 ? Math.round((sum / count) * 10) / 10 : 0)
+    const successRate = Math.round((correctCount / pronunciationAttempts.length) * 100)
+
+    return {
+      totalAttempts: pronunciationAttempts.length,
+      successRate: Number.isFinite(successRate) ? successRate : 0,
+      averageAccuracy: toAverage(accuracySum, accuracyCount),
+      averagePedagogicalScore: toAverage(pedagogicalSum, pedagogicalCount),
+      averageConfidence: toAverage(confidenceSum, confidenceCount),
+      recentAttempts
+    }
+  } catch (error) {
+    console.error('Error al obtener estadísticas de pronunciación:', error)
+    if (signal?.aborted) {
+      throw new Error('Operation was cancelled')
+    }
+
+    return {
+      totalAttempts: 0,
+      successRate: 0,
+      averageAccuracy: 0,
+      averagePedagogicalScore: 0,
+      averageConfidence: 0,
+      recentAttempts: []
+    }
   }
 }
 

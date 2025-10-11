@@ -127,7 +127,9 @@ export function useProgressTracking(currentItem, onResult) {
           errorTags: result.errorTags || [],
           userAnswer: result.userAnswer,
           correctAnswer: result.correctAnswer,
-          item: currentItem
+          item: currentItem,
+          practiceType: result.practiceType,
+          meta: result.meta
         })
 
         logger.debug(`Intento ${attemptIdRef.current} registrado`)

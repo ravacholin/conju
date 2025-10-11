@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import { renderHook, waitFor, act } from '@testing-library/react'
 import useProgressDashboardData from './useProgressDashboardData.js'
-import { getHeatMapData, getAdvancedAnalytics } from '../../lib/progress/analytics.js'
+import { getHeatMapData, getAdvancedAnalytics, getPronunciationStats } from '../../lib/progress/analytics.js'
 import { generatePersonalizedStudyPlan } from '../../lib/progress/studyPlans.js'
 import { __triggerReady, onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
 
@@ -14,7 +14,15 @@ vi.mock('../../lib/progress/analytics.js', () => ({
   checkWeeklyProgress: vi.fn().mockResolvedValue({}),
   getRecommendations: vi.fn().mockResolvedValue([]),
   getAdvancedAnalytics: vi.fn().mockResolvedValue({}),
-  getErrorIntelligence: vi.fn().mockResolvedValue({})
+  getErrorIntelligence: vi.fn().mockResolvedValue({}),
+  getPronunciationStats: vi.fn().mockResolvedValue({
+    totalAttempts: 0,
+    successRate: 0,
+    averageAccuracy: 0,
+    averagePedagogicalScore: 0,
+    averageConfidence: 0,
+    recentAttempts: []
+  })
 }))
 
 vi.mock('../../lib/progress/userManager.js', () => ({
@@ -147,9 +155,14 @@ describe('useProgressDashboardData', () => {
       expect(getHeatMapData).toHaveBeenCalledTimes(1)
     })
 
+    await waitFor(() => {
+      expect(getPronunciationStats).toHaveBeenCalledTimes(1)
+    })
+
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     expect(getHeatMapData).toHaveBeenCalledTimes(1)
+    expect(getPronunciationStats).toHaveBeenCalledTimes(1)
   })
 
   it('usa refreshFromEvent para cambios acotados sin disparar analíticas pesadas', async () => {
@@ -176,9 +189,18 @@ describe('useProgressDashboardData', () => {
       expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
     })
 
+    await waitFor(() => {
+      expect(getPronunciationStats).toHaveBeenCalledTimes(1)
+    })
+
+    await waitFor(() => {
+      expect(getPronunciationStats).toHaveBeenCalledTimes(1)
+    })
+
     const initialHeatMapCalls = getHeatMapData.mock.calls.length
     const initialAdvancedCalls = getAdvancedAnalytics.mock.calls.length
     const initialStudyPlanCalls = generatePersonalizedStudyPlan.mock.calls.length
+    const initialPronunciationCalls = getPronunciationStats.mock.calls.length
 
     await act(async () => {
       window.dispatchEvent(
@@ -195,6 +217,7 @@ describe('useProgressDashboardData', () => {
 
     expect(getAdvancedAnalytics).toHaveBeenCalledTimes(initialAdvancedCalls)
     expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(initialStudyPlanCalls)
+    expect(getPronunciationStats).toHaveBeenCalledTimes(initialPronunciationCalls + 1)
   })
 
   it('recarga todo el dashboard cuando el evento indica una sincronización', async () => {

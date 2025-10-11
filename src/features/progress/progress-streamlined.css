@@ -239,6 +239,159 @@
   color: var(--muted-2, rgba(255, 255, 255, 0.65));
 }
 
+/* Pronunciation widget */
+.pronunciation-widget {
+  background: rgba(17, 17, 17, 0.72);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 24px;
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.pronunciation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pronunciation-header h2 {
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--text);
+}
+
+.pronunciation-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.pronunciation-practice-btn {
+  background: linear-gradient(135deg, rgba(125, 233, 184, 0.25), rgba(125, 233, 184, 0.55));
+  color: var(--text);
+  border: 1px solid rgba(125, 233, 184, 0.5);
+  border-radius: 999px;
+  padding: 0.55rem 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pronunciation-practice-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(125, 233, 184, 0.18);
+}
+
+.pronunciation-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.pronunciation-card {
+  background: rgba(21, 21, 21, 0.85);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pronunciation-card-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pronunciation-card-value {
+  font-size: 1.5rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pronunciation-history h3 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.pronunciation-history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.pronunciation-history li {
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(245, 245, 245, 0.05);
+  background: rgba(19, 19, 19, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.attempt-correct {
+  border-color: rgba(125, 233, 184, 0.4);
+}
+
+.attempt-incorrect {
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+.attempt-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.attempt-target {
+  font-size: 1rem;
+}
+
+.attempt-recognized {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: right;
+}
+
+.attempt-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.pronunciation-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .pronunciation-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pronunciation-summary {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+}
+
 .goal-controls {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
