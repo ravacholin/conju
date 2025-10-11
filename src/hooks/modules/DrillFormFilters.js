@@ -33,11 +33,16 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
   let forms
 
   if (region === 'global') {
-    const [rioplatense, peninsular] = await Promise.all([
+    const [rioplatense, peninsular, laGeneral] = await Promise.all([
       getFormsForRegion('rioplatense', settings),
-      getFormsForRegion('peninsular', settings)
+      getFormsForRegion('peninsular', settings),
+      getFormsForRegion('la_general', settings)
     ])
-    const combined = [...normalizeForms(rioplatense), ...normalizeForms(peninsular)]
+    const combined = [
+      ...normalizeForms(rioplatense),
+      ...normalizeForms(peninsular),
+      ...normalizeForms(laGeneral)
+    ]
     const dedup = deduplicateForms(combined)
     forms = dedup
   } else {
@@ -50,7 +55,8 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
     const fallbackForms = region === 'global'
       ? deduplicateForms([
           ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings)),
-          ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings))
+          ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings)),
+          ...normalizeForms(await getFormsForRegion('la_general', fallbackSettings))
         ])
       : normalizeForms(await getFormsForRegion(region, fallbackSettings))
     if (fallbackForms?.length) {
