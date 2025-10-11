@@ -9,6 +9,7 @@
  */
 
 import { useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import { useSettings } from '../state/settings.js'
 
 // Import the new specialized hooks
@@ -32,7 +33,21 @@ const logger = createLogger('useDrillMode')
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})
-  const settings = useSettings()
+  const settings = useSettings(
+    useShallow((state) => ({
+      set: state.set,
+      currentSession: state.currentSession,
+      verbType: state.verbType,
+      selectedFamily: state.selectedFamily,
+      level: state.level,
+      useVoseo: state.useVoseo,
+      useVosotros: state.useVosotros,
+      practiceMode: state.practiceMode,
+      specificMood: state.specificMood,
+      specificTense: state.specificTense,
+      region: state.region
+    }))
+  )
 
   // Use the specialized hooks
   const {
@@ -121,8 +136,8 @@ export function useDrillMode() {
     }
 
     // Temporarily apply activity settings
-    const originalSettings = { ...settings }
-    settings.set(activitySettings)
+    const { set: setSettings, ...originalSettings } = settings
+    setSettings(activitySettings)
 
     try {
       // Generate item with activity-specific settings
@@ -151,7 +166,7 @@ export function useDrillMode() {
       }
     } finally {
       // Restore original settings (except practiceMode)
-      settings.set({ ...originalSettings, practiceMode: 'personalized_session' })
+      setSettings({ ...originalSettings, practiceMode: 'personalized_session' })
     }
   }
 

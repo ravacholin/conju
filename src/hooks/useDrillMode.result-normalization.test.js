@@ -9,14 +9,30 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useDrillMode } from './useDrillMode.js'
 
-// Mock the settings store
-vi.mock('../state/settings.js', () => ({
-  useSettings: vi.fn(() => ({
+// Mock the settings store with shallow selector support
+const { useSettingsMock } = vi.hoisted(() => {
+  const mockSet = vi.fn()
+  const state = {
+    set: mockSet,
+    currentSession: null,
     verbType: 'all',
+    selectedFamily: null,
     level: 'A1',
-    region: 'la_general',
-    practiceMode: 'mixed'
-  }))
+    useVoseo: false,
+    useVosotros: false,
+    practiceMode: 'mixed',
+    specificMood: null,
+    specificTense: null,
+    region: 'la_general'
+  }
+
+  const selectorAwareUseSettings = vi.fn((selector) => (selector ? selector(state) : state))
+
+  return { useSettingsMock: selectorAwareUseSettings }
+})
+
+vi.mock('../state/settings.js', () => ({
+  useSettings: useSettingsMock
 }))
 
 // Mock the specialized hooks
