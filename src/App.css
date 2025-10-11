@@ -3095,3 +3095,166 @@ body {
     justify-content: center;
   }
 }
+
+.placement-report-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 20, 30, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1.5rem;
+}
+
+.placement-report-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(8, 12, 20, 0.45);
+  padding: 2rem;
+  width: min(540px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  border: 1px solid var(--border-2);
+}
+
+.placement-report-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.placement-report-header p {
+  margin: 0.35rem 0 1.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.placement-report-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.summary-value {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.placement-report-section {
+  margin-bottom: 1.75rem;
+}
+
+.placement-report-section h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.placement-report-section ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.placement-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.placement-report-button {
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.placement-report-button.primary {
+  background: var(--accent-blue);
+  color: white;
+  box-shadow: 0 8px 20px rgba(44, 121, 255, 0.35);
+}
+
+.placement-report-button.primary.saved {
+  background: var(--accent-green);
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.25);
+}
+
+.placement-report-button.secondary {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border-2);
+}
+
+.placement-report-button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+
+.placement-report-button:hover {
+  transform: translateY(-1px);
+}
+
+.placement-report-button.primary:hover {
+  box-shadow: 0 12px 24px rgba(44, 121, 255, 0.38);
+}
+
+.placement-report-button.primary.saved:hover {
+  box-shadow: 0 12px 24px rgba(40, 167, 69, 0.28);
+}
+
+.placement-report-button.secondary:hover {
+  background: var(--surface-3);
+}
+
+.placement-report-button.ghost:hover {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .placement-report-modal {
+    padding: 1.5rem;
+  }
+
+  .placement-report-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .placement-report-button {
+    width: 100%;
+    text-align: center;
+  }
+}
