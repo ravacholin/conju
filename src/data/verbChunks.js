@@ -1,7 +1,10 @@
 // Verb chunking system by CEFR levels for optimal loading
 // Only loads verbs needed for current level/practice mode
 
+import { createLogger, registerDebugTool } from '../lib/utils/logger.js'
 import { getVerbs } from './verbsLazy.js'
+
+const logger = createLogger('verbChunks')
 
 // Cache for verb chunks by level
 const verbChunksCache = new Map()
@@ -28,7 +31,7 @@ export async function getVerbsForLevel(level, includeHigherLevels = true) {
 
   // Start loading chunk
   const promise = (async () => {
-    console.log(`🔄 Loading verbs for level ${level}...`)
+    logger.info(`🔄 Loading verbs for level ${level}...`)
 
     // Get all verbs first
     const allVerbs = await getVerbs()
@@ -62,7 +65,11 @@ export async function getVerbsForLevel(level, includeHigherLevels = true) {
       return (hasLevelTag || noLevelTag || isHighFrequency) && isEssential
     })
 
-    console.log(`✅ Loaded ${filteredVerbs.length} verbs for level ${level}`)
+    logger.info(`✅ Loaded ${filteredVerbs.length} verbs for level ${level}`, {
+      level,
+      includeHigherLevels,
+      count: filteredVerbs.length
+    })
 
     // Cache the result
     verbChunksCache.set(cacheKey, filteredVerbs)
@@ -89,7 +96,7 @@ export async function getCoreVerbs() {
   }
 
   const promise = (async () => {
-    console.log('🔄 Loading core essential verbs...')
+    logger.info('🔄 Loading core essential verbs...')
 
     const allVerbs = await getVerbs()
 
@@ -105,7 +112,9 @@ export async function getCoreVerbs() {
       (verb.frequency && verb.frequency <= 20)
     )
 
-    console.log(`✅ Loaded ${coreVerbs.length} core essential verbs`)
+    logger.info(`✅ Loaded ${coreVerbs.length} core essential verbs`, {
+      count: coreVerbs.length
+    })
 
     verbChunksCache.set(cacheKey, coreVerbs)
     return coreVerbs
@@ -148,3 +157,11 @@ export function getVerbChunkStats() {
     chunkKeys: Array.from(verbChunksCache.keys())
   }
 }
+
+registerDebugTool('verbChunks', {
+  getStatus: () => ({
+    ...getVerbChunkStats(),
+    pendingChunkKeys: Array.from(chunkPromises.keys())
+  }),
+  clearCache: () => clearVerbChunksCache()
+})

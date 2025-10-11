@@ -1,5 +1,9 @@
 // Configuration for sync endpoints with automatic environment detection
 
+import { createLogger, registerDebugTool } from '../utils/logger.js'
+
+const logger = createLogger('syncConfig')
+
 /**
  * Determines the correct sync API base URL based on the environment
  * @returns {string} The API base URL
@@ -19,7 +23,7 @@ function getSafeLocation() {
 
     return { hostname, protocol, origin, port }
   } catch (error) {
-    console.warn('⚠️ Unable to access window.location:', error?.message || error)
+    logger.warn('⚠️ Unable to access window.location', error)
     return null
   }
 }
@@ -28,7 +32,7 @@ function getSyncApiBase() {
   // 1. First, check for explicit environment variable override
   const envUrl = import.meta.env.VITE_PROGRESS_SYNC_URL
   if (envUrl) {
-    console.log('🔧 Using sync URL from environment variable:', envUrl)
+    logger.info('🔧 Using sync URL from environment variable', { envUrl })
     return envUrl
   }
 
@@ -40,21 +44,21 @@ function getSyncApiBase() {
     // Development environment detection
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       const devUrl = 'http://localhost:8787/api'
-      console.log('🔧 Development environment detected, using:', devUrl)
+      logger.info('🔧 Development environment detected', { devUrl })
       return devUrl
     }
 
     // Production environment detection
     if (hostname === 'verb-os.vercel.app' || hostname.includes('vercel.app')) {
       const prodUrl = 'https://conju.onrender.com/api'
-      console.log('🔧 Production environment detected, using:', prodUrl)
+      logger.info('🔧 Production environment detected', { prodUrl })
       return prodUrl
     }
   }
 
   // 3. Default fallback (should rarely be used)
   const fallbackUrl = 'https://conju.onrender.com/api'
-  console.log('🔧 Using fallback sync URL:', fallbackUrl)
+  logger.info('🔧 Using fallback sync URL', { fallbackUrl })
   return fallbackUrl
 }
 
@@ -116,14 +120,14 @@ function getSyncConfigDebug() {
 function attachGlobalSyncDebugger() {
   if (typeof window !== 'undefined') {
     window.debugSync = () => {
-      console.group('🔍 SYNC DEBUG INFORMATION')
-      console.log('📋 Current Configuration:', getSyncConfigDebug())
+      const debugInfo = getSyncConfigDebug()
+      logger.info('📋 Current Configuration', debugInfo)
 
       // Try to get auth service info
       try {
         const authModule = window.authService || null
         if (authModule) {
-          console.log('🔑 Authentication Status:', {
+          logger.info('🔑 Authentication Status', {
             isLoggedIn: authModule.isLoggedIn?.() || false,
             hasToken: !!authModule.getToken?.(),
             tokenLength: authModule.getToken?.()?.length || 0,
@@ -131,31 +135,35 @@ function attachGlobalSyncDebugger() {
             account: authModule.getAccount?.() || null
           })
         } else {
-          console.log('⚠️ AuthService not found on window object')
+          logger.warn('⚠️ AuthService not found on window object')
         }
       } catch (error) {
-        console.error('❌ Error getting auth info:', error)
+        logger.error('❌ Error getting auth info', error)
       }
 
       // Try to get sync status
       try {
         const syncModule = window.cloudSync || null
         if (syncModule && syncModule.getSyncStatus) {
-          console.log('☁️ Sync Status:', syncModule.getSyncStatus())
+          logger.info('☁️ Sync Status', syncModule.getSyncStatus())
         } else {
-          console.log('⚠️ CloudSync module not found on window object')
+          logger.warn('⚠️ CloudSync module not found on window object')
         }
       } catch (error) {
-        console.error('❌ Error getting sync status:', error)
+        logger.error('❌ Error getting sync status', error)
       }
 
-      console.groupEnd()
-      return getSyncConfigDebug()
+      return debugInfo
     }
 
-    console.log('🔧 Global sync debugger attached. Call window.debugSync() for detailed info.')
+    logger.info('🔧 Global sync debugger attached. Call window.debugSync() for detailed info.')
   }
 }
+
+registerDebugTool('syncConfig', {
+  getConfig: () => getSyncConfigDebug(),
+  attachDebugger: () => attachGlobalSyncDebugger()
+})
 
 export {
   getSyncApiBase,

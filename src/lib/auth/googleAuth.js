@@ -1,5 +1,9 @@
 // Google OAuth integration for Spanish Conjugator
 
+import { createLogger, registerDebugTool } from '../utils/logger.js'
+
+const logger = createLogger('googleAuth')
+
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '123456789-abcdefg.apps.googleusercontent.com'
 
@@ -57,10 +61,10 @@ export async function initializeGoogleAuth() {
       cancel_on_tap_outside: true
     })
 
-    console.log('✅ Google OAuth initialized successfully')
+    logger.info('✅ Google OAuth initialized successfully')
     return true
   } catch (error) {
-    console.error('❌ Failed to initialize Google OAuth:', error)
+    logger.error('❌ Failed to initialize Google OAuth', error)
     return false
   }
 }
@@ -93,7 +97,7 @@ function handleGoogleResponse(response) {
       issuer: payload.iss
     }
 
-    console.log('📥 Google user data received:', {
+    logger.info('📥 Google user data received', {
       email: googleUser.email,
       name: googleUser.name,
       verified: googleUser.emailVerified,
@@ -106,7 +110,7 @@ function handleGoogleResponse(response) {
     }))
 
   } catch (error) {
-    console.error('❌ Google auth response error:', error)
+    logger.error('❌ Google auth response error', error)
     window.dispatchEvent(new CustomEvent('google-auth-error', {
       detail: { error: error.message }
     }))
@@ -126,7 +130,7 @@ function parseJWT(token) {
     )
     return JSON.parse(jsonPayload)
   } catch (error) {
-    console.error('Failed to parse JWT:', error)
+    logger.error('Failed to parse JWT', error)
     return null
   }
 }
@@ -152,7 +156,7 @@ export async function showGoogleSignIn(element) {
 
     return true
   } catch (error) {
-    console.error('❌ Failed to render Google Sign-In button:', error)
+    logger.error('❌ Failed to render Google Sign-In button', error)
     return false
   }
 }
@@ -169,7 +173,7 @@ export async function triggerGoogleSignIn() {
     // Use popup method instead of One Tap - more reliable
     google.accounts.id.prompt((notification) => {
       if (notification.isNotDisplayed()) {
-        console.log('Google One Tap blocked, trying alternative method')
+        logger.info('Google One Tap blocked, trying alternative method')
         // Create invisible button and click it
         const tempDiv = document.createElement('div')
         tempDiv.style.display = 'none'
@@ -191,7 +195,7 @@ export async function triggerGoogleSignIn() {
 
     return true
   } catch (error) {
-    console.error('❌ Failed to trigger Google Sign-In:', error)
+    logger.error('❌ Failed to trigger Google Sign-In', error)
     // Don't throw error, just log it
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('google-auth-error', {
@@ -237,3 +241,13 @@ export default {
   isGoogleAuthConfigured,
   getDeviceName
 }
+
+registerDebugTool('googleAuth', {
+  isConfigured: () => isGoogleAuthConfigured(),
+  clientIdSuffix: () => (GOOGLE_CLIENT_ID ? GOOGLE_CLIENT_ID.slice(-6) : null),
+  isLibraryLoaded: () => isGoogleLibLoaded,
+  resetLibrary: () => {
+    isGoogleLibLoaded = false
+    googleLibPromise = null
+  }
+})
