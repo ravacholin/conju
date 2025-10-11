@@ -70,6 +70,15 @@ describe('Sistema de Tracking', () => {
     vi.clearAllMocks()
   })
 
+  describe('trackAttemptStarted', () => {
+    it('debería devolver un identificador de intento', () => {
+      const attemptId = trackAttemptStarted({ id: 'item-1', lemma: 'probar' })
+
+      expect(typeof attemptId).toBe('string')
+      expect(attemptId).toMatch(/^attempt-/)
+    })
+  })
+
   describe('getUserStats', () => {
     it('debería retornar estadísticas vacías para usuario sin intentos', async () => {
       const { getAttemptsByUser, getMasteryByUser } = await import('./database.js')
