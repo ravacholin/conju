@@ -136,7 +136,31 @@ export default function ReverseInputs({
     onSubmit && onSubmit(resultObj)
   }
 
-  const insertChar = (char) => setInfinitiveGuess((prev) => prev + char)
+  const insertChar = (char) => {
+    const input = inputRef.current
+
+    if (input) {
+      const start = input.selectionStart ?? input.value.length
+      const end = input.selectionEnd ?? input.value.length
+
+      setInfinitiveGuess((prev) => {
+        const newValue = prev.slice(0, start) + char + prev.slice(end)
+
+        setTimeout(() => {
+          const target = inputRef.current
+          if (target) {
+            const newPosition = start + char.length
+            target.setSelectionRange(newPosition, newPosition)
+            target.focus()
+          }
+        }, 0)
+
+        return newValue
+      })
+    } else {
+      setInfinitiveGuess((prev) => prev + char)
+    }
+  }
 
   return (
     <div className="reverse-container">
