@@ -1,6 +1,6 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent, within, act } from '@testing-library/react'
 import ReverseInputs from './ReverseInputs.jsx'
 
 describe('ReverseInputs', () => {
@@ -86,6 +86,40 @@ describe('ReverseInputs', () => {
       expect(warnSpy).not.toHaveBeenCalled()
     } finally {
       warnSpy.mockRestore()
+    }
+  })
+
+  it('inserts special characters at the current cursor position', () => {
+    vi.useFakeTimers()
+
+    try {
+      render(
+        <ReverseInputs
+          currentItem={baseItem}
+          inSpecific={false}
+          onSubmit={() => {}}
+          onContinue={() => {}}
+          result={null}
+        />
+      )
+
+      const input = screen.getByPlaceholderText(/infinitivo/i)
+      fireEvent.change(input, { target: { value: 'casa' } })
+      input.focus()
+      input.setSelectionRange(2, 2)
+
+      fireEvent.click(screen.getByRole('button', { name: 'á' }))
+
+      expect(input).toHaveValue('caása')
+
+      act(() => {
+        vi.runAllTimers()
+      })
+
+      expect(input.selectionStart).toBe(3)
+      expect(input.selectionEnd).toBe(3)
+    } finally {
+      vi.useRealTimers()
     }
   })
 })
