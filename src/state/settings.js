@@ -89,6 +89,10 @@ const useSettings = create(
 
       // Sistema de progreso - toggle para la integración con mastery data
       enableProgressIntegration: true, // Puede deshabilitarse si hay problemas
+
+      // Metas diarias
+      dailyGoalType: 'attempts',
+      dailyGoalValue: 20,
       
       // Métodos para actualizar configuración
       set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
@@ -132,6 +136,19 @@ const useSettings = create(
       setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
       toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
       toggleProgressIntegration: () => set((state) => ({ enableProgressIntegration: !state.enableProgressIntegration })),
+
+      setDailyGoalType: (goalType) =>
+        set({ dailyGoalType: goalType === 'minutes' ? 'minutes' : 'attempts' }),
+      setDailyGoalValue: (value) => {
+        const numericValue = Number(value)
+        const sanitized = Number.isFinite(numericValue) ? Math.max(0, numericValue) : 0
+        set((state) => ({
+          dailyGoalValue:
+            state.dailyGoalType === 'minutes'
+              ? Math.round(sanitized * 10) / 10
+              : Math.round(sanitized)
+        }))
+      },
       
       // Métodos para debugging
       getCacheStats: () => {
@@ -175,7 +192,9 @@ const useSettings = create(
         enableFuturoSubjProd: state.enableFuturoSubjProd,
         enableFuturoSubjRead: state.enableFuturoSubjRead,
         cliticsPercent: state.cliticsPercent,
-        resistanceBestMsByLevel: state.resistanceBestMsByLevel
+        resistanceBestMsByLevel: state.resistanceBestMsByLevel,
+        dailyGoalType: state.dailyGoalType,
+        dailyGoalValue: state.dailyGoalValue
       })
     }
   )

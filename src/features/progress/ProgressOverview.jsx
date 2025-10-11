@@ -2,6 +2,19 @@ import React from 'react'
 import AccountButton from '../../components/auth/AccountButton.jsx'
 import { useSettings } from '../../state/settings.js'
 
+const GOAL_TYPES = {
+  attempts: {
+    key: 'attemptsToday',
+    label: 'Intentos',
+    unit: 'intentos'
+  },
+  minutes: {
+    key: 'focusMinutesToday',
+    label: 'Minutos enfocados',
+    unit: 'minutos'
+  }
+}
+
 /**
  * Progress Overview - Clean header with essential stats and navigation
  * Replaces: ProgressHeader, ProgressTracker, WeeklyGoalsPanel
@@ -69,6 +82,56 @@ export default function ProgressOverview({
   }
 
   const masteryInfo = getDominanceLevel(settings.userLevel, masteryRatio)
+
+  const defaultGoalType = settings.dailyGoalType || 'attempts'
+  const storedGoalValue = Number(settings.dailyGoalValue)
+  const defaultGoalValue = Number.isFinite(storedGoalValue) ? storedGoalValue : 20
+
+  const [goalType, setGoalType] = React.useState(defaultGoalType)
+  const [goalValue, setGoalValue] = React.useState(defaultGoalValue)
+
+  React.useEffect(() => {
+    setGoalType(settings.dailyGoalType || 'attempts')
+  }, [settings.dailyGoalType])
+
+  React.useEffect(() => {
+    const numericValue = Number(settings.dailyGoalValue)
+    if (Number.isFinite(numericValue)) {
+      setGoalValue(numericValue)
+    }
+  }, [settings.dailyGoalValue])
+
+  const goalConfig = GOAL_TYPES[goalType] || GOAL_TYPES.attempts
+  const currentValueRaw = stats?.[goalConfig.key]
+  const currentValue = Number.isFinite(currentValueRaw) ? currentValueRaw : 0
+  const sanitizedGoal = Number.isFinite(goalValue) ? Math.max(0, goalValue) : 0
+  const progressRatio = sanitizedGoal > 0 ? Math.min(1, currentValue / sanitizedGoal) : 0
+  const progressPercent = Math.round(progressRatio * 100)
+  const isMinutesGoal = goalConfig.unit === 'minutos'
+
+  const formatValue = (value) => {
+    if (!Number.isFinite(value)) return '0'
+    if (isMinutesGoal) {
+      return Number.isInteger(value) ? value.toString() : (Math.round(value * 10) / 10).toString()
+    }
+    return Math.round(value).toString()
+  }
+
+  const progressLabel = `${formatValue(currentValue)} / ${formatValue(sanitizedGoal)} ${goalConfig.unit}`
+
+  const handleGoalTypeChange = (event) => {
+    const newType = event?.target?.value === 'minutes' ? 'minutes' : 'attempts'
+    setGoalType(newType)
+    settings.setDailyGoalType?.(newType)
+  }
+
+  const handleGoalValueChange = (event) => {
+    const value = Number(event?.target?.value)
+    const sanitized = Number.isFinite(value) ? Math.max(0, value) : 0
+    const normalized = goalType === 'minutes' ? Math.round(sanitized * 10) / 10 : Math.round(sanitized)
+    setGoalValue(normalized)
+    settings.setDailyGoalValue?.(normalized)
+  }
 
   return (
     <div className="progress-overview">
@@ -162,6 +225,61 @@ export default function ProgressOverview({
           <div className="stat-content">
             <div className="stat-value">{totalAttempts}</div>
             <div className="stat-label">Ejercicios completados</div>
+          </div>
+        </div>
+
+        <div className="stat-card goal-card">
+          <div className="goal-card-header">
+            <div className="goal-title">
+              <div className="goal-icon">
+                <img src="/icons/timer.png" alt="Meta diaria" className="section-icon" />
+              </div>
+              <div>
+                <h3 className="goal-heading">Meta diaria</h3>
+                <p className="goal-progress-text">{progressLabel}</p>
+              </div>
+            </div>
+            <span className="goal-percentage">{progressPercent}%</span>
+          </div>
+
+          <div className="goal-progress">
+            <div
+              className="progress-bar"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={sanitizedGoal || 1}
+              aria-valuenow={Math.min(currentValue, sanitizedGoal)}
+              aria-label={`Progreso diario: ${progressLabel}`}
+            >
+              <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
+            <span className="goal-progress-label">{progressLabel}</span>
+          </div>
+
+          <div className="goal-controls">
+            <label className="goal-field" htmlFor="daily-goal-type">
+              <span>Tipo de meta</span>
+              <select
+                id="daily-goal-type"
+                value={goalType}
+                onChange={handleGoalTypeChange}
+              >
+                <option value="attempts">Intentos</option>
+                <option value="minutes">Minutos</option>
+              </select>
+            </label>
+
+            <label className="goal-field" htmlFor="daily-goal-value">
+              <span>Cantidad objetivo</span>
+              <input
+                id="daily-goal-value"
+                type="number"
+                min="0"
+                step={goalType === 'minutes' ? '0.5' : '1'}
+                value={goalValue}
+                onChange={handleGoalValueChange}
+              />
+            </label>
           </div>
         </div>
       </div>
