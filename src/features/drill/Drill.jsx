@@ -584,9 +584,13 @@ export default function Drill({
 
       {/* Result feedback */}
       {result && (
-        <div className={`result ${result.correct ? 'correct' : 'incorrect'} slide-in`}>
+        <div
+          className={`result ${result.correct ? 'correct' : 'incorrect'} slide-in`}
+          role="status"
+          aria-live="polite"
+        >
           <div className="result-top">
-            <p>{result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}</p>
+            <p aria-atomic="true">{result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}</p>
             <button 
               type="button" 
               className="tts-btn" 
