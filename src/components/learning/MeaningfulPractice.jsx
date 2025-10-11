@@ -6,6 +6,7 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { grade as GRADE } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 import { getAllVerbsSync } from '../../lib/core/verbDataService.js';
+import { FORM_LOOKUP_MAP, warmupCaches as warmOptimizedCaches } from '../../lib/core/optimizedCache.js';
 
 // Importar el nuevo sistema de práctica significativa
 import exerciseFactory from '../../lib/meaningful-practice/exercises/ExerciseFactory.js';
@@ -19,37 +20,140 @@ import './MeaningfulPractice.css';
  * @param {string} conjugatedForm - Forma verbal conjugada
  * @returns {string|null} - Lemma del verbo o null si no se encuentra
  */
+const lemmaCacheByForm = new Map();
+let lemmaCachePrimed = false;
+let cacheMode = 'uninitialized'; // 'uninitialized' | 'optimized' | 'manual'
+let cacheSignature = null;
+
+function getOptimizedCacheSignature() {
+  try {
+    return FORM_LOOKUP_MAP?.size ?? null;
+  } catch (error) {
+    console.warn('No se pudo obtener la firma de FORM_LOOKUP_MAP', error);
+    return null;
+  }
+}
+
+function primeLemmaCache() {
+  const currentSignature = getOptimizedCacheSignature();
+
+  if (
+    lemmaCachePrimed &&
+    ((cacheMode === 'optimized' && cacheSignature === currentSignature) ||
+      (cacheMode === 'manual' && (!currentSignature || currentSignature === 0)))
+  ) {
+    return;
+  }
+
+  lemmaCacheByForm.clear();
+
+  if (FORM_LOOKUP_MAP && currentSignature && currentSignature > 0) {
+    for (const form of FORM_LOOKUP_MAP.values()) {
+      if (!form?.value || !form?.lemma) continue;
+
+      const normalizedValue = form.value.trim().toLowerCase();
+      if (!normalizedValue) continue;
+
+      lemmaCacheByForm.set(normalizedValue, form.lemma);
+    }
+
+    lemmaCachePrimed = true;
+    cacheMode = 'optimized';
+    cacheSignature = currentSignature;
+    return;
+  }
+
+  try {
+    const allVerbs = getAllVerbsSync();
+
+    for (const verb of allVerbs || []) {
+      if (!verb?.paradigms) continue;
+
+      for (const paradigm of verb.paradigms) {
+        if (!paradigm?.forms) continue;
+
+        for (const form of paradigm.forms) {
+          if (!form?.value) continue;
+
+          const normalizedValue = form.value.trim().toLowerCase();
+          if (!normalizedValue) continue;
+
+          if (!lemmaCacheByForm.has(normalizedValue)) {
+            lemmaCacheByForm.set(normalizedValue, verb.lemma || null);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Error al precalentar la caché de lemmas', error);
+  }
+
+  lemmaCachePrimed = true;
+  cacheMode = 'manual';
+  cacheSignature = currentSignature;
+}
+
+function findLemmaAndCache(normalizedForm) {
+  try {
+    const allVerbs = getAllVerbsSync();
+
+    for (const verb of allVerbs || []) {
+      if (!verb?.paradigms) continue;
+
+      for (const paradigm of verb.paradigms) {
+        if (!paradigm?.forms) continue;
+
+        for (const form of paradigm.forms) {
+          if (!form?.value) continue;
+
+          if (form.value.trim().toLowerCase() === normalizedForm) {
+            lemmaCacheByForm.set(normalizedForm, verb.lemma || null);
+            return verb.lemma || null;
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Error al buscar lemma para forma conjugada:', normalizedForm, error);
+  }
+
+  lemmaCacheByForm.set(normalizedForm, null);
+  return null;
+}
+
+export function invalidateLemmaCache(options = {}) {
+  lemmaCacheByForm.clear();
+  lemmaCachePrimed = false;
+  cacheMode = 'uninitialized';
+  cacheSignature = null;
+
+  if (options?.warm && typeof warmOptimizedCaches === 'function') {
+    try {
+      warmOptimizedCaches();
+    } catch (error) {
+      console.warn('No se pudo recalentar las cachés globales', error);
+    }
+  }
+}
+
 export function getLemmaFromConjugatedForm(conjugatedForm) {
   if (!conjugatedForm || typeof conjugatedForm !== 'string') {
     return null;
   }
 
-  try {
-    // Buscar en todos los verbos disponibles
-    const allVerbs = getAllVerbsSync();
+  primeLemmaCache();
 
-    for (const verb of allVerbs) {
-      if (!verb.paradigms) continue;
-
-      // Buscar en todos los paradigmas
-      for (const paradigm of verb.paradigms) {
-        if (!paradigm.forms) continue;
-
-        // Buscar si alguna forma coincide con la forma conjugada
-        const matchingForm = paradigm.forms.find(
-          form => form.value && form.value.toLowerCase() === conjugatedForm.toLowerCase()
-        );
-
-        if (matchingForm) {
-          return verb.lemma;
-        }
-      }
-    }
-  } catch (error) {
-    console.warn('Error al buscar lemma para forma conjugada:', conjugatedForm, error);
+  const normalizedForm = conjugatedForm.trim().toLowerCase();
+  if (!normalizedForm) {
+    return null;
   }
 
-  return null;
+  if (!lemmaCacheByForm.has(normalizedForm)) {
+    const lemma = findLemmaAndCache(normalizedForm);
+    return lemma;
+  }
+
+  return lemmaCacheByForm.get(normalizedForm) || null;
 }
 
 /**

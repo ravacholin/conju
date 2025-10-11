@@ -5,6 +5,11 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
+const optimizedCacheMocks = vi.hoisted(() => ({
+  formLookupMap: new Map(),
+  warmupCaches: vi.fn()
+}))
+
 // Mock de verbDataService
 const mockAllVerbs = [
   {
@@ -74,12 +79,32 @@ const mockAllVerbs = [
   }
 ]
 
+vi.mock('../../../lib/core/optimizedCache.js', () => ({
+  FORM_LOOKUP_MAP: optimizedCacheMocks.formLookupMap,
+  warmupCaches: optimizedCacheMocks.warmupCaches
+}))
+
 vi.mock('../../../lib/core/verbDataService.js', () => ({
   getAllVerbsSync: vi.fn(() => mockAllVerbs)
 }))
 
 // Importar las funciones después del mock
-const { getLemmaFromConjugatedForm, deriveLemmaFallback, extractRequiredVerbs } = await import('../MeaningfulPractice.jsx')
+const {
+  getLemmaFromConjugatedForm,
+  deriveLemmaFallback,
+  extractRequiredVerbs,
+  invalidateLemmaCache
+} = await import('../MeaningfulPractice.jsx')
+
+const { getAllVerbsSync } = await import('../../../lib/core/verbDataService.js')
+
+beforeEach(() => {
+  optimizedCacheMocks.formLookupMap.clear()
+  optimizedCacheMocks.warmupCaches.mockClear()
+  getAllVerbsSync.mockClear()
+  getAllVerbsSync.mockImplementation(() => mockAllVerbs)
+  invalidateLemmaCache()
+})
 
 describe('getLemmaFromConjugatedForm', () => {
   describe('Irregular Verbs', () => {
@@ -138,6 +163,46 @@ describe('getLemmaFromConjugatedForm', () => {
       expect(getLemmaFromConjugatedForm('')).toBe(null)
       expect(getLemmaFromConjugatedForm(123)).toBe(null)
     })
+  })
+})
+
+describe('Lemma cache performance', () => {
+  it('reutiliza los resultados de getAllVerbsSync tras la primera carga', () => {
+    const firstResult = getLemmaFromConjugatedForm('tengo')
+    expect(firstResult).toBe('tener')
+    expect(getAllVerbsSync).toHaveBeenCalledTimes(1)
+
+    const secondResult = getLemmaFromConjugatedForm('tiene')
+    expect(secondResult).toBe('tener')
+    expect(getAllVerbsSync).toHaveBeenCalledTimes(1)
+
+    const thirdResult = getLemmaFromConjugatedForm('tengo')
+    expect(thirdResult).toBe('tener')
+    expect(getAllVerbsSync).toHaveBeenCalledTimes(1)
+  })
+
+  it('permite invalidar la caché y recalentarla usando optimizedCache', () => {
+    getLemmaFromConjugatedForm('tengo')
+    expect(getAllVerbsSync).toHaveBeenCalledTimes(1)
+
+    optimizedCacheMocks.formLookupMap.clear()
+    optimizedCacheMocks.formLookupMap.set('caminar|indicative|pretIndef|3p', {
+      value: 'caminaron',
+      lemma: 'caminar',
+      mood: 'indicative',
+      tense: 'pretIndef',
+      person: '3p'
+    })
+
+    getAllVerbsSync.mockClear()
+    getAllVerbsSync.mockImplementation(() => [])
+
+    invalidateLemmaCache({ warm: true })
+    expect(optimizedCacheMocks.warmupCaches).toHaveBeenCalledTimes(1)
+
+    const result = getLemmaFromConjugatedForm('caminaron')
+    expect(result).toBe('caminar')
+    expect(getAllVerbsSync).not.toHaveBeenCalled()
   })
 })
 
