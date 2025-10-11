@@ -3,8 +3,11 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import { createLogger, registerDebugTool } from './lib/utils/logger.js'
 // Initialize service worker update handling
 import './utils/swUpdateHandler.js'
+
+const bootstrapLogger = createLogger('bootstrap')
 
 // PERFORMANCE: Initialize app immediately, defer heavy modules
 createRoot(document.getElementById('root')).render(
@@ -15,14 +18,28 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
+const bootstrapDebugState = {
+  lazyLoadingSuccessful: null,
+  fallbackTriggered: false,
+  lastError: null,
+  lastAutoSyncResult: null
+}
+
+registerDebugTool('bootstrap', {
+  getStatus: () => ({ ...bootstrapDebugState })
+})
+
 // ROBUST FALLBACK SYSTEM: Ensures app ALWAYS works, even if optimizations fail
 if (typeof window !== 'undefined') {
   // Attempt optimized lazy loading first
   setTimeout(async () => {
     let lazyLoadingSuccessful = false
+    bootstrapDebugState.lazyLoadingSuccessful = null
+    bootstrapDebugState.fallbackTriggered = false
+    bootstrapDebugState.lastError = null
 
     try {
-      console.log('🚀 Attempting optimized lazy initialization...')
+      bootstrapLogger.info('🚀 Attempting optimized lazy initialization...')
 
       // Try lazy progress system
       const { preloadProgressSystem } = await import('./lib/progress/lazyInit.js')
@@ -67,7 +84,7 @@ if (typeof window !== 'undefined') {
 
       // Setup auth login handler
       window.addEventListener('auth-login', async () => {
-        console.log('🔄 Iniciando sincronización automática después del login...')
+        bootstrapLogger.info('🔄 Iniciando sincronización automática después del login...')
         try {
           setSyncAuthHeaderName('Authorization')
           const authService = await import('./lib/auth/authService.js')
@@ -75,18 +92,21 @@ if (typeof window !== 'undefined') {
             await authService.default.ensureAnonymousProgressMigration()
           }
         } catch (migrationError) {
-          console.warn('⚠️ Falló la migración de progreso anónimo:', migrationError?.message || migrationError)
+          bootstrapLogger.warn('⚠️ Falló la migración de progreso anónimo', migrationError)
+          bootstrapDebugState.lastError = migrationError
         }
 
         try {
           const result = await syncNow()
           if (result.success) {
-            console.log('✅ Sincronización automática completada:', result)
+            bootstrapLogger.info('✅ Sincronización automática completada', result)
           } else {
-            console.log('⚠️ Sincronización automática falló:', result.reason)
+            bootstrapLogger.warn('⚠️ Sincronización automática falló', result)
           }
+          bootstrapDebugState.lastAutoSyncResult = result
         } catch (error) {
-          console.warn('❌ Error en sincronización automática:', error.message)
+          bootstrapLogger.error('❌ Error en sincronización automática', error)
+          bootstrapDebugState.lastError = error
         }
       })
 
@@ -94,7 +114,8 @@ if (typeof window !== 'undefined') {
       try {
         scheduleAutoSync(5 * 60 * 1000)
       } catch (e) {
-        console.warn('No se pudo programar auto-sync:', e?.message || e)
+        bootstrapLogger.warn('No se pudo programar auto-sync', e)
+        bootstrapDebugState.lastError = e
       }
 
       // Sync on focus
@@ -103,24 +124,28 @@ if (typeof window !== 'undefined') {
       })
 
       lazyLoadingSuccessful = true
-      console.log('✅ Optimized lazy initialization successful!')
+      bootstrapDebugState.lazyLoadingSuccessful = true
+      bootstrapLogger.info('✅ Optimized lazy initialization successful!')
 
     } catch (lazyError) {
-      console.warn('⚠️ Lazy loading failed, activating ROBUST FALLBACK:', lazyError)
+      bootstrapDebugState.lazyLoadingSuccessful = false
+      bootstrapDebugState.lastError = lazyError
+      bootstrapLogger.warn('⚠️ Lazy loading failed, activating ROBUST FALLBACK', lazyError)
     }
 
     // ROBUST FALLBACK: If lazy loading fails, load everything immediately
     if (!lazyLoadingSuccessful) {
       try {
-        console.log('🔄 Activating robust fallback - loading all systems immediately...')
+        bootstrapDebugState.fallbackTriggered = true
+        bootstrapLogger.info('🔄 Activating robust fallback - loading all systems immediately...')
 
         // Import everything immediately as fallback
         const [
-          autoInit,
-          notifications,
+          _autoInit,
+          _notifications,
           userManager,
           cloudSync,
-          authService
+          _authService
         ] = await Promise.all([
           import('./lib/progress/autoInit.js').catch(() => null),
           import('./lib/notifications/smartNotifications.js').catch(() => null),
@@ -161,7 +186,8 @@ if (typeof window !== 'undefined') {
           try {
             scheduleAutoSync(5 * 60 * 1000)
           } catch (e) {
-            console.warn('Fallback sync setup failed:', e?.message)
+            bootstrapLogger.warn('Fallback sync setup failed', e)
+            bootstrapDebugState.lastError = e
           }
 
           // Simple focus sync for fallback
@@ -172,10 +198,11 @@ if (typeof window !== 'undefined') {
           })
         }
 
-        console.log('✅ Robust fallback initialization completed - app fully functional!')
+        bootstrapLogger.info('✅ Robust fallback initialization completed - app fully functional!')
 
       } catch (fallbackError) {
-        console.warn('⚠️ Even robust fallback had issues, but app will still work:', fallbackError)
+        bootstrapLogger.warn('⚠️ Even robust fallback had issues, but app will still work', fallbackError)
+        bootstrapDebugState.lastError = fallbackError
 
         // ULTIMATE FALLBACK: Minimal functionality guarantee
         try {
@@ -183,7 +210,7 @@ if (typeof window !== 'undefined') {
           import('./data/verbFallback.js').then(({ startProgressiveVerbLoading }) => {
             startProgressiveVerbLoading()
           }).catch(() => {
-            console.warn('⚠️ Even verb fallback failed - using minimal functionality')
+            bootstrapLogger.warn('⚠️ Even verb fallback failed - using minimal functionality')
           })
         } catch {
           // Silent ultimate fallback - app will work with whatever is available
@@ -208,12 +235,14 @@ if (typeof window !== 'undefined') {
   }
 
   window.addEventListener('error', (e) => {
-    console.error('🛑 Window error:', e.error || e.message)
+    bootstrapLogger.error('🛑 Window error', e.error || e.message)
+    bootstrapDebugState.lastError = e.error || e
     if (import.meta.env.PROD) showGlobalErrorBanner(e?.message || 'Error inesperado')
   })
 
   window.addEventListener('unhandledrejection', (e) => {
-    console.error('🛑 Unhandled rejection:', e.reason)
+    bootstrapLogger.error('🛑 Unhandled rejection', e.reason)
+    bootstrapDebugState.lastError = e.reason || e
     if (import.meta.env.PROD) showGlobalErrorBanner(e?.reason?.message || 'Promesa rechazada sin manejar')
   })
 }

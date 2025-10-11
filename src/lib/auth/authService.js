@@ -6,6 +6,9 @@ import {
   isGoogleAuthConfigured
 } from './googleAuth.js'
 import { getSyncApiBase, getSyncConfigDebug } from '../config/syncConfig.js'
+import { createLogger, registerDebugTool } from '../utils/logger.js'
+
+const logger = createLogger('authService')
 
 // Use intelligent environment detection for sync URL
 const API_BASE = getSyncApiBase()
@@ -23,7 +26,7 @@ class AuthService {
     this.setupGoogleEventListeners()
 
     // Debug sync configuration on initialization
-    console.log('🔧 AuthService initialized with sync config:', getSyncConfigDebug())
+    logger.info('🔧 AuthService initialized with sync config:', getSyncConfigDebug())
   }
 
   // Storage management
@@ -43,7 +46,7 @@ class AuthService {
         this.account = JSON.parse(account)
       }
     } catch (error) {
-      console.warn('Failed to load auth from storage:', error)
+      logger.warn('Failed to load auth from storage:', error)
       this.clearAuth()
     }
   }
@@ -60,7 +63,7 @@ class AuthService {
         localStorage.setItem('auth_account', JSON.stringify(this.account))
       }
     } catch (error) {
-      console.warn('Failed to save auth to storage:', error)
+      logger.warn('Failed to save auth to storage:', error)
     }
   }
 
@@ -80,7 +83,7 @@ class AuthService {
       localStorage.removeItem('auth_user')
       localStorage.removeItem('auth_account')
     } catch (error) {
-      console.warn('Failed to clear auth storage:', error)
+      logger.warn('Failed to clear auth storage:', error)
     }
 
     // Clear sync configuration to prevent cross-user data leaks
@@ -92,7 +95,7 @@ class AuthService {
         // Silent fail if userManager is not available
       })
     } catch (error) {
-      console.warn('Could not clear sync token on logout:', error)
+      logger.warn('Could not clear sync token on logout:', error)
     }
   }
 
@@ -496,15 +499,15 @@ class AuthService {
 
         if (!initialized) {
           this.googleInitPromise = null
-          console.warn('⚠️ Google OAuth initialization was not successful')
+          logger.warn('⚠️ Google OAuth initialization was not successful')
         } else {
-          console.log('✅ Google OAuth initialized in AuthService')
+          logger.info('✅ Google OAuth initialized in AuthService')
         }
 
         return initialized
       })().catch((error) => {
         this.googleInitPromise = null
-        console.warn('⚠️ Failed to initialize Google OAuth:', error?.message || error)
+        logger.warn('⚠️ Failed to initialize Google OAuth:', error?.message || error)
         return false
       })
     }
@@ -519,15 +522,15 @@ class AuthService {
     window.addEventListener('google-auth-success', async (event) => {
       const googleUser = event.detail
       try {
-        console.log('🔵 Processing Google auth success event:', googleUser)
+        logger.info('🔵 Processing Google auth success event:', googleUser)
         await this.processGoogleLogin(googleUser)
 
         // Emit login event after successful processing
         this.emitLoginEvent()
 
-        console.log('✅ Google authentication completed successfully')
+        logger.info('✅ Google authentication completed successfully')
       } catch (error) {
-        console.error('❌ Failed to process Google login:', error)
+        logger.error('❌ Failed to process Google login:', error)
         // Emit error event
         window.dispatchEvent(new CustomEvent('google-auth-error', {
           detail: { error: error.message }
@@ -538,7 +541,7 @@ class AuthService {
     // Listen for Google auth errors
     window.addEventListener('google-auth-error', (event) => {
       const error = event.detail.error
-      console.error('Google auth error:', error)
+      logger.error('Google auth error:', error)
     })
 
     this.googleListenersAttached = true
@@ -563,7 +566,7 @@ class AuthService {
         }
       }
 
-      console.log('🔵 Sending Google login request to server:', {
+      logger.info('🔵 Sending Google login request to server:', {
         email: googleUser.email,
         name: googleUser.name,
         deviceName: data.deviceName,
@@ -592,7 +595,7 @@ class AuthService {
 
       await this.ensureAnonymousProgressMigration()
 
-      console.log('✅ Google login successful:', {
+      logger.info('✅ Google login successful:', {
         email: this.account.email,
         name: this.account.name,
         device: this.user.deviceName,
@@ -601,7 +604,7 @@ class AuthService {
 
       return result
     } catch (error) {
-      console.error('❌ Google login processing error:', error)
+      logger.error('❌ Google login processing error:', error)
       throw error
     }
   }
@@ -622,7 +625,7 @@ class AuthService {
           const { waitForProgressSystem } = await import('../progress/ProgressSystemEvents.js')
           await waitForProgressSystem(5000) // 5 second timeout
         } catch (timeoutError) {
-          console.warn('⚠️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
+          logger.warn('⚠️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
         }
 
         const module = await import('../progress/userManager.js')
@@ -639,12 +642,12 @@ class AuthService {
           try {
             anonymousUserId = localStorage.getItem('progress-system-user-id')
           } catch (storageError) {
-            console.warn('⚠️ Could not access localStorage for userId fallback:', storageError.message)
+            logger.warn('⚠️ Could not access localStorage for userId fallback:', storageError.message)
           }
         }
 
         if (!anonymousUserId) {
-          console.warn('⚠️ No anonymous userId found in progress system or localStorage')
+          logger.warn('⚠️ No anonymous userId found in progress system or localStorage')
           return null
         }
 
@@ -666,7 +669,7 @@ class AuthService {
             anonymousUserId
           })
         } else if (migrationResult) {
-          console.log('✅ Anonymous progress linked to authenticated account on server', {
+          logger.info('✅ Anonymous progress linked to authenticated account on server', {
             anonymousUserId
           })
         }
@@ -675,35 +678,35 @@ class AuthService {
         let localMigrationResult = null
         let validationResult = null
         try {
-          console.log('🔄 Iniciando migración local de IndexedDB...')
+          logger.info('🔄 Iniciando migración local de IndexedDB...')
           const databaseModule = await import('../progress/database.js')
           const { migrateUserIdInLocalDB, validateUserIdMigration, revertUserIdMigration } = databaseModule
 
           if (typeof migrateUserIdInLocalDB === 'function') {
             // Ejecutar migración
             localMigrationResult = await migrateUserIdInLocalDB(anonymousUserId, authenticatedUserId)
-            console.log('✅ Migración local de IndexedDB completada:', localMigrationResult)
+            logger.info('✅ Migración local de IndexedDB completada:', localMigrationResult)
 
             // Validar que la migración fue exitosa
             if (typeof validateUserIdMigration === 'function') {
               validationResult = await validateUserIdMigration(anonymousUserId, authenticatedUserId)
-              console.log('🔍 Resultado de validación:', validationResult)
+              logger.info('🔍 Resultado de validación:', validationResult)
 
               if (!validationResult.valid) {
-                console.error('❌ Validación de migración falló. Intentando revertir...')
+                logger.error('❌ Validación de migración falló. Intentando revertir...')
 
                 // Intentar revertir la migración
                 if (typeof revertUserIdMigration === 'function') {
                   try {
                     await revertUserIdMigration(authenticatedUserId, anonymousUserId)
-                    console.log('✅ Migración revertida exitosamente')
+                    logger.info('✅ Migración revertida exitosamente')
                     localMigrationResult = {
                       error: 'migration_validation_failed',
                       reverted: true,
                       validationResult
                     }
                   } catch (revertError) {
-                    console.error('❌ Error crítico: no se pudo revertir migración:', revertError)
+                    logger.error('❌ Error crítico: no se pudo revertir migración:', revertError)
                     localMigrationResult = {
                       error: 'migration_validation_failed_and_revert_failed',
                       validationResult,
@@ -712,15 +715,15 @@ class AuthService {
                   }
                 }
               } else {
-                console.log('✅ Migración validada exitosamente')
+                logger.info('✅ Migración validada exitosamente')
                 localMigrationResult = { ...localMigrationResult, validated: true, validationResult }
               }
             }
           } else {
-            console.warn('⚠️ Función migrateUserIdInLocalDB no encontrada')
+            logger.warn('⚠️ Función migrateUserIdInLocalDB no encontrada')
           }
         } catch (localError) {
-          console.error('❌ Error en migración local de IndexedDB:', localError)
+          logger.error('❌ Error en migración local de IndexedDB:', localError)
           localMigrationResult = { error: localError.message }
         }
 
@@ -728,20 +731,20 @@ class AuthService {
         // Fix: Treat "no rows migrated" case as success - still call setCurrentUserId
         if (localMigrationResult && !localMigrationResult.error && validationResult?.valid) {
           try {
-            console.log('🔄 Actualizando sistema de progreso con nuevo userId...')
+            logger.info('🔄 Actualizando sistema de progreso con nuevo userId...')
             const progressModule = await import('../progress/index.js')
             const { setCurrentUserId } = progressModule
 
             if (typeof setCurrentUserId === 'function') {
               const updateSuccess = setCurrentUserId(authenticatedUserId)
               if (updateSuccess) {
-                console.log('✅ Sistema de progreso actualizado con nuevo userId')
+                logger.info('✅ Sistema de progreso actualizado con nuevo userId')
               } else {
-                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso')
+                logger.warn('⚠️ No se pudo actualizar userId en sistema de progreso')
               }
             }
           } catch (progressError) {
-            console.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
+            logger.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
           }
         } else if (localMigrationResult && !localMigrationResult.error && 
                    validationResult && 
@@ -750,23 +753,23 @@ class AuthService {
           // Special case: no rows to migrate (fresh device)
           // Treat as success and still update the progress system
           try {
-            console.log('🔄 Actualizando sistema de progreso con nuevo userId (no data to migrate)...')
+            logger.info('🔄 Actualizando sistema de progreso con nuevo userId (no data to migrate)...')
             const progressModule = await import('../progress/index.js')
             const { setCurrentUserId } = progressModule
 
             if (typeof setCurrentUserId === 'function') {
               const updateSuccess = setCurrentUserId(authenticatedUserId)
               if (updateSuccess) {
-                console.log('✅ Sistema de progreso actualizado con nuevo userId (no data case)')
+                logger.info('✅ Sistema de progreso actualizado con nuevo userId (no data case)')
               } else {
-                console.warn('⚠️ No se pudo actualizar userId en sistema de progreso (no data case)')
+                logger.warn('⚠️ No se pudo actualizar userId en sistema de progreso (no data case)')
               }
             }
           } catch (progressError) {
-            console.warn('⚠️ Error actualizando sistema de progreso (no data case):', progressError.message)
+            logger.warn('⚠️ Error actualizando sistema de progreso (no data case):', progressError.message)
           }
         } else {
-          console.warn('⚠️ Saltando actualización de sistema de progreso - migración no exitosa')
+          logger.warn('⚠️ Saltando actualización de sistema de progreso - migración no exitosa')
         }
 
         this.lastMigratedAnonymousId = anonymousUserId
@@ -789,7 +792,7 @@ class AuthService {
           authenticatedUserId
         }
       } catch (error) {
-        console.warn('⚠️ Failed to migrate anonymous progress:', error?.message || error)
+        logger.warn('⚠️ Failed to migrate anonymous progress:', error?.message || error)
         return null
       } finally {
         this.postLoginMigrationPromise = null
@@ -813,7 +816,7 @@ class AuthService {
 
       return await triggerGoogleSignIn()
     } catch (error) {
-      console.error('Failed to trigger Google Sign-In:', error)
+      logger.error('Failed to trigger Google Sign-In:', error)
       throw error
     }
   }
@@ -834,5 +837,16 @@ export const authService = new AuthService()
 if (typeof window !== 'undefined') {
   window.authService = authService
 }
+
+registerDebugTool('authService', {
+  getState: () => ({
+    isLoggedIn: authService.isLoggedIn(),
+    hasToken: !!authService.token,
+    tokenLength: authService.token?.length || 0,
+    user: authService.user,
+    account: authService.account
+  }),
+  clearAuth: () => authService.clearAuth()
+})
 
 export default authService

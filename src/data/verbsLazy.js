@@ -1,6 +1,10 @@
 // Lazy loading system for verbs data
 // Eliminates 4.1MB initial bundle size by loading verbs on-demand
 
+import { createLogger, registerDebugTool } from '../lib/utils/logger.js'
+
+const logger = createLogger('verbsLazy')
+
 let verbsCache = null
 let verbsPromise = null
 
@@ -21,14 +25,14 @@ export async function getVerbs() {
 
   // Start loading verbs dynamically
   verbsPromise = (async () => {
-    console.log('🔄 Loading verbs data lazily...')
+    logger.info('🔄 Loading verbs data lazily...')
     try {
       const { verbs } = await import('./verbs.js')
       verbsCache = verbs
-      console.log(`✅ Loaded ${verbs.length} verbs lazily`)
+      logger.info(`✅ Loaded ${verbs.length} verbs lazily`, { count: verbs.length })
       return verbs
     } catch (error) {
-      console.error('❌ Failed to load verbs:', error)
+      logger.error('❌ Failed to load verbs', error)
       verbsPromise = null // Reset promise so we can retry
       throw error
     }
@@ -72,3 +76,13 @@ export function clearVerbsCache() {
 
 // Export original verbs as default for compatibility
 export default getVerbs
+
+registerDebugTool('verbsLazy', {
+  getStatus: () => ({
+    cached: Boolean(verbsCache),
+    cacheSize: verbsCache?.length ?? 0,
+    isLoading: Boolean(verbsPromise)
+  }),
+  clearCache: () => clearVerbsCache(),
+  preload: () => preloadVerbs()
+})

@@ -25,6 +25,24 @@ const getDefaultLogLevel = () => {
 // Current log level (can be overridden)
 let currentLogLevel = getDefaultLogLevel()
 
+// Shared debug namespace (browser only) so engineers can inspect state without noisy logs
+const ensureDebugNamespace = () => {
+  if (typeof window === 'undefined') return null
+
+  if (!window.__CONJU_DEBUG__) {
+    Object.defineProperty(window, '__CONJU_DEBUG__', {
+      value: {},
+      enumerable: false,
+      configurable: true,
+      writable: true
+    })
+  }
+
+  return window.__CONJU_DEBUG__
+}
+
+const debugNamespace = ensureDebugNamespace()
+
 // Performance tracking for expensive operations
 const performanceTracking = new Map()
 
@@ -37,6 +55,14 @@ export function setLogLevel(level) {
     currentLogLevel = LOG_LEVELS[level.toUpperCase()] ?? getDefaultLogLevel()
   } else if (typeof level === 'number') {
     currentLogLevel = level
+  }
+
+  if (debugNamespace) {
+    debugNamespace.logger = {
+      ...debugNamespace.logger,
+      level: currentLogLevel,
+      levelName: Object.keys(LOG_LEVELS).find(key => LOG_LEVELS[key] === currentLogLevel)
+    }
   }
 }
 
@@ -250,6 +276,34 @@ export function getLogConfig() {
 
 // Export log levels for external use
 export { LOG_LEVELS }
+
+// Expose debug helpers when running in the browser so we can toggle log output at runtime
+if (debugNamespace) {
+  debugNamespace.logger = {
+    ...(debugNamespace.logger || {}),
+    setLogLevel,
+    getLogConfig,
+    levels: LOG_LEVELS,
+    suppressLogs
+  }
+}
+
+// Allow modules to register their own debug utilities in a consistent place
+export function registerDebugTool(name, tool) {
+  if (!name) return
+
+  if (typeof window === 'undefined') return
+
+  const namespace = ensureDebugNamespace()
+  if (namespace) {
+    namespace[name] = tool
+  }
+}
+
+export function getDebugTools() {
+  if (typeof window === 'undefined') return null
+  return ensureDebugNamespace()
+}
 
 // Global logger instance
 export const logger = createLogger('app')

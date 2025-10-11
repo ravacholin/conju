@@ -34,6 +34,17 @@ Usuario → App.jsx → Settings → Generator → Verbs Database → Drill Comp
                    Cache System → Performance Optimizations
 ```
 
+## 🛠️ Debugging y Sistema de Logs
+
+- Usa el logger central (`createLogger`) para cualquier traza nueva. En producción solo se mostrarán errores por defecto.
+- Para habilitar niveles más verbosos en tiempo de ejecución, abre la consola y ejecuta `window.__CONJU_DEBUG__.logger.setLogLevel('DEBUG')`.
+- El namespace `window.__CONJU_DEBUG__` expone utilidades como:
+  - `logger.getLogConfig()` para inspeccionar el nivel actual.
+  - `bootstrap.getStatus()` para revisar si el arranque usó el fallback robusto.
+  - `verbsLazy.getStatus()` y `verbChunks.getStatus()` para ver el estado de cachés de verbos.
+  - `authService.getState()` y `googleAuth.isConfigured()` para diagnosticar autenticación.
+- Puedes extender el panel registrando nuevas herramientas con `registerDebugTool('miModulo', {...})` desde `src/lib/utils/logger.js`.
+
 ### Estado Global (Zustand)
 **Ubicación:** `src/state/settings.js`
 
