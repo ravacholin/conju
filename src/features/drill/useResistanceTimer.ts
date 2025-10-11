@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSettings } from '../../state/settings.js'
+import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js'
 
 /**
  * useResistanceTimer.ts
@@ -73,7 +73,8 @@ export function useResistanceTimer() {
   const handleClockClick = useCallback(() => {
     if (!settings.resistanceActive || settings.resistanceMsLeft <= 0) return
     const currentMs = settings.resistanceMsLeft
-    settings.set({ resistanceMsLeft: currentMs + 5000 })
+    const nextMs = Math.min(currentMs + 5000, RESISTANCE_MAX_MS)
+    settings.set({ resistanceMsLeft: nextMs })
     setClockClickFeedback(true)
     setTimeout(() => setClockClickFeedback(false), 300)
   }, [settings])

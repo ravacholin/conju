@@ -5,6 +5,8 @@ import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
 // Niveles disponibles
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
 
+export const RESISTANCE_MAX_MS = 120000
+
 // Practice modes
 export const PRACTICE_MODES = {
   BY_LEVEL: 'by_level',
