@@ -26,6 +26,22 @@ export async function getRealUserStats(userId, signal) {
     }
 
     if (masteryRecords.length === 0) {
+      const startOfDay = new Date()
+      startOfDay.setHours(0, 0, 0, 0)
+      const startOfDayMs = startOfDay.getTime()
+
+      let attemptsToday = 0
+      let latencyToday = 0
+      for (const attempt of attempts) {
+        const createdAt = new Date(attempt?.createdAt || 0).getTime()
+        if (Number.isFinite(createdAt) && createdAt >= startOfDayMs) {
+          attemptsToday += 1
+          latencyToday += attempt.latencyMs || 0
+        }
+      }
+
+      const focusMinutesToday = attemptsToday > 0 ? Math.round((latencyToday / 60000) * 10) / 10 : 0
+
       return {
         totalMastery: 0,
         masteredCells: 0,
@@ -37,7 +53,9 @@ export async function getRealUserStats(userId, signal) {
         accuracy: 0,
         bestStreak: 0,
         currentSessionStreak: 0,
-        sessionBestStreak: 0
+        sessionBestStreak: 0,
+        attemptsToday,
+        focusMinutesToday
       }
     }
     
@@ -58,6 +76,12 @@ export async function getRealUserStats(userId, signal) {
     let bestStreak = 0
     let sessionBestStreak = 0
     let currentSessionStreak = 0
+    let attemptsToday = 0
+    let latencyToday = 0
+
+    const startOfDay = new Date()
+    startOfDay.setHours(0, 0, 0, 0)
+    const startOfDayMs = startOfDay.getTime()
 
     // Ordenar intentos por fecha
     const attemptsSorted = [...attempts].sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
@@ -80,6 +104,12 @@ export async function getRealUserStats(userId, signal) {
       totalLatency += attempt.latencyMs || 0
       totalAttempts++
       if (attempt.correct) correctAttempts++
+
+      const createdAt = new Date(attempt.createdAt || 0).getTime()
+      if (Number.isFinite(createdAt) && createdAt >= startOfDayMs) {
+        attemptsToday += 1
+        latencyToday += attempt.latencyMs || 0
+      }
     }
 
     // Calcular mejor racha global y racha actual/mejor de la sesión más reciente
@@ -102,6 +132,7 @@ export async function getRealUserStats(userId, signal) {
     
     const avgLatency = totalAttempts > 0 ? totalLatency / totalAttempts : 0
     const accuracy = totalAttempts > 0 ? (correctAttempts / totalAttempts) * 100 : 0
+    const focusMinutesToday = attemptsToday > 0 ? Math.round((latencyToday / 60000) * 10) / 10 : 0
     
     if (signal?.aborted) {
       throw new Error('Operation was cancelled')
@@ -118,7 +149,9 @@ export async function getRealUserStats(userId, signal) {
       accuracy: Math.round(accuracy),
       bestStreak,
       sessionBestStreak,
-      currentSessionStreak
+      currentSessionStreak,
+      attemptsToday,
+      focusMinutesToday
     }
   } catch (error) {
     console.error('Error al obtener estadísticas reales del usuario:', error)
@@ -135,7 +168,9 @@ export async function getRealUserStats(userId, signal) {
       totalAttempts: 0,
       totalSessions: 0,
       accuracy: 0,
-      bestStreak: 0
+      bestStreak: 0,
+      attemptsToday: 0,
+      focusMinutesToday: 0
     }
   }
 }
