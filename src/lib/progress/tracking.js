@@ -14,6 +14,21 @@ import { notifyNewAttempt } from './incrementalMastery.js'
 import { recordGlobalCompetency, refreshGlobalDynamicEvaluations } from '../levels/userLevelProfile.js'
 import { checkUserProgression } from '../levels/levelProgression.js'
 
+const env = typeof import.meta !== 'undefined' ? import.meta.env : undefined
+const isDevelopment = Boolean(env?.DEV && !env?.TEST)
+
+function devLog(...args) {
+  if (isDevelopment) {
+    console.log(...args)
+  }
+}
+
+function devWarn(...args) {
+  if (isDevelopment) {
+    console.warn(...args)
+  }
+}
+
 // Estado del tracking
 let currentSession = null
 let currentUserId = null
@@ -24,7 +39,7 @@ let currentUserId = null
  * @returns {Promise<void>}
  */
 export async function initTracking(userId) {
-  console.log(`🎯 Inicializando tracking para usuario ${userId}`)
+  devLog(`🎯 Inicializando tracking para usuario ${userId}`)
   
   try {
     // Crear sesión actual
@@ -37,7 +52,7 @@ export async function initTracking(userId) {
     
     currentUserId = userId
     
-    console.log(`✅ Tracking inicializado para sesión ${currentSession.id}`)
+    devLog(`✅ Tracking inicializado para sesión ${currentSession.id}`)
   } catch (error) {
     console.error('❌ Error al inicializar el sistema de tracking:', error)
     throw error
@@ -65,12 +80,12 @@ if (typeof window !== 'undefined') {
         }
         currentUserId = newUserId
 
-        console.log('🔄 Tracking actualizado tras cambio de userId:', {
+        devLog('🔄 Tracking actualizado tras cambio de userId:', {
           newUserId: currentUserId,
           sessionId: currentSession.id
         })
       } catch (innerErr) {
-        console.warn('⚠️ No se pudo actualizar tracking tras cambio de userId:', innerErr?.message || innerErr)
+        devWarn('⚠️ No se pudo actualizar tracking tras cambio de userId:', innerErr?.message || innerErr)
       }
     })
   } catch {/* ignore listener wiring errors */}
@@ -88,7 +103,7 @@ export function trackAttemptStarted(item) {
   
   const attemptId = `attempt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   
-  console.log(`🎯 Intento iniciado: ${attemptId} para ítem ${item.id}`)
+  devLog(`🎯 Intento iniciado: ${attemptId} para ítem ${item.id}`)
   return attemptId
 }
 
@@ -176,7 +191,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     // Invalidar cache de mastery para el ítem actualizado
     notifyNewAttempt(canonicalItemId)
 
-    console.log(`✅ Intento registrado: ${attemptId}`, attempt)
+    devLog(`✅ Intento registrado: ${attemptId}`, attempt)
 
     // Notificar que se actualizaron los datos de progreso
     if (typeof window !== 'undefined') {
@@ -202,7 +217,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         { latencyMs: attempt.latencyMs, errorTags }
       )
     } catch (error) {
-      console.warn('No se pudo actualizar SRS:', error)
+      devWarn('No se pudo actualizar SRS:', error)
     }
 
     // Integrar con sistema de niveles - actualizar competencia del usuario
@@ -214,7 +229,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
       if (shouldRefreshDynamic) {
         // Don't await to avoid blocking - refresh in background
         refreshGlobalDynamicEvaluations().catch(error => {
-          console.warn('Error refreshing dynamic evaluations:', error)
+          devWarn('Error refreshing dynamic evaluations:', error)
         })
       }
 
@@ -225,7 +240,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         const recommendation = await checkGlobalLevelRecommendation()
 
         if (recommendation.shouldChange && recommendation.confidence > 0.85) {
-          console.log(`🔄 Recomendación de cambio de nivel: ${recommendation.currentLevel} → ${recommendation.recommendedLevel} (confianza: ${recommendation.confidence})`)
+          devLog(`🔄 Recomendación de cambio de nivel: ${recommendation.currentLevel} → ${recommendation.recommendedLevel} (confianza: ${recommendation.confidence})`)
 
           // Dispatch dynamic level recommendation event
           if (typeof window !== 'undefined') {
@@ -245,7 +260,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         // Also check traditional progression for compatibility
         const progressionResult = await checkUserProgression()
         if (progressionResult.promoted) {
-          console.log(`🎉 Usuario promovido automáticamente de ${progressionResult.from} a ${progressionResult.to}`)
+          devLog(`🎉 Usuario promovido automáticamente de ${progressionResult.from} a ${progressionResult.to}`)
 
           // Dispatch traditional level promotion event
           if (typeof window !== 'undefined') {
@@ -262,7 +277,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         }
       }
     } catch (error) {
-      console.warn('No se pudo actualizar sistema de niveles:', error)
+      devWarn('No se pudo actualizar sistema de niveles:', error)
     }
 
     // Recalcular y guardar mastery de la celda basada en intentos reales del usuario
@@ -308,7 +323,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
     }
       await saveMastery(masteryRecord)
     } catch (error) {
-      console.warn('No se pudo actualizar mastery de la celda:', error)
+      devWarn('No se pudo actualizar mastery de la celda:', error)
     }
   } catch (error) {
     console.error(`❌ Error al registrar intento ${attemptId}:`, error)
@@ -374,7 +389,7 @@ export async function trackSessionEnded(sessionData = {}) {
     // Marcar fin de sesión
     currentSession.endedAt = new Date()
     
-    console.log(`🔚 Sesión finalizada: ${currentSession.id}`, sessionData)
+    devLog(`🔚 Sesión finalizada: ${currentSession.id}`, sessionData)
   } catch (error) {
     console.error('❌ Error al finalizar sesión:', error)
     throw error
@@ -407,7 +422,7 @@ export async function trackHintShown(context = {}) {
     }
 
     await saveEvent(hintEvent)
-    console.log(`💡 Pista mostrada y registrada: ${hintEvent.id}`)
+    devLog(`💡 Pista mostrada y registrada: ${hintEvent.id}`)
   } catch (error) {
     console.error('❌ Error al registrar pista mostrada:', error)
     throw error
@@ -441,7 +456,7 @@ export async function trackStreakIncremented(context = {}) {
     }
 
     await saveEvent(streakEvent)
-    console.log(`🔥 Racha incrementada y registrada: ${streakEvent.id} (longitud: ${streakEvent.streakLength})`)
+    devLog(`🔥 Racha incrementada y registrada: ${streakEvent.id} (longitud: ${streakEvent.streakLength})`)
   } catch (error) {
     console.error('❌ Error al registrar incremento de racha:', error)
     throw error
@@ -474,7 +489,7 @@ export async function trackTenseDrillStarted(tense, context = {}) {
     }
 
     await saveEvent(drillEvent)
-    console.log(`🔁 Drill de tiempo ${tense} iniciado y registrado: ${drillEvent.id}`)
+    devLog(`🔁 Drill de tiempo ${tense} iniciado y registrado: ${drillEvent.id}`)
   } catch (error) {
     console.error('❌ Error al registrar inicio de drill de tiempo:', error)
     throw error
@@ -510,7 +525,7 @@ export async function trackTenseDrillEnded(tense, results = {}) {
     }
 
     await saveEvent(drillEvent)
-    console.log(`✅ Drill de tiempo ${tense} finalizado y registrado: ${drillEvent.id} (${drillEvent.correctAttempts}/${drillEvent.totalAttempts})`)
+    devLog(`✅ Drill de tiempo ${tense} finalizado y registrado: ${drillEvent.id} (${drillEvent.correctAttempts}/${drillEvent.totalAttempts})`)
   } catch (error) {
     console.error('❌ Error al registrar finalización de drill de tiempo:', error)
     throw error
