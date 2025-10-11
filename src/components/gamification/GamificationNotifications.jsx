@@ -195,7 +195,22 @@ export default function GamificationNotifications() {
   }
 
   const handleImageError = (event) => {
-    event.target.src = event.target.dataset.fallback || '/icons/star.png'
+    const { target } = event
+
+    if (!target) return
+
+    // Avoid infinite loops by clearing the error handler before swapping the source
+    target.onerror = null
+
+    if (import.meta.env.DEV) {
+      // Surface missing icon information in development for easier debugging/metrics
+      console.warn('Gamification notification icon missing, applying fallback', {
+        attemptedSrc: target.src,
+        fallbackSrc: target.dataset?.fallback || '/icons/star.png'
+      })
+    }
+
+    target.src = target.dataset?.fallback || '/icons/star.png'
   }
 
   if (notifications.length === 0) return null
