@@ -138,5 +138,20 @@ describe('dynamicImportRetry', () => {
 
       global.window = originalWindow
     })
+
+    it('should not throw when window is undefined and import succeeds', async () => {
+      const originalWindow = global.window
+      const originalCaches = global.caches
+
+      global.window = undefined
+      global.caches = undefined
+
+      const mockImportFn = vi.fn().mockResolvedValue({ default: 'component' })
+
+      await expect(retryDynamicImport(mockImportFn, 1)).resolves.toEqual({ default: 'component' })
+
+      global.window = originalWindow
+      global.caches = originalCaches
+    })
   })
 })

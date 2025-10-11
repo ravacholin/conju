@@ -9,6 +9,41 @@
  * @param {number} maxRetries - Maximum number of retries (default: 2)
  * @returns {Promise} - Promise resolving to the imported module
  */
+const CACHE_NAME = 'dynamic-assets'
+
+async function clearDynamicImportCache(error) {
+  if (
+    typeof globalThis === 'undefined' ||
+    typeof globalThis.caches === 'undefined' ||
+    typeof globalThis.caches.open !== 'function'
+  ) {
+    return
+  }
+
+  try {
+    const cache = await globalThis.caches.open(CACHE_NAME)
+    if (!cache || typeof cache.delete !== 'function') {
+      return
+    }
+    const failedUrl = typeof error?.message === 'string' ? error.message.match(/https?:\/\/[^\s]+/)?.[0] : undefined
+
+    await cache.delete(failedUrl ?? '')
+  } catch (cacheError) {
+    console.debug('Cache clearing failed:', cacheError)
+  }
+}
+
+function reloadPage() {
+  if (typeof window !== 'undefined' && window.location?.reload) {
+    window.location.reload()
+    return
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis.location?.reload) {
+    globalThis.location.reload()
+  }
+}
+
 export async function retryDynamicImport(importFn, maxRetries = 2) {
   let lastError
 
@@ -23,14 +58,7 @@ export async function retryDynamicImport(importFn, maxRetries = 2) {
       if (attempt < maxRetries) {
         if (attempt === 0) {
           // First retry: clear module cache if available
-          if ('caches' in window) {
-            try {
-              const cache = await caches.open('dynamic-assets')
-              await cache.delete(error.message.match(/https?:\/\/[^\s]+/)?.[0] || '')
-            } catch (cacheError) {
-              console.debug('Cache clearing failed:', cacheError)
-            }
-          }
+          await clearDynamicImportCache(error)
         } else {
           // Final retry: wait a bit before final attempt
           await new Promise(resolve => setTimeout(resolve, 500))
@@ -41,9 +69,7 @@ export async function retryDynamicImport(importFn, maxRetries = 2) {
 
   // All retries failed - force page reload as last resort
   console.error('All dynamic import attempts failed, forcing page reload')
-  if (typeof window !== 'undefined') {
-    window.location.reload()
-  }
+  reloadPage()
 
   throw lastError
 }
