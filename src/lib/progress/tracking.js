@@ -102,13 +102,14 @@ export async function trackAttemptSubmitted(attemptId, result) {
   if (!currentSession) {
     throw new Error('Sistema de tracking no inicializado')
   }
-  
+
   try {
     // Usar etiquetas si vienen desde la UI; si no, clasificar
-    let errorTags = Array.isArray(result.errorTags) ? result.errorTags : []
+    let errorTags = dedupeErrorTags(result.errorTags)
     if (errorTags.length === 0 && !result.correct && !result.isAccentError) {
-      errorTags = classifyError(result.userAnswer, result.correctAnswer, result.item)
+      errorTags = classifyCompositeAnswers(result.userAnswer, result.correctAnswer, result.item)
     }
+    errorTags = dedupeErrorTags(errorTags)
     // Derivar identidad canónica del ítem/celda
     const lemma = result.item?.lemma || result.item?.form?.lemma || 'unknown_verb'
     const mood = result.item?.mood || result.item?.form?.mood
@@ -313,6 +314,50 @@ export async function trackAttemptSubmitted(attemptId, result) {
     console.error(`❌ Error al registrar intento ${attemptId}:`, error)
     throw error
   }
+}
+
+function dedupeErrorTags(tags) {
+  if (!tags) return []
+  const normalized = Array.isArray(tags) ? tags : [tags]
+  return Array.from(new Set(normalized.filter(Boolean)))
+}
+
+function flattenAnswerStructure(answer) {
+  if (Array.isArray(answer)) {
+    return answer
+      .filter(value => value !== undefined && value !== null)
+      .map(value => String(value))
+  }
+
+  if (answer && typeof answer === 'object') {
+    return Object.values(answer)
+      .filter(value => value !== undefined && value !== null)
+      .map(value => String(value))
+  }
+
+  if (answer === undefined || answer === null) {
+    return []
+  }
+
+  return [String(answer)]
+}
+
+function classifyCompositeAnswers(userAnswer, correctAnswer, item) {
+  const userValues = flattenAnswerStructure(userAnswer)
+  const correctValues = flattenAnswerStructure(correctAnswer)
+  const maxLength = Math.max(userValues.length, correctValues.length, 1)
+  const combined = new Set()
+
+  for (let i = 0; i < maxLength; i++) {
+    const user = userValues[i] ?? userValues[userValues.length - 1] ?? ''
+    const correct = correctValues[i] ?? correctValues[correctValues.length - 1] ?? ''
+    const tags = classifyError(user, correct, item)
+    if (Array.isArray(tags)) {
+      tags.filter(Boolean).forEach(tag => combined.add(tag))
+    }
+  }
+
+  return Array.from(combined)
 }
 
 /**

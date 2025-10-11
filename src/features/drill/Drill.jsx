@@ -179,10 +179,24 @@ export default function Drill({
       } : getCanonicalTarget();
       const secondRes = secondTarget ? grade(secondInput.trim(), secondTarget, currentItem.settings || {}) : { correct: false };
       const correct = firstRes.correct && secondRes.correct;
+      const primaryTarget = getCanonicalTarget()?.value || '';
+      const secondaryTarget = secondTarget?.value || '';
+      const aggregatedErrorTags = Array.from(
+        new Set([...(firstRes.errorTags || []), ...(secondRes.errorTags || [])].filter(Boolean))
+      );
       const resultObj = {
         correct,
         isAccentError: firstRes.isAccentError || secondRes.isAccentError,
-        targets: [getCanonicalTarget()?.value || '', secondTarget?.value || '']
+        targets: [primaryTarget, secondaryTarget],
+        userAnswer: {
+          first: input.trim(),
+          second: secondInput.trim()
+        },
+        correctAnswer: {
+          first: primaryTarget,
+          second: secondaryTarget
+        },
+        errorTags: aggregatedErrorTags
       };
       setResult(resultObj);
       

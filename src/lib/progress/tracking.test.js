@@ -55,11 +55,14 @@ vi.mock('./incrementalMastery.js', () => ({
   notifyNewAttempt: vi.fn()
 }))
 
+import { classifyError } from './errorClassification.js'
+
 describe('Sistema de Tracking', () => {
   const testUserId = 'test-user-123'
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    classifyError.mockReturnValue(['grammar'])
     await initTracking(testUserId)
   })
 
@@ -376,6 +379,35 @@ describe('Sistema de Tracking', () => {
       expect(stats.userId).toBe(testUserId)
       expect(stats.totalAttempts).toBe(2)
       expect(stats.correctAttempts).toBe(1)
+    })
+
+    it('debería clasificar respuestas compuestas cuando faltan etiquetas', async () => {
+      classifyError.mockImplementation((user) => {
+        if (user === 'fallo1') return ['wrong-person']
+        if (user === 'fallo2') return ['wrong-tense']
+        return ['grammar']
+      })
+
+      const attemptId = trackAttemptStarted({
+        id: 'double-item',
+        lemma: 'hablar',
+        mood: 'indicativo',
+        tense: 'presente',
+        person: '1s'
+      })
+
+      await trackAttemptSubmitted(attemptId, {
+        item: { lemma: 'hablar', mood: 'indicativo', tense: 'presente', person: '1s' },
+        correct: false,
+        userAnswer: ['fallo1', 'fallo2'],
+        correctAnswer: ['correcta1', 'correcta2'],
+        latencyMs: 1500
+      })
+
+      const { saveAttempt } = await import('./database.js')
+      const attemptPayload = saveAttempt.mock.calls.at(-1)[0]
+      expect(attemptPayload.errorTags).toEqual(['wrong-person', 'wrong-tense'])
+      expect(classifyError).toHaveBeenCalledTimes(2)
     })
   })
 })

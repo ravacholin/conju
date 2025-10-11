@@ -30,6 +30,7 @@ vi.mock('../../../lib/progress/index.js', () => ({
 vi.mock('../../../lib/utils/logger.js', () => ({
   createLogger: () => ({
     debug: vi.fn(),
+    info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
   })
@@ -205,15 +206,18 @@ describe('useProgressTracking', () => {
       })
 
       expect(mockOnResult).toHaveBeenCalledWith(pronunciationResult)
-      expect(trackAttemptSubmitted).toHaveBeenCalledWith('attempt-123', {
-        correct: true,
-        latencyMs: 1500,
-        hintsUsed: 0,
-        errorTags: [],
-        userAnswer: 'hablo',
-        correctAnswer: 'hablo',
-        item: currentItem
-      })
+      expect(trackAttemptSubmitted).toHaveBeenCalledWith(
+        'attempt-123',
+        expect.objectContaining({
+          correct: true,
+          latencyMs: expect.any(Number),
+          hintsUsed: 0,
+          errorTags: [],
+          userAnswer: 'hablo',
+          correctAnswer: 'hablo',
+          item: currentItem
+        })
+      )
     })
 
     it('should handle incorrect pronunciation results', async () => {
@@ -245,15 +249,52 @@ describe('useProgressTracking', () => {
         await result.current.handleResult(incorrectResult)
       })
 
-      expect(trackAttemptSubmitted).toHaveBeenCalledWith('attempt-123', {
+      expect(trackAttemptSubmitted).toHaveBeenCalledWith(
+        'attempt-123',
+        expect.objectContaining({
+          correct: false,
+          latencyMs: expect.any(Number),
+          hintsUsed: 0,
+          errorTags: ['pronunciation-error'],
+          userAnswer: 'ablo',
+          correctAnswer: 'hablo',
+          item: currentItem
+        })
+      )
+    })
+
+    it('should forward composite answers for double attempts', async () => {
+      const mockOnResult = vi.fn()
+      const currentItem = { id: 'double-item', verb: 'hablar', value: 'hablo' }
+
+      const { result } = renderHook(() => useProgressTracking(currentItem, mockOnResult))
+
+      const doubleAttemptResult = {
         correct: false,
-        latencyMs: 2000,
-        hintsUsed: 0,
-        errorTags: ['pronunciation-error'],
-        userAnswer: 'ablo',
-        correctAnswer: 'hablo',
-        item: currentItem
+        latencyMs: 1800,
+        hintsUsed: 1,
+        errorTags: ['wrong-person', 'accent'],
+        userAnswer: { first: 'hablas', second: 'habláis' },
+        correctAnswer: { first: 'hablo', second: 'hablamos' }
+      }
+
+      await act(async () => {
+        await result.current.handleResult(doubleAttemptResult)
       })
+
+      expect(mockOnResult).toHaveBeenCalledWith(doubleAttemptResult)
+      expect(trackAttemptSubmitted).toHaveBeenCalledWith(
+        'attempt-123',
+        expect.objectContaining({
+          correct: false,
+          latencyMs: expect.any(Number),
+          hintsUsed: 1,
+          errorTags: ['wrong-person', 'accent'],
+          userAnswer: { first: 'hablas', second: 'habláis' },
+          correctAnswer: { first: 'hablo', second: 'hablamos' },
+          item: currentItem
+        })
+      )
     })
 
     it('should handle legacy result format (backwards compatibility)', async () => {
