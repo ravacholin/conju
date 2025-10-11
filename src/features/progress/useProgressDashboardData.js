@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import {
   getHeatMapData,
   getUserStats,
@@ -719,6 +719,120 @@ export default function useProgressDashboardData() {
     }
   }, [])
 
+  const practiceReminders = useMemo(() => {
+    const reminders = []
+    const now = Date.now()
+    const dayMs = 24 * 60 * 60 * 1000
+
+    const heatMapEntries =
+      heatMapData && typeof heatMapData === 'object' && heatMapData.heatMap
+        ? Object.entries(heatMapData.heatMap)
+        : []
+
+    const lastAttempts = heatMapEntries
+      .map(([, entry]) => Number(entry?.lastAttempt))
+      .filter(timestamp => Number.isFinite(timestamp) && timestamp > 0)
+
+    const latestAttempt = lastAttempts.length > 0 ? Math.max(...lastAttempts) : null
+
+    if (!latestAttempt) {
+      reminders.push({
+        id: 'no-practice-yet',
+        category: 'activity',
+        priority: 'high',
+        message: 'Aún no registramos sesiones recientes. Practica un verbo para iniciar tu racha.',
+        metadata: {}
+      })
+    } else {
+      const daysSincePractice = Math.max(0, Math.floor((now - latestAttempt) / dayMs))
+      if (daysSincePractice >= 2) {
+        reminders.push({
+          id: 'gap-multi-day',
+          category: 'activity',
+          priority: 'high',
+          message: `Han pasado ${daysSincePractice} días desde tu última práctica. Retoma una sesión corta para evitar perder progreso.`,
+          metadata: { daysSincePractice }
+        })
+      } else if (daysSincePractice === 1) {
+        reminders.push({
+          id: 'gap-single-day',
+          category: 'activity',
+          priority: 'medium',
+          message: 'Tomaste un descanso ayer. Una sesión rápida hoy mantendrá tu racha activa.',
+          metadata: { daysSincePractice }
+        })
+      }
+    }
+
+    const untouchedCells = heatMapEntries.filter(([, entry]) => (entry?.attempts || 0) === 0)
+    if (untouchedCells.length > 0) {
+      const sample = untouchedCells
+        .slice(0, 2)
+        .map(([key]) => key.replace('-', ' '))
+        .filter(Boolean)
+      const detail = sample.length > 0 ? ` (${sample.join(', ')})` : ''
+      reminders.push({
+        id: 'untouched-areas',
+        category: 'coverage',
+        priority: 'low',
+        message: `Hay ${untouchedCells.length} áreas sin intentos recientes${detail}. Agenda un recordatorio para repasarlas.`,
+        metadata: { untouchedCount: untouchedCells.length }
+      })
+    }
+
+    const sessionsGoal = Number(weeklyGoals?.SESSIONS) || 0
+    const sessionsCompleted = Number(weeklyProgress?.sessionsCompleted) || 0
+    const sessionsRemaining = Math.max(0, sessionsGoal - sessionsCompleted)
+    if (sessionsGoal > 0 && sessionsRemaining >= Math.ceil(sessionsGoal / 2)) {
+      reminders.push({
+        id: 'sessions-behind',
+        category: 'weekly-goal',
+        priority: sessionsRemaining >= sessionsGoal ? 'high' : 'medium',
+        message: `Quedan ${sessionsRemaining} sesiones para tu meta semanal de ${sessionsGoal}. Programa avisos para distribuirlas mejor.`,
+        metadata: { sessionsRemaining, sessionsGoal }
+      })
+    }
+
+    const attemptsGoal = Number(weeklyGoals?.ATTEMPTS) || 0
+    const attemptsMade = Number(weeklyProgress?.attemptsMade) || 0
+    const attemptsRemaining = Math.max(0, attemptsGoal - attemptsMade)
+    if (attemptsGoal > 0 && attemptsRemaining > attemptsGoal * 0.4) {
+      reminders.push({
+        id: 'attempts-behind',
+        category: 'weekly-goal',
+        priority: 'medium',
+        message: `Te faltan ${attemptsRemaining} intentos para tu meta semanal (${attemptsGoal}). Considera dividirlos en sesiones diarias.`,
+        metadata: { attemptsRemaining, attemptsGoal }
+      })
+    }
+
+    const focusGoal = Number(weeklyGoals?.FOCUS_TIME) || 0
+    const focusMinutes = Number(weeklyProgress?.focusTime) || 0
+    if (focusGoal > 0 && focusMinutes < focusGoal * 0.6) {
+      reminders.push({
+        id: 'focus-time',
+        category: 'weekly-goal',
+        priority: 'low',
+        message: `Llevas ${focusMinutes} minutos enfocados de los ${focusGoal} planeados esta semana. Un recordatorio diario podría ayudarte a cerrar la brecha.`,
+        metadata: { focusMinutes, focusGoal }
+      })
+    }
+
+    const attemptsToday = Number(userStats?.attemptsToday) || 0
+    const focusToday = Number(userStats?.focusMinutesToday) || 0
+    if (attemptsToday === 0 && focusToday === 0 && latestAttempt) {
+      reminders.push({
+        id: 'no-progress-today',
+        category: 'daily-goal',
+        priority: 'medium',
+        message: 'Todavía no registramos progreso hoy. Configura un recordatorio para asegurar al menos una mini sesión diaria.',
+        metadata: {}
+      })
+    }
+
+    return reminders
+  }, [heatMapData, weeklyGoals, weeklyProgress, userStats])
+
   return {
     // state
     heatMapData,
@@ -742,6 +856,7 @@ export default function useProgressDashboardData() {
     error,
     refreshing,
     systemReady,
+    practiceReminders,
     // actions
     loadData,
     refresh,

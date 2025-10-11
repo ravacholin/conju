@@ -241,4 +241,23 @@ describe('useProgressDashboardData', () => {
     expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
     expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
   })
+
+  it('genera recordatorios cuando no hay práctica reciente', async () => {
+    const { result } = renderHook(() => useProgressDashboardData())
+
+    await waitFor(() => {
+      expect(onProgressSystemReady).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      __triggerReady(true)
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(Array.isArray(result.current.practiceReminders)).toBe(true)
+    })
+
+    expect(result.current.practiceReminders.some(reminder => reminder.id === 'no-practice-yet')).toBe(true)
+  })
 })

@@ -380,6 +380,179 @@
   font-weight: 350;
 }
 
+/* Practice Reminders */
+.practice-reminders {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 24px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reminder-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.setting-row.days-picker {
+  grid-column: 1 / -1;
+}
+
+.setting-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.setting-field input[type='time'] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(245, 245, 245, 0.12);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.setting-field input[type='time']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input {
+  width: 18px;
+  height: 18px;
+}
+
+.weekday-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(36px, 1fr));
+  gap: 0.5rem;
+}
+
+.weekday {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(245, 245, 245, 0.1);
+  border-radius: 10px;
+  padding: 0.45rem 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.weekday.active {
+  color: var(--text);
+  background: rgba(125, 233, 184, 0.15);
+  border-color: rgba(125, 233, 184, 0.4);
+}
+
+.weekday:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.reminder-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reminder-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(245, 245, 245, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reminder-card.priority-high {
+  border-color: rgba(255, 87, 87, 0.6);
+  box-shadow: 0 6px 24px rgba(255, 87, 87, 0.12);
+}
+
+.reminder-card.priority-medium {
+  border-color: rgba(255, 198, 87, 0.45);
+}
+
+.reminder-card.priority-low {
+  border-color: rgba(125, 233, 184, 0.25);
+}
+
+.reminder-text {
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.reminder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.reminder-button {
+  background: rgba(125, 233, 184, 0.18);
+  border: 1px solid rgba(125, 233, 184, 0.45);
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.reminder-button.secondary {
+  background: transparent;
+  border-color: rgba(245, 245, 245, 0.18);
+}
+
+.reminder-button:hover {
+  transform: translateY(-1px);
+  background: rgba(125, 233, 184, 0.28);
+}
+
+.reminder-button.secondary:hover {
+  background: rgba(245, 245, 245, 0.08);
+}
+
+.reminder-empty {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 /* SRS Summary */
 .srs-summary {
   background: rgba(125, 233, 184, 0.1);
