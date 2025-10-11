@@ -243,28 +243,66 @@ export class StoryBuildingExercise extends ExerciseBase {
   }
 
   generateVerbPatterns(verb) {
-    // Generar patrones regex para diferentes conjugaciones del verbo
+    // Normalizar el verbo para mantener coherencia con la detección del texto
+    const normalizedVerb = this.normalizeText(verb);
     const patterns = [];
 
-    // Patrón básico del infinitivo
-    patterns.push(new RegExp(`\\b${verb}\\b`, 'i'));
+    const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+    const addPatternForEndings = (stem, endings) => {
+      const normalizedEndings = endings
+        .filter(Boolean)
+        .map(ending => this.normalizeText(ending));
 
-    // Patrones comunes de conjugación según la terminación
-    if (verb.endsWith('ar')) {
-      const stem = verb.slice(0, -2);
-      patterns.push(new RegExp(`\\b${stem}(o|as|a|amos|áis|an)\\b`, 'i')); // presente
-      patterns.push(new RegExp(`\\b${stem}(é|aste|ó|amos|asteis|aron)\\b`, 'i')); // pretérito
-      patterns.push(new RegExp(`\\b${stem}(aba|abas|aba|ábamos|abais|aban)\\b`, 'i')); // imperfecto
-    } else if (verb.endsWith('er')) {
-      const stem = verb.slice(0, -2);
-      patterns.push(new RegExp(`\\b${stem}(o|es|e|emos|éis|en)\\b`, 'i')); // presente
-      patterns.push(new RegExp(`\\b${stem}(í|iste|ió|imos|isteis|ieron)\\b`, 'i')); // pretérito
-      patterns.push(new RegExp(`\\b${stem}(ía|ías|ía|íamos|íais|ían)\\b`, 'i')); // imperfecto
-    } else if (verb.endsWith('ir')) {
-      const stem = verb.slice(0, -2);
-      patterns.push(new RegExp(`\\b${stem}(o|es|e|imos|ís|en)\\b`, 'i')); // presente
-      patterns.push(new RegExp(`\\b${stem}(í|iste|ió|imos|isteis|ieron)\\b`, 'i')); // pretérito
-      patterns.push(new RegExp(`\\b${stem}(ía|ías|ía|íamos|íais|ían)\\b`, 'i')); // imperfecto
+      if (normalizedEndings.length === 0) {
+        return;
+      }
+
+      const uniqueEndings = Array.from(new Set(normalizedEndings)).map(escapeRegExp);
+      const group = uniqueEndings.length === 1 ? uniqueEndings[0] : `(?:${uniqueEndings.join('|')})`;
+      patterns.push(new RegExp(`\\b${escapeRegExp(stem)}${group}\\b`, 'i'));
+    };
+
+    // Patrón básico del infinitivo normalizado
+    patterns.push(new RegExp(`\\b${escapeRegExp(normalizedVerb)}\\b`, 'i'));
+
+    const endingsByGroup = {
+      ar: {
+        present: ['o', 'as', 'a', 'amos', 'ais', 'an'],
+        preterite: ['e', 'aste', 'o', 'amos', 'asteis', 'aron'],
+        imperfect: ['aba', 'abas', 'aba', 'abamos', 'abais', 'aban']
+      },
+      er: {
+        present: ['o', 'es', 'e', 'emos', 'eis', 'en'],
+        preterite: ['i', 'iste', 'io', 'imos', 'isteis', 'ieron'],
+        imperfect: ['ia', 'ias', 'ia', 'iamos', 'iais', 'ian']
+      },
+      ir: {
+        present: ['o', 'es', 'e', 'imos', 'is', 'en'],
+        preterite: ['i', 'iste', 'io', 'imos', 'isteis', 'ieron'],
+        imperfect: ['ia', 'ias', 'ia', 'iamos', 'iais', 'ian']
+      }
+    };
+
+    const verbEnding = normalizedVerb.slice(-2);
+    const stem = normalizedVerb.slice(0, -2);
+
+    if (endingsByGroup[verbEnding]) {
+      const groups = endingsByGroup[verbEnding];
+      Object.values(groups).forEach(endings => addPatternForEndings(stem, endings));
+
+      // Manejar conjugaciones con inserción de 'y' para verbos que lo requieren
+      const requiresYInPreterite = /(?:a|e|o)er$/.test(normalizedVerb) || normalizedVerb.endsWith('oir');
+      const isUirVerb = normalizedVerb.endsWith('uir') && !normalizedVerb.endsWith('guir');
+
+      if (requiresYInPreterite || isUirVerb) {
+        const yEndings = ['yo', 'yeron', 'yendo'];
+
+        if (isUirVerb || normalizedVerb.endsWith('oir')) {
+          yEndings.push('yes', 'ye', 'yen');
+        }
+
+        addPatternForEndings(stem, yEndings);
+      }
     }
 
     return patterns;
@@ -412,8 +450,10 @@ export class StoryBuildingExercise extends ExerciseBase {
 
   // Método para obtener estadísticas del ejercicio
   getExerciseStats() {
+    const baseStats = typeof super.getExerciseStats === 'function' ? super.getExerciseStats() : {};
+
     return {
-      ...super.getExerciseStats(),
+      ...baseStats,
       elementsUsed: this.storyProgress.elementsUsed,
       requiredElements: this.requiredElements,
       verbsDetected: this.storyProgress.verbsDetected.length,
