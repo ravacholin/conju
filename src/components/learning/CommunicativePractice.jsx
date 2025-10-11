@@ -24,12 +24,20 @@ function detectTenseUsage(userText, expectedTense) {
   const expectedPattern = TENSE_PATTERNS[expectedTense];
   const wrongTenseUsed = [];
 
+  const testPattern = (pattern) => {
+    if (!pattern) return false;
+    // The patterns are declared with the global flag, so reset the index before
+    // every test to avoid state leaking between executions and causing regressions.
+    pattern.lastIndex = 0;
+    return pattern.test(text);
+  };
+
   // Check if user used expected tense
-  const hasExpectedTense = expectedPattern && expectedPattern.test(text);
+  const hasExpectedTense = testPattern(expectedPattern);
 
   // Check for wrong tenses
   for (const [tense, pattern] of Object.entries(TENSE_PATTERNS)) {
-    if (tense !== expectedTense && pattern.test(text)) {
+    if (tense !== expectedTense && testPattern(pattern)) {
       wrongTenseUsed.push(tense);
     }
   }
@@ -461,4 +469,5 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
   );
 }
 
+export { detectTenseUsage };
 export default CommunicativePractice;
