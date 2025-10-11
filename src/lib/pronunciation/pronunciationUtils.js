@@ -1,13 +1,21 @@
+import { resolveDialect } from './languagePreferences.js';
+
 // Utilidades de pronunciación extraídas para reutilización en paneles de drill
 
 /**
  * Genera notación IPA simplificada para una palabra española
  * @param {string} word - Palabra a procesar
+ * @param {string} [dialect='general'] - Dialecto preferido (general, peninsular, etc.)
  * @returns {string} Notación IPA aproximada
  */
-export const generateIPA = (word) => {
+export const generateIPA = (word, dialect = 'general') => {
   // Versión simplificada - en producción se usaría un diccionario fonético
-  return `/${word.replace(/h/g, '').replace(/qu/g, 'k').replace(/c([ei])/g, 'θ$1')}/`;
+  const softCSound = dialect === 'peninsular' ? 'θ' : 's';
+  return `/${word
+    .replace(/h/gi, '')
+    .replace(/qu/gi, 'k')
+    .replace(/c([ei])/gi, `${softCSound}$1`)
+    .replace(/z/gi, softCSound)}/`;
 };
 
 /**
@@ -80,11 +88,12 @@ export const generatePronunciationTip = (word, _verb) => {
  * @param {Object} currentItem - Item actual del drill
  * @returns {Object} Datos de pronunciación para el item
  */
-export const convertCurrentItemToPronunciation = (currentItem) => {
+export const convertCurrentItemToPronunciation = (currentItem, { dialect, region } = {}) => {
   if (!currentItem) return null;
 
   const form = currentItem.value || currentItem.form?.value || currentItem.expectedValue || '';
   const verb = currentItem.lemma || '';
+  const resolvedDialect = dialect || resolveDialect(region);
 
   return {
     verb: verb,
@@ -92,7 +101,7 @@ export const convertCurrentItemToPronunciation = (currentItem) => {
     person: currentItem.person || '',
     mood: currentItem.mood || '',
     tense: currentItem.tense || '',
-    ipa: generateIPA(form),
+    ipa: generateIPA(form, resolvedDialect),
     pronunciation: generatePronunciationGuide(form),
     tip: generatePronunciationTip(form, verb),
     audioKey: `${verb}_${currentItem.tense}_${currentItem.person}`
