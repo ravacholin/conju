@@ -31,8 +31,21 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     error,
     systemReady,
     refresh,
-    practiceReminders
+    practiceReminders,
+    offlineStatus
   } = useProgressDashboardData()
+
+  const isOnline = React.useMemo(() => {
+    if (offlineStatus && typeof offlineStatus.isOffline === 'boolean') {
+      return !offlineStatus.isOffline
+    }
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      return false
+    }
+    return true
+  }, [offlineStatus])
+
+  const previousOnlineRef = React.useRef(isOnline)
 
   const handleShowToast = React.useCallback((toastConfig) => {
     if (!toastConfig || !toastConfig.message) {
@@ -83,10 +96,23 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
   // Auto-sync on mount
   React.useEffect(() => {
-    if (syncAvailable && !loading && systemReady) {
+    if (syncAvailable && !loading && systemReady && isOnline) {
       handleSync()
     }
-  }, [syncAvailable, loading, systemReady])
+  }, [syncAvailable, loading, systemReady, isOnline])
+
+  React.useEffect(() => {
+    const wasOnline = previousOnlineRef.current
+    previousOnlineRef.current = isOnline
+
+    if (!wasOnline && isOnline && syncAvailable && !loading && systemReady) {
+      setToast({
+        message: 'Conexión restablecida. Reintentando sincronización...',
+        type: 'info'
+      })
+      handleSync()
+    }
+  }, [isOnline, syncAvailable, loading, systemReady])
 
   if (loading) {
     return (
