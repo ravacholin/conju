@@ -4,7 +4,12 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { generatePronunciationGuide, generateIPA, generatePronunciationTip } from '../pronunciationUtils.js'
+import {
+  generatePronunciationGuide,
+  generateIPA,
+  generatePronunciationTip,
+  convertCurrentItemToPronunciation
+} from '../pronunciationUtils.js'
 
 describe('pronunciationUtils', () => {
   describe('generatePronunciationGuide', () => {
@@ -144,9 +149,19 @@ describe('pronunciationUtils', () => {
       expect(generateIPA('quiero')).toContain('kiero')
     })
 
-    it('should handle c before e/i', () => {
-      expect(generateIPA('cena')).toContain('θena')
-      expect(generateIPA('cinco')).toContain('θinco')
+    it('should use american soft c sound by default', () => {
+      expect(generateIPA('cena')).toContain('sena')
+      expect(generateIPA('cinco')).toContain('sinco')
+    })
+
+    it('should support peninsular soft c sound', () => {
+      expect(generateIPA('cena', 'peninsular')).toContain('θena')
+      expect(generateIPA('cinco', 'peninsular')).toContain('θinco')
+    })
+
+    it('should map z according to dialect', () => {
+      expect(generateIPA('zapato')).toContain('sapato')
+      expect(generateIPA('zapato', 'peninsular')).toContain('θapato')
     })
 
     it('should wrap result in slashes', () => {
@@ -191,6 +206,31 @@ describe('pronunciationUtils', () => {
       const tip = generatePronunciationTip('hallar')
       expect(tip).toContain('muda')
       expect(tip).toContain('Ll')
+    })
+  })
+
+  describe('convertCurrentItemToPronunciation', () => {
+    const baseItem = {
+      value: 'cena',
+      lemma: 'cenar',
+      person: 'yo',
+      mood: 'indicativo',
+      tense: 'presente'
+    }
+
+    it('should default to american soft c when no dialect provided', () => {
+      const result = convertCurrentItemToPronunciation(baseItem)
+      expect(result.ipa).toContain('sena')
+    })
+
+    it('should accept explicit dialect parameter', () => {
+      const result = convertCurrentItemToPronunciation(baseItem, { dialect: 'peninsular' })
+      expect(result.ipa).toContain('θena')
+    })
+
+    it('should resolve dialect from region option', () => {
+      const result = convertCurrentItemToPronunciation(baseItem, { region: 'peninsular' })
+      expect(result.ipa).toContain('θena')
     })
   })
 })

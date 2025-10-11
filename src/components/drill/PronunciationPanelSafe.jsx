@@ -78,10 +78,13 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
   const pronunciationData = useMemo(() => {
     console.log('🎤 CREATING PRONUNCIATION DATA FROM:', currentItem);
-    const result = convertCurrentItemToPronunciation(currentItem);
+    const result = convertCurrentItemToPronunciation(currentItem, {
+      dialect,
+      region: settings?.region
+    });
     console.log('🎤 PRONUNCIATION DATA RESULT:', result);
     return result;
-  }, [currentItem]);
+  }, [currentItem, dialect, settings?.region]);
 
   // Function to play correct pronunciation - DEFINED AFTER pronunciationData
   const playCorrectPronunciation = useCallback(() => {
