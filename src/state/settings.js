@@ -93,6 +93,11 @@ const useSettings = create(
       // Metas diarias
       dailyGoalType: 'attempts',
       dailyGoalValue: 20,
+
+      // Recordatorios de práctica
+      practiceReminderEnabled: false,
+      practiceReminderTime: '19:00',
+      practiceReminderDays: [1, 2, 3, 4, 5],
       
       // Métodos para actualizar configuración
       set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
@@ -149,6 +154,40 @@ const useSettings = create(
               : Math.round(sanitized)
         }))
       },
+
+      setPracticeReminderEnabled: (enabled) =>
+        set({ practiceReminderEnabled: Boolean(enabled) }),
+      setPracticeReminderTime: (time) => {
+        if (typeof time !== 'string' || time.length < 3) {
+          return set({ practiceReminderTime: '19:00' })
+        }
+        const [hours, minutes] = time.split(':')
+        const normalizedHours = String(Math.max(0, Math.min(23, Number(hours) || 0))).padStart(2, '0')
+        const normalizedMinutes = String(Math.max(0, Math.min(59, Number(minutes) || 0))).padStart(2, '0')
+        set({ practiceReminderTime: `${normalizedHours}:${normalizedMinutes}` })
+      },
+      togglePracticeReminderDay: (dayIndex) => {
+        const normalized = Number.isInteger(dayIndex) ? ((dayIndex % 7) + 7) % 7 : null
+        if (normalized === null) return
+        set((state) => {
+          const current = Array.isArray(state.practiceReminderDays) ? state.practiceReminderDays : []
+          const exists = current.includes(normalized)
+          const updated = exists
+            ? current.filter(day => day !== normalized)
+            : [...current, normalized].sort((a, b) => a - b)
+          return { practiceReminderDays: updated }
+        })
+      },
+      setPracticeReminderDays: (days) => {
+        const normalized = Array.isArray(days)
+          ? Array.from(new Set(
+              days
+                .map(day => ((Number(day) % 7) + 7) % 7)
+                .filter(day => Number.isInteger(day))
+            )).sort((a, b) => a - b)
+          : []
+        set({ practiceReminderDays: normalized })
+      },
       
       // Métodos para debugging
       getCacheStats: () => {
@@ -194,7 +233,10 @@ const useSettings = create(
         cliticsPercent: state.cliticsPercent,
         resistanceBestMsByLevel: state.resistanceBestMsByLevel,
         dailyGoalType: state.dailyGoalType,
-        dailyGoalValue: state.dailyGoalValue
+        dailyGoalValue: state.dailyGoalValue,
+        practiceReminderEnabled: state.practiceReminderEnabled,
+        practiceReminderTime: state.practiceReminderTime,
+        practiceReminderDays: state.practiceReminderDays
       })
     }
   )
