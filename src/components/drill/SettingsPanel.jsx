@@ -13,7 +13,7 @@ function SettingsPanel({
   const getDialectValue = () => {
     if (settings.region === 'rioplatense' && settings.useVoseo && !settings.useTuteo) return 'rioplatense'
     if (settings.region === 'peninsular' && settings.useVosotros) return 'peninsular'
-    if (!settings.strict && settings.useTuteo && settings.useVoseo) return 'both'
+    if (settings.strict === false && settings.useTuteo && settings.useVoseo) return 'both'
     return 'la_general'
   }
 

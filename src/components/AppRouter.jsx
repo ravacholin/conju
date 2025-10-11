@@ -68,7 +68,9 @@ function AppRouter() {
     useShallow((state) => ({
       region: state.region,
       useVoseo: state.useVoseo,
+      useTuteo: state.useTuteo,
       useVosotros: state.useVosotros,
+      strict: state.strict ?? true,
       practiceMode: state.practiceMode,
       specificMood: state.specificMood,
       specificTense: state.specificTense,
@@ -100,7 +102,9 @@ function AppRouter() {
     () => ({
       region: settings.region,
       useVoseo: settings.useVoseo,
+      useTuteo: settings.useTuteo,
       useVosotros: settings.useVosotros,
+      strict: settings.strict ?? true,
       practiceMode: settings.practiceMode,
       specificMood: settings.specificMood,
       specificTense: settings.specificTense,
@@ -110,7 +114,9 @@ function AppRouter() {
     [
       settings.region,
       settings.useVoseo,
+      settings.useTuteo,
       settings.useVosotros,
+      settings.strict,
       settings.practiceMode,
       settings.specificMood,
       settings.specificTense,
@@ -127,8 +133,8 @@ function AppRouter() {
       return
     }
 
-    const cachedEntry = formsCacheRef.current.get(formsSettings.region)
-    if (cachedEntry && cachedEntry.key === formsSettingsKey) {
+    const cachedEntry = formsCacheRef.current.get(formsSettingsKey)
+    if (cachedEntry) {
       setFormsForRegion(cachedEntry.forms)
       return
     }
@@ -140,10 +146,7 @@ function AppRouter() {
         const forms = await buildFormsForRegion(formsSettings.region, formsSettings)
         if (!cancelled) {
           setFormsForRegion(forms)
-          formsCacheRef.current.set(formsSettings.region, {
-            key: formsSettingsKey,
-            forms
-          })
+          formsCacheRef.current.set(formsSettingsKey, { forms })
         }
       } catch (error) {
         if (!cancelled) {

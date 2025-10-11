@@ -12,7 +12,7 @@ function QuickSwitchPanel({
   const getDialectValue = () => {
     if (settings.region === 'rioplatense' && settings.useVoseo && !settings.useTuteo) return 'rioplatense'
     if (settings.region === 'peninsular' && settings.useVosotros) return 'peninsular'
-    if (!settings.strict && settings.useTuteo && settings.useVoseo && settings.useVosotros) return 'both'
+    if (settings.strict === false && settings.useTuteo && settings.useVoseo && settings.useVosotros) return 'both'
     return 'la_general'
   }
 
