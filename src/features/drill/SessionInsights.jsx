@@ -51,12 +51,21 @@ export default function SessionInsights() {
     updateInsights()
     
     // Update on progress events
-    const handleProgressUpdate = () => updateInsights()
-    window.addEventListener('progress:update', handleProgressUpdate)
-    
+    const handleProgressUpdate = (event) => {
+      const detailUserId = event?.detail?.userId
+      if (detailUserId) {
+        const currentUserId = getCurrentUserId()
+        if (!currentUserId || detailUserId !== currentUserId) {
+          return
+        }
+      }
+      updateInsights()
+    }
+    window.addEventListener('progress:dataUpdated', handleProgressUpdate)
+
     return () => {
       mounted = false
-      window.removeEventListener('progress:update', handleProgressUpdate)
+      window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
   }, [])
 
@@ -78,8 +87,15 @@ export default function SessionInsights() {
                 setShowInsights(false)
                 setToast({ message: 'Perfil creado, cargando métricas…', type: 'success' })
                 setTimeout(() => {
-                  const ev = new Event('progress:update')
-                  window.dispatchEvent(ev)
+                  const currentUser = getCurrentUserId()
+                  window.dispatchEvent(
+                    new CustomEvent('progress:dataUpdated', {
+                      detail: {
+                        source: 'profile:init',
+                        userId: currentUser || undefined
+                      }
+                    })
+                  )
                 }, 50)
               } catch {
                 setMissingUser(true)
