@@ -134,10 +134,14 @@ export function markSessionAsStarted(sessionId) {
   }
 }
 
+function applyManualCompletionState(session, manualEnd = false) {
+  session.manualEnd = manualEnd
+}
+
 /**
  * Marca una sesión como completada
  */
-export async function markSessionAsCompleted(sessionId, stats = {}) {
+export async function markSessionAsCompleted(sessionId, stats = {}, options = {}) {
   try {
     const plan = getActivePlan()
     if (!plan) return false
@@ -145,6 +149,7 @@ export async function markSessionAsCompleted(sessionId, stats = {}) {
     const sessionIndex = plan.sessions.findIndex(s => s.sessionId === sessionId)
     if (sessionIndex === -1) return false
 
+    const manualEnd = Boolean(options.manualEnd ?? stats.manualEnd)
     plan.sessions[sessionIndex].status = 'completed'
     plan.sessions[sessionIndex].completedAt = Date.now()
     plan.sessions[sessionIndex].stats = {
@@ -154,13 +159,16 @@ export async function markSessionAsCompleted(sessionId, stats = {}) {
       ...stats
     }
 
+    plan.sessions[sessionIndex].stats.manualEnd = manualEnd
+    applyManualCompletionState(plan.sessions[sessionIndex], manualEnd)
+
     // Actualizar progreso
     plan.progress.completed = plan.sessions.filter(s => s.status === 'completed').length
 
     saveActivePlan(plan)
 
     // Persistir en IndexedDB para sincronización
-    await persistSessionCompletionToDb(plan.planId, sessionId, stats)
+    await persistSessionCompletionToDb(plan.planId, sessionId, plan.sessions[sessionIndex].stats)
 
     logger.info('Session completed:', sessionId, stats)
 

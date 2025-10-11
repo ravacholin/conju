@@ -233,7 +233,7 @@ export class SessionManager {
    * Finaliza la sesión actual
    * @returns {Object} - Métricas finales de la sesión
    */
-  endSession() {
+  endSession(options = {}) {
     if (!this.currentSession) {
       return null
     }
@@ -249,8 +249,13 @@ export class SessionManager {
       activitiesCompleted: this.completedActivities
     }
 
-    logger.info('endSession', 'Session ended', finalMetrics)
-    this.dispatchSessionUpdate('session_ended', finalMetrics)
+    const manualEnd = Boolean(options.manualEnd)
+
+    logger.info('endSession', 'Session ended', {
+      ...finalMetrics,
+      manualEnd
+    })
+    this.dispatchSessionUpdate('session_ended', finalMetrics, { manualEnd })
 
     // Limpiar estado
     this.currentSession = null
@@ -275,13 +280,14 @@ export class SessionManager {
    * @param {string} eventType - Tipo de evento
    * @param {Object} data - Datos adicionales
    */
-  dispatchSessionUpdate(eventType, data = null) {
+  dispatchSessionUpdate(eventType, data = null, extraDetail = {}) {
     try {
       if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
         const eventData = {
           type: eventType,
           progress: this.getSessionProgress(),
-          ...(data && { data })
+          ...(data && { data }),
+          ...extraDetail
         }
 
         const event = new CustomEvent('session-progress-update', {
