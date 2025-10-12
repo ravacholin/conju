@@ -1,10 +1,33 @@
 // Sistema de base de datos IndexedDB para progreso y analíticas
 
 import { STORAGE_CONFIG, INIT_CONFIG } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:database')
+const isDev = import.meta?.env?.DEV
+
+// Timeout configuration for IndexedDB transactions
+const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
 
 // Estado de la base de datos
 let dbInstance = null
 let isInitializing = false
+
+/**
+ * Wraps a promise with a timeout to prevent hanging transactions
+ * @param {Promise} promise - Promise to wrap
+ * @param {number} timeout - Timeout in milliseconds
+ * @param {string} operation - Operation name for error messages
+ * @returns {Promise} Promise that rejects if timeout is reached
+ */
+function withTimeout(promise, timeout, operation) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${operation} timed out after ${timeout}ms`)), timeout)
+    )
+  ])
+}
 
 /**
  * Inicializa la base de datos IndexedDB
@@ -35,21 +58,21 @@ export async function initDB() {
   }
   
   isInitializing = true
-  
+
   try {
-    console.log('🔄 Inicializando base de datos de progreso...')
-    
+    if (isDev) logger.info('initDB', 'Inicializando base de datos de progreso')
+
     // Importar openDB dinámicamente para permitir mocks por prueba
     const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
       upgrade(db) {
-        console.log('🔧 Actualizando estructura de base de datos...')
-        
+        if (isDev) logger.info('initDB', 'Actualizando estructura de base de datos')
+
         // Crear tabla de usuarios
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USERS)) {
           const userStore = db.createObjectStore(STORAGE_CONFIG.STORES.USERS, { keyPath: 'id' })
           userStore.createIndex('lastActive', 'lastActive', { unique: false })
-          console.log('✅ Tabla de usuarios creada')
+          if (isDev) logger.info('initDB', 'Tabla de usuarios creada')
         }
 
         // Crear tabla de verbos
@@ -58,7 +81,7 @@ export async function initDB() {
           verbStore.createIndex('lemma', 'lemma', { unique: true })
           verbStore.createIndex('type', 'type', { unique: false })
           verbStore.createIndex('frequency', 'frequency', { unique: false })
-          console.log('✅ Tabla de verbos creada')
+          if (isDev) logger.info('initDB', 'Tabla de verbos creada')
         }
 
         // Crear tabla de ítems
@@ -70,7 +93,7 @@ export async function initDB() {
           itemStore.createIndex('person', 'person', { unique: false })
           // Índice compuesto para búsqueda rápida
           itemStore.createIndex('verb-mood-tense-person', ['verbId', 'mood', 'tense', 'person'], { unique: true })
-          console.log('✅ Tabla de ítems creada')
+          if (isDev) logger.info('initDB', 'Tabla de ítems creada')
         }
 
         // Crear tabla de intentos
@@ -80,7 +103,7 @@ export async function initDB() {
           attemptStore.createIndex('createdAt', 'createdAt', { unique: false })
           attemptStore.createIndex('correct', 'correct', { unique: false })
           attemptStore.createIndex('userId', 'userId', { unique: false })
-          console.log('✅ Tabla de intentos creada')
+          if (isDev) logger.info('initDB', 'Tabla de intentos creada')
         }
 
         // Crear tabla de mastery
@@ -89,7 +112,7 @@ export async function initDB() {
           masteryStore.createIndex('userId', 'userId', { unique: false })
           masteryStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
           masteryStore.createIndex('updatedAt', 'updatedAt', { unique: false })
-          console.log('✅ Tabla de mastery creada')
+          if (isDev) logger.info('initDB', 'Tabla de mastery creada')
         }
 
         // Crear tabla de schedules
@@ -98,7 +121,7 @@ export async function initDB() {
           scheduleStore.createIndex('userId', 'userId', { unique: false })
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
-          console.log('✅ Tabla de schedules creada')
+          if (isDev) logger.info('initDB', 'Tabla de schedules creada')
         }
 
         // Crear tabla de learning sessions (analytics)
@@ -108,14 +131,14 @@ export async function initDB() {
           sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
           sessionStore.createIndex('updatedAt', 'updatedAt', { unique: false })
           sessionStore.createIndex('mode-tense', ['mode', 'tense'], { unique: false })
-          console.log('✅ Tabla de learning sessions creada')
+          if (isDev) logger.info('initDB', 'Tabla de learning sessions creada')
         }
 
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.CHALLENGES)) {
           const challengeStore = db.createObjectStore(STORAGE_CONFIG.STORES.CHALLENGES, { keyPath: 'id' })
           challengeStore.createIndex('userId', 'userId', { unique: false })
           challengeStore.createIndex('date', 'date', { unique: false })
-          console.log('✅ Tabla de daily challenges creada')
+          if (isDev) logger.info('initDB', 'Tabla de daily challenges creada')
         }
 
         // Crear tabla de eventos auxiliares
@@ -125,17 +148,17 @@ export async function initDB() {
           eventStore.createIndex('type', 'type', { unique: false })
           eventStore.createIndex('createdAt', 'createdAt', { unique: false })
           eventStore.createIndex('sessionId', 'sessionId', { unique: false })
-          console.log('✅ Tabla de eventos auxiliares creada')
+          if (isDev) logger.info('initDB', 'Tabla de eventos auxiliares creada')
         }
 
-        console.log('🔧 Estructura de base de datos actualizada')
+        if (isDev) logger.info('initDB', 'Estructura de base de datos actualizada')
       }
     })
-    
-    console.log('✅ Base de datos de progreso inicializada correctamente')
+
+    if (isDev) logger.info('initDB', 'Base de datos de progreso inicializada correctamente')
     return dbInstance
   } catch (error) {
-    console.error('❌ Error al inicializar la base de datos de progreso:', error)
+    logger.error('initDB', 'Error al inicializar la base de datos de progreso', error)
     throw error
   } finally {
     isInitializing = false
@@ -166,11 +189,11 @@ export async function saveToDB(storeName, data) {
     data.updatedAt = new Date()
     
     await store.put(data)
-    await tx.done
-    
-    console.log(`✅ Dato guardado en ${storeName}: ${data.id}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `saveToDB(${storeName})`)
+
+    if (isDev) logger.debug('saveToDB', `Dato guardado en ${storeName}`, { id: data.id })
   } catch (error) {
-    console.error(`❌ Error al guardar en ${storeName}:`, error)
+    logger.error('saveToDB', `Error al guardar en ${storeName}`, error)
     throw error
   }
 }
@@ -187,15 +210,15 @@ export async function getFromDB(storeName, id) {
     const tx = db.transaction(storeName, 'readonly')
     const store = tx.objectStore(storeName)
     const result = await store.get(id)
-    await tx.done
-    
-    if (result) {
-      console.log(`✅ Dato obtenido de ${storeName}: ${id}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `getFromDB(${storeName})`)
+
+    if (result && isDev) {
+      logger.debug('getFromDB', `Dato obtenido de ${storeName}`, { id })
     }
-    
+
     return result || null
   } catch (error) {
-    console.error(`❌ Error al obtener de ${storeName}:`, error)
+    logger.error('getFromDB', `Error al obtener de ${storeName}`, error)
     return null
   }
 }
@@ -211,12 +234,12 @@ export async function getAllFromDB(storeName) {
     const tx = db.transaction(storeName, 'readonly')
     const store = tx.objectStore(storeName)
     const result = await store.getAll()
-    await tx.done
-    
-    console.log(`✅ ${result.length} datos obtenidos de ${storeName}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `getAllFromDB(${storeName})`)
+
+    if (isDev) logger.debug('getAllFromDB', `${result.length} datos obtenidos de ${storeName}`)
     return result
   } catch (error) {
-    console.error(`❌ Error al obtener todos de ${storeName}:`, error)
+    logger.error('getAllFromDB', `Error al obtener todos de ${storeName}`, error)
     return []
   }
 }
@@ -235,12 +258,12 @@ export async function getByIndex(storeName, indexName, value) {
     const store = tx.objectStore(storeName)
     const index = store.index(indexName)
     const result = await index.getAll(value)
-    await tx.done
-    
-    console.log(`✅ ${result.length} datos encontrados en ${storeName} por ${indexName}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `getByIndex(${storeName}.${indexName})`)
+
+    if (isDev) logger.debug('getByIndex', `${result.length} datos encontrados en ${storeName} por ${indexName}`)
     return result
   } catch (error) {
-    console.error(`❌ Error al buscar por índice en ${storeName}:`, error)
+    logger.error('getByIndex', `Error al buscar por índice en ${storeName}`, error)
     return []
   }
 }
@@ -259,15 +282,15 @@ export async function getOneByIndex(storeName, indexName, value) {
     const store = tx.objectStore(storeName)
     const index = store.index(indexName)
     const result = await index.get(value)
-    await tx.done
-    
-    if (result) {
-      console.log(`✅ Dato encontrado en ${storeName} por ${indexName}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `getOneByIndex(${storeName}.${indexName})`)
+
+    if (result && isDev) {
+      logger.debug('getOneByIndex', `Dato encontrado en ${storeName} por ${indexName}`)
     }
-    
+
     return result || null
   } catch (error) {
-    console.error(`❌ Error al buscar por índice en ${storeName}:`, error)
+    logger.error('getOneByIndex', `Error al buscar por índice en ${storeName}`, error)
     return null
   }
 }
@@ -284,11 +307,11 @@ export async function deleteFromDB(storeName, id) {
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)
     await store.delete(id)
-    await tx.done
-    
-    console.log(`✅ Dato eliminado de ${storeName}: ${id}`)
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `deleteFromDB(${storeName})`)
+
+    if (isDev) logger.debug('deleteFromDB', `Dato eliminado de ${storeName}`, { id })
   } catch (error) {
-    console.error(`❌ Error al eliminar de ${storeName}:`, error)
+    logger.error('deleteFromDB', `Error al eliminar de ${storeName}`, error)
     throw error
   }
 }
@@ -306,13 +329,136 @@ export async function updateInDB(storeName, id, updates) {
     if (!existing) {
       throw new Error(`Objeto con ID ${id} no encontrado en ${storeName}`)
     }
-    
+
     const updated = { ...existing, ...updates, updatedAt: new Date() }
     await saveToDB(storeName, updated)
-    
-    console.log(`✅ Dato actualizado en ${storeName}: ${id}`)
+
+    if (isDev) logger.debug('updateInDB', `Dato actualizado en ${storeName}`, { id })
   } catch (error) {
-    console.error(`❌ Error al actualizar en ${storeName}:`, error)
+    logger.error('updateInDB', `Error al actualizar en ${storeName}`, error)
+    throw error
+  }
+}
+
+/**
+ * Guarda múltiples objetos en una sola transacción (batch operation)
+ * Optimiza el rendimiento al reducir overhead de transacciones múltiples
+ * @param {string} storeName - Nombre de la tabla
+ * @param {Object[]} dataArray - Array de objetos a guardar
+ * @param {Object} options - Opciones de configuración
+ * @param {boolean} [options.skipTimestamps=false] - No agregar timestamps automáticos
+ * @returns {Promise<{saved: number, errors: Array}>} Resultado de la operación
+ */
+export async function batchSaveToDB(storeName, dataArray, options = {}) {
+  const { skipTimestamps = false } = options
+  const results = { saved: 0, errors: [] }
+
+  if (!Array.isArray(dataArray) || dataArray.length === 0) {
+    if (isDev) logger.debug('batchSaveToDB', `Array vacío para ${storeName}`)
+    return results
+  }
+
+  try {
+    const db = await initDB()
+    const tx = db.transaction(storeName, 'readwrite')
+    const store = tx.objectStore(storeName)
+
+    // Procesar todos los objetos en una sola transacción
+    for (const data of dataArray) {
+      try {
+        // Preparar el objeto
+        const prepared = { ...data }
+
+        // Generar ID si no existe
+        if (!prepared.id) {
+          prepared.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        }
+
+        // Agregar timestamps si no está deshabilitado
+        if (!skipTimestamps) {
+          if (!prepared.createdAt) {
+            prepared.createdAt = new Date()
+          }
+          prepared.updatedAt = new Date()
+        }
+
+        await store.put(prepared)
+        results.saved++
+      } catch (itemError) {
+        results.errors.push({
+          id: data?.id || 'unknown',
+          error: itemError.message
+        })
+        logger.error('batchSaveToDB', `Error guardando item en ${storeName}`, itemError)
+      }
+    }
+
+    // Esperar a que la transacción complete con timeout
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchSaveToDB(${storeName})`)
+
+    if (isDev) logger.debug('batchSaveToDB', `${results.saved}/${dataArray.length} objetos guardados en ${storeName}`)
+
+    return results
+  } catch (error) {
+    logger.error('batchSaveToDB', `Error en batch save para ${storeName}`, error)
+    throw error
+  }
+}
+
+/**
+ * Actualiza múltiples objetos en una sola transacción (batch operation)
+ * @param {string} storeName - Nombre de la tabla
+ * @param {Array<{id: string, updates: Object}>} updateArray - Array de objetos {id, updates}
+ * @returns {Promise<{updated: number, errors: Array}>} Resultado de la operación
+ */
+export async function batchUpdateInDB(storeName, updateArray) {
+  const results = { updated: 0, errors: [] }
+
+  if (!Array.isArray(updateArray) || updateArray.length === 0) {
+    if (isDev) logger.debug('batchUpdateInDB', `Array vacío para ${storeName}`)
+    return results
+  }
+
+  try {
+    const db = await initDB()
+    const tx = db.transaction(storeName, 'readwrite')
+    const store = tx.objectStore(storeName)
+
+    for (const { id, updates } of updateArray) {
+      try {
+        const existing = await store.get(id)
+        if (!existing) {
+          results.errors.push({
+            id,
+            error: `Objeto no encontrado: ${id}`
+          })
+          continue
+        }
+
+        const updated = {
+          ...existing,
+          ...updates,
+          updatedAt: new Date()
+        }
+
+        await store.put(updated)
+        results.updated++
+      } catch (itemError) {
+        results.errors.push({
+          id: id || 'unknown',
+          error: itemError.message
+        })
+        logger.error('batchUpdateInDB', `Error actualizando item en ${storeName}`, itemError)
+      }
+    }
+
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchUpdateInDB(${storeName})`)
+
+    if (isDev) logger.debug('batchUpdateInDB', `${results.updated}/${updateArray.length} objetos actualizados en ${storeName}`)
+
+    return results
+  } catch (error) {
+    logger.error('batchUpdateInDB', `Error en batch update para ${storeName}`, error)
     throw error
   }
 }
@@ -323,14 +469,14 @@ export async function updateInDB(storeName, id, updates) {
  */
 export async function clearAllCaches() {
   try {
-    console.log('🧹 Limpiando todos los caches...')
-    
+    if (isDev) logger.info('clearAllCaches', 'Limpiando todos los caches')
+
     // En una implementación completa, esto limpiaría todos los caches
     // de la base de datos
-    
-    console.log('✅ Todos los caches limpiados')
+
+    if (isDev) logger.info('clearAllCaches', 'Todos los caches limpiados')
   } catch (error) {
-    console.error('❌ Error al limpiar caches:', error)
+    logger.error('clearAllCaches', 'Error al limpiar caches', error)
     throw error
   }
 }
@@ -343,7 +489,7 @@ export async function getCacheStats() {
   try {
     // En una implementación completa, esto obtendría estadísticas
     // del uso de caché en la base de datos
-    
+
     return {
       cacheHits: 0, // Valor de ejemplo
       cacheMisses: 0, // Valor de ejemplo
@@ -351,7 +497,7 @@ export async function getCacheStats() {
       generatedAt: new Date()
     }
   } catch (error) {
-    console.error('❌ Error al obtener estadísticas de caché:', error)
+    logger.error('getCacheStats', 'Error al obtener estadísticas de caché', error)
     return {}
   }
 }
@@ -445,10 +591,10 @@ export async function getItemByProperties(verbId, mood, tense, person) {
     const store = tx.objectStore(STORAGE_CONFIG.STORES.ITEMS)
     const index = store.index('verb-mood-tense-person')
     const result = await index.get([verbId, mood, tense, person])
-    await tx.done
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getItemByProperties')
     return result || null
   } catch (error) {
-    console.error('❌ Error al buscar ítem por propiedades:', error)
+    logger.error('getItemByProperties', 'Error al buscar ítem por propiedades', error)
     return null
   }
 }
@@ -510,11 +656,11 @@ export async function getRecentAttempts(userId, limit = 100) {
       .filter(a => a.userId === userId)
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, limit)
-    
-    await tx.done
+
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getRecentAttempts')
     return userAttempts
   } catch (error) {
-    console.error('❌ Error al obtener intentos recientes:', error)
+    logger.error('getRecentAttempts', 'Error al obtener intentos recientes', error)
     return []
   }
 }
@@ -562,13 +708,13 @@ export async function getMasteryByCell(userId, mood, tense, person) {
     
     // Filtrar por usuario
     result = result.filter(m => m.userId === userId)
-    
-    await tx.done
-    
+
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getMasteryByCell')
+
     // Devolver el primero (debería haber solo uno)
     return result.length > 0 ? result[0] : null
   } catch (error) {
-    console.error('❌ Error al buscar mastery por celda:', error)
+    logger.error('getMasteryByCell', 'Error al buscar mastery por celda', error)
     return null
   }
 }
@@ -620,13 +766,13 @@ export async function getScheduleByCell(userId, mood, tense, person) {
     
     // Filtrar por usuario
     result = result.filter(s => s.userId === userId)
-    
-    await tx.done
-    
+
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getScheduleByCell')
+
     // Devolver el primero (debería haber solo uno)
     return result.length > 0 ? result[0] : null
   } catch (error) {
-    console.error('❌ Error al buscar schedule por celda:', error)
+    logger.error('getScheduleByCell', 'Error al buscar schedule por celda', error)
     return null
   }
 }
@@ -648,14 +794,14 @@ export async function getDueSchedules(userId, beforeDate) {
     const allSchedules = await index.getAll()
     
     // Filtrar por usuario y fecha
-    const result = allSchedules.filter(s => 
+    const result = allSchedules.filter(s =>
       s.userId === userId && new Date(s.nextDue) <= beforeDate
     )
-    
-    await tx.done
+
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getDueSchedules')
     return result
   } catch (error) {
-    console.error('❌ Error al obtener schedules pendientes:', error)
+    logger.error('getDueSchedules', 'Error al obtener schedules pendientes', error)
     return []
   }
 }
@@ -680,9 +826,9 @@ export async function saveLearningSession(session) {
     }
 
     await store.put(payload)
-    await tx.done
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'saveLearningSession')
   } catch (error) {
-    console.error('❌ Error al guardar learning session:', error)
+    logger.error('saveLearningSession', 'Error al guardar learning session', error)
     throw error
   }
 }
@@ -705,7 +851,7 @@ export async function updateLearningSession(sessionId, updates) {
     }
     await saveToDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, merged)
   } catch (error) {
-    console.error('❌ Error al actualizar learning session:', error)
+    logger.error('updateLearningSession', 'Error al actualizar learning session', error)
     throw error
   }
 }
@@ -786,10 +932,10 @@ export async function getRecentEvents(userId, limit = 100) {
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, limit)
 
-    await tx.done
+    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getRecentEvents')
     return userEvents
   } catch (error) {
-    console.error('❌ Error al obtener eventos recientes:', error)
+    logger.error('getRecentEvents', 'Error al obtener eventos recientes', error)
     return []
   }
 }
@@ -799,7 +945,7 @@ export async function getRecentEvents(userId, limit = 100) {
  * @returns {Promise<void>}
  */
 export async function initializeFullDB() {
-  console.log('🚀 Inicializando completamente la base de datos...')
+  if (isDev) logger.info('initializeFullDB', 'Inicializando completamente la base de datos')
 
   try {
     // Inicializar base de datos
@@ -808,9 +954,9 @@ export async function initializeFullDB() {
     // En una implementación completa, aquí se inicializarían
     // las tablas con datos predeterminados si es necesario
 
-    console.log('✅ Base de datos completamente inicializada')
+    if (isDev) logger.info('initializeFullDB', 'Base de datos completamente inicializada')
   } catch (error) {
-    console.error('❌ Error al inicializar completamente la base de datos:', error)
+    logger.error('initializeFullDB', 'Error al inicializar completamente la base de datos', error)
     throw error
   }
 }
@@ -823,7 +969,7 @@ export async function closeDB() {
   if (dbInstance) {
     await dbInstance.close()
     dbInstance = null
-    console.log('🚪 Base de datos cerrada')
+    if (isDev) logger.info('closeDB', 'Base de datos cerrada')
   }
 }
 
@@ -837,9 +983,9 @@ export async function deleteDB() {
     // Importar deleteDB de idb con alias para evitar sombra
     const { deleteDB: idbDeleteDB } = await import('idb')
     await idbDeleteDB(STORAGE_CONFIG.DB_NAME)
-    console.log('🗑️ Base de datos eliminada')
+    if (isDev) logger.info('deleteDB', 'Base de datos eliminada')
   } catch (error) {
-    console.error('❌ Error al eliminar la base de datos:', error)
+    logger.error('deleteDB', 'Error al eliminar la base de datos', error)
     throw error
   }
 }
@@ -857,11 +1003,11 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   }
 
   if (oldUserId === newUserId) {
-    console.log('🔄 No se requiere migración, userIds son idénticos')
+    if (isDev) logger.info('migrateUserIdInLocalDB', 'No se requiere migración, userIds son idénticos')
     return { migrated: 0, skipped: 'same_user_id' }
   }
 
-  console.log(`🔄 Iniciando migración de userId: ${oldUserId} → ${newUserId}`)
+  if (isDev) logger.info('migrateUserIdInLocalDB', `Iniciando migración de userId: ${oldUserId} → ${newUserId}`)
 
   const stats = {
     attempts: 0,
@@ -885,28 +1031,28 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
         })
         stats[statName]++
       } catch (error) {
-        console.error(`❌ Error migrando ${statName} (ID: ${record.id}):`, error)
+        logger.error('updateUser', `Error migrando ${statName} (ID: ${record.id})`, error)
         stats.errors.push(`${statName}: ${error.message}`)
       }
     }
 
     // 1. Migrar tabla ATTEMPTS
     const oldAttempts = await getAttemptsByUser(oldUserId)
-    console.log(`📊 Migrando ${oldAttempts.length} intentos...`)
+    if (isDev) logger.info('migrateUserIdInLocalDB', `Migrando ${oldAttempts.length} intentos`)
     for (const attempt of oldAttempts) {
       await updateUser(STORAGE_CONFIG.STORES.ATTEMPTS, attempt, 'attempts')
     }
 
     // 2. Migrar tabla MASTERY
     const oldMastery = await getMasteryByUser(oldUserId)
-    console.log(`📈 Migrando ${oldMastery.length} registros de mastery...`)
+    if (isDev) logger.info('migrateUserIdInLocalDB', `Migrando ${oldMastery.length} registros de mastery`)
     for (const mastery of oldMastery) {
       await updateUser(STORAGE_CONFIG.STORES.MASTERY, mastery, 'mastery')
     }
 
     // 3. Migrar tabla SCHEDULES
     const oldSchedules = await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', oldUserId)
-    console.log(`⏰ Migrando ${oldSchedules.length} schedules SRS...`)
+    if (isDev) logger.info('migrateUserIdInLocalDB', `Migrando ${oldSchedules.length} schedules SRS`)
     for (const schedule of oldSchedules) {
       await updateUser(STORAGE_CONFIG.STORES.SCHEDULES, schedule, 'schedules')
     }
@@ -915,7 +1061,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     try {
       const oldUser = await getUser(oldUserId)
       if (oldUser) {
-        console.log(`👤 Migrando usuario ${oldUserId}...`)
+        if (isDev) logger.info('migrateUserIdInLocalDB', `Migrando usuario ${oldUserId}`)
         // Create new user record and delete old one
         const migratedUser = { ...oldUser, id: newUserId, updatedAt: new Date() }
         await saveUser(migratedUser)
@@ -923,16 +1069,16 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
         stats.users++
       }
     } catch (error) {
-      console.error('❌ Error migrando usuario:', error)
+      logger.error('migrateUserIdInLocalDB', 'Error migrando usuario', error)
       stats.errors.push(`users: ${error.message}`)
     }
 
     const totalMigrated = stats.attempts + stats.mastery + stats.schedules + stats.users
 
-    console.log(`✅ Migración completada: ${totalMigrated} registros migrados`, stats)
+    if (isDev) logger.info('migrateUserIdInLocalDB', `Migración completada: ${totalMigrated} registros migrados`, stats)
 
     if (stats.errors.length > 0) {
-      console.warn('⚠️ Algunos errores durante la migración:', stats.errors)
+      logger.warn('migrateUserIdInLocalDB', 'Algunos errores durante la migración', { errors: stats.errors })
     }
 
     return {
@@ -944,7 +1090,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     }
 
   } catch (error) {
-    console.error('❌ Error crítico durante migración userId:', error)
+    logger.error('migrateUserIdInLocalDB', 'Error crítico durante migración userId', error)
     throw error
   }
 }
@@ -955,7 +1101,7 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     return { valid: false, reason: 'missing_user_ids' }
   }
 
-  console.log(`🔍 Validando migración: ${oldUserId} → ${newUserId}`)
+  if (isDev) logger.info('validateUserIdMigration', `Validando migración: ${oldUserId} → ${newUserId}`)
 
   try {
     // Verificar que no queden datos bajo el userId anterior
@@ -991,7 +1137,7 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     // This handles the case where a new device has no local data to migrate
     const isValid = totalRemaining === 0 && (totalNew > 0 || (totalNew === 0 && totalRemaining === 0))
 
-    console.log(`🔍 Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
+    if (isDev) logger.info('validateUserIdMigration', `Validación migración - Restantes: ${totalRemaining}, Nuevos: ${totalNew}, Válida: ${isValid}`)
 
     return {
       valid: isValid,
@@ -1004,7 +1150,7 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
     }
 
   } catch (error) {
-    console.error('❌ Error validando migración:', error)
+    logger.error('validateUserIdMigration', 'Error validando migración', error)
     return { valid: false, error: error.message }
   }
 }
@@ -1020,15 +1166,15 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
     throw new Error('revertUserIdMigration: newUserId y oldUserId son requeridos')
   }
 
-  console.log(`🔄 Revirtiendo migración: ${newUserId} → ${oldUserId}`)
+  if (isDev) logger.info('revertUserIdMigration', `Revirtiendo migración: ${newUserId} → ${oldUserId}`)
 
   try {
     // Básicamente es la misma operación pero en reversa
     const result = await migrateUserIdInLocalDB(newUserId, oldUserId)
-    console.log('✅ Migración revertida exitosamente:', result)
+    if (isDev) logger.info('revertUserIdMigration', 'Migración revertida exitosamente', result)
     return result
   } catch (error) {
-    console.error('❌ Error crítico revirtiendo migración:', error)
+    logger.error('revertUserIdMigration', 'Error crítico revirtiendo migración', error)
     throw error
   }
 }

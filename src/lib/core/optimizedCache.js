@@ -270,11 +270,12 @@ class IntelligentCache {
 
   _compress(value) {
     try {
-      // Simple compression using JSON + basic string compression
+      // Use native JSON compression - browser engines optimize this internally
+      // No regex compression needed - modern JS engines handle this efficiently
       const json = JSON.stringify(value)
       return {
         __compressed: true,
-        data: this._simpleCompress(json),
+        data: json,
         originalSize: json.length
       }
     } catch (error) {
@@ -286,36 +287,13 @@ class IntelligentCache {
   _decompress(compressed) {
     try {
       if (compressed.__compressed) {
-        const json = this._simpleDecompress(compressed.data)
-        return JSON.parse(json)
+        return JSON.parse(compressed.data)
       }
       return compressed
     } catch (error) {
       logger.warn('_decompress', 'Decompression failed', error)
       return compressed
     }
-  }
-
-  _simpleCompress(str) {
-    // Very basic compression - replace common patterns
-    return str
-      .replace(/\{"mood":"([^"]+)","tense":"([^"]+)","person":"([^"]+)","value":"([^"]+)"\}/g, '[$1,$2,$3,$4]')
-      .replace(/\["indicative"/g, '[0')
-      .replace(/\["subjunctive"/g, '[1')
-      .replace(/\["imperative"/g, '[2')
-      .replace(/\["conditional"/g, '[3')
-      .replace(/\["nonfinite"/g, '[4')
-  }
-
-  _simpleDecompress(str) {
-    // Reverse the compression
-    return str
-      .replace(/\[4/g, '["nonfinite"')
-      .replace(/\[3/g, '["conditional"')
-      .replace(/\[2/g, '["imperative"')
-      .replace(/\[1/g, '["subjunctive"')
-      .replace(/\[0/g, '["indicative"')
-      .replace(/\[([^,]+),([^,]+),([^,]+),([^\]]+)\]/g, '{"mood":"$1","tense":"$2","person":"$3","value":"$4"}')
   }
 
   // Persistence methods

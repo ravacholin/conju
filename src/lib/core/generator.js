@@ -24,9 +24,13 @@ import {
   clearAllCaches,
   initializeMaps
 } from './optimizedCache.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:generator')
+const isDev = import.meta?.env?.DEV
 
 // Quiet debug logging during tests; keep in dev runtime
-const dbg = (...args) => { if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args) }
+const dbg = (...args) => { if (isDev && !import.meta?.env?.VITEST) logger.debug('dbg', ...args) }
 
 // Ensure maps are initialized
 async function ensureMapsInitialized() {
@@ -34,7 +38,7 @@ async function ensureMapsInitialized() {
     try {
       await initializeMaps()
     } catch (error) {
-      console.error('❌ Generator: Failed to initialize verb maps:', error)
+      logger.error('ensureMapsInitialized', 'Failed to initialize verb maps', error)
       throw new Error('Generator cannot function without initialized verb maps')
     }
   }

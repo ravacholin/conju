@@ -13,13 +13,17 @@ import {
   saveSchedule,
   saveLearningSession,
   updateLearningSession,
-  getLearningSessionsByUser
+  getLearningSessionsByUser,
+  batchSaveToDB,
+  batchUpdateInDB
 } from './database.js'
 import { PROGRESS_CONFIG, STORAGE_CONFIG } from './config.js'
 import authService from '../auth/authService.js'
 import { progressDataCache } from '../cache/ProgressDataCache.js'
-import { getSyncApiBase, getSyncAuthHeaderName, getSyncConfigDebug } from '../config/syncConfig.js'
+import { getSyncConfigDebug } from '../config/syncConfig.js'
 import { createLogger } from '../utils/logger.js'
+import AuthTokenManager from './AuthTokenManager.js'
+import SyncService from './SyncService.js'
 
 const logger = createLogger('progress:userManager')
 
@@ -111,115 +115,20 @@ const safeLogger = {
 
 const LS_KEY = 'progress-user-settings'
 const USER_ID_STORAGE_KEY = 'progress-system-user-id'
-const SYNC_QUEUE_KEY = 'progress-sync-queue-v1'
-const SYNC_ENDPOINT_KEY = 'progress-sync-endpoint'
-const SYNC_AUTH_TOKEN_KEY = 'progress-sync-auth-token'
-const SYNC_AUTH_HEADER_NAME_KEY = 'progress-sync-auth-header-name'
 
-// Resolve sync base URL using intelligent environment detection
-function resolveSyncBaseUrl() {
-  try {
-    // Check for localStorage override first
-    if (typeof window !== 'undefined') {
-      const override = window.localStorage.getItem(SYNC_ENDPOINT_KEY)
-      if (override) {
-        safeLogger.info('Using sync URL override from localStorage', {
-          overrideLength: override.length,
-          hasOverride: true
-        })
-        return override
-      }
-    }
-  } catch {}
+// Re-export auth functions from AuthTokenManager for backward compatibility
+export const setSyncEndpoint = AuthTokenManager.setSyncEndpoint
+export const getSyncEndpoint = AuthTokenManager.getSyncEndpoint
+export const isSyncEnabled = AuthTokenManager.isSyncEnabled
+export const isLocalSyncMode = AuthTokenManager.isLocalSyncMode
+export const setSyncAuthToken = AuthTokenManager.setSyncAuthToken
+export const getSyncAuthToken = AuthTokenManager.getSyncAuthToken
+export const clearSyncAuthToken = AuthTokenManager.clearSyncAuthToken
+export const setSyncAuthHeaderName = AuthTokenManager.setSyncAuthHeaderName
 
-  // Use the intelligent environment detection
-  return getSyncApiBase()
-}
-
-let SYNC_BASE_URL = resolveSyncBaseUrl()
-let SYNC_AUTH_TOKEN = null
-let SYNC_AUTH_HEADER_NAME = getSyncAuthHeaderName()
-
-export function setSyncEndpoint(url) {
-  SYNC_BASE_URL = url || null
-  try {
-    if (typeof window !== 'undefined') {
-      if (url) window.localStorage.setItem(SYNC_ENDPOINT_KEY, url)
-      else window.localStorage.removeItem(SYNC_ENDPOINT_KEY)
-    }
-  } catch {}
-}
-
-export function getSyncEndpoint() {
-  return SYNC_BASE_URL
-}
-
-// Helper to detect if a URL is a local development placeholder
-function isLocalPlaceholderUrl(url) {
-  if (!url) return false
-  return url.includes('localhost:') || url.includes('127.0.0.1:') || url.includes('0.0.0.0:')
-}
-
-export function isSyncEnabled() {
-  // Sync is enabled if there's a URL configured
-  return !!SYNC_BASE_URL
-}
-
-// Helper function to check if we're in development mode with local server
-export function isLocalSyncMode() {
-  return !!SYNC_BASE_URL && isLocalPlaceholderUrl(SYNC_BASE_URL)
-}
-
-export function setSyncAuthToken(token, { persist = false } = {}) {
-  SYNC_AUTH_TOKEN = token || null
-  try {
-    if (typeof window !== 'undefined') {
-      if (persist && token) window.localStorage.setItem(SYNC_AUTH_TOKEN_KEY, token)
-      else if (!persist) window.localStorage.removeItem(SYNC_AUTH_TOKEN_KEY)
-    }
-  } catch {}
-}
-
-export function getSyncAuthToken() {
-  // Priority 1: Use auth service token if user is authenticated
-  const authToken = authService.getToken()
-  if (authToken) {
-    return authToken
-  }
-
-  // Priority 2: Use manually set token
-  if (SYNC_AUTH_TOKEN) return SYNC_AUTH_TOKEN
-
-  // Priority 3: Use stored token
-  try {
-    if (typeof window !== 'undefined') {
-      const t = window.localStorage.getItem(SYNC_AUTH_TOKEN_KEY)
-      if (t) return t
-    }
-  } catch {}
-
-  // Priority 4: Use environment token
-  const envToken = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_TOKEN) ||
-                   (typeof process !== 'undefined' && process?.env?.VITE_PROGRESS_SYNC_TOKEN) ||
-                   null
-  return envToken || null
-}
-
-export function clearSyncAuthToken() {
-  SYNC_AUTH_TOKEN = null
-  try {
-    if (typeof window !== 'undefined') window.localStorage.removeItem(SYNC_AUTH_TOKEN_KEY)
-  } catch {}
-}
-
-export function setSyncAuthHeaderName(name) {
-  SYNC_AUTH_HEADER_NAME = name || 'Authorization'
-  try {
-    if (typeof window !== 'undefined') {
-      if (name) window.localStorage.setItem(SYNC_AUTH_HEADER_NAME_KEY, name)
-      else window.localStorage.removeItem(SYNC_AUTH_HEADER_NAME_KEY)
-    }
-  } catch {}
+// Helper function to get header name (with fallback)
+function getSyncAuthHeaderName() {
+  return AuthTokenManager.getSyncAuthHeaderName()
 }
 
 
@@ -375,207 +284,19 @@ export function incrementSessionCount(userId) {
 
 // --------------------------
 // Remote Sync Service (REST)
+// Delegated to SyncService module
 // --------------------------
 
-function isBrowserOnline() {
-  try {
-    return typeof navigator === 'undefined' ? true : !!navigator.onLine
-  } catch {
-    return true
-  }
-}
-
-function getQueue() {
-  try {
-    if (typeof window === 'undefined') return []
-    const raw = window.localStorage.getItem(SYNC_QUEUE_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch {
-    return []
-  }
-}
-
-function setQueue(q) {
-  try {
-    if (typeof window === 'undefined') return
-    window.localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(q))
-  } catch {}
-}
-
-function enqueue(type, payload) {
-  const q = getQueue()
-  q.push({ type, payload, enqueuedAt: Date.now() })
-  setQueue(q)
-}
-
-function getSyncSuccessMessage(strategy, results, accountSyncResult) {
-  const legacyUploaded = (results.attempts?.uploaded || 0) +
-                        (results.mastery?.uploaded || 0) +
-                        (results.schedules?.uploaded || 0) +
-                        (results.sessions?.uploaded || 0)
-
-  const accountDownloaded = accountSyncResult?.downloaded ?
-    (accountSyncResult.downloaded.attempts || 0) +
-    (accountSyncResult.downloaded.mastery || 0) +
-    (accountSyncResult.downloaded.schedules || 0) +
-    (accountSyncResult.downloaded.sessions || 0) : 0
-
-  const accountMerged = accountSyncResult?.merged ?
-    (accountSyncResult.merged.attempts || 0) +
-    (accountSyncResult.merged.mastery || 0) +
-    (accountSyncResult.merged.schedules || 0) +
-    (accountSyncResult.merged.sessions || 0) : 0
-
-  switch (strategy) {
-    case 'account+legacy': {
-      const uploadsSummary = `${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones`
-      return `✅ Sincronización completa (descargados: ${accountSyncResult?.downloaded?.attempts || 0} intentos, ${accountSyncResult?.downloaded?.mastery || 0} mastery, ${accountSyncResult?.downloaded?.schedules || 0} srs, ${accountSyncResult?.downloaded?.sessions || 0} sesiones | subidos: ${uploadsSummary}). Datos alineados entre todos tus dispositivos.`
-    }
-    case 'account':
-      if (accountDownloaded > 0) {
-        return `✅ Sincronización completa (descargados: ${accountSyncResult.downloaded.attempts} intentos, ${accountSyncResult.downloaded.mastery} mastery, ${accountSyncResult.downloaded.schedules} srs, ${accountSyncResult.downloaded.sessions || 0} sesiones | aplicados: ${accountMerged} nuevos registros). Datos sincronizados desde tu cuenta Google.`
-      } else {
-        return `ℹ️ Sincronización completa (descargados: 0 intentos, 0 mastery, 0 srs, 0 sesiones). No hay datos nuevos en tu cuenta Google. Asegúrate de haber practicado en otros dispositivos.`
-      }
-
-    case 'legacy-fallback':
-      if (legacyUploaded > 0) {
-        return `⚠️ Account sync falló, pero legacy sync exitoso (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones). Datos locales enviados al servidor.`
-      } else {
-        return `⚠️ Account sync falló y no hay datos locales para subir. Intenta practicar algo primero o verifica tu conexión.`
-      }
-
-    case 'legacy':
-    default:
-      if (legacyUploaded > 0) {
-        return `✅ Sincronización legacy completa (subidos: ${results.attempts?.uploaded || 0} intentos, ${results.mastery?.uploaded || 0} mastery, ${results.schedules?.uploaded || 0} srs, ${results.sessions?.uploaded || 0} sesiones). Para sincronización entre dispositivos, haz login con Google.`
-      } else {
-        return `ℹ️ Sincronización legacy completa (subidos: 0). No hay datos locales nuevos para enviar. Para sincronización entre dispositivos, haz login con Google.`
-      }
-  }
-}
-
-async function postJSON(path, body, timeoutMs = 30000) {
-  if (!SYNC_BASE_URL || typeof fetch === 'undefined') {
-    throw new Error('Sync endpoint not configured')
-  }
-
-  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null
-  const t = ctrl ? setTimeout(() => {
-    safeLogger.warn('postJSON timeout alcanzado', { path, timeoutMs })
-    ctrl.abort()
-  }, timeoutMs) : null
-
-  try {
-    const headers = { 'Content-Type': 'application/json' }
-    const token = getSyncAuthToken()
-    const headerName = getSyncAuthHeaderName()
-    const authToken = typeof authService?.getToken === 'function' ? authService.getToken() : null
-    const isJwt = typeof authToken === 'string' && authToken.split('.').length === 3
-    const resolvedUserId =
-      (typeof authService?.getUser === 'function' && authService.getUser()?.id) ||
-      getCurrentUserId()
-
-    safeLogger.debug(`postJSON: configurando headers para ${path}`, {
-      hasToken: !!token,
-      tokenLength: token ? token.length : 0,
-      headerName,
-      hasJwt: isJwt,
-      hasResolvedUserId: !!resolvedUserId,
-      userIdLength: resolvedUserId ? resolvedUserId.length : 0
-    })
-
-    if (isJwt) {
-      headers.Authorization = `Bearer ${authToken}`
-
-      if (headerName && headerName.toLowerCase() !== 'authorization') {
-        if (headerName.toLowerCase() === 'x-user-id' && resolvedUserId) {
-          headers[headerName] = resolvedUserId
-        } else if (token) {
-          headers[headerName] = token
-        }
-      }
-
-      if (!headers['X-User-Id'] && resolvedUserId) {
-        headers['X-User-Id'] = resolvedUserId
-      }
-    } else if (token && headerName) {
-      const normalizedHeader = headerName.toLowerCase()
-      headers[headerName] = normalizedHeader === 'authorization' ? `Bearer ${token}` : token
-
-      if (!headers['X-User-Id'] && normalizedHeader !== 'x-user-id' && resolvedUserId) {
-        headers['X-User-Id'] = resolvedUserId
-      }
-    } else if (resolvedUserId) {
-      headers['X-User-Id'] = resolvedUserId
-      safeLogger.debug('postJSON: usando X-User-Id por falta de token', {
-        hasResolvedUserId: !!resolvedUserId,
-        userIdLength: resolvedUserId ? resolvedUserId.length : 0
-      })
-    }
-
-    safeLogger.info('postJSON: enviando solicitud', { path, timeoutMs })
-    safeLogger.debug('postJSON: headers finales configurados', { headerKeys: Object.keys(headers) })
-
-    const startTime = Date.now()
-
-    const res = await fetch(`${SYNC_BASE_URL}${path}`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(body),
-      signal: ctrl?.signal
-    })
-
-    const elapsed = Date.now() - startTime
-    safeLogger.info('postJSON: solicitud completada', { path, elapsed, status: res.status })
-
-    if (!res.ok) {
-      const text = await res.text().catch(() => '')
-      safeLogger.warn('postJSON: respuesta con error del servidor', {
-        status: res.status,
-        statusText: res.statusText,
-        message: text ? 'Payload omitido en producción' : 'Sin cuerpo',
-        path,
-        url: `${SYNC_BASE_URL}${path}`
-      })
-      throw new Error(`HTTP ${res.status}: ${text}`)
-    }
-
-    const jsonResponse = await res.json().catch(() => ({}))
-    safeLogger.debug('postJSON: claves de respuesta exitosa', { keys: Object.keys(jsonResponse) })
-
-    return jsonResponse
-  } catch (error) {
-    safeLogger.error('postJSON: error durante la solicitud', {
-      path,
-      errorName: error?.name,
-      errorMessage: error?.message
-    })
-    safeLogger.debug('postJSON: detalles del error', {
-      url: `${SYNC_BASE_URL}${path}`,
-      errorName: error?.name,
-      errorMessage: error?.message,
-      errorStack: error?.stack?.split('\n')?.[0]
-    })
-    throw error
-  } finally {
-    if (t) clearTimeout(t)
-  }
-}
-
-async function tryBulk(type, records) {
-  if (!records || records.length === 0) return { success: true, count: 0 }
-  const path = `/progress/${type}/bulk`
-  // Strip local-only fields before upload
-  const sanitize = (obj) => {
-    if (!obj || typeof obj !== 'object') return obj
-    const { syncPriority: _SYNC_PRIORITY, migratedAt: _MIGRATED_AT, ...rest } = obj
-    return rest
-  }
-  const body = { records: records.map(sanitize) }
-  const res = await postJSON(path, body)
-  return { success: true, ...res }
-}
+// Re-export and destructure sync functions from SyncService for internal use
+const {
+  isBrowserOnline,
+  enqueue,
+  getSyncSuccessMessage,
+  postJSON,
+  tryBulk,
+  wakeUpServer,
+  flushSyncQueue: flushSyncQueueFromService
+} = SyncService
 
 async function markSynced(storeName, ids) {
   try {
@@ -598,80 +319,9 @@ async function markSynced(storeName, ids) {
   }
 }
 
-/**
- * Wake up the server (Render free tier sleeps after 15 min)
- */
-async function wakeUpServer() {
-  if (!SYNC_BASE_URL) return false
-  try {
-    safeLogger.info('wakeUpServer: intentando despertar servidor')
-    let requestUrl = SYNC_BASE_URL
-
-    try {
-      const syncUrl = new URL(SYNC_BASE_URL)
-
-      // Remove query/hash noise so we ping the actual host
-      syncUrl.search = ''
-      syncUrl.hash = ''
-
-      const trimmedPath = syncUrl.pathname.replace(/\/$/, '')
-      if (trimmedPath.endsWith('/api')) {
-        const segments = trimmedPath.split('/')
-        segments.pop()
-        const newPath = segments.join('/') || '/'
-        syncUrl.pathname = newPath || '/'
-      }
-
-      requestUrl = syncUrl.toString()
-      if (requestUrl.endsWith('/')) {
-        requestUrl = requestUrl.slice(0, -1)
-      }
-    } catch (urlError) {
-      safeLogger.warn('wakeUpServer: URL de sincronización inválida, usando fallback', {
-        message: urlError?.message
-      })
-      requestUrl = SYNC_BASE_URL.replace(/\/api\/?$/, '')
-    }
-
-    // Mobile-compatible timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 25000)
-
-    const response = await fetch(requestUrl, {
-      method: 'GET',
-      signal: controller.signal
-    })
-
-    clearTimeout(timeoutId)
-
-    if (response.status === 404) {
-      safeLogger.warn('wakeUpServer: el servidor de sincronización respondió 404', {
-        url: requestUrl,
-        status: response.status,
-        statusText: response.statusText
-      })
-      return false
-    }
-
-    if (response.ok) {
-      safeLogger.info('wakeUpServer: servidor responde OK')
-      return true
-    }
-
-    safeLogger.warn('wakeUpServer: no se pudo despertar el servidor', {
-      status: response.status,
-      statusText: response.statusText
-    })
-    return false
-  } catch (error) {
-    safeLogger.warn('wakeUpServer: error al intentar despertar servidor', {
-      message: error?.message,
-      name: error?.name
-    })
-    // Even if wake-up fails, continue with sync attempt
-    return false
-  }
-}
+// --------------------------
+// Account Sync
+// --------------------------
 
 /**
  * Downloads and merges data from all devices of the authenticated account
@@ -717,7 +367,7 @@ export async function syncAccountData() {
 
   if (!isSyncEnabled()) {
     safeLogger.warn('syncAccountData: sincronización deshabilitada', {
-      hasEndpoint: !!SYNC_BASE_URL
+      hasEndpoint: !!getSyncEndpoint()
     })
     return { success: false, reason: 'sync_disabled' }
   }
@@ -729,7 +379,7 @@ export async function syncAccountData() {
 
   safeLogger.info('syncAccountData: iniciando sincronización multi-dispositivo')
   safeLogger.debug('syncAccountData: configuración de sincronización', {
-    hasSyncUrl: !!SYNC_BASE_URL,
+    hasSyncUrl: !!getSyncEndpoint(),
     tokenLength: token ? token.length : 0
   })
 
@@ -754,7 +404,7 @@ export async function syncAccountData() {
         const resolvedUserId = (authService.getUser?.()?.id) || getCurrentUserId()
         if (authToken) headers.Authorization = `Bearer ${authToken}`
         if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
-        const res = await fetch(`${SYNC_BASE_URL}/auth/sync/download`, { method: 'GET', headers })
+        const res = await fetch(`${getSyncEndpoint()}/auth/sync/download`, { method: 'GET', headers })
         if (!res.ok) {
           const text = await res.text().catch(() => '')
           throw new Error(`HTTP ${res.status}: ${text}`)
@@ -1044,8 +694,10 @@ async function mergeAccountDataLocally(accountData) {
     sessionMap.set(key, session)
   })
 
-  // Merge attempts using map lookups
+  // Merge attempts using map lookups (batch operation)
   if (accountData.attempts) {
+    const attemptsToSave = []
+
     for (const remoteAttempt of accountData.attempts) {
       try {
         const createdTime = Math.floor(new Date(remoteAttempt.createdAt).getTime() / 5000) * 5000
@@ -1053,17 +705,16 @@ async function mergeAccountDataLocally(accountData) {
         const existing = attemptMap.get(key)
 
         if (!existing) {
-          // Add new attempt with current user ID
+          // Prepare new attempt with current user ID
           const localAttempt = {
             ...remoteAttempt,
             userId: currentUserId,
             id: remoteAttempt.id || `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await saveAttempt(localAttempt)
+          attemptsToSave.push(localAttempt)
           // Update in-memory map to maintain consistency
           attemptMap.set(key, localAttempt)
-          results.attempts++
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error al fusionar attempt', {
@@ -1073,10 +724,30 @@ async function mergeAccountDataLocally(accountData) {
         results.conflicts++
       }
     }
+
+    // Batch save all new attempts in a single transaction
+    if (attemptsToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attemptsToSave, { skipTimestamps: true })
+        results.attempts = batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch save de attempts', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += attemptsToSave.length
+      }
+    }
   }
 
-  // Merge learning sessions by sessionId (keep most recent updatedAt)
+  // Merge learning sessions by sessionId (keep most recent updatedAt) - batch operation
   if (Array.isArray(accountData.sessions)) {
+    const sessionsToSave = []
+    const sessionsToUpdate = []
+
     for (const remoteSession of accountData.sessions) {
       try {
         const key = remoteSession.sessionId || remoteSession.id
@@ -1091,9 +762,8 @@ async function mergeAccountDataLocally(accountData) {
             updatedAt: remoteSession.updatedAt || new Date().toISOString(),
             syncedAt: new Date()
           }
-          await saveLearningSession(localSession)
+          sessionsToSave.push(localSession)
           sessionMap.set(key, localSession)
-          results.sessions++
         } else if (remoteSession.updatedAt && new Date(remoteSession.updatedAt) > new Date(existing.updatedAt || 0)) {
           const updatedSession = {
             ...existing,
@@ -1102,9 +772,8 @@ async function mergeAccountDataLocally(accountData) {
             userId: currentUserId,
             syncedAt: new Date()
           }
-          await updateLearningSession(existing.sessionId || key, updatedSession)
+          sessionsToUpdate.push({ id: existing.sessionId || key, updates: updatedSession })
           sessionMap.set(key, updatedSession)
-          results.sessions++
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error al fusionar session', {
@@ -1114,39 +783,74 @@ async function mergeAccountDataLocally(accountData) {
         results.conflicts++
       }
     }
+
+    // Batch save new sessions
+    if (sessionsToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, sessionsToSave, { skipTimestamps: true })
+        results.sessions += batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch save de sessions', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += sessionsToSave.length
+      }
+    }
+
+    // Batch update existing sessions
+    if (sessionsToUpdate.length > 0) {
+      try {
+        const batchResult = await batchUpdateInDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, sessionsToUpdate)
+        results.sessions += batchResult.updated
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch update de sessions', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += sessionsToUpdate.length
+      }
+    }
   }
 
-  // Merge mastery using map lookups (keep best scores)
+  // Merge mastery using map lookups (keep best scores) - batch operation
   if (accountData.mastery) {
+    const masteryToSave = []
+    const masteryToUpdate = []
+
     for (const remoteMastery of accountData.mastery) {
       try {
         const key = `${remoteMastery.verbId}|${remoteMastery.mood}|${remoteMastery.tense}|${remoteMastery.person}`
         const existing = masteryMap.get(key)
 
         if (!existing) {
-          // Add new mastery record
+          // Prepare new mastery record
           const localMastery = {
             ...remoteMastery,
             userId: currentUserId,
             id: remoteMastery.id || `mastery-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await saveMastery(localMastery)
+          masteryToSave.push(localMastery)
           // Update in-memory map to maintain consistency
           masteryMap.set(key, localMastery)
-          results.mastery++
         } else if (new Date(remoteMastery.updatedAt) > new Date(existing.updatedAt)) {
-          // Update with more recent score
+          // Prepare update with more recent score
           const updatedMastery = {
             ...existing,
             ...remoteMastery,
             userId: currentUserId,
             syncedAt: new Date()
           }
-          await updateInDB(STORAGE_CONFIG.STORES.MASTERY, existing.id, updatedMastery)
+          masteryToUpdate.push({ id: existing.id, updates: updatedMastery })
           // Update in-memory map to maintain consistency
           masteryMap.set(key, updatedMastery)
-          results.mastery++
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error al fusionar mastery', {
@@ -1156,39 +860,74 @@ async function mergeAccountDataLocally(accountData) {
         results.conflicts++
       }
     }
+
+    // Batch save new mastery records
+    if (masteryToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.MASTERY, masteryToSave, { skipTimestamps: true })
+        results.mastery += batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch save de mastery', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += masteryToSave.length
+      }
+    }
+
+    // Batch update existing mastery records
+    if (masteryToUpdate.length > 0) {
+      try {
+        const batchResult = await batchUpdateInDB(STORAGE_CONFIG.STORES.MASTERY, masteryToUpdate)
+        results.mastery += batchResult.updated
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch update de mastery', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += masteryToUpdate.length
+      }
+    }
   }
 
-  // Merge schedules using map lookups (keep most recent)
+  // Merge schedules using map lookups (keep most recent) - batch operation
   if (accountData.schedules) {
+    const schedulesToSave = []
+    const schedulesToUpdate = []
+
     for (const remoteSchedule of accountData.schedules) {
       try {
         const key = `${remoteSchedule.verbId}|${remoteSchedule.mood}|${remoteSchedule.tense}|${remoteSchedule.person}`
         const existing = scheduleMap.get(key)
 
         if (!existing) {
-          // Add new schedule
+          // Prepare new schedule
           const localSchedule = {
             ...remoteSchedule,
             userId: currentUserId,
             id: remoteSchedule.id || `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
             syncedAt: new Date()
           }
-          await saveSchedule(localSchedule)
+          schedulesToSave.push(localSchedule)
           // Update in-memory map to maintain consistency
           scheduleMap.set(key, localSchedule)
-          results.schedules++
         } else if (new Date(remoteSchedule.updatedAt) > new Date(existing.updatedAt)) {
-          // Update with more recent schedule
+          // Prepare update with more recent schedule
           const updatedSchedule = {
             ...existing,
             ...remoteSchedule,
             userId: currentUserId,
             syncedAt: new Date()
           }
-          await updateInDB(STORAGE_CONFIG.STORES.SCHEDULES, existing.id, updatedSchedule)
+          schedulesToUpdate.push({ id: existing.id, updates: updatedSchedule })
           // Update in-memory map to maintain consistency
           scheduleMap.set(key, updatedSchedule)
-          results.schedules++
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error al fusionar schedule', {
@@ -1198,9 +937,43 @@ async function mergeAccountDataLocally(accountData) {
         results.conflicts++
       }
     }
+
+    // Batch save new schedules
+    if (schedulesToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.SCHEDULES, schedulesToSave, { skipTimestamps: true })
+        results.schedules += batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch save de schedules', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += schedulesToSave.length
+      }
+    }
+
+    // Batch update existing schedules
+    if (schedulesToUpdate.length > 0) {
+      try {
+        const batchResult = await batchUpdateInDB(STORAGE_CONFIG.STORES.SCHEDULES, schedulesToUpdate)
+        results.schedules += batchResult.updated
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch update de schedules', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += schedulesToUpdate.length
+      }
+    }
   }
 
-  return { ...results, userId: currentUserId, source: resolution.source, attempted: resolution.attempted }
+  return { ...results, userId: currentUserId, source: resolution.source, attempted: resolution.attempted, merged: results }
 }
 
 /**
@@ -1223,7 +996,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
 
   if (!isSyncEnabled()) {
     safeLogger.warn('syncNow: sincronización deshabilitada', {
-      hasEndpoint: !!SYNC_BASE_URL
+      hasEndpoint: !!getSyncEndpoint()
     })
     return { success: false, reason: 'sync_disabled' }
   }
@@ -1238,7 +1011,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
     userIdLength: userId.length
   })
   safeLogger.debug('syncNow: endpoint configurado', {
-    hasEndpoint: !!SYNC_BASE_URL
+    hasEndpoint: !!getSyncEndpoint()
   })
   safeLogger.debug('syncNow: colecciones a sincronizar', {
     include
@@ -1395,7 +1168,7 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
     }
 
     // Procesar cola offline (si hubiera)
-    await flushSyncQueue()
+    await flushSyncQueueFromService()
 
     if (usedAccountSync && legacyUploadsPerformed && syncStrategy !== 'legacy-fallback') {
       syncStrategy = 'account+legacy'
@@ -1441,30 +1214,14 @@ export async function syncNow({ include = ['attempts','mastery','schedules','ses
   }
 }
 
-export async function flushSyncQueue() {
-  if (!isSyncEnabled() || !isBrowserOnline()) return { flushed: 0 }
-  const q = getQueue()
-  if (q.length === 0) return { flushed: 0 }
-  const pending = [...q]
-  setQueue([])
-  let ok = 0
-  for (const entry of pending) {
-    try {
-      await postJSON(`/progress/${entry.type}`, entry.payload)
-      ok++
-    } catch {
-      // Re-encolar si vuelve a fallar
-      enqueue(entry.type, entry.payload)
-    }
-  }
-  return { flushed: ok }
-}
+// Re-export flushSyncQueue from SyncService for backward compatibility
+export const flushSyncQueue = flushSyncQueueFromService
 
 // Intento de auto-flush cuando vuelve la conectividad
 if (typeof window !== 'undefined') {
   try {
     window.addEventListener('online', () => {
-      flushSyncQueue().catch(() => {})
+      flushSyncQueueFromService().catch(() => {})
       // Intentar sync completo en background
       syncNow().catch(() => {})
     })
