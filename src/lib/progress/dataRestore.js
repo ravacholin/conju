@@ -2,7 +2,28 @@
 // Parte de la Fase 5: Exportación y respaldo de datos
 
 import { saveToDB } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { STORAGE_CONFIG } from './config.js'
+
+const STORE_MAP = {
+  attempts: STORAGE_CONFIG.STORES.ATTEMPTS,
+  mastery: STORAGE_CONFIG.STORES.MASTERY,
+  schedules: STORAGE_CONFIG.STORES.SCHEDULES
+}
+
+async function resolveUserId(userIdOverride = null) {
+  if (userIdOverride) return userIdOverride
+
+  try {
+    const module = await import('./userManager.js')
+    if (typeof module.getCurrentUserId === 'function') {
+      return module.getCurrentUserId() || null
+    }
+  } catch (error) {
+    console.warn('⚠️ No se pudo obtener el userId actual:', error?.message || error)
+  }
+
+  return null
+}
 
 /**
  * Restaura datos de progreso desde un archivo exportado
@@ -25,7 +46,7 @@ export async function restoreProgressData(importData, options = {}) {
       throw new Error('Formato de datos inválido')
     }
 
-    const targetUserId = userId || getCurrentUserId()
+    const targetUserId = await resolveUserId(userId)
     if (!targetUserId) {
       throw new Error('No se encontró ID de usuario para restaurar datos')
     }
@@ -81,6 +102,12 @@ export async function restoreProgressData(importData, options = {}) {
  */
 async function restoreDataType(dataType, records, userId, overwriteExisting) {
   const result = { imported: 0, skipped: 0, errors: 0 }
+  const storeName = STORE_MAP[dataType]
+
+  if (!storeName) {
+    console.warn(`⚠️ Tipo de datos no soportado para restauración: ${dataType}`)
+    return result
+  }
   
   for (const record of records) {
     try {
@@ -97,7 +124,7 @@ async function restoreDataType(dataType, records, userId, overwriteExisting) {
       }
       
       // Guardar el registro
-      await saveToDB(dataType, recordWithUserId)
+      await saveToDB(storeName, recordWithUserId)
       result.imported++
       
     } catch (error) {
@@ -175,12 +202,87 @@ function isValidExportFormat(importData) {
   // Validar estructura básica de attempts
   if (hasAttempts && data.attempts.length > 0) {
     const sampleAttempt = data.attempts[0]
-    if (!sampleAttempt.timestamp || !sampleAttempt.itemId) {
+    if (!sampleAttempt.id && !sampleAttempt.itemId) {
       return false
     }
   }
 
   return true
+}
+
+async function readFileAsText(file) {
+  if (!file) return ''
+  if (typeof file === 'string') return file
+
+  const candidates = []
+
+  const addCandidate = (value) => {
+    if (typeof value === 'string') {
+      candidates.push(value)
+    }
+  }
+
+  if (typeof file.text === 'function') {
+    try {
+      const raw = await file.text()
+      if (typeof raw === 'string') addCandidate(raw)
+      else if (raw instanceof ArrayBuffer) addCandidate(new TextDecoder('utf-8').decode(raw))
+      else if (raw && typeof raw.arrayBuffer === 'function') {
+        const buffer = await raw.arrayBuffer()
+        addCandidate(new TextDecoder('utf-8').decode(buffer))
+      }
+    } catch {/* ignore */}
+  }
+
+  if (typeof file.arrayBuffer === 'function') {
+    try {
+      const buffer = await file.arrayBuffer()
+      addCandidate(new TextDecoder('utf-8').decode(buffer))
+    } catch {/* ignore */}
+  }
+
+  if (typeof globalThis.Response === 'function') {
+    try {
+      addCandidate(await new Response(file).text())
+    } catch {
+      if (typeof globalThis.Blob === 'function') {
+        try {
+          addCandidate(await new Response(new Blob([file])).text())
+        } catch {/* ignore */}
+      }
+    }
+  }
+
+  if (typeof file?.content === 'string') {
+    addCandidate(file.content)
+  }
+
+  const implSymbol = Object.getOwnPropertySymbols(file || {}).find(sym => sym.toString() === 'Symbol(impl)')
+  if (implSymbol) {
+    const impl = file[implSymbol]
+    if (impl?._buffer && typeof Buffer !== 'undefined') {
+      addCandidate(Buffer.from(impl._buffer).toString('utf-8'))
+    }
+  }
+
+  const validCandidate = candidates.find(candidate => candidate && !/^\[object\s.+\]$/.test(candidate.trim()))
+  if (validCandidate) {
+    return validCandidate
+  }
+
+  const placeholder = candidates.find(candidate => candidate && /^\[object\s.+\]$/.test(candidate.trim()))
+  if (placeholder && implSymbol) {
+    const impl = file[implSymbol]
+    if (impl?._buffer && typeof Buffer !== 'undefined') {
+      return Buffer.from(impl._buffer).toString('utf-8')
+    }
+  }
+
+  console.warn('dataRestore: falling back to string conversion', {
+    keys: file ? Object.getOwnPropertyNames(file) : null,
+    constructor: file?.constructor?.name
+  })
+  return String((candidates[0] ?? file) ?? '')
 }
 
 /**
@@ -193,28 +295,31 @@ export async function importFromFile(file, options = {}) {
   try {
     console.log(`📂 Importando datos desde archivo: ${file.name}`)
     
-    let text
-    if (file && typeof file.text === 'function') {
-      text = await file.text()
-    } else if (file && typeof file.arrayBuffer === 'function') {
-      const buffer = await file.arrayBuffer()
-      text = new TextDecoder('utf-8').decode(buffer)
-    } else if (typeof file?.content === 'string') {
-      text = file.content
-    } else if (typeof file === 'string') {
-      text = file
-    } else {
-      throw new Error('El archivo no soporta lectura de texto')
-    }
+    const text = await readFileAsText(file)
     let importData
     
     try {
       importData = JSON.parse(text)
-    } catch {
-      throw new Error('El archivo no contiene JSON válido')
+    } catch (parseError) {
+      if (file && typeof file.arrayBuffer === 'function') {
+        try {
+          const retryBuffer = await file.arrayBuffer()
+          const retryText = new TextDecoder('utf-8').decode(retryBuffer)
+          importData = JSON.parse(retryText)
+        } catch (retryError) {
+          throw new Error(`El archivo no contiene JSON válido${retryError?.message ? `: ${retryError.message}` : ''}`)
+        }
+      } else {
+        throw new Error(`El archivo no contiene JSON válido${parseError?.message ? `: ${parseError.message}` : ''}`)
+      }
     }
     
-    const result = await restoreProgressData(importData, options)
+    const resolvedOptions = {
+      ...options,
+      userId: options.userId || importData?.metadata?.userId || null
+    }
+
+    const result = await restoreProgressData(importData, resolvedOptions)
     
     console.log(`📥 Importación desde archivo completada exitosamente`)
     return result
@@ -232,7 +337,8 @@ export async function importFromFile(file, options = {}) {
  */
 export async function createBackup(userId = null) {
   try {
-    const actualUserId = userId || getCurrentUserId()
+    const resolvedUserId = await resolveUserId(userId)
+    const actualUserId = resolvedUserId || 'anonymous'
     console.log(`💾 Creando respaldo automático para usuario ${actualUserId}...`)
 
     // Usar el sistema de exportación existente

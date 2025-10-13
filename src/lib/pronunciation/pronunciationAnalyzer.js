@@ -315,7 +315,7 @@ class PronunciationAnalyzer {
 
       case 'minor_pronunciation':
         suggestions.push('Habla más lentamente y pronuncia cada letra con claridad');
-        suggestions.push('Practica la diferencia entre sonidos similares (b/v, d/t, etc.)');
+        suggestions.push('Repite las vocales básicas en voz alta: a, e, i, o, u para fijar el sonido');
         break;
 
       case 'incorrect_word':
@@ -373,6 +373,7 @@ class PronunciationAnalyzer {
     // General phonetic suggestions (improved)
     if (detailedAnalysis.phoneticAnalysis?.vowel_accuracy < 80) {
       suggestions.push('Las vocales españolas son puras: /a/ /e/ /i/ /o/ /u/');
+      suggestions.push('Concéntrate en vocales cortas y claras: a, e, i, o, u sin deslizamientos');
     }
 
     if (detailedAnalysis.phoneticAnalysis?.consonant_accuracy < 70) {
@@ -799,6 +800,9 @@ class PronunciationAnalyzer {
     const weakVowels = ['i', 'u', 'í', 'ú'];
     const strongVowels = ['a', 'e', 'o', 'á', 'é', 'ó'];
 
+    const stripAccent = ch => ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const normalizedPair = stripAccent(vowel1) + stripAccent(vowel2);
+
     const isWeak1 = weakVowels.includes(vowel1);
     const isWeak2 = weakVowels.includes(vowel2);
     const isStrong1 = strongVowels.includes(vowel1);
@@ -822,13 +826,12 @@ class PronunciationAnalyzer {
         'ia', 'ie', 'io', 'ua', 'ue', 'ui', 'uo'  // weak + strong
       ];
 
-      return alwaysDiphthongs.includes(pair);
+      return alwaysDiphthongs.includes(normalizedPair);
     }
 
     // Rule 4: Weak + Weak = diphthong
     if (isWeak1 && isWeak2) {
-      const pair = vowel1 + vowel2;
-      return ['iu', 'ui'].includes(pair);
+      return ['iu', 'ui'].includes(normalizedPair);
     }
 
     return false;

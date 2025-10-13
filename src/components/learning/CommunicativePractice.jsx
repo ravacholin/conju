@@ -550,28 +550,6 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
         }
       });
 
-      // Try to update SRS for expected verb forms if we can match them
-      if (eligibleForms && tense?.tense) {
-        try {
-          const userId = getCurrentUserId();
-          if (userId) {
-            // Mark expected verbs as needing more practice
-            const relevantForms = eligibleForms.filter(f =>
-              f.tense === tense.tense &&
-              currentScriptNode.userKeywords.some(keyword =>
-                f.value.includes(keyword) || keyword.includes(f.value)
-              )
-            );
-
-            for (const form of relevantForms.slice(0, 3)) { // Limit to avoid spam
-              await updateSchedule(userId, form, false, 1); // Mark as incorrect with hint
-              console.log(`Analytics: Marked verb form for more practice: ${form.lemma} - ${form.value}`);
-            }
-          }
-        } catch (error) {
-          console.error("Failed to update SRS for communicative practice:", error);
-        }
-      }
     }
 
     setMessages(newMessages);

@@ -39,14 +39,19 @@ vi.mock('./DrillItemGenerator.js', () => ({
 }))
 
 // Mock del logger
-vi.mock('../../lib/utils/logger.js', () => ({
-  createLogger: vi.fn(() => ({
-    debug: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  }))
-}))
+vi.mock('../../lib/utils/logger.js', async () => {
+  const actual = await vi.importActual('../../lib/utils/logger.js')
+  return {
+    ...actual,
+    createLogger: vi.fn(() => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    })),
+    registerDebugTool: vi.fn()
+  }
+})
 
 // Variables globales para controlar mocks
 let mockProgressSystemReady = false

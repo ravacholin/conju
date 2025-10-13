@@ -90,14 +90,19 @@ vi.mock('../DoubleModeManager.js', () => ({
   isDoubleModeViable: mockIsDoubleModeViable
 }))
 
-vi.mock('../../../lib/utils/logger.js', () => ({
-  createLogger: () => ({
-    debug: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  })
-}))
+vi.mock('../../../lib/utils/logger.js', async () => {
+  const actual = await vi.importActual('../../../lib/utils/logger.js')
+  return {
+    ...actual,
+    createLogger: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    }),
+    registerDebugTool: vi.fn()
+  }
+})
 
 describe('useDrillGenerator - review filters', () => {
   beforeAll(async () => {

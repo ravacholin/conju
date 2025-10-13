@@ -262,9 +262,10 @@ export async function wakeUpServer() {
     clearTimeout(timeoutId)
 
     if (response.status === 404) {
-      logger.warn('wakeUpServer', 'El servidor respondió 404', {
+      logger.warn('wakeUpServer: el servidor de sincronización respondió 404', {
         url: requestUrl,
-        status: response.status
+        status: response.status,
+        statusText: response.statusText
       })
       return false
     }

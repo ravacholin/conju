@@ -135,45 +135,59 @@ export class LanguageAnalyzer {
     // Análisis de coherencia
     const coherenceAnalysis = this.analyzeCoherence(normalizedText, context);
 
+    const grammarScore = await this.calculateGrammarScore(text, grammarAnalysis, basicAnalysis);
+    const creativityScore = this.calculateCreativityScore(complexityAnalysis, coherenceAnalysis, verbAnalysis);
+
     return {
-      // Información básica
       originalText: text,
       normalizedText,
       wordCount: basicAnalysis.wordCount,
       sentenceCount: basicAnalysis.sentenceCount,
       characterCount: text.length,
 
-      // Análisis de verbos
-      verbs: verbAnalysis.verbs,
-      verbCount: verbAnalysis.verbCount,
-      irregularVerbs: verbAnalysis.irregularVerbs,
-      verbTypes: verbAnalysis.verbTypes,
+      verbAnalysis: {
+        detectedVerbs: verbAnalysis.detectedVerbs,
+        conjugations: verbAnalysis.conjugations,
+        irregularVerbs: verbAnalysis.irregularVerbs,
+        verbTypes: verbAnalysis.verbTypes,
+        foundExpectedVerbs: verbAnalysis.foundExpectedVerbs,
+        missingExpectedVerbs: verbAnalysis.missingExpectedVerbs,
+        expectedVerbsUsage: verbAnalysis.expectedVerbsUsage
+      },
 
-      // Análisis de tiempos
-      tenses: tenseAnalysis.tenses,
-      dominantTense: tenseAnalysis.dominantTense,
-      tenseConsistency: tenseAnalysis.consistency,
-      expectedTenseUsage: tenseAnalysis.expectedTenseUsage,
+      tenseAnalysis: {
+        detectedTenses: tenseAnalysis.detectedTenses,
+        dominantTense: tenseAnalysis.dominantTense,
+        consistency: tenseAnalysis.consistency,
+        correctTenseUsage: tenseAnalysis.expectedTensePercentage,
+        tenseErrors: tenseAnalysis.tenseErrors,
+        isExpectedTenseDominant: tenseAnalysis.isExpectedTenseDominant
+      },
 
-      // Análisis gramatical
       grammarElements: grammarAnalysis,
-
-      // Análisis de errores
+      errorAnalysis,
       errors: errorAnalysis.errors,
       errorCount: errorAnalysis.errorCount,
       errorTypes: errorAnalysis.errorTypes,
+      complexityAnalysis,
+      coherenceAnalysis,
 
-      // Métricas de calidad
-      complexity: complexityAnalysis.complexity,
-      readability: complexityAnalysis.readability,
-      coherence: coherenceAnalysis.score,
-
-      // Métricas de rendimiento
       accuracy: this.calculateAccuracy(verbAnalysis, tenseAnalysis, context),
       completeness: this.calculateCompleteness(verbAnalysis, context),
       appropriateness: this.calculateAppropriateness(tenseAnalysis, grammarAnalysis, context),
+      grammarScore,
+      creativityScore,
 
-      // Metadatos
+      quality: {
+        grammar: grammarScore,
+        coherence: coherenceAnalysis.score,
+        richness: Math.min(1, basicAnalysis.wordCount / 200),
+        creativity: creativityScore
+      },
+
+      verbs: verbAnalysis.detectedVerbs,
+      tenses: tenseAnalysis.detectedTenses,
+
       analysisTimestamp: Date.now(),
       analyzerVersion: '1.0.0'
     };
@@ -227,6 +241,17 @@ export class LanguageAnalyzer {
       }
     }
 
+    const tokens = text.split(/\s+/).filter(Boolean);
+    const heuristicEndings = ['o', 'as', 'es', 'a', 'e', 'amos', 'emos', 'imos', 'áis', 'éis', 'ís', 'an', 'en', 'aba', 'abas', 'aban', 'ía', 'ías', 'ían', 'ando', 'iendo', 'yendo'];
+
+    for (const token of tokens) {
+      const cleaned = token.replace(/[^a-záéíóúñü]/gi, '').toLowerCase();
+      if (!cleaned) continue;
+      if (heuristicEndings.some(ending => cleaned.endsWith(ending)) && cleaned.length > 2) {
+        verbs.push({ verb: cleaned, type: this.inferVerbGroup(cleaned), conjugationType: 'regular' });
+      }
+    }
+
     // Eliminar duplicados y contar regulares
     const uniqueVerbs = this.removeDuplicateVerbs(verbs);
     verbTypes.regular = uniqueVerbs.filter(v => v.conjugationType === 'regular').length;
@@ -240,6 +265,14 @@ export class LanguageAnalyzer {
       !foundExpectedVerbs.includes(expected)
     );
 
+    const detectedVerbs = uniqueVerbs.map(v => v.verb);
+    const conjugations = uniqueVerbs.map(v => ({
+      form: v.verb,
+      infinitive: v.infinitive || v.verb,
+      isIrregular: v.conjugationType === 'irregular',
+      type: v.type || null
+    }));
+
     return {
       verbs: uniqueVerbs,
       verbCount: uniqueVerbs.length,
@@ -247,7 +280,9 @@ export class LanguageAnalyzer {
       verbTypes,
       foundExpectedVerbs,
       missingExpectedVerbs,
-      expectedVerbsUsage: foundExpectedVerbs.length / Math.max(expectedVerbs.length, 1)
+      expectedVerbsUsage: foundExpectedVerbs.length / Math.max(expectedVerbs.length, 1),
+      detectedVerbs,
+      conjugations
     };
   }
 
@@ -289,6 +324,17 @@ export class LanguageAnalyzer {
     const expectedTenseUsage = expectedTense ? (tenseUsage[expectedTense] || 0) : 0;
     const expectedTensePercentage = expectedTenseUsage / Math.max(totalTenseUsage, 1);
 
+    const detectedTenses = Object.entries(tenseUsage).map(([tense, count]) => ({ tense, count }));
+
+    const tenseErrors = [];
+    if (expectedTense && expectedTensePercentage < 0.5) {
+      tenseErrors.push({
+        expected: expectedTense,
+        dominant: dominantTense,
+        usage: expectedTensePercentage
+      });
+    }
+
     return {
       tenses: tenseUsage,
       dominantTense,
@@ -296,7 +342,10 @@ export class LanguageAnalyzer {
       expectedTenseUsage: expectedTenseUsage,
       expectedTensePercentage,
       tenseVariety: Object.keys(tenseUsage).length,
-      isExpectedTenseDominant: dominantTense === expectedTense
+      isExpectedTenseDominant: dominantTense === expectedTense,
+      detectedTenses,
+      tenseErrors,
+      correctTenseUsage: expectedTensePercentage
     };
   }
 
@@ -464,6 +513,16 @@ export class LanguageAnalyzer {
       });
     }
 
+    // Detección simple de errores de concordancia de género
+    if (/\bla\s+\w+o\b/i.test(text) || /\bel\s+\w+a\b/i.test(text)) {
+      errors.push({
+        type: ERROR_TYPES.GENDER_AGREEMENT,
+        severity: 2,
+        description: 'Posible error de concordancia de género',
+        suggestion: 'Asegura que artículos y adjetivos coincidan en género'
+      });
+    }
+
     return errors;
   }
 
@@ -529,6 +588,108 @@ export class LanguageAnalyzer {
       connectorsFound: connectors.length,
       isTopical: coherenceScore > 0.7
     };
+  }
+
+  calculateCreativityScore(complexityAnalysis, coherenceAnalysis, verbAnalysis) {
+    const complexityComponent = Math.min(complexityAnalysis.complexity, 1) * 0.6;
+    const coherenceComponent = Math.min(coherenceAnalysis.score, 1) * 0.3;
+    const lexicalComponent = Math.min((verbAnalysis.verbCount || 0) / 10, 1) * 0.1;
+    return Math.max(0, Math.min(1, complexityComponent + coherenceComponent + lexicalComponent));
+  }
+
+  async calculateGrammarScore(text, precomputedGrammar = null, basicAnalysis = null) {
+    const normalized = this.normalizeText(text || '');
+    const grammarAnalysis = precomputedGrammar || this.analyzeGrammar(normalized);
+    const basic = basicAnalysis || this.performBasicAnalysis(normalized);
+    const totalWords = Math.max(basic.wordCount, 1);
+
+    const contribution = (
+      (grammarAnalysis.verbs?.count || 0) +
+      (grammarAnalysis.articles?.count || 0) +
+      (grammarAnalysis.conjunctions?.count || 0) +
+      (grammarAnalysis.prepositions?.count || 0)
+    ) / (totalWords * 1.5);
+
+    const errors = this.detectErrors(normalized, {});
+    const penalty = Math.min(0.6, errors.errorCount * 0.1 + errors.severity * 0.05);
+
+    return Math.max(0, Math.min(1, contribution - penalty));
+  }
+
+  async evaluateContentQuality(text) {
+    const normalized = this.normalizeText(text || '');
+    const basic = this.performBasicAnalysis(normalized);
+    if (basic.wordCount === 0) {
+      return {
+        overallScore: 0,
+        coherence: 0,
+        richness: 0,
+        engagement: 0,
+        strengths: [],
+        improvements: ['Añade contenido a tu respuesta']
+      };
+    }
+
+    const grammarScore = await this.calculateGrammarScore(text);
+    const complexity = this.analyzeComplexity(normalized);
+    const coherence = this.analyzeCoherence(normalized, {});
+    const verbAnalysis = this.analyzeVerbs(normalized);
+    const creativity = this.calculateCreativityScore(complexity, coherence, verbAnalysis);
+
+    const richness = Math.min(1, (basic.wordCount / 200) + (complexity.averageWordsPerSentence / 25));
+    const engagement = Math.min(1, (complexity.averageWordsPerSentence / 15) + (coherence.connectorsFound * 0.05));
+
+    const overall = Math.min(1, (grammarScore * 0.35) + (coherence.score * 0.25) + (richness * 0.2) + (engagement * 0.2));
+
+    const strengths = [];
+    if (grammarScore > 0.7) strengths.push('Buena estructura gramatical');
+    if (coherence.score > 0.7) strengths.push('Ideas coherentes');
+    if (richness > 0.6) strengths.push('Contenido rico y variado');
+
+    const improvements = [];
+    if (grammarScore < 0.6) improvements.push('Revisa la gramática y concordancia');
+    if (coherence.score < 0.6) improvements.push('Añade conectores y ordena tus ideas');
+    if (richness < 0.5) improvements.push('Amplía el contenido con más detalles');
+
+    return {
+      overallScore: overall,
+      coherence: coherence.score,
+      richness,
+      engagement,
+      creativity,
+      strengths,
+      improvements
+    };
+  }
+
+  async extractKeyPhrases(text) {
+    if (!text || typeof text !== 'string') {
+      return [];
+    }
+
+    const phrases = new Set();
+    const nounPhrasePattern = /\b(el|la|los|las|un|una|unos|unas)\s+[a-záéíóúñü]+(?:\s+[a-záéíóúñü]+){0,2}/gi;
+    let match;
+    while ((match = nounPhrasePattern.exec(text)) !== null) {
+      let phrase = match[0].trim().toLowerCase();
+      phrase = phrase.replace(/\b(de|del|la|el|los|las)\s*$/g, '').trim();
+      if (phrase) {
+        phrases.add(phrase);
+        const withoutArticle = phrase.replace(/^(el|la|los|las|un|una|unos|unas)\s+/, '').trim();
+        if (withoutArticle) {
+          phrases.add(withoutArticle);
+        }
+      }
+    }
+
+    if (phrases.size === 0) {
+      const words = text.split(/\s+/).filter(word => word.length > 3);
+      if (words.length >= 2) {
+        phrases.add(`${words[0]} ${words[1]}`.toLowerCase());
+      }
+    }
+
+    return Array.from(phrases);
   }
 
   /**
@@ -647,6 +808,13 @@ export class LanguageAnalyzer {
     });
   }
 
+  inferVerbGroup(word) {
+    if (word.endsWith('ar')) return 'ar';
+    if (word.endsWith('er')) return 'er';
+    if (word.endsWith('ir')) return 'ir';
+    return 'unknown';
+  }
+
   /**
    * Genera clave de cache
    * @param {string} text - Texto
@@ -668,17 +836,40 @@ export class LanguageAnalyzer {
    * @returns {Object} Análisis básico
    */
   getDefaultAnalysis(text) {
+    const normalized = this.normalizeText(text || '');
     return {
       originalText: text,
-      normalizedText: this.normalizeText(text),
-      wordCount: text.split(/\s+/).filter(word => word.length > 0).length,
-      verbs: [],
-      tenses: {},
-      errors: [],
-      accuracy: 0.5,
-      completeness: 0.5,
-      appropriateness: 0.5,
-      complexity: 0.5,
+      normalizedText: normalized,
+      wordCount: 0,
+      sentenceCount: 0,
+      characterCount: (text || '').length,
+      verbAnalysis: {
+        detectedVerbs: [],
+        conjugations: [],
+        irregularVerbs: [],
+        verbTypes: { regular: 0, irregular: 0 },
+        foundExpectedVerbs: [],
+        missingExpectedVerbs: [],
+        expectedVerbsUsage: 0
+      },
+      tenseAnalysis: {
+        detectedTenses: [],
+        dominantTense: null,
+        consistency: 0,
+        correctTenseUsage: 0,
+        tenseErrors: [],
+        isExpectedTenseDominant: false
+      },
+      grammarElements: {},
+      errorAnalysis: { errors: [], errorCount: 0, errorTypes: {}, severity: 0 },
+      complexityAnalysis: { complexity: 0, averageWordsPerSentence: 0, averageCharsPerWord: 0, readability: 1, textComplexityLevel: 'simple' },
+      coherenceAnalysis: { score: 0.5, connectorsFound: 0, isTopical: false },
+      accuracy: 0,
+      completeness: 0,
+      appropriateness: 0,
+      grammarScore: 0,
+      creativityScore: 0,
+      quality: { grammar: 0, coherence: 0, richness: 0, creativity: 0 },
       analysisTimestamp: Date.now(),
       error: true
     };

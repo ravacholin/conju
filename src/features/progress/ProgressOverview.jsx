@@ -172,7 +172,7 @@ export default function ProgressOverview({
           </div>
         </div>
 
-        <h1>Progreso</h1>
+        <h1>Progreso y Analíticas</h1>
         <p>Tu avance en el dominio de los verbos españoles</p>
       </div>
 

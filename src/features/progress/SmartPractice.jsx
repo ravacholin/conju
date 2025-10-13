@@ -166,7 +166,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   }
 
   return (
-    <div className="smart-practice">
+    <div className="smart-practice" data-testid="enhanced-error-analysis">
       <div className="section-header">
         <h2>
           <img src="/icons/robot.png" alt="Práctica Inteligente" className="section-icon" />

@@ -32,7 +32,7 @@ class SpeechRecognitionService {
   /**
    * Initialize speech recognition with Spanish-specific settings
    */
-  initialize(options = {}) {
+  async initialize(options = {}) {
     if (!this.isSupported) {
       throw new Error('Speech recognition not supported in this browser');
     }

@@ -7,14 +7,19 @@ import exerciseFactory from '../exercises/ExerciseFactory.js';
 import { EXERCISE_TYPES } from '../core/constants.js';
 
 // Mock de logger
-vi.mock('../../utils/logger.js', () => ({
-  createLogger: () => ({
-    info: vi.fn(),
-    debug: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  })
-}));
+vi.mock('../../utils/logger.js', async () => {
+  const actual = await vi.importActual('../../utils/logger.js')
+  return {
+    ...actual,
+    createLogger: () => ({
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    }),
+    registerDebugTool: vi.fn()
+  }
+});
 
 describe('ExerciseFactory', () => {
   beforeEach(() => {

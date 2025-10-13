@@ -292,19 +292,21 @@ export class PersonalizationEngine {
    */
   calculateLearningVelocity() {
     const recentHistory = this.learningHistory.slice(0, 30);
-    if (recentHistory.length < 10) {
+    if (recentHistory.length < 2) {
       this.adaptationMetrics.learningVelocity = 0.5;
       return;
     }
 
-    // Calcular mejora en las últimas 30 sesiones
-    const firstHalf = recentHistory.slice(15, 30);
-    const secondHalf = recentHistory.slice(0, 15);
+    const midpoint = Math.floor(recentHistory.length / 2);
+    const recentSegment = recentHistory.slice(0, Math.max(midpoint, 1));
+    const olderSegment = recentHistory.slice(Math.max(midpoint, 1));
 
-    const firstHalfAvg = firstHalf.reduce((sum, entry) => sum + entry.score, 0) / firstHalf.length;
-    const secondHalfAvg = secondHalf.reduce((sum, entry) => sum + entry.score, 0) / secondHalf.length;
+    const average = (segment) => segment.reduce((sum, entry) => sum + (entry.score || 0), 0) / segment.length;
 
-    const improvement = secondHalfAvg - firstHalfAvg;
+    const recentAvg = recentSegment.length ? average(recentSegment) : this.learningHistory[0].score || 0.5;
+    const olderAvg = olderSegment.length ? average(olderSegment) : recentAvg;
+
+    const improvement = recentAvg - olderAvg;
 
     // Normalizar velocidad entre 0 y 1
     this.adaptationMetrics.learningVelocity = Math.max(0, Math.min(1, 0.5 + improvement));
@@ -342,8 +344,13 @@ export class PersonalizationEngine {
       score += (preference - 0.5) * PERSONALIZATION_CONFIG.PREFERENCE_WEIGHT;
 
       // Factor de variedad (penalizar tipos usados recientemente)
-      const recentUsage = this.getRecentUsage(type);
-      score -= recentUsage * PERSONALIZATION_CONFIG.VARIETY_WEIGHT;
+      const recentUsageStats = this.getRecentUsage(type);
+      score -= recentUsageStats.ratio * PERSONALIZATION_CONFIG.VARIETY_WEIGHT;
+
+      if (recentUsageStats.consecutive >= PERSONALIZATION_CONFIG.MAX_CONSECUTIVE_SAME_TYPE) {
+        const excess = recentUsageStats.consecutive - PERSONALIZATION_CONFIG.MAX_CONSECUTIVE_SAME_TYPE + 1;
+        score -= excess * 0.1;
+      }
 
       // Bonus por compatibilidad con tiempo verbal
       score += this.getTypeCompatibilityBonus(type, tense, mood);
@@ -370,8 +377,22 @@ export class PersonalizationEngine {
    */
   getRecentUsage(type) {
     const recentHistory = this.learningHistory.slice(0, 10);
-    const recentUsage = recentHistory.filter(entry => entry.exerciseType === type).length;
-    return Math.min(recentUsage / 5, 1); // Máximo penalización a los 5 usos recientes
+    const totalUsage = recentHistory.filter(entry => entry.exerciseType === type).length;
+
+    let consecutive = 0;
+    for (const entry of recentHistory) {
+      if (entry.exerciseType === type) {
+        consecutive++;
+      } else {
+        break;
+      }
+    }
+
+    return {
+      ratio: Math.min(totalUsage / 5, 1),
+      total: totalUsage,
+      consecutive
+    };
   }
 
   /**

@@ -156,12 +156,13 @@ export class SemanticValidator {
       if (wrongContextMatch) {
         const wrongContext = this._formatContextInSpanish(...wrongContextMatch.contextKey.split('_'));
         const correctContext = this._formatContextInSpanish(mood, tense, person);
+        const wrongContextCode = wrongContextMatch.contextKey.replace(/_/g, ' ');
 
         return {
           isValid: false,
           confidence: 60,
           type: 'wrong_context',
-          message: `Es una conjugación válida de "${verb}" pero para ${wrongContext}`,
+          message: `Es una conjugación válida de "${verb}" pero para ${wrongContext} (${wrongContextCode})`,
           pedagogicalScore: 20,
           suggestion: `Para ${correctContext} debe ser "${normalizedTarget}"`
         };

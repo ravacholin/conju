@@ -112,6 +112,23 @@ class VerbDataRedundancyManager {
       averageResponseTime: 0
     }
 
+    // Seed caches synchronously so first consumers get full data instead of emergency fallback
+    if (Array.isArray(primaryVerbs) && primaryVerbs.length > 0) {
+      this.dataCache.set(DATA_LAYERS.PRIMARY, primaryVerbs)
+      this.layerHealth.set(DATA_LAYERS.PRIMARY, true)
+      this.currentLayer = DATA_LAYERS.PRIMARY
+    } else {
+      this.layerHealth.set(DATA_LAYERS.PRIMARY, false)
+    }
+
+    // Emergency layer must always be available before async initialization runs
+    this.dataCache.set(DATA_LAYERS.EMERGENCY, EMERGENCY_VERBS)
+    this.layerHealth.set(DATA_LAYERS.EMERGENCY, true)
+    if (!this.currentLayer) {
+      this.currentLayer = DATA_LAYERS.EMERGENCY
+      this.healthState = HEALTH_STATES.EMERGENCY
+    }
+
     // Initialize immediately
     this.initialize()
   }

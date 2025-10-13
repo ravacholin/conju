@@ -175,6 +175,14 @@ export default function PracticeReminders({
         </p>
       </div>
 
+      <div className="weekly-goals-callout">
+        <h3>Objetivos Semanales</h3>
+        <p>
+          Avanza {goalValue > 0 ? `${goalValue} ${goalUnit}` : 'tu meta asignada'} al menos 5 días esta semana
+          para mantener tu streak y desbloquear nuevos desafíos.
+        </p>
+      </div>
+
       <div className="reminder-settings">
         <div className="setting-row">
           <label className="toggle">

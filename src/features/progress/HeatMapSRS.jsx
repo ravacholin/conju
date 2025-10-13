@@ -258,7 +258,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   }
 
   return (
-    <div className="heatmap-srs">
+    <div className="heatmap-srs" data-testid="mastery-map">
       <div className="section-header">
         <h2>
           <img src="/icons/map.png" alt="Mapa" className="section-icon" />
@@ -274,8 +274,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
       )}
 
       {/* SRS Summary */}
-      {srsData.dueNow > 0 && (
-        <div className="srs-summary" onClick={handleSRSPractice}>
+      {srsData.dueNow > 0 ? (
+        <div className="srs-summary" data-testid="srs-panel" onClick={handleSRSPractice}>
           <div className="srs-content">
             <img src="/icons/timer.png" alt="SRS" className="srs-icon" />
             <div className="srs-text">
@@ -286,6 +286,15 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
             </div>
           </div>
           <div className="srs-arrow">→</div>
+        </div>
+      ) : (
+        <div className="srs-summary srs-empty" data-testid="srs-panel">
+          <div className="srs-content">
+            <img src="/icons/timer.png" alt="SRS" className="srs-icon" />
+            <div className="srs-text">
+              Sin elementos pendientes de repaso
+            </div>
+          </div>
         </div>
       )}
 

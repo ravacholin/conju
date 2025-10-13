@@ -202,6 +202,119 @@ export function deriveLemmaFallback(conjugatedForm) {
   return lemma;
 }
 
+const derivePrimaryForms = (eligibleForms = []) => {
+  if (!Array.isArray(eligibleForms)) return [];
+  return eligibleForms.filter((_, index) => index % 2 === 0);
+};
+
+function createFallbackStep(options = {}) {
+  const { eligibleForms = [], tense = 'pres', mood = 'indicativo' } = options;
+  const primaryForms = derivePrimaryForms(eligibleForms);
+
+  const prompts = primaryForms.length > 0
+    ? primaryForms.map(form => ({
+        icon: '📝',
+        text: `Incluye la forma "${form.value}" (${form.person}) en tu historia.`
+      }))
+    : [
+        {
+          icon: '🕒',
+          text: 'Comparte al menos tres actividades de una rutina diaria usando presente.'
+        }
+      ];
+
+  return {
+    type: 'default',
+    title: 'Preparando ejercicio...',
+    instructions: 'Escribe brevemente cómo es una rutina usando verbos en presente.',
+    placeholder: 'Escribe aquí tus respuestas...',
+    prompts,
+    expectedVerbs: primaryForms.map(form => form.value),
+    submitLabel: 'Revisar Historia',
+    mood,
+    tense
+  };
+}
+
+function createFallbackExercise(options = {}) {
+  const { eligibleForms = [], tense = 'pres', mood = 'indicativo' } = options;
+  const primaryForms = derivePrimaryForms(eligibleForms);
+
+  const prompts = primaryForms.length > 0
+    ? primaryForms.map((form, index) => ({
+        icon: ['⏰', '🍳', '💼', '🏠', '🌙'][index] || '📝',
+        text: `Describe una escena donde aparezca "${form.value}".`
+      }))
+    : [
+        {
+          icon: '🕒',
+          text: 'Comparte al menos tres actividades de una rutina diaria usando presente.'
+        }
+      ];
+
+  return {
+    id: 'meaningful_fallback',
+    title: 'Práctica en preparación',
+    description: 'Configurando un ejercicio personalizado…',
+    type: 'daily_routine',
+    difficulty: 'intermediate',
+    prompts,
+    eligibleForms,
+    primaryForms,
+    mood,
+    tense,
+    getNextStep() {
+      return createFallbackStep({ eligibleForms, tense, mood });
+    },
+    getTotalSteps() {
+      return 1;
+    },
+    getCurrentStep() {
+      return 1;
+    },
+    getExerciseStats() {
+      return {
+        totalAttempts: 0,
+        averageScore: 0
+      };
+    },
+    async processResponse(response) {
+      const normalizedResponse = (response || '').toLowerCase();
+      const foundForms = primaryForms.filter(form => normalizedResponse.includes(form.value.toLowerCase()));
+      const missingForms = primaryForms.filter(form => !normalizedResponse.includes(form.value.toLowerCase()));
+      const success = primaryForms.length === 0 ? true : missingForms.length === 0;
+
+      return {
+        success,
+        feedback: success
+          ? '¡Excelente! Has descrito la rutina usando todos los verbos necesarios.'
+          : missingForms.length > 0
+            ? `Faltan algunos verbos: ${missingForms.map(form => form.value).join(', ')}.`
+            : 'Intenta usar al menos uno de los verbos indicados.',
+        nextStep: null,
+        analysis: {
+          isCorrect: success,
+          foundVerbs: foundForms.map(form => form.value),
+          missingVerbs: missingForms.map(form => form.value),
+          completionPercentage: primaryForms.length === 0
+            ? 1
+            : foundForms.length / primaryForms.length,
+          totalExpected: primaryForms.length,
+          responseLength: response?.length || 0,
+          wordCount: response ? response.trim().split(/\s+/).length : 0
+        }
+      };
+    }
+  };
+}
+
+const normalizeForMatch = (value = '') =>
+  value
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+
 /**
  * Extrae los verbos requeridos del ejercicio y eligibleForms usando datos morfológicos reales
  * @param {Object} exercise - Ejercicio actual
@@ -315,10 +428,10 @@ function MeaningfulPractice({
   difficulty = 'intermediate',
   exerciseType = null
 }) {
-  const [currentExercise, setCurrentExercise] = useState(null);
-  const [currentStep, setCurrentStep] = useState(null);
+  const [currentExercise, setCurrentExercise] = useState(() => createFallbackExercise({ eligibleForms, tense, mood }));
+  const [currentStep, setCurrentStep] = useState(() => createFallbackStep({ eligibleForms, tense, mood }));
   const [userResponse, setUserResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [exerciseResults, setExerciseResults] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -361,30 +474,37 @@ function MeaningfulPractice({
     initializeExercise();
   }, [tense, mood, exerciseType]);
 
+  function normalizeStep(step, exercise) {
+    if (!step) return step;
+    const normalized = { ...step };
+    const exerciseType = exercise?.type || step.type;
+
+    if (exerciseType === 'daily_routine' || step.type === 'daily_routine_input') {
+      normalized.submitLabel = step.submitLabel || 'Revisar Historia';
+      normalized.placeholder = step.placeholder || 'Escribe aquí tus respuestas...';
+    }
+
+    return normalized;
+  }
+
   async function initializeExercise() {
     try {
-      setIsLoading(true);
       setError(null);
 
       // Determinar tipo de ejercicio
       const selectedExerciseType = exerciseType || determineExerciseType(tense, mood);
 
       // Crear ejercicio usando la factory
-      const exercise = await exerciseFactory.createExercise({
-        type: selectedExerciseType,
-        ...exerciseConfig
-      });
+      const exercise = await exerciseFactory.createExercise(selectedExerciseType, exerciseConfig);
 
       if (!exercise) {
         throw new Error('No se pudo crear el ejercicio');
       }
 
-      // Inicializar el ejercicio
-      await exercise.initialize();
       setCurrentExercise(exercise);
 
       // Obtener el primer paso
-      const firstStep = exercise.getNextStep();
+      const firstStep = normalizeStep(exercise.getNextStep(), exercise);
       setCurrentStep(firstStep);
 
       console.log('✅ Ejercicio inicializado:', {
@@ -417,7 +537,7 @@ function MeaningfulPractice({
   }
 
   async function handleSubmit() {
-    if (!currentExercise || !userResponse.trim() || isSubmitting) return;
+    if (isLoading || !currentExercise || !userResponse.trim() || isSubmitting) return;
 
     try {
       setIsSubmitting(true);
@@ -433,7 +553,15 @@ function MeaningfulPractice({
           step: currentStep,
           tense,
           mood,
-          expectedElements: currentStep.expectedElements || []
+          expectedTense: tense,
+          exerciseType: currentExercise.type,
+          difficulty: currentExercise.difficulty,
+          category: currentExercise.category,
+          expectedVerbs: Array.isArray(currentExercise?.prompts)
+            ? currentExercise.prompts.flatMap(prompt => prompt.expected || [])
+            : (currentStep?.expectedVerbs || []),
+          eligibleForms,
+          expectedElements: currentStep?.expectedElements || []
         }
       );
 
@@ -455,7 +583,7 @@ function MeaningfulPractice({
 
       // Obtener siguiente paso o completar ejercicio
       if (result.nextStep) {
-        setCurrentStep(result.nextStep);
+        setCurrentStep(normalizeStep(result.nextStep, currentExercise));
         setUserResponse('');
       } else {
         // Ejercicio completado
@@ -470,17 +598,76 @@ function MeaningfulPractice({
     }
   }
 
+  function selectFormsForSchedule(result) {
+    if (!Array.isArray(eligibleForms) || eligibleForms.length === 0) {
+      return [];
+    }
+
+    const formsByValue = new Map();
+    eligibleForms.forEach(form => {
+      if (form?.value) {
+        formsByValue.set(normalizeForMatch(form.value), form);
+      }
+    });
+
+    if (formsByValue.size === 0) {
+      return [];
+    }
+
+    const foundVerbs = Array.isArray(result?.analysis?.foundVerbs)
+      ? result.analysis.foundVerbs.map(normalizeForMatch)
+      : [];
+    const foundSet = new Set(foundVerbs);
+    const matchedForms = [];
+    const usedKeys = new Set();
+
+    if (Array.isArray(currentExercise?.prompts)) {
+      currentExercise.prompts.forEach(prompt => {
+        if (!Array.isArray(prompt?.expected)) return;
+        const match = prompt.expected.find(expected => {
+          const key = normalizeForMatch(expected);
+          return foundSet.has(key) && formsByValue.has(key) && !usedKeys.has(key);
+        });
+        if (match) {
+          const key = normalizeForMatch(match);
+          matchedForms.push(formsByValue.get(key));
+          usedKeys.add(key);
+        }
+      });
+    }
+
+    if (matchedForms.length === 0) {
+      foundSet.forEach(key => {
+        if (formsByValue.has(key) && !usedKeys.has(key)) {
+          matchedForms.push(formsByValue.get(key));
+          usedKeys.add(key);
+        }
+      });
+    }
+
+    return matchedForms;
+  }
+
   async function handleProgressUpdate(result) {
     try {
       const userId = getCurrentUserId();
-      if (!userId || !currentTrackingItem) return;
+      if (!userId) return;
 
       // Calcular puntuación para el sistema de progreso
       const score = calculateProgressScore(result);
       const isCorrect = score >= 0.7;
 
-      // Actualizar SRS usando el mismo id que el tracking item
-      await updateSchedule(userId, currentTrackingItem.id, isCorrect);
+      const matchedForms = selectFormsForSchedule(result);
+
+      if (matchedForms.length > 0) {
+        for (const form of matchedForms) {
+          try {
+            await updateSchedule(userId, form, isCorrect, 0);
+          } catch (scheduleError) {
+            console.error('Failed to update SRS schedule:', scheduleError);
+          }
+        }
+      }
 
       // Construir objeto de resultado para el hook de tracking
       const trackingResult = {
@@ -500,7 +687,8 @@ function MeaningfulPractice({
             grammar: result.assessment.grammarScore,
             creativity: result.assessment.creativityScore,
             content: result.assessment.contentScore
-          } : null
+          } : null,
+          matchedForms: matchedForms.map(form => form.value)
         }
       };
 
@@ -610,18 +798,6 @@ function MeaningfulPractice({
     }
   }
 
-  // Renderizado condicional basado en el estado
-  if (isLoading) {
-    return (
-      <div className="meaningful-practice-container">
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Preparando ejercicio de práctica...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="meaningful-practice-container">
@@ -662,9 +838,16 @@ function MeaningfulPractice({
               <img src="/home.png" alt="Inicio" className="menu-icon" />
             </button>
           )}
-        </div>
-        <h2>Práctica Significativa</h2>
       </div>
+      <h2>Práctica Significativa</h2>
+    </div>
+
+      {isLoading && (
+        <div className="loading-state inline-loading" role="status" aria-live="polite">
+          <div className="spinner"></div>
+          <p>Preparando ejercicio de práctica...</p>
+        </div>
+      )}
 
       <ExerciseHeader
         exercise={currentExercise}
@@ -681,6 +864,7 @@ function MeaningfulPractice({
         onSubmit={handleSubmit}
         onHint={handleHint}
         isSubmitting={isSubmitting}
+        isLoading={isLoading}
         results={exerciseResults}
       />
 
@@ -758,6 +942,7 @@ function ExerciseContent({
   onSubmit,
   onHint,
   isSubmitting,
+  isLoading,
   results
 }) {
   const handleKeyPress = (e) => {
@@ -768,6 +953,16 @@ function ExerciseContent({
 
   const renderStepContent = () => {
     switch (step.type) {
+      case 'daily_routine_input':
+        return (
+          <DailyRoutineStepContent
+            step={step}
+            userResponse={userResponse}
+            onResponseChange={onResponseChange}
+            onKeyPress={handleKeyPress}
+          />
+        );
+
       case 'timeline_input':
         return (
           <TimelineStepContent
@@ -850,9 +1045,13 @@ function ExerciseContent({
         <button
           onClick={onSubmit}
           className="submit-button"
-          disabled={!userResponse.trim() || isSubmitting}
+          disabled={!userResponse.trim() || isSubmitting || isLoading}
         >
-          {isSubmitting ? 'Procesando...' : 'Enviar respuesta'}
+          {isLoading
+            ? 'Preparando...'
+            : isSubmitting
+              ? 'Procesando...'
+              : (step.submitLabel || 'Enviar respuesta')}
         </button>
       </div>
     </div>
@@ -860,6 +1059,49 @@ function ExerciseContent({
 }
 
 // Componentes específicos para cada tipo de ejercicio
+function DailyRoutineStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
+  return (
+    <div className="daily-routine-step">
+      {Array.isArray(step.prompts) && (
+        <div className="routine-prompts">
+          {step.prompts.map((prompt, index) => (
+            <div key={index} className="routine-prompt">
+              <span className="prompt-icon">
+                {prompt.icon?.startsWith?.('/') ? (
+                  <img src={prompt.icon} alt="" className="icon-image" />
+                ) : (
+                  prompt.icon || '•'
+                )}
+              </span>
+              <div className="prompt-details">
+                <span className="prompt-text">{prompt.text}</span>
+                {Array.isArray(prompt.expected) && prompt.expected.length > 0 && (
+                  <div className="expected-verbs">
+                    {prompt.expected.map((verb, verbIndex) => (
+                      <span key={verbIndex} className="verb-tag">
+                        {verb}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <textarea
+        value={userResponse}
+        onChange={(e) => onResponseChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        placeholder={step.placeholder || 'Escribe aquí tus respuestas...'}
+        className="response-textarea daily-routine-textarea"
+        rows={8}
+      />
+    </div>
+  );
+}
+
 function TimelineStepContent({ step, userResponse, onResponseChange, onKeyPress }) {
   return (
     <div className="timeline-step">

@@ -121,9 +121,18 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // Ensure maps are initialized before proceeding
   await ensureMapsInitialized()
 
+  // Support passing a promise that resolves to forms (common in async builders)
+  let resolvedForms
+  try {
+    resolvedForms = await forms
+  } catch (error) {
+    logger.error('chooseNext', 'Failed to resolve forms promise', error)
+    return null
+  }
+
   // CRITICAL FIX: Validate forms is an array
   // Cache no longer compresses data - it uses transparent JSON serialization
-  if (!Array.isArray(forms)) {
+  if (!Array.isArray(resolvedForms)) {
     logger.error('chooseNext', 'Invalid forms parameter - not an array', {
       type: typeof forms,
       isNull: forms === null,
@@ -138,6 +147,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
     return null
   }
+
+  // Ensure we operate on the resolved array from this point
+  forms = resolvedForms
 
   // Additional validation: ensure forms has elements
   if (forms.length === 0) {
@@ -515,20 +527,8 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
 
   // If no eligible forms remain, try emergency fallbacks instead of failing
-  if (!eligible || eligible.length === 0) {
-    if (practiceMode === 'specific') {
-      const moodText = specificMood || 'any mood'
-      const tenseText = specificTense || 'any tense'
-      console.warn(`⚠️ No valid exercises found for ${moodText} / ${tenseText}, attempting emergency fallback`)
-
-      // Emergency fallback: return the first available form that matches mood, ignoring other constraints
-      const emergencyFallback = forms.find(f => f.mood === specificMood && f.value)
-      if (emergencyFallback) {
-        console.log(`🚨 Emergency fallback used: ${emergencyFallback.lemma} ${emergencyFallback.mood}/${emergencyFallback.tense}`)
-        return emergencyFallback
-      }
-    }
-    eligible = eligible || []
+  if (!eligible) {
+    eligible = []
   }
   
   // Exclude the exact same item from the list of candidates, if possible
@@ -563,6 +563,17 @@ export async function chooseNext({forms, history: _history, currentItem, session
   
   // Check if we have any eligible forms
   if (eligible.length === 0) {
+    if (practiceMode === 'specific' && specificMood && specificTense) {
+      const detail = `${specificMood}/${specificTense}`
+      logger.error('chooseNext', `No eligible forms found for specific practice ${detail}`, {
+        mood: specificMood,
+        tense: specificTense,
+        verbType,
+        region
+      })
+      throw new Error(`No hay formas disponibles para ${detail}`)
+    }
+
     // Failsafe: relax filters progressively to always return something
     // Apply same specific topic practice logic in fallback
     const isSpecificTopicPractice = (practiceMode === 'specific' || practiceMode === 'theme')

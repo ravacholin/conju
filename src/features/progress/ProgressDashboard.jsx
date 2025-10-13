@@ -1,5 +1,4 @@
 import React from 'react'
-import { useSettings } from '../../state/settings.js'
 import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import Toast from '../../components/Toast.jsx'
@@ -12,6 +11,7 @@ import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
+import ErrorIntelligence from './ErrorIntelligence.jsx'
 
 import './progress-streamlined.css'
 
@@ -174,6 +174,14 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           userStats={userStats}
           heatMapData={heatMapData}
           studyPlan={studyPlan}
+          onNavigateToDrill={onNavigateToDrill}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Error Intelligence">
+        <ErrorIntelligence
+          data={null}
+          compact
           onNavigateToDrill={onNavigateToDrill}
         />
       </SafeComponent>

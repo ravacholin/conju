@@ -32,14 +32,19 @@ vi.mock('./AutoRecoverySystem.js', () => ({
   handleErrorWithRecovery: handleErrorWithRecoveryMock
 }))
 
-vi.mock('../utils/logger.js', () => ({
-  createLogger: () => ({
-    debug: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  })
-}))
+vi.mock('../utils/logger.js', async () => {
+  const actual = await vi.importActual('../utils/logger.js')
+  return {
+    ...actual,
+    createLogger: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn()
+    }),
+    registerDebugTool: vi.fn()
+  }
+})
 
 let verbDataService
 

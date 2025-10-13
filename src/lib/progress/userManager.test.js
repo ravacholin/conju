@@ -16,7 +16,13 @@ function setupLoggerMock() {
   vi.doMock('../utils/logger.js', () => ({
     createLogger: vi.fn(() => loggerSpies),
     logger: loggerSpies,
-    LOG_LEVELS: { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, NONE: 4 }
+    LOG_LEVELS: { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, NONE: 4 },
+    registerDebugTool: vi.fn(),
+    setLogLevel: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
   }))
 
   return loggerSpies

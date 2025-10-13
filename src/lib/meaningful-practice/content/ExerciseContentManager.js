@@ -7,13 +7,13 @@
  * @module ExerciseContentManager
  */
 
-import timelineExercises from '../../../data/meaningful-practice/exercises/timeline-exercises.json';
-import promptExercises from '../../../data/meaningful-practice/exercises/prompt-exercises.json';
-import perfectTenseExercises from '../../../data/meaningful-practice/exercises/perfect-tense-exercises.json';
-import communicativeExercises from '../../../data/meaningful-practice/exercises/communicative-exercises.json';
-import storyBuildingExercises from '../../../data/meaningful-practice/exercises/story-building-exercises.json';
-import rolePlayingExercises from '../../../data/meaningful-practice/exercises/role-playing-exercises.json';
-import problemSolvingExercises from '../../../data/meaningful-practice/exercises/problem-solving-exercises.json';
+const timelineExercises = (await import('../../../data/meaningful-practice/exercises/timeline-exercises.json', { assert: { type: 'json' } })).default;
+const promptExercises = (await import('../../../data/meaningful-practice/exercises/prompt-exercises.json', { assert: { type: 'json' } })).default;
+const perfectTenseExercises = (await import('../../../data/meaningful-practice/exercises/perfect-tense-exercises.json', { assert: { type: 'json' } })).default;
+const communicativeExercises = (await import('../../../data/meaningful-practice/exercises/communicative-exercises.json', { assert: { type: 'json' } })).default;
+const storyBuildingExercises = (await import('../../../data/meaningful-practice/exercises/story-building-exercises.json', { assert: { type: 'json' } })).default;
+const rolePlayingExercises = (await import('../../../data/meaningful-practice/exercises/role-playing-exercises.json', { assert: { type: 'json' } })).default;
+const problemSolvingExercises = (await import('../../../data/meaningful-practice/exercises/problem-solving-exercises.json', { assert: { type: 'json' } })).default;
 import { createLogger } from '../../utils/logger.js';
 
 const logger = createLogger('ExerciseContentManager');
