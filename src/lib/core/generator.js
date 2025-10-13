@@ -44,6 +44,30 @@ async function ensureMapsInitialized() {
   }
 }
 
+// CRITICAL FIX: Clear corrupted cache data from refactoring
+// This was caused by incompatible compression format changes
+function clearCorruptedCache() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      // Clear corrupted form filter cache
+      localStorage.removeItem('formFilterCache')
+      // Clear corrupted verb lookup cache
+      localStorage.removeItem('verbLookupCache')
+      if (isDev) {
+        logger.info('clearCorruptedCache', 'Cleared corrupted cache from localStorage')
+      }
+    }
+  } catch (error) {
+    logger.warn('clearCorruptedCache', 'Failed to clear corrupted cache', error)
+  }
+}
+
+// Clear corrupted cache on module load (only once per session)
+if (typeof window !== 'undefined' && !window.__generatorCacheCleared) {
+  clearCorruptedCache()
+  window.__generatorCacheCleared = true
+}
+
 // Fast lookups (ahora usando cache optimizado)
 const LEMMA_TO_VERB = VERB_LOOKUP_MAP
 // Use canonical gate from curriculumGate (handles Spanish/English key normalization)
@@ -97,40 +121,27 @@ export async function chooseNext({forms, history: _history, currentItem, session
   // Ensure maps are initialized before proceeding
   await ensureMapsInitialized()
 
-  // CRITICAL FIX: Handle compressed forms data
-  // If forms is compressed data from cache, decompress it first
-  if (forms && typeof forms === 'object' && forms.__compressed === true) {
-    try {
-      // Implement decompression logic based on optimizedCache.js
-      const simpleDecompress = (str) => {
-        return str
-          .replace(/\[4/g, '["nonfinite"')
-          .replace(/\[3/g, '["conditional"')
-          .replace(/\[2/g, '["imperative"')
-          .replace(/\[1/g, '["subjunctive"')
-          .replace(/\[0/g, '["indicative"')
-          .replace(/\[([^,]+),([^,]+),([^,]+),([^\]]+)\]/g, '{"mood":"$1","tense":"$2","person":"$3","value":"$4"}')
-      }
+  // CRITICAL FIX: Validate forms is an array
+  // Cache no longer compresses data - it uses transparent JSON serialization
+  if (!Array.isArray(forms)) {
+    logger.error('chooseNext', 'Invalid forms parameter - not an array', {
+      type: typeof forms,
+      isNull: forms === null,
+      isCompressed: forms?.__compressed === true
+    })
 
-      const json = simpleDecompress(forms.data)
-      const decompressed = JSON.parse(json)
-
-      if (Array.isArray(decompressed)) {
-        forms = decompressed
-        console.log('✅ chooseNext: Successfully decompressed forms array:', forms.length, 'forms')
-      } else {
-        console.warn('⚠️ chooseNext: Decompression resulted in non-array:', typeof decompressed)
-        forms = []
-      }
-    } catch (error) {
-      console.error('❌ chooseNext: Failed to decompress forms:', error)
-      forms = []
+    // If it's still compressed data from old cache, clear it and return null
+    if (forms && typeof forms === 'object' && forms.__compressed === true) {
+      logger.warn('chooseNext', 'Detected old compressed format - clearing cache')
+      clearAllCaches()
     }
+
+    return null
   }
 
-  // Additional safety check: ensure forms is an array
-  if (!Array.isArray(forms)) {
-    console.warn('⚠️ chooseNext: forms is not an array after processing:', typeof forms, forms)
+  // Additional validation: ensure forms has elements
+  if (forms.length === 0) {
+    logger.warn('chooseNext', 'Empty forms array provided')
     return null
   }
 
