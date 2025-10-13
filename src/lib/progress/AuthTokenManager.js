@@ -35,7 +35,7 @@
  */
 
 import authService from '../auth/authService.js'
-import { getSyncApiBase, getSyncAuthHeaderName } from '../config/syncConfig.js'
+import { getSyncApiBase, getSyncAuthHeaderName as getSyncAuthHeaderNameFromConfig } from '../config/syncConfig.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:AuthTokenManager')
@@ -100,7 +100,7 @@ export function initializeAuthTokenManager() {
   SYNC_BASE_URL = resolveSyncBaseUrl()
 
   // Resolver header name
-  SYNC_AUTH_HEADER_NAME = getSyncAuthHeaderName()
+  SYNC_AUTH_HEADER_NAME = getSyncAuthHeaderNameFromConfig()
 
   if (isDev) {
     logger.debug('initializeAuthTokenManager', 'Módulo inicializado', {
