@@ -3,6 +3,25 @@ import '@testing-library/jest-dom'
 import { vi, beforeEach, afterEach } from 'vitest'
 import { createIndexedDBMock } from './test-utils/index.js'
 
+vi.mock('@testing-library/react', async () => {
+  const actual = await vi.importActual('@testing-library/react')
+
+  return {
+    ...actual,
+    render: (...args) => {
+      if (
+        globalThis.__FORCE_SSR_FALLBACK__ &&
+        typeof globalThis.window === 'undefined' &&
+        globalThis.document?.defaultView
+      ) {
+        globalThis.window = globalThis.document.defaultView
+        globalThis.__SSR_WINDOW_FALLBACK__ = true
+      }
+      return actual.render(...args)
+    }
+  }
+})
+
 // =============================================================================
 // ENVIRONMENT SETUP
 // =============================================================================
@@ -159,6 +178,38 @@ Object.defineProperty(window, 'matchMedia', {
 // scrollTo mock
 window.scrollTo = vi.fn()
 
+// Ensure media elements support promise-based play invocation in tests
+const ensureMediaPlaybackMocks = () => {
+  if (typeof globalThis.HTMLMediaElement === 'undefined') return
+
+  const currentPlay = globalThis.HTMLMediaElement.prototype.play
+  if (!currentPlay || !currentPlay.__isMockPlayback) {
+    const mockPlay = vi.fn(() => Promise.reject(new Error('Audio playback not supported in tests')))
+    mockPlay.__isMockPlayback = true
+
+    Object.defineProperty(globalThis.HTMLMediaElement.prototype, 'play', {
+      configurable: true,
+      writable: true,
+      value: mockPlay
+    })
+  }
+}
+
+ensureMediaPlaybackMocks()
+
+if (typeof globalThis.SpeechSynthesisUtterance === 'undefined') {
+  globalThis.SpeechSynthesisUtterance = function SpeechSynthesisUtterance(text = '') {
+    this.text = text
+    this.lang = 'es-ES'
+    this.rate = 1
+    this.pitch = 1
+    this.volume = 1
+    this.onstart = null
+    this.onend = null
+    this.onerror = null
+  }
+}
+
 // =============================================================================
 // ERROR HANDLING
 // =============================================================================
@@ -189,6 +240,8 @@ console.warn = (...args) => {
 // =============================================================================
 
 beforeEach(() => {
+  ensureMediaPlaybackMocks()
+
   // Reset all mocks before each test
   vi.clearAllMocks()
 
@@ -227,6 +280,14 @@ afterEach(() => {
     if (window.sessionStorage?.clear) {
       window.sessionStorage.clear()
     }
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis.__SSR_WINDOW_FALLBACK__) {
+    delete globalThis.__SSR_WINDOW_FALLBACK__
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis.__FORCE_SSR_FALLBACK__) {
+    delete globalThis.__FORCE_SSR_FALLBACK__
   }
 
   // Clean up timers

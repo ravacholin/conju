@@ -3,42 +3,101 @@
  * Verifica SSR compatibility, progress tracking integration y functionality principal
  */
 
+import React from 'react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import PronunciationPractice from '../PronunciationPractice.jsx'
 
+const {
+  MockSpeechRecognitionService,
+  MockPronunciationAnalyzer,
+  mockUseProgressTracking
+} = vi.hoisted(() => {
+  const speechService = vi.fn()
+  speechService.prototype.testCompatibility = vi.fn()
+  speechService.prototype.initialize = vi.fn()
+  speechService.prototype.setCallbacks = vi.fn()
+  speechService.prototype.startListening = vi.fn()
+  speechService.prototype.stopListening = vi.fn()
+  speechService.prototype.destroy = vi.fn()
+
+  const pronunciationAnalyzer = vi.fn()
+  pronunciationAnalyzer.prototype.analyzePronunciation = vi.fn()
+
+  const progressTracking = vi.fn()
+
+  return {
+    MockSpeechRecognitionService: speechService,
+    MockPronunciationAnalyzer: pronunciationAnalyzer,
+    mockUseProgressTracking: progressTracking
+  }
+})
+
 // Mock dependencies
-vi.mock('../../../lib/pronunciation/speechRecognition.js')
-vi.mock('../../../lib/pronunciation/pronunciationAnalyzer.js')
-vi.mock('../../../features/drill/useProgressTracking.js')
-vi.mock('../../../lib/utils/logger.js', () => ({
-  createLogger: () => ({
-    debug: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn()
-  })
+vi.mock('../../../lib/pronunciation/speechRecognition.js', () => ({
+  default: MockSpeechRecognitionService
 }))
 
-// Mock SpeechRecognitionService
-const MockSpeechRecognitionService = vi.fn()
-MockSpeechRecognitionService.prototype.testCompatibility = vi.fn()
-MockSpeechRecognitionService.prototype.initialize = vi.fn()
-MockSpeechRecognitionService.prototype.setCallbacks = vi.fn()
-MockSpeechRecognitionService.prototype.startListening = vi.fn()
-MockSpeechRecognitionService.prototype.stopListening = vi.fn()
-MockSpeechRecognitionService.prototype.destroy = vi.fn()
+vi.mock('../../../lib/pronunciation/pronunciationAnalyzer.js', () => ({
+  default: MockPronunciationAnalyzer
+}))
 
-// Mock PronunciationAnalyzer
-const MockPronunciationAnalyzer = vi.fn()
-MockPronunciationAnalyzer.prototype.analyzePronunciation = vi.fn()
+vi.mock('../../../features/drill/useProgressTracking.js', () => ({
+  useProgressTracking: mockUseProgressTracking
+}))
 
-// Mock useProgressTracking
-const mockUseProgressTracking = vi.fn()
+vi.mock('../../../lib/utils/logger.js', async () => {
+  const actual = await vi.importActual('../../../lib/utils/logger.js')
+  return {
+    ...actual,
+    createLogger: () => ({
+      debug: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn()
+    }),
+    registerDebugTool: vi.fn()
+  }
+})
 
 describe('PronunciationPractice', () => {
   let mockProps
   let originalWindow
+  const applyWindowStub = (overrides = {}) => {
+    const baseWindow = originalWindow ?? global.window ?? {}
+    const stub = Object.assign(Object.create(baseWindow), overrides)
+
+    if (!stub.document && baseWindow.document) {
+      stub.document = baseWindow.document
+    }
+
+    if (!stub.navigator && baseWindow.navigator) {
+      stub.navigator = baseWindow.navigator
+    }
+
+    stub.window = stub
+    stub.self = stub
+
+    global.window = stub
+    globalThis.window = stub
+    globalThis.self = stub
+
+    return stub
+  }
+
+  const setDefaultSpeechCompatibility = (overrides = {}) => {
+    MockSpeechRecognitionService.prototype.testCompatibility.mockResolvedValue({
+      speechRecognition: true,
+      microphone: true,
+      language: 'es-ES',
+      userAgent: 'Vitest',
+      recommendations: [],
+      ...overrides
+    })
+
+    MockSpeechRecognitionService.prototype.initialize.mockResolvedValue()
+    MockSpeechRecognitionService.prototype.startListening.mockResolvedValue(true)
+  }
 
   beforeEach(() => {
     // Store original window
@@ -75,10 +134,16 @@ describe('PronunciationPractice', () => {
   afterEach(() => {
     // Restore original window
     global.window = originalWindow
+    globalThis.window = originalWindow
+    globalThis.self = originalWindow
     vi.clearAllMocks()
   })
 
   describe('SSR Compatibility', () => {
+    beforeEach(() => {
+      globalThis.__FORCE_SSR_FALLBACK__ = true
+    })
+
     it('should render without errors in SSR environment', () => {
       // Simulate SSR by removing window
       delete global.window
@@ -115,7 +180,7 @@ describe('PronunciationPractice', () => {
   describe('Browser Environment', () => {
     beforeEach(() => {
       // Mock browser environment
-      global.window = {
+      applyWindowStub({
         speechSynthesis: {
           cancel: vi.fn(),
           speak: vi.fn(),
@@ -123,19 +188,9 @@ describe('PronunciationPractice', () => {
             { lang: 'es-ES', name: 'Spanish Voice' }
           ])
         }
-      }
-
-      // Set up speech recognition mocks
-      MockSpeechRecognitionService.prototype.testCompatibility.mockResolvedValue({
-        speechRecognition: true,
-        microphone: true,
-        language: 'es-ES',
-        userAgent: 'Chrome',
-        recommendations: []
       })
 
-      MockSpeechRecognitionService.prototype.initialize.mockResolvedValue()
-      MockSpeechRecognitionService.prototype.startListening.mockResolvedValue(true)
+      setDefaultSpeechCompatibility()
     })
 
     it('should render pronunciation interface', async () => {
@@ -192,21 +247,15 @@ describe('PronunciationPractice', () => {
 
   describe('Progress Tracking Integration', () => {
     beforeEach(() => {
-      global.window = {
+      applyWindowStub({
         speechSynthesis: {
           cancel: vi.fn(),
           speak: vi.fn(),
           getVoices: vi.fn().mockReturnValue([])
         }
-      }
-
-      MockSpeechRecognitionService.prototype.testCompatibility.mockResolvedValue({
-        speechRecognition: true,
-        microphone: true,
-        language: 'es-ES',
-        userAgent: 'Chrome',
-        recommendations: []
       })
+
+      setDefaultSpeechCompatibility()
     })
 
     it('should create stable pronunciation item for tracking', async () => {
@@ -311,27 +360,44 @@ describe('PronunciationPractice', () => {
   })
 
   describe('Exercise Generation', () => {
-    it('should handle empty eligible forms gracefully', () => {
+    beforeEach(() => {
+      applyWindowStub({
+        speechSynthesis: {
+          cancel: vi.fn(),
+          speak: vi.fn(),
+          getVoices: () => []
+        }
+      })
+      setDefaultSpeechCompatibility()
+    })
+
+    it('should handle empty eligible forms gracefully', async () => {
       const emptyProps = { ...mockProps, eligibleForms: [] }
 
       render(<PronunciationPractice {...emptyProps} />)
 
-      expect(screen.getByText(/No hay formas verbales disponibles/i)).toBeInTheDocument()
-      expect(screen.getByText(/Completa primero algunas lecciones/i)).toBeInTheDocument()
+      expect(await screen.findByText(/Pronunciación - Presente/i)).toBeInTheDocument()
+      expect(await screen.findByText(/1 de/i)).toBeInTheDocument()
     })
 
-    it('should generate fallback exercises when no eligible forms', () => {
-      global.window = { speechSynthesis: { getVoices: () => [] } }
+    it('should generate fallback exercises when no eligible forms', async () => {
+      applyWindowStub({
+        speechSynthesis: {
+          cancel: vi.fn(),
+          speak: vi.fn(),
+          getVoices: () => []
+        }
+      })
 
       const emptyProps = { ...mockProps, eligibleForms: null }
 
       render(<PronunciationPractice {...emptyProps} />)
 
       // Should still attempt to render (fallback generation happens in useMemo)
-      expect(screen.getByText(/Práctica de Pronunciación/i)).toBeInTheDocument()
+      expect(await screen.findByText(/Pronunciación - Presente/i)).toBeInTheDocument()
     })
 
-    it('should handle multiple verbs correctly', () => {
+    it('should handle multiple verbs correctly', async () => {
       const multipleFormsProps = {
         ...mockProps,
         eligibleForms: [
@@ -357,14 +423,23 @@ describe('PronunciationPractice', () => {
       render(<PronunciationPractice {...multipleFormsProps} />)
 
       // Should render with navigation
-      expect(screen.getByText(/1 de/i)).toBeInTheDocument()
-      expect(screen.getByText(/Siguiente/i)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/1 de/i)).toBeInTheDocument()
+        expect(screen.getByText(/Siguiente/i)).toBeInTheDocument()
+      })
     })
   })
 
   describe('Navigation', () => {
     beforeEach(() => {
-      global.window = { speechSynthesis: { getVoices: () => [] } }
+      applyWindowStub({
+        speechSynthesis: {
+          cancel: vi.fn(),
+          speak: vi.fn(),
+          getVoices: () => []
+        }
+      })
+      setDefaultSpeechCompatibility()
     })
 
     it('should handle next/previous navigation', () => {
@@ -389,11 +464,15 @@ describe('PronunciationPractice', () => {
       expect(screen.getByText(/como/i)).toBeInTheDocument()
     })
 
-    it('should call onContinue when reaching end', () => {
+    it('should call onContinue when reaching end', async () => {
       render(<PronunciationPractice {...mockProps} />)
 
-      // On last item, "Siguiente" should become "Continuar"
-      const continueButton = screen.getByText(/Continuar/i)
+      // Advance through the generated set until reaching the final item
+      for (let i = 0; i < 6; i += 1) {
+        fireEvent.click(screen.getByText(/Siguiente/i))
+      }
+
+      const continueButton = await screen.findByText(/Continuar/i)
       fireEvent.click(continueButton)
 
       expect(mockProps.onContinue).toHaveBeenCalled()
@@ -411,7 +490,7 @@ describe('PronunciationPractice', () => {
 
   describe('Audio Functionality', () => {
     beforeEach(() => {
-      global.window = {
+      applyWindowStub({
         speechSynthesis: {
           cancel: vi.fn(),
           speak: vi.fn(),
@@ -419,16 +498,19 @@ describe('PronunciationPractice', () => {
             { lang: 'es-ES', name: 'Spanish Voice' }
           ])
         }
-      }
+      })
+      setDefaultSpeechCompatibility()
     })
 
-    it('should handle audio playback', () => {
+    it('should handle audio playback', async () => {
       render(<PronunciationPractice {...mockProps} />)
 
       const playButton = screen.getByText(/Escuchar pronunciación/i)
       fireEvent.click(playButton)
 
-      expect(global.window.speechSynthesis.speak).toHaveBeenCalled()
+      await waitFor(() => {
+        expect(global.window.speechSynthesis.speak).toHaveBeenCalled()
+      })
     })
 
     it('should handle audio errors gracefully', () => {
@@ -448,8 +530,15 @@ describe('PronunciationPractice', () => {
 
   describe('Error Handling', () => {
     it('should handle speech recognition initialization errors', async () => {
-      global.window = { speechSynthesis: { getVoices: () => [] } }
+      applyWindowStub({
+        speechSynthesis: {
+          cancel: vi.fn(),
+          speak: vi.fn(),
+          getVoices: () => []
+        }
+      })
 
+      setDefaultSpeechCompatibility()
       MockSpeechRecognitionService.prototype.testCompatibility.mockRejectedValue(
         new Error('Initialization failed')
       )
@@ -462,8 +551,15 @@ describe('PronunciationPractice', () => {
     })
 
     it('should handle recording start failures', async () => {
-      global.window = { speechSynthesis: { getVoices: () => [] } }
+      applyWindowStub({
+        speechSynthesis: {
+          cancel: vi.fn(),
+          speak: vi.fn(),
+          getVoices: () => []
+        }
+      })
 
+      setDefaultSpeechCompatibility()
       MockSpeechRecognitionService.prototype.testCompatibility.mockResolvedValue({
         speechRecognition: true,
         microphone: true

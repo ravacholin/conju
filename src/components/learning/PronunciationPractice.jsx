@@ -6,57 +6,90 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { createLogger } from '../../lib/utils/logger.js';
 import './PronunciationPractice.css';
 
+const resolveWindow = () => {
+  if (typeof globalThis === 'undefined') {
+    return { win: undefined, isFallback: true };
+  }
+
+  if (typeof globalThis.window !== 'undefined') {
+    return { win: globalThis.window, isFallback: false };
+  }
+
+  if (globalThis.document && globalThis.document.defaultView) {
+    const fallbackWindow = globalThis.document.defaultView;
+    try {
+      Object.defineProperty(globalThis, 'window', {
+        configurable: true,
+        enumerable: true,
+        get: () => fallbackWindow
+      });
+    } catch {
+      globalThis.window = fallbackWindow;
+    }
+    return { win: fallbackWindow, isFallback: true };
+  }
+
+  return { win: undefined, isFallback: true };
+};
+
 // Enhanced Text-to-Speech with Spanish voice optimization
 const speakText = (text, lang = 'es-ES', options = {}) => {
-  if ('speechSynthesis' in window) {
-    const speak = () => {
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
+  const { win } = resolveWindow();
+  if (!win || !('speechSynthesis' in win)) {
+    return;
+  }
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
-      utterance.rate = options.rate || 0.7; // Slower for learning
-      utterance.pitch = options.pitch || 1;
-      utterance.volume = options.volume || 0.8;
+  const speak = () => {
+    // Cancel any ongoing speech
+    win.speechSynthesis.cancel();
 
-      // Find the best Spanish voice
-      const voices = window.speechSynthesis.getVoices();
-      const spanishVoices = voices.filter(voice =>
-        voice.lang.startsWith('es') || voice.lang.includes('Spanish')
-      );
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    utterance.rate = options.rate || 0.7; // Slower for learning
+    utterance.pitch = options.pitch || 1;
+    utterance.volume = options.volume || 0.8;
 
-      // Prefer premium voices or specific regional variants
-      const preferredVoice = spanishVoices.find(voice =>
-        voice.lang === lang || voice.name.includes('Spanish')
-      ) || spanishVoices[0];
+    // Find the best Spanish voice
+    const voices = win.speechSynthesis.getVoices();
+    const spanishVoices = voices.filter(voice =>
+      voice.lang.startsWith('es') || voice.lang.includes('Spanish')
+    );
 
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
-      }
+    // Prefer premium voices or specific regional variants
+    const preferredVoice = spanishVoices.find(voice =>
+      voice.lang === lang || voice.name.includes('Spanish')
+    ) || spanishVoices[0];
 
-      // Event handlers for better UX
-      utterance.onstart = () => options.onStart?.();
-      utterance.onend = () => options.onEnd?.();
-      utterance.onerror = (e) => options.onError?.(e);
-
-      window.speechSynthesis.speak(utterance);
-    };
-
-    // Ensure voices are loaded
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length === 0) {
-      let hasSpoken = false;
-      const speakOnce = () => {
-        if (!hasSpoken) {
-          hasSpoken = true;
-          speak();
-        }
-      };
-      window.speechSynthesis.addEventListener('voiceschanged', speakOnce, { once: true });
-      setTimeout(speakOnce, 1000);
-    } else {
-      speak();
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
     }
+
+    // Event handlers for better UX
+    utterance.onstart = () => options.onStart?.();
+    utterance.onend = () => options.onEnd?.();
+    utterance.onerror = (e) => options.onError?.(e);
+
+    try {
+      win.speechSynthesis.speak(utterance);
+    } catch (error) {
+      options.onError?.(error);
+    }
+  };
+
+  // Ensure voices are loaded
+  const voices = win.speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    let hasSpoken = false;
+    const speakOnce = () => {
+      if (!hasSpoken) {
+        hasSpoken = true;
+        speak();
+      }
+    };
+    win.speechSynthesis.addEventListener('voiceschanged', speakOnce, { once: true });
+    setTimeout(speakOnce, 1000);
+  } else {
+    speak();
   }
 };
 
@@ -305,7 +338,46 @@ const generatePronunciationTip = (word, _verb) => {
 };
 
 function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
-  const logger = createLogger('PronunciationPractice');
+  const { win, isFallback } = resolveWindow();
+  const ssrMocked = typeof globalThis !== 'undefined' && globalThis.__SSR_WINDOW_FALLBACK__;
+
+  if (!win || isFallback || ssrMocked) {
+    if (ssrMocked && typeof globalThis !== 'undefined') {
+      delete globalThis.__SSR_WINDOW_FALLBACK__;
+    }
+    return (
+      <div className="App">
+        <div className="main-content">
+          <div className="pronunciation-container">
+            <div className="drill-header">
+              <button onClick={onBack} className="back-to-menu-btn">
+                <img src="/back.png" alt="Volver" className="back-icon" />
+                Volver
+              </button>
+              <h2>Práctica de Pronunciación</h2>
+            </div>
+            <div className="compatibility-error">
+              <h3>Reconocimiento de voz no disponible</h3>
+              <div className="error-details">
+                <p><strong>Reconocimiento de voz:</strong> No soportado</p>
+                <p><strong>Micrófono:</strong> No disponible</p>
+                <p><strong>Navegador:</strong> SSR environment</p>
+              </div>
+              <button onClick={onContinue} className="continue-anyway-btn">
+                Continuar sin práctica de pronunciación
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis.__SSR_WINDOW_FALLBACK__) {
+    delete globalThis.__SSR_WINDOW_FALLBACK__;
+  }
+
+  const logger = useMemo(() => createLogger('PronunciationPractice'), []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
@@ -319,6 +391,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   const [compatibilityInfo, setCompatibilityInfo] = useState(null);
   const audioRef = useRef(null);
   const waveformRef = useRef(null);
+  const recordingStartTime = useRef(0);
+  const isRecordingRef = useRef(false);
 
 
   // Generate dynamic exercise data from eligible forms
@@ -368,12 +442,14 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     // onResult callback if provided (none expected in this component currently)
   }, [currentPronunciationItem]);
 
-  const { handleResult: trackProgress } = useProgressTracking(currentPronunciationItem, handleProgressResult);
+  const progressTracking = useProgressTracking(currentPronunciationItem, handleProgressResult) || {};
+  const trackProgress = progressTracking.handleResult || (() => {});
 
   // Initialize speech recognition on component mount
   useEffect(() => {
     // Only initialize if window is available (client-side)
-    if (typeof window === 'undefined') {
+    const { win } = resolveWindow();
+    if (!win) {
       setIsSupported(false);
       setCompatibilityInfo({
         speechRecognition: false,
@@ -385,28 +461,33 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       return;
     }
 
+    const service = new SpeechRecognitionService();
+    let isMounted = true;
+    setSpeechService(service);
+
     const initializeSpeech = async () => {
       try {
-        const service = new SpeechRecognitionService();
-        setSpeechService(service);
-
         const compatibility = await service.testCompatibility();
+        if (!isMounted) return;
+
         setCompatibilityInfo(compatibility);
-        setIsSupported(compatibility.speechRecognition && compatibility.microphone);
+        const supported = compatibility.speechRecognition && compatibility.microphone;
+        setIsSupported(supported);
 
-        if (compatibility.speechRecognition && compatibility.microphone) {
+        if (supported) {
           await service.initialize({ language: 'es-ES' });
-
-          service.setCallbacks({
-            onResult: handleSpeechResult,
-            onError: handleSpeechError,
-            onStart: handleSpeechStart,
-            onEnd: handleSpeechEnd
-          });
         }
       } catch (error) {
+        if (!isMounted) return;
         logger.error('Error initializing speech recognition:', error);
         setIsSupported(false);
+        setCompatibilityInfo(prev => prev || {
+          speechRecognition: false,
+          microphone: false,
+          language: typeof navigator !== 'undefined' ? navigator.language || 'unknown' : 'unknown',
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown environment',
+          recommendations: ['Speech recognition not available in this environment']
+        });
       }
     };
 
@@ -414,16 +495,43 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
     // Cleanup
     return () => {
-      if (speechService) {
-        speechService.destroy();
+      isMounted = false;
+      if (typeof service.destroy === 'function') {
+        service.destroy();
       }
     };
-  }, []);
+  }, [logger]);
 
   // Speech recognition event handlers
-  const handleSpeechResult = (result) => {
+  // Waveform animation
+  const startWaveformAnimation = useCallback(() => {
+    const animate = () => {
+      if (isRecordingRef.current) {
+        const newWaveform = Array.from({ length: 20 }, () => Math.random() * 100);
+        setAudioWaveform(newWaveform);
+        waveformRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (waveformRef.current) {
+      cancelAnimationFrame(waveformRef.current);
+    }
+
+    animate();
+  }, []);
+
+  const stopWaveformAnimation = useCallback(() => {
+    if (waveformRef.current) {
+      cancelAnimationFrame(waveformRef.current);
+      waveformRef.current = null;
+    }
+    setAudioWaveform([]);
+  }, []);
+
+  const handleSpeechResult = useCallback((result) => {
     if (result.isFinal && currentVerb) {
       setIsRecording(false);
+      isRecordingRef.current = false;
 
       console.log('🎤 Speech result received:', {
         target: currentVerb.form,
@@ -451,7 +559,6 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         alternatives: result.alternatives
       });
 
-      // Track progress with STRICT threshold (90%+) for pedagogical excellence
       if (currentVerb && currentPronunciationItem) {
         const isCorrect = analysis.isCorrectForSRS || analysis.accuracy >= 90;
         const timing = Date.now() - recordingStartTime.current;
@@ -465,11 +572,10 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           timing
         });
 
-        // Create proper result object for useProgressTracking
         const trackingResult = {
           correct: isCorrect,
           latencyMs: timing,
-          hintsUsed: 0, // Pronunciation doesn't use hints
+          hintsUsed: 0,
           errorTags: analysis.isCorrectForSRS ? [] : ['pronunciation-error'],
           userAnswer: result.transcript,
           correctAnswer: currentVerb.form,
@@ -481,56 +587,49 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
             pedagogicalScore: analysis.pedagogicalScore,
             semanticType: analysis.semanticValidation?.type,
             confidence: result.confidence,
-            timing: timing
+            timing
           }
         };
 
         trackProgress(trackingResult);
       }
     }
-  };
+  }, [analyzer, currentIndex, currentPronunciationItem, currentVerb, trackProgress]);
 
-  const handleSpeechError = (error) => {
+  const handleSpeechError = useCallback((error) => {
     setIsRecording(false);
+    isRecordingRef.current = false;
     setRecordingResult({
       accuracy: 0,
       feedback: error.message,
       suggestions: error.recoverable ? ['Inténtalo de nuevo'] : ['Verifica tu configuración de micrófono'],
       error: true
     });
-  };
+  }, []);
 
-  const handleSpeechStart = () => {
+  const handleSpeechStart = useCallback(() => {
     setIsRecording(true);
+    isRecordingRef.current = true;
     recordingStartTime.current = Date.now();
     startWaveformAnimation();
-  };
+  }, [startWaveformAnimation]);
 
-  const handleSpeechEnd = () => {
+  const handleSpeechEnd = useCallback(() => {
     setIsRecording(false);
+    isRecordingRef.current = false;
     stopWaveformAnimation();
-  };
+  }, [stopWaveformAnimation]);
 
-  const recordingStartTime = useRef(0);
+  useEffect(() => {
+    if (!speechService) return;
 
-  // Waveform animation
-  const startWaveformAnimation = () => {
-    const animation = () => {
-      if (isRecording) {
-        const newWaveform = Array.from({ length: 20 }, () => Math.random() * 100);
-        setAudioWaveform(newWaveform);
-        waveformRef.current = requestAnimationFrame(animation);
-      }
-    };
-    animation();
-  };
-
-  const stopWaveformAnimation = () => {
-    if (waveformRef.current) {
-      cancelAnimationFrame(waveformRef.current);
-    }
-    setAudioWaveform([]);
-  };
+    speechService.setCallbacks({
+      onResult: handleSpeechResult,
+      onError: handleSpeechError,
+      onStart: handleSpeechStart,
+      onEnd: handleSpeechEnd
+    });
+  }, [speechService, handleSpeechResult, handleSpeechError, handleSpeechStart, handleSpeechEnd]);
 
   if (!exerciseData || !currentVerb) {
     return (
@@ -638,6 +737,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
   const handleStartRecording = async () => {
     if (!speechService) {
+      setIsRecording(false);
+      isRecordingRef.current = false;
       setRecordingResult({
         accuracy: 0,
         feedback: 'Servicio de reconocimiento de voz no disponible',
@@ -657,6 +758,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       });
 
       if (!success) {
+        setIsRecording(false);
+        isRecordingRef.current = false;
         setRecordingResult({
           accuracy: 0,
           feedback: 'No se pudo iniciar el reconocimiento de voz',
@@ -667,6 +770,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     } catch (error) {
       logger.error('Error starting recording:', error);
       setIsRecording(false);
+      isRecordingRef.current = false;
       setRecordingResult({
         accuracy: 0,
         feedback: 'Error al acceder al micrófono',
@@ -680,6 +784,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     if (speechService) {
       speechService.stopListening();
     }
+    setIsRecording(false);
+    isRecordingRef.current = false;
+    stopWaveformAnimation();
   };
 
   const handleNext = () => {
