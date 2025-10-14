@@ -565,7 +565,50 @@ export default function useProgressDashboardData() {
         progressDataCache.warmup(userId, warmupLoaders)
       }
 
-      await runOperations([...CORE_DATA_KEYS, ...HEAVY_ANALYTICS_KEYS], { userId })
+      // Load core data first (fast, essential for initial render)
+      await runOperations(CORE_DATA_KEYS, { userId })
+
+      // Load heavy analytics in background after initial render (lazy)
+      if (!isRefresh) {
+        // Failsafe: if lazy loading fails or takes too long, load synchronously
+        let lazyLoadFailed = false
+        const lazyLoadTimeout = setTimeout(() => {
+          if (!lazyLoadFailed) {
+            console.warn('Lazy loading taking too long, falling back to synchronous load')
+            lazyLoadFailed = true
+            runOperations(HEAVY_ANALYTICS_KEYS, { userId })
+              .catch(err => console.error('Failsafe synchronous load failed:', err))
+          }
+        }, 5000) // 5 second failsafe timeout
+
+        // Use requestIdleCallback for non-critical analytics
+        const loadHeavyAnalytics = () => {
+          if (lazyLoadFailed) return // Already loaded by failsafe
+
+          runOperations(HEAVY_ANALYTICS_KEYS, { userId })
+            .then(() => {
+              clearTimeout(lazyLoadTimeout)
+            })
+            .catch(err => {
+              console.error('Lazy heavy analytics failed, triggering failsafe:', err)
+              lazyLoadFailed = true
+              clearTimeout(lazyLoadTimeout)
+              // Immediate retry with synchronous load
+              return runOperations(HEAVY_ANALYTICS_KEYS, { userId })
+                .catch(retryErr => console.error('Failsafe retry also failed:', retryErr))
+            })
+        }
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+          window.requestIdleCallback(loadHeavyAnalytics, { timeout: 3000 })
+        } else {
+          // Fallback: load after a small delay
+          setTimeout(loadHeavyAnalytics, 100)
+        }
+      } else {
+        // On refresh, load everything synchronously (no lazy loading)
+        await runOperations(HEAVY_ANALYTICS_KEYS, { userId })
+      }
 
       setError(null)
     } catch (err) {

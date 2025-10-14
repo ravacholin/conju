@@ -35,13 +35,30 @@ class Router {
 
   /**
    * Parse the current URL to extract route information
+   * Supports both pathname-based routes (/progress, /drill) and legacy query strings (?mode=progress)
    */
   parseCurrentURL() {
     try {
+      const pathname = window.location.pathname || '/'
       const params = new URLSearchParams(window.location.search || '')
+
+      // Try pathname-based routing first (modern)
+      const pathMatch = pathname.match(/^\/(onboarding|drill|learning|progress|story)(\/(\d+))?/)
+      if (pathMatch) {
+        const mode = pathMatch[1]
+        const step = pathMatch[3] ? parseInt(pathMatch[3], 10) : null
+
+        return {
+          mode,
+          step: step && step >= 1 && step <= 8 ? step : null,
+          timestamp: Date.now()
+        }
+      }
+
+      // Fallback to query string mode (legacy compatibility)
       const mode = params.get('mode') || 'onboarding'
       const step = parseInt(params.get('step'), 10) || null
-      
+
       return {
         mode: ['onboarding', 'drill', 'learning', 'progress', 'story'].includes(mode) ? mode : 'onboarding',
         step: step && step >= 1 && step <= 8 ? step : null,
@@ -143,14 +160,15 @@ class Router {
 
   /**
    * Build URL from route object
+   * Uses pathname-based routing for clean URLs (/progress, /drill/3)
    */
   buildURL(route) {
-    const params = new URLSearchParams()
-    params.set('mode', route.mode)
+    // Build pathname-based URL
+    let path = `/${route.mode}`
     if (route.step) {
-      params.set('step', route.step.toString())
+      path += `/${route.step}`
     }
-    return `?${params.toString()}`
+    return path
   }
 
   /**

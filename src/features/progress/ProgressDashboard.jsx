@@ -83,12 +83,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }
 
-  // Auto-sync on mount
-  React.useEffect(() => {
-    if (syncAvailable && !loading && systemReady) {
-      handleSync()
-    }
-  }, [syncAvailable, loading, systemReady])
+  // Manual sync only - removed auto-sync to prevent double load on mount
+  // Users can manually sync via the sync button if needed
 
   if (loading) {
     return (

@@ -3,7 +3,7 @@ import { grade } from '../../lib/core/grader.js';
 // Removed unused imports to satisfy lint
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
-import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js';
+import { useSettings, RESISTANCE_MAX_MS, warmupCachesIfNeeded } from '../../state/settings.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 import ReverseInputs from './ReverseInputs.jsx';
 import ResistanceHUD from './ResistanceHUD.jsx';
@@ -12,12 +12,16 @@ import { useSpeech } from './useSpeech';
 import { useResistanceTimer } from './useResistanceTimer';
 import './session-progress-hud.css';
 
-export default function Drill({ 
-  currentItem, 
-  onResult, 
+export default function Drill({
+  currentItem,
+  onResult,
   onContinue,
   showAccentKeys = true
 }) {
+  // Warmup caches on first mount (lazy initialization)
+  useEffect(() => {
+    warmupCachesIfNeeded()
+  }, [])
   const [input, setInput] = useState('');
   const [result, setResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

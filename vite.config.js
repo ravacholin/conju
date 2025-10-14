@@ -124,12 +124,16 @@ export default defineConfig(({ mode }) => ({
     host: true,
     port: 5173,
     strictPort: false,
-    open: '/?mode=learning'
+    open: '/learning',
+    // Handle SPA routing - fallback to index.html for all routes
+    middlewares: {
+      fallthrough: false
+    }
   },
   preview: {
     host: true,
     port: 4173,
     strictPort: false,
-    open: '/?mode=learning'
+    open: '/learning'
   }
 }))

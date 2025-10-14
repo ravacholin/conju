@@ -13,14 +13,23 @@ export const PRACTICE_MODES = {
   BY_TOPIC: 'by_topic'
 }
 
-// Inicializar caches al cargar
-if (typeof window !== 'undefined') {
-  import('../lib/core/optimizedCache.js').then(({ warmupCaches }) => {
-    warmupCaches()
-  })
-  
-  // Note: Progress system initialization moved to AppRouter for better error handling
-}
+// Lazy cache warmup - only warm up when actually needed
+// Warmup is triggered by Drill component on mount to avoid penalizing time-to-interactive
+export const warmupCachesIfNeeded = (() => {
+  let hasWarmedUp = false
+
+  return () => {
+    if (hasWarmedUp || typeof window === 'undefined') return Promise.resolve()
+
+    hasWarmedUp = true
+    return import('../lib/core/optimizedCache.js').then(({ warmupCaches }) => {
+      warmupCaches()
+    }).catch(err => {
+      console.warn('Cache warmup failed:', err)
+      hasWarmedUp = false // Allow retry on failure
+    })
+  }
+})()
 
 const useSettings = create(
   persist(
