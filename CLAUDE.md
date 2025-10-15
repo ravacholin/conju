@@ -223,6 +223,66 @@ The app uses IndexedDB for local storage with these stores:
 - PWA functionality provided by vite-plugin-pwa (auto-registration in production)
 - Code chunking strategy: vendor libs, verb data, progress system, and core engine are separate chunks
 
+## Logging Policy
+
+**CRITICAL**: Production logging must be minimal to avoid performance degradation and console pollution.
+
+### Centralized Logger Usage
+
+Always use the centralized logger from `src/lib/utils/logger.js` instead of direct `console.*` calls:
+
+```javascript
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('moduleName:context')
+
+// Development only - silenced in production
+logger.debug('Detailed debugging info', { data })
+
+// Production warnings - only if needed
+logger.warn('Something unexpected happened', { context })
+
+// Production errors - always shown
+logger.error('Critical error occurred', error)
+```
+
+### Logger Behavior
+
+- **Development** (`import.meta.env.DEV`): All logs visible (debug, info, warn, error)
+- **Production** (`import.meta.env.PROD`): Only ERROR level logs visible
+- **Automatic filtering**: No need to wrap logs in `if (isDev)` checks
+
+### Migration Pattern
+
+```javascript
+// ❌ OLD - Avoid this
+console.log('Processing item:', item)
+console.warn('Cache miss detected')
+console.error('Failed to load:', error)
+
+// ✅ NEW - Use centralized logger
+logger.debug('Processing item', { item })
+logger.warn('Cache miss detected')
+logger.error('Failed to load', error)
+```
+
+### Exceptions
+
+Direct `console.*` calls are acceptable ONLY in:
+- **Node.js scripts** (validate-data.js, audit-*.js, etc.)
+- **Test files** (*.test.js, test-setup.js)
+- **Error boundaries** (console.error for critical UI errors)
+- **Development-only debug utilities** (window.debugSync, etc.)
+
+### Production Console Policy
+
+In production builds, the console should be **nearly silent** except for:
+1. Critical errors that affect user experience
+2. Security warnings (CSP violations, etc.)
+3. Essential diagnostic information (sync failures, etc.)
+
+**Target**: Reduce production console output from ~1,300+ messages to <10 messages in typical user sessions.
+
 ## Configuration Files
 
 - **Vite**: Development server configured with PWA support, code chunking, and terser minification
@@ -271,11 +331,65 @@ The sync system is **fully implemented** and uses intelligent environment detect
    - Check browser network tab for CORS errors
    - Verify server CORS configuration includes frontend origin
 
+## Architecture Guidelines
+
+### Module Complexity Limits
+
+To maintain code quality and testability, modules should adhere to these limits:
+
+**File Size Limits:**
+- **Maximum**: 500 lines per module
+- **Target**: 200-300 lines per module
+- **Exception**: Data files (verbs.js, curriculum.json) can be larger
+
+**Function Complexity:**
+- **Maximum**: 50 lines per function
+- **Cyclomatic Complexity**: <10 per function
+- **Nesting Depth**: <4 levels
+
+### Refactoring Triggers
+
+A module needs refactoring when:
+1. File exceeds 500 lines
+2. Single function exceeds 100 lines
+3. Cyclomatic complexity >15
+4. More than 5 responsibilities in one module
+
+### Modularization Strategy
+
+**Example: generator.js refactoring plan**
+```
+generator.js (1,416 lines) →
+  ├── FormFilterService.js (~300 lines)
+  ├── FormSelectorService.js (~150 lines)
+  ├── FormValidator.js (~150 lines)
+  └── generator.js (~400 lines - orchestration)
+```
+
+**Example: userManager.js refactoring plan**
+```
+userManager.js (1,260 lines) →
+  ├── UserSettingsStore.js (~100 lines)
+  ├── DataMergeService.js (~400 lines)
+  ├── AuthTokenManager.js ✅ (already extracted)
+  ├── SyncService.js ✅ (already extracted)
+  └── userManager.js (~300 lines - orchestration)
+```
+
+### Testing Requirements
+
+When extracting modules:
+1. Write unit tests for each new module
+2. Maintain integration tests for orchestration layer
+3. Verify functional equivalence with existing tests
+4. Target >80% code coverage for business logic
+
 ## Known Issues & Limitations
 
 - 186 validation errors in verb database (ongoing cleanup)
 - Only 32% coverage of high-frequency Spanish verbs
 - Some regional restrictions (e.g., "coger" only in Spain)
 - Mobile performance optimization pending
+- **Architecture debt**: generator.js (1,416 lines) and userManager.js (1,260 lines) need modularization
 
 This codebase prioritizes linguistic accuracy, performance optimization, and comprehensive progress tracking for effective Spanish verb learning.
