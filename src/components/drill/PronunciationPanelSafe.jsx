@@ -77,27 +77,27 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
   const pronunciationData = useMemo(() => {
-    console.log('🎤 CREATING PRONUNCIATION DATA FROM:', currentItem);
+    logger.debug('Creating pronunciation data from current item', currentItem);
     const result = convertCurrentItemToPronunciation(currentItem, {
       dialect,
       region: settings?.region
     });
-    console.log('🎤 PRONUNCIATION DATA RESULT:', result);
+    logger.debug('Pronunciation data result', result);
     return result;
-  }, [currentItem, dialect, settings?.region]);
+  }, [currentItem, dialect, settings?.region, logger]);
 
   // Function to play correct pronunciation - DEFINED AFTER pronunciationData
   const playCorrectPronunciation = useCallback(() => {
     if (pronunciationData?.form) {
-      console.log('🔊 Playing correct pronunciation:', pronunciationData.form);
+      logger.debug('Playing correct pronunciation', { form: pronunciationData.form });
       speakText(pronunciationData.form, speechLocale, {
         rate: 0.7,
-        onStart: () => console.log('🔊 Started playing correct pronunciation'),
-        onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
-        onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
+        onStart: () => logger.debug('Started playing correct pronunciation'),
+        onEnd: () => logger.debug('Finished playing correct pronunciation'),
+        onError: (error) => logger.error('Error playing correct pronunciation', error)
       });
     }
-  }, [pronunciationData?.form, speechLocale]);
+  }, [pronunciationData?.form, speechLocale, logger]);
 
   // Speech recognition event handlers - ESTABLES CON useCallback
   const handleSpeechResult = useCallback((result) => {
@@ -105,12 +105,14 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       setIsRecording(false);
 
       // DEBUG: Log what we're comparing
-      console.log('🎤 PRONUNCIATION DEBUG:');
-      console.log('  Expected:', `"${pronunciationData.form}"`);
-      console.log('  Recognized:', `"${result.transcript}"`);
-      console.log('  Exact match:', pronunciationData.form === result.transcript);
-      console.log('  Lower case match:', pronunciationData.form.toLowerCase() === result.transcript.toLowerCase());
-      console.log('  PronunciationData:', pronunciationData);
+      logger.debug('Pronunciation comparison details', {
+        expected: pronunciationData.form,
+        recognized: result.transcript,
+        exactMatch: pronunciationData.form === result.transcript,
+        lowerCaseMatch:
+          pronunciationData.form.toLowerCase() === result.transcript.toLowerCase(),
+        pronunciationData
+      });
 
       const analysis = analyzer.analyzePronunciation(
         pronunciationData.form,
@@ -139,7 +141,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         const isCorrect = finalAnalysis.isCorrectForSRS;
         const timing = Date.now() - recordingStartTime.current;
 
-        console.log('🎤 STRICT PRONUNCIATION RESULT TRACKING:', {
+        logger.debug('Strict pronunciation result tracking', {
           isCorrect,
           accuracy: finalAnalysis.accuracy,
           pedagogicalScore: finalAnalysis.pedagogicalScore,
@@ -175,16 +177,16 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
         // Auto-advance if correct (90%+) - continue to next drill after 2 seconds
         if (isCorrect && onContinueRef.current) {
-          console.log('🎤 STRICT AUTO-ADVANCE TRIGGERED: Will continue in 2 seconds');
+          logger.debug('Strict auto-advance triggered: continuing in 2 seconds');
           setTimeout(() => {
-            console.log('🎤 EXECUTING AUTO-ADVANCE: Calling onContinue and onClose');
+            logger.debug('Executing auto-advance: calling onContinue and onClose');
             // Call continue first to advance to next exercise
             onContinueRef.current();
             // Then close the pronunciation panel
             onCloseRef.current();
           }, 2000);
         } else {
-          console.log('🎤 AUTO-ADVANCE NOT TRIGGERED:', {
+          logger.debug('Auto-advance not triggered', {
             isCorrect,
             reason: isCorrect ? 'no onContinue function' : 'accuracy below 90% threshold',
             hasOnContinue: !!onContinueRef.current
@@ -192,7 +194,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         }
       }
     }
-  }, [pronunciationData, analyzer]); // Solo dependencias estables
+  }, [pronunciationData, analyzer, logger]); // Solo dependencias estables
 
   const handleSpeechError = useCallback((error) => {
     setIsRecording(false);
