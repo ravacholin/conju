@@ -6,6 +6,11 @@ import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
 
+const TENSE_LABEL_FALLBACKS = {
+  impAff: 'Imperativo afirmativo',
+  impNeg: 'Imperativo negativo'
+}
+
 /**
  * Combined Heat Map + SRS - Unified mastery visualization with SRS indicators
  * Replaces: VerbMasteryMap, SRSPanel, SRSReviewQueueModal
@@ -177,6 +182,14 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
 
     return dataSource.heatMap
   }, [heatMapData, data])
+
+  const getTenseLabel = (tense) => {
+    if (tense?.label) return tense.label
+    if (tense?.key && TENSE_LABEL_FALLBACKS[tense.key]) {
+      return TENSE_LABEL_FALLBACKS[tense.key]
+    }
+    return tense?.key || ''
+  }
 
   // Get mastery level and SRS status for a cell
   const getCellData = (mood, tense) => {
@@ -351,26 +364,27 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
               <div className="tense-grid">
                 {tensesToShow.map(tense => {
                   const cellData = getCellData(mood, tense.key)
+                  const tenseLabel = getTenseLabel(tense)
 
                   return (
                     <div
                       key={tense.key}
                       className={`data-cell ${cellData.level} ${cellData.srsStatus === 'due' ? 'srs-due' : ''}`}
                       onClick={() => handleCellClick(mood, tense.key)}
-                      title={`${config.label} - ${tense.label}`}
+                      title={`${config.label} - ${tenseLabel}`}
                     >
                       <div className="cell-content">
                         {cellData.srsStatus === 'due' && (
                           <div
                             className="srs-indicator clickable"
                             onClick={(e) => handleSRSClick(mood, tense.key, e)}
-                            title={`Practicar SRS: ${config.label} - ${tense.label}`}
+                            title={`Practicar SRS: ${config.label} - ${tenseLabel}`}
                           >
                             <img src="/icons/timer.png" alt="SRS" className="srs-badge" />
                           </div>
                         )}
 
-                        <div className="tense-label">{tense.label}</div>
+                        <div className="tense-label">{tenseLabel}</div>
 
                         {cellData.attempts > 0 ? (
                           <>
