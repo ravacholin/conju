@@ -11,6 +11,30 @@ const TENSE_LABEL_FALLBACKS = {
   impNeg: 'Imperativo negativo'
 }
 
+const LEGACY_IMPERATIVE_COMBO = 'imperative-imper'
+const IMPERATIVE_AFFIRMATIVE_COMBO = 'imperative-impAff'
+
+function normalizeLegacyHeatMapCombos(heatMap = {}) {
+  if (!heatMap || typeof heatMap !== 'object') {
+    return {}
+  }
+
+  const normalizedEntries = {}
+
+  Object.entries(heatMap).forEach(([combo, value]) => {
+    if (combo === LEGACY_IMPERATIVE_COMBO) {
+      if (!normalizedEntries[IMPERATIVE_AFFIRMATIVE_COMBO]) {
+        normalizedEntries[IMPERATIVE_AFFIRMATIVE_COMBO] = value
+      }
+      return
+    }
+
+    normalizedEntries[combo] = value
+  })
+
+  return normalizedEntries
+}
+
 /**
  * Combined Heat Map + SRS - Unified mastery visualization with SRS indicators
  * Replaces: VerbMasteryMap, SRSPanel, SRSReviewQueueModal
@@ -23,7 +47,7 @@ function buildHeatMapPayload(rawData, rangeKey = DEFAULT_TIME_RANGE) {
 
   if (rawData && typeof rawData === 'object' && !Array.isArray(rawData) && rawData.heatMap) {
     return {
-      heatMap: rawData.heatMap || {},
+      heatMap: normalizeLegacyHeatMapCombos(rawData.heatMap || {}),
       range: rawData.range || rangeKey,
       updatedAt: rawData.updatedAt || timestamp
     }
@@ -54,7 +78,11 @@ function buildHeatMapPayload(rawData, rangeKey = DEFAULT_TIME_RANGE) {
     }
   })
 
-  return { heatMap: heatMapObject, range: rangeKey, updatedAt: timestamp }
+  return {
+    heatMap: normalizeLegacyHeatMapCombos(heatMapObject),
+    range: rangeKey,
+    updatedAt: timestamp
+  }
 }
 
 export default function HeatMapSRS({ data, onNavigateToDrill }) {

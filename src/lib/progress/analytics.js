@@ -6,6 +6,14 @@ import { PROGRESS_CONFIG } from './config.js'
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
 
+const normalizeMoodTense = (mood, tense) => {
+  if (mood === 'imperative' && tense === 'imper') {
+    return { mood, tense: 'impAff' }
+  }
+
+  return { mood, tense }
+}
+
 const ensureNotCancelled = (signal) => {
   if (signal?.aborted) {
     throw new Error('Operation was cancelled')
@@ -96,21 +104,23 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
       if (person && a.person && a.person !== person) return
       const timestamp = new Date(a?.createdAt || a?.timestamp || 0).getTime()
       if (!Number.isFinite(timestamp) || timestamp <= 0) return
-      const key = `${a.mood}|${a.tense}|${a.person || ''}`
+      const { mood, tense } = normalizeMoodTense(a.mood, a.tense)
+      const key = `${mood}|${tense}|${a.person || ''}`
       attemptCounts.set(key, (attemptCounts.get(key) || 0) + 1)
       const latest = attemptLatest.get(key) || 0
       if (timestamp > latest) {
         attemptLatest.set(key, timestamp)
       }
-      ensureGroup(a.mood, a.tense)
+      ensureGroup(mood, tense)
     })
 
     for (const record of masteryRecords) {
       if (person && record.person && record.person !== person) continue
       ensureNotCancelled(signal)
-      const group = ensureGroup(record.mood, record.tense)
+      const { mood, tense } = normalizeMoodTense(record.mood, record.tense)
+      const group = ensureGroup(mood, tense)
       // Determine weight for this person cell: attempts in window (fallback to 1)
-      const wKey = `${record.mood}|${record.tense}|${record.person || ''}`
+      const wKey = `${mood}|${tense}|${record.person || ''}`
       const w = attemptCounts.get(wKey) || 0
       if (w > 0) {
         group.weightedSum += record.score * w
