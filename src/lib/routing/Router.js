@@ -43,7 +43,7 @@ class Router {
       const params = new URLSearchParams(window.location.search || '')
 
       // Try pathname-based routing first (modern)
-      const pathMatch = pathname.match(/^\/(onboarding|drill|learning|progress|story)(\/(\d+))?/)
+      const pathMatch = pathname.match(/^\/(onboarding|drill|learning|progress|story|timeline)(\/(\d+))?/)
       if (pathMatch) {
         const mode = pathMatch[1]
         const step = pathMatch[3] ? parseInt(pathMatch[3], 10) : null
@@ -60,7 +60,7 @@ class Router {
       const step = parseInt(params.get('step'), 10) || null
 
       return {
-        mode: ['onboarding', 'drill', 'learning', 'progress', 'story'].includes(mode) ? mode : 'onboarding',
+        mode: ['onboarding', 'drill', 'learning', 'progress', 'story', 'timeline'].includes(mode) ? mode : 'onboarding',
         step: step && step >= 1 && step <= 8 ? step : null,
         timestamp: Date.now()
       }
@@ -87,7 +87,7 @@ class Router {
       }
 
       // Validate route
-      if (!['onboarding', 'drill', 'learning', 'progress', 'story'].includes(newRoute.mode)) {
+      if (!['onboarding', 'drill', 'learning', 'progress', 'story', 'timeline'].includes(newRoute.mode)) {
         debug('warn', 'Invalid route mode:', newRoute.mode)
         newRoute.mode = 'onboarding'
       }

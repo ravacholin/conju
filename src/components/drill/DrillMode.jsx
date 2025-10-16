@@ -50,6 +50,7 @@
  * @param {Function} props.getAvailableTensesForLevelAndMood - Obtener tiempos por nivel/modo
  * @param {Function} props.onNavigateToProgress - Navegar al dashboard de progreso
  * @param {Function} props.onNavigateToStory - Lanzar el modo historias
+ * @param {Function} props.onNavigateToTimeline - Lanzar el modo línea de tiempo
  * 
  * @requires Drill - Componente core de práctica de conjugaciones
  * @requires DrillHeader - Header con botones de navegación y paneles
@@ -95,7 +96,8 @@ function DrillMode({
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
   onNavigateToProgress,
-  onNavigateToStory
+  onNavigateToStory,
+  onNavigateToTimeline
 }) {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
@@ -328,6 +330,7 @@ function DrillMode({
         onTogglePronunciation={handleTogglePronunciation}
         onNavigateToProgress={onNavigateToProgress}
         onNavigateToStory={onNavigateToStory}
+        onNavigateToTimeline={onNavigateToTimeline}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
