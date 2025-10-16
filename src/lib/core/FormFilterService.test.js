@@ -200,6 +200,32 @@ describe('FormFilterService', () => {
       expect(result.some(f => f.tense === 'impNeg')).toBe(true)
     })
 
+    it('should restrict eligible forms to targeted cells when currentBlock.cells is provided', () => {
+      const settings = {
+        level: 'A1',
+        region: 'la_general',
+        practiceMode: 'mixed',
+        verbType: 'all',
+        currentBlock: {
+          combos: [{ mood: 'indicative', tense: 'pres' }],
+          cells: [
+            { mood: 'indicative', tense: 'pres', person: '2s_tu' }
+          ],
+          itemsRemaining: 5
+        },
+        shouldApplyLevelFiltering: false,
+        levelForFiltering: 'ALL'
+      }
+
+      const context = { verbLookupMap: mockVerbLookupMap }
+      const result = filterEligibleForms(mockForms, settings, context)
+
+      expect(result.length).toBeGreaterThan(0)
+      expect(result.every(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '2s_tu')).toBe(true)
+      expect(result.some(f => f.person === '1s')).toBe(false)
+      expect(result.some(f => f.person === '2s_vos')).toBe(false)
+    })
+
     it('should respect allowedLemmas restriction', () => {
       const settings = {
         level: 'A1',

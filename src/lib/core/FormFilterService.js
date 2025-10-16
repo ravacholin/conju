@@ -51,6 +51,13 @@ export function filterEligibleForms(forms, settings, context = {}) {
   } = settings
 
   const { verbLookupMap } = context
+  const blockCellFilter = Array.isArray(currentBlock?.cells) && currentBlock.cells.length > 0
+    ? new Set(
+        currentBlock.cells
+          .map(cell => `${cell.mood}|${cell.tense}|${cell.person}`)
+          .filter(Boolean)
+      )
+    : null
 
   // Step 1: Gate sistemático por curriculum y dialecto
   const preFiltered = gateFormsByCurriculumAndDialect(forms, settings)
@@ -73,7 +80,13 @@ export function filterEligibleForms(forms, settings, context = {}) {
     }
 
     // Pronoun filtering
-    if (!applyPronounFilter(form, {practiceMode, specificMood, specificTense, practicePronoun})) {
+    if (!applyPronounFilter(form, {
+      practiceMode,
+      specificMood,
+      specificTense,
+      practicePronoun,
+      blockCellFilter
+    })) {
       return false
     }
 
@@ -172,7 +185,11 @@ function applyFuturoSubjuntivoGate(form, enableFuturoSubjProd) {
 /**
  * Apply pronoun practice filtering
  */
-function applyPronounFilter(form, {practiceMode, specificMood, specificTense, practicePronoun}) {
+function applyPronounFilter(form, {practiceMode, specificMood, specificTense, practicePronoun, blockCellFilter}) {
+  if (blockCellFilter && blockCellFilter.size > 0) {
+    return blockCellFilter.has(`${form.mood}|${form.tense}|${form.person}`)
+  }
+
   // For specific/theme practice, show ALL persons
   if ((practiceMode === 'specific' || practiceMode === 'theme') && specificMood && specificTense) {
     return true

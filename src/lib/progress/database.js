@@ -8,10 +8,71 @@ const isDev = import.meta?.env?.DEV
 
 // Timeout configuration for IndexedDB transactions
 const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
+const CACHE_TTL_MS = 4000
 
 // Estado de la base de datos
 let dbInstance = null
 let isInitializing = false
+
+// Simple in-memory caches to avoid hitting IndexedDB repeatedly for hot paths
+const attemptsCache = new Map()
+const masteryCache = new Map()
+
+function freezeRecords(records) {
+  if (!Array.isArray(records)) {
+    return records
+  }
+  const normalized = records.map(record => {
+    if (record && typeof record === 'object') {
+      return Object.isFrozen(record) ? record : Object.freeze({ ...record })
+    }
+    return record
+  })
+  return Object.freeze(normalized)
+}
+
+function setCacheEntry(map, key, records) {
+  if (!key) return
+  map.set(key, {
+    value: freezeRecords(records),
+    timestamp: Date.now()
+  })
+}
+
+function appendCacheEntry(map, key, records) {
+  if (!key || !Array.isArray(records) || records.length === 0) return
+  const existing = map.get(key)
+  if (!existing) {
+    setCacheEntry(map, key, records)
+    return
+  }
+  const merged = [...existing.value, ...records]
+  map.set(key, {
+    value: freezeRecords(merged),
+    timestamp: Date.now()
+  })
+}
+
+function getCacheEntry(map, key) {
+  if (!key) return null
+  const entry = map.get(key)
+  if (!entry) return null
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    map.delete(key)
+    return null
+  }
+  return entry.value
+}
+
+function invalidateCacheEntry(map, key) {
+  if (typeof key === 'undefined' || key === null) return
+  map.delete(key)
+}
+
+function resetMemoryCaches() {
+  attemptsCache.clear()
+  masteryCache.clear()
+}
 
 /**
  * Wraps a promise with a timeout to prevent hanging transactions
@@ -303,11 +364,24 @@ export async function getOneByIndex(storeName, indexName, value) {
  */
 export async function deleteFromDB(storeName, id) {
   try {
+    let recordForCache = null
+    try {
+      recordForCache = await getFromDB(storeName, id)
+    } catch {
+      recordForCache = null
+    }
+
     const db = await initDB()
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)
     await store.delete(id)
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `deleteFromDB(${storeName})`)
+
+    if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS && recordForCache?.userId) {
+      invalidateCacheEntry(attemptsCache, recordForCache.userId)
+    } else if (storeName === STORAGE_CONFIG.STORES.MASTERY && recordForCache?.userId) {
+      invalidateCacheEntry(masteryCache, recordForCache.userId)
+    }
 
     if (isDev) logger.debug('deleteFromDB', `Dato eliminado de ${storeName}`, { id })
   } catch (error) {
@@ -332,6 +406,22 @@ export async function updateInDB(storeName, id, updates) {
 
     const updated = { ...existing, ...updates, updatedAt: new Date() }
     await saveToDB(storeName, updated)
+
+    if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) {
+      if (existing?.userId) {
+        invalidateCacheEntry(attemptsCache, existing.userId)
+      }
+      if (updated?.userId && updated.userId !== existing?.userId) {
+        invalidateCacheEntry(attemptsCache, updated.userId)
+      }
+    } else if (storeName === STORAGE_CONFIG.STORES.MASTERY) {
+      if (existing?.userId) {
+        invalidateCacheEntry(masteryCache, existing.userId)
+      }
+      if (updated?.userId && updated.userId !== existing?.userId) {
+        invalidateCacheEntry(masteryCache, updated.userId)
+      }
+    }
 
     if (isDev) logger.debug('updateInDB', `Dato actualizado en ${storeName}`, { id })
   } catch (error) {
@@ -363,6 +453,8 @@ export async function batchSaveToDB(storeName, dataArray, options = {}) {
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)
 
+    const persistedRecords = []
+
     // Procesar todos los objetos en una sola transacción
     for (const data of dataArray) {
       try {
@@ -383,6 +475,7 @@ export async function batchSaveToDB(storeName, dataArray, options = {}) {
         }
 
         await store.put(prepared)
+        persistedRecords.push(prepared)
         results.saved++
       } catch (itemError) {
         results.errors.push({
@@ -397,6 +490,34 @@ export async function batchSaveToDB(storeName, dataArray, options = {}) {
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchSaveToDB(${storeName})`)
 
     if (isDev) logger.debug('batchSaveToDB', `${results.saved}/${dataArray.length} objetos guardados en ${storeName}`)
+
+    if (persistedRecords.length > 0) {
+      if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) {
+        const grouped = new Map()
+        for (const record of persistedRecords) {
+          if (!record?.userId) continue
+          if (!grouped.has(record.userId)) {
+            grouped.set(record.userId, [])
+          }
+          grouped.get(record.userId).push(record)
+        }
+        grouped.forEach((records, user) => {
+          appendCacheEntry(attemptsCache, user, records)
+        })
+      } else if (storeName === STORAGE_CONFIG.STORES.MASTERY) {
+        const grouped = new Map()
+        for (const record of persistedRecords) {
+          if (!record?.userId) continue
+          if (!grouped.has(record.userId)) {
+            grouped.set(record.userId, [])
+          }
+          grouped.get(record.userId).push(record)
+        }
+        grouped.forEach((records, user) => {
+          appendCacheEntry(masteryCache, user, records)
+        })
+      }
+    }
 
     return results
   } catch (error) {
@@ -471,8 +592,7 @@ export async function clearAllCaches() {
   try {
     if (isDev) logger.info('clearAllCaches', 'Limpiando todos los caches')
 
-    // En una implementación completa, esto limpiaría todos los caches
-    // de la base de datos
+    resetMemoryCaches()
 
     if (isDev) logger.info('clearAllCaches', 'Todos los caches limpiados')
   } catch (error) {
@@ -606,6 +726,9 @@ export async function getItemByProperties(verbId, mood, tense, person) {
  */
 export async function saveAttempt(attempt) {
   await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attempt)
+  if (attempt?.userId) {
+    appendCacheEntry(attemptsCache, attempt.userId, [attempt])
+  }
 }
 
 /**
@@ -632,7 +755,13 @@ export async function getAttemptsByItem(itemId) {
  * @returns {Promise<Object[]>}
  */
 export async function getAttemptsByUser(userId) {
-  return await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, 'userId', userId)
+  const cached = getCacheEntry(attemptsCache, userId)
+  if (cached) {
+    return cached
+  }
+  const attempts = await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, 'userId', userId)
+  setCacheEntry(attemptsCache, userId, attempts || [])
+  return getCacheEntry(attemptsCache, userId) || []
 }
 
 /**
@@ -672,6 +801,9 @@ export async function getRecentAttempts(userId, limit = 100) {
  */
 export async function saveMastery(mastery) {
   await saveToDB(STORAGE_CONFIG.STORES.MASTERY, mastery)
+  if (mastery?.userId) {
+    appendCacheEntry(masteryCache, mastery.userId, [mastery])
+  }
 }
 
 /**
@@ -725,7 +857,13 @@ export async function getMasteryByCell(userId, mood, tense, person) {
  * @returns {Promise<Object[]>}
  */
 export async function getMasteryByUser(userId) {
-  return await getByIndex(STORAGE_CONFIG.STORES.MASTERY, 'userId', userId)
+  const cached = getCacheEntry(masteryCache, userId)
+  if (cached) {
+    return cached
+  }
+  const mastery = await getByIndex(STORAGE_CONFIG.STORES.MASTERY, 'userId', userId)
+  setCacheEntry(masteryCache, userId, mastery || [])
+  return getCacheEntry(masteryCache, userId) || []
 }
 
 /**
@@ -969,6 +1107,7 @@ export async function closeDB() {
   if (dbInstance) {
     await dbInstance.close()
     dbInstance = null
+    clearAllCaches()
     if (isDev) logger.info('closeDB', 'Base de datos cerrada')
   }
 }
@@ -983,6 +1122,7 @@ export async function deleteDB() {
     // Importar deleteDB de idb con alias para evitar sombra
     const { deleteDB: idbDeleteDB } = await import('idb')
     await idbDeleteDB(STORAGE_CONFIG.DB_NAME)
+    clearAllCaches()
     if (isDev) logger.info('deleteDB', 'Base de datos eliminada')
   } catch (error) {
     logger.error('deleteDB', 'Error al eliminar la base de datos', error)
@@ -1095,7 +1235,17 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
   }
 }
 
-/**\n * Valida que la migración de userId fue exitosa\n * @param {string} oldUserId - Usuario ID anónimo original\n * @param {string} newUserId - Usuario ID autenticado\n * @returns {Promise<Object>} Resultado de la validación\n */
+// Helpers for tests
+export function __clearProgressDatabaseCaches() {
+  clearAllCaches()
+}
+
+/**
+ * Valida que la migración de userId fue exitosa
+ * @param {string} oldUserId - Usuario ID anónimo original
+ * @param {string} newUserId - Usuario ID autenticado
+ * @returns {Promise<Object>} Resultado de la validación
+ */
 export async function validateUserIdMigration(oldUserId, newUserId) {
   if (!oldUserId || !newUserId) {
     return { valid: false, reason: 'missing_user_ids' }

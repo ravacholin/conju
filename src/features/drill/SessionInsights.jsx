@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { initProgressSystem } from '../../lib/progress/index.js'
@@ -15,21 +15,32 @@ export default function SessionInsights() {
   const [missingUser, setMissingUser] = useState(false)
   const [registering, setRegistering] = useState(false)
   const [toast, setToast] = useState(null)
+  const requestSeq = useRef(0)
+  const activeRequest = useRef(null)
 
   useEffect(() => {
     let mounted = true
     
     const updateInsights = async () => {
+      const requestId = requestSeq.current + 1
+      requestSeq.current = requestId
+      activeRequest.current?.abort()
+      const controller = new AbortController()
+      activeRequest.current = controller
+
       try {
         const userId = getCurrentUserId()
         if (!userId) {
           setMissingUser(true)
           setShowInsights(false)
+          if (activeRequest.current === controller) {
+            activeRequest.current = null
+          }
           return
         }
-        const stats = await getRealUserStats(userId)
+        const stats = await getRealUserStats(userId, controller.signal)
         
-        if (!mounted) return
+        if (!mounted || requestSeq.current !== requestId) return
         
         // Only show meaningful metrics
         setInsights({
@@ -44,6 +55,10 @@ export default function SessionInsights() {
         
       } catch {
         /* fail silently */
+      } finally {
+        if (activeRequest.current === controller) {
+          activeRequest.current = null
+        }
       }
     }
 
@@ -65,6 +80,7 @@ export default function SessionInsights() {
 
     return () => {
       mounted = false
+      activeRequest.current?.abort()
       window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
   }, [])
