@@ -48,6 +48,7 @@ import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import { buildFormsForRegion } from '../lib/core/eligibility.js'
 import router from '../lib/routing/Router.js'
+import { createBoundedCache } from '../lib/utils/boundedCache.js'
 
 // Centralized logger for development-only debug output
 const logger = {
@@ -98,7 +99,12 @@ function AppRouter() {
 
 
   const [formsForRegion, setFormsForRegion] = useState([])
-  const formsCacheRef = useRef(new Map())
+  const formsCacheRef = useRef(
+    createBoundedCache({
+      maxSize: 20,
+      maxAgeMinutes: 30
+    })
+  )
 
   const formsSettings = useMemo(
     () => ({
@@ -137,9 +143,9 @@ function AppRouter() {
       return
     }
 
-    const cachedEntry = formsCacheRef.current.get(formsSettingsKey)
-    if (cachedEntry) {
-      setFormsForRegion(cachedEntry.forms)
+    const cachedForms = formsCacheRef.current.get(formsSettingsKey)
+    if (cachedForms) {
+      setFormsForRegion(cachedForms)
       return
     }
 
@@ -150,7 +156,7 @@ function AppRouter() {
         const forms = await buildFormsForRegion(formsSettings.region, formsSettings)
         if (!cancelled) {
           setFormsForRegion(forms)
-          formsCacheRef.current.set(formsSettingsKey, { forms })
+          formsCacheRef.current.set(formsSettingsKey, forms)
         }
       } catch (error) {
         if (!cancelled) {
