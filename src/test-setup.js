@@ -280,6 +280,12 @@ afterEach(() => {
     if (window.sessionStorage?.clear) {
       window.sessionStorage.clear()
     }
+
+    // Clear verb cache initialization timeout to prevent "window is not defined" errors
+    if (window.__verbCacheInitTimeout) {
+      clearTimeout(window.__verbCacheInitTimeout)
+      delete window.__verbCacheInitTimeout
+    }
   }
 
   if (typeof globalThis !== 'undefined' && globalThis.__SSR_WINDOW_FALLBACK__) {

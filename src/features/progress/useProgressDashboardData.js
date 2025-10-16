@@ -711,9 +711,9 @@ export default function useProgressDashboardData() {
       if (ready) {
         const userId = getCurrentUserId()
         if (userId) {
-          setSystemReady(true)
           if (!hasInitialLoad.current) {
             hasInitialLoad.current = true
+            setSystemReady(true)
             loadData()
           }
         } else {

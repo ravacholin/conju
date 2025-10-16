@@ -689,7 +689,7 @@ if (typeof window !== 'undefined') {
   logger.info('auto-init', '🚀 Starting auto-initialization in browser environment')
 
   // Use setTimeout to avoid blocking the main thread
-  setTimeout(async () => {
+  const timeoutId = setTimeout(async () => {
     try {
       const initResult = await initializeMaps()
       if (initResult.success) {
@@ -757,4 +757,9 @@ if (typeof window !== 'undefined') {
       }
     }
   }, 100) // Small delay to ensure other modules are loaded
+
+  // Store timeout ID so it can be cleared in tests
+  if (typeof window !== 'undefined') {
+    window.__verbCacheInitTimeout = timeoutId
+  }
 }
