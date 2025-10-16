@@ -26,6 +26,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
   const {
     heatMapData,
+    errorIntel,
     userStats,
     studyPlan,
     loading,
@@ -110,6 +111,10 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     )
   }
 
+  if (!heatMapData && !error) {
+    return null
+  }
+
   return (
     <div className="progress-dashboard">
       {toast?.message && (
@@ -176,7 +181,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
       <SafeComponent name="Error Intelligence">
         <ErrorIntelligence
-          data={null}
+          data={errorIntel}
           compact
           onNavigateToDrill={onNavigateToDrill}
         />
