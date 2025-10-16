@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor, act, cleanup } from '@testing-library/react';
 import { useSettings } from '../../state/settings.js';
+import { setLogLevel } from '../../lib/utils/logger.js';
 
 const {
   setCallbacksMock,
@@ -217,5 +218,48 @@ describe('PronunciationPanelSafe', () => {
     await waitFor(() => {
       expect(getMockService()?.startListening).toHaveBeenCalledWith({ language: 'es-ES' });
     });
+  });
+
+  it('no escribe en consola cuando import.meta.env.DEV es false', async () => {
+    const originalDev = import.meta.env.DEV;
+    const originalProd = import.meta.env.PROD;
+    const consoleLogSpy = vi.spyOn(console, 'log');
+
+    const setEnvValue = (key, value) => {
+      try {
+        Object.defineProperty(import.meta.env, key, {
+          value,
+          configurable: true,
+          writable: true
+        });
+      } catch (error) {
+        import.meta.env[key] = value;
+      }
+    };
+
+    try {
+      setEnvValue('DEV', false);
+      setEnvValue('PROD', true);
+      setLogLevel('ERROR');
+
+      render(
+        <PronunciationPanelSafe
+          currentItem={createItem('hablo')}
+          handleResult={vi.fn()}
+          onClose={vi.fn()}
+        />
+      );
+
+      await waitFor(() => {
+        expect(getMockService()?.initialize).toHaveBeenCalled();
+      });
+
+      expect(consoleLogSpy).not.toHaveBeenCalled();
+    } finally {
+      consoleLogSpy.mockRestore();
+      setEnvValue('DEV', originalDev);
+      setEnvValue('PROD', originalProd);
+      setLogLevel(originalDev ? 'DEBUG' : 'ERROR');
+    }
   });
 });
