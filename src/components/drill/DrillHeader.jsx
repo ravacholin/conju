@@ -6,6 +6,8 @@ function DrillHeader({
   onToggleGames,
   onTogglePronunciation,
   onNavigateToProgress,
+  onNavigateToStory,
+  onNavigateToTimeline,
   onHome,
   showQuickSwitch,
   showGames,
@@ -66,6 +68,26 @@ function DrillHeader({
         >
           <img src="/dice.png" alt="Juegos" className="menu-icon" />
         </button>
+
+        {typeof onNavigateToStory === 'function' && (
+          <button
+            onClick={() => onNavigateToStory()}
+            className="icon-btn"
+            title="Modo historias"
+          >
+            <img src="/openbook.png" alt="Modo historias" className="menu-icon" />
+          </button>
+        )}
+
+        {typeof onNavigateToTimeline === 'function' && (
+          <button
+            onClick={() => onNavigateToTimeline()}
+            className="icon-btn"
+            title="Modo línea de tiempo"
+          >
+            <img src="/crono.png" alt="Modo línea de tiempo" className="menu-icon" />
+          </button>
+        )}
 
         <button
           onClick={() => onNavigateToProgress()}
