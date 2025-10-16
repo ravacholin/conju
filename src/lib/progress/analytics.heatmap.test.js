@@ -95,4 +95,36 @@ describe('getHeatMapData', () => {
     const result = await getHeatMapData('user-1', null, 'last_7_days')
     expect(result).toHaveLength(0)
   })
+
+  it('normalizes legacy imperative records into the affirmative column', async () => {
+    getMasteryByUserMock.mockResolvedValue([
+      {
+        userId: 'user-1',
+        mood: 'imperative',
+        tense: 'imper',
+        person: 'tu',
+        score: 64
+      }
+    ])
+
+    const recentTimestamp = new Date(Date.now() - (2 * 24 * 60 * 60 * 1000)).toISOString()
+
+    getAttemptsByUserMock.mockResolvedValue([
+      {
+        userId: 'user-1',
+        mood: 'imperative',
+        tense: 'imper',
+        person: 'tu',
+        createdAt: recentTimestamp
+      }
+    ])
+
+    const result = await getHeatMapData('user-1', null, 'last_7_days')
+
+    expect(result).toHaveLength(1)
+    expect(result[0].mood).toBe('imperative')
+    expect(result[0].tense).toBe('impAff')
+    expect(result[0].count).toBe(1)
+    expect(result[0].lastAttempt).toBe(new Date(recentTimestamp).getTime())
+  })
 })

@@ -34,7 +34,8 @@ export const HEATMAP_MOOD_CONFIG = {
     label: 'Imperativo',
     icon: '/megaf-imperat.png',
     tenses: [
-      { key: 'imper', label: 'Imperativo' }
+      { key: 'impAff', label: 'Imperativo afirmativo' },
+      { key: 'impNeg', label: 'Imperativo negativo' }
     ]
   }
 }
