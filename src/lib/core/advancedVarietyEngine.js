@@ -5,6 +5,9 @@
 import { VERB_LOOKUP_MAP as LEMMA_TO_VERB } from './optimizedCache.js'
 import { isIrregularInTense, getEffectiveVerbType as GET_EFFECTIVE_VERB_TYPE } from '../utils/irregularityUtils.js'
 import { getVerbSelectionWeight, getVerbPriority, isHighPriorityVerb } from './levelVerbFiltering.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:varietyEngine')
 
 /**
  * Session Memory for Anti-Repetition
@@ -51,9 +54,7 @@ class SessionMemory {
     // CRITICAL: Record exact combination (verb|person) to prevent identical repetition
     const exactCombo = `${form.lemma}|${form.person}`
     this.recentCombinations.set(exactCombo, now)
-    if (import.meta.env.DEV) {
-      console.log(`✅ RECORDED COMBO - ${exactCombo} at ${now}`)
-    }
+    logger.debug('recordSelection', `Recorded combo ${exactCombo}`, { timestamp: now })
     
     // Record semantic category
     if (semanticCategory) {
@@ -143,11 +144,11 @@ class SessionMemory {
       const age = Date.now() - this.recentVerbs.get(form.lemma)
       const verbPenalty = Math.max(0, 0.9 - (age / 120000)) // Decay over 2 minutes instead of 30 seconds
       penalty += verbPenalty
-      
-      // DEBUG: Log penalty calculation
-      if (import.meta.env.DEV) {
-        console.log(`🚫 REPETITION PENALTY - ${form.lemma}: age=${Math.floor(age/1000)}s, penalty=${verbPenalty.toFixed(3)}`)
-      }
+
+      logger.debug('getRepetitionPenalty', `Verb ${form.lemma} repetition penalty`, {
+        ageSeconds: Math.floor(age / 1000),
+        penalty: verbPenalty.toFixed(3)
+      })
     }
     
     // Tense repetition penalty
@@ -168,9 +169,7 @@ class SessionMemory {
     const exactCombo = `${form.lemma}|${form.person}`
     if (this.recentCombinations && this.recentCombinations.has(exactCombo)) {
       penalty += 0.95 // Very high penalty for exact same combination
-      if (import.meta.env.DEV) {
-        console.log(`🚫 EXACT COMBO PENALTY - ${exactCombo}: +0.95 penalty`)
-      }
+      logger.debug('getRepetitionPenalty', `Exact combo ${exactCombo} penalized`, { penalty: 0.95 })
     }
     
     // Category repetition penalty
@@ -338,16 +337,16 @@ export class AdvancedVarietyEngine {
     if (eligibleForms.length === 0) return null
     
     // Log high-priority vs advanced verb distribution for topic practice
-    if (practiceMode === 'specific' && import.meta.env.DEV) {
+    if (practiceMode === 'specific') {
       const highPriorityCount = eligibleForms.filter(f => isHighPriorityVerb(f.lemma)).length
       const totalCount = eligibleForms.length
       const highPriorityPercent = ((highPriorityCount / totalCount) * 100).toFixed(1)
-      
-      console.group(`🎯 TOPIC PRACTICE PRIORITIZATION - Level ${level}`)
-      console.log(`📊 Eligible forms: ${totalCount}`)
-      console.log(`⭐ High priority (A1/A2/B1): ${highPriorityCount} (${highPriorityPercent}%)`)
-      console.log(`🔺 Advanced (B2+/C1+): ${totalCount - highPriorityCount} (${(100 - parseFloat(highPriorityPercent)).toFixed(1)}%)`)
-      console.groupEnd()
+
+      logger.debug('selectVariedForm', `Topic practice prioritization for level ${level}`, {
+        totalForms: totalCount,
+        highPriority: `${highPriorityCount} (${highPriorityPercent}%)`,
+        advanced: `${totalCount - highPriorityCount} (${(100 - parseFloat(highPriorityPercent)).toFixed(1)}%)`
+      })
     }
     
     // For non-mixed practice, use simpler selection
@@ -364,8 +363,8 @@ export class AdvancedVarietyEngine {
    */
   selectBasicForm(forms, history) {
     // ENHANCED: Apply stronger variety algorithms even for basic selection
-    console.log('🔄 BASIC SELECTION - Enhancing variety algorithms')
-    
+    logger.debug('selectBasicForm', 'Enhancing variety algorithms for basic selection')
+
     // Group forms by lemma to ensure verb variety
     const verbGroups = new Map()
     forms.forEach(form => {
@@ -374,8 +373,10 @@ export class AdvancedVarietyEngine {
       }
       verbGroups.get(form.lemma).push(form)
     })
-    
-    console.log(`🔄 VARIETY DEBUG - ${verbGroups.size} different verbs available:`, Array.from(verbGroups.keys()).slice(0, 10))
+
+    logger.debug('selectBasicForm', `${verbGroups.size} different verbs available`, {
+      verbs: Array.from(verbGroups.keys()).slice(0, 10)
+    })
     
     const scoredForms = forms.map(form => {
       const accuracyScore = this.getAccuracyScore(form, history)
@@ -412,8 +413,12 @@ export class AdvancedVarietyEngine {
           if (isIrreg) rebalancer -= 0.35
           else rebalancer += 0.15
         }
-        if (import.meta?.env?.DEV && this.sessionMemory.selectionCount % 25 === 0) {
-          console.log(`[mix rebalance] irr=${irrCount}/${total} -> ${(irrFrac*100).toFixed(0)}%`)
+        if (this.sessionMemory.selectionCount % 25 === 0) {
+          logger.debug('selectBasicForm', 'Irregular/regular ratio rebalancing', {
+            irregular: irrCount,
+            total,
+            percentage: `${(irrFrac * 100).toFixed(0)}%`
+          })
         }
       }
 
@@ -433,17 +438,24 @@ export class AdvancedVarietyEngine {
     // Select from top candidates with enhanced randomization
     scoredForms.sort((a, b) => b.score - a.score) // Higher score = higher priority
     const topCandidates = scoredForms.slice(0, Math.min(8, Math.ceil(forms.length * 0.4)))
-    
-    console.log('🔄 TOP CANDIDATES:', topCandidates.slice(0, 5).map(c => `${c.form.lemma}(${c.score.toFixed(2)})`))
-    
+
+    logger.debug('selectBasicForm', 'Top candidates selected', {
+      count: topCandidates.length,
+      topFive: topCandidates.slice(0, 5).map(c => `${c.form.lemma}(${c.score.toFixed(2)})`)
+    })
+
     const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)].form
-    
+
     // Record selection
     const category = this.getVerbSemanticCategory(selected.lemma)
     this.sessionMemory.recordSelection(selected, category)
-    
-    console.log('🔄 SELECTED:', `${selected.lemma} - ${selected.mood}/${selected.tense} - ${selected.person}`)
-    
+
+    logger.debug('selectBasicForm', 'Form selected', {
+      lemma: selected.lemma,
+      moodTense: `${selected.mood}/${selected.tense}`,
+      person: selected.person
+    })
+
     return selected
   }
   
@@ -466,32 +478,42 @@ export class AdvancedVarietyEngine {
    */
   selectMixedPracticeForm(forms, level, history) {
     const currentDifficulty = this.sessionMemory.getCurrentDifficultyLevel()
-    
+
     // Score all forms using multiple criteria
     const scoredForms = forms.map(form => {
       const scores = this.calculateAdvancedScores(form, level, history, currentDifficulty)
-      
+
       return {
         form,
         scores,
         totalScore: this.calculateTotalScore(scores, level)
       }
     })
-    
+
     // Apply tense family rotation preference
     const preferredForms = this.applyTenseFamilyRotation(scoredForms)
-    
+
     // Apply verb category balancing
     const balancedForms = this.applyVerbCategoryBalancing(preferredForms)
-    
+
     // Select using weighted random selection
     const selected = this.weightedRandomSelection(balancedForms)
-    
+
+    // NULL SAFETY: Validate selected form before accessing properties
+    if (!selected) {
+      logger.error('selectMixedPracticeForm', 'No form selected from balancedForms', {
+        balancedCount: balancedForms?.length || 0,
+        originalCount: forms?.length || 0
+      })
+      // Emergency fallback: return first form from original array
+      return forms[0] || null
+    }
+
     // Record selection and update rotation indices
     const category = this.getVerbSemanticCategory(selected.lemma)
     this.sessionMemory.recordSelection(selected, category)
     this.updateRotationIndices(selected)
-    
+
     return selected
   }
 
@@ -646,7 +668,7 @@ export class AdvancedVarietyEngine {
   weightedRandomSelection(scoredForms) {
     // Validate input - handle empty arrays
     if (!scoredForms || !Array.isArray(scoredForms) || scoredForms.length === 0) {
-      console.warn('weightedRandomSelection: Empty or invalid scoredForms array provided')
+      logger.warn('weightedRandomSelection', 'Empty or invalid scoredForms array provided')
       return null
     }
     
@@ -763,8 +785,12 @@ export class AdvancedVarietyEngine {
     const weightMultiplier = Math.min(2.0, weight / 50) // Normalize weight to 0-2 range
     const finalScore = priorityScore * weightMultiplier
     
-    if (import.meta.env.DEV && Math.random() < 0.05) {
-      console.log(`🎯 VERB PRIORITY - ${lemma}: priority=${priority}, weight=${weight}, score=${finalScore.toFixed(2)}`)
+    if (Math.random() < 0.05) {
+      logger.debug('getVerbPriorityScore', `Verb priority for ${lemma}`, {
+        priority,
+        weight,
+        finalScore: finalScore.toFixed(2)
+      })
     }
     
     return Math.min(1.0, finalScore) // Cap at 1.0
@@ -792,9 +818,11 @@ export class AdvancedVarietyEngine {
         const compoundPenalty = Math.min(0.8, recentCompoundCount * 0.25) // Up to 80% penalty
         score = Math.max(0.05, score - compoundPenalty) // Minimum 5% chance
         
-        if (import.meta.env.DEV) {
-          console.log(`🔄 COMPOUND COOLDOWN - Recent compounds: ${recentCompoundCount}, penalty: ${(compoundPenalty * 100).toFixed(1)}%, final score: ${(score * 100).toFixed(1)}%`)
-        }
+        logger.debug('getTenseFamilyBalanceScore', 'Compound tense cooldown applied', {
+          recentCompoundCount,
+          penaltyPercent: `${(compoundPenalty * 100).toFixed(1)}%`,
+          finalScorePercent: `${(score * 100).toFixed(1)}%`
+        })
       }
     }
     

@@ -92,12 +92,16 @@ export function buildGerund(lemma) {
   const endsWith = (s) => lemma.endsWith(s)
   const stem = lemma.slice(0, -2)
   const lastStemChar = stem.slice(-1)
-  // Nota: incluir 'u' explícitamente para casos como secuencias con vocal simple
-  if ((endsWith('er') || endsWith('ir')) && /[aeiouáéíóú]/i.test(lastStemChar)) {
+  // FIX: Incluir ü (diéresis) para verbos como argüir → arguyendo
+  if ((endsWith('er') || endsWith('ir')) && /[aeiouáéíóúü]/i.test(lastStemChar)) {
     return stem + 'yendo'
   }
   if (lemma.endsWith('uir') && !lemma.endsWith('guir')) {
     return stem + 'yendo'
+  }
+  // FIX: Regla especial para -ñir verbos (gruñir → gruñendo, NO gruñiendo)
+  if (endsWith('ñir')) {
+    return stem + 'endo'
   }
   // Regulares
   if (endsWith('ar')) return lemma.replace(/ar$/, 'ando')
