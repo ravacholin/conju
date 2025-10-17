@@ -218,6 +218,20 @@ export function createLogger(context) {
     info: (message, data) => info(context, message, data),
     warn: (message, data) => warn(context, message, data),
     error: (message, errorData) => error(context, message, errorData),
+
+    // Legacy methods from old ProgressLogger for compatibility
+    systemInit: (message) => info(context, `🚀 ${message}`),
+    flow: (message, data) => debug(context, `🔥 [Flow] ${message}`, data),
+    momentum: (message, data) => debug(context, `📈 [Momentum] ${message}`, data),
+    confidence: (message, data) => debug(context, `🎯 [Confidence] ${message}`, data),
+    goals: (message, data) => debug(context, `🏆 [Goals] ${message}`, data),
+    temporal: (message, data) => debug(context, `⏰ [Temporal] ${message}`, data),
+    performance: (message, timing) => {
+      const timeStr = timing ? ` (${timing}ms)` : ''
+      debug(context, `⚡ [Performance] ${message}${timeStr}`)
+    },
+    cleanup: (message, details) => debug(context, `🧹 [Cleanup] ${message}`, details),
+
     perf: {
       start: (key) => perf.start(`${context}-${key}`),
       end: (key, operation, threshold) => perf.end(`${context}-${key}`, context, operation, threshold),
