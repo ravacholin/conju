@@ -3,6 +3,10 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { getErrorIntelligence } from '../../lib/progress/analytics.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { useSettings } from '../../state/settings.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ErrorIntelligence')
+
 
 export default function ErrorIntelligence({ data: externalData = null, compact = true, onNavigateToDrill = null }) {
   const [data, setData] = useState({ tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [] })
@@ -25,7 +29,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
         const d = await getErrorIntelligence(uid)
         if (!cancelled) setData(d)
       } catch (e) {
-        console.warn('Error loading error intelligence:', e)
+        logger.warn('Error loading error intelligence:', e)
       } finally {
         if (!cancelled) setLoading(false)
       }

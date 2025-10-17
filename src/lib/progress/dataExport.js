@@ -4,6 +4,10 @@
 import { getAllFromDB, getAttemptsByUser, getMasteryByUser } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { formatDate } from './helpers.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:dataExport')
+
 
 /**
  * Exporta los datos de progreso del usuario en formato JSON
@@ -17,7 +21,7 @@ export async function exportProgressData(userId = null) {
       throw new Error('No se encontró ID de usuario para exportar')
     }
 
-    console.log(`📦 Exportando datos de progreso para usuario ${actualUserId}...`)
+    logger.debug(`📦 Exportando datos de progreso para usuario ${actualUserId}...`)
 
     // Obtener todos los datos del usuario
     const [attempts, mastery, schedules] = await Promise.all([
@@ -42,10 +46,10 @@ export async function exportProgressData(userId = null) {
       }
     }
 
-    console.log(`✅ Datos exportados: ${attempts.length} intentos, ${mastery.length} registros de dominio`)
+    logger.debug(`✅ Datos exportados: ${attempts.length} intentos, ${mastery.length} registros de dominio`)
     return exportData
   } catch (error) {
-    console.error('❌ Error al exportar datos de progreso:', error)
+    logger.error('❌ Error al exportar datos de progreso:', error)
     throw error
   }
 }
@@ -89,9 +93,9 @@ export function downloadExportedData(data, filename, type = 'application/json') 
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
     
-    console.log(`💾 Archivo descargado: ${filename}`)
+    logger.debug(`💾 Archivo descargado: ${filename}`)
   } catch (error) {
-    console.error('❌ Error al descargar archivo:', error)
+    logger.error('❌ Error al descargar archivo:', error)
     throw error
   }
 }
@@ -126,10 +130,10 @@ export async function generateProgressReport(userId = null) {
       reportGenerated: formatDate(new Date())
     }
     
-    console.log('📈 Reporte de progreso generado exitosamente')
+    logger.debug('📈 Reporte de progreso generado exitosamente')
     return report
   } catch (error) {
-    console.error('❌ Error al generar reporte de progreso:', error)
+    logger.error('❌ Error al generar reporte de progreso:', error)
     throw error
   }
 }

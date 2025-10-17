@@ -1,15 +1,19 @@
 import { normalizeInput } from './rules.js'
 import { stripAccents, normalizeKeepAccents } from '../utils/accentUtils.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:grader')
+
 
 export function grade(input, expected, settings){
   const startTs = Date.now()
   
   // Debug only if there are issues
-  // console.log('🔍 GRADER DEBUG - Input parameters:', {input, expected, settings})
+  // logger.debug('🔍 GRADER DEBUG - Input parameters:', {input, expected, settings})
   
   // PARAMETER VALIDATION: Ensure we never fail silently
   if (!input || typeof input !== 'string') {
-    console.error('❌ GRADER ERROR: Invalid input parameter:', input)
+    logger.error('❌ GRADER ERROR: Invalid input parameter:', input)
     return {
       correct: false,
       accepted: null,
@@ -22,7 +26,7 @@ export function grade(input, expected, settings){
   }
   
   if (!expected || typeof expected !== 'object' || !expected.value) {
-    console.error('❌ GRADER ERROR: Invalid expected parameter:', expected)
+    logger.error('❌ GRADER ERROR: Invalid expected parameter:', expected)
     return {
       correct: false,
       accepted: null,
@@ -35,7 +39,7 @@ export function grade(input, expected, settings){
   }
   
   if (!settings || typeof settings !== 'object') {
-    console.error('❌ GRADER ERROR: Invalid settings parameter:', settings)
+    logger.error('❌ GRADER ERROR: Invalid settings parameter:', settings)
     settings = {} // Use empty settings as fallback
   }
   
@@ -310,7 +314,7 @@ export function grade(input, expected, settings){
   }
   
   if (!correct && feedback === undefined) {
-    console.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
+    logger.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
     const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
     feedback = `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
   }
@@ -326,7 +330,7 @@ export function grade(input, expected, settings){
   }
   
   // Debug only for problematic cases
-  // console.log('🔍 GRADER DEBUG - Final result:', {correct: result.correct, note: result.note})
+  // logger.debug('🔍 GRADER DEBUG - Final result:', {correct: result.correct, note: result.note})
   
   return result
 }

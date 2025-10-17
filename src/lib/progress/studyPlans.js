@@ -9,7 +9,6 @@ import { mlRecommendationEngine } from './mlRecommendations.js'
 import { temporalIntelligence } from './temporalIntelligence.js'
 import { momentumTracker } from './momentumTracker.js'
 import confidenceEngine from './confidenceEngine.js'
-import logger from './logger.js'
 import { getAdvancedAnalytics } from './analytics.js'
 
 const planCache = new Map()

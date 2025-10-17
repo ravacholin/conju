@@ -2,8 +2,11 @@
 // Genera y adapta objetivos granulares basados en el progreso del usuario
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger } from './logger.js'
 import { memoryManager, registerInterval } from './memoryManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:dynamicGoals')
+
 
 /**
  * Sistema de Micro-objetivos que se adapta dinámicamente
@@ -921,7 +924,7 @@ export class DynamicGoalsSystem {
         }
       }
     } catch (error) {
-      console.warn('Failed to load goals data:', error)
+      logger.warn('Failed to load goals data:', error)
     }
   }
 
@@ -939,7 +942,7 @@ export class DynamicGoalsSystem {
       }
       localStorage.setItem('dynamic-goals-data', JSON.stringify(data))
     } catch (error) {
-      console.warn('Failed to save goals data:', error)
+      logger.warn('Failed to save goals data:', error)
     }
   }
 

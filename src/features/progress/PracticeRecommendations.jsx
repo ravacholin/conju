@@ -5,6 +5,10 @@ import { AdaptivePracticeEngine } from '../../lib/progress/AdaptivePracticeEngin
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import './practice-recommendations.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:PracticeRecommendations')
+
 
 // Use centralized formatter for consistency
 
@@ -59,7 +63,7 @@ export default function PracticeRecommendations({
 
       setRecommendations(Array.isArray(recs) ? recs : [])
     } catch (err) {
-      console.error('Error cargando recomendaciones:', err)
+      logger.error('Error cargando recomendaciones:', err)
       if (!requestState.cancelled) {
         setError('Error al cargar recomendaciones de práctica')
       }
@@ -126,7 +130,7 @@ export default function PracticeRecommendations({
 
       setSelectedSession(session)
     } catch (err) {
-      console.error('Error cargando sesión personalizada:', err)
+      logger.error('Error cargando sesión personalizada:', err)
     }
   }
 

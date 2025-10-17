@@ -3,6 +3,10 @@
 import { useState, useEffect } from 'react'
 import { getMasteryScore } from '../../lib/progress/mastery.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:MasteryIndicator')
+
 
 /**
  * Componente que muestra el puntaje de mastery actual para la combinación mood/tense
@@ -33,7 +37,7 @@ export default function MasteryIndicator({ currentItem }) {
         setMasteryScore(score)
         setLoading(false)
       } catch (error) {
-        console.warn('Error al cargar mastery score:', error)
+        logger.warn('Error al cargar mastery score:', error)
         setMasteryScore(null)
         setLoading(false)
       }

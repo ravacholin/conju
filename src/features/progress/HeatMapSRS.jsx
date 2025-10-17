@@ -5,6 +5,10 @@ import { getHeatMapData } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:HeatMapSRS')
+
 
 const TENSE_LABEL_FALLBACKS = {
   impAff: 'Imperativo afirmativo',
@@ -174,7 +178,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         rangeCacheRef.current[rangeKey] = payload
         setHeatMapData(payload)
       } catch (error) {
-        console.error('Error fetching heat map data:', error)
+        logger.error('Error fetching heat map data:', error)
         if (!cancelled) {
           const fallback = buildHeatMapPayload([], rangeKey)
           rangeCacheRef.current[rangeKey] = fallback

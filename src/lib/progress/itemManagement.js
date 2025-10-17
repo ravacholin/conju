@@ -1,6 +1,10 @@
 // Gestión de ítems de práctica en el sistema de progreso
 
 import { getAllVerbsSync } from '../core/verbDataService.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:itemManagement')
+
 
 /**
  * Tamaño del lote para procesamiento no bloqueante
@@ -17,7 +21,7 @@ const BATCH_DELAY = 5
  * @returns {Promise<void>}
  */
 export async function initializeItems() {
-  console.log('🔄 Inicializando ítems de práctica...')
+  logger.debug('🔄 Inicializando ítems de práctica...')
   
   try {
     // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
@@ -69,15 +73,15 @@ export async function initializeItems() {
               skippedCount++
             }
           } catch (error) {
-            console.error(`❌ Error al inicializar ítem para ${verb.lemma} ${form.mood}/${form.tense}/${form.person}:`, error)
+            logger.error(`❌ Error al inicializar ítem para ${verb.lemma} ${form.mood}/${form.tense}/${form.person}:`, error)
           }
         }
       }
     }
     
-    console.log(`✅ Inicialización de ítems completada: ${itemCount} creados, ${skippedCount} ya existentes`)
+    logger.debug(`✅ Inicialización de ítems completada: ${itemCount} creados, ${skippedCount} ya existentes`)
   } catch (error) {
-    console.error('❌ Error al inicializar ítems:', error)
+    logger.error('❌ Error al inicializar ítems:', error)
     throw error
   }
 }
@@ -186,7 +190,7 @@ async function processBatch(formsData, saveItem, getItemByProperties) {
         skipped++
       }
     } catch (error) {
-      console.error(`❌ Error procesando ítem ${verb.lemma} ${form.mood}/${form.tense}/${form.person}:`, error)
+      logger.error(`❌ Error procesando ítem ${verb.lemma} ${form.mood}/${form.tense}/${form.person}:`, error)
     }
   }
 
@@ -235,7 +239,7 @@ export async function initializeItemsBatched(options = {}) {
     onProgress
   } = options
 
-  console.log('🔄 Inicializando ítems por lotes (no bloqueante)...')
+  logger.debug('🔄 Inicializando ítems por lotes (no bloqueante)...')
 
   try {
     // Importar funciones de eventos de progreso
@@ -265,7 +269,7 @@ export async function initializeItemsBatched(options = {}) {
     }
 
     if (verbs.length === 0) {
-      console.warn('No verbs available for batch initialization')
+      logger.warn('No verbs available for batch initialization')
       return { totalCreated: 0, totalSkipped: 0, batchCount: 0 }
     }
 
@@ -310,9 +314,9 @@ export async function initializeItemsBatched(options = {}) {
     }
     markBatchInitializationComplete(finalStats)
 
-    console.log(`✅ Inicialización por lotes completada: ${totalCreated} creados, ${totalSkipped} ya existentes en ${batchCount} lotes`)
+    logger.debug(`✅ Inicialización por lotes completada: ${totalCreated} creados, ${totalSkipped} ya existentes en ${batchCount} lotes`)
   } catch (error) {
-    console.error('❌ Error en inicialización por lotes:', error)
+    logger.error('❌ Error en inicialización por lotes:', error)
     throw error
   }
 }
@@ -327,9 +331,9 @@ export async function updateItem(_itemId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el ítem existente
     
-    console.log(`✅ Ítem ${_itemId} actualizado`)
+    logger.debug(`✅ Ítem ${_itemId} actualizado`)
   } catch (error) {
-    console.error(`❌ Error al actualizar ítem ${_itemId}:`, error)
+    logger.error(`❌ Error al actualizar ítem ${_itemId}:`, error)
     throw error
   }
 }
@@ -343,9 +347,9 @@ export async function removeItem(itemId) {
   try {
     // En una implementación completa, esto eliminaría el ítem
     
-    console.log(`✅ Ítem ${itemId} eliminado`)
+    logger.debug(`✅ Ítem ${itemId} eliminado`)
   } catch (error) {
-    console.error(`❌ Error al eliminar ítem ${itemId}:`, error)
+    logger.error(`❌ Error al eliminar ítem ${itemId}:`, error)
     throw error
   }
 }
@@ -380,9 +384,9 @@ export async function createItemsBulk(items) {
     // En una implementación completa, esto crearía múltiples ítems
     // en una sola transacción para mejor rendimiento
     
-    console.log(`✅ ${items.length} ítems creados masivamente`)
+    logger.debug(`✅ ${items.length} ítems creados masivamente`)
   } catch (error) {
-    console.error('❌ Error al crear ítems masivamente:', error)
+    logger.error('❌ Error al crear ítems masivamente:', error)
     throw error
   }
 }

@@ -2,10 +2,14 @@
 // Comprehensive analysis of curriculum.json for intelligent verb/tense selection
 
 import curriculum from '../../data/curriculum.json'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:levelDrivenPrioritizer')
+
 
 // Quiet logs during tests while keeping them in dev runtime
 const debug = (...args) => {
-  if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) console.log(...args)
+  if (import.meta?.env?.DEV && !import.meta?.env?.VITEST) logger.debug(...args)
 }
 
 /**
@@ -324,7 +328,7 @@ export class LevelDrivenPrioritizer {
       categorized.adjusted = this.applyAdvancedProgressAdjustments(categorized, userProgress, userLevel)
     }
 
-    console.log(`🎯 Enhanced Level ${userLevel} prioritization:`, {
+    logger.debug(`🎯 Enhanced Level ${userLevel} prioritization:`, {
       core: categorized.core.length,
       review: categorized.review.length,
       exploration: categorized.exploration.length,
@@ -1322,39 +1326,39 @@ export class LevelDrivenPrioritizer {
     const prioritized = this.getPrioritizedTenses(userLevel, userProgress)
     const levelData = this.curriculumData.levelOrder[userLevel] || []
     
-    console.log(`\n📚 === ENHANCED LEVEL ${userLevel} CURRICULUM DEBUG ===`)
+    logger.debug(`\n📚 === ENHANCED LEVEL ${userLevel} CURRICULUM DEBUG ===`)
     
     // 1. Level Overview
-    console.log(`\n🎯 LEVEL OVERVIEW:`)
-    console.log(`  Total tenses in level: ${levelData.length}`)
-    console.log(`  Core (new): ${prioritized.core.length}`)
-    console.log(`  Review (previous): ${prioritized.review.length}`)
-    console.log(`  Exploration (next): ${prioritized.exploration.length}`)
-    console.log(`  Prerequisite gaps: ${prioritized.prerequisites.length}`)
-    console.log(`  Tense families: ${Object.keys(prioritized.familyGroups).length}`)
-    console.log(`  Progression path: ${prioritized.progression.length}`)
+    logger.debug(`\n🎯 LEVEL OVERVIEW:`)
+    logger.debug(`  Total tenses in level: ${levelData.length}`)
+    logger.debug(`  Core (new): ${prioritized.core.length}`)
+    logger.debug(`  Review (previous): ${prioritized.review.length}`)
+    logger.debug(`  Exploration (next): ${prioritized.exploration.length}`)
+    logger.debug(`  Prerequisite gaps: ${prioritized.prerequisites.length}`)
+    logger.debug(`  Tense families: ${Object.keys(prioritized.familyGroups).length}`)
+    logger.debug(`  Progression path: ${prioritized.progression.length}`)
     
     // 2. Core Tenses with Enhanced Analysis
-    console.log(`\n🆕 CORE TENSES (New for ${userLevel}):`)
+    logger.debug(`\n🆕 CORE TENSES (New for ${userLevel}):`)
     prioritized.core.slice(0, 5).forEach(t => {
       const readiness = Math.round(t.readiness * 100)
       const urgency = Math.round(t.urgency)
-      console.log(`  • ${t.mood}/${t.tense}`)
-      console.log(`    Priority: ${t.priority} | Readiness: ${readiness}% | Urgency: ${urgency} | Family: ${t.family}`)
-      console.log(`    Complexity: ${t.complexity} | Pedagogical Value: ${t.pedagogicalValue || 'N/A'}`)
+      logger.debug(`  • ${t.mood}/${t.tense}`)
+      logger.debug(`    Priority: ${t.priority} | Readiness: ${readiness}% | Urgency: ${urgency} | Family: ${t.family}`)
+      logger.debug(`    Complexity: ${t.complexity} | Pedagogical Value: ${t.pedagogicalValue || 'N/A'}`)
     })
     
     // 3. Prerequisite Gaps
     if (prioritized.prerequisites.length > 0) {
-      console.log(`\n⚠️  PREREQUISITE GAPS (Must master first):`)
+      logger.debug(`\n⚠️  PREREQUISITE GAPS (Must master first):`)
       prioritized.prerequisites.slice(0, 3).forEach(gap => {
-        console.log(`  • ${gap.mood}/${gap.tense}`)
-        console.log(`    Current mastery: ${gap.mastery}% | Required for: ${gap.requiredFor} | Urgency: ${gap.urgency}`)
+        logger.debug(`  • ${gap.mood}/${gap.tense}`)
+        logger.debug(`    Current mastery: ${gap.mastery}% | Required for: ${gap.requiredFor} | Urgency: ${gap.urgency}`)
       })
     }
     
     // 4. Family Analysis
-    console.log(`\n👨‍👩‍👧‍👦 TENSE FAMILIES:`)
+    logger.debug(`\n👨‍👩‍👧‍👦 TENSE FAMILIES:`)
     Object.entries(prioritized.familyGroups).forEach(([family, group]) => {
       const statusEmoji = {
         'completed': '✅',
@@ -1362,59 +1366,59 @@ export class LevelDrivenPrioritizer {
         'started': '🟡',
         'not_started': '⚪'
       }
-      console.log(`  ${statusEmoji[group.completionStatus]} ${family}: ${Math.round(group.avgMastery)}% avg mastery (${group.tenses.length} tenses)`)
+      logger.debug(`  ${statusEmoji[group.completionStatus]} ${family}: ${Math.round(group.avgMastery)}% avg mastery (${group.tenses.length} tenses)`)
       if (group.completionStatus === 'in_progress') {
         const remaining = group.tenses.filter(t => t.mastery < 75)
-        console.log(`    Still need: ${remaining.map(t => `${t.mood}/${t.tense}`).join(', ')}`)
+        logger.debug(`    Still need: ${remaining.map(t => `${t.mood}/${t.tense}`).join(', ')}`)
       }
     })
     
     // 5. Optimal Progression Path
-    console.log(`\n🛤️  OPTIMAL PROGRESSION PATH:`)
+    logger.debug(`\n🛤️  OPTIMAL PROGRESSION PATH:`)
     prioritized.progression.slice(0, 5).forEach((tense, i) => {
       const readiness = Math.round(tense.readiness * 100)
-      console.log(`  ${i + 1}. ${tense.mood}/${tense.tense} (${readiness}% ready, ${tense.mastery}% mastered)`)
+      logger.debug(`  ${i + 1}. ${tense.mood}/${tense.tense} (${readiness}% ready, ${tense.mastery}% mastered)`)
     })
     
     // 6. Review Priorities  
     if (prioritized.review.length > 0) {
-      console.log(`\n📚 REVIEW PRIORITIES:`)
+      logger.debug(`\n📚 REVIEW PRIORITIES:`)
       prioritized.review.slice(0, 5).forEach(t => {
         const prereqIcon = t.isPrerequisite ? '🔗' : '📖'
-        console.log(`  ${prereqIcon} ${t.mood}/${t.tense} (${t.originalLevel}) - Priority: ${t.priority}`)
+        logger.debug(`  ${prereqIcon} ${t.mood}/${t.tense} (${t.originalLevel}) - Priority: ${t.priority}`)
         if (t.isPrerequisite) {
-          console.log(`    ⚡ Prerequisite for current level!`)
+          logger.debug(`    ⚡ Prerequisite for current level!`)
         }
       })
     }
     
     // 7. Dynamic Weights
-    console.log(`\n⚖️  DYNAMIC WEIGHTS:`)
+    logger.debug(`\n⚖️  DYNAMIC WEIGHTS:`)
     Object.entries(prioritized.weights).forEach(([category, weight]) => {
       const percentage = Math.round(weight * 100)
-      console.log(`  ${category}: ${percentage}%`)
+      logger.debug(`  ${category}: ${percentage}%`)
     })
     
     // 8. Curriculum Insights
-    console.log(`\n🧠 CURRICULUM INSIGHTS:`)
+    logger.debug(`\n🧠 CURRICULUM INSIGHTS:`)
     const masteryMap = this.createMasteryMap(userProgress)
     const totalMasteries = Array.from(masteryMap.values())
     const avgMastery = totalMasteries.length > 0 ? 
       totalMasteries.reduce((sum, m) => sum + m, 0) / totalMasteries.length : 0
     
-    console.log(`  Overall mastery: ${Math.round(avgMastery)}%`)
-    console.log(`  Learning stage: ${this.determineLearningStage(avgMastery, prioritized)}`)
-    console.log(`  Recommended focus: ${this.getRecommendedFocus(prioritized, userLevel)}`)
+    logger.debug(`  Overall mastery: ${Math.round(avgMastery)}%`)
+    logger.debug(`  Learning stage: ${this.determineLearningStage(avgMastery, prioritized)}`)
+    logger.debug(`  Recommended focus: ${this.getRecommendedFocus(prioritized, userLevel)}`)
     
     // 9. Next Recommendations
     const nextRec = this.getNextRecommendedTense(userLevel, userProgress)
     if (nextRec) {
-      console.log(`\n🎯 NEXT RECOMMENDED:`)
-      console.log(`  ${nextRec.mood}/${nextRec.tense}`)
-      console.log(`  Reason: ${this.getRecommendationReason(nextRec, prioritized)}`)
+      logger.debug(`\n🎯 NEXT RECOMMENDED:`)
+      logger.debug(`  ${nextRec.mood}/${nextRec.tense}`)
+      logger.debug(`  Reason: ${this.getRecommendationReason(nextRec, prioritized)}`)
     }
     
-    console.log(`\n=== END ENHANCED DEBUG ===\n`)
+    logger.debug(`\n=== END ENHANCED DEBUG ===\n`)
   }
 
   /**
@@ -1682,7 +1686,7 @@ export function getWeightedFormsSelection(forms, level, userProgress = null) {
 export function getEnhancedMixedPracticeSelection(forms, level, sessionHistory = null) {
   if (!forms || forms.length === 0) return []
   
-  console.log(`🎯 Enhanced mixed practice selection for ${level}:`, forms.length, 'forms')
+  logger.debug(`🎯 Enhanced mixed practice selection for ${level}:`, forms.length, 'forms')
   
   const levelConfig = ENHANCED_LEVEL_VERB_POOLS[level] || ENHANCED_LEVEL_VERB_POOLS.B1
   
@@ -1698,7 +1702,7 @@ export function getEnhancedMixedPracticeSelection(forms, level, sessionHistory =
   // Apply semantic category rotation
   const semanticBalancedForms = applySemanticCategoryRotation(difficultyWeightedForms, level)
   
-  console.log(`🎯 Enhanced selection pipeline: ${forms.length} → ${levelFilteredForms.length} → ${varietyBalancedForms.length} → ${difficultyWeightedForms.length} → ${semanticBalancedForms.length}`)
+  logger.debug(`🎯 Enhanced selection pipeline: ${forms.length} → ${levelFilteredForms.length} → ${varietyBalancedForms.length} → ${difficultyWeightedForms.length} → ${semanticBalancedForms.length}`)
   
   return semanticBalancedForms
 }

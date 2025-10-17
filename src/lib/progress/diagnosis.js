@@ -3,6 +3,10 @@
 import { getMasteryByUser } from './database.js'
 
 import { generateId } from './helpers.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:diagnosis')
+
 
 /**
  * Realiza un diagnóstico inicial del usuario
@@ -11,7 +15,7 @@ import { generateId } from './helpers.js'
  */
 export async function performInitialDiagnosis(userId) {
   try {
-    console.log('🔍 Realizando diagnóstico inicial...')
+    logger.debug('🔍 Realizando diagnóstico inicial...')
     
     // En una implementación completa, esto crearía un test adaptativo
     // de 3 minutos con ítems por tiempo clave
@@ -59,7 +63,7 @@ export async function performInitialDiagnosis(userId) {
       totalCells: masteryRecords.length
     }
   } catch (error) {
-    console.error('Error al realizar diagnóstico inicial:', error)
+    logger.error('Error al realizar diagnóstico inicial:', error)
     return {}
   }
 }
@@ -70,14 +74,14 @@ export async function performInitialDiagnosis(userId) {
  * @returns {Promise<void>}
  */
 export async function scheduleMonthlyRecalibration(_userId) {
-  console.log('📅 Programando recalibración mensual...')
+  logger.debug('📅 Programando recalibración mensual...')
   
   // En una implementación completa, esto programaría
   // una recalibración automática que inserta ítems
   // sorpresa por celda con M ≥ 80
   
   // Por ahora, solo registramos la intención
-  console.log('✅ Recalibración mensual programada')
+  logger.debug('✅ Recalibración mensual programada')
 }
 
 /**
@@ -87,7 +91,7 @@ export async function scheduleMonthlyRecalibration(_userId) {
  */
 export async function performRecalibration(_userId) {
   try {
-    console.log('🔍 Realizando recalibración...')
+    logger.debug('🔍 Realizando recalibración...')
     
     // En una implementación completa, esto insertaría
     // ítems sorpresa por celda con M ≥ 80
@@ -101,7 +105,7 @@ export async function performRecalibration(_userId) {
       cellsNeedingAttention: 2 // Valor de ejemplo
     }
   } catch (error) {
-    console.error('Error al realizar recalibración:', error)
+    logger.error('Error al realizar recalibración:', error)
     return {}
   }
 }
@@ -125,7 +129,7 @@ export async function createAdaptiveTest(userId, durationMs = 180000) { // 3 min
       createdAt: new Date()
     }
   } catch (error) {
-    console.error('Error al crear test adaptativo:', error)
+    logger.error('Error al crear test adaptativo:', error)
     throw error
   }
 }
@@ -160,7 +164,7 @@ export async function evaluateAdaptiveTest(test, responses) {
       evaluatedAt: new Date()
     }
   } catch (error) {
-    console.error('Error al evaluar test adaptativo:', error)
+    logger.error('Error al evaluar test adaptativo:', error)
     throw error
   }
 }
@@ -234,7 +238,7 @@ export async function generateDiagnosisRecommendations(diagnosis) {
     
     return recommendations
   } catch (error) {
-    console.error('Error al generar recomendaciones de diagnóstico:', error)
+    logger.error('Error al generar recomendaciones de diagnóstico:', error)
     return []
   }
 }
@@ -250,9 +254,9 @@ export async function saveDiagnosisResults(_userId, diagnosis) {
     // En una implementación completa, esto guardaría los resultados
     // del diagnóstico en la base de datos
     
-    console.log(`✅ Resultados de diagnóstico guardados para usuario ${_userId}:`, diagnosis)
+    logger.debug(`✅ Resultados de diagnóstico guardados para usuario ${_userId}:`, diagnosis)
   } catch (error) {
-    console.error('Error al guardar resultados de diagnóstico:', error)
+    logger.error('Error al guardar resultados de diagnóstico:', error)
     throw error
   }
 }
@@ -302,7 +306,7 @@ export async function compareDiagnosisProgress(diagnoses) {
       }
     }
   } catch (error) {
-    console.error('Error al comparar progreso de diagnósticos:', error)
+    logger.error('Error al comparar progreso de diagnósticos:', error)
     return {
       canCompare: false,
       error: error.message
@@ -328,7 +332,7 @@ export async function generateProgressReport(userId) {
       generatedAt: new Date()
     }
   } catch (error) {
-    console.error('Error al generar informe de progreso:', error)
+    logger.error('Error al generar informe de progreso:', error)
     throw error
   }
 }

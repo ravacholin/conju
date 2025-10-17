@@ -14,6 +14,10 @@ import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
 
 import './progress-streamlined.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ProgressDashboard')
+
 
 /**
  * Streamlined Progress Dashboard - Focused on actionable learning features
@@ -74,7 +78,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         })
       }
     } catch (e) {
-      console.error('Error en sincronización:', e)
+      logger.error('Error en sincronización:', e)
       setToast({
         message: 'Error al sincronizar.',
         type: 'error'

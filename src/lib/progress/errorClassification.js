@@ -4,6 +4,10 @@ import { ERROR_TAGS } from './dataModels.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
 import { VERB_LOOKUP_MAP } from '../core/optimizedCache.js'
 import { getAllVerbsSync } from '../core/verbDataService.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:errorClassification')
+
 
 /**
  * Clasifica errores en la conjugación de verbos
@@ -235,7 +239,7 @@ function hasIrregularStemIssue(item, user, correct) {
   const verbs = getAllVerbsSync()
 
   if (!Array.isArray(verbs)) {
-    console.warn('hasIrregularStemIssue: getAllVerbsSync() did not return an array:', verbs)
+    logger.warn('hasIrregularStemIssue: getAllVerbsSync() did not return an array:', verbs)
     return false
   }
 

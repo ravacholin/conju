@@ -1,20 +1,24 @@
 // Inicialización automática del sistema de progreso
 
 import { initProgressSystem } from './index.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:autoInit')
+
 
 /**
  * Inicializa automáticamente el sistema de progreso cuando se carga la aplicación
  * @returns {Promise<void>}
  */
 export async function autoInitializeProgressSystem() {
-  console.log('🚀 Inicializando automáticamente el sistema de progreso...')
+  logger.debug('🚀 Inicializando automáticamente el sistema de progreso...')
   
   try {
     // Inicializar el sistema de progreso
     const userId = await initProgressSystem()
-    console.log('✅ Sistema de progreso inicializado para usuario:', userId)
+    logger.debug('✅ Sistema de progreso inicializado para usuario:', userId)
   } catch (error) {
-    console.error('❌ Error al inicializar automáticamente el sistema de progreso:', error)
+    logger.error('❌ Error al inicializar automáticamente el sistema de progreso:', error)
   }
 }
 
@@ -22,9 +26,9 @@ export async function autoInitializeProgressSystem() {
 if (typeof window !== 'undefined') {
   // Solo ejecutar en el navegador
   autoInitializeProgressSystem().catch(error => {
-    console.error('Error en inicialización automática:', error)
+    logger.error('Error en inicialización automática:', error)
   })
-  console.log('🚀 Inicialización automática del sistema de progreso habilitada')
+  logger.debug('🚀 Inicialización automática del sistema de progreso habilitada')
 }
 
 export default autoInitializeProgressSystem

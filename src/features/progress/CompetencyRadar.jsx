@@ -5,6 +5,10 @@ import { getHeatMapData } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/uiUtils.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:CompetencyRadar')
+
 
 /**
  * Componente para mostrar el radar de competencias
@@ -202,7 +206,7 @@ export function CompetencyRadar({ data }) {
               }
             }
           } catch (error) {
-            console.error('Error handling radar chart click:', error)
+            logger.error('Error handling radar chart click:', error)
           }
         }}
       />

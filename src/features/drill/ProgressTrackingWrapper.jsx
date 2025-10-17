@@ -2,6 +2,10 @@
 
 import { useEffect } from 'react'
 import { useProgressTracking } from './useProgressTracking.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ProgressTrackingWrapper')
+
 
 /**
  * Wrapper para tracking de progreso en Drill
@@ -21,7 +25,7 @@ export function ProgressTrackingWrapper({ currentItem, onResult, result }) {
     if (!result) {
       // Registrar fin de sesión cuando se reinicia
       // En una implementación completa, esto se haría en el momento adecuado
-      console.log('🔄 Sesión reiniciada')
+      logger.debug('🔄 Sesión reiniciada')
     }
   }, [result])
 

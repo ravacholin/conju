@@ -3,6 +3,10 @@
 
 // Import and re-export from centralized accent utils
 import { normalize } from '../utils/accentUtils.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:conjugationRules')
+
 export { normalize }
 
 /**
@@ -21,7 +25,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
     if (value === undefined) {
       return false // No considerar como regular para evitar filtrado incorrecto
     }
-    console.warn('⚠️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
+    logger.warn('⚠️ isRegularFormForMood called with invalid params:', { lemma, mood, tense, person, value })
     return false
   }
   
@@ -399,7 +403,7 @@ export function isRegularFormForMood(lemma, mood, tense, person, value) {
  */
 export function isRegularNonfiniteForm(lemma, tense, value) {
   if (!lemma || !value || typeof lemma !== 'string' || typeof value !== 'string') {
-    console.warn('⚠️ isRegularNonfiniteForm called with invalid params:', { lemma, tense, value })
+    logger.warn('⚠️ isRegularNonfiniteForm called with invalid params:', { lemma, tense, value })
     return false
   }
   

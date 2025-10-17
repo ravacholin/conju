@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import { toggleExpertMode, setExpertModeSettings } from '../../lib/progress/expertMode.js'
 import './expert-mode-panel.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ExpertModePanel')
+
 
 const PROFILES = [
   {
@@ -59,7 +63,7 @@ export default function ExpertModePanel({ settings }) {
         overrides: profile.overrides
       })
     } catch (error) {
-      console.error('No se pudo aplicar el perfil experto', error)
+      logger.error('No se pudo aplicar el perfil experto', error)
     } finally {
       setUpdating(false)
     }

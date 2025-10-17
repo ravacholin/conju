@@ -2,6 +2,10 @@
 
 import { getMasteryByUser, getAttemptsByItem } from './database.js'
 import { msToSeconds } from './helpers.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:teacherMode')
+
 // import { formatDate } from './helpers.js'
 
 /**
@@ -72,7 +76,7 @@ export async function generateStudentReport(userId = null) {
       }
     }
   } catch (error) {
-    console.error('Error al generar informe del estudiante:', error)
+    logger.error('Error al generar informe del estudiante:', error)
     throw error
   }
 }
@@ -125,7 +129,7 @@ export async function getClassStats(userIds) {
       generatedAt: new Date()
     }
   } catch (error) {
-    console.error('Error al obtener estadísticas de clase:', error)
+    logger.error('Error al obtener estadísticas de clase:', error)
     throw error
   }
 }
@@ -169,7 +173,7 @@ export async function generateDetailedReport(userId, options = {}) {
       options
     }
   } catch (error) {
-    console.error('Error al generar informe detallado:', error)
+    logger.error('Error al generar informe detallado:', error)
     throw error
   }
 }
@@ -188,7 +192,7 @@ export async function exportToPDF() {
     // Por ahora, lanzamos un error indicando que no está implementado
     throw new Error('Exportación a PDF no implementada en esta versión')
   } catch (error) {
-    console.error('Error al exportar datos a PDF:', error)
+    logger.error('Error al exportar datos a PDF:', error)
     throw error
   }
 }
@@ -204,9 +208,9 @@ export async function shareProgressWithTeacher(userId, teacherCode) {
     // En una implementación completa, esto compartiría el progreso
     // con el docente usando el código proporcionado
     
-    console.log(`✅ Progreso compartido con docente usando código ${teacherCode}`)
+    logger.debug(`✅ Progreso compartido con docente usando código ${teacherCode}`)
   } catch (error) {
-    console.error('Error al compartir progreso con docente:', error)
+    logger.error('Error al compartir progreso con docente:', error)
     throw error
   }
 }
@@ -234,9 +238,9 @@ export async function revokeSharedAccess(userId, shareId) {
     // En una implementación completa, esto revocaría el acceso
     // compartido especificado
     
-    console.log(`✅ Acceso compartido ${shareId} revocado`)
+    logger.debug(`✅ Acceso compartido ${shareId} revocado`)
   } catch (error) {
-    console.error('Error al revocar acceso compartido:', error)
+    logger.error('Error al revocar acceso compartido:', error)
     throw error
   }
 }
@@ -258,7 +262,7 @@ export async function getAnonymousResearchStats(userIds) {
       generatedAt: new Date()
     }
   } catch (error) {
-    console.error('Error al obtener estadísticas anónimas:', error)
+    logger.error('Error al obtener estadísticas anónimas:', error)
     return {}
   }
 }

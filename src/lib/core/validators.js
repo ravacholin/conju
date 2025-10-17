@@ -2,6 +2,10 @@
 import { getAllVerbs } from '../core/verbDataService.js'
 import { getAllVerbsWithPriority } from '../../data/priorityVerbs.js'
 import { IRREGULAR_FAMILIES } from '../data/irregularFamilies.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:validators')
+
 
 // Validadores individuales
 export class VerbValidator {
@@ -386,7 +390,7 @@ export class FamilyValidator {
 
 // Función principal de validación
 export async function validateAllData() {
-  console.log('🔍 INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
+  logger.debug('🔍 INICIANDO VALIDACIÓN COMPLETA DE DATOS\n')
   
   const verbValidator = new VerbValidator()
   const semanticValidator = new SemanticValidator()
@@ -400,8 +404,8 @@ export async function validateAllData() {
   const problemVerbs = []
   
   // Validar todos los verbos
-  console.log(`📚 Validando ${allVerbs.length} verbos...`)
-  console.log(`🧠 Incluye validación semántica, verbos defectivos y patrones irregulares
+  logger.debug(`📚 Validando ${allVerbs.length} verbos...`)
+  logger.debug(`🧠 Incluye validación semántica, verbos defectivos y patrones irregulares
 `)
   
   allVerbs.forEach((verb, index) => {
@@ -425,7 +429,7 @@ export async function validateAllData() {
   })
   
   // Validar familias irregulares
-  console.log(`
+  logger.debug(`
 🏗️  Validando ${Object.keys(IRREGULAR_FAMILIES).length} familias irregulares...
 `)
   
@@ -446,58 +450,58 @@ export async function validateAllData() {
   })
   
   // Reportar resultados
-  console.log(`
+  logger.debug(`
 📊 RESULTADOS DE VALIDACIÓN:
 `)
-  console.log(`✅ Verbos validados: ${allVerbs.length}`)
-  console.log(`✅ Familias validadas: ${Object.keys(IRREGULAR_FAMILIES).length}`)
-  console.log(`❌ Total errores: ${totalErrors}`)
-  console.log(`⚠️  Total advertencias: ${totalWarnings}`)
+  logger.debug(`✅ Verbos validados: ${allVerbs.length}`)
+  logger.debug(`✅ Familias validadas: ${Object.keys(IRREGULAR_FAMILIES).length}`)
+  logger.debug(`❌ Total errores: ${totalErrors}`)
+  logger.debug(`⚠️  Total advertencias: ${totalWarnings}`)
   
   // Mostrar problemas más críticos
   if (totalErrors > 0) {
-    console.log(`
+    logger.debug(`
 🚨 ERRORES CRÍTICOS:
 `)
     problemVerbs.filter(p => p.errors.length > 0).slice(0, 5).forEach(problem => {
-      console.log(`  ${problem.verb}:
+      logger.debug(`  ${problem.verb}:
 `)
-      problem.errors.forEach(error => console.log(`    - ${error}`))
+      problem.errors.forEach(error => logger.debug(`    - ${error}`))
     })
     
     if (problemVerbs.filter(p => p.errors.length > 0).length > 5) {
-      console.log(`    ... y ${problemVerbs.filter(p => p.errors.length > 0).length - 5} verbos más con errores`)
+      logger.debug(`    ... y ${problemVerbs.filter(p => p.errors.length > 0).length - 5} verbos más con errores`)
     }
   }
   
   if (totalWarnings > 0) {
-    console.log(`
+    logger.debug(`
 ⚠️  ADVERTENCIAS:
 `)
     problemVerbs.filter(p => p.warnings.length > 0).forEach(problem => {
-      console.log(`  ${problem.verb}:
+      logger.debug(`  ${problem.verb}:
 `)
-      problem.warnings.forEach(warning => console.log(`    - ${warning}`))
+      problem.warnings.forEach(warning => logger.debug(`    - ${warning}`))
     })
     
     familyProblems.filter(p => p.warnings.length > 0).forEach(problem => {
-      console.log(`  Familia ${problem.family}:
+      logger.debug(`  Familia ${problem.family}:
 `)
-      problem.warnings.forEach(warning => console.log(`    - ${warning}`))
+      problem.warnings.forEach(warning => logger.debug(`    - ${warning}`))
     })
   }
   
   // Estado general
   if (totalErrors === 0 && totalWarnings === 0) {
-    console.log(`
+    logger.debug(`
 🎉 ¡PERFECTO! Todos los datos pasaron la validación.
 `)
   } else if (totalErrors === 0) {
-    console.log(`
+    logger.debug(`
 ✅ Sin errores críticos. Solo advertencias menores.
 `)
   } else {
-    console.log(`
+    logger.debug(`
 🔧 Se requieren correcciones antes del deploy.
 `)
   }

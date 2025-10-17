@@ -3,7 +3,6 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { getCurrentUserId } from './userManager.js'
 import { getDailyChallengeSnapshot } from './challenges.js'
-import logger from './logger.js'
 
 const STORAGE_KEY = 'progress-social-community'
 const communityCache = new Map()

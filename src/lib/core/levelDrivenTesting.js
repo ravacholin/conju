@@ -4,6 +4,10 @@
 import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
 import { AdaptivePracticeEngine } from '../progress/AdaptivePracticeEngine.js'
 import { PersonalizedCoach } from '../progress/personalizedCoaching.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:levelDrivenTesting')
+
 
 /**
  * Comprehensive testing suite for the level-driven system
@@ -18,7 +22,7 @@ export class LevelDrivenTester {
    * Run all tests and return comprehensive results
    */
   async runAllTests() {
-    console.log('\n🧪 === LEVEL-DRIVEN PRIORITIZATION TESTING SUITE ===')
+    logger.debug('\n🧪 === LEVEL-DRIVEN PRIORITIZATION TESTING SUITE ===')
     
     this.testResults = []
     
@@ -42,19 +46,19 @@ export class LevelDrivenTester {
     
     // Generate summary report
     const summary = this.generateTestSummary()
-    console.log('\n📊 TEST SUMMARY:')
-    console.log(`✅ Passed: ${summary.passed}`)
-    console.log(`❌ Failed: ${summary.failed}`)
-    console.log(`⏳ Total: ${summary.total}`)
+    logger.debug('\n📊 TEST SUMMARY:')
+    logger.debug(`✅ Passed: ${summary.passed}`)
+    logger.debug(`❌ Failed: ${summary.failed}`)
+    logger.debug(`⏳ Total: ${summary.total}`)
     
     if (summary.failed > 0) {
-      console.log('\n❌ FAILED TESTS:')
+      logger.debug('\n❌ FAILED TESTS:')
       this.testResults
         .filter(r => !r.passed)
-        .forEach(r => console.log(`  - ${r.name}: ${r.error}`))
+        .forEach(r => logger.debug(`  - ${r.name}: ${r.error}`))
     }
     
-    console.log('\n=== END TESTING SUITE ===\n')
+    logger.debug('\n=== END TESTING SUITE ===\n')
     
     return {
       summary,
@@ -66,7 +70,7 @@ export class LevelDrivenTester {
    * Test basic prioritizer functionality
    */
   async testPrioritizerBasics() {
-    console.log('\n🔍 Testing Prioritizer Basics...')
+    logger.debug('\n🔍 Testing Prioritizer Basics...')
     
     for (const level of this.allLevels) {
       try {
@@ -101,7 +105,7 @@ export class LevelDrivenTester {
           )
         }
         
-        console.log(`  ✅ ${level}: ${prioritized.core.length} core, ${prioritized.review.length} review, ${prioritized.exploration.length} exploration`)
+        logger.debug(`  ✅ ${level}: ${prioritized.core.length} core, ${prioritized.review.length} review, ${prioritized.exploration.length} exploration`)
         
       } catch (error) {
         this.recordFailure(`Prioritizer basics ${level}`, error)
@@ -113,7 +117,7 @@ export class LevelDrivenTester {
    * Test that different levels have different priorities
    */
   async testLevelSpecificPriorities() {
-    console.log('\n🎯 Testing Level-Specific Priorities...')
+    logger.debug('\n🎯 Testing Level-Specific Priorities...')
     
     try {
       // Test that B1 prioritizes subjunctive present
@@ -162,7 +166,7 @@ export class LevelDrivenTester {
         'A1 should have higher core weight than C2'
       )
       
-      console.log('  ✅ Level-specific priorities verified')
+      logger.debug('  ✅ Level-specific priorities verified')
       
     } catch (error) {
       this.recordFailure('Level-specific priorities', error)
@@ -173,7 +177,7 @@ export class LevelDrivenTester {
    * Test weighted form selection
    */
   async testWeightedFormSelection() {
-    console.log('\n⚖️  Testing Weighted Form Selection...')
+    logger.debug('\n⚖️  Testing Weighted Form Selection...')
     
     try {
       // Create mock forms for testing
@@ -214,7 +218,7 @@ export class LevelDrivenTester {
         'A1 should weight present indicative heavily'
       )
       
-      console.log(`  ✅ Weighted selection working (B1: ${subjPresCount} subj.pres, A1: ${presIndCount} ind.pres)`)
+      logger.debug(`  ✅ Weighted selection working (B1: ${subjPresCount} subj.pres, A1: ${presIndCount} ind.pres)`)
       
     } catch (error) {
       this.recordFailure('Weighted form selection', error)
@@ -225,7 +229,7 @@ export class LevelDrivenTester {
    * Test adaptive engine integration
    */
   async testAdaptiveEngineIntegration() {
-    console.log('\n🤖 Testing Adaptive Engine Integration...')
+    logger.debug('\n🤖 Testing Adaptive Engine Integration...')
     
     try {
       const engine = new AdaptivePracticeEngine()
@@ -261,7 +265,7 @@ export class LevelDrivenTester {
         'Difficulty level should be valid'
       )
       
-      console.log(`  ✅ Adaptive engine integrated (${b1Combinations.length} combinations, difficulty: ${difficultyAnalysis.level})`)
+      logger.debug(`  ✅ Adaptive engine integrated (${b1Combinations.length} combinations, difficulty: ${difficultyAnalysis.level})`)
       
     } catch (error) {
       this.recordFailure('Adaptive engine integration', error)
@@ -272,7 +276,7 @@ export class LevelDrivenTester {
    * Test coaching system integration
    */
   async testCoachingSystemIntegration() {
-    console.log('\n💡 Testing Coaching System Integration...')
+    logger.debug('\n💡 Testing Coaching System Integration...')
     
     try {
       const coach = new PersonalizedCoach()
@@ -311,7 +315,7 @@ export class LevelDrivenTester {
         'Level progression should return status'
       )
       
-      console.log(`  ✅ Coaching system integrated (${progression.completionPercentage}% completion, status: ${progression.status})`)
+      logger.debug(`  ✅ Coaching system integrated (${progression.completionPercentage}% completion, status: ${progression.status})`)
       
     } catch (error) {
       this.recordFailure('Coaching system integration', error)
@@ -322,7 +326,7 @@ export class LevelDrivenTester {
    * Test real-world scenarios
    */
   async testRealWorldScenarios() {
-    console.log('\n🌍 Testing Real-World Scenarios...')
+    logger.debug('\n🌍 Testing Real-World Scenarios...')
     
     try {
       // Scenario 1: New B1 user should get subjunctive present
@@ -375,10 +379,10 @@ export class LevelDrivenTester {
         `Different levels should prioritize different tenses (found ${uniqueTopTenses.size} unique)`
       )
       
-      console.log('  ✅ Real-world scenarios verified')
-      console.log(`    - New B1 user gets: ${b1Recommendation.mood}/${b1Recommendation.tense}`)
-      console.log(`    - Advanced B1 user gets: ${b1AdvancedRec.mood}/${b1AdvancedRec.tense}`)
-      console.log(`    - Top tenses by level:`, allLevelTopTenses.map(l => `${l.level}:${l.topTense}`).join(', '))
+      logger.debug('  ✅ Real-world scenarios verified')
+      logger.debug(`    - New B1 user gets: ${b1Recommendation.mood}/${b1Recommendation.tense}`)
+      logger.debug(`    - Advanced B1 user gets: ${b1AdvancedRec.mood}/${b1AdvancedRec.tense}`)
+      logger.debug(`    - Top tenses by level:`, allLevelTopTenses.map(l => `${l.level}:${l.topTense}`).join(', '))
       
     } catch (error) {
       this.recordFailure('Real-world scenarios', error)
@@ -405,7 +409,7 @@ export class LevelDrivenTester {
       passed: false, 
       error: error.message || String(error) 
     })
-    console.log(`  ❌ ${testName}: ${error.message || error}`)
+    logger.debug(`  ❌ ${testName}: ${error.message || error}`)
   }
 
   /**
@@ -436,7 +440,7 @@ export async function runLevelDrivenTests() {
  * Quick debug function to show level prioritization for all levels
  */
 export function debugAllLevelPrioritization() {
-  console.log('\n🔍 === DEBUG: ALL LEVEL PRIORITIZATION ===')
+  logger.debug('\n🔍 === DEBUG: ALL LEVEL PRIORITIZATION ===')
   
   const allLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
   
@@ -444,46 +448,46 @@ export function debugAllLevelPrioritization() {
     try {
       const prioritized = levelPrioritizer.getPrioritizedTenses(level)
       
-      console.log(`\n📚 LEVEL ${level}:`)
-      console.log(`  Core (${prioritized.core.length}):`, 
+      logger.debug(`\n📚 LEVEL ${level}:`)
+      logger.debug(`  Core (${prioritized.core.length}):`, 
         prioritized.core.slice(0, 3).map(t => `${t.mood}/${t.tense}(${t.priority})`))
-      console.log(`  Review (${prioritized.review.length}):`, 
+      logger.debug(`  Review (${prioritized.review.length}):`, 
         prioritized.review.slice(0, 3).map(t => `${t.mood}/${t.tense}(${t.priority})`))
-      console.log(`  Exploration (${prioritized.exploration.length}):`, 
+      logger.debug(`  Exploration (${prioritized.exploration.length}):`, 
         prioritized.exploration.slice(0, 2).map(t => `${t.mood}/${t.tense}(${t.priority})`))
-      console.log(`  Weights:`, prioritized.weights)
+      logger.debug(`  Weights:`, prioritized.weights)
       
     } catch (error) {
-      console.error(`  ❌ Error for ${level}:`, error.message)
+      logger.error(`  ❌ Error for ${level}:`, error.message)
     }
   })
   
-  console.log('\n=== END DEBUG ===\n')
+  logger.debug('\n=== END DEBUG ===\n')
 }
 
 /**
  * Test specific level behavior
  */
 export function testSpecificLevel(level, mockUserProgress = null) {
-  console.log(`\n🎯 === TESTING SPECIFIC LEVEL: ${level} ===`)
+  logger.debug(`\n🎯 === TESTING SPECIFIC LEVEL: ${level} ===`)
   
   try {
     const prioritized = levelPrioritizer.getPrioritizedTenses(level, mockUserProgress)
     const nextRec = levelPrioritizer.getNextRecommendedTense(level, mockUserProgress)
     
-    console.log('Prioritization Results:')
-    console.log(`  - Core tenses: ${prioritized.core.length}`)
-    console.log(`  - Review tenses: ${prioritized.review.length}`)
-    console.log(`  - Exploration tenses: ${prioritized.exploration.length}`)
-    console.log(`  - Weights:`, prioritized.weights)
+    logger.debug('Prioritization Results:')
+    logger.debug(`  - Core tenses: ${prioritized.core.length}`)
+    logger.debug(`  - Review tenses: ${prioritized.review.length}`)
+    logger.debug(`  - Exploration tenses: ${prioritized.exploration.length}`)
+    logger.debug(`  - Weights:`, prioritized.weights)
     
-    console.log('\nTop Recommendations:')
-    console.log(`  - Core:`, prioritized.core.slice(0, 3).map(t => 
+    logger.debug('\nTop Recommendations:')
+    logger.debug(`  - Core:`, prioritized.core.slice(0, 3).map(t => 
       `${t.mood}/${t.tense} (priority: ${t.priority})`
     ))
     
     if (nextRec) {
-      console.log(`\nNext recommended tense: ${nextRec.mood}/${nextRec.tense}`)
+      logger.debug(`\nNext recommended tense: ${nextRec.mood}/${nextRec.tense}`)
     }
     
     // Test with mock forms
@@ -494,7 +498,7 @@ export function testSpecificLevel(level, mockUserProgress = null) {
     ]
     
     const weighted = getWeightedFormsSelection(mockForms, level)
-    console.log(`\nWeighted selection: ${weighted.length} forms (from ${mockForms.length} original)`)
+    logger.debug(`\nWeighted selection: ${weighted.length} forms (from ${mockForms.length} original)`)
     
     const tenseCounts = {}
     weighted.forEach(f => {
@@ -502,13 +506,13 @@ export function testSpecificLevel(level, mockUserProgress = null) {
       tenseCounts[key] = (tenseCounts[key] || 0) + 1
     })
     
-    console.log('Distribution:', tenseCounts)
+    logger.debug('Distribution:', tenseCounts)
     
   } catch (error) {
-    console.error(`❌ Error testing ${level}:`, error)
+    logger.error(`❌ Error testing ${level}:`, error)
   }
   
-  console.log(`\n=== END ${level} TEST ===\n`)
+  logger.debug(`\n=== END ${level} TEST ===\n`)
 }
 
 // Browser/window integration for easy testing
@@ -519,7 +523,7 @@ if (typeof window !== 'undefined') {
     testLevel: testSpecificLevel
   }
   
-  console.log(`
+  logger.debug(`
 🧪 Level-Driven Testing Available!
   
 Run in browser console:

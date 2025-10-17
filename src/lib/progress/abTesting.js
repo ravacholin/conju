@@ -3,7 +3,6 @@
 
 import { PROGRESS_CONFIG } from './config.js'
 import { getCurrentUserId } from './userManager.js'
-import { logger } from './logger.js'
 
 /**
  * Manager de A/B Testing para experimentos de SRS

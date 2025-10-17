@@ -6,7 +6,10 @@ import { getDueItems } from './srs.js'
 import { getCurrentUserId } from './userManager.js'
 import { getAttemptsByUser, getMasteryByUser, getAllFromDB, getLearningSessionsByUser } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
-import logger from './logger.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:offlineSupport')
+
 
 const statusCache = {
   timestamp: 0,
@@ -43,7 +46,7 @@ async function collectQueueSize() {
 
     const totalPending = unsyncedAttempts.length + unsyncedMastery.length + unsyncedSchedules.length + unsyncedSessions.length
 
-    console.log(`🔍 DEBUG collectQueueSize: attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}, total: ${totalPending}`)
+    logger.debug(`🔍 DEBUG collectQueueSize: attempts: ${unsyncedAttempts.length}, mastery: ${unsyncedMastery.length}, schedules: ${unsyncedSchedules.length}, sessions: ${unsyncedSessions.length}, total: ${totalPending}`)
 
     return totalPending
   } catch (error) {

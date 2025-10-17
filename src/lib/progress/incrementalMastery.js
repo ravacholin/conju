@@ -5,6 +5,10 @@ import { getAttemptsByItem } from './database.js'
 import { getVerbDifficulty } from './mastery.js'
 import { calculateRecencyWeight } from './helpers.js'
 import { PROGRESS_CONFIG } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:incrementalMastery')
+
 
 /**
  * Cache de mastery scores para evitar recálculos O(N²)
@@ -233,7 +237,7 @@ class IncrementalMasteryCache {
       return updatedResult
 
     } catch (error) {
-      console.warn(`Error en actualización incremental para ${itemId}:`, error)
+      logger.warn(`Error en actualización incremental para ${itemId}:`, error)
       // Fallback a cálculo completo
       const fullResult = await this.calculateMasteryWithDetails(itemId, verb)
       return {
@@ -254,7 +258,7 @@ class IncrementalMasteryCache {
       const attempts = await getAttemptsByItem(itemId) || []
       return attempts.length
     } catch (error) {
-      console.warn(`Error obteniendo recuento de intentos para ${itemId}:`, error)
+      logger.warn(`Error obteniendo recuento de intentos para ${itemId}:`, error)
       return 0
     }
   }

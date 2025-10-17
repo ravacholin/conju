@@ -2,6 +2,10 @@
 
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { getUserSettings } from './userManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:goals')
+
 
 // Configuración de objetivos predeterminados
 const DEFAULT_WEEKLY_GOALS = {
@@ -28,7 +32,7 @@ export async function getWeeklyGoals(userId, signal) {
     // Devolver objetivos guardados o usar predeterminados
     return userSettings.weeklyGoals || DEFAULT_WEEKLY_GOALS
   } catch (error) {
-    console.error('Error al obtener objetivos semanales:', error)
+    logger.error('Error al obtener objetivos semanales:', error)
     return DEFAULT_WEEKLY_GOALS
   }
 }
@@ -79,7 +83,7 @@ export async function checkWeeklyProgress(userId, signal) {
       goals
     }
   } catch (error) {
-    console.error('Error al verificar progreso semanal:', error)
+    logger.error('Error al verificar progreso semanal:', error)
     return {}
   }
 }
@@ -119,7 +123,7 @@ export async function getRecommendations(userId) {
     
     return recommendations
   } catch (error) {
-    console.error('Error al generar recomendaciones:', error)
+    logger.error('Error al generar recomendaciones:', error)
     return []
   }
 }
@@ -141,9 +145,9 @@ export async function setCustomWeeklyGoals(userId, customGoals) {
       store[key] = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS, ...customGoals } }
       window.localStorage.setItem('progress-user-settings', JSON.stringify(store))
     }
-    console.log(`✅ Objetivos personalizados establecidos para usuario ${userId}:`, customGoals)
+    logger.debug(`✅ Objetivos personalizados establecidos para usuario ${userId}:`, customGoals)
   } catch (error) {
-    console.error('Error al establecer objetivos personalizados:', error)
+    logger.error('Error al establecer objetivos personalizados:', error)
     throw error
   }
 }
@@ -163,9 +167,9 @@ export async function resetWeeklyGoals(userId) {
       store[key] = { ...base, weeklyGoals: { ...DEFAULT_WEEKLY_GOALS } }
       window.localStorage.setItem('progress-user-settings', JSON.stringify(store))
     }
-    console.log(`✅ Objetivos semanales reiniciados para usuario ${userId}`)
+    logger.debug(`✅ Objetivos semanales reiniciados para usuario ${userId}`)
   } catch (error) {
-    console.error('Error al reiniciar objetivos semanales:', error)
+    logger.error('Error al reiniciar objetivos semanales:', error)
     throw error
   }
 }
@@ -201,7 +205,7 @@ export async function checkGoalsCompletion(userId) {
       goals
     }
   } catch (error) {
-    console.error('Error al verificar cumplimiento de objetivos:', error)
+    logger.error('Error al verificar cumplimiento de objetivos:', error)
     return {
       completed: {},
       completionPercentage: 0,
@@ -236,9 +240,9 @@ export async function sendProgressNotifications(userId, _progress) {
     // En una implementación completa, esto enviaría notificaciones
     // al usuario sobre su progreso
     
-    console.log(`🔔 Notificaciones de progreso enviadas a usuario ${userId}`)
+    logger.debug(`🔔 Notificaciones de progreso enviadas a usuario ${userId}`)
   } catch (error) {
-    console.error('Error al enviar notificaciones de progreso:', error)
+    logger.error('Error al enviar notificaciones de progreso:', error)
     throw error
   }
 }
@@ -291,7 +295,7 @@ export async function calculateRewards(userId, completion) {
       totalPoints: rewards.reduce((sum, reward) => sum + reward.points, 0)
     }
   } catch (error) {
-    console.error('Error al calcular recompensas:', error)
+    logger.error('Error al calcular recompensas:', error)
     return {
       rewards: [],
       totalPoints: 0

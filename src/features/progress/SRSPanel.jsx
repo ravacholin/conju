@@ -10,6 +10,10 @@ import ProgressJourney from '../../components/progress/ProgressJourney.jsx'
 import { SRSHints, GamificationHints, JourneyHints } from '../../components/mobile/TouchHints.jsx'
 import NotificationSettings from '../../components/notifications/NotificationSettings.jsx'
 import './srs-panel.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:SRSPanel')
+
 
 /**
  * Formatea mood/tense a nombres amigables
@@ -40,7 +44,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
       const basicStats = await getSRSStats(uid, now)
       setStats(basicStats)
     } catch (error) {
-      console.error('Error loading SRS data:', error)
+      logger.error('Error loading SRS data:', error)
     }
   }, [])
 
@@ -164,7 +168,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
         }))
       }
     } catch (error) {
-      console.error('Error starting review session:', error)
+      logger.error('Error starting review session:', error)
     }
   }
 

@@ -2,8 +2,11 @@
 // Analiza patrones de respuesta para construir perfiles de confianza granulares
 
 import { PROGRESS_CONFIG } from './config.js';
-import { logger } from './logger.js';
 import { memoryManager, registerInterval } from './memoryManager.js';
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:confidenceEngine')
+
 
 /**
  * Sistema de análisis de confianza basado en múltiples dimensiones
@@ -650,7 +653,7 @@ export class ConfidenceEngine {
         }
       }
     } catch (error) {
-      console.warn('Failed to load confidence data:', error)
+      logger.warn('Failed to load confidence data:', error)
     }
   }
 
@@ -666,7 +669,7 @@ export class ConfidenceEngine {
       }
       localStorage.setItem('confidence-engine-data', JSON.stringify(data))
     } catch (error) {
-      console.warn('Failed to save confidence data:', error)
+      logger.warn('Failed to save confidence data:', error)
     }
   }
 

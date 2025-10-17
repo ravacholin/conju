@@ -6,6 +6,10 @@ import { calculateRecencyWeight } from './helpers.js'
 // import { applyPenalties } from './penalties.js'
 // import { getIrregularTenses, getVerbIrregularityStats } from '../utils/irregularityUtils.js'
 import { getVerbIrregularityStats } from '../utils/irregularityUtils.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:mastery')
+
 
 /**
  * Obtiene la dificultad base de un verbo
@@ -311,7 +315,7 @@ export async function getMasteryScore(userId, { mood, tense, verbId }) {
     // para esta combinación mood/tense
     return 50 // Valor neutral por defecto
   } catch (error) {
-    console.error('Error al obtener mastery score:', error)
+    logger.error('Error al obtener mastery score:', error)
     return null
   }
 }

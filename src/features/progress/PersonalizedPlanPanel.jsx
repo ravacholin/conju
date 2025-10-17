@@ -10,6 +10,10 @@ import {
   invalidateActivePlan
 } from '../../lib/progress/planTracking.js'
 import './personalized-plan.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:PersonalizedPlanPanel')
+
 
 function formatWeek(week) {
   if (!week) return null
@@ -95,7 +99,7 @@ export default function PersonalizedPlanPanel({ plan, onRefresh, onNavigateToDri
   // Lanzar sesión
   const handleLaunchSession = useCallback((session) => {
     if (!session.drillConfig) {
-      console.warn('Session does not have drillConfig:', session)
+      logger.warn('Session does not have drillConfig:', session)
       return
     }
 

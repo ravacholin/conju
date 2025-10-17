@@ -4,6 +4,10 @@ import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { formatMoodTense } from '../utils/verbLabels.js'
 // import { getCurrentUserId, getUserSettings } from './userManager.js'
 import { getUserSettings } from './userManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:realTimeAnalytics')
+
 
 /**
  * Obtiene estadísticas precisas del usuario basadas en datos reales
@@ -154,7 +158,7 @@ export async function getRealUserStats(userId, signal) {
       focusMinutesToday
     }
   } catch (error) {
-    console.error('Error al obtener estadísticas reales del usuario:', error)
+    logger.error('Error al obtener estadísticas reales del usuario:', error)
     if (signal?.aborted) {
       throw new Error('Operation was cancelled')
     }
@@ -277,7 +281,7 @@ export async function getRealCompetencyRadarData(userId) {
       responseSpeed
     }
   } catch (error) {
-    console.error('Error al obtener datos del radar de competencias:', error)
+    logger.error('Error al obtener datos del radar de competencias:', error)
     return {
       moodMastery: 0,
       tenseControl: 0,
@@ -405,7 +409,7 @@ export async function getIntelligentRecommendations(userId, signal) {
 
     return recommendations.slice(0, 4) // Limitar a 4 recomendaciones máximo
   } catch (error) {
-    console.error('Error al generar recomendaciones inteligentes:', error)
+    logger.error('Error al generar recomendaciones inteligentes:', error)
     return [
       {
         id: 'general-practice',

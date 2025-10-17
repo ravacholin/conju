@@ -1,3 +1,7 @@
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:levelVerbFiltering')
+
 // Sistema de filtrado de verbos por nivel MCER
 // Algunos verbos irregulares solo aparecen en niveles avanzados
 
@@ -277,17 +281,17 @@ export function debugVerbFilteringForLevel(level) {
   const stats = getFilteringStats(level)
   
   console.group(`🎯 VERB FILTERING STATS - Nivel ${level}`)
-  console.log('📊 Total verbos clasificados:', stats.totalVerbsClassified)
-  console.log('✅ Verbos permitidos:', stats.allowedVerbs.total)
-  console.log('  - A1/A2:', stats.allowedVerbs.a1a2)
-  console.log('  - B1:', stats.allowedVerbs.b1) 
-  console.log('  - B2:', stats.allowedVerbs.b2)
-  console.log('  - C1+:', stats.allowedVerbs.c1)
-  console.log('🚫 Verbos filtrados:', stats.filteredVerbs.total)
+  logger.debug('📊 Total verbos clasificados:', stats.totalVerbsClassified)
+  logger.debug('✅ Verbos permitidos:', stats.allowedVerbs.total)
+  logger.debug('  - A1/A2:', stats.allowedVerbs.a1a2)
+  logger.debug('  - B1:', stats.allowedVerbs.b1) 
+  logger.debug('  - B2:', stats.allowedVerbs.b2)
+  logger.debug('  - C1+:', stats.allowedVerbs.c1)
+  logger.debug('🚫 Verbos filtrados:', stats.filteredVerbs.total)
   if (stats.filteredVerbs.examples.length > 0) {
-    console.log('  Ejemplos:', stats.filteredVerbs.examples.join(', '))
+    logger.debug('  Ejemplos:', stats.filteredVerbs.examples.join(', '))
   }
-  console.log('🎚️ Filtrado activo:', stats.filteringActive)
+  logger.debug('🎚️ Filtrado activo:', stats.filteringActive)
   console.groupEnd()
   
   return stats

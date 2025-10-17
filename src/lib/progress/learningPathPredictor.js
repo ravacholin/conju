@@ -7,7 +7,6 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { flowDetector } from './flowStateDetection.js'
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { getCurrentUserId } from './userManager.js'
-import { logger } from './logger.js'
 
 /**
  * Predictor de rutas de aprendizaje basado en análisis de patrones

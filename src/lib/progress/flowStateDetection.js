@@ -2,7 +2,6 @@
 // Algoritmo inteligente para detectar cuándo el usuario está "en la zona"
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger, logFlow } from './logger.js'
 import { memoryManager } from './memoryManager.js'
 
 /**

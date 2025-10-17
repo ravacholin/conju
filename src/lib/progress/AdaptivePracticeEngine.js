@@ -8,6 +8,10 @@ import { validateMoodTenseAvailability } from '../core/generator.js'
 import { useSettings } from '../../state/settings.js'
 import { buildFormsForRegion } from '../core/eligibility.js'
 import { formatMoodTense } from '../utils/verbLabels.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:AdaptivePracticeEngine')
+
 
 // Use centralized formatter for consistency
 
@@ -81,7 +85,7 @@ export class AdaptivePracticeEngine {
         .sort((a, b) => b.priority - a.priority)
         .slice(0, maxRecommendations)
     } catch (error) {
-      console.error('Error generando recomendaciones adaptativas:', error)
+      logger.error('Error generando recomendaciones adaptativas:', error)
       return []
     }
   }
@@ -356,7 +360,7 @@ export class AdaptivePracticeEngine {
         }))
       
     } catch (error) {
-      console.error('Error getting curriculum-driven combinations, falling back to basic:', error)
+      logger.error('Error getting curriculum-driven combinations, falling back to basic:', error)
       
       // Fallback to basic combinations for the level
       return this.getFallbackCombinations(cefrLevel)
@@ -501,7 +505,7 @@ export class AdaptivePracticeEngine {
       }
       
     } catch (error) {
-      console.error('Error evaluating difficulty, using fallback:', error)
+      logger.error('Error evaluating difficulty, using fallback:', error)
       
       // Fallback to basic difficulty evaluation
       const basicDifficulty = this.getBasicDifficulty(mood, tense, userStats)
@@ -581,7 +585,7 @@ export class AdaptivePracticeEngine {
 
       return session
     } catch (error) {
-      console.error('Error generando sesión personalizada:', error)
+      logger.error('Error generando sesión personalizada:', error)
       return {
         duration: sessionDuration,
         activities: [],
@@ -628,7 +632,7 @@ export class AdaptivePracticeEngine {
 
       const effectiveSettings = regionAwareSettings
       
-      console.log(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
+      logger.debug(`🔍 VALIDATION - Checking ${recommendations.length} recommendations`)
       
       const validRecommendations = []
       
@@ -636,7 +640,7 @@ export class AdaptivePracticeEngine {
         const { mood, tense } = rec.targetCombination || {}
         
         if (!mood || !tense) {
-          console.log(`❌ VALIDATION - Skipping recommendation without mood/tense:`, rec.title)
+          logger.debug(`❌ VALIDATION - Skipping recommendation without mood/tense:`, rec.title)
           continue
         }
         
@@ -645,23 +649,23 @@ export class AdaptivePracticeEngine {
         
         if (isValid) {
           validRecommendations.push(rec)
-          console.log(`✅ VALIDATION - Valid: ${mood}/${tense}`)
+          logger.debug(`✅ VALIDATION - Valid: ${mood}/${tense}`)
         } else {
-          console.log(`❌ VALIDATION - Invalid: ${mood}/${tense} - no forms available`)
+          logger.debug(`❌ VALIDATION - Invalid: ${mood}/${tense} - no forms available`)
         }
       }
       
       // If we filtered out all recommendations, provide safe fallbacks
       if (validRecommendations.length === 0 && recommendations.length > 0) {
-        console.log('⚠️  VALIDATION - All recommendations were invalid, adding fallbacks')
+        logger.debug('⚠️  VALIDATION - All recommendations were invalid, adding fallbacks')
         const fallbacks = await this.generateFallbackRecommendations(effectiveSettings, allForms)
         validRecommendations.push(...fallbacks)
       }
       
-      console.log(`🔍 VALIDATION - Filtered to ${validRecommendations.length} valid recommendations`)
+      logger.debug(`🔍 VALIDATION - Filtered to ${validRecommendations.length} valid recommendations`)
       return validRecommendations
     } catch (error) {
-      console.error('Error validating recommendations:', error)
+      logger.error('Error validating recommendations:', error)
       // Return original recommendations on error to avoid breaking the system
       return recommendations
     }
@@ -733,7 +737,7 @@ export async function needsMorePractice(mood, tense) {
     const record = masteryRecords.find(r => r.mood === mood && r.tense === tense)
     return !record || record.score < 70
   } catch (error) {
-    console.error('Error evaluando necesidad de práctica:', error)
+    logger.error('Error evaluando necesidad de práctica:', error)
     return true
   }
 }
@@ -749,8 +753,8 @@ export async function getNextRecommendedItem(userLevel = null) {
     const normalizedLevel = validateAndNormalizeLevel(userLevel)
 
     if (!normalizedLevel) {
-      console.warn('getNextRecommendedItem: No se proporcionó un nivel válido, usando B1 como fallback')
-      console.warn('getNextRecommendedItem: userLevel recibido:', userLevel)
+      logger.warn('getNextRecommendedItem: No se proporcionó un nivel válido, usando B1 como fallback')
+      logger.warn('getNextRecommendedItem: userLevel recibido:', userLevel)
     }
 
     const engine = new AdaptivePracticeEngine()
@@ -761,7 +765,7 @@ export async function getNextRecommendedItem(userLevel = null) {
 
     return recommendations.length > 0 ? recommendations[0] : null
   } catch (error) {
-    console.error('Error obteniendo próximo elemento recomendado:', error)
+    logger.error('Error obteniendo próximo elemento recomendado:', error)
     return null
   }
 }

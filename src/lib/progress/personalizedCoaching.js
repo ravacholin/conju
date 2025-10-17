@@ -5,6 +5,10 @@ import { getMasteryByUser, getRecentAttempts } from './database.js'
 import { getCurrentUserId } from './userManager.js'
 import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:personalizedCoaching')
+
 
 /**
  * Personalized coaching engine that provides intelligent learning guidance
@@ -64,7 +68,7 @@ export class PersonalizedCoach {
       return analysis
 
     } catch (error) {
-      console.error('Error generating coaching analysis:', error)
+      logger.error('Error generating coaching analysis:', error)
       return this.getFallbackAnalysis(userLevel)
     }
   }
@@ -674,17 +678,17 @@ export async function checkLevelAdvancementReadiness(userLevel = 'B1') {
  * Debug coaching analysis
  */
 export async function debugCoachingAnalysis(userLevel = 'B1') {
-  console.log(`\n=== COACHING ANALYSIS DEBUG FOR ${userLevel} ===`)
+  logger.debug(`\n=== COACHING ANALYSIS DEBUG FOR ${userLevel} ===`)
   const analysis = await personalizedCoach.getCoachingAnalysis(userLevel)
   
-  console.log('Level Progression:', analysis.levelProgression)
-  console.log('Recommendations:', analysis.recommendations?.slice(0, 3))
-  console.log('Strengths/Weaknesses:', {
+  logger.debug('Level Progression:', analysis.levelProgression)
+  logger.debug('Recommendations:', analysis.recommendations?.slice(0, 3))
+  logger.debug('Strengths/Weaknesses:', {
     strengths: analysis.strengthsWeaknesses?.strengths?.slice(0, 2),
     weaknesses: analysis.strengthsWeaknesses?.weaknesses?.slice(0, 2)
   })
-  console.log('Next Steps:', analysis.nextSteps)
-  console.log('=== END COACHING DEBUG ===\n')
+  logger.debug('Next Steps:', analysis.nextSteps)
+  logger.debug('=== END COACHING DEBUG ===\n')
   
   return analysis
 }

@@ -1,5 +1,9 @@
 import { LEVELS } from '../data/levels.js';
 import gates from '../../data/curriculum.json';
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:curriculumGate')
+
 
 // Map curriculum mood keys (which may use Spanish labels) to the
 // canonical internal mood tokens used in forms and across the app.
@@ -87,7 +91,7 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
   // Debug logging for regional filtering issues
   if (import.meta.env.DEV && region && region !== 'global') {
     const allowedPersonsArray = Array.from(allowedPersons);
-    console.log(`🌍 Regional filtering active:`, {
+    logger.debug(`🌍 Regional filtering active:`, {
       region,
       level,
       allowedPersons: allowedPersonsArray,

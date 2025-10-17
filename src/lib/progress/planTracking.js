@@ -2,7 +2,6 @@
 // Gestiona el progreso de sesiones dentro de planes generados
 
 import { getCurrentUserId } from './userManager.js'
-import { logger } from './logger.js'
 import { saveToDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 

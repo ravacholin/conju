@@ -3,6 +3,10 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './ErrorAnalysisForensics.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ErrorAnalysisForensics')
+
 
 export default function ErrorAnalysisForensics({ onStartPractice }) {
   const [selectedError, setSelectedError] = useState(null)
@@ -28,7 +32,7 @@ export default function ErrorAnalysisForensics({ onStartPractice }) {
         setSelectedError(processedData.errorTypes[0])
       }
     } catch (error) {
-      console.error('Error loading forensic data:', error)
+      logger.error('Error loading forensic data:', error)
     } finally {
       setLoading(false)
     }

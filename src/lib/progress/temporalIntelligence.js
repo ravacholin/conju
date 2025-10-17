@@ -2,9 +2,12 @@
 // Optimiza el aprendizaje basado en patrones temporales y ritmos biológicos
 
 import { PROGRESS_CONFIG } from './config.js'
-import { logger } from './logger.js'
 // import { logTemporal, logError, logWarn } from './logger.js'
 import { memoryManager, registerInterval } from './memoryManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:temporalIntelligence')
+
 
 /**
  * Inteligencia Temporal para Optimización del Aprendizaje
@@ -739,7 +742,7 @@ export class TemporalIntelligence {
         }
       }
     } catch (error) {
-      console.warn('Failed to load temporal data:', error)
+      logger.warn('Failed to load temporal data:', error)
     }
   }
 
@@ -757,7 +760,7 @@ export class TemporalIntelligence {
       }
       localStorage.setItem('temporal-intelligence-data', JSON.stringify(data))
     } catch (error) {
-      console.warn('Failed to save temporal data:', error)
+      logger.warn('Failed to save temporal data:', error)
     }
   }
 

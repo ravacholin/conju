@@ -11,6 +11,10 @@ import SessionProgressHUD from './SessionProgressHUD.jsx';
 import { useSpeech } from './useSpeech';
 import { useResistanceTimer } from './useResistanceTimer';
 import './session-progress-hud.css';
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:Drill')
+
 
 export default function Drill({
   currentItem,
@@ -160,7 +164,7 @@ export default function Drill({
     try {
       await handleResult(extendedResult);
     } catch (error) {
-      console.error('Error tracking progress for attempt:', error);
+      logger.error('Error tracking progress for attempt:', error);
     }
     
     setIsSubmitting(false);
@@ -212,7 +216,7 @@ export default function Drill({
       try {
         await handleResult(resultObj);
       } catch (error) {
-        console.error('Error tracking progress for double mode attempt:', error);
+        logger.error('Error tracking progress for double mode attempt:', error);
       }
     } finally {
       setIsSubmitting(false);
@@ -480,7 +484,7 @@ export default function Drill({
             try {
               await handleResult(reverseResult)
             } catch (err) {
-              console.error('Error tracking progress for reverse mode attempt:', err)
+              logger.error('Error tracking progress for reverse mode attempt:', err)
             }
           }}
         />

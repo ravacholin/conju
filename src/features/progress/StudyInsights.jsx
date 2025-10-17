@@ -2,6 +2,10 @@ import React, { useState, useMemo, useCallback } from 'react'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { generatePersonalizedStudyPlan } from '../../lib/progress/studyPlans.js'
 import PersonalizedPlanPanel from './PersonalizedPlanPanel.jsx'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:StudyInsights')
+
 
 function StudyPlanSection({ plan, onGeneratePlan, onNavigateToDrill, generating, error }) {
   if (!plan) {
@@ -102,7 +106,7 @@ export default function StudyInsights({ userStats, heatMapData, studyPlan, onNav
       setGeneratingPlan(true)
       await generatePersonalizedStudyPlan(null, { forceRefresh: true })
     } catch (error) {
-      console.error('No se pudo generar el plan de estudio', error)
+      logger.error('No se pudo generar el plan de estudio', error)
       setPlanError('No pudimos generar el plan. Intentá nuevamente en unos segundos.')
     } finally {
       setGeneratingPlan(false)

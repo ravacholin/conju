@@ -2,6 +2,10 @@
 // Comprehensive tests for the enhanced mixed practice algorithms
 
 import { varietyEngine } from './advancedVarietyEngine.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:advancedVarietyTesting')
+
 // Advanced Variety Testing - verbs not currently used directly
 
 /**
@@ -43,13 +47,13 @@ function generateTestForms() {
  * Test anti-repetition system
  */
 export function testAntiRepetition() {
-  console.log('\n🔬 === ANTI-REPETITION SYSTEM TEST ===')
+  logger.debug('\n🔬 === ANTI-REPETITION SYSTEM TEST ===')
   
   varietyEngine.resetSession()
   const testForms = generateTestForms()
   const mockHistory = {}
   
-  console.log('Testing 20 selections for repetition patterns...')
+  logger.debug('Testing 20 selections for repetition patterns...')
   
   const selections = []
   const verbCounts = new Map()
@@ -69,25 +73,25 @@ export function testAntiRepetition() {
     }
   }
   
-  console.log('\nVerb distribution:')
+  logger.debug('\nVerb distribution:')
   Array.from(verbCounts.entries())
     .sort((a, b) => b[1] - a[1])
     .forEach(([verb, count]) => {
-      console.log(`  ${verb}: ${count} times (${Math.round(count/20*100)}%)`)
+      logger.debug(`  ${verb}: ${count} times (${Math.round(count/20*100)}%)`)
     })
   
-  console.log('\nTense distribution:')
+  logger.debug('\nTense distribution:')
   Array.from(tenseCounts.entries())
     .sort((a, b) => b[1] - a[1])
     .forEach(([tense, count]) => {
-      console.log(`  ${tense}: ${count} times (${Math.round(count/20*100)}%)`)
+      logger.debug(`  ${tense}: ${count} times (${Math.round(count/20*100)}%)`)
     })
   
-  console.log('\nPerson distribution:')
+  logger.debug('\nPerson distribution:')
   Array.from(personCounts.entries())
     .sort((a, b) => b[1] - a[1])
     .forEach(([person, count]) => {
-      console.log(`  ${person}: ${count} times (${Math.round(count/20*100)}%)`)
+      logger.debug(`  ${person}: ${count} times (${Math.round(count/20*100)}%)`)
     })
   
   // Check for good variety (no single item should dominate)
@@ -95,7 +99,7 @@ export function testAntiRepetition() {
   const maxTenseCount = Math.max(...tenseCounts.values())
   const hasGoodVariety = maxVerbCount <= 4 && maxTenseCount <= 5 // Allow some repetition but not dominance
   
-  console.log(`\n✅ Variety Assessment: ${hasGoodVariety ? 'GOOD' : 'POOR'} (max verb: ${maxVerbCount}, max tense: ${maxTenseCount})`)
+  logger.debug(`\n✅ Variety Assessment: ${hasGoodVariety ? 'GOOD' : 'POOR'} (max verb: ${maxVerbCount}, max tense: ${maxTenseCount})`)
   
   return {
     success: hasGoodVariety,
@@ -111,14 +115,14 @@ export function testAntiRepetition() {
  * Test level-specific priorities
  */
 export function testLevelSpecificPriorities() {
-  console.log('\n🎯 === LEVEL-SPECIFIC PRIORITIES TEST ===')
+  logger.debug('\n🎯 === LEVEL-SPECIFIC PRIORITIES TEST ===')
   
   const testForms = generateTestForms()
   const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
   const results = {}
   
   levels.forEach(level => {
-    console.log(`\nTesting ${level} level priorities...`)
+    logger.debug(`\nTesting ${level} level priorities...`)
     varietyEngine.resetSession()
     
     const levelSelections = []
@@ -152,8 +156,8 @@ export function testLevelSpecificPriorities() {
       .slice(0, 3)
       .map(([tense, count]) => `${tense}(${count})`)
     
-    console.log(`  Top verbs: ${topVerbs.join(', ')}`)
-    console.log(`  Top tenses: ${topTenses.join(', ')}`)
+    logger.debug(`  Top verbs: ${topVerbs.join(', ')}`)
+    logger.debug(`  Top tenses: ${topTenses.join(', ')}`)
     
     results[level] = {
       selections: levelSelections.length,
@@ -169,10 +173,10 @@ export function testLevelSpecificPriorities() {
   const b1HasSubjunctive = results.B1?.topTenses.some(t => t.includes('subjunctive'))
   const c1HasAdvanced = results.C1?.uniqueTenses >= results.A1?.uniqueTenses
   
-  console.log(`\n✅ Level Differentiation:`)
-  console.log(`   A1 focuses on basics: ${a1HasBasics}`)
-  console.log(`   B1 includes subjunctive: ${b1HasSubjunctive}`) 
-  console.log(`   C1 shows variety: ${c1HasAdvanced}`)
+  logger.debug(`\n✅ Level Differentiation:`)
+  logger.debug(`   A1 focuses on basics: ${a1HasBasics}`)
+  logger.debug(`   B1 includes subjunctive: ${b1HasSubjunctive}`) 
+  logger.debug(`   C1 shows variety: ${c1HasAdvanced}`)
   
   return {
     success: a1HasBasics && b1HasSubjunctive && c1HasAdvanced,
@@ -187,13 +191,13 @@ export function testLevelSpecificPriorities() {
  * Test progressive difficulty within session
  */
 export function testProgressiveDifficulty() {
-  console.log('\n📈 === PROGRESSIVE DIFFICULTY TEST ===')
+  logger.debug('\n📈 === PROGRESSIVE DIFFICULTY TEST ===')
   
   varietyEngine.resetSession()
   const testForms = generateTestForms()
   const mockHistory = {}
   
-  console.log('Testing difficulty progression over 30 selections...')
+  logger.debug('Testing difficulty progression over 30 selections...')
   
   const selections = []
   const difficultyProgression = []
@@ -222,12 +226,12 @@ export function testProgressiveDifficulty() {
   
   const showsProgression = avgLate > avgEarly
   
-  console.log(`Early session avg difficulty: ${avgEarly.toFixed(2)}`)
-  console.log(`Late session avg difficulty: ${avgLate.toFixed(2)}`)
-  console.log(`Progressive difficulty: ${showsProgression ? 'YES' : 'NO'}`)
+  logger.debug(`Early session avg difficulty: ${avgEarly.toFixed(2)}`)
+  logger.debug(`Late session avg difficulty: ${avgLate.toFixed(2)}`)
+  logger.debug(`Progressive difficulty: ${showsProgression ? 'YES' : 'NO'}`)
   
   const sessionStats = varietyEngine.getSessionStats()
-  console.log('Session stats:', sessionStats)
+  logger.debug('Session stats:', sessionStats)
   
   return {
     success: showsProgression,
@@ -242,7 +246,7 @@ export function testProgressiveDifficulty() {
  * Test semantic category diversity
  */
 export function testSemanticDiversity() {
-  console.log('\n🌈 === SEMANTIC DIVERSITY TEST ===')
+  logger.debug('\n🌈 === SEMANTIC DIVERSITY TEST ===')
   
   varietyEngine.resetSession()
   
@@ -272,7 +276,7 @@ export function testSemanticDiversity() {
     })
   })
   
-  console.log('Testing semantic diversity over 24 selections...')
+  logger.debug('Testing semantic diversity over 24 selections...')
   
   const selections = []
   const mockHistory = {}
@@ -299,17 +303,17 @@ export function testSemanticDiversity() {
     semanticCounts.set(category, (semanticCounts.get(category) || 0) + 1)
   })
   
-  console.log('\nSemantic category distribution:')
+  logger.debug('\nSemantic category distribution:')
   Array.from(semanticCounts.entries())
     .sort((a, b) => b[1] - a[1])
     .forEach(([category, count]) => {
-      console.log(`  ${category}: ${count} selections (${Math.round(count/selections.length*100)}%)`)
+      logger.debug(`  ${category}: ${count} selections (${Math.round(count/selections.length*100)}%)`)
     })
   
   const categoriesUsed = semanticCounts.size
   const hasGoodDiversity = categoriesUsed >= 4 // Should use at least 4 different categories
   
-  console.log(`\n✅ Semantic diversity: ${hasGoodDiversity ? 'GOOD' : 'POOR'} (${categoriesUsed}/6 categories)`)
+  logger.debug(`\n✅ Semantic diversity: ${hasGoodDiversity ? 'GOOD' : 'POOR'} (${categoriesUsed}/6 categories)`)
   
   return {
     success: hasGoodDiversity,
@@ -323,19 +327,19 @@ export function testSemanticDiversity() {
  * Comprehensive variety engine test suite
  */
 export function runAdvancedVarietyTests() {
-  console.log('\n🚀 === ADVANCED VARIETY ENGINE TEST SUITE ===')
-  console.log('Testing the enhanced mixed practice algorithms\n')
+  logger.debug('\n🚀 === ADVANCED VARIETY ENGINE TEST SUITE ===')
+  logger.debug('Testing the enhanced mixed practice algorithms\n')
   
   const antiRepetitionTest = testAntiRepetition()
   const levelPrioritiesTest = testLevelSpecificPriorities()
   const progressiveDifficultyTest = testProgressiveDifficulty()
   const semanticDiversityTest = testSemanticDiversity()
   
-  console.log('\n📊 === COMPREHENSIVE TEST RESULTS ===')
-  console.log(`Anti-Repetition System: ${antiRepetitionTest.success ? '✅ PASSED' : '❌ FAILED'}`)
-  console.log(`Level-Specific Priorities: ${levelPrioritiesTest.success ? '✅ PASSED' : '❌ FAILED'}`)
-  console.log(`Progressive Difficulty: ${progressiveDifficultyTest.success ? '✅ PASSED' : '❌ FAILED'}`)
-  console.log(`Semantic Diversity: ${semanticDiversityTest.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug('\n📊 === COMPREHENSIVE TEST RESULTS ===')
+  logger.debug(`Anti-Repetition System: ${antiRepetitionTest.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug(`Level-Specific Priorities: ${levelPrioritiesTest.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug(`Progressive Difficulty: ${progressiveDifficultyTest.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug(`Semantic Diversity: ${semanticDiversityTest.success ? '✅ PASSED' : '❌ FAILED'}`)
   
   const overallSuccess = antiRepetitionTest.success && 
                          levelPrioritiesTest.success && 
@@ -343,14 +347,14 @@ export function runAdvancedVarietyTests() {
                          semanticDiversityTest.success
   
   if (overallSuccess) {
-    console.log('\n🎉 ALL ADVANCED VARIETY TESTS PASSED!')
-    console.log('✨ The enhanced mixed practice algorithm is working correctly:')
-    console.log('   • Effective anti-repetition prevents boring patterns')
-    console.log('   • Level-specific priorities ensure appropriate content')
-    console.log('   • Progressive difficulty keeps sessions challenging')
-    console.log('   • Semantic diversity provides engaging variety')
+    logger.debug('\n🎉 ALL ADVANCED VARIETY TESTS PASSED!')
+    logger.debug('✨ The enhanced mixed practice algorithm is working correctly:')
+    logger.debug('   • Effective anti-repetition prevents boring patterns')
+    logger.debug('   • Level-specific priorities ensure appropriate content')
+    logger.debug('   • Progressive difficulty keeps sessions challenging')
+    logger.debug('   • Semantic diversity provides engaging variety')
   } else {
-    console.log('\n⚠️  Some advanced variety tests failed. Check the details above.')
+    logger.debug('\n⚠️  Some advanced variety tests failed. Check the details above.')
   }
   
   return {
@@ -372,7 +376,7 @@ if (typeof window !== 'undefined') {
     testDiversity: testSemanticDiversity
   }
   
-  console.log(`
+  logger.debug(`
 🚀 Advanced Variety Testing Available!
 
 Run in browser console:

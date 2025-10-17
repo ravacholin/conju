@@ -2,6 +2,10 @@
 // Eliminates blocking initialization on app startup
 
 import { initProgressSystem } from './index.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:lazyInit')
+
 
 let initPromise = null
 let isInitialized = false
@@ -21,13 +25,13 @@ export async function initProgressSystemLazy() {
 
   initPromise = (async () => {
     try {
-      console.log('🔄 Initializing progress system lazily...')
+      logger.debug('🔄 Initializing progress system lazily...')
       const userId = await initProgressSystem()
       isInitialized = true
-      console.log('✅ Progress system initialized lazily for user:', userId)
+      logger.debug('✅ Progress system initialized lazily for user:', userId)
       return userId
     } catch (error) {
-      console.error('❌ Lazy progress system initialization failed:', error)
+      logger.error('❌ Lazy progress system initialization failed:', error)
       initPromise = null // Reset so we can retry
       throw error
     }

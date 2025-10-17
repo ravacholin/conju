@@ -3,6 +3,10 @@
 
 import { saveToDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:dataRestore')
+
 
 const STORE_MAP = {
   attempts: STORAGE_CONFIG.STORES.ATTEMPTS,
@@ -19,7 +23,7 @@ async function resolveUserId(userIdOverride = null) {
       return module.getCurrentUserId() || null
     }
   } catch (error) {
-    console.warn('⚠️ No se pudo obtener el userId actual:', error?.message || error)
+    logger.warn('⚠️ No se pudo obtener el userId actual:', error?.message || error)
   }
 
   return null
@@ -39,7 +43,7 @@ export async function restoreProgressData(importData, options = {}) {
       validateData = true 
     } = options
 
-    console.log('📥 Iniciando restauración de datos de progreso...')
+    logger.debug('📥 Iniciando restauración de datos de progreso...')
 
     // Validar formato de datos
     if (validateData && !isValidExportFormat(importData)) {
@@ -62,7 +66,7 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar intentos
     if (data.attempts?.length) {
-      console.log(`📝 Restaurando ${data.attempts.length} intentos...`)
+      logger.debug(`📝 Restaurando ${data.attempts.length} intentos...`)
       const attemptsResult = await restoreDataType('attempts', data.attempts, targetUserId, overwriteExisting)
       results.attempts = attemptsResult
       results.totalProcessed += attemptsResult.imported
@@ -70,7 +74,7 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar registros de mastery
     if (data.mastery?.length) {
-      console.log(`🎯 Restaurando ${data.mastery.length} registros de dominio...`)
+      logger.debug(`🎯 Restaurando ${data.mastery.length} registros de dominio...`)
       const masteryResult = await restoreDataType('mastery', data.mastery, targetUserId, overwriteExisting)
       results.mastery = masteryResult
       results.totalProcessed += masteryResult.imported
@@ -78,16 +82,16 @@ export async function restoreProgressData(importData, options = {}) {
 
     // Restaurar horarios
     if (data.schedules?.length) {
-      console.log(`⏰ Restaurando ${data.schedules.length} horarios...`)
+      logger.debug(`⏰ Restaurando ${data.schedules.length} horarios...`)
       const schedulesResult = await restoreDataType('schedules', data.schedules, targetUserId, overwriteExisting)
       results.schedules = schedulesResult
       results.totalProcessed += schedulesResult.imported
     }
 
-    console.log(`✅ Restauración completada: ${results.totalProcessed} registros importados`)
+    logger.debug(`✅ Restauración completada: ${results.totalProcessed} registros importados`)
     return results
   } catch (error) {
-    console.error('❌ Error al restaurar datos de progreso:', error)
+    logger.error('❌ Error al restaurar datos de progreso:', error)
     throw error
   }
 }
@@ -105,7 +109,7 @@ async function restoreDataType(dataType, records, userId, overwriteExisting) {
   const storeName = STORE_MAP[dataType]
 
   if (!storeName) {
-    console.warn(`⚠️ Tipo de datos no soportado para restauración: ${dataType}`)
+    logger.warn(`⚠️ Tipo de datos no soportado para restauración: ${dataType}`)
     return result
   }
   
@@ -128,7 +132,7 @@ async function restoreDataType(dataType, records, userId, overwriteExisting) {
       result.imported++
       
     } catch (error) {
-      console.warn(`⚠️ Error al restaurar registro ${dataType}:`, error)
+      logger.warn(`⚠️ Error al restaurar registro ${dataType}:`, error)
       result.errors++
     }
   }
@@ -163,7 +167,7 @@ async function checkRecordExists(dataType, record) {
     
     return false
   } catch (error) {
-    console.warn('Error al verificar existencia de registro:', error)
+    logger.warn('Error al verificar existencia de registro:', error)
     return false
   }
 }
@@ -278,7 +282,7 @@ async function readFileAsText(file) {
     }
   }
 
-  console.warn('dataRestore: falling back to string conversion', {
+  logger.warn('dataRestore: falling back to string conversion', {
     keys: file ? Object.getOwnPropertyNames(file) : null,
     constructor: file?.constructor?.name
   })
@@ -293,7 +297,7 @@ async function readFileAsText(file) {
  */
 export async function importFromFile(file, options = {}) {
   try {
-    console.log(`📂 Importando datos desde archivo: ${file.name}`)
+    logger.debug(`📂 Importando datos desde archivo: ${file.name}`)
     
     const text = await readFileAsText(file)
     let importData
@@ -321,11 +325,11 @@ export async function importFromFile(file, options = {}) {
 
     const result = await restoreProgressData(importData, resolvedOptions)
     
-    console.log(`📥 Importación desde archivo completada exitosamente`)
+    logger.debug(`📥 Importación desde archivo completada exitosamente`)
     return result
     
   } catch (error) {
-    console.error('❌ Error al importar desde archivo:', error)
+    logger.error('❌ Error al importar desde archivo:', error)
     throw error
   }
 }
@@ -339,7 +343,7 @@ export async function createBackup(userId = null) {
   try {
     const resolvedUserId = await resolveUserId(userId)
     const actualUserId = resolvedUserId || 'anonymous'
-    console.log(`💾 Creando respaldo automático para usuario ${actualUserId}...`)
+    logger.debug(`💾 Creando respaldo automático para usuario ${actualUserId}...`)
 
     // Usar el sistema de exportación existente
     const { exportProgressData } = await import('./dataExport.js')
@@ -358,19 +362,19 @@ export async function createBackup(userId = null) {
       if (typeof window !== 'undefined' && window.localStorage) {
         const backupKey = `progress_backup_${actualUserId}`
         localStorage.setItem(backupKey, JSON.stringify(backupData))
-        console.log(`💾 Respaldo guardado en localStorage con clave: ${backupKey}`)
+        logger.debug(`💾 Respaldo guardado en localStorage con clave: ${backupKey}`)
       } else {
-        console.warn('⚠️ localStorage no disponible - respaldo no persistido localmente')
+        logger.warn('⚠️ localStorage no disponible - respaldo no persistido localmente')
       }
     } catch (localStorageError) {
-      console.warn('⚠️ No se pudo guardar el respaldo en localStorage:', localStorageError.message)
+      logger.warn('⚠️ No se pudo guardar el respaldo en localStorage:', localStorageError.message)
     }
 
-    console.log(`✅ Respaldo creado con ID: ${backupData.metadata.backupId}`)
+    logger.debug(`✅ Respaldo creado con ID: ${backupData.metadata.backupId}`)
     return backupData
 
   } catch (error) {
-    console.error('❌ Error al crear respaldo:', error)
+    logger.error('❌ Error al crear respaldo:', error)
     throw error
   }
 }

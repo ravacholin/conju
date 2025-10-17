@@ -4,6 +4,10 @@ import { getRecentAttempts } from '../../lib/progress/database.js'
 import { getDueItems } from '../../lib/progress/srs.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:SessionHUD')
+
 
 const DUE_LOOKAHEAD_MS = 6 * 60 * 60 * 1000 // six hours
 
@@ -105,7 +109,7 @@ export default function SessionHUD() {
       } catch (error) {
         if (error?.name === 'AbortError') return
         if (import.meta.env?.DEV) {
-          console.warn('SessionHUD loadSessionData failed', error)
+          logger.warn('SessionHUD loadSessionData failed', error)
         }
       } finally {
         if (analyticsController.current === controller) {
@@ -239,7 +243,7 @@ export default function SessionHUD() {
                     )
                   } catch (error) {
                     if (import.meta.env?.DEV) {
-                      console.warn('Error launching micro drill from SessionHUD', error)
+                      logger.warn('Error launching micro drill from SessionHUD', error)
                     }
                   }
                 }}

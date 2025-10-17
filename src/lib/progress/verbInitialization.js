@@ -2,13 +2,17 @@
 
 import { getAllVerbs } from '../core/verbDataService.js'
 import { VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:verbInitialization')
+
 
 /**
  * Inicializa los verbos en el sistema de progreso
  * @returns {Promise<void>}
  */
 export async function initializeVerbs() {
-  console.log('🔄 Inicializando verbos en el sistema de progreso...')
+  logger.debug('🔄 Inicializando verbos en el sistema de progreso...')
 
   try {
     // Cargar funciones de BD de forma perezosa y tolerante a mocks parciales
@@ -27,7 +31,7 @@ export async function initializeVerbs() {
     const verbs = await getAllVerbs()
 
     if (!Array.isArray(verbs) || verbs.length === 0) {
-      console.warn('⚠️ No se encontraron verbos para inicializar.')
+      logger.warn('⚠️ No se encontraron verbos para inicializar.')
       return
     }
 
@@ -61,14 +65,14 @@ export async function initializeVerbs() {
           orthographicChangeCount++
         }
       } catch (error) {
-        console.error(`❌ Error al inicializar verbo ${verb.lemma}:`, error)
+        logger.error(`❌ Error al inicializar verbo ${verb.lemma}:`, error)
         errorCount++
       }
     }
     
-    console.log(`✅ Inicialización completada: ${regularCount} regulares, ${irregularCount} irregulares, ${diphtongCount} diptongos, ${orthographicChangeCount} cambios ortográficos, ${errorCount} errores`)
+    logger.debug(`✅ Inicialización completada: ${regularCount} regulares, ${irregularCount} irregulares, ${diphtongCount} diptongos, ${orthographicChangeCount} cambios ortográficos, ${errorCount} errores`)
   } catch (error) {
-    console.error('❌ Error al inicializar verbos:', error)
+    logger.error('❌ Error al inicializar verbos:', error)
     throw error
   }
 }
@@ -149,9 +153,9 @@ export async function addNewVerb(verb) {
     // Guardar en la base de datos
     await saveVerb(progressVerb)
     
-    console.log(`✅ Verbo ${verb.lemma} añadido al sistema de progreso`)
+    logger.debug(`✅ Verbo ${verb.lemma} añadido al sistema de progreso`)
   } catch (error) {
-    console.error(`❌ Error al añadir verbo ${verb.lemma}:`, error)
+    logger.error(`❌ Error al añadir verbo ${verb.lemma}:`, error)
     throw error
   }
 }
@@ -166,9 +170,9 @@ export async function updateVerb(verbId, _updates) {
   try {
     // En una implementación completa, esto actualizaría el verbo existente
     
-    console.log(`✅ Verbo ${verbId} actualizado`)
+    logger.debug(`✅ Verbo ${verbId} actualizado`)
   } catch (error) {
-    console.error(`❌ Error al actualizar verbo ${verbId}:`, error)
+    logger.error(`❌ Error al actualizar verbo ${verbId}:`, error)
     throw error
   }
 }
@@ -182,9 +186,9 @@ export async function removeVerb(verbId) {
   try {
     // En una implementación completa, esto eliminaría el verbo
     
-    console.log(`✅ Verbo ${verbId} eliminado del sistema de progreso`)
+    logger.debug(`✅ Verbo ${verbId} eliminado del sistema de progreso`)
   } catch (error) {
-    console.error(`❌ Error al eliminar verbo ${verbId}:`, error)
+    logger.error(`❌ Error al eliminar verbo ${verbId}:`, error)
     throw error
   }
 }

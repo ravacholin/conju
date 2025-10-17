@@ -3,6 +3,10 @@
 import { useMemo, useState, memo, Fragment } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:HeatMap')
+
 // import { getEligiblePool } from '../../lib/core/eligibility.js'
 
 /**
@@ -172,7 +176,7 @@ export function HeatMap({ data }) {
                   onMouseLeave={() => setHoveredCell(null)}
                   onClick={() => {
                     try {
-                      console.log(`Heat map clicked: ${mood}/${tense}`)
+                      logger.debug(`Heat map clicked: ${mood}/${tense}`)
                       // Set specific practice settings
                       settings.set({ 
                         practiceMode: 'specific', 
@@ -184,7 +188,7 @@ export function HeatMap({ data }) {
                         detail: { mood, tense } 
                       }))
                     } catch (error) {
-                      console.error('Error clicking heat map cell:', error)
+                      logger.error('Error clicking heat map cell:', error)
                     }
                   }}
                   title={`${moodLabels[mood] || mood} - ${tenseLabels[tense] || tense} — Haz clic para practicar esta celda`}

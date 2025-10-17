@@ -5,6 +5,10 @@ import { getErrorIntelligence, getErrorRadarData } from '../../lib/progress/anal
 import { useSettings } from '../../state/settings.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './EnhancedErrorAnalysis.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:EnhancedErrorAnalysis')
+
 
 const VIEW_OPTIONS = [
   { id: 'dashboard', label: 'Panorama', icon: '/icons/chart.png', alt: 'Panel general' },
@@ -77,7 +81,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
         loading: false
       })
     } catch (error) {
-      console.error('Error loading enhanced error analysis:', error)
+      logger.error('Error loading enhanced error analysis:', error)
       setAnalysisData(prev => ({ ...prev, loading: false }))
     }
   }
@@ -370,7 +374,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
         }))
       }
     } catch (error) {
-      console.error('Error starting targeted practice:', error)
+      logger.error('Error starting targeted practice:', error)
     }
   }
 

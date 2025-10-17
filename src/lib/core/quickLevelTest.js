@@ -3,26 +3,30 @@
 
 import { levelPrioritizer } from './levelDrivenPrioritizer.js'
 import { chooseNext } from './generator.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('core:quickLevelTest')
+
 
 /**
  * Enhanced test for the comprehensive curriculum-driven algorithm
  */
 export function quickB1Test() {
-  console.log('\n🎯 === ENHANCED CURRICULUM-DRIVEN B1 TEST ===')
-  console.log('Testing the advanced curriculum analysis system\n')
+  logger.debug('\n🎯 === ENHANCED CURRICULUM-DRIVEN B1 TEST ===')
+  logger.debug('Testing the advanced curriculum analysis system\n')
   
   try {
     // Test 1: Enhanced Level Prioritizer
-    console.log('1️⃣ Testing Enhanced Level Prioritizer...')
+    logger.debug('1️⃣ Testing Enhanced Level Prioritizer...')
     const b1Prioritized = levelPrioritizer.getPrioritizedTenses('B1')
     
-    console.log('B1 Enhanced Core Analysis:')
+    logger.debug('B1 Enhanced Core Analysis:')
     b1Prioritized.core.slice(0, 5).forEach((tense, i) => {
       const readiness = Math.round((tense.readiness || 0) * 100)
       const urgency = Math.round(tense.urgency || 0)
-      console.log(`  ${i + 1}. ${tense.mood}/${tense.tense}`)
-      console.log(`     Priority: ${tense.priority} | Readiness: ${readiness}% | Urgency: ${urgency}`)
-      console.log(`     Family: ${tense.family} | Complexity: ${tense.complexity}`)
+      logger.debug(`  ${i + 1}. ${tense.mood}/${tense.tense}`)
+      logger.debug(`     Priority: ${tense.priority} | Readiness: ${readiness}% | Urgency: ${urgency}`)
+      logger.debug(`     Family: ${tense.family} | Complexity: ${tense.complexity}`)
     })
     
     // Test curriculum-driven features
@@ -32,33 +36,33 @@ export function quickB1Test() {
     const hasFamilyGroups = b1Prioritized.familyGroups && Object.keys(b1Prioritized.familyGroups).length > 0
     const hasProgressionPath = b1Prioritized.progression && b1Prioritized.progression.length >= 0
     
-    console.log(`✅ B1 prioritizes subjunctive: ${hasSubjunctive}`)
-    console.log(`✅ B1 prioritizes perfect tenses: ${hasPerfectTenses}`)
-    console.log(`✅ Has prerequisite analysis: ${hasPrerequisiteAnalysis}`)
-    console.log(`✅ Has family grouping: ${hasFamilyGroups}`)
-    console.log(`✅ Has progression path: ${hasProgressionPath}`)
+    logger.debug(`✅ B1 prioritizes subjunctive: ${hasSubjunctive}`)
+    logger.debug(`✅ B1 prioritizes perfect tenses: ${hasPerfectTenses}`)
+    logger.debug(`✅ Has prerequisite analysis: ${hasPrerequisiteAnalysis}`)
+    logger.debug(`✅ Has family grouping: ${hasFamilyGroups}`)
+    logger.debug(`✅ Has progression path: ${hasProgressionPath}`)
     
     // Test 2: Curriculum Progression Analysis
-    console.log('\n2️⃣ Testing Curriculum Progression...')
+    logger.debug('\n2️⃣ Testing Curriculum Progression...')
     
     if (b1Prioritized.progression.length > 0) {
-      console.log('B1 Optimal Progression Path:')
+      logger.debug('B1 Optimal Progression Path:')
       b1Prioritized.progression.slice(0, 3).forEach((tense, i) => {
         const readiness = Math.round((tense.readiness || 0) * 100)
-        console.log(`  ${i + 1}. ${tense.mood}/${tense.tense} (${readiness}% ready)`)
+        logger.debug(`  ${i + 1}. ${tense.mood}/${tense.tense} (${readiness}% ready)`)
       })
     }
     
     // Test 3: Family Analysis
-    console.log('\n3️⃣ Testing Family Analysis...')
+    logger.debug('\n3️⃣ Testing Family Analysis...')
     const familyGroups = Object.entries(b1Prioritized.familyGroups).slice(0, 3)
     familyGroups.forEach(([family, group]) => {
-      console.log(`  • ${family}: ${group.tenses.length} tenses, ${Math.round(group.avgMastery)}% avg mastery`)
-      console.log(`    Status: ${group.completionStatus}, Priority: ${Math.round(group.priority)}`)
+      logger.debug(`  • ${family}: ${group.tenses.length} tenses, ${Math.round(group.avgMastery)}% avg mastery`)
+      logger.debug(`    Status: ${group.completionStatus}, Priority: ${Math.round(group.priority)}`)
     })
     
     // Test 4: Compare with other levels
-    console.log('\n4️⃣ Enhanced Level Comparison...')
+    logger.debug('\n4️⃣ Enhanced Level Comparison...')
     const allLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
     
     allLevels.forEach(level => {
@@ -69,18 +73,18 @@ export function quickB1Test() {
         const familyCount = Object.keys(prioritized.familyGroups).length
         
         if (topTense) {
-          console.log(`  ${level}: ${topTense.mood}/${topTense.tense} (${topTense.complexity} complexity)`)
-          console.log(`        ${coreCount} core tenses, ${familyCount} families`)
+          logger.debug(`  ${level}: ${topTense.mood}/${topTense.tense} (${topTense.complexity} complexity)`)
+          logger.debug(`        ${coreCount} core tenses, ${familyCount} families`)
         } else {
-          console.log(`  ${level}: No core tenses`)
+          logger.debug(`  ${level}: No core tenses`)
         }
       } catch (error) {
-        console.log(`  ${level}: Error - ${error.message}`)
+        logger.debug(`  ${level}: Error - ${error.message}`)
       }
     })
     
     // Test 5: Weighted Selection Enhancement
-    console.log('\n5️⃣ Testing Enhanced Weighted Selection...')
+    logger.debug('\n5️⃣ Testing Enhanced Weighted Selection...')
     const mockForms = [
       { mood: 'indicative', tense: 'pres', person: '1s', lemma: 'hablar', value: 'hablo' },
       { mood: 'subjunctive', tense: 'subjPres', person: '1s', lemma: 'hablar', value: 'hable' },
@@ -97,38 +101,38 @@ export function quickB1Test() {
       distributions[key] = (distributions[key] || 0) + 1
     })
     
-    console.log('Enhanced weighting distribution:')
+    logger.debug('Enhanced weighting distribution:')
     Object.entries(distributions)
       .sort((a, b) => b[1] - a[1])
       .forEach(([tense, count]) => {
         const percentage = Math.round((count / weighted.length) * 100)
-        console.log(`  ${tense}: ${count} occurrences (${percentage}%)`)
+        logger.debug(`  ${tense}: ${count} occurrences (${percentage}%)`)
       })
     
     // Test 6: Next Recommendation with Reasoning
-    console.log('\n6️⃣ Testing Smart Recommendations...')
+    logger.debug('\n6️⃣ Testing Smart Recommendations...')
     const b1NextRec = levelPrioritizer.getNextRecommendedTense('B1')
     
     if (b1NextRec) {
       const isNotPresentIndicative = !(b1NextRec.mood === 'indicative' && b1NextRec.tense === 'pres')
-      console.log(`B1 next recommendation: ${b1NextRec.mood}/${b1NextRec.tense}`)
-      console.log(`✅ B1 recommendation is NOT present indicative: ${isNotPresentIndicative}`)
+      logger.debug(`B1 next recommendation: ${b1NextRec.mood}/${b1NextRec.tense}`)
+      logger.debug(`✅ B1 recommendation is NOT present indicative: ${isNotPresentIndicative}`)
       
       // Get recommendation reasoning
       const reasoning = levelPrioritizer.getRecommendationReason(b1NextRec, b1Prioritized)
-      console.log(`Reasoning: ${reasoning}`)
+      logger.debug(`Reasoning: ${reasoning}`)
     } else {
-      console.log('❌ No B1 recommendation available')
+      logger.debug('❌ No B1 recommendation available')
     }
     
-    console.log('\n🎉 Enhanced curriculum-driven B1 test completed!')
-    console.log('✨ Key improvements verified:')
-    console.log('   • Comprehensive curriculum analysis from curriculum.json')
-    console.log('   • Prerequisite dependency tracking')
-    console.log('   • Pedagogical family grouping')
-    console.log('   • Optimal learning progression paths')
-    console.log('   • Dynamic priority weighting')
-    console.log('   • Readiness assessment for advanced content')
+    logger.debug('\n🎉 Enhanced curriculum-driven B1 test completed!')
+    logger.debug('✨ Key improvements verified:')
+    logger.debug('   • Comprehensive curriculum analysis from curriculum.json')
+    logger.debug('   • Prerequisite dependency tracking')
+    logger.debug('   • Pedagogical family grouping')
+    logger.debug('   • Optimal learning progression paths')
+    logger.debug('   • Dynamic priority weighting')
+    logger.debug('   • Readiness assessment for advanced content')
     
     return {
       success: true,
@@ -143,7 +147,7 @@ export function quickB1Test() {
     }
     
   } catch (error) {
-    console.error('❌ Enhanced B1 test failed:', error)
+    logger.error('❌ Enhanced B1 test failed:', error)
     return {
       success: false,
       error: error.message
@@ -155,8 +159,8 @@ export function quickB1Test() {
  * Test the integration with the generator
  */
 export function testGeneratorIntegration() {
-  console.log('\n🔧 === GENERATOR INTEGRATION TEST ===')
-  console.log('Testing that the chooseNext function uses level-aware prioritization\n')
+  logger.debug('\n🔧 === GENERATOR INTEGRATION TEST ===')
+  logger.debug('Testing that the chooseNext function uses level-aware prioritization\n')
   
   // Mock the useSettings to return B1 level
   const mockSettings = {
@@ -192,7 +196,7 @@ export function testGeneratorIntegration() {
     globalThis.useSettings = () => mockSettings
     
     // Test multiple selections to see the pattern
-    console.log('Testing 10 selections from chooseNext...')
+    logger.debug('Testing 10 selections from chooseNext...')
     const selections = []
     const history = {} // Empty history for new user simulation
     
@@ -203,7 +207,7 @@ export function testGeneratorIntegration() {
           selections.push(`${selected.mood}/${selected.tense}`)
         }
       } catch (error) {
-        console.log(`Selection ${i + 1} failed: ${error.message}`)
+        logger.debug(`Selection ${i + 1} failed: ${error.message}`)
       }
     }
     
@@ -213,11 +217,11 @@ export function testGeneratorIntegration() {
       selectionCounts[selection] = (selectionCounts[selection] || 0) + 1
     })
     
-    console.log('Selection distribution:')
+    logger.debug('Selection distribution:')
     Object.entries(selectionCounts)
       .sort((a, b) => b[1] - a[1])
       .forEach(([tense, count]) => {
-        console.log(`  ${tense}: ${count} times (${Math.round(count / selections.length * 100)}%)`)
+        logger.debug(`  ${tense}: ${count} times (${Math.round(count / selections.length * 100)}%)`)
       })
     
     // Check if subjunctive was selected more than present indicative
@@ -225,14 +229,14 @@ export function testGeneratorIntegration() {
     const presCount = selectionCounts['indicative/pres'] || 0
     
     const subjunctivePrioritized = subjCount >= presCount
-    console.log(`\n✅ Subjunctive prioritized over present indicative: ${subjunctivePrioritized}`)
+    logger.debug(`\n✅ Subjunctive prioritized over present indicative: ${subjunctivePrioritized}`)
     
     // Restore original useSettings
     if (originalUseSettings) {
       globalThis.useSettings = originalUseSettings
     }
     
-    console.log('\n✅ Generator integration test completed!')
+    logger.debug('\n✅ Generator integration test completed!')
     
     return {
       success: true,
@@ -242,7 +246,7 @@ export function testGeneratorIntegration() {
     }
     
   } catch (error) {
-    console.error('❌ Generator integration test failed:', error)
+    logger.error('❌ Generator integration test failed:', error)
     return {
       success: false,
       error: error.message
@@ -254,24 +258,24 @@ export function testGeneratorIntegration() {
  * Run both quick tests
  */
 export function runQuickTests() {
-  console.log('\n🚀 === RUNNING QUICK LEVEL-DRIVEN TESTS ===')
+  logger.debug('\n🚀 === RUNNING QUICK LEVEL-DRIVEN TESTS ===')
   
   const b1Test = quickB1Test()
   const generatorTest = testGeneratorIntegration()
   
-  console.log('\n📊 === QUICK TEST SUMMARY ===')
-  console.log(`B1 Prioritization Test: ${b1Test.success ? '✅ PASSED' : '❌ FAILED'}`)
-  console.log(`Generator Integration Test: ${generatorTest.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug('\n📊 === QUICK TEST SUMMARY ===')
+  logger.debug(`B1 Prioritization Test: ${b1Test.success ? '✅ PASSED' : '❌ FAILED'}`)
+  logger.debug(`Generator Integration Test: ${generatorTest.success ? '✅ PASSED' : '❌ FAILED'}`)
   
   if (b1Test.success && generatorTest.success) {
-    console.log('\n🎉 ALL TESTS PASSED! The level-driven system is working correctly.')
-    console.log('\n✨ Key improvements verified:')
-    console.log('   • B1 users get subjunctive and perfect tenses (not just present indicative)')
-    console.log('   • Different levels prioritize different tenses')
-    console.log('   • The generator respects level-aware prioritization')
-    console.log('   • The multi-tier system (SRS → Adaptive → Level-Aware) is integrated')
+    logger.debug('\n🎉 ALL TESTS PASSED! The level-driven system is working correctly.')
+    logger.debug('\n✨ Key improvements verified:')
+    logger.debug('   • B1 users get subjunctive and perfect tenses (not just present indicative)')
+    logger.debug('   • Different levels prioritize different tenses')
+    logger.debug('   • The generator respects level-aware prioritization')
+    logger.debug('   • The multi-tier system (SRS → Adaptive → Level-Aware) is integrated')
   } else {
-    console.log('\n⚠️  Some tests failed. Check the details above.')
+    logger.debug('\n⚠️  Some tests failed. Check the details above.')
   }
   
   return {
@@ -289,7 +293,7 @@ if (typeof window !== 'undefined') {
     testGenerator: testGeneratorIntegration
   }
   
-  console.log(`
+  logger.debug(`
 🚀 Quick Level Test Available!
 
 Run in browser console:

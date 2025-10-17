@@ -2,7 +2,6 @@
 
 import { PROGRESS_CONFIG } from './config.js'
 import { getCurrentUserId, getUserSettings, updateUserSettings } from './userManager.js'
-import logger from './logger.js'
 
 const expertModeCache = new Map()
 const listeners = new Set()

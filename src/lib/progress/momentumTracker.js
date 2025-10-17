@@ -1,7 +1,10 @@
 // Sistema de Tracking de Momentum Emocional
 // Rastrea las rachas emocionales del usuario más allá de simple acierto/error
 
-import { logger } from './logger.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:momentumTracker')
+
 
 /**
  * Tipos de momentum emocional
@@ -605,7 +608,7 @@ export class MomentumTracker {
     this.currentMomentum = newMomentum
     this.lastMomentumChange = now
     
-    console.log('Cambio de momentum', `${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
+    logger.debug('Cambio de momentum', `${previousMomentum} → ${newMomentum} (Score: ${this.momentumScore.toFixed(2)})`)
   }
 
   /**

@@ -5,6 +5,10 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { useSettings } from '../../state/settings.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ErrorRadar')
+
 
 /**
  * @param {{ axes: Array<{key:string,label:string,value:number,tag:string,count:number,combos?:Array<{mood:string,tense:string}>}> } } props
@@ -131,7 +135,7 @@ export function ErrorRadar({ axes = [] }) {
       settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 6 } })
       window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 6 } } }))
     } catch (e) {
-      console.warn('No se pudo iniciar micro-práctica para', tag, e)
+      logger.warn('No se pudo iniciar micro-práctica para', tag, e)
     }
   }
 

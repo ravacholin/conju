@@ -7,7 +7,6 @@ import { ERROR_TAGS } from './dataModels.js'
 import { confidenceEngine } from './confidenceEngine.js'
 import { temporalIntelligence } from './temporalIntelligence.js'
 import { FLOW_STATES, flowDetector } from './flowStateDetection.js'
-import { logger } from './logger.js'
 import { shouldUseFSRS } from './abTesting.js'
 import { getActiveFSRSConfig } from './expertMode.js'
 

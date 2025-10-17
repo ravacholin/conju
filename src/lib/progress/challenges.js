@@ -1,6 +1,10 @@
 import { STORAGE_CONFIG } from './config.js'
 import { getFromDB, saveToDB } from './database.js'
 import { getDailyChallengeMetrics } from './analytics.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:challenges')
+
 
 const CHALLENGE_STORE = STORAGE_CONFIG.STORES.CHALLENGES
 
@@ -98,7 +102,7 @@ function emitChallengeCompleted(detail) {
       }
     }))
   } catch (error) {
-    console.warn('No se pudo emitir evento de desafío completado:', error)
+    logger.warn('No se pudo emitir evento de desafío completado:', error)
   }
 }
 

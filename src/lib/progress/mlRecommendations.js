@@ -9,7 +9,6 @@ import { flowDetector, FLOW_STATES } from './flowStateDetection.js'
 import { intelligentFSRS } from './fsrs.js'
 // import { getMasteryByUser } from './database.js' // TODO: Use when implementing full ML features
 import { getCurrentUserId } from './userManager.js'
-import { logger } from './logger.js'
 
 /**
  * Generador de recomendaciones ML que integra todos los sistemas de inteligencia

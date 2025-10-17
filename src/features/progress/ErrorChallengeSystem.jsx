@@ -3,6 +3,10 @@ import { getCurrentUserId } from '../../lib/progress/userManager.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './ErrorChallengeSystem.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:ErrorChallengeSystem')
+
 
 export default function ErrorChallengeSystem({ onStartChallenge, userStats: _userStats }) {
   const [challenges, setChallenges] = useState([])
@@ -27,7 +31,7 @@ export default function ErrorChallengeSystem({ onStartChallenge, userStats: _use
       const generatedChallenges = generateGameifiedChallenges(attempts)
       setChallenges(generatedChallenges)
     } catch (error) {
-      console.error('Error loading challenges:', error)
+      logger.error('Error loading challenges:', error)
     }
   }
 

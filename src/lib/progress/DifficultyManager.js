@@ -3,6 +3,10 @@
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { getCurrentUserId } from './userManager.js'
 import { getMasteryByUser as _getMasteryByUser } from './database.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:DifficultyManager')
+
 
 /**
  * Gestiona la dificultad dinámica basada en el rendimiento del usuario
@@ -57,7 +61,7 @@ export class DifficultyManager {
         shouldAdjust: analysis.shouldAdjust
       }
     } catch (error) {
-      console.error('Error evaluando nivel de dificultad:', error)
+      logger.error('Error evaluando nivel de dificultad:', error)
       return this.getDefaultDifficulty()
     }
   }

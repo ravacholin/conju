@@ -2,6 +2,10 @@ import React, { useMemo, memo } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import './verb-mastery-map.css'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:VerbMasteryMap')
+
 
 export function VerbMasteryMap({ data, onNavigateToDrill }) {
   const settings = useSettings()
@@ -242,7 +246,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         }
       }, 50) // Small delay to ensure settings persistence
     } catch (error) {
-      console.error('Error clicking mastery cell:', error)
+      logger.error('Error clicking mastery cell:', error)
     }
   }
 
