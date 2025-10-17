@@ -4,6 +4,9 @@
 import { getCurrentUserId } from './userManager.js'
 import { saveToDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:planTracking')
 
 const STORAGE_KEY = 'progress-plan-tracking'
 const ACTIVE_PLAN_KEY = 'progress-active-plan'

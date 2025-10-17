@@ -3,6 +3,9 @@
 
 import { PROGRESS_CONFIG } from './config.js'
 import { memoryManager } from './memoryManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:flowStateDetection')
 
 /**
  * Estados posibles de flow del usuario

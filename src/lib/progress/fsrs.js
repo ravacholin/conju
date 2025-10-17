@@ -9,6 +9,9 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { FLOW_STATES, flowDetector } from './flowStateDetection.js'
 import { shouldUseFSRS } from './abTesting.js'
 import { getActiveFSRSConfig } from './expertMode.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:fsrs')
 
 // Mapeo de ratings FSRS (1-4) a nuestros conceptos
 const FSRS_RATINGS = {

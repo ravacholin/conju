@@ -10,6 +10,9 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { momentumTracker } from './momentumTracker.js'
 import confidenceEngine from './confidenceEngine.js'
 import { getAdvancedAnalytics } from './analytics.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:studyPlans')
 
 const planCache = new Map()
 const planListeners = new Set()

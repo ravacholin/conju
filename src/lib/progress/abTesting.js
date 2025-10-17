@@ -3,6 +3,9 @@
 
 import { PROGRESS_CONFIG } from './config.js'
 import { getCurrentUserId } from './userManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:abTesting')
 
 /**
  * Manager de A/B Testing para experimentos de SRS

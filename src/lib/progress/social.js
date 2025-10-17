@@ -3,6 +3,9 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { getCurrentUserId } from './userManager.js'
 import { getDailyChallengeSnapshot } from './challenges.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:social')
 
 const STORAGE_KEY = 'progress-social-community'
 const communityCache = new Map()

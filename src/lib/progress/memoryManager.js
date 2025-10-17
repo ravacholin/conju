@@ -2,6 +2,9 @@
 // Previene memory leaks y gestiona cleanup de recursos
 
 import { PROGRESS_CONFIG } from './config.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:memoryManager')
 
 /**
  * Gestor centralizado de memoria y cleanup
