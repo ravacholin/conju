@@ -208,7 +208,7 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       consecutiveCorrect: meta.consecutiveCorrect || 0
     })
   } catch (error) {
-    console.error('Error processing gamification for SRS review:', error)
+    logger.error('updateSchedule', 'Error processing gamification for SRS review', error)
   }
 
   // A/B Testing: Track algorithm performance
@@ -226,7 +226,7 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       })
     }).catch(error => {
       // Non-critical, continue without A/B tracking
-      console.warn('A/B tracking failed:', error)
+      logger.warn('updateSchedule', 'A/B tracking failed', error)
     })
   }
 
@@ -257,7 +257,7 @@ export async function getDueItems(userId, currentDate = new Date()) {
       .sort((a, b) => new Date(a.nextDue) - new Date(b.nextDue))
       .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue }))
   } catch (error) {
-    console.error('Error obteniendo ítems SRS pendientes:', error)
+    logger.error('getDueItems', 'Error obteniendo ítems SRS pendientes', error)
     return []
   }
 }
@@ -283,10 +283,10 @@ export async function extractDueLemmas(userId, currentDate = new Date(), hoursAh
     })
 
     const uniqueLemmas = Array.from(lemmas)
-    console.log(`📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
+    logger.debug('extractDueLemmas', `📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
     return uniqueLemmas
   } catch (error) {
-    console.error('Error extracting due lemmas from SRS:', error)
+    logger.error('extractDueLemmas', 'Error extracting due lemmas from SRS', error)
     return []
   }
 }
