@@ -5,6 +5,9 @@ import { PROGRESS_CONFIG } from './config.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:analytics')
 
 const normalizeMoodTense = (mood, tense) => {
   if (mood === 'imperative' && tense === 'imper') {
@@ -166,7 +169,7 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
 
     return heatMapData
   } catch (error) {
-    console.error('Error al obtener datos para el mapa de calor:', error)
+    logger.error('getHeatMapData', 'Error al obtener datos para el mapa de calor', error)
     return []
   }
 }
@@ -261,7 +264,7 @@ export async function getErrorRadarData(userId) {
 
     return { axes }
   } catch (error) {
-    console.warn('Error radar unavailable:', error)
+    logger.warn('getErrorRadarData', 'Error radar unavailable', error)
     return { axes: [] }
   }
 }
@@ -356,7 +359,7 @@ export async function getPronunciationStats(userId, signal) {
       recentAttempts
     }
   } catch (error) {
-    console.error('Error al obtener estadísticas de pronunciación:', error)
+    logger.error('getPronunciationStats', 'Error al obtener estadísticas de pronunciación', error)
     if (signal?.aborted) {
       throw new Error('Operation was cancelled')
     }
@@ -565,7 +568,7 @@ export async function getErrorIntelligence(userId, signal) {
 
     return { tags, heatmap: { moods, tenses, cells }, leeches, summary }
   } catch (error) {
-    console.warn('Error intelligence unavailable:', error)
+    logger.warn('getErrorIntelligence', 'Error intelligence unavailable', error)
     return { tags: [], heatmap: { moods: [], tenses: [], cells: [] }, leeches: [], summary: { errorRate7: 0, errorRatePrev7: 0, incorrect7: 0, total7: 0, trend: 'flat' } }
   }
 }
@@ -639,7 +642,7 @@ export async function getProgressLineData(userId) {
     
     return progressData
   } catch (error) {
-    console.error('Error al obtener datos para la línea de progreso:', error)
+    logger.error('getProgressLineData', 'Error al obtener datos para la línea de progreso', error)
     return []
   }
 }
@@ -701,7 +704,7 @@ export async function getDailyChallengeMetrics(userId, signal) {
       focusMinutesToday
     }
   } catch (error) {
-    console.warn('No se pudieron calcular métricas de desafíos diarios:', error)
+    logger.warn('getDailyChallengeMetrics', 'No se pudieron calcular métricas de desafíos diarios', error)
     return {
       attemptsToday: 0,
       correctToday: 0,
@@ -813,7 +816,7 @@ export async function getAdvancedAnalytics(userId, signal) {
       mastery: masteryDistribution
     }
   } catch (error) {
-    console.warn('Advanced analytics unavailable:', error)
+    logger.warn('getAdvancedAnalytics', 'Advanced analytics unavailable', error)
     return {
       retention: { windowDays: 0, overallAccuracy: 0, dailyAccuracy: [], trend: null },
       engagement: null,
@@ -1016,7 +1019,7 @@ export async function getSRSStats(userId, now = new Date()) {
 
     return { dueNow, dueToday }
   } catch (error) {
-    console.warn('SRS stats unavailable:', error)
+    logger.warn('getSRSStats', 'SRS stats unavailable', error)
     return { dueNow: 0, dueToday: 0 }
   }
 }

@@ -2,6 +2,9 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { saveUser, getUserById } from './database.js'
 import { getCurrentUserId } from './userManager.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:gamification')
 
 // Configuración de gamificación
 export const GAMIFICATION_CONFIG = {
@@ -148,7 +151,7 @@ export async function awardXP(userId, xpAmount, reason = 'general', metadata = {
       levelInfo: newLevel
     }
   } catch (error) {
-    console.error('Error awarding XP:', error)
+    logger.error('awardXP', 'Error awarding XP', error)
     return null
   }
 }
@@ -206,7 +209,7 @@ export async function updateStreak(userId, streakType, successful = true) {
 
     return streaks[streakType]
   } catch (error) {
-    console.error('Error updating streak:', error)
+    logger.error('updateStreak', 'Error updating streak', error)
     return null
   }
 }
@@ -274,7 +277,7 @@ export async function checkAndAwardBadges(userId) {
 
     return newBadges
   } catch (error) {
-    console.error('Error checking badges:', error)
+    logger.error('checkAndAwardBadges', 'Error checking badges', error)
     return []
   }
 }
@@ -370,7 +373,7 @@ export async function getGamificationStats(userId) {
       stats: user.stats || {}
     }
   } catch (error) {
-    console.error('Error getting gamification stats:', error)
+    logger.error('getGamificationStats', 'Error getting gamification stats', error)
     return null
   }
 }
