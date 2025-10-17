@@ -1,17 +1,21 @@
 // Inicialización completa del sistema de progreso y analíticas
 
-import { 
+import {
   initProgressSystem,
   isProgressSystemInitialized,
   getCurrentUserId
 } from './index.js'
 
-import { 
+import {
   initDB,
   initTracking,
   initializeVerbs,
   initializeItems
 } from './all.js'
+
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:fullInit')
 
 // Estado de inicialización completa
 let isFullyInitialized = false
@@ -22,42 +26,42 @@ let isFullyInitialized = false
  * @returns {Promise<string>} ID del usuario
  */
 export async function initializeFullProgressSystem(userId = null) {
-  console.log('🚀 Inicializando completamente el sistema de progreso y analíticas...')
-  
+  logger.info('initializeFullProgressSystem', '🚀 Inicializando completamente el sistema de progreso y analíticas...')
+
   try {
     // Si ya está completamente inicializado, devolver el ID actual
     if (isFullyInitialized && getCurrentUserId()) {
-      console.log(`✅ Sistema ya completamente inicializado para usuario ${getCurrentUserId()}`)
+      logger.info('initializeFullProgressSystem', `✅ Sistema ya completamente inicializado para usuario ${getCurrentUserId()}`)
       return getCurrentUserId()
     }
-    
+
     // Inicializar sistema básico
     const initializedUserId = await initProgressSystem(userId)
-    console.log(`✅ Sistema básico inicializado para usuario ${initializedUserId}`)
-    
+    logger.info('initializeFullProgressSystem', `✅ Sistema básico inicializado para usuario ${initializedUserId}`)
+
     // Inicializar base de datos
     await initDB()
-    console.log('✅ Base de datos inicializada')
-    
+    logger.info('initializeFullProgressSystem', '✅ Base de datos inicializada')
+
     // Inicializar tracking
     await initTracking(initializedUserId)
-    console.log('✅ Tracking inicializado')
-    
+    logger.info('initializeFullProgressSystem', '✅ Tracking inicializado')
+
     // Inicializar verbos
     await initializeVerbs()
-    console.log('✅ Verbos inicializados')
-    
+    logger.info('initializeFullProgressSystem', '✅ Verbos inicializados')
+
     // Inicializar ítems
     await initializeItems()
-    console.log('✅ Ítems inicializados')
-    
+    logger.info('initializeFullProgressSystem', '✅ Ítems inicializados')
+
     // Marcar como completamente inicializado
     isFullyInitialized = true
-    
-    console.log(`🎉 Sistema de progreso y analíticas completamente inicializado para usuario ${initializedUserId}`)
+
+    logger.info('initializeFullProgressSystem', `🎉 Sistema de progreso y analíticas completamente inicializado para usuario ${initializedUserId}`)
     return initializedUserId
   } catch (error) {
-    console.error('❌ Error al inicializar completamente el sistema de progreso y analíticas:', error)
+    logger.error('initializeFullProgressSystem', '❌ Error al inicializar completamente el sistema de progreso y analíticas', error)
     throw error
   }
 }
@@ -75,15 +79,15 @@ export function isFullProgressSystemInitialized() {
  * @returns {Promise<void>}
  */
 export async function resetFullInitialization() {
-  console.log('🔄 Reiniciando inicialización completa...')
-  
+  logger.info('resetFullInitialization', '🔄 Reiniciando inicialización completa...')
+
   try {
     // Reiniciar estado
     isFullyInitialized = false
-    
-    console.log('✅ Inicialización completa reiniciada')
+
+    logger.info('resetFullInitialization', '✅ Inicialización completa reiniciada')
   } catch (error) {
-    console.error('❌ Error al reiniciar inicialización completa:', error)
+    logger.error('resetFullInitialization', '❌ Error al reiniciar inicialización completa', error)
     throw error
   }
 }
@@ -111,11 +115,11 @@ export function getFullInitializationStatus() {
  * @returns {Promise<Object>} Resultados del diagnóstico
  */
 export async function diagnoseFullInitialization() {
-  console.log('🔍 Diagnosticando inicialización completa...')
-  
+  logger.info('diagnoseFullInitialization', '🔍 Diagnosticando inicialización completa...')
+
   try {
     const status = getFullInitializationStatus()
-    
+
     // Verificar cada componente
     const diagnostics = {
       basic: status.components.basic ? '✅' : '❌',
@@ -124,14 +128,14 @@ export async function diagnoseFullInitialization() {
       verbs: status.components.verbs ? '✅' : '❌',
       items: status.components.items ? '✅' : '❌'
     }
-    
+
     const allGood = Object.values(diagnostics).every(d => d === '✅')
-    
-    console.log(`📊 Diagnóstico de inicialización completa: ${allGood ? '✅' : '❌'}`)
+
+    logger.info('diagnoseFullInitialization', `📊 Diagnóstico de inicialización completa: ${allGood ? '✅' : '❌'}`)
     Object.entries(diagnostics).forEach(([component, status]) => {
-      console.log(`  ${status} ${component}`)
+      logger.debug('diagnoseFullInitialization', `  ${status} ${component}`)
     })
-    
+
     return {
       status: allGood ? 'healthy' : 'issues',
       diagnostics,
@@ -139,7 +143,7 @@ export async function diagnoseFullInitialization() {
       timestamp: new Date()
     }
   } catch (error) {
-    console.error('❌ Error al diagnosticar inicialización completa:', error)
+    logger.error('diagnoseFullInitialization', '❌ Error al diagnosticar inicialización completa', error)
     return {
       status: 'error',
       error: error.message,
@@ -153,8 +157,8 @@ export async function diagnoseFullInitialization() {
  * @returns {Promise<Object>} Resultados de las pruebas
  */
 export async function testFullInitialization() {
-  console.log('🧪 Ejecutando pruebas de inicialización completa...')
-  
+  logger.info('testFullInitialization', '🧪 Ejecutando pruebas de inicialización completa...')
+
   try {
     // Verificar que todas las funciones están disponibles
     const functions = [
@@ -166,23 +170,23 @@ export async function testFullInitialization() {
       initializeVerbs,
       initializeItems
     ]
-    
+
     const allFunctionsAvailable = functions.every(fn => typeof fn === 'function')
-    
+
     // Verificar inicialización
     const userId = await initializeFullProgressSystem()
     const isInitialized = isFullProgressSystemInitialized()
     const status = getFullInitializationStatus()
     const diagnosis = await diagnoseFullInitialization()
-    
+
     const allTestsPassed = allFunctionsAvailable && isInitialized && status.isInitialized && diagnosis.status === 'healthy'
-    
-    console.log(`🧪 Pruebas de inicialización completa: ${allTestsPassed ? '✅' : '❌'}`)
-    console.log(`  ${allFunctionsAvailable ? '✅' : '❌'} Todas las funciones disponibles`)
-    console.log(`  ${isInitialized ? '✅' : '❌'} Sistema completamente inicializado`)
-    console.log(`  ${status.isInitialized ? '✅' : '❌'} Estado de inicialización correcto`)
-    console.log(`  ${diagnosis.status === 'healthy' ? '✅' : '❌'} Diagnóstico saludable`)
-    
+
+    logger.info('testFullInitialization', `🧪 Pruebas de inicialización completa: ${allTestsPassed ? '✅' : '❌'}`)
+    logger.debug('testFullInitialization', `  ${allFunctionsAvailable ? '✅' : '❌'} Todas las funciones disponibles`)
+    logger.debug('testFullInitialization', `  ${isInitialized ? '✅' : '❌'} Sistema completamente inicializado`)
+    logger.debug('testFullInitialization', `  ${status.isInitialized ? '✅' : '❌'} Estado de inicialización correcto`)
+    logger.debug('testFullInitialization', `  ${diagnosis.status === 'healthy' ? '✅' : '❌'} Diagnóstico saludable`)
+
     return {
       passed: allTestsPassed,
       functions: allFunctionsAvailable,
@@ -193,7 +197,7 @@ export async function testFullInitialization() {
       timestamp: new Date()
     }
   } catch (error) {
-    console.error('❌ Error al ejecutar pruebas de inicialización completa:', error)
+    logger.error('testFullInitialization', '❌ Error al ejecutar pruebas de inicialización completa', error)
     return {
       passed: false,
       error: error.message,
@@ -206,9 +210,9 @@ export async function testFullInitialization() {
 if (typeof window !== 'undefined' && window.location) {
   // Solo ejecutar en el navegador
   // DISABLED: initializeFullProgressSystem().catch(error => {
-  //   console.error('Error en inicialización completa:', error)
+  //   logger.error('auto-init', 'Error en inicialización completa', error)
   // })
-  console.log('⏸️ Inicialización completa automática deshabilitada temporalmente')
+  logger.info('auto-init', '⏸️ Inicialización completa automática deshabilitada temporalmente')
 }
 
 export default {
