@@ -9,6 +9,9 @@ import {
   getPronunciationStats
 } from '../../lib/progress/analytics.js'
 import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('progress:dashboard')
 import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
 import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
@@ -158,7 +161,7 @@ export default function useProgressDashboardData() {
 
           return normalizeHeatMapResult(result, 'all')
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load heat map data:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:heatMap', 'Failed to load heat map data', e)
           return normalizeHeatMapResult(null, 'all')
         }
       },
@@ -185,7 +188,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return result && typeof result === 'object' ? result : null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load error intelligence data:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:errorIntel', 'Failed to load error intelligence data', e)
           return null
         }
       },
@@ -206,7 +209,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return result && typeof result === 'object' ? result : {}
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load user stats:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:userStats', 'Failed to load user stats', e)
           return {}
         }
       },
@@ -227,7 +230,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return result && typeof result === 'object' ? result : {}
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load weekly goals:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:weeklyGoals', 'Failed to load weekly goals', e)
           return {}
         }
       },
@@ -248,7 +251,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return result && typeof result === 'object' ? result : {}
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load weekly progress:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:weeklyProgress', 'Failed to load weekly progress', e)
           return {}
         }
       },
@@ -269,7 +272,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return Array.isArray(result) ? result : []
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load recommendations:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:recommendations', 'Failed to load recommendations', e)
           return []
         }
       },
@@ -291,7 +294,7 @@ export default function useProgressDashboardData() {
           if (!result || typeof result !== 'object') return { date: null, metrics: {}, challenges: [] }
           return result
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load daily challenges:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:dailyChallenges', 'Failed to load daily challenges', e)
           return { date: null, metrics: {}, challenges: [] }
         }
       },
@@ -336,7 +339,7 @@ export default function useProgressDashboardData() {
             recentAttempts: Array.isArray(result.recentAttempts) ? result.recentAttempts : []
           }
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load pronunciation stats:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:pronunciationStats', 'Failed to load pronunciation stats', e)
           return emptyStats
         }
       },
@@ -372,7 +375,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return plan || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to generate study plan:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:studyPlan', 'Failed to generate study plan', e)
           return null
         }
       },
@@ -387,7 +390,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return analytics || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load advanced analytics:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:advancedAnalytics', 'Failed to load advanced analytics', e)
           return null
         }
       },
@@ -402,7 +405,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return snapshot || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load community snapshot:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:community', 'Failed to load community snapshot', e)
           return null
         }
       },
@@ -417,7 +420,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return status ?? null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to determine offline status:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:offlineStatus', 'Failed to determine offline status', e)
           return null
         }
       },
@@ -433,7 +436,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return settings
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to retrieve expert mode settings:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:expertMode', 'Failed to retrieve expert mode settings', e)
           return null
         }
       },
@@ -448,7 +451,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return evaluation || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load dynamic level evaluation:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:dynamicLevelEvaluation', 'Failed to load dynamic level evaluation', e)
           return null
         }
       },
@@ -463,7 +466,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return progress || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load dynamic level progress:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:dynamicLevelProgress', 'Failed to load dynamic level progress', e)
           return null
         }
       },
@@ -478,7 +481,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return info || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to load dynamic level info:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:dynamicLevelInfo', 'Failed to load dynamic level info', e)
           return null
         }
       },
@@ -493,7 +496,7 @@ export default function useProgressDashboardData() {
           if (signal.aborted) throw new Error('Cancelled')
           return recommendation || null
         } catch (e) {
-          if (!signal.aborted) console.warn('Failed to check level recommendation:', e)
+          if (!signal.aborted) logger.warn('getOperationDefinitions:levelRecommendation', 'Failed to check level recommendation', e)
           return null
         }
       },
@@ -532,7 +535,7 @@ export default function useProgressDashboardData() {
         try {
           definition.apply?.(results[key])
         } catch (applyError) {
-          console.warn(`Failed to apply result for ${key}:`, applyError)
+          logger.warn('runOperations', `Failed to apply result for ${key}`, applyError)
         }
       })
 
@@ -574,10 +577,10 @@ export default function useProgressDashboardData() {
         let lazyLoadFailed = false
         const lazyLoadTimeout = setTimeout(() => {
           if (!lazyLoadFailed) {
-            console.warn('Lazy loading taking too long, falling back to synchronous load')
+            logger.warn('loadData', 'Lazy loading taking too long, falling back to synchronous load')
             lazyLoadFailed = true
             runOperations(HEAVY_ANALYTICS_KEYS, { userId })
-              .catch(err => console.error('Failsafe synchronous load failed:', err))
+              .catch(err => logger.error('loadData', 'Failsafe synchronous load failed', err))
           }
         }, 5000) // 5 second failsafe timeout
 
@@ -590,12 +593,12 @@ export default function useProgressDashboardData() {
               clearTimeout(lazyLoadTimeout)
             })
             .catch(err => {
-              console.error('Lazy heavy analytics failed, triggering failsafe:', err)
+              logger.error('loadData', 'Lazy heavy analytics failed, triggering failsafe', err)
               lazyLoadFailed = true
               clearTimeout(lazyLoadTimeout)
               // Immediate retry with synchronous load
               return runOperations(HEAVY_ANALYTICS_KEYS, { userId })
-                .catch(retryErr => console.error('Failsafe retry also failed:', retryErr))
+                .catch(retryErr => logger.error('loadData', 'Failsafe retry also failed', retryErr))
             })
         }
 
@@ -612,7 +615,7 @@ export default function useProgressDashboardData() {
 
       setError(null)
     } catch (err) {
-      console.error('Error al cargar datos del dashboard:', err)
+      logger.error('loadData', 'Error al cargar datos del dashboard', err)
       setError(err.message || 'Error desconocido al cargar datos')
     } finally {
       setLoading(false)
@@ -641,7 +644,7 @@ export default function useProgressDashboardData() {
       try {
         return await runOperations(operationKeys, { userId })
       } catch (error) {
-        console.warn('Partial dashboard refresh failed, falling back to full reload', error)
+        logger.warn('refreshFromEvent', 'Partial dashboard refresh failed, falling back to full reload', error)
         await loadData(true)
       } finally {
         setRefreshing(false)
@@ -678,7 +681,7 @@ export default function useProgressDashboardData() {
         })
       }
     } catch (error) {
-      console.error('Error al marcar desafío diario como completado:', error)
+      logger.error('completeChallenge', 'Error al marcar desafío diario como completado', error)
     }
   }
 
@@ -777,7 +780,7 @@ export default function useProgressDashboardData() {
         refreshTimeoutId = null
         if (typeof task === 'function') {
           Promise.resolve(task()).catch(error => {
-            console.warn('Dashboard refresh task failed', error)
+            logger.warn('scheduleRefresh', 'Dashboard refresh task failed', error)
           })
         }
       }, 400)
@@ -788,7 +791,7 @@ export default function useProgressDashboardData() {
       const operationKeys = resolveKeysFromDetail(detail)
 
       if (import.meta.env?.DEV) {
-        console.log('🔄 Datos de progreso actualizados', { detail, operationKeys })
+        logger.debug('handleProgressUpdate', '🔄 Datos de progreso actualizados', { detail, operationKeys })
       }
 
       if (!operationKeys || operationKeys.length === 0) {
@@ -821,7 +824,7 @@ export default function useProgressDashboardData() {
     if (import.meta.env?.DEV) {
       const logCacheStats = () => {
         const stats = progressDataCache.getStats()
-        console.log('📊 Cache Stats:', stats)
+        logger.debug('cache-stats', '📊 Cache Stats', stats)
       }
 
       // Log cache stats every 30 seconds in development

@@ -10,6 +10,9 @@ import { markProgressSystemReady } from './ProgressSystemEvents.js'
 import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
 import { getAllVerbs } from '../core/verbDataService.js'
 import { cleanupMasteryCache } from './incrementalMastery.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:system')
 
 const MINIMAL_EMERGENCY_VERBS = [
   {
@@ -45,27 +48,27 @@ const USER_ID_STORAGE_KEY = 'progress-system-user-id'
 function getOrCreatePersistentUserId() {
   try {
     // Intentar recuperar userId existente
-    const existingUserId = typeof window !== 'undefined' 
+    const existingUserId = typeof window !== 'undefined'
       ? window.localStorage.getItem(USER_ID_STORAGE_KEY)
       : null
-    
+
     if (existingUserId) {
-      console.log('✅ Usuario existente recuperado:', existingUserId)
+      logger.info('getOrCreatePersistentUserId', 'Usuario existente recuperado', { userId: existingUserId })
       return existingUserId
     }
-    
+
     // Generar nuevo userId
     const newUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+
     // Guardarlo para futuras sesiones
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(USER_ID_STORAGE_KEY, newUserId)
     }
-    
-    console.log('🆕 Nuevo usuario creado:', newUserId)
+
+    logger.info('getOrCreatePersistentUserId', 'Nuevo usuario creado', { userId: newUserId })
     return newUserId
   } catch (error) {
-    console.error('Error manejando userId persistente:', error)
+    logger.error('getOrCreatePersistentUserId', 'Error manejando userId persistente', error)
     // Fallback a ID temporal si hay problemas con localStorage
     return `user-temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
@@ -87,7 +90,7 @@ async function scheduleItemsInitializationBatched() {
         await initializeItemsBatched()
         resolve()
       } catch (error) {
-        console.warn('Error en inicialización por lotes:', error)
+        logger.warn('scheduleItemsInitializationBatched', 'Error en inicialización por lotes', error)
         resolve() // No fallar, es proceso en background
       }
     })
@@ -101,7 +104,7 @@ async function scheduleItemsInitializationBatched() {
  */
 export async function initProgressSystem(userId = null) {
   try {
-    console.log('🚀 Inicializando completamente el sistema de progreso...')
+    logger.info('initProgressSystem', 'Inicializando sistema de progreso')
     
     // Nota: los errores de inicialización de DB se propagan desde initDB (que importa idb dinámicamente)
     
@@ -139,7 +142,7 @@ export async function initProgressSystem(userId = null) {
           /* En entorno de pruebas, algunos mocks pueden omitir initDB; continuar sin DB */
         }
         await maybeInitDB()
-        console.log('✅ Base de datos inicializada')
+        logger.info('initProgressSystem', 'Base de datos inicializada')
 
         // Si no se proporcionó ID de usuario, intentar recuperar uno existente o generar uno nuevo
         if (!userId) {
@@ -148,7 +151,7 @@ export async function initProgressSystem(userId = null) {
 
         // Inicializar tracking
         await initTracking(userId)
-        console.log('✅ Tracking inicializado')
+        logger.info('initProgressSystem', 'Tracking inicializado')
 
         // Inyectar verbos en el metadata provider para motores emocionales
         try {
@@ -158,15 +161,15 @@ export async function initProgressSystem(userId = null) {
             if (Array.isArray(serviceVerbs) && serviceVerbs.length > 0) {
               verbs = serviceVerbs
             } else {
-              console.warn('verbMetadataProvider', 'Servicio devolvió 0 verbos, intentando fallback estático')
+              logger.warn('initProgressSystem', 'Servicio devolvió 0 verbos, intentando fallback estático')
             }
           } catch (serviceError) {
-            console.warn('verbMetadataProvider', 'Servicio de verbos falló, intentando fallback estático', serviceError)
+            logger.warn('initProgressSystem', 'Servicio de verbos falló, intentando fallback estático', serviceError)
           }
 
           if (verbs.length === 0) {
             const fallbackModule = await import('../../data/verbs.js').catch((fallbackError) => {
-              console.warn('Fallback estático de verbos también falló', fallbackError)
+              logger.warn('initProgressSystem', 'Fallback estático de verbos también falló', fallbackError)
               return null
             })
             if (fallbackModule) {
@@ -174,24 +177,24 @@ export async function initProgressSystem(userId = null) {
               if (Array.isArray(fallbackVerbs) && fallbackVerbs.length > 0) {
                 verbs = fallbackVerbs
               } else {
-                console.warn('Fallback estático de verbos devolvió 0 elementos, usando conjunto de emergencia')
+                logger.warn('initProgressSystem', 'Fallback estático de verbos devolvió 0 elementos, usando conjunto de emergencia')
               }
             }
           }
 
           if (verbs.length === 0) {
-            console.warn('Metadata provider usando conjunto de emergencia mínimo para continuar')
+            logger.warn('initProgressSystem', 'Metadata provider usando conjunto de emergencia mínimo')
             verbs = MINIMAL_EMERGENCY_VERBS
           }
 
           if (verbs.length > 0) {
             injectVerbsIntoProvider(verbs)
-            console.log('✅ Metadata provider inicializado con servicio de verbos')
+            logger.info('initProgressSystem', 'Metadata provider inicializado con servicio de verbos')
           } else {
-            console.warn('Metadata provider no recibió verbos; las analíticas pueden ser limitadas')
+            logger.warn('initProgressSystem', 'Metadata provider no recibió verbos')
           }
         } catch (error) {
-          console.warn('No se pudo inyectar verbos en metadata provider:', error)
+          logger.warn('initProgressSystem', 'No se pudo inyectar verbos en metadata provider', error)
         }
 
         // Inicializar ítems canónicos para analíticas (no bloqueante)
@@ -199,12 +202,12 @@ export async function initProgressSystem(userId = null) {
           if (!(import.meta && import.meta.vitest)) {
             // En ejecución normal, dispara inicialización por lotes sin bloquear UI
             scheduleItemsInitializationBatched().catch(e => {
-              console.warn('Inicialización de ítems por lotes omitida o fallida (no bloqueante):', e)
+              logger.warn('initProgressSystem', 'Inicialización de ítems por lotes omitida (no bloqueante)', e)
             })
           }
           // En entorno de pruebas, saltar para evitar timeouts por E/S pesada
         } catch (error) {
-          console.warn('Inicialización de ítems omitida o fallida (no bloqueante):', error)
+          logger.warn('initProgressSystem', 'Inicialización de ítems omitida (no bloqueante)', error)
         }
 
         // Marcar como inicializado
@@ -216,7 +219,10 @@ export async function initProgressSystem(userId = null) {
           setInterval(() => {
             const cleaned = cleanupMasteryCache()
             if (cleaned.cleanedItems > 0 || cleaned.cleanedCells > 0) {
-              console.log(`🧹 Cache de mastery limpiado: ${cleaned.cleanedItems} ítems, ${cleaned.cleanedCells} celdas`)
+              logger.debug('initProgressSystem', 'Cache de mastery limpiado', {
+                items: cleaned.cleanedItems,
+                cells: cleaned.cleanedCells
+              })
             }
           }, 30 * 60 * 1000) // 30 minutos
         }
@@ -224,7 +230,7 @@ export async function initProgressSystem(userId = null) {
         // Notificar a través del sistema de eventos que el sistema está listo
         markProgressSystemReady()
 
-        console.log(`🎉 Sistema de progreso completamente inicializado para usuario ${userId}`)
+        logger.info('initProgressSystem', 'Sistema de progreso completamente inicializado', { userId })
         return userId
       })()
 
@@ -236,7 +242,7 @@ export async function initProgressSystem(userId = null) {
       initializingPromise = null
     }
   } catch (error) {
-    console.error('❌ Error al inicializar el sistema de progreso:', error)
+    logger.error('initProgressSystem', 'Error al inicializar el sistema de progreso', error)
     throw error
   }
 }
@@ -280,7 +286,7 @@ export function getCurrentUserId() {
       return currentUserId
     }
   } catch (error) {
-    console.warn('Error recuperando userId persistente:', error)
+    logger.warn('getCurrentUserId', 'Error recuperando userId persistente', error)
   }
 
   return null
@@ -294,7 +300,7 @@ export function getCurrentUserId() {
  */
 export function setCurrentUserId(newUserId) {
   if (!newUserId || typeof newUserId !== 'string') {
-    console.error('setCurrentUserId: newUserId debe ser una string válida')
+    logger.error('setCurrentUserId', 'newUserId debe ser una string válida')
     return false
   }
 
@@ -309,7 +315,10 @@ export function setCurrentUserId(newUserId) {
       window.localStorage.setItem(USER_ID_STORAGE_KEY, newUserId)
     }
 
-    console.log(`🔄 UserId del sistema de progreso actualizado: ${oldUserId} → ${newUserId}`)
+    logger.info('setCurrentUserId', 'UserId del sistema de progreso actualizado', {
+      oldUserId,
+      newUserId
+    })
 
     // Emitir evento para notificar el cambio
     if (typeof window !== 'undefined') {
@@ -320,7 +329,7 @@ export function setCurrentUserId(newUserId) {
 
     return true
   } catch (error) {
-    console.error('Error estableciendo nuevo userId:', error)
+    logger.error('setCurrentUserId', 'Error estableciendo nuevo userId', error)
     // Revertir en caso de error
     currentUserId = oldUserId
     return false
@@ -334,9 +343,9 @@ export function setCurrentUserId(newUserId) {
 export async function endCurrentSession() {
   try {
     // En una implementación completa, esto finalizaría la sesión actual
-    console.log('🔚 Sesión finalizada')
+    logger.info('endCurrentSession', 'Sesión finalizada')
   } catch (error) {
-    console.error('❌ Error al finalizar sesión:', error)
+    logger.error('endCurrentSession', 'Error al finalizar sesión', error)
     throw error
   }
 }
@@ -347,20 +356,20 @@ export async function endCurrentSession() {
  */
 export async function resetProgressSystem() {
   try {
-    console.log('🔄 Reiniciando sistema de progreso...')
-    
+    logger.info('resetProgressSystem', 'Reiniciando sistema de progreso')
+
     // Reiniciar estado
     isInitialized = false
-    
+
     // Limpiar userId persistente
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(USER_ID_STORAGE_KEY)
     }
     currentUserId = null
-    
-    console.log('✅ Sistema de progreso reiniciado')
+
+    logger.info('resetProgressSystem', 'Sistema de progreso reiniciado')
   } catch (error) {
-    console.error('❌ Error al reiniciar sistema de progreso:', error)
+    logger.error('resetProgressSystem', 'Error al reiniciar sistema de progreso', error)
     throw error
   }
 }
