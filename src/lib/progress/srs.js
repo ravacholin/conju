@@ -7,6 +7,9 @@ import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 import { handleSRSReviewComplete } from './gamification.js'
 import { calculateNextIntervalFSRS, isFSRSEnabled } from './fsrs.js'
 import { getActiveSRSConfig, getActiveSRSIntervals } from './expertMode.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('progress:srs')
 
 // Helpers
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
@@ -140,12 +143,13 @@ export function calculateNextIntervalSM2(schedule, correct, hintsUsed, meta = {}
  * @param {Object} cell - Celda (modo, tiempo, persona)
  * @param {boolean} correct - Si la respuesta fue correcta
  * @param {number} hintsUsed - Número de pistas usadas
+ * @param {Object} meta - Metadatos (latency, errorTags, lemma, etc.)
  * @returns {Promise<void>}
  */
 export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}) {
   // Buscar schedule existente para esta celda
   let schedule = await getScheduleByCell(userId, cell.mood, cell.tense, cell.person)
-  
+
   // Si no existe, crear uno nuevo
   if (!schedule) {
     schedule = {
@@ -164,17 +168,29 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       syncedAt: null
     }
   }
-  
-  // Calcular nuevo intervalo
+
+  // Calcular nuevo intervalo con algoritmo base (SM-2 o FSRS)
   const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, {
     ...meta,
     userId
   })
-  const updatedSchedule = {
+
+  let updatedSchedule = {
     ...schedule,
     ...intervalResult,
     updatedAt: new Date(),
     syncedAt: null
+  }
+
+  // Apply family clustering boost if lemma is provided
+  if (meta.lemma && PROGRESS_CONFIG.FEATURE_FLAGS?.SRS_FAMILY_CLUSTERING) {
+    try {
+      const { applyFamilyClusteringBoost } = await import('./srsFamilyClustering.js')
+      updatedSchedule = await applyFamilyClusteringBoost(userId, meta.lemma, cell, updatedSchedule)
+    } catch (error) {
+      // Non-critical feature, continue without clustering
+      logger.warn('updateSchedule', 'Family clustering boost failed', error)
+    }
   }
 
   // Guardar en la base de datos

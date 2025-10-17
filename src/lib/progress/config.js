@@ -260,7 +260,8 @@ export const PROGRESS_CONFIG = {
     PERSONALIZED_STUDY_PLANS: true, // Planes de estudio personalizados (Fase 3)
     EXPERT_MODE: false,            // Modo experto con ajustes de SRS avanzados
     SOCIAL_CHALLENGES: true,       // Funciones sociales y desafíos comunitarios
-    OFFLINE_FIRST: true           // Arquitectura offline-first mejorada
+    OFFLINE_FIRST: true,          // Arquitectura offline-first mejorada
+    SRS_FAMILY_CLUSTERING: true    // Transfer learning entre verbos de familias irregulares
   },
 
   // Configuración de personalización avanzada (Fase 3)
