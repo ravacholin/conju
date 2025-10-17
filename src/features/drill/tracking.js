@@ -1,6 +1,6 @@
 // Funciones de tracking para el sistema de progreso
 
-import { 
+import {
   trackAttemptStarted as internalTrackAttemptStarted,
   trackAttemptSubmitted as internalTrackAttemptSubmitted,
   trackSessionEnded as internalTrackSessionEnded,
@@ -11,6 +11,9 @@ import {
   getUserStats as internalGetUserStats
 } from '../../lib/progress/tracking.js'
 import { classifyError as internalClassifyError } from '../../lib/progress/errorClassification.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('drill:tracking')
 
 /**
  * Registra el inicio de un intento
@@ -20,10 +23,10 @@ import { classifyError as internalClassifyError } from '../../lib/progress/error
 export function trackAttemptStarted(item) {
   try {
     const attemptId = internalTrackAttemptStarted(item)
-    console.log(`🎯 Intento ${attemptId} iniciado para ítem ${item.id}`)
+    logger.debug('trackAttemptStarted', `Intento ${attemptId} iniciado para ítem ${item.id}`)
     return attemptId
   } catch (error) {
-    console.error('❌ Error al iniciar intento:', error)
+    logger.error('trackAttemptStarted', 'Error al iniciar intento', error)
     // Generar ID de respaldo
     return `attempt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }
@@ -38,9 +41,9 @@ export function trackAttemptStarted(item) {
 export async function trackAttemptSubmitted(attemptId, result) {
   try {
     await internalTrackAttemptSubmitted(attemptId, result)
-    console.log(`✅ Intento ${attemptId} registrado`)
+    logger.debug('trackAttemptSubmitted', `Intento ${attemptId} registrado`)
   } catch (error) {
-    console.error('❌ Error al registrar intento:', error)
+    logger.error('trackAttemptSubmitted', 'Error al registrar intento', error)
   }
 }
 
@@ -52,9 +55,9 @@ export async function trackAttemptSubmitted(attemptId, result) {
 export async function trackSessionEnded(sessionData = {}) {
   try {
     await internalTrackSessionEnded(sessionData)
-    console.log('🔚 Sesión finalizada')
+    logger.debug('trackSessionEnded', 'Sesión finalizada')
   } catch (error) {
-    console.error('❌ Error al finalizar sesión:', error)
+    logger.error('trackSessionEnded', 'Error al finalizar sesión', error)
   }
 }
 
@@ -65,9 +68,9 @@ export async function trackSessionEnded(sessionData = {}) {
 export async function trackHintShown() {
   try {
     await internalTrackHintShown()
-    console.log('💡 Pista mostrada')
+    logger.debug('trackHintShown', 'Pista mostrada')
   } catch (error) {
-    console.error('❌ Error al mostrar pista:', error)
+    logger.error('trackHintShown', 'Error al mostrar pista', error)
   }
 }
 
@@ -78,9 +81,9 @@ export async function trackHintShown() {
 export async function trackStreakIncremented() {
   try {
     await internalTrackStreakIncremented()
-    console.log('🔥 Racha incrementada')
+    logger.debug('trackStreakIncremented', 'Racha incrementada')
   } catch (error) {
-    console.error('❌ Error al incrementar racha:', error)
+    logger.error('trackStreakIncremented', 'Error al incrementar racha', error)
   }
 }
 
@@ -92,9 +95,9 @@ export async function trackStreakIncremented() {
 export async function trackTenseDrillStarted(tense) {
   try {
     await internalTrackTenseDrillStarted(tense)
-    console.log(`🔁 Drill de tiempo ${tense} iniciado`)
+    logger.debug('trackTenseDrillStarted', `Drill de tiempo ${tense} iniciado`)
   } catch (error) {
-    console.error('❌ Error al iniciar drill de tiempo:', error)
+    logger.error('trackTenseDrillStarted', 'Error al iniciar drill de tiempo', error)
   }
 }
 
@@ -106,9 +109,9 @@ export async function trackTenseDrillStarted(tense) {
 export async function trackTenseDrillEnded(tense) {
   try {
     await internalTrackTenseDrillEnded(tense)
-    console.log(`✅ Drill de tiempo ${tense} finalizado`)
+    logger.debug('trackTenseDrillEnded', `Drill de tiempo ${tense} finalizado`)
   } catch (error) {
-    console.error('❌ Error al finalizar drill de tiempo:', error)
+    logger.error('trackTenseDrillEnded', 'Error al finalizar drill de tiempo', error)
   }
 }
 
@@ -121,7 +124,7 @@ export async function getUserStats() {
     const stats = await internalGetUserStats()
     return stats
   } catch (error) {
-    console.error('❌ Error al obtener estadísticas del usuario:', error)
+    logger.error('getUserStats', 'Error al obtener estadísticas del usuario', error)
     return {}
   }
 }
@@ -138,7 +141,7 @@ export function classifyError(userAnswer, correctAnswer, item) {
     const errors = internalClassifyError(userAnswer, correctAnswer, item)
     return errors
   } catch (error) {
-    console.error('❌ Error al clasificar error:', error)
+    logger.error('classifyError', 'Error al clasificar error', error)
     // Devolver error genérico si falla la clasificación
     return ['error_general']
   }
