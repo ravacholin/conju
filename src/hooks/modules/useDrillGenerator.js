@@ -47,6 +47,54 @@ import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('useDrillGenerator')
 
+const devDebug = (...args) => {
+  if (import.meta?.env?.DEV) {
+    logger.debug(...args)
+  }
+}
+
+const devInfo = (...args) => {
+  if (import.meta?.env?.DEV) {
+    logger.info(...args)
+  }
+}
+
+const devWarn = (...args) => {
+  if (import.meta?.env?.DEV) {
+    logger.warn(...args)
+  }
+}
+
+const fallbackResultsCache = new Map()
+
+const getFallbackCacheKey = (region, mood, tense) =>
+  `${region || 'la_general'}|${mood}|${tense}`
+
+const buildDrillItemFromForm = (form, method) => ({
+  id: `${method}_${Date.now()}`,
+  lemma: form.lemma,
+  mood: form.mood,
+  tense: form.tense,
+  person: form.person,
+  value: form.value,
+  type: form.type,
+  isEmergencyFallback: false,
+  prompt: `Conjugar ${form.lemma} en ${form.person}`,
+  answer: form.value,
+  selectionMethod: method
+})
+
+const respectsAllowedPersons = (form, allowedPersons) =>
+  form.mood === 'nonfinite' || !allowedPersons || allowedPersons.has(form.person)
+
+const filterFormsByConstraints = (forms, mood, tense, allowedPersons) =>
+  (forms || []).filter(form =>
+    form.mood === mood &&
+    form.tense === tense &&
+    form.value &&
+    respectsAllowedPersons(form, allowedPersons)
+  )
+
 const computeUrgencyLevel = (nextDue, now) => {
   if (!nextDue) return 1
   const dueDate = new Date(nextDue)
@@ -177,6 +225,10 @@ export const useDrillGenerator = () => {
 
     setIsGenerating(true)
     
+    const region = settings.region || 'la_general'
+    let signature = null
+    let allFormsForRegion = formsPoolRef.current.forms
+
     try {
       const reviewSessionType = settings.reviewSessionType || 'due'
       const reviewSessionFilter = settings.reviewSessionFilter || {}
@@ -197,9 +249,7 @@ export const useDrillGenerator = () => {
       // Trigger smart preloading before form generation for better performance
       // Note: Verb preloading is no longer needed as all verbs are directly imported
 
-      const region = settings.region || 'la_general'
-      const signature = getFormsCacheKey(region, settings)
-      let allFormsForRegion = formsPoolRef.current.forms
+      signature = getFormsCacheKey(region, settings)
 
       if (!allFormsForRegion || formsPoolRef.current.signature !== signature) {
         const startTime = getNow()
@@ -333,8 +383,11 @@ export const useDrillGenerator = () => {
             return mixedFallbackItem
           }
           // If even mixed fallback failed, use emergency fallback
-          console.log('🆘 useDrillGenerator: Mixed fallback failed, using emergency fallback')
-          const emergencyItem = await createEmergencyFallbackItem(settings)
+          devWarn('generateNextItem', 'Mixed fallback failed, using emergency fallback')
+          const emergencyItem = await createEmergencyFallbackItem(settings, {
+            precomputedForms: allFormsForRegion,
+            formsSignature: signature
+          })
           setLastGeneratedItem(emergencyItem)
           return emergencyItem
         }
@@ -476,8 +529,11 @@ export const useDrillGenerator = () => {
             return mixedFallbackItem
           } else {
             // Even mixed fallback failed - use emergency
-            console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
-            const emergencyItem = await createEmergencyFallbackItem(settings)
+            devWarn('generateNextItem', 'Mixed fallback returned null, using emergency fallback')
+            const emergencyItem = await createEmergencyFallbackItem(settings, {
+              precomputedForms: allFormsForRegion,
+              formsSignature: signature
+            })
             setLastGeneratedItem(emergencyItem)
             return emergencyItem
           }
@@ -512,8 +568,11 @@ export const useDrillGenerator = () => {
       }
 
       // NEVER return null - use emergency fallback as absolute last resort
-      console.log('🆘 useDrillGenerator: All fallbacks failed, using emergency fallback')
-      const emergencyItem = await createEmergencyFallbackItem(settings)
+      devWarn('generateNextItem', 'All fallbacks failed, using emergency fallback')
+      const emergencyItem = await createEmergencyFallbackItem(settings, {
+        precomputedForms: allFormsForRegion,
+        formsSignature: signature
+      })
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
 
@@ -532,8 +591,11 @@ export const useDrillGenerator = () => {
       logger.error('generateNextItem', 'Error during item generation', error)
 
       // NEVER return null - always provide an emergency fallback
-      console.log('🆘 useDrillGenerator: Creating emergency fallback after critical error')
-      const emergencyItem = await createEmergencyFallbackItem(settings)
+      devWarn('generateNextItem', 'Creating emergency fallback after critical error')
+      const emergencyItem = await createEmergencyFallbackItem(settings, {
+        precomputedForms: allFormsForRegion,
+        formsSignature: signature
+      })
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
     } finally {
@@ -638,43 +700,161 @@ export const useDrillGenerator = () => {
  * @param {Object} settings - User settings for context
  * @returns {Object} A valid drill item that always works
  */
-async function createEmergencyFallbackItem(settings) {
-  console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense, 'region:', settings.region)
-
-  // Define target mood/tense outside try block so it's available throughout function
+async function createEmergencyFallbackItem(settings, options = {}) {
+  const { precomputedForms = null, formsSignature = null } = options
+  const region = settings.region || 'la_general'
   const targetMood = settings.specificMood || 'indicative'
   const targetTense = settings.specificTense || 'pres'
+  const cacheKey = getFallbackCacheKey(region, targetMood, targetTense)
+  const expectedSignature = getFormsCacheKey(region, settings)
+
+  const selectFromCache = (entry) => {
+    if (!entry) return null
+
+    if (entry.signature && entry.signature !== expectedSignature) {
+      return null
+    }
+
+    const pools = [entry.direct, entry.relaxedMood]
+    for (const pool of pools) {
+      if (!pool?.forms?.length) continue
+      const selectedForm = pool.forms[Math.floor(Math.random() * pool.forms.length)]
+      if (selectedForm) {
+        devInfo('createEmergencyFallbackItem', 'Reusing cached fallback result', {
+          mood: selectedForm.mood,
+          tense: selectedForm.tense,
+          method: pool.method,
+          cachedAt: entry.cachedAt
+        })
+        return buildDrillItemFromForm(selectedForm, pool.method)
+      }
+    }
+    return null
+  }
 
   try {
-    // Import regional filtering function
+    const cachedEntry = fallbackResultsCache.get(cacheKey)
+    if (cachedEntry) {
+      const cachedItem = selectFromCache(cachedEntry)
+      if (cachedItem) {
+        return cachedItem
+      }
+    }
+
     const { getAllowedPersonsForRegion } = await import('../../lib/core/curriculumGate.js')
-    const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
+    const allowedPersons = getAllowedPersonsForRegion(region)
 
-    console.log('🌍 Emergency fallback: filtering by region', settings.region, 'allowed persons:', Array.from(allowedPersons))
+    if (import.meta?.env?.DEV) {
+      devDebug('createEmergencyFallbackItem', 'Computed allowed persons for region', {
+        region,
+        allowed: Array.from(allowedPersons || [])
+      })
+    }
 
-    // STEP 1: Try to get forms directly from database, bypassing all caching
+    const canUsePrecomputed = Array.isArray(precomputedForms) &&
+      precomputedForms.length > 0 &&
+      (!formsSignature || formsSignature === expectedSignature)
+
+    if (canUsePrecomputed) {
+      const directMatches = filterFormsByConstraints(precomputedForms, targetMood, targetTense, allowedPersons)
+      if (directMatches.length > 0) {
+        const method = 'precomputed_forms_fallback'
+        fallbackResultsCache.set(cacheKey, {
+          direct: { forms: directMatches, method },
+          relaxedMood: cachedEntry?.relaxedMood || null,
+          cachedAt: Date.now(),
+          signature: expectedSignature
+        })
+
+        const selectedForm = directMatches[Math.floor(Math.random() * directMatches.length)]
+        devInfo('createEmergencyFallbackItem', 'Using precomputed forms pool for fallback', {
+          mood: selectedForm.mood,
+          tense: selectedForm.tense,
+          forms: directMatches.length
+        })
+        return buildDrillItemFromForm(selectedForm, method)
+      }
+    }
+
     const { getAllVerbs } = await import('../../lib/core/verbDataService.js')
     const allVerbs = await getAllVerbs()
 
-    console.log('📚 Direct database access: got', allVerbs.length, 'verbs')
-
-    console.log('🎯 Looking for forms with mood:', targetMood, 'tense:', targetTense)
+    devDebug('createEmergencyFallbackItem', 'Scanning raw verbs for fallback forms', {
+      verbs: allVerbs.length,
+      targetMood,
+      targetTense
+    })
 
     const matchingForms = []
+    const MAX_MATCHES = 150
+    const MAX_VERB_SCAN = 800
+    let scannedVerbs = 0
 
-    for (const verb of allVerbs) {
-      if (!verb.paradigms) continue
+    outer: for (const verb of allVerbs) {
+      if (!verb?.paradigms) continue
+      scannedVerbs += 1
 
       for (const paradigm of verb.paradigms) {
-        if (!paradigm.forms) continue
+        if (!paradigm?.forms) continue
 
         for (const form of paradigm.forms) {
-          // EXACT MATCH for requested mood and tense
-          if (form.mood === targetMood && form.tense === targetTense && form.value) {
-            // CRITICAL FIX: Only include forms with persons allowed for this region
-            // For nonfinite forms (infinitive, gerund, participle), person filtering doesn't apply
-            if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
-              matchingForms.push({
+          if (form.mood === targetMood && form.tense === targetTense && form.value &&
+              respectsAllowedPersons(form, allowedPersons)) {
+            matchingForms.push({
+              lemma: verb.lemma,
+              mood: form.mood,
+              tense: form.tense,
+              person: form.person,
+              value: form.value,
+              type: verb.type || 'regular'
+            })
+
+            if (matchingForms.length >= MAX_MATCHES) {
+              break outer
+            }
+          }
+        }
+      }
+
+      if (scannedVerbs >= MAX_VERB_SCAN && matchingForms.length > 0) {
+        break
+      }
+    }
+
+    if (matchingForms.length > 0) {
+      const method = 'direct_database_fallback'
+      fallbackResultsCache.set(cacheKey, {
+        direct: { forms: matchingForms, method },
+        relaxedMood: cachedEntry?.relaxedMood || null,
+        cachedAt: Date.now(),
+        signature: expectedSignature
+      })
+
+      const selectedForm = matchingForms[Math.floor(Math.random() * matchingForms.length)]
+      devInfo('createEmergencyFallbackItem', 'Using direct database fallback', {
+        mood: selectedForm.mood,
+        tense: selectedForm.tense,
+        totalMatches: matchingForms.length,
+        scannedVerbs
+      })
+      return buildDrillItemFromForm(selectedForm, method)
+    }
+
+    if (targetTense !== 'pres') {
+      const relaxedForms = []
+      let relaxedScanned = 0
+
+      outerRelaxed: for (const verb of allVerbs) {
+        if (!verb?.paradigms) continue
+        relaxedScanned += 1
+
+        for (const paradigm of verb.paradigms) {
+          if (!paradigm?.forms) continue
+
+          for (const form of paradigm.forms) {
+            if (form.mood === targetMood && form.tense === 'pres' && form.value &&
+                respectsAllowedPersons(form, allowedPersons)) {
+              relaxedForms.push({
                 lemma: verb.lemma,
                 mood: form.mood,
                 tense: form.tense,
@@ -682,93 +862,52 @@ async function createEmergencyFallbackItem(settings) {
                 value: form.value,
                 type: verb.type || 'regular'
               })
-            }
-          }
-        }
-      }
-    }
 
-    console.log('✅ Found', matchingForms.length, 'REAL forms for', targetMood, targetTense, 'respecting regional constraints')
-
-    // STEP 3: If we found real forms, use one randomly
-    if (matchingForms.length > 0) {
-      const selectedForm = matchingForms[Math.floor(Math.random() * matchingForms.length)]
-
-      console.log('🎉 Using REAL form:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, selectedForm.value)
-
-      const realItem = {
-        id: `real_fallback_${Date.now()}`,
-        lemma: selectedForm.lemma,
-        mood: selectedForm.mood,
-        tense: selectedForm.tense,
-        person: selectedForm.person,
-        value: selectedForm.value,
-        type: selectedForm.type,
-        isEmergencyFallback: false, // This is NOT emergency, it's REAL
-        prompt: `Conjugar ${selectedForm.lemma} en ${selectedForm.person}`,
-        answer: selectedForm.value,
-        selectionMethod: 'direct_database_fallback'
-      }
-
-      return realItem
-    }
-
-    // STEP 4: If no exact match, try relaxing tense but keeping mood
-    if (targetTense !== 'pres') {
-      console.log('⚠️ No exact match found, trying', targetMood, 'presente as fallback')
-
-      const moodForms = []
-      for (const verb of allVerbs) {
-        if (!verb.paradigms) continue
-
-        for (const paradigm of verb.paradigms) {
-          if (!paradigm.forms) continue
-
-          for (const form of paradigm.forms) {
-            if (form.mood === targetMood && form.tense === 'pres' && form.value) {
-              // CRITICAL FIX: Only include forms with persons allowed for this region
-              if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
-                moodForms.push({
-                  lemma: verb.lemma,
-                  mood: form.mood,
-                  tense: form.tense,
-                  person: form.person,
-                  value: form.value,
-                  type: verb.type || 'regular'
-                })
+              if (relaxedForms.length >= MAX_MATCHES) {
+                break outerRelaxed
               }
             }
           }
         }
+
+        if (relaxedScanned >= MAX_VERB_SCAN && relaxedForms.length > 0) {
+          break
+        }
       }
 
-      if (moodForms.length > 0) {
-        const selectedForm = moodForms[Math.floor(Math.random() * moodForms.length)]
+      if (relaxedForms.length > 0) {
+        const method = 'mood_fallback'
+        fallbackResultsCache.set(cacheKey, {
+          direct: cachedEntry?.direct || null,
+          relaxedMood: { forms: relaxedForms, method },
+          cachedAt: Date.now(),
+          signature: expectedSignature
+        })
 
-        console.log('🔄 Using mood fallback:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, 'respecting regional constraints')
-
-        return {
-          id: `mood_fallback_${Date.now()}`,
-          lemma: selectedForm.lemma,
-          mood: selectedForm.mood,
-          tense: selectedForm.tense,
-          person: selectedForm.person,
-          value: selectedForm.value,
-          type: selectedForm.type,
-          isEmergencyFallback: false,
-          prompt: `Conjugar ${selectedForm.lemma} en ${selectedForm.person}`,
-          answer: selectedForm.value,
-          selectionMethod: 'mood_fallback'
-        }
+        const selectedForm = relaxedForms[Math.floor(Math.random() * relaxedForms.length)]
+        devWarn('createEmergencyFallbackItem', 'No exact tense match found, using mood fallback', {
+          fallbackTense: 'pres',
+          targetMood,
+          requestedTense: targetTense,
+          candidates: relaxedForms.length
+        })
+        return buildDrillItemFromForm(selectedForm, method)
       }
     }
 
   } catch (error) {
-    console.error('❌ Error in real fallback system:', error)
+    logger.error('createEmergencyFallbackItem', 'Error in real fallback system', error)
   }
 
-  // STEP 5: Only if everything fails, show clear error message
-  console.error(`💥 CRITICAL: No forms found for ${targetMood}/${targetTense}. Database may be corrupted.`)
+  logger.error(
+    'createEmergencyFallbackItem',
+    `No forms found for ${targetMood}/${targetTense}. Database may be corrupted.`,
+    {
+      mood: targetMood,
+      tense: targetTense,
+      region
+    }
+  )
 
   return {
     id: `critical_error_${Date.now()}`,
