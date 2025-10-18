@@ -13,7 +13,7 @@ vi.mock('./tracking.js', () => ({
   trackTenseDrillEnded: vi.fn()
 }))
 
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   incrementSessionCount: vi.fn(),
   getCurrentUserId: vi.fn(() => 'user-test')
 }))

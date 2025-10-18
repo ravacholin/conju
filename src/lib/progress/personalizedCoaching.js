@@ -2,7 +2,7 @@
 // Analyzes user patterns and provides targeted learning guidance
 
 import { getMasteryByUser, getRecentAttempts } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { createLogger } from '../utils/logger.js'

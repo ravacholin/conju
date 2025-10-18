@@ -1,7 +1,7 @@
 // Motor de práctica adaptativa para personalizar la experiencia de aprendizaje
 
 import { getMasteryByUser, getDueSchedules } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
 import { validateMoodTenseAvailability } from '../core/generator.js'

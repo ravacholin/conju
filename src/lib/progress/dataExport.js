@@ -2,7 +2,7 @@
 // Parte de la Fase 5: Exportación y respaldo de datos
 
 import { getAllFromDB, getAttemptsByUser, getMasteryByUser } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { formatDate } from './helpers.js'
 import { createLogger } from '../utils/logger.js'
 

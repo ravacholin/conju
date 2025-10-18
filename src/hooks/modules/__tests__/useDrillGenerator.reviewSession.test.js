@@ -42,7 +42,7 @@ vi.mock('../../../lib/core/curriculumGate.js', () => ({
   gateDueItemsByCurriculum: mockGateDueItemsByCurriculum
 }))
 
-vi.mock('../../../lib/progress/userManager.js', () => ({
+vi.mock('../../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: mockGetCurrentUserId
 }))
 

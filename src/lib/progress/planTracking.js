@@ -1,7 +1,7 @@
 // Sistema de tracking de planes de estudio personalizados
 // Gestiona el progreso de sesiones dentro de planes generados
 
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { saveToDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'

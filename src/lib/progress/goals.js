@@ -1,7 +1,7 @@
 // Objetivos semanales para el sistema de progreso
 
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
-import { getUserSettings } from './userManager.js'
+import { getUserSettings } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:goals')

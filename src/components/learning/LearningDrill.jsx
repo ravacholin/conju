@@ -68,7 +68,7 @@ import {
 import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 
 const logger = createLogger('LearningDrill');
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { getGamificationStats } from '../../lib/progress/gamification.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import './GamificationDisplay.css'
 
 export default function GamificationDisplay({ compact = false, showBadges = true }) {

@@ -1,6 +1,6 @@
 // Sistema de notificaciones inteligentes basado en patrones de aprendizaje
 import { PROGRESS_CONFIG } from '../progress/config.js'
-import { getCurrentUserId } from '../progress/userManager.js'
+import { getCurrentUserId } from '../progress/userManager/index.js'
 import { getAttemptsByUser, getDueSchedules } from '../progress/database.js'
 
 // Configuración de notificaciones

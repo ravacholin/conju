@@ -7,7 +7,7 @@ import personalizationEngine from '../personalization/PersonalizationEngine.js';
 import { EXERCISE_TYPES, DIFFICULTY_LEVELS } from '../core/constants.js';
 
 // Mock de dependencias
-vi.mock('../../progress/userManager.js', () => ({
+vi.mock('../../progress/userManager/index.js', () => ({
   getCurrentUserId: () => 'test-user-id'
 }));
 

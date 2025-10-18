@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { grade } from '../../lib/core/grader.js';

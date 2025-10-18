@@ -2,7 +2,7 @@
 // Permite probar FSRS vs SM-2 y otras funcionalidades de manera controlada
 
 import { PROGRESS_CONFIG } from './config.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:abTesting')

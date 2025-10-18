@@ -51,7 +51,7 @@ vi.mock('../../lib/learning/analytics.js', () => ({
 vi.mock('../../state/settings.js', () => ({
   useSettings: () => useSettingsMock()
 }))
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: vi.fn(() => 'test-user')
 }))
 vi.mock('../../lib/core/eligibility.js', () => ({

@@ -1,7 +1,7 @@
 // Sistema de sincronización avanzada con la nube
 // Funcionalidades avanzadas para Fase 5+
 
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { exportProgressData } from './dataExport.js'
 import { createLogger } from '../utils/logger.js'
 

@@ -1,7 +1,7 @@
 // Social and community features (Phase 3)
 
 import { PROGRESS_CONFIG } from './config.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { getDailyChallengeSnapshot } from './challenges.js'
 import { createLogger } from '../utils/logger.js'
 

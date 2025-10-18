@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getMasteryScore } from '../../lib/progress/mastery.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('features:MasteryIndicator')

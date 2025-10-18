@@ -1,7 +1,7 @@
 // Gestor de dificultad dinámico para ajustar la experiencia según el rendimiento
 
 import { getRealUserStats } from './realTimeAnalytics.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { getMasteryByUser as _getMasteryByUser } from './database.js'
 import { createLogger } from '../utils/logger.js'
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getDueSchedules, getMasteryByUser } from '../lib/progress/database.js'
-import { getCurrentUserId } from '../lib/progress/userManager.js'
+import { getCurrentUserId } from '../lib/progress/userManager/index.js'
 import { formatMoodTense } from '../lib/utils/verbLabels.js'
 
 function computeUrgency(nextDue, now) {

@@ -27,7 +27,7 @@ vi.mock('../../hooks/useSRSQueue.js', () => ({
   })
 }))
 
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: () => 'user-123'
 }))
 

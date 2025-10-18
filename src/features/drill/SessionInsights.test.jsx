@@ -2,10 +2,10 @@ import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import SessionInsights from './SessionInsights.jsx'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: vi.fn(() => null)
 }))
 

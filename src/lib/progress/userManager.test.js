@@ -6,6 +6,7 @@ function setupLoggerMock() {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
+    systemInit: vi.fn(),
     perf: {
       start: vi.fn(),
       end: vi.fn(),
@@ -50,7 +51,7 @@ describe('wakeUpServer URL handling', () => {
 
     setupLoggerMock()
 
-    const { setSyncEndpoint, __testing } = await import('./userManager.js')
+    const { setSyncEndpoint, __testing } = await import('./userManager/index.js')
 
     setSyncEndpoint('https://example.com/foo/bar/api')
 
@@ -67,7 +68,7 @@ describe('wakeUpServer URL handling', () => {
 
     setupLoggerMock()
 
-    const { setSyncEndpoint, __testing } = await import('./userManager.js')
+    const { setSyncEndpoint, __testing } = await import('./userManager/index.js')
 
     setSyncEndpoint('https://example.com/api')
 
@@ -83,7 +84,7 @@ describe('wakeUpServer URL handling', () => {
     global.fetch = fetchMock
     const loggerSpies = setupLoggerMock()
 
-    const { setSyncEndpoint, __testing } = await import('./userManager.js')
+    const { setSyncEndpoint, __testing } = await import('./userManager/index.js')
 
     setSyncEndpoint('https://example.com/api')
 
@@ -167,7 +168,7 @@ describe('mergeAccountDataLocally safeguards', () => {
 
     const loggerSpies = setupLoggerMock()
 
-    const module = await import('./userManager.js')
+    const module = await import('./userManager/index.js')
 
     const mergeResult = await module.__testing.mergeAccountDataLocally({
       attempts: [

@@ -17,7 +17,7 @@ vi.mock('../tracking.js', () => ({
   trackTenseDrillEnded: vi.fn()
 }))
 
-vi.mock('../../../lib/progress/userManager.js', () => ({
+vi.mock('../../../lib/progress/userManager/index.js', () => ({
   incrementSessionCount: vi.fn(),
   getCurrentUserId: vi.fn()
 }))
@@ -53,7 +53,7 @@ import {
 import {
   incrementSessionCount,
   getCurrentUserId
-} from '../../../lib/progress/userManager.js'
+} from '../../../lib/progress/userManager/index.js'
 
 import {
   isProgressSystemInitialized,

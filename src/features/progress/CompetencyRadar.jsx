@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, memo } from 'react'
 import { getHeatMapData } from '../../lib/progress/analytics.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/uiUtils.js'
 import { createLogger } from '../../lib/utils/logger.js'

@@ -5,13 +5,13 @@ import React from 'react';
 import CommunicativePractice, { detectTenseUsage } from './CommunicativePractice.jsx';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 import * as srs from '../../lib/progress/srs.js';
-import * as userManager from '../../lib/progress/userManager.js';
+import * as userManager from '../../lib/progress/userManager/index.js';
 
 const mockUseProgressTracking = vi.hoisted(() => vi.fn());
 const mockHandleResult = vi.hoisted(() => vi.fn());
 
 vi.mock('../../lib/progress/srs.js');
-vi.mock('../../lib/progress/userManager.js');
+vi.mock('../../lib/progress/userManager/index.js');
 vi.mock('../../features/drill/useProgressTracking.js', () => ({
   useProgressTracking: (...args) => mockUseProgressTracking(...args)
 }));

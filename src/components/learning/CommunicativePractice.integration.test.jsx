@@ -7,13 +7,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import * as srs from '../../lib/progress/srs.js';
-import * as userManager from '../../lib/progress/userManager.js';
+import * as userManager from '../../lib/progress/userManager/index.js';
 
 const mockUseProgressTracking = vi.hoisted(() => vi.fn());
 
 // Mock the SRS and user manager modules
 vi.mock('../../lib/progress/srs.js');
-vi.mock('../../lib/progress/userManager.js');
+vi.mock('../../lib/progress/userManager/index.js');
 vi.mock('../../features/drill/useProgressTracking.js', () => ({
   useProgressTracking: (...args) => mockUseProgressTracking(...args)
 }));

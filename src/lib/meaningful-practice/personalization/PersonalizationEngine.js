@@ -7,7 +7,7 @@
  * @module PersonalizationEngine
  */
 
-import { getCurrentUserId } from '../../progress/userManager.js';
+import { getCurrentUserId } from '../../progress/userManager/index.js';
 import { getProgress } from '../../progress/progressRepository.js';
 import { createLogger } from '../../utils/logger.js';
 import { EXERCISE_TYPES, DIFFICULTY_LEVELS, PERSONALIZATION_CONFIG } from '../core/constants.js';

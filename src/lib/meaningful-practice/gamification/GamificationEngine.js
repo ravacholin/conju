@@ -7,7 +7,7 @@
  * @module GamificationEngine
  */
 
-import { getCurrentUserId } from '../../progress/userManager.js';
+import { getCurrentUserId } from '../../progress/userManager/index.js';
 import { createLogger } from '../../utils/logger.js';
 import { GAMIFICATION_CONFIG, DIFFICULTY_LEVELS } from '../core/constants.js';
 

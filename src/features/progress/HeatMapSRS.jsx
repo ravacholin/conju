@@ -3,7 +3,7 @@ import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import { getHeatMapData } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
 import { createLogger } from '../../lib/utils/logger.js'
 

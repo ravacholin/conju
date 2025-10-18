@@ -8,7 +8,7 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { flowDetector, FLOW_STATES } from './flowStateDetection.js'
 import { intelligentFSRS } from './fsrs.js'
 // import { getMasteryByUser } from './database.js' // TODO: Use when implementing full ML features
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:mlRecommendations')

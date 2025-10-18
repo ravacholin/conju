@@ -9,7 +9,7 @@ import {
   trackTenseDrillStarted,
   trackTenseDrillEnded
 } from './tracking.js'
-import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager.js'
+import { incrementSessionCount, getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import {
   isProgressSystemInitialized,
   onProgressSystemReady

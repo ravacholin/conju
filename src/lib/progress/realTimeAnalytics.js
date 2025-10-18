@@ -2,8 +2,8 @@
 
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
 import { formatMoodTense } from '../utils/verbLabels.js'
-// import { getCurrentUserId, getUserSettings } from './userManager.js'
-import { getUserSettings } from './userManager.js'
+// import { getCurrentUserId, getUserSettings } from './userManager/index.js'
+import { getUserSettings } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:realTimeAnalytics')
