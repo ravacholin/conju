@@ -13,12 +13,13 @@
 
 /* SRS Review Queue Banner */
 .srs-review-banner {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--panel);
+  border: 2px solid var(--accent-blue);
   border-radius: 12px;
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,8 +27,9 @@
 }
 
 .srs-review-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: var(--hover);
+  border-color: var(--accent-blue);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .srs-banner-content {
@@ -44,7 +46,7 @@
 }
 
 .srs-banner-text {
-  color: white;
+  color: var(--text);
   font-size: 1.1rem;
   line-height: 1.5;
 }
@@ -52,17 +54,18 @@
 .srs-banner-text strong {
   font-size: 1.5rem;
   font-weight: 700;
+  color: var(--accent-blue);
 }
 
 .srs-urgent {
-  color: #ffd700;
+  color: var(--accent-orange);
   font-weight: 600;
 }
 
 .srs-banner-action {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid white;
+  background: var(--accent-blue);
+  color: var(--text);
+  border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
@@ -73,8 +76,9 @@
 }
 
 .srs-banner-action:hover {
-  background: white;
-  color: #667eea;
+  background: var(--hover);
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
 }
 
 /* Loading and Error States */
@@ -1220,13 +1224,13 @@
 
 /* ML-Powered Recommendation Card */
 .recommendation-card.ml-powered {
-  border-color: rgba(167, 139, 250, 0.3);
-  background: rgba(167, 139, 250, 0.05);
+  border-color: rgba(0, 123, 255, 0.3);
+  background: rgba(0, 123, 255, 0.05);
 }
 
 .recommendation-card.ml-powered:hover {
-  border-color: rgba(167, 139, 250, 0.5);
-  background: rgba(167, 139, 250, 0.08);
+  border-color: rgba(0, 123, 255, 0.5);
+  background: rgba(0, 123, 255, 0.08);
 }
 
 .rec-header {
@@ -1254,8 +1258,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(167, 139, 250, 0.2);
-  border: 1px solid rgba(167, 139, 250, 0.4);
+  background: rgba(0, 123, 255, 0.2);
+  border: 1px solid rgba(0, 123, 255, 0.4);
   border-radius: 12px;
   padding: 0.2rem 0.4rem;
 }
@@ -1275,7 +1279,7 @@
 }
 
 .rec-meta.confidence {
-  color: rgba(167, 139, 250, 0.9);
+  color: rgba(0, 123, 255, 0.9);
   font-weight: 600;
 }
 
@@ -1283,14 +1287,14 @@
 .ml-metrics {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: rgba(167, 139, 250, 0.05);
-  border: 1px solid rgba(167, 139, 250, 0.2);
+  background: rgba(0, 123, 255, 0.05);
+  border: 1px solid rgba(0, 123, 255, 0.2);
   border-radius: 12px;
 }
 
 .ml-metrics h4 {
   font-size: 0.9rem;
-  color: rgba(167, 139, 250, 0.9);
+  color: rgba(0, 123, 255, 0.9);
   margin: 0 0 0.75rem 0;
   font-weight: 600;
 }

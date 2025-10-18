@@ -75,24 +75,25 @@ export default function CommunityPulse({ snapshot }) {
           onClick={fetchRealData}
           disabled={isLoading}
           style={{
-            background: isLoading ? '#ccc' : '#667eea',
-            color: 'white',
-            border: 'none',
+            background: isLoading ? 'var(--hover)' : 'var(--accent-blue)',
+            color: 'var(--text)',
+            border: '1px solid var(--border)',
             borderRadius: '4px',
             padding: '6px 12px',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             fontSize: '13px'
           }}
         >
-          {isLoading ? 'Actualizando...' : '🔄 Actualizar'}
+          {isLoading ? 'Actualizando...' : 'Actualizar'}
         </button>
       </div>
 
       {/* Current user rank highlight */}
       {currentUserRank && !isOffline && (
         <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
+          background: 'var(--panel)',
+          border: '1px solid var(--accent-blue)',
+          color: 'var(--text)',
           padding: '12px 16px',
           borderRadius: '8px',
           marginBottom: '16px',
@@ -163,9 +164,6 @@ export default function CommunityPulse({ snapshot }) {
                 <li key={entry.userId || entry.alias || index} className={isCurrentUser ? 'current-user' : ''}>
                   <span className="community-rank">
                     #{rank}
-                    {rank === 1 && ' 🏆'}
-                    {rank === 2 && ' 🥈'}
-                    {rank === 3 && ' 🥉'}
                   </span>
                   <div className="community-player">
                     <strong>
