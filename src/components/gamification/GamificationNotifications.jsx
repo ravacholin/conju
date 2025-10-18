@@ -16,7 +16,7 @@ export default function GamificationNotifications() {
         type: 'xp',
         title: `+${amount} XP`,
         message: getXPMessage(reason),
-        icon: '/icons/star.png',
+        icon: '/icons/sparks.png',
         duration: 3000,
         meta: {
           amount,
@@ -63,7 +63,7 @@ export default function GamificationNotifications() {
           type: 'streak',
           title: '¡Racha increíble!',
           message: `${currentStreak} ${streakName} seguidos`,
-          icon: '/icons/fire.png',
+          icon: '/icons/bolt.png',
           duration: 4000
         })
       }
@@ -206,11 +206,11 @@ export default function GamificationNotifications() {
       // Surface missing icon information in development for easier debugging/metrics
       console.warn('Gamification notification icon missing, applying fallback', {
         attemptedSrc: target.src,
-        fallbackSrc: target.dataset?.fallback || '/icons/star.png'
+        fallbackSrc: target.dataset?.fallback || '/icons/sparks.png'
       })
     }
 
-    target.src = target.dataset?.fallback || '/icons/star.png'
+    target.src = target.dataset?.fallback || '/icons/sparks.png'
   }
 
   if (notifications.length === 0) return null

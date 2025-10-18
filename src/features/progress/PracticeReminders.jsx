@@ -166,7 +166,7 @@ export default function PracticeReminders({
     <div className="practice-reminders">
       <div className="section-header">
         <h2>
-          <img src="/icons/bell.png" alt="Recordatorios" className="section-icon" />
+          <img src="/icons/timer.png" alt="Recordatorios" className="section-icon" />
           Recordatorios inteligentes
         </h2>
         <p>
