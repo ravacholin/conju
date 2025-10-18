@@ -29,115 +29,31 @@ import {
   generateAllFormsForRegion,
   getFormsCacheKey
 } from './DrillFormFilters.js'
-import { 
-  validateEligibleForms, 
+import {
+  validateEligibleForms,
   performIntegrityGuard,
-  validateSpecificPracticeConfig 
+  validateSpecificPracticeConfig
 } from './DrillValidationSystem.js'
 import { 
   tryIntelligentFallback, 
   fallbackToMixedPractice 
 } from './DrillFallbackStrategies.js'
 import { generateDrillItem } from './DrillItemGenerator.js'
-import { 
-  generateDoubleModeItem, 
-  isDoubleModeViable 
+import {
+  generateDoubleModeItem,
+  isDoubleModeViable
 } from './DoubleModeManager.js'
+import { resolveFormsPool } from './formsPoolService.js'
+import {
+  getReviewSessionContext,
+  buildSpecificConstraints,
+  applyReviewSessionFilter,
+  selectDueCandidate
+} from './specificConstraints.js'
+import { selectNextForm } from './hierarchicalSelection.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('useDrillGenerator')
-
-const computeUrgencyLevel = (nextDue, now) => {
-  if (!nextDue) return 1
-  const dueDate = new Date(nextDue)
-  const diffHours = (dueDate - now) / (1000 * 60 * 60)
-
-  if (Number.isNaN(diffHours)) return 1
-  if (diffHours < 0) return 4
-  if (diffHours < 6) return 3
-  if (diffHours < 24) return 2
-  return 1
-}
-
-const applyReviewSessionFilter = (
-  dueCells,
-  reviewSessionType,
-  reviewSessionFilter,
-  now
-) => {
-  if (!Array.isArray(dueCells) || dueCells.length === 0) return []
-
-  const filter = reviewSessionFilter || {}
-  let filtered = dueCells.filter(Boolean)
-
-  const targetMood = filter.mood
-  const targetTense = filter.tense
-  const targetPerson = filter.person
-
-  if (targetMood) {
-    filtered = filtered.filter(cell => cell?.mood === targetMood)
-  }
-
-  if (targetTense) {
-    filtered = filtered.filter(cell => cell?.tense === targetTense)
-  }
-
-  if (targetPerson) {
-    filtered = filtered.filter(cell => cell?.person === targetPerson)
-  }
-
-  const urgencyFilter = filter.urgency
-  if (urgencyFilter && urgencyFilter !== 'all') {
-    filtered = filtered.filter(cell => {
-      const urgency = computeUrgencyLevel(cell?.nextDue, now)
-
-      if (urgencyFilter === 'urgent') return urgency >= 3
-      if (urgencyFilter === 'overdue') return urgency === 4
-
-      const numericUrgency = Number(urgencyFilter)
-      if (!Number.isNaN(numericUrgency)) {
-        return urgency === numericUrgency
-      }
-
-      return true
-    })
-  }
-
-  const limit = filter.limit
-  if (limit === 'light') {
-    filtered = filtered.slice(0, Math.max(1, filter.limitCount || 10))
-  } else if (typeof limit === 'number' && limit > 0) {
-    filtered = filtered.slice(0, Math.floor(limit))
-  }
-
-  // Specific review sessions should still honour mood/tense even if filter removed all
-  if (reviewSessionType === 'specific' && filtered.length === 0) {
-    filtered = dueCells.filter(cell => {
-      if (!cell) return false
-      if (targetMood && cell.mood !== targetMood) return false
-      if (targetTense && cell.tense !== targetTense) return false
-      if (targetPerson && cell.person !== targetPerson) return false
-      return true
-    })
-  }
-
-  return filtered
-}
-
-const selectDueCandidate = (dueCells, reviewSessionType) => {
-  if (!Array.isArray(dueCells) || dueCells.length === 0) return null
-
-  switch (reviewSessionType) {
-    case 'specific':
-    case 'urgent':
-    case 'light':
-    case 'due':
-    case 'today':
-      return dueCells.find(Boolean) || null
-    default:
-      return dueCells.find(Boolean) || null
-  }
-}
 
 /**
  * Specialized hook for drill item generation
@@ -175,12 +91,11 @@ export const useDrillGenerator = () => {
       return null
     }
 
-    setIsGenerating(true)
-    
-    try {
-      const reviewSessionType = settings.reviewSessionType || 'due'
-      const reviewSessionFilter = settings.reviewSessionFilter || {}
+    const { reviewSessionType, reviewSessionFilter } = getReviewSessionContext(settings)
 
+    setIsGenerating(true)
+
+    try {
       logger.info('generateNextItem', 'Starting item generation', {
         verbType: settings.verbType,
         selectedFamily: settings.selectedFamily,
@@ -193,111 +108,77 @@ export const useDrillGenerator = () => {
         excludedItem: itemToExclude?.lemma,
         doubleActive: settings.doubleActive
       })
-      
-      // Trigger smart preloading before form generation for better performance
-      // Note: Verb preloading is no longer needed as all verbs are directly imported
 
-      const region = settings.region || 'la_general'
-      const signature = getFormsCacheKey(region, settings)
-      let allFormsForRegion = formsPoolRef.current.forms
+      const poolResult = await resolveFormsPool({
+        settings,
+        region: settings.region,
+        cache: formsPoolRef.current,
+        generateAllFormsForRegion,
+        getFormsCacheKey,
+        now: getNow
+      })
 
-      if (!allFormsForRegion || formsPoolRef.current.signature !== signature) {
-        const startTime = getNow()
-        allFormsForRegion = await generateAllFormsForRegion(region, settings)
-        const endTime = getNow()
-        const durationMs = Number((endTime - startTime).toFixed(2))
+      formsPoolRef.current = poolResult.cache
 
-        logger.debug('generateNextItem', 'Built forms pool for generation', {
-          signature,
-          durationMs,
-          totalForms: allFormsForRegion?.length || 0
-        })
-
-        formsPoolRef.current = {
-          signature,
-          forms: allFormsForRegion
-        }
-      } else {
+      if (poolResult.reused) {
         logger.debug('generateNextItem', 'Reusing memoized forms pool', {
-          signature,
-          totalForms: allFormsForRegion.length
+          signature: poolResult.signature,
+          totalForms: poolResult.forms?.length || 0
+        })
+      } else {
+        logger.debug('generateNextItem', 'Built forms pool for generation', {
+          signature: poolResult.signature,
+          durationMs: poolResult.durationMs,
+          totalForms: poolResult.forms?.length || 0
         })
       }
 
-      if (!allFormsForRegion || allFormsForRegion.length === 0) {
+      const formsPool = poolResult.forms
+      if (!formsPool || formsPool.length === 0) {
         logger.error('generateNextItem', 'No forms available for region', settings.region)
         return null
       }
 
-      logger.debug('generateNextItem', `Generated ${allFormsForRegion.length} forms for processing`)
-
-      // Check if double mode is requested and viable
       if (settings.doubleActive) {
-        // Defensive: ensure helper functions exist before attempting double mode
         const helpersOk = typeof getAvailableMoodsForLevel === 'function' && typeof getAvailableTensesForLevelAndMood === 'function'
         if (!helpersOk) {
           logger.warn('generateNextItem', 'Double mode helpers missing, skipping double mode path')
         }
-        if (isDoubleModeViable(allFormsForRegion, settings, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)) {
+        if (
+          helpersOk &&
+          isDoubleModeViable(formsPool, settings, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+        ) {
           logger.debug('generateNextItem', 'Attempting double mode generation')
-          // Note: DoubleModeManager handles setCurrentItem internally
           const doubleItem = await generateDoubleModeItem(
             settings,
             itemToExclude,
-            allFormsForRegion,
+            formsPool,
             getAvailableMoodsForLevel,
             getAvailableTensesForLevelAndMood,
             setLastGeneratedItem
           )
-          
+
           if (doubleItem) {
             setLastGeneratedItem(doubleItem)
             return doubleItem
           }
-          
+
           logger.warn('generateNextItem', 'Double mode generation failed, falling back to single mode')
-        } else {
+        } else if (helpersOk) {
           logger.warn('generateNextItem', 'Double mode not viable with current settings')
         }
       }
 
-      // Validate specific practice configuration
       const configValidation = validateSpecificPracticeConfig(settings)
       if (!configValidation.valid) {
         logger.error('generateNextItem', 'Invalid specific practice configuration', configValidation)
         return null
       }
 
-      // Set up specific practice constraints
-      const isPracticeSpecificActive = Boolean(
-        (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
-        settings.specificMood &&
-        settings.specificTense
-      )
-      const isReviewSpecificActive = Boolean(
-        settings.practiceMode === 'review' &&
-        reviewSessionType === 'specific' &&
-        reviewSessionFilter?.mood &&
-        reviewSessionFilter?.tense
-      )
+      const specificConstraints = buildSpecificConstraints(settings, reviewSessionType, reviewSessionFilter)
 
-      const isSpecific = isPracticeSpecificActive || isReviewSpecificActive
-      const resolvedMood = isReviewSpecificActive
-        ? reviewSessionFilter.mood
-        : (isPracticeSpecificActive ? settings.specificMood : null)
-      const resolvedTense = isReviewSpecificActive
-        ? reviewSessionFilter.tense
-        : (isPracticeSpecificActive ? settings.specificTense : null)
-      const specificConstraints = {
-        isSpecific,
-        specificMood: isSpecific ? resolvedMood : null,
-        specificTense: isSpecific ? resolvedTense : null
-      }
+      let eligibleForms = applyComprehensiveFiltering(formsPool, settings, specificConstraints)
 
-      // Apply comprehensive filtering
-      let eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
-
-      // Validate that we have eligible forms. If none, try graceful fallbacks
       try {
         validateEligibleForms(eligibleForms, specificConstraints)
       } catch (e) {
@@ -313,10 +194,9 @@ export const useDrillGenerator = () => {
           }
         })
 
-        // First attempt: progressively relax constraints within the same pool
         try {
           const { progressiveConstraintRelaxation } = await import('./DrillFallbackStrategies.js')
-          const relaxed = progressiveConstraintRelaxation(allFormsForRegion, settings, specificConstraints)
+          const relaxed = progressiveConstraintRelaxation(formsPool, settings, specificConstraints)
           if (relaxed) {
             eligibleForms = [relaxed]
             logger.info('generateNextItem', 'Progressive relaxation produced a candidate')
@@ -325,14 +205,13 @@ export const useDrillGenerator = () => {
           logger.warn('generateNextItem', 'Progressive relaxation failed', relaxErr)
         }
 
-        // If still no candidates, last resort: mixed practice fallback
         if (!eligibleForms || eligibleForms.length === 0) {
-          const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
+          const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
           if (mixedFallbackItem) {
             setLastGeneratedItem(mixedFallbackItem)
             return mixedFallbackItem
           }
-          // If even mixed fallback failed, use emergency fallback
+
           console.log('🆘 useDrillGenerator: Mixed fallback failed, using emergency fallback')
           const emergencyItem = await createEmergencyFallbackItem(settings)
           setLastGeneratedItem(emergencyItem)
@@ -340,158 +219,87 @@ export const useDrillGenerator = () => {
         }
       }
 
-      let nextForm = null
-      let selectionMethod = 'standard'
-
-      // Tier 1: SRS due items
-      const userId = getCurrentUserId()
-      if (userId) {
-        const now = new Date()
-        let dueCells = await getDueItems(userId, now)
-        dueCells = gateDueItemsByCurriculum(dueCells, settings)
-        dueCells = filterDueForSpecific(dueCells, specificConstraints)
-
-        if (settings.practiceMode === 'review') {
-          dueCells = applyReviewSessionFilter(
-            dueCells,
-            reviewSessionType,
-            reviewSessionFilter,
-            now
-          )
+      const { form: selectedForm, selectionMethod: pipelineMethod, errors } = await selectNextForm({
+        eligibleForms,
+        settings,
+        history,
+        itemToExclude,
+        specificConstraints,
+        reviewSessionType,
+        reviewSessionFilter,
+        now: new Date(),
+        dependencies: {
+          getCurrentUserId,
+          getDueItems,
+          gateDueItemsByCurriculum,
+          filterDueForSpecific,
+          filterByVerbType,
+          selectVariedForm: (forms, level, practiceMode, historyArg) =>
+            varietyEngine.selectVariedForm(forms, level, practiceMode, historyArg),
+          getNextRecommendedItem,
+          chooseNext,
+          applyReviewSessionFilter,
+          selectDueCandidate
         }
+      })
 
-        const pickFromDue = selectDueCandidate(dueCells, reviewSessionType)
-        if (pickFromDue) {
-          // In práctica específica (tema fijo), NO fijar la persona desde SRS.
-          // Queremos variedad de pronombres dentro del mismo modo/tiempo.
-          // Seguimos usando el due item para priorizar el mood/tense, pero dejamos flotar la persona.
-          let candidateForms = eligibleForms.filter(f =>
-            f.mood === pickFromDue.mood &&
-            f.tense === pickFromDue.tense &&
-            // Solo fijamos la persona cuando NO es práctica específica.
-            (!isSpecific ? (f.person === pickFromDue.person) : true)
-          )
-          
-          candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
-          
-          if (candidateForms.length > 0) {
-            nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history) ||
-                      candidateForms[Math.floor(Math.random() * candidateForms.length)]
-            selectionMethod = 'srs_due_with_variety'
-            
-            logger.debug('generateNextItem', 'SRS due item selected', {
-              mood: nextForm.mood,
-              tense: nextForm.tense,
-              person: nextForm.person
-            })
-          }
-        }
-      }
-
-      // Tier 2: Adaptive recommendations
-      if (!nextForm) {
-        try {
-          const recommendation = await getNextRecommendedItem(settings.level || 'B1')
-          if (recommendation) {
-            const { mood, tense, verbId } = recommendation
-            
-            logger.debug('generateNextItem', 'Adaptive recommendation received', {
-              type: recommendation.type,
-              mood,
-              tense,
-              verbId,
-              reason: recommendation.reason
-            })
-            
-            let candidateForms = eligibleForms.filter(f => f.mood === mood && f.tense === tense)
-            
-            if (verbId) {
-              const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)
-              if (specificVerbForms.length > 0) {
-                candidateForms = specificVerbForms
-              }
-            }
-            
-            candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
-            
-            if (candidateForms.length > 0) {
-              nextForm = varietyEngine.selectVariedForm(candidateForms, settings.level, settings.practiceMode, history) ||
-                        candidateForms[Math.floor(Math.random() * candidateForms.length)]
-              selectionMethod = 'adaptive_recommendation_with_variety'
-              
-              logger.debug('generateNextItem', 'Adaptive recommendation selected', {
-                mood: nextForm.mood,
-                tense: nextForm.tense
-              })
-            }
-          }
-        } catch (error) {
+      errors.forEach(({ stage, error }) => {
+        if (stage === 'adaptive') {
           logger.warn('generateNextItem', 'Adaptive recommendation failed', error)
+        } else {
+          logger.warn('generateNextItem', 'Selection stage failed', { stage, error })
         }
-      }
+      })
 
-      // Tier 3: Standard generator
-      if (!nextForm) {
-        nextForm = await chooseNext({
-          forms: eligibleForms,
-          history,
-          currentItem: itemToExclude,
-          sessionSettings: settings
-        })
-        selectionMethod = 'standard_generator'
+      let nextForm = selectedForm
+      let selectionMethod = pipelineMethod || 'standard_generator'
 
-        logger.debug('generateNextItem', 'Standard generator used', {
-          eligibleFormsCount: eligibleForms.length,
-          passedSettings: {
-            practiceMode: settings.practiceMode,
-            specificMood: settings.specificMood,
-            specificTense: settings.specificTense
-          }
+      if (nextForm) {
+        logger.debug('generateNextItem', 'Selection pipeline produced candidate', {
+          method: selectionMethod,
+          mood: nextForm.mood,
+          tense: nextForm.tense,
+          person: nextForm.person
         })
       }
 
-      // Perform integrity validation
       const integrityCheck = performIntegrityGuard(nextForm, settings, specificConstraints, selectionMethod)
-      
+
       if (!integrityCheck.success) {
         logger.warn('generateNextItem', 'Integrity check failed, attempting fallback')
-        
-        // Try intelligent fallback
+
         const fallbackForm = await tryIntelligentFallback(settings, eligibleForms, {
           specificMood: specificConstraints.specificMood,
           specificTense: specificConstraints.specificTense,
           isSpecific: specificConstraints.isSpecific
         })
-        
+
         if (fallbackForm) {
           nextForm = fallbackForm
-          selectionMethod += '+intelligent_fallback'
+          selectionMethod = `${selectionMethod}+intelligent_fallback`
           logger.info('generateNextItem', 'Intelligent fallback succeeded')
         } else {
-          // Last resort: mixed practice fallback
           logger.warn('generateNextItem', 'All fallbacks failed, using mixed practice fallback')
-          const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
+          const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
           if (mixedFallbackItem) {
             setLastGeneratedItem(mixedFallbackItem)
             return mixedFallbackItem
-          } else {
-            // Even mixed fallback failed - use emergency
-            console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
-            const emergencyItem = await createEmergencyFallbackItem(settings)
-            setLastGeneratedItem(emergencyItem)
-            return emergencyItem
           }
+
+          console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
+          const emergencyItem = await createEmergencyFallbackItem(settings)
+          setLastGeneratedItem(emergencyItem)
+          return emergencyItem
         }
       }
 
-      // Generate final drill item
       if (nextForm) {
         const drillItem = generateDrillItem(nextForm, settings, eligibleForms)
-        
+
         if (drillItem) {
           drillItem.selectionMethod = selectionMethod
           setLastGeneratedItem(drillItem)
-          
+
           logger.info('generateNextItem', 'Item generation completed successfully', {
             lemma: drillItem.lemma,
             mood: drillItem.mood,
@@ -499,19 +307,18 @@ export const useDrillGenerator = () => {
             person: drillItem.person,
             method: selectionMethod
           })
-          
+
           return drillItem
         }
       }
 
       logger.error('generateNextItem', 'Failed to generate drill item, attempting mixed fallback')
-      const mixedFallbackItem = fallbackToMixedPractice(allFormsForRegion, settings)
+      const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
       if (mixedFallbackItem) {
         setLastGeneratedItem(mixedFallbackItem)
         return mixedFallbackItem
       }
 
-      // NEVER return null - use emergency fallback as absolute last resort
       console.log('🆘 useDrillGenerator: All fallbacks failed, using emergency fallback')
       const emergencyItem = await createEmergencyFallbackItem(settings)
       setLastGeneratedItem(emergencyItem)
@@ -527,11 +334,12 @@ export const useDrillGenerator = () => {
         specificMood: settings.specificMood,
         specificTense: settings.specificTense,
         verbType: settings.verbType,
-        enableChunks: settings.enableChunks
+        enableChunks: settings.enableChunks,
+        reviewSessionType,
+        reviewSessionFilter
       })
       logger.error('generateNextItem', 'Error during item generation', error)
 
-      // NEVER return null - always provide an emergency fallback
       console.log('🆘 useDrillGenerator: Creating emergency fallback after critical error')
       const emergencyItem = await createEmergencyFallbackItem(settings)
       setLastGeneratedItem(emergencyItem)
