@@ -141,14 +141,14 @@ export async function generateProgressReport(userId = null) {
 // Funciones auxiliares para el reporte
 function calculateMasteryDistribution(masteryData) {
   const distribution = { low: 0, medium: 0, high: 0 }
-  
+
   masteryData.forEach(record => {
-    const score = record.masteryScore || 0
+    const score = getScoreValue(record?.score)
     if (score < 40) distribution.low++
     else if (score < 70) distribution.medium++
     else distribution.high++
   })
-  
+
   return distribution
 }
 
@@ -175,10 +175,24 @@ export function calculatePracticeFrequency(attempts) {
 
 function getTopMasteryAreas(masteryData, highest = true) {
   return masteryData
-    .sort((a, b) => highest ? b.masteryScore - a.masteryScore : a.masteryScore - b.masteryScore)
+    .slice()
+    .sort((a, b) => {
+      const scoreA = getScoreValue(a?.score)
+      const scoreB = getScoreValue(b?.score)
+      return highest ? scoreB - scoreA : scoreA - scoreB
+    })
     .slice(0, 5)
     .map(record => ({
       area: `${record.mood}-${record.tense}`,
-      score: record.masteryScore || 0
+      score: getScoreValue(record?.score)
     }))
+}
+
+function getScoreValue(score) {
+  if (typeof score === 'number' && Number.isFinite(score)) {
+    return score
+  }
+
+  const parsed = Number(score)
+  return Number.isFinite(parsed) ? parsed : 0
 }

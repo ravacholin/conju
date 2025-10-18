@@ -1,13 +1,31 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import 'fake-indexeddb/auto'
 
-import { exportProgressData } from '../src/lib/progress/dataExport.js'
+vi.mock('../src/lib/progress/srs.js', () => ({
+  updateSchedule: vi.fn().mockResolvedValue(undefined)
+}))
+
+vi.mock('../src/lib/progress/incrementalMastery.js', () => ({
+  notifyNewAttempt: vi.fn()
+}))
+
+vi.mock('../src/lib/levels/userLevelProfile.js', () => ({
+  recordGlobalCompetency: vi.fn().mockResolvedValue(undefined),
+  refreshGlobalDynamicEvaluations: vi.fn().mockResolvedValue(undefined)
+}))
+
+vi.mock('../src/lib/levels/levelProgression.js', () => ({
+  checkUserProgression: vi.fn().mockResolvedValue({ shouldPromote: false })
+}))
+
+import { exportProgressData, generateProgressReport } from '../src/lib/progress/dataExport.js'
 import {
   saveAttempt,
   saveMastery,
   saveSchedule,
   deleteDB
 } from '../src/lib/progress/database.js'
+import { initTracking, trackAttemptSubmitted } from '../src/lib/progress/tracking.js'
 
 const USER_A = 'user-a'
 const USER_B = 'user-b'
@@ -67,7 +85,7 @@ async function seedTestData() {
     mood: 'indicative',
     tense: 'present',
     person: 'yo',
-    masteryScore: 78,
+    score: 78,
     updatedAt: toIso(0)
   })
 
@@ -77,7 +95,7 @@ async function seedTestData() {
     mood: 'indicative',
     tense: 'preterite',
     person: 'tú',
-    masteryScore: 54,
+    score: 54,
     updatedAt: toIso(30_000)
   })
 
@@ -87,7 +105,7 @@ async function seedTestData() {
     mood: 'subjunctive',
     tense: 'present',
     person: 'él',
-    masteryScore: 90,
+    score: 90,
     updatedAt: toIso(45_000)
   })
 
@@ -128,6 +146,7 @@ async function seedTestData() {
 describe('exportación de datos filtrada por usuario', () => {
   beforeEach(async () => {
     await resetDatabase()
+    vi.clearAllMocks()
   })
 
   afterEach(async () => {
@@ -157,4 +176,37 @@ describe('exportación de datos filtrada por usuario', () => {
     expect(result.data.schedules.some(record => record.userId === USER_B)).toBe(false)
   })
 
+  it('generateProgressReport refleja los scores calculados por trackAttemptSubmitted', async () => {
+    await initTracking(USER_A)
+
+    await trackAttemptSubmitted('attempt-generated-1', {
+      correct: true,
+      latencyMs: 450,
+      item: {
+        lemma: 'hablar',
+        verbId: 'hablar',
+        mood: 'indicative',
+        tense: 'present',
+        person: 'yo'
+      },
+      userAnswer: 'hablo',
+      correctAnswer: 'hablo',
+      errorTags: []
+    })
+
+    const report = await generateProgressReport(USER_A)
+
+    const masteryEntry = report.data.mastery.find(record =>
+      record.mood === 'indicative' &&
+      record.tense === 'present' &&
+      record.person === 'yo'
+    )
+
+    expect(masteryEntry).toBeDefined()
+    expect(masteryEntry.score).toBeGreaterThan(0)
+
+    const strongestArea = report.statistics.strongestAreas.find(area => area.area === 'indicative-present')
+    expect(strongestArea).toBeDefined()
+    expect(strongestArea.score).toBe(masteryEntry.score)
+  })
 })
