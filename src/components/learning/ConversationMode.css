@@ -1,0 +1,351 @@
+.conversation-mode {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.scenario-info h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.score-display {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.conversation-context {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+
+.conversation-context p {
+  margin: 0;
+  color: #495057;
+  font-style: italic;
+}
+
+.conversation-history {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.message {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.message.npc {
+  background: #e3f2fd;
+  margin-right: 60px;
+}
+
+.message.user {
+  background: #f3e5f5;
+  margin-left: 60px;
+}
+
+.message-content {
+  flex: 1;
+}
+
+.speaker {
+  font-weight: bold;
+  color: #667eea;
+  margin-right: 8px;
+}
+
+.grade-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.grade-badge.perfect {
+  background: #4caf50;
+  color: white;
+}
+
+.grade-badge.good {
+  background: #8bc34a;
+  color: white;
+}
+
+.grade-badge.needs-work {
+  background: #ff9800;
+  color: white;
+}
+
+.feedback-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 2px solid #e0e0e0;
+}
+
+.feedback-panel.perfect {
+  border-color: #4caf50;
+  background: #f1f8f4;
+}
+
+.feedback-panel.good {
+  border-color: #8bc34a;
+  background: #f7faf5;
+}
+
+.feedback-panel.needs-work {
+  border-color: #ff9800;
+  background: #fff8f0;
+}
+
+.feedback-panel h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.successes, .errors, .suggestions {
+  margin: 12px 0;
+}
+
+.successes h4 {
+  color: #4caf50;
+}
+
+.errors h4 {
+  color: #f44336;
+}
+
+.suggestions h4 {
+  color: #2196f3;
+}
+
+.input-panel {
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.input-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.voice-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.voice-btn:hover {
+  background: #5568d3;
+  transform: translateY(-1px);
+}
+
+.voice-btn.recording {
+  background: #f44336;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.text-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.text-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.submit-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff3e0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.pulse {
+  width: 12px;
+  height: 12px;
+  background: #f44336;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.help-controls {
+  display: flex;
+  gap: 12px;
+}
+
+.hint-btn {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hint-btn:hover {
+  background: #1976d2;
+}
+
+.hints-panel {
+  background: #e3f2fd;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.hints-panel h4 {
+  margin-top: 0;
+  color: #1976d2;
+}
+
+.hints-panel ul {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.hints-panel li {
+  margin-bottom: 6px;
+  color: #424242;
+}
+
+.vocabulary-panel {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #9c27b0;
+}
+
+.vocabulary-panel h4 {
+  margin-top: 0;
+  color: #9c27b0;
+}
+
+.vocabulary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vocab-tag {
+  background: white;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  border: 1px solid #e0e0e0;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #999;
+}
