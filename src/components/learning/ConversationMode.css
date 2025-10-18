@@ -20,19 +20,19 @@
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
+  background: var(--accent-blue);
+  border: none;
   padding: 8px 16px;
   border-radius: 6px;
   color: var(--text);
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: background 0.2s;
 }
 
 .back-btn:hover {
   background: var(--hover);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--accent-blue);
 }
 
 .scenario-info h2 {
@@ -44,18 +44,17 @@
 .difficulty-badge {
   display: inline-block;
   padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
+  background: var(--accent-blue);
   border-radius: 12px;
   font-size: 12px;
   margin-top: 4px;
-  color: var(--muted);
+  color: var(--text);
 }
 
 .score-display {
   font-size: 20px;
   font-weight: bold;
-  color: var(--text);
+  color: var(--accent-blue);
 }
 
 .conversation-context {
@@ -63,7 +62,7 @@
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 20px;
-  border-left: 4px solid var(--border-2);
+  border-left: 4px solid var(--accent-blue);
 }
 
 .conversation-context p {
@@ -92,14 +91,14 @@
 }
 
 .message.npc {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  background: rgba(0, 123, 255, 0.1);
+  border: 1px solid rgba(0, 123, 255, 0.2);
   margin-right: 60px;
 }
 
 .message.user {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.2);
   margin-left: 60px;
 }
 
@@ -110,7 +109,7 @@
 
 .speaker {
   font-weight: bold;
-  color: var(--muted);
+  color: var(--accent-blue);
   margin-right: 8px;
 }
 
@@ -123,18 +122,18 @@
 }
 
 .grade-badge.perfect {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-green);
   color: var(--text);
 }
 
 .grade-badge.good {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(40, 167, 69, 0.5);
   color: var(--text);
 }
 
 .grade-badge.needs-work {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--muted);
+  background: var(--accent-orange);
+  color: var(--text);
 }
 
 .feedback-panel {
@@ -146,18 +145,18 @@
 }
 
 .feedback-panel.perfect {
-  border-color: var(--border-2);
-  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--accent-green);
+  background: rgba(40, 167, 69, 0.1);
 }
 
 .feedback-panel.good {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(40, 167, 69, 0.5);
+  background: rgba(40, 167, 69, 0.05);
 }
 
 .feedback-panel.needs-work {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.1);
 }
 
 .feedback-panel h3 {
@@ -170,15 +169,15 @@
 }
 
 .successes h4 {
-  color: var(--muted);
+  color: var(--accent-green);
 }
 
 .errors h4 {
-  color: var(--muted);
+  color: var(--accent-red);
 }
 
 .suggestions h4 {
-  color: var(--muted);
+  color: var(--accent-blue);
 }
 
 .input-panel {
@@ -196,9 +195,9 @@
 }
 
 .voice-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--accent-blue);
   color: var(--text);
-  border: 1px solid var(--border);
+  border: none;
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 16px;
@@ -209,12 +208,12 @@
 
 .voice-btn:hover {
   background: var(--hover);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--accent-blue);
   transform: translateY(-1px);
 }
 
 .voice-btn.recording {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--accent-red);
   animation: pulse 1.5s infinite;
 }
 
@@ -240,7 +239,7 @@
 
 .text-input:focus {
   outline: none;
-  border-color: var(--border-2);
+  border-color: var(--accent-blue);
 }
 
 .text-input:disabled {
@@ -249,9 +248,9 @@
 }
 
 .submit-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--accent-green);
   color: var(--text);
-  border: 1px solid var(--border);
+  border: none;
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 16px;
@@ -262,7 +261,7 @@
 
 .submit-btn:hover:not(:disabled) {
   background: var(--hover);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--accent-green);
   transform: translateY(-1px);
 }
 
@@ -276,8 +275,8 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  background: rgba(253, 126, 20, 0.1);
+  border: 1px solid rgba(253, 126, 20, 0.2);
   border-radius: 8px;
   margin-bottom: 12px;
 }
@@ -285,7 +284,7 @@
 .pulse {
   width: 12px;
   height: 12px;
-  background: var(--muted);
+  background: var(--accent-red);
   border-radius: 50%;
   animation: pulse 1.5s infinite;
 }
@@ -296,24 +295,24 @@
 }
 
 .hint-btn {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--accent-blue);
   color: var(--text);
-  border: 1px solid var(--border);
+  border: none;
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s;
 }
 
 .hint-btn:hover {
   background: var(--hover);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--accent-blue);
 }
 
 .hints-panel {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
+  background: rgba(0, 123, 255, 0.1);
+  border: 1px solid rgba(0, 123, 255, 0.2);
   padding: 16px;
   border-radius: 8px;
   margin-top: 12px;
@@ -321,7 +320,7 @@
 
 .hints-panel h4 {
   margin-top: 0;
-  color: var(--text);
+  color: var(--accent-blue);
 }
 
 .hints-panel ul {
@@ -338,12 +337,12 @@
   background: var(--panel);
   padding: 16px;
   border-radius: 8px;
-  border-left: 4px solid var(--border-2);
+  border-left: 4px solid var(--accent-blue);
 }
 
 .vocabulary-panel h4 {
   margin-top: 0;
-  color: var(--text);
+  color: var(--accent-blue);
 }
 
 .vocabulary-tags {
@@ -353,7 +352,7 @@
 }
 
 .vocab-tag {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover);
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 14px;
