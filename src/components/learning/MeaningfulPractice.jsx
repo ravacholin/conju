@@ -7,6 +7,7 @@ import { grade as GRADE } from '../../lib/core/grader.js';
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 import { getAllVerbsSync } from '../../lib/core/verbDataService.js';
 import { FORM_LOOKUP_MAP, warmupCaches as warmOptimizedCaches } from '../../lib/core/optimizedCache.js';
+import { createLogger } from '../../lib/utils/logger.js';
 
 // Importar el nuevo sistema de práctica significativa
 import exerciseFactory from '../../lib/meaningful-practice/exercises/ExerciseFactory.js';
@@ -14,6 +15,8 @@ import assessmentEngine from '../../lib/meaningful-practice/assessment/Assessmen
 import { EXERCISE_TYPES } from '../../lib/meaningful-practice/core/constants.js';
 
 import './MeaningfulPractice.css';
+
+const logger = createLogger('learning:MeaningfulPractice');
 
 /**
  * Obtiene el lemma (infinitivo) de una forma conjugada usando datos morfológicos reales
@@ -29,7 +32,7 @@ function getOptimizedCacheSignature() {
   try {
     return FORM_LOOKUP_MAP?.size ?? null;
   } catch (error) {
-    console.warn('No se pudo obtener la firma de FORM_LOOKUP_MAP', error);
+    logger.warn('No se pudo obtener la firma de FORM_LOOKUP_MAP', error);
     return null;
   }
 }
@@ -85,7 +88,7 @@ function primeLemmaCache() {
       }
     }
   } catch (error) {
-    console.warn('Error al precalentar la caché de lemmas', error);
+    logger.warn('Error al precalentar la caché de lemmas', error);
   }
 
   lemmaCachePrimed = true;
@@ -114,7 +117,7 @@ function findLemmaAndCache(normalizedForm) {
       }
     }
   } catch (error) {
-    console.warn('Error al buscar lemma para forma conjugada:', normalizedForm, error);
+    logger.warn('Error al buscar lemma para forma conjugada', { normalizedForm, error });
   }
 
   lemmaCacheByForm.set(normalizedForm, null);
@@ -131,7 +134,7 @@ export function invalidateLemmaCache(options = {}) {
     try {
       warmOptimizedCaches();
     } catch (error) {
-      console.warn('No se pudo recalentar las cachés globales', error);
+      logger.warn('No se pudo recalentar las cachés globales', error);
     }
   }
 }
@@ -364,7 +367,7 @@ export function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
       }
 
       // FALLBACK: Solo usar regex si no se encuentra en datos morfológicos
-      console.warn(
+      logger.warn(
         `⚠️ No se encontró lemma morfológico para "${verb}", usando fallback regex (puede ser incorrecto para irregulares)`
       );
       return deriveLemmaFallback(verb);
@@ -373,7 +376,7 @@ export function extractRequiredVerbs(exercise, eligibleForms, tense, mood) {
 
   // 3. ÚLTIMO RECURSO: Si aún no hay verbos, usar verbos comunes para el tiempo verbal
   if (result.lemmas.length === 0) {
-    console.warn('⚠️ Usando verbos comunes como último recurso - no hay datos de SRS disponibles');
+    logger.warn('Usando verbos comunes como último recurso - no hay datos de SRS disponibles');
 
     const commonVerbsByTense = {
       'pres': ['ser', 'estar', 'tener', 'hacer', 'decir', 'ver'],
@@ -507,14 +510,14 @@ function MeaningfulPractice({
       const firstStep = normalizeStep(exercise.getNextStep(), exercise);
       setCurrentStep(firstStep);
 
-      console.log('✅ Ejercicio inicializado:', {
+      logger.debug('Ejercicio inicializado', {
         type: selectedExerciseType,
         title: exercise.title,
         steps: exercise.getTotalSteps()
       });
 
     } catch (err) {
-      console.error('❌ Error al inicializar ejercicio:', err);
+      logger.error('Error al inicializar ejercicio', err);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -591,7 +594,7 @@ function MeaningfulPractice({
       }
 
     } catch (err) {
-      console.error('❌ Error al procesar respuesta:', err);
+      logger.error('Error al procesar respuesta', err);
       setError('Error al procesar la respuesta. Inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
@@ -664,7 +667,7 @@ function MeaningfulPractice({
           try {
             await updateSchedule(userId, form, isCorrect, 0);
           } catch (scheduleError) {
-            console.error('Failed to update SRS schedule:', scheduleError);
+            logger.error('Failed to update SRS schedule', scheduleError);
           }
         }
       }
@@ -696,7 +699,7 @@ function MeaningfulPractice({
       await handleResult(trackingResult);
 
     } catch (err) {
-      console.error('❌ Error al actualizar progreso:', err);
+      logger.error('Error al actualizar progreso', err);
     }
   }
 
@@ -759,7 +762,7 @@ function MeaningfulPractice({
         completedAt: Date.now()
       };
 
-      console.log('✅ Ejercicio completado:', summary);
+      logger.debug('Ejercicio completado', summary);
 
       // Llamar callback de completación
       if (onComplete) {
@@ -772,7 +775,7 @@ function MeaningfulPractice({
       }
 
     } catch (err) {
-      console.error('❌ Error al completar ejercicio:', err);
+      logger.error('Error al completar ejercicio', err);
     }
   }
 

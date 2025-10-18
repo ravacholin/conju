@@ -167,6 +167,7 @@ body {
 /* Header */
 .header {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 1rem 1.618rem;
@@ -178,6 +179,28 @@ body {
   top: 0;
   z-index: 50;
   box-shadow: 0 1px 0 rgba(245, 245, 245, 0.05);
+  gap: 0.5rem;
+}
+
+/* SRS Mode Badge */
+.srs-mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(125, 233, 184, 0.15), rgba(102, 126, 234, 0.15));
+  border: 1px solid rgba(125, 233, 184, 0.3);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(125, 233, 184, 0.95);
+}
+
+.srs-badge-icon {
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
 }
 
 .icon-row { display: flex; gap: 0.5rem; align-items: center; }

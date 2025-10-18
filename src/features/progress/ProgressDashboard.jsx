@@ -3,6 +3,8 @@ import { syncNow, isSyncEnabled } from '../../lib/progress/userManager/index.js'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'
+import { useSRSQueue } from '../../hooks/useSRSQueue.js'
+import { useSettings } from '../../state/settings.js'
 
 // New streamlined components
 import ProgressOverview from './ProgressOverview.jsx'
@@ -27,6 +29,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
   const syncAvailable = isSyncEnabled()
+  const settings = useSettings()
+  const { stats: srsStats } = useSRSQueue()
 
   const {
     heatMapData,
@@ -88,6 +92,17 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     }
   }
 
+  // Handle SRS Review Now action
+  const handleSRSReviewNow = React.useCallback(() => {
+    if (!onNavigateToDrill) return
+
+    settings.set({
+      practiceMode: 'review',
+      reviewSessionType: 'due'
+    })
+    onNavigateToDrill()
+  }, [onNavigateToDrill, settings])
+
   // Manual sync only - removed auto-sync to prevent double load on mount
   // Users can manually sync via the sync button if needed
 
@@ -129,6 +144,24 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           duration={3000}
           onClose={() => setToast(null)}
         />
+      )}
+
+      {/* SRS Review Queue Banner */}
+      {srsStats && srsStats.total > 0 && (
+        <div className="srs-review-banner" onClick={handleSRSReviewNow}>
+          <div className="srs-banner-content">
+            <img src="/icons/timer.png" alt="SRS Review" className="srs-banner-icon" />
+            <div className="srs-banner-text">
+              <strong>{srsStats.total}</strong> {srsStats.total === 1 ? 'elemento listo' : 'elementos listos'} para repasar
+              {srsStats.overdue > 0 && (
+                <span className="srs-urgent"> • {srsStats.overdue} {srsStats.overdue === 1 ? 'vencido' : 'vencidos'}</span>
+              )}
+            </div>
+          </div>
+          <button className="srs-banner-action">
+            Revisar ahora →
+          </button>
+        </div>
       )}
 
       <SafeComponent name="Progress Overview">

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSettings } from '../../state/settings.js'
 
 function DrillHeader({
   onToggleQuickSwitch,
@@ -13,9 +14,17 @@ function DrillHeader({
   showGames,
   showPronunciation: _showPronunciation
 }) {
+  const settings = useSettings()
+  const isReviewMode = settings.practiceMode === 'review'
 
   return (
     <header className="header">
+      {isReviewMode && (
+        <div className="srs-mode-badge">
+          <img src="/icons/timer.png" alt="SRS" className="srs-badge-icon" />
+          <span>Sesión de Repaso SRS</span>
+        </div>
+      )}
       <div className="icon-row">
         <button
           onClick={() => {

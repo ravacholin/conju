@@ -1,7 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect, useState } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
+import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('features:SmartPractice')
 
 /**
  * Smart Practice Panel - Intelligent, actionable practice recommendations
@@ -9,14 +13,42 @@ import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMap
  */
 export default function SmartPractice({ heatMapData, userStats, onNavigateToDrill }) {
   const settings = useSettings()
+  const [mlRecommendations, setMLRecommendations] = useState(null)
+  const [loadingML, setLoadingML] = useState(false)
 
   // Get user-friendly labels for mood/tense combinations
   const getMoodTenseLabel = (mood, tense) => {
     return formatMoodTense(mood, tense)
   }
 
-  // Analyze user data to generate smart recommendations
-  const recommendations = useMemo(() => {
+  // Fetch ML recommendations when component mounts or userStats changes
+  useEffect(() => {
+    const fetchMLRecommendations = async () => {
+      if (!userStats) return
+
+      setLoadingML(true)
+      try {
+        const sessionPlan = await mlRecommendationEngine.generateSessionRecommendations({
+          duration: 20,
+          preferredDifficulty: 'medium',
+          includeNewContent: true,
+          adaptToState: true
+        })
+        setMLRecommendations(sessionPlan)
+        logger.debug('ML recommendations generated', sessionPlan)
+      } catch (error) {
+        logger.error('Failed to generate ML recommendations', error)
+        setMLRecommendations(null)
+      } finally {
+        setLoadingML(false)
+      }
+    }
+
+    fetchMLRecommendations()
+  }, [userStats])
+
+  // Analyze user data to generate smart recommendations (fallback heuristics)
+  const heuristicRecommendations = useMemo(() => {
     const recs = []
 
     if (!heatMapData?.heatMap || !userStats) {
@@ -116,6 +148,108 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     return recs.slice(0, 3) // Max 3 recommendations
   }, [heatMapData, userStats, getMoodTenseLabel])
 
+  // Combine ML and heuristic recommendations
+  const recommendations = useMemo(() => {
+    if (loadingML) {
+      return heuristicRecommendations // Show heuristics while loading
+    }
+
+    if (!mlRecommendations || !mlRecommendations.recommendations || mlRecommendations.recommendations.length === 0) {
+      return heuristicRecommendations // Fallback to heuristics
+    }
+
+    // Convert ML recommendations to UI format
+    const mlRecs = mlRecommendations.recommendations.map((rec) => {
+      // Map ML recommendation types to UI format
+      const recTypeMap = {
+        'confidence_building': {
+          title: 'Construir confianza',
+          icon: '/diana.png',
+          priority: rec.priority || 0.9
+        },
+        'guided_practice': {
+          title: 'Práctica guiada',
+          icon: '/openbook.png',
+          priority: rec.priority || 0.7
+        },
+        'challenge_practice': {
+          title: 'Desafío avanzado',
+          icon: '/icons/robot.png',
+          priority: rec.priority || 0.6
+        },
+        'calibration_practice': {
+          title: 'Calibración',
+          icon: '/diana.png',
+          priority: rec.priority || 0.8
+        },
+        'timing_adjustment': {
+          title: 'Ajuste de timing',
+          icon: '/icons/timer.png',
+          priority: rec.priority || 0.8
+        },
+        'timing_optimization': {
+          title: 'Momento óptimo',
+          icon: '/icons/timer.png',
+          priority: rec.priority || 0.7
+        },
+        'fatigue_management': {
+          title: 'Manejo de fatiga',
+          icon: '/icons/chart.png',
+          priority: rec.priority || 0.9
+        },
+        'flow_maintenance': {
+          title: 'Mantener flow',
+          icon: '/icons/robot.png',
+          priority: rec.priority || 0.9
+        },
+        'flow_recovery': {
+          title: 'Recuperar flow',
+          icon: '/diana.png',
+          priority: rec.priority || 0.95
+        },
+        'flow_support': {
+          title: 'Soporte adaptativo',
+          icon: '/openbook.png',
+          priority: rec.priority || 0.8
+        },
+        'srs_optimization': {
+          title: 'Optimizar SRS',
+          icon: '/icons/timer.png',
+          priority: rec.priority || 0.6
+        },
+        'emotional_balance': {
+          title: 'Balance emocional',
+          icon: '/icons/chart.png',
+          priority: rec.priority || 0.7
+        }
+      }
+
+      const mapping = recTypeMap[rec.type] || {
+        title: rec.type?.replace(/_/g, ' ') || 'Recomendación',
+        icon: '/icons/robot.png',
+        priority: rec.priority || 0.5
+      }
+
+      return {
+        type: rec.type,
+        title: mapping.title,
+        description: rec.message,
+        action: 'Practicar',
+        priority: mapping.priority >= 0.8 ? 'high' : mapping.priority >= 0.6 ? 'medium' : 'low',
+        icon: mapping.icon,
+        targetMood: rec.targetAreas?.[0],
+        targetTense: rec.targetAreas?.[1],
+        confidence: Math.round((rec.weightedPriority || rec.priority || 0.5) * 100),
+        mlPowered: true,
+        reason: rec.suggestedApproach
+      }
+    })
+
+    // Mix ML recommendations with top heuristic ones
+    const combinedRecs = [...mlRecs.slice(0, 2), ...heuristicRecommendations.slice(0, 1)]
+    return combinedRecs.slice(0, 3)
+  }, [mlRecommendations, heuristicRecommendations, loadingML])
+
   // Handle recommendation click
   const handleRecommendationClick = (rec) => {
     if (!onNavigateToDrill) return
@@ -180,14 +314,24 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
         {recommendations.map((rec, index) => (
           <div
             key={index}
-            className={`recommendation-card priority-${rec.priority}`}
+            className={`recommendation-card priority-${rec.priority} ${rec.mlPowered ? 'ml-powered' : ''}`}
             onClick={() => handleRecommendationClick(rec)}
           >
             <div className="rec-header">
               <img src={rec.icon} alt={rec.title} className="rec-icon" />
               <div className="rec-content">
-                <h3>{rec.title}</h3>
+                <div className="rec-title-row">
+                  <h3>{rec.title}</h3>
+                  {rec.mlPowered && (
+                    <span className="ml-badge" title="Recomendación ML">
+                      <img src="/icons/robot.png" alt="ML" className="ml-badge-icon" />
+                    </span>
+                  )}
+                </div>
                 <p>{rec.description}</p>
+                {rec.reason && (
+                  <p className="rec-reason">Enfoque: {rec.reason.replace(/_/g, ' ')}</p>
+                )}
               </div>
             </div>
 
@@ -195,6 +339,11 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
               {rec.mastery !== undefined && (
                 <div className="rec-meta">
                   Dominio actual: {Math.round(rec.mastery * 100)}%
+                </div>
+              )}
+              {rec.confidence !== undefined && rec.mlPowered && (
+                <div className="rec-meta confidence">
+                  Confianza: {rec.confidence}%
                 </div>
               )}
               {rec.planProgress && (
@@ -209,6 +358,31 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
           </div>
         ))}
       </div>
+
+      {/* ML Metrics Display */}
+      {mlRecommendations && mlRecommendations.metrics && (
+        <div className="ml-metrics">
+          <h4>Estado del sistema ML:</h4>
+          <div className="metrics-grid">
+            <div className="metric-item">
+              <span className="metric-label">Nivel de confianza:</span>
+              <span className="metric-value">{mlRecommendations.metrics.confidenceLevel || 'N/A'}</span>
+            </div>
+            <div className="metric-item">
+              <span className="metric-label">Estado de flow:</span>
+              <span className="metric-value">{mlRecommendations.metrics.flowState || 'N/A'}</span>
+            </div>
+            <div className="metric-item">
+              <span className="metric-label">Timing óptimo:</span>
+              <span className="metric-value">{mlRecommendations.metrics.optimalTiming ? 'Sí' : 'No'}</span>
+            </div>
+            <div className="metric-item">
+              <span className="metric-label">Probabilidad de éxito:</span>
+              <span className="metric-value">{Math.round((mlRecommendations.metrics.predictedSuccess || 0) * 100)}%</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Error insights if available */}
       {errorInsights && errorInsights.length > 0 && (

@@ -21,7 +21,12 @@ describe('migrateUserIdInLocalDB', () => {
 
   beforeEach(async () => {
     // Reset DB between tests
-    try { await deleteDB() } catch {}
+    try {
+      await deleteDB()
+    } catch (error) {
+      // DB may not exist on first test run
+      console.log('DB cleanup skipped:', error.message)
+    }
     await initDB()
   })
 

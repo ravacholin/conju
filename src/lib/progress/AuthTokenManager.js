@@ -142,7 +142,9 @@ function resolveSyncBaseUrl() {
         return override
       }
     }
-  } catch {}
+  } catch (error) {
+    logger.debug('resolveSyncBaseUrl', 'Error accediendo a localStorage', error)
+  }
 
   // Prioridad 2: Detección inteligente de entorno
   return getSyncApiBase()
@@ -327,7 +329,9 @@ export function getSyncAuthToken() {
         return storedToken
       }
     }
-  } catch {}
+  } catch (error) {
+    logger.debug('getSyncAuthToken', 'Error accediendo a localStorage', error)
+  }
 
   // Prioridad 4: Token de variable de entorno
   const envToken = (typeof import.meta !== 'undefined' && import.meta?.env?.VITE_PROGRESS_SYNC_TOKEN) ||

@@ -6,6 +6,8 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { createLogger } from '../../lib/utils/logger.js';
 import './PronunciationPractice.css';
 
+const logger = createLogger('learning:PronunciationPractice');
+
 const resolveWindow = () => {
   if (typeof globalThis === 'undefined') {
     return { win: undefined, isFallback: true };
@@ -173,7 +175,7 @@ const generateFormsForTense = (tenseMood) => {
   const conjugations = conjugationMap[tenseKey];
 
   if (!conjugations) {
-    console.warn(`No conjugations available for ${tenseKey}, using present as fallback`);
+    logger.warn(`No conjugations available for ${tenseKey}, using present as fallback`);
     return generateFormsForTense({ mood: 'indicative', tense: 'pres' });
   }
 
@@ -202,7 +204,7 @@ const generateFormsForTense = (tenseMood) => {
 
 // Generate pronunciation data from eligible forms or create fallback data
 const generatePronunciationData = (eligibleForms, tense) => {
-  console.log('🔍 generatePronunciationData called with:', {
+  logger.debug('generatePronunciationData called with:', {
     eligibleFormsLength: eligibleForms?.length,
     tense,
     firstForm: eligibleForms?.[0]
@@ -224,20 +226,22 @@ const generatePronunciationData = (eligibleForms, tense) => {
       selectedForms = eligibleForms.filter(form =>
         form.mood === normalizedMood && form.tense === tense.tense
       );
-      console.log('🎯 Exact match filter result:', selectedForms.length, 'forms',
-                 `(normalized ${tense.mood} -> ${normalizedMood})`);
+      logger.debug('Exact match filter result', {
+        count: selectedForms.length,
+        normalized: `${tense.mood} -> ${normalizedMood}`
+      });
     }
 
     // Second attempt: match by tense only (more permissive)
     if (selectedForms.length === 0 && tense?.tense) {
       selectedForms = eligibleForms.filter(form => form.tense === tense.tense);
-      console.log('📝 Tense-only filter result:', selectedForms.length, 'forms');
+      logger.debug('Tense-only filter result:', { count: selectedForms.length });
     }
   }
 
   // STRATEGY 2: If no eligible forms or insufficient forms, generate guaranteed forms
   if (selectedForms.length < 5) {
-    console.log('⚠️ Insufficient forms from eligibleForms, generating guaranteed forms for:', tense);
+    logger.debug('Insufficient forms from eligibleForms, generating guaranteed forms', { tense });
 
     if (tense?.mood && tense?.tense) {
       // Use the same mood normalization for generated forms
@@ -254,25 +258,25 @@ const generatePronunciationData = (eligibleForms, tense) => {
         const existingValues = new Set(selectedForms.map(f => f.value));
         const newForms = generatedForms.filter(f => !existingValues.has(f.value));
         selectedForms = [...selectedForms, ...newForms];
-        console.log('✅ Added', newForms.length, 'generated forms, total:', selectedForms.length);
+        logger.debug('Added generated forms', { newCount: newForms.length, total: selectedForms.length });
       }
     }
   }
 
   // STRATEGY 3: Final safety check - if still no forms, this shouldn't happen with our generator
   if (selectedForms.length === 0) {
-    console.error('🚨 CRITICAL: No forms available even after generation. This should not happen.');
+    logger.error('CRITICAL: No forms available even after generation');
     // Emergency fallback - use presente if all else fails
     const emergencyForms = generateFormsForTense({ mood: 'indicative', tense: 'pres' });
     selectedForms = emergencyForms.slice(0, 5);
-    console.log('🆘 Using emergency presente fallback:', selectedForms.length, 'forms');
+    logger.warn('Using emergency presente fallback', { count: selectedForms.length });
   }
 
   // Select 5-7 representative forms for practice
   const finalForms = selectedForms
     .slice(0, 7)
     .map(form => {
-      console.log('🔍 Processing form for pronunciation:', {
+      logger.debug('Processing form for pronunciation', {
         verb: form.verb || form.lemma,
         value: form.value,
         person: form.person,
@@ -293,10 +297,9 @@ const generatePronunciationData = (eligibleForms, tense) => {
       };
     });
 
-  console.log('✅ Final pronunciation data:', {
+  logger.debug('Final pronunciation data', {
     title: `Pronunciación - ${TENSE_LABELS[tense?.tense] || 'Práctica'}`,
-    verbsCount: finalForms.length,
-    verbs: finalForms
+    verbsCount: finalForms.length
   });
 
   return finalForms.length > 0 ? {
@@ -397,9 +400,8 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
   // Generate dynamic exercise data from eligible forms
   const exerciseData = useMemo(() => {
-    console.log('🎯 PronunciationPractice useMemo triggered:', {
+    logger.debug('PronunciationPractice useMemo triggered', {
       eligibleFormsLength: eligibleForms?.length,
-      eligibleFormsFirst3: eligibleForms?.slice(0, 3),
       tense,
       hasEligibleForms: eligibleForms && eligibleForms.length > 0
     });
@@ -435,9 +437,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
 
   // Progress tracking integration with real handler
   const handleProgressResult = useCallback((result) => {
-    console.log('🎯 Pronunciation result tracked:', {
+    logger.debug('Pronunciation result tracked', {
       item: currentPronunciationItem?.id,
-      result: result
+      correct: result.correct
     });
     // onResult callback if provided (none expected in this component currently)
   }, [currentPronunciationItem]);
@@ -533,10 +535,9 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
       setIsRecording(false);
       isRecordingRef.current = false;
 
-      console.log('🎤 Speech result received:', {
+      logger.debug('Speech result received', {
         target: currentVerb.form,
         recognized: result.transcript,
-        currentVerb: currentVerb,
         currentIndex: currentIndex
       });
 
@@ -563,7 +564,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
         const isCorrect = analysis.isCorrectForSRS || analysis.accuracy >= 90;
         const timing = Date.now() - recordingStartTime.current;
 
-        console.log('🎯 STRICT Pronunciation Tracking:', {
+        logger.debug('STRICT Pronunciation Tracking', {
           isCorrect,
           accuracy: analysis.accuracy,
           pedagogicalScore: analysis.pedagogicalScore,
@@ -816,12 +817,12 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
   // Function to play correct pronunciation for incorrect answers
   const playCorrectPronunciation = () => {
     if (currentVerb?.form) {
-      console.log('🔊 Playing correct pronunciation:', currentVerb.form);
+      logger.debug('Playing correct pronunciation', { form: currentVerb.form });
       speakText(currentVerb.form, 'es-ES', {
         rate: 0.7,
-        onStart: () => console.log('🔊 Started playing correct pronunciation'),
-        onEnd: () => console.log('🔊 Finished playing correct pronunciation'),
-        onError: (error) => console.error('🔊 Error playing correct pronunciation:', error)
+        onStart: () => logger.debug('Started playing correct pronunciation'),
+        onEnd: () => logger.debug('Finished playing correct pronunciation'),
+        onError: (error) => logger.error('Error playing correct pronunciation', error)
       });
     }
   };

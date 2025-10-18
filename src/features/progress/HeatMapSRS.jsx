@@ -104,7 +104,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   })
   const [loading, setLoading] = useState(false)
   const [manualRefreshRange, setManualRefreshRange] = useState(null)
-  const { queue, stats: srsStats } = useSRSQueue()
+  const { queue, stats } = useSRSQueue()
   const rangeCacheRef = useRef(initialPayloadRef.current ? { [initialPayloadRef.current.range]: initialPayloadRef.current } : {})
 
   const timeRangeMap = useMemo(() => ({
@@ -204,8 +204,23 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   // Mood configuration with PNG icons
   const moodConfig = HEATMAP_MOOD_CONFIG
 
-  // SRS stats summary
-  const srsData = srsStats || { dueNow: 0, dueToday: 0, total: 0 }
+  // SRS stats summary - compute from queue data
+  const srsData = React.useMemo(() => {
+    if (!queue || queue.length === 0) {
+      return { dueNow: 0, dueToday: 0, total: 0, urgent: 0, overdue: 0 }
+    }
+
+    const now = new Date()
+    const todayEnd = new Date(now)
+    todayEnd.setHours(23, 59, 59, 999)
+
+    const dueNow = queue.filter(item => new Date(item.nextDue) <= now).length
+    const dueToday = queue.filter(item => new Date(item.nextDue) <= todayEnd).length
+    const urgent = stats?.urgent || 0
+    const overdue = stats?.overdue || 0
+
+    return { dueNow, dueToday, total: queue.length, urgent, overdue }
+  }, [queue, stats])
 
   // Use fetched data or fallback to prop data
   const filteredData = useMemo(() => {
@@ -318,26 +333,79 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         </div>
       )}
 
-      {/* SRS Summary */}
-      {srsData.dueNow > 0 ? (
-        <div className="srs-summary" data-testid="srs-panel" onClick={handleSRSPractice}>
-          <div className="srs-content">
-            <img src="/icons/timer.png" alt="SRS" className="srs-icon" />
-            <div className="srs-text">
-              <strong>{srsData.dueNow}</strong> elementos listos para repasar
-              {srsData.dueToday > srsData.dueNow && (
-                <span className="srs-today"> • {srsData.dueToday} hoy</span>
-              )}
+      {/* SRS Summary - Items Due Today */}
+      {srsData.dueToday > 0 ? (
+        <div className="srs-items-due-today">
+          <div className="srs-summary clickable" data-testid="srs-panel" onClick={handleSRSPractice}>
+            <div className="srs-content">
+              <img src="/icons/timer.png" alt="SRS" className="srs-icon" />
+              <div className="srs-text">
+                <div className="srs-main-text">
+                  <strong>{srsData.dueNow}</strong> listos ahora
+                  {srsData.dueToday > srsData.dueNow && (
+                    <span className="srs-today"> • {srsData.dueToday - srsData.dueNow} más hoy</span>
+                  )}
+                </div>
+                {srsData.overdue > 0 && (
+                  <div className="srs-urgent-notice">
+                    {srsData.overdue} {srsData.overdue === 1 ? 'elemento vencido' : 'elementos vencidos'}
+                  </div>
+                )}
+              </div>
             </div>
+            <div className="srs-arrow">→</div>
           </div>
-          <div className="srs-arrow">→</div>
+
+          {/* Breakdown by mood/tense */}
+          {queue && queue.length > 0 && (
+            <div className="srs-breakdown">
+              <h4>Combos con elementos pendientes:</h4>
+              <div className="srs-combo-grid">
+                {Object.entries(
+                  queue.reduce((acc, item) => {
+                    const key = `${item.mood}-${item.tense}`
+                    if (!acc[key]) {
+                      acc[key] = {
+                        mood: item.mood,
+                        tense: item.tense,
+                        count: 0,
+                        urgentCount: 0,
+                        formattedName: item.formattedName
+                      }
+                    }
+                    acc[key].count++
+                    if (item.urgency >= 3) acc[key].urgentCount++
+                    return acc
+                  }, {})
+                )
+                  .sort((a, b) => b[1].urgentCount - a[1].urgentCount || b[1].count - a[1].count)
+                  .slice(0, 6)
+                  .map(([key, combo]) => (
+                    <div
+                      key={key}
+                      className={`srs-combo-item ${combo.urgentCount > 0 ? 'urgent' : ''}`}
+                      onClick={(e) => handleSRSClick(combo.mood, combo.tense, e)}
+                      title={`Practicar ${combo.formattedName}`}
+                    >
+                      <div className="combo-name">{combo.formattedName}</div>
+                      <div className="combo-count">
+                        {combo.count} {combo.count === 1 ? 'elemento' : 'elementos'}
+                        {combo.urgentCount > 0 && (
+                          <span className="urgent-badge"> • {combo.urgentCount} urgente{combo.urgentCount > 1 ? 's' : ''}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="srs-summary srs-empty" data-testid="srs-panel">
           <div className="srs-content">
             <img src="/icons/timer.png" alt="SRS" className="srs-icon" />
             <div className="srs-text">
-              Sin elementos pendientes de repaso
+              Sin elementos pendientes de repaso hoy
             </div>
           </div>
         </div>

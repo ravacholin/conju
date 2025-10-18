@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { createLogger } from '../../lib/utils/logger.js'
 import './GamificationNotifications.css'
+
+const logger = createLogger('gamification:Notifications')
 
 export default function GamificationNotifications() {
   const [notifications, setNotifications] = useState([])
@@ -202,13 +205,11 @@ export default function GamificationNotifications() {
     // Avoid infinite loops by clearing the error handler before swapping the source
     target.onerror = null
 
-    if (import.meta.env.DEV) {
-      // Surface missing icon information in development for easier debugging/metrics
-      console.warn('Gamification notification icon missing, applying fallback', {
-        attemptedSrc: target.src,
-        fallbackSrc: target.dataset?.fallback || '/icons/sparks.png'
-      })
-    }
+    // Surface missing icon information in development for easier debugging/metrics
+    logger.warn('Gamification notification icon missing, applying fallback', {
+      attemptedSrc: target.src,
+      fallbackSrc: target.dataset?.fallback || '/icons/sparks.png'
+    })
 
     target.src = target.dataset?.fallback || '/icons/sparks.png'
   }
