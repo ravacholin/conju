@@ -81,7 +81,7 @@ import ErrorBoundary from '../ErrorBoundary.jsx';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
-import { getCurrentUserId } from '../../lib/progress/userManager.js';
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
 import { getExampleVerbs, getVerbByLemma } from '../../lib/core/verbDataService.js';
 

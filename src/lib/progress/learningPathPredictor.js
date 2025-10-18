@@ -6,7 +6,7 @@ import { confidenceEngine } from './confidenceEngine.js'
 import { temporalIntelligence } from './temporalIntelligence.js'
 import { flowDetector } from './flowStateDetection.js'
 import { getMasteryByUser, getAttemptsByUser } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:learningPathPredictor')

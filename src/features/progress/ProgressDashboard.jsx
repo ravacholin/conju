@@ -1,5 +1,5 @@
 import React from 'react'
-import { syncNow, isSyncEnabled } from '../../lib/progress/userManager.js'
+import { syncNow, isSyncEnabled } from '../../lib/progress/userManager/index.js'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'

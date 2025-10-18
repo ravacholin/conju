@@ -1,7 +1,7 @@
 // Expert Mode configuration management for SRS/FSRS advanced users
 
 import { PROGRESS_CONFIG } from './config.js'
-import { getCurrentUserId, getUserSettings, updateUserSettings } from './userManager.js'
+import { getCurrentUserId, getUserSettings, updateUserSettings } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:expertMode')

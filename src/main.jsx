@@ -50,7 +50,7 @@ if (typeof window !== 'undefined') {
 
       // Try optimized sync setup
       const [userManager, cloudSync] = await Promise.all([
-        import('./lib/progress/userManager.js'),
+        import('./lib/progress/userManager/index.js'),
         import('./lib/progress/cloudSync.js')
       ])
 
@@ -149,7 +149,7 @@ if (typeof window !== 'undefined') {
         ] = await Promise.all([
           import('./lib/progress/autoInit.js').catch(() => null),
           import('./lib/notifications/smartNotifications.js').catch(() => null),
-          import('./lib/progress/userManager.js').catch(() => null),
+          import('./lib/progress/userManager/index.js').catch(() => null),
           import('./lib/progress/cloudSync.js').catch(() => null),
           import('./lib/auth/authService.js').catch(() => null)
         ])

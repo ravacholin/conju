@@ -3,7 +3,7 @@
 import { PROGRESS_CONFIG } from './config.js'
 import { getSyncStatus, hasPendingSyncData } from './cloudSync.js'
 import { getDueItems } from './srs.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { getAttemptsByUser, getMasteryByUser, getAllFromDB, getLearningSessionsByUser } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'

@@ -7,7 +7,7 @@ import { createBackup, restoreProgressData, importFromFile } from './dataRestore
 import 'fake-indexeddb/auto'
 
 // Mock del userManager
-vi.mock('./userManager.js', () => ({
+vi.mock('./userManager/index.js', () => ({
   getCurrentUserId: vi.fn().mockReturnValue('test-user-123')
 }))
 
@@ -161,7 +161,7 @@ describe('Sistema de Restauración de Datos', () => {
 
     it('debería usar el userId proporcionado como parámetro', async () => {
       const customUserId = 'custom-user-456'
-      const { getCurrentUserId } = await import('./userManager.js')
+      const { getCurrentUserId } = await import('./userManager/index.js')
 
       const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 

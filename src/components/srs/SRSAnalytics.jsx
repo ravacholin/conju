@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser, getDueSchedules } from '../../lib/progress/database.js'
 import './SRSAnalytics.css'
 

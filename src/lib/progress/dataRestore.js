@@ -18,7 +18,7 @@ async function resolveUserId(userIdOverride = null) {
   if (userIdOverride) return userIdOverride
 
   try {
-    const module = await import('./userManager.js')
+    const module = await import('./userManager/index.js')
     if (typeof module.getCurrentUserId === 'function') {
       return module.getCurrentUserId() || null
     }

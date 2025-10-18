@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 
 export default function ErrorInsights({ onNavigateToDrill }) {

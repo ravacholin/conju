@@ -46,7 +46,7 @@
 import authService from '../auth/authService.js'
 import { STORAGE_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import AuthTokenManager from './AuthTokenManager.js'
 
 const logger = createLogger('progress:SyncService')

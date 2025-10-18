@@ -13,10 +13,10 @@ import {
   isSyncEnabled,
   isLocalSyncMode,
   syncNow
-} from '../../lib/progress/userManager.js'
+} from '../../lib/progress/userManager/index.js'
 import { getSyncAuthHeaderName } from '../../lib/config/syncConfig.js'
 import { getSyncStatus as getCloudSyncStatus } from '../../lib/progress/cloudSync.js'
-// import { getCurrentUserId } from '../../lib/progress/userManager.js'
+// import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 
 /**
  * Panel avanzado de gestión de datos del usuario

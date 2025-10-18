@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getErrorIntelligence, getErrorRadarData } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'

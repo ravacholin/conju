@@ -1,7 +1,7 @@
 // Sistema de Gamificación para SRS y Progreso
 import { PROGRESS_CONFIG } from './config.js'
 import { saveUser, getUserById } from './database.js'
-import { getCurrentUserId } from './userManager.js'
+import { getCurrentUserId } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:gamification')

@@ -26,7 +26,7 @@ vi.mock('../../lib/progress/index.js', () => ({
 }))
 
 // Mock del userManager
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: vi.fn(() => 'test-user-123')
 }))
 
@@ -397,7 +397,7 @@ describe('useDrillProgress Hook', () => {
 
     it('should handle hint tracking without user ID gracefully', async () => {
       // Mock para devolver null userId
-      const { getCurrentUserId } = await import('../../lib/progress/userManager.js')
+      const { getCurrentUserId } = await import('../../lib/progress/userManager/index.js')
       getCurrentUserId.mockReturnValueOnce(null)
       
       const { result } = renderHook(() => useDrillProgress())

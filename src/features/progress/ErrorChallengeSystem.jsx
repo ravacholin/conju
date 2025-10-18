@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './ErrorChallengeSystem.css'

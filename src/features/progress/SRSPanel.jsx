@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'

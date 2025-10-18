@@ -10,7 +10,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { validateDrillItemStructure } from './DrillItemGenerator.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'

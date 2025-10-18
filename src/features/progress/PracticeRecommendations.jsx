@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { AdaptivePracticeEngine } from '../../lib/progress/AdaptivePracticeEngine.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import './practice-recommendations.css'
 import { createLogger } from '../../lib/utils/logger.js'
 

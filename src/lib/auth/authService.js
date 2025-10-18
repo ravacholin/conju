@@ -89,7 +89,7 @@ class AuthService {
     // Clear sync configuration to prevent cross-user data leaks
     try {
       // Import dynamically to avoid circular dependency
-      import('../progress/userManager.js').then(({ clearSyncAuthToken }) => {
+      import('../progress/userManager/index.js').then(({ clearSyncAuthToken }) => {
         clearSyncAuthToken()
       }).catch(() => {
         // Silent fail if userManager is not available
@@ -628,7 +628,7 @@ class AuthService {
           logger.warn('⚠️ Progress system not ready after timeout, proceeding with fallback:', timeoutError.message)
         }
 
-        const module = await import('../progress/userManager.js')
+        const module = await import('../progress/userManager/index.js')
         const getProgressUserId = module?.getCurrentUserId
 
         if (typeof getProgressUserId !== 'function') {

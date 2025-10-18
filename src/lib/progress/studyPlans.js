@@ -1,7 +1,7 @@
 // Personalized study plan builder (Phase 3)
 
 import { PROGRESS_CONFIG } from './config.js'
-import { getCurrentUserId, getUserSettings } from './userManager.js'
+import { getCurrentUserId, getUserSettings } from './userManager/index.js'
 import { PersonalizedCoach } from './personalizedCoaching.js'
 import { getCurrentGoalsState, dynamicGoalsSystem } from './dynamicGoals.js'
 import { learningPathPredictor } from './learningPathPredictor.js'

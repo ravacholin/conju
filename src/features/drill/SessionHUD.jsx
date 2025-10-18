@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
 import { getRecentAttempts } from '../../lib/progress/database.js'
 import { getDueItems } from '../../lib/progress/srs.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
 

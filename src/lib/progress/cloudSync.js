@@ -13,7 +13,7 @@ import {
   flushSyncQueue,
   isSyncEnabled,
   isLocalSyncMode
-} from './userManager.js'
+} from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:cloudSync')

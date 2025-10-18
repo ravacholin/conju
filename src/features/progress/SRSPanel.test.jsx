@@ -51,7 +51,7 @@ vi.mock('../../lib/progress/analytics.js', () => ({
   getSRSStats: getSRSStatsMock
 }))
 
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   getCurrentUserId: getCurrentUserIdMock
 }))
 

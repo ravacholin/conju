@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 const useProgressDashboardDataMock = vi.fn()
 const errorIntelligenceSpy = vi.fn()
 
-vi.mock('../../lib/progress/userManager.js', () => ({
+vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
   isSyncEnabled: vi.fn(() => true)
 }))

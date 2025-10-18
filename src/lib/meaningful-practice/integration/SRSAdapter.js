@@ -8,7 +8,7 @@
  */
 
 import { updateSchedule, getScheduleForItems } from '../../progress/srs.js';
-import { getCurrentUserId } from '../../progress/userManager.js';
+import { getCurrentUserId } from '../../progress/userManager/index.js';
 import { recordAttempt } from '../../progress/progressRepository.js';
 import { createLogger } from '../../utils/logger.js';
 import { ERROR_TAGS } from '../../progress/dataModels.js';

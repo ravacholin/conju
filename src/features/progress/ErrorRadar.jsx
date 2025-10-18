@@ -3,7 +3,7 @@
 import { useEffect, useRef, memo, useMemo, useState, useCallback } from 'react'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
 

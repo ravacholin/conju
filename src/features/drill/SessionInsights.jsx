@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { getRealUserStats } from '../../lib/progress/realTimeAnalytics.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { initProgressSystem } from '../../lib/progress/index.js'
 import Toast from '../../components/Toast.jsx'
 

@@ -8,7 +8,7 @@ import {
   getAdvancedAnalytics,
   getPronunciationStats
 } from '../../lib/progress/analytics.js'
-import { getCurrentUserId } from '../../lib/progress/userManager.js'
+import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('progress:dashboard')
