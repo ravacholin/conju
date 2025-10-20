@@ -31,6 +31,16 @@ export function getAuthenticatedAccount() {
 }
 
 export function clearAuthState() {
+  // Cleanup auto-sync timers to prevent memory leaks
+  // Dynamic import to avoid circular dependency
+  if (typeof window !== 'undefined') {
+    import('./cloudSync.js').then(({ cancelScheduledSync }) => {
+      cancelScheduledSync()
+    }).catch(() => {
+      // Silent fail - cleanup is best effort
+    })
+  }
+
   return authService.clearAuth()
 }
 

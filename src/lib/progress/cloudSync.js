@@ -15,13 +15,13 @@ import {
   isLocalSyncMode
 } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
+import { withMutex, globalMutex } from './SyncMutex.js'
 
 const logger = createLogger('progress:cloudSync')
 const isDev = import.meta?.env?.DEV
 
 const SYNC_QUEUE_KEY = 'progress-sync-queue-v1'
 
-let isSyncing = false
 let lastSyncTime = null
 let syncError = null
 let lastSyncResult = null
@@ -92,35 +92,38 @@ export async function syncWithCloud(options = {}) {
     return false
   }
 
-  if (isSyncing) {
-    if (isDev) logger.info('syncWithCloud', 'Sincronización ya en progreso, reutilizando estado actual')
-    return false
-  }
-
   if (isDev) logger.debug('syncWithCloud', 'getCurrentUserId al inicio', { userId: getCurrentUserId() })
 
-  isSyncing = true
-  syncError = null
+  // Use SyncMutex to prevent race conditions across tabs/devices
+  const result = await withMutex(async () => {
+    syncError = null
 
-  try {
-    const result = await syncNow({ include: collections })
-    recordSyncOutcome(result)
+    try {
+      const syncResult = await syncNow({ include: collections })
+      recordSyncOutcome(syncResult)
 
-    if (!result?.success) {
-      logger.warn('syncWithCloud', 'Error durante la sincronización con la nube', { reason: result?.reason || result?.error })
+      if (!syncResult?.success) {
+        logger.warn('syncWithCloud', 'Error durante la sincronización con la nube', { reason: syncResult?.reason || syncResult?.error })
+        return false
+      }
+
+      await flushSyncQueue()
+      return true
+    } catch (error) {
+      syncError = error?.message || String(error)
+      logger.error('syncWithCloud', 'Excepción durante la sincronización con la nube', error)
+      recordSyncOutcome({ success: false, error: syncError })
       return false
     }
+  }, { retries: 2, retryDelay: 500 })
 
-    await flushSyncQueue()
-    return true
-  } catch (error) {
-    syncError = error?.message || String(error)
-    logger.error('syncWithCloud', 'Excepción durante la sincronización con la nube', error)
-    recordSyncOutcome({ success: false, error: syncError })
+  // If mutex failed to acquire after retries, return false
+  if (result === null) {
+    if (isDev) logger.info('syncWithCloud', 'Sincronización ya en progreso en otra tab/dispositivo')
     return false
-  } finally {
-    isSyncing = false
   }
+
+  return result
 }
 
 /**
@@ -129,7 +132,7 @@ export async function syncWithCloud(options = {}) {
  */
 export function getSyncStatus() {
   return {
-    isSyncing,
+    isSyncing: globalMutex.hasLock(),
     lastSyncTime,
     syncError,
     isOnline,
@@ -325,8 +328,15 @@ export function cancelScheduledSync() {
   const timerApi = typeof globalThis !== 'undefined' ? globalThis : undefined
   if (autoSyncTimerId && timerApi?.clearInterval) {
     timerApi.clearInterval(autoSyncTimerId)
+    if (isDev) logger.debug('cancelScheduledSync', 'Auto-sync timer cancelado', { timerId: autoSyncTimerId })
   }
   autoSyncTimerId = null
+
+  // Also release mutex if we're holding it
+  if (globalMutex.hasLock()) {
+    globalMutex.release()
+    if (isDev) logger.debug('cancelScheduledSync', 'Mutex liberado durante cancelación')
+  }
 }
 
 const cloudSyncModule = {

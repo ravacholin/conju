@@ -280,9 +280,9 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
     // ULTIMATE FALLBACK: If even this fails, use emergency fallback
     logger.error('All fallback strategies failed, using emergency fallback')
-    return await createEmergencyFallback(specificMood, specificTense)
+    return await createEmergencyFallback(specificMood, specificTense, forms)
   }
-  
+
   // Use FormSelectorService for all selection logic
   const selectorContext = {
     verbLookupMap: VERB_LOOKUP_MAP
