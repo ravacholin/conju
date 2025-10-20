@@ -25,7 +25,7 @@ class MemoryManager {
     if (typeof setInterval === 'undefined') return null
 
     const intervalId = setInterval(callback, intervalMs)
-    
+
     this.intervals.set(intervalId, {
       systemName,
       intervalMs,
@@ -33,7 +33,12 @@ class MemoryManager {
       createdAt: Date.now()
     })
 
-    logger.debug(`Interval registrado: ${systemName}`, { intervalMs, description })
+    // Safe logging - avoid TDZ errors during module initialization
+    try {
+      logger?.debug?.(`Interval registrado: ${systemName}`, { intervalMs, description })
+    } catch (e) {
+      // Logger not ready yet - silent fail
+    }
     return intervalId
   }
 
@@ -63,7 +68,12 @@ class MemoryManager {
    */
   registerSystem(systemName, cleanupFunction) {
     this.systems.set(systemName, cleanupFunction)
-    logger.debug(`Sistema registrado: ${systemName}`)
+    // Safe logging - avoid TDZ errors during module initialization
+    try {
+      logger?.debug?.(`Sistema registrado: ${systemName}`)
+    } catch (e) {
+      // Logger not ready yet - silent fail
+    }
   }
 
   /**
