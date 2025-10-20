@@ -38,6 +38,7 @@ import DrillMode from './drill/DrillMode.jsx'
 import LearnTenseFlowContainer from './learning/LearnTenseFlow.jsx';
 import StoryMode from '../features/story/StoryMode.jsx'
 import TimelineMode from '../features/timeline/TimelineMode.jsx'
+import SyncStatusIndicator from './sync/SyncStatusIndicator.jsx'
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
 import { useShallow } from 'zustand/react/shallow'
@@ -517,7 +518,9 @@ function AppRouter() {
 
   if (currentMode === 'onboarding') {
     return (
-      <OnboardingFlow 
+      <>
+        <SyncStatusIndicator />
+        <OnboardingFlow 
         onStartPractice={handleStartPractice} 
         setCurrentMode={setCurrentMode} 
         formsForRegion={formsForRegion}
@@ -541,12 +544,15 @@ function AppRouter() {
         onGoToProgress={handleGoToProgress}
         onStartLearningNewTense={handleStartLearningNewTense}
       />
+      </>
     )
   }
 
   if (currentMode === 'drill') {
     return (
-      <DrillMode
+      <>
+        <SyncStatusIndicator />
+        <DrillMode
         currentItem={drillMode.currentItem}
         settings={settings}
         onDrillResult={drillMode.handleDrillResult}
@@ -565,39 +571,51 @@ function AppRouter() {
         onNavigateToStory={handleStartStoryMode}
         onNavigateToTimeline={handleStartTimelineMode}
       />
+      </>
     )
   }
 
   if (currentMode === 'story') {
     return (
-      <StoryMode
+      <>
+        <SyncStatusIndicator />
+        <StoryMode
         onBack={handleStartPractice}
         onHome={handleHome}
       />
+      </>
     )
   }
 
   if (currentMode === 'timeline') {
     return (
-      <TimelineMode
+      <>
+        <SyncStatusIndicator />
+        <TimelineMode
         onBack={handleStartPractice}
         onHome={handleHome}
       />
+      </>
     )
   }
 
   if (currentMode === 'learning') {
     return (
-      <LearnTenseFlowContainer 
+      <>
+        <SyncStatusIndicator />
+        <LearnTenseFlowContainer
         onHome={handleHome}
         onGoToProgress={handleGoToProgress}
       />
+      </>
     )
   }
 
   if (currentMode === 'progress') {
     return (
-      <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
+      <>
+        <SyncStatusIndicator />
+        <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
         <ProgressDashboard
           onNavigateHome={handleProgressMenu}
           onNavigateToDrill={() => {
@@ -607,11 +625,13 @@ function AppRouter() {
           }}
         />
       </React.Suspense>
+      </>
     )
   }
 
   return (
     <div className="App">
+      <SyncStatusIndicator />
       <div className="loading">Cargando aplicación...</div>
     </div>
   )

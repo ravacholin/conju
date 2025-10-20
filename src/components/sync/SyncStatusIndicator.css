@@ -1,0 +1,177 @@
+/* SyncStatusIndicator - Indicador flotante de estado de sincronización */
+
+.sync-status-indicator {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sync-status-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.sync-status-indicator:hover .sync-status-icon {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Estados del indicador */
+.sync-status-indicator.synced .sync-status-icon {
+  border-color: #44ff44;
+  background: rgba(0, 50, 0, 0.8);
+}
+
+.sync-status-indicator.syncing .sync-status-icon {
+  border-color: #ffaa00;
+  background: rgba(50, 40, 0, 0.8);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sync-status-indicator.error .sync-status-icon {
+  border-color: #ff4444;
+  background: rgba(50, 0, 0, 0.8);
+  animation: shake 0.5s ease-in-out;
+}
+
+.sync-status-indicator.offline .sync-status-icon {
+  border-color: #999;
+  background: rgba(30, 30, 30, 0.8);
+}
+
+.sync-status-indicator.stale .sync-status-icon {
+  border-color: #ffaa00;
+  background: rgba(40, 30, 0, 0.8);
+}
+
+.sync-status-indicator.unknown .sync-status-icon {
+  border-color: #666;
+  background: rgba(20, 20, 20, 0.8);
+}
+
+/* Animación de sincronización */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+/* Animación de error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Tooltip expandido */
+.sync-status-tooltip {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  min-width: 280px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-header {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 14px;
+}
+
+.tooltip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.status-row .label {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.status-row .value {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: right;
+  max-width: 180px;
+  word-break: break-word;
+}
+
+.status-row.warning .value {
+  color: #ffaa00;
+}
+
+.status-row.error .value {
+  color: #ff4444;
+  font-size: 11px;
+}
+
+.status-row.success .value {
+  color: #44ff44;
+}
+
+.status-row.info .value {
+  color: #4488ff;
+}
+
+/* Responsive - mobile */
+@media (max-width: 768px) {
+  .sync-status-indicator {
+    top: 12px;
+    right: 12px;
+  }
+
+  .sync-status-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .sync-status-tooltip {
+    min-width: 240px;
+    right: -4px;
+  }
+}

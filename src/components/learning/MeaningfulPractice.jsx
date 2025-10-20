@@ -19,11 +19,37 @@ import './MeaningfulPractice.css';
 const logger = createLogger('learning:MeaningfulPractice');
 
 /**
+ * BoundedCache - Cache con límite de tamaño y LRU eviction
+ * Previene memory leaks al mantener el tamaño bajo control
+ */
+class BoundedCache extends Map {
+  constructor(maxSize = 2000) {
+    super();
+    this.maxSize = maxSize;
+  }
+
+  set(key, value) {
+    // Si ya existe, eliminarlo para re-insertarlo al final (LRU)
+    if (this.has(key)) {
+      this.delete(key);
+    }
+
+    // Si alcanzamos el límite, eliminar el elemento más antiguo (LRU)
+    if (this.size >= this.maxSize) {
+      const firstKey = this.keys().next().value;
+      this.delete(firstKey);
+    }
+
+    return super.set(key, value);
+  }
+}
+
+/**
  * Obtiene el lemma (infinitivo) de una forma conjugada usando datos morfológicos reales
  * @param {string} conjugatedForm - Forma verbal conjugada
  * @returns {string|null} - Lemma del verbo o null si no se encuentra
  */
-const lemmaCacheByForm = new Map();
+const lemmaCacheByForm = new BoundedCache(2000); // Límite de 2000 entradas
 let lemmaCachePrimed = false;
 let cacheMode = 'uninitialized'; // 'uninitialized' | 'optimized' | 'manual'
 let cacheSignature = null;
@@ -68,25 +94,35 @@ function primeLemmaCache() {
 
   try {
     const allVerbs = getAllVerbsSync();
+    let entriesAdded = 0;
+    const MAX_MANUAL_CACHE_ENTRIES = 2000; // Límite de seguridad
 
     for (const verb of allVerbs || []) {
       if (!verb?.paradigms) continue;
+      if (entriesAdded >= MAX_MANUAL_CACHE_ENTRIES) {
+        logger.debug(`Límite de caché manual alcanzado: ${entriesAdded} entradas`);
+        break;
+      }
 
       for (const paradigm of verb.paradigms) {
         if (!paradigm?.forms) continue;
 
         for (const form of paradigm.forms) {
           if (!form?.value) continue;
+          if (entriesAdded >= MAX_MANUAL_CACHE_ENTRIES) break;
 
           const normalizedValue = form.value.trim().toLowerCase();
           if (!normalizedValue) continue;
 
           if (!lemmaCacheByForm.has(normalizedValue)) {
             lemmaCacheByForm.set(normalizedValue, verb.lemma || null);
+            entriesAdded++;
           }
         }
       }
     }
+
+    logger.debug(`Caché de lemmas precalentada en modo manual: ${entriesAdded} entradas`);
   } catch (error) {
     logger.warn('Error al precalentar la caché de lemmas', error);
   }
@@ -98,10 +134,29 @@ function primeLemmaCache() {
 
 function findLemmaAndCache(normalizedForm) {
   try {
+    // Primero intentar con FORM_LOOKUP_MAP si está disponible (O(1) lookup)
+    if (FORM_LOOKUP_MAP && FORM_LOOKUP_MAP.size > 0) {
+      for (const form of FORM_LOOKUP_MAP.values()) {
+        if (form?.value?.trim().toLowerCase() === normalizedForm) {
+          const lemma = form.lemma || null;
+          lemmaCacheByForm.set(normalizedForm, lemma);
+          return lemma;
+        }
+      }
+    }
+
+    // Fallback: búsqueda en getAllVerbsSync (más lento)
     const allVerbs = getAllVerbsSync();
+    let verbsChecked = 0;
+    const MAX_VERBS_TO_CHECK = 100; // Límite de seguridad para evitar búsquedas eternas
 
     for (const verb of allVerbs || []) {
       if (!verb?.paradigms) continue;
+      if (verbsChecked >= MAX_VERBS_TO_CHECK) {
+        logger.debug(`Límite de búsqueda de lemma alcanzado: ${verbsChecked} verbos`);
+        break;
+      }
+      verbsChecked++;
 
       for (const paradigm of verb.paradigms) {
         if (!paradigm?.forms) continue;
@@ -110,8 +165,9 @@ function findLemmaAndCache(normalizedForm) {
           if (!form?.value) continue;
 
           if (form.value.trim().toLowerCase() === normalizedForm) {
-            lemmaCacheByForm.set(normalizedForm, verb.lemma || null);
-            return verb.lemma || null;
+            const lemma = verb.lemma || null;
+            lemmaCacheByForm.set(normalizedForm, lemma);
+            return lemma;
           }
         }
       }
@@ -120,6 +176,7 @@ function findLemmaAndCache(normalizedForm) {
     logger.warn('Error al buscar lemma para forma conjugada', { normalizedForm, error });
   }
 
+  // No encontrado - cachear como null para evitar búsquedas repetidas
   lemmaCacheByForm.set(normalizedForm, null);
   return null;
 }

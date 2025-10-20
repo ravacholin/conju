@@ -1,7 +1,7 @@
 // Quick Integration Test for Level-Driven Prioritization
 // Simple script to verify the new system works end-to-end
 
-import { levelPrioritizer } from './levelDrivenPrioritizer.js'
+import { levelPrioritizer } from './prioritizer/index.js'
 import { chooseNext } from './generator.js'
 import { createLogger } from '../utils/logger.js'
 
