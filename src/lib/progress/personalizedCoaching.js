@@ -3,7 +3,7 @@
 
 import { getMasteryByUser, getRecentAttempts } from './database.js'
 import { getCurrentUserId } from './userManager/index.js'
-import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
+import { levelPrioritizer } from '../core/prioritizer/index.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
 import { createLogger } from '../utils/logger.js'
 

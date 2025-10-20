@@ -18,7 +18,7 @@ import { useDrillValidation } from './modules/useDrillValidation.js'
 
 // Import remaining functionality that wasn't modularized
 import { getMotivationalInsights } from '../lib/progress/personalizedCoaching.js'
-import { debugLevelPrioritization } from '../lib/core/levelDrivenPrioritizer.js'
+import { debugLevelPrioritization } from '../lib/core/prioritizer/index.js'
 import { getCurrentFlowState } from '../lib/progress/flowStateDetection.js'
 import { createLogger } from '../lib/utils/logger.js'
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest'
 import { AdaptivePracticeEngine, getNextRecommendedItem } from './AdaptivePracticeEngine.js'
 import { useSettings } from '../../state/settings.js'
-import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
+import { levelPrioritizer } from '../core/prioritizer/index.js'
 
 const engine = new AdaptivePracticeEngine('test-user')
 const originalSettings = useSettings.getState()

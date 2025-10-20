@@ -3,7 +3,7 @@
 import { getMasteryByUser, getDueSchedules } from './database.js'
 import { getCurrentUserId } from './userManager/index.js'
 import { getRealUserStats } from './realTimeAnalytics.js'
-import { levelPrioritizer } from '../core/levelDrivenPrioritizer.js'
+import { levelPrioritizer } from '../core/prioritizer/index.js'
 import { validateMoodTenseAvailability } from '../core/generator.js'
 import { useSettings } from '../../state/settings.js'
 import { buildFormsForRegion } from '../core/eligibility.js'

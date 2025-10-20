@@ -18,7 +18,7 @@
  */
 
 import { isRegularFormForMood, isRegularNonfiniteForm } from './conjugationRules.js'
-import { getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
+import { getWeightedFormsSelection } from './prioritizer/index.js'
 import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePolicy.js'
 import { varietyEngine } from './advancedVarietyEngine.js'
 import { VERB_LOOKUP_MAP, clearAllCaches } from './optimizedCache.js'

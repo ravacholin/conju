@@ -1,7 +1,7 @@
 // Testing and Debugging Utilities for Level-Driven Prioritization System
 // Comprehensive testing suite to verify the new algorithm works correctly
 
-import { levelPrioritizer, getWeightedFormsSelection } from './levelDrivenPrioritizer.js'
+import { levelPrioritizer, getWeightedFormsSelection } from './prioritizer/index.js'
 import { AdaptivePracticeEngine } from '../progress/AdaptivePracticeEngine.js'
 import { PersonalizedCoach } from '../progress/personalizedCoaching.js'
 import { createLogger } from '../utils/logger.js'
