@@ -25,6 +25,7 @@ import { VERB_LOOKUP_MAP, clearAllCaches } from './optimizedCache.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../utils/logger.js'
+import { getAdaptiveEngine } from '../progress/AdaptiveDifficultyEngine.js'
 
 const logger = createLogger('core:FormSelectorService')
 const isDev = import.meta?.env?.DEV
@@ -469,10 +470,34 @@ function applyWeightedSelection(forms) {
     }
   })
 
+  // Get adaptive difficulty recommendations (if available)
+  let targetRegularRatio = 0.3
+  let TARGET_IRREGULAR_RATIO = 0.7
 
-  // Calculate target distribution: 30% regular, 70% irregular
-  const targetRegularRatio = 0.3
-  const TARGET_IRREGULAR_RATIO = 0.7
+  try {
+    const adaptiveEngine = getAdaptiveEngine()
+    const difficultyConfig = adaptiveEngine.getDifficultyConfig()
+
+    // Apply adaptive difficulty adjustments if enabled
+    if (difficultyConfig.enabled && difficultyConfig.recommendations.verbPoolAdjustment) {
+      const adjustment = difficultyConfig.recommendations.verbPoolAdjustment
+
+      // Normalize weights to maintain 100% total
+      const totalWeight = adjustment.regularWeight + adjustment.irregularWeight
+      targetRegularRatio = adjustment.regularWeight / totalWeight
+      TARGET_IRREGULAR_RATIO = adjustment.irregularWeight / totalWeight
+
+      dbg('🎯 Adaptive difficulty adjusting verb weights', {
+        boost: difficultyConfig.currentBoost,
+        flowState: difficultyConfig.flowState,
+        regularRatio: targetRegularRatio.toFixed(2),
+        irregularRatio: TARGET_IRREGULAR_RATIO.toFixed(2)
+      })
+    }
+  } catch (error) {
+    // Fallback to default ratios if adaptive engine unavailable
+    logger.debug('Using default verb weights (adaptive engine unavailable)', error)
+  }
 
   // Calculate how many forms we should select from each type
   const totalForms = forms.length

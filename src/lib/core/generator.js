@@ -28,6 +28,7 @@ import {
   initializeMaps
 } from './optimizedCache.js'
 import { createLogger } from '../utils/logger.js'
+import { getAdaptiveEngine } from '../progress/AdaptiveDifficultyEngine.js'
 
 const logger = createLogger('core:generator')
 const isDev = import.meta?.env?.DEV

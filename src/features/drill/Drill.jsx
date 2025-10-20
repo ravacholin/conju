@@ -10,6 +10,7 @@ import ResistanceHUD from './ResistanceHUD.jsx';
 import SessionProgressHUD from './SessionProgressHUD.jsx';
 import { useSpeech } from './useSpeech';
 import { useResistanceTimer } from './useResistanceTimer';
+import AdaptiveDifficultyIndicator from './AdaptiveDifficultyIndicator.jsx';
 import './session-progress-hud.css';
 import { createLogger } from '../../lib/utils/logger.js'
 
@@ -627,6 +628,13 @@ export default function Drill({
 
       {/* Session Progress HUD - For personalized sessions */}
       <SessionProgressHUD />
+
+      {/* Adaptive Difficulty Indicator - Shows flow state and difficulty adjustments */}
+      {settings.enableProgressIntegration !== false && (
+        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 100 }}>
+          <AdaptiveDifficultyIndicator compact={false} />
+        </div>
+      )}
 
       {/* Resistance HUD */}
       {(settings.resistanceActive || showExplosion) && (

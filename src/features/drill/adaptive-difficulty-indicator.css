@@ -1,0 +1,150 @@
+/* Adaptive Difficulty Indicator Styles */
+
+.adaptive-difficulty-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 320px;
+}
+
+/* Flow State Card */
+.flow-state-card {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border-left: 3px solid var(--flow-color, #6b7280);
+}
+
+.flow-state-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.flow-emoji {
+  font-size: 20px;
+}
+
+.flow-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--flow-color, #6b7280);
+}
+
+.flow-message {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 28px;
+}
+
+/* Difficulty Level */
+.difficulty-level {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.difficulty-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.difficulty-label strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.difficulty-bar {
+  width: 100%;
+}
+
+.difficulty-track {
+  display: flex;
+  gap: 4px;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.difficulty-segment {
+  flex: 1;
+  transition: background-color 0.3s ease;
+  border-radius: 2px;
+}
+
+.difficulty-segment.active {
+  transform: scaleY(1.5);
+  box-shadow: 0 0 8px var(--flow-color);
+}
+
+/* Adjustment Notification */
+.adjustment-notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border-left: 3px solid var(--flow-color, #6b7280);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.adjustment-icon {
+  font-size: 16px;
+}
+
+.adjustment-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+/* Compact Mode */
+.adaptive-indicator-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  border: 1px solid var(--flow-color, rgba(255, 255, 255, 0.1));
+}
+
+.adaptive-indicator-compact .flow-emoji {
+  font-size: 14px;
+}
+
+.adaptive-indicator-compact .flow-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--flow-color, #6b7280);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .adaptive-difficulty-indicator {
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .flow-message {
+    font-size: 11px;
+  }
+}

@@ -17,6 +17,7 @@ import {
 import { createLogger } from '../../lib/utils/logger.js'
 import { incrementSessionAttempts } from '../../lib/progress/planTracking.js'
 import { useSettings } from '../../state/settings.js'
+import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
 
 /**
  * Hook personalizado para tracking de progreso en Drill
@@ -111,6 +112,32 @@ export function useProgressTracking(currentItem, onResult) {
         logger.debug(`Plan session attempt tracked: ${result.correct ? 'correct' : 'incorrect'}`)
       } catch (error) {
         logger.warn('Error al rastrear intento de sesión de plan:', error)
+      }
+    }
+
+    // Process response with Adaptive Difficulty Engine
+    if (currentItem && itemStartTimeRef.current) {
+      try {
+        const adaptiveEngine = getAdaptiveEngine()
+        const latencyMs = Date.now() - itemStartTimeRef.current
+
+        const adaptiveResponse = {
+          correct: result.correct,
+          latency: latencyMs,
+          verbId: currentItem.lemma,
+          mood: currentItem.mood,
+          tense: currentItem.tense
+        }
+
+        const adaptiveResult = adaptiveEngine.processResponse(adaptiveResponse)
+
+        logger.debug('Adaptive difficulty processed', {
+          flowState: adaptiveResult.flowState,
+          difficultyBoost: adaptiveResult.difficultyBoost,
+          adjustment: adaptiveResult.adjustment
+        })
+      } catch (error) {
+        logger.warn('Error al procesar adaptive difficulty:', error)
       }
     }
 
