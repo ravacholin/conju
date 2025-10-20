@@ -193,7 +193,12 @@ if (typeof window !== 'undefined') {
           // Simple focus sync for fallback
           window.addEventListener('focus', () => {
             setTimeout(() => {
-              if (syncNow) syncNow().catch(() => {})
+              if (syncNow) {
+                syncNow().catch((error) => {
+                  // Log sync error - el SyncStatusIndicator mostrará el error al usuario
+                  bootstrapLogger.warn('Sync failed on window focus', error);
+                });
+              }
             }, 600)
           })
         }
