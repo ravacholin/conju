@@ -30,3 +30,4 @@ dist-ssr
 *_backup.*
 *_temp_backup.*
 *.backup-*
+coverage/
