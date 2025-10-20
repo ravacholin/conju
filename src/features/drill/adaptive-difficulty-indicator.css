@@ -1,46 +1,52 @@
-/* Adaptive Difficulty Indicator Styles */
+/* Adaptive Difficulty Indicator - Estilo minimalista oscuro consistente */
 
 .adaptive-difficulty-indicator {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 320px;
+  background: rgba(21, 21, 21, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 16px;
+  max-width: 280px;
+  color: var(--text);
+  transition: all 0.3s ease;
 }
 
 /* Flow State Card */
 .flow-state-card {
   padding: 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  border-left: 3px solid var(--flow-color, #6b7280);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(245, 245, 245, 0.06);
 }
 
 .flow-state-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
-.flow-emoji {
-  font-size: 20px;
+.flow-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+  filter: brightness(1.1);
 }
 
 .flow-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--flow-color, #6b7280);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(245, 245, 245, 0.9);
 }
 
 .flow-message {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-left: 28px;
+  font-size: 0.8rem;
+  color: rgba(245, 245, 245, 0.6);
+  margin-left: 30px;
+  line-height: 1.4;
 }
 
 /* Difficulty Level */
@@ -51,13 +57,13 @@
 }
 
 .difficulty-label {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+  color: rgba(245, 245, 245, 0.6);
 }
 
 .difficulty-label strong {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
+  color: rgba(245, 245, 245, 0.9);
+  font-weight: 500;
 }
 
 .difficulty-bar {
@@ -67,38 +73,40 @@
 .difficulty-track {
   display: flex;
   gap: 4px;
-  height: 6px;
-  border-radius: 3px;
+  height: 4px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .difficulty-segment {
   flex: 1;
-  transition: background-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 .difficulty-segment.active {
+  background: rgba(245, 245, 245, 0.4);
   transform: scaleY(1.5);
-  box-shadow: 0 0 8px var(--flow-color);
+  box-shadow: 0 0 4px rgba(245, 245, 245, 0.2);
 }
 
 /* Adjustment Notification */
 .adjustment-notification {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 8px;
-  border-left: 3px solid var(--flow-color, #6b7280);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(245, 245, 245, 0.08);
   animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -107,12 +115,16 @@
 }
 
 .adjustment-icon {
-  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .adjustment-text {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  color: rgba(245, 245, 245, 0.8);
   line-height: 1.4;
 }
 
@@ -120,21 +132,24 @@
 .adaptive-indicator-compact {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  border: 1px solid var(--flow-color, rgba(255, 255, 255, 0.1));
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(21, 21, 21, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 12px;
 }
 
-.adaptive-indicator-compact .flow-emoji {
-  font-size: 14px;
+.flow-icon-compact {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
 }
 
-.adaptive-indicator-compact .flow-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--flow-color, #6b7280);
+.flow-label-compact {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(245, 245, 245, 0.9);
 }
 
 /* Responsive */
@@ -145,6 +160,18 @@
   }
 
   .flow-message {
-    font-size: 11px;
+    font-size: 0.75rem;
+    margin-left: 26px;
   }
+
+  .flow-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Hover state para mejor feedback visual */
+.adaptive-difficulty-indicator:hover {
+  border-color: rgba(245, 245, 245, 0.12);
+  background: rgba(21, 21, 21, 0.9);
 }

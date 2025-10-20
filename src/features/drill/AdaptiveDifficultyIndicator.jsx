@@ -6,12 +6,8 @@ import './adaptive-difficulty-indicator.css'
 /**
  * AdaptiveDifficultyIndicator - Muestra el estado de flow y dificultad adaptativa
  *
- * Diseño minimalista que muestra:
- * - Estado de flow actual del usuario
- * - Nivel de dificultad ajustado (-2 a +2)
- * - Mensaje motivacional basado en el estado
- *
- * Se actualiza automáticamente cuando el adaptive engine cambia la dificultad
+ * Diseño minimalista oscuro consistente con el resto de la webapp
+ * Sin gradientes, sin emojis, solo iconos PNG y colores sutiles
  */
 export default function AdaptiveDifficultyIndicator({ compact = false }) {
   const [flowState, setFlowState] = useState(FLOW_STATES.NEUTRAL)
@@ -48,36 +44,31 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
     }
   }, [])
 
-  // Mapeo de estados de flow a descripciones y colores
+  // Mapeo de estados de flow a descripciones y iconos PNG
   const flowStateConfig = {
     [FLOW_STATES.DEEP_FLOW]: {
       label: 'Flow Profundo',
-      emoji: '🔥',
-      color: '#10b981', // green
+      icon: '/icons/sparks.png',
       message: 'Estás en tu mejor momento'
     },
     [FLOW_STATES.LIGHT_FLOW]: {
       label: 'En Flow',
-      emoji: '✨',
-      color: '#3b82f6', // blue
+      icon: '/icons/bolt.png',
       message: 'Buen ritmo de aprendizaje'
     },
     [FLOW_STATES.NEUTRAL]: {
       label: 'Neutral',
-      emoji: '⚖️',
-      color: '#6b7280', // gray
+      icon: '/icons/brain.png',
       message: 'Calentando motores'
     },
     [FLOW_STATES.STRUGGLING]: {
       label: 'Desafiante',
-      emoji: '💪',
-      color: '#f59e0b', // amber
+      icon: '/icons/lightbulb.png',
       message: 'Sigue adelante, lo tienes'
     },
     [FLOW_STATES.FRUSTRATED]: {
       label: 'Difícil',
-      emoji: '🎯',
-      color: '#ef4444', // red
+      icon: '/icons/error.png',
       message: 'Vamos a facilitarlo un poco'
     }
   }
@@ -96,9 +87,9 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
 
   if (compact) {
     return (
-      <div className="adaptive-indicator-compact" style={{ '--flow-color': config.color }}>
-        <span className="flow-emoji">{config.emoji}</span>
-        <span className="flow-label">{config.label}</span>
+      <div className="adaptive-indicator-compact">
+        <img src={config.icon} alt="" className="flow-icon-compact" />
+        <span className="flow-label-compact">{config.label}</span>
       </div>
     )
   }
@@ -106,9 +97,9 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
   return (
     <div className="adaptive-difficulty-indicator">
       {/* Estado de Flow */}
-      <div className="flow-state-card" style={{ '--flow-color': config.color }}>
+      <div className="flow-state-card">
         <div className="flow-state-header">
-          <span className="flow-emoji">{config.emoji}</span>
+          <img src={config.icon} alt="" className="flow-icon" />
           <span className="flow-label">{config.label}</span>
         </div>
         <div className="flow-message">{config.message}</div>
@@ -125,9 +116,6 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
               <div
                 key={level}
                 className={`difficulty-segment ${difficultyBoost === level ? 'active' : ''}`}
-                style={{
-                  backgroundColor: difficultyBoost === level ? config.color : 'rgba(255,255,255,0.1)'
-                }}
               />
             ))}
           </div>
@@ -136,8 +124,8 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
 
       {/* Mensaje de Ajuste (temporal) */}
       {showAdjustment && lastAdjustment && (
-        <div className="adjustment-notification" style={{ '--flow-color': config.color }}>
-          <div className="adjustment-icon">🎯</div>
+        <div className="adjustment-notification">
+          <img src="/icons/robot.png" alt="" className="adjustment-icon" />
           <div className="adjustment-text">{lastAdjustment.reason}</div>
         </div>
       )}
