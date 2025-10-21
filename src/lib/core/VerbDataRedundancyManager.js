@@ -137,7 +137,12 @@ class VerbDataRedundancyManager {
    * Initialize the redundancy manager
    */
   async initialize() {
-    logger.info('initialize', 'Starting VerbDataRedundancyManager initialization')
+    // Safe logging - avoid TDZ during module initialization
+    try {
+      logger?.info?.('initialize', 'Starting VerbDataRedundancyManager initialization')
+    } catch (e) {
+      // Logger not ready yet
+    }
 
     try {
       // Initialize all layers
@@ -149,14 +154,24 @@ class VerbDataRedundancyManager {
       // Validate initial data
       await this.validateCurrentData()
 
-      logger.info('initialize', 'VerbDataRedundancyManager initialized successfully', {
-        currentLayer: this.currentLayer,
-        healthState: this.healthState,
-        verbCount: this.getVerbCount()
-      })
+      // Safe logging - avoid TDZ during module initialization
+      try {
+        logger?.info?.('initialize', 'VerbDataRedundancyManager initialized successfully', {
+          currentLayer: this.currentLayer,
+          healthState: this.healthState,
+          verbCount: this.getVerbCount()
+        })
+      } catch (e) {
+        // Logger not ready yet
+      }
 
     } catch (error) {
-      logger.error('initialize', 'Failed to initialize VerbDataRedundancyManager', error)
+      // Safe logging - avoid TDZ during module initialization
+      try {
+        logger?.error?.('initialize', 'Failed to initialize VerbDataRedundancyManager', error)
+      } catch (e) {
+        // Logger not ready yet
+      }
       await this.handleInitializationFailure(error)
     }
   }
