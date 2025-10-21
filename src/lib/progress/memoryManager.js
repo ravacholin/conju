@@ -160,9 +160,19 @@ class MemoryManager {
     for (const [systemName, cleanupFn] of this.systems.entries()) {
       try {
         cleanupFn()
-        logger.cleanup(systemName, 'Sistema limpiado')
+        // Safe logging - avoid TDZ errors
+        try {
+          logger?.cleanup?.(systemName, 'Sistema limpiado')
+        } catch (e) {
+          // Logger not ready yet
+        }
       } catch (error) {
-        logger.error(`Error en cleanup de ${systemName}:`, error)
+        // Safe logging - avoid TDZ errors
+        try {
+          logger?.error?.(`Error en cleanup de ${systemName}:`, error)
+        } catch (e) {
+          // Logger not ready yet
+        }
       }
     }
 
