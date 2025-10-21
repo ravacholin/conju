@@ -26,7 +26,7 @@ const getDefaultLogLevel = () => {
 let currentLogLevel = getDefaultLogLevel()
 
 // Shared debug namespace (browser only) so engineers can inspect state without noisy logs
-const ensureDebugNamespace = () => {
+function ensureDebugNamespace() {
   if (typeof window === 'undefined') return null
 
   if (!window.__CONJU_DEBUG__) {
