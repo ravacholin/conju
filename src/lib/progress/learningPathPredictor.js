@@ -37,7 +37,12 @@ export class LearningPathPredictor {
       DIFFICULTY_PROGRESSION: 0.05 // Progresión de dificultad
     }
 
-    logger.systemInit('Predictor de Ruta de Aprendizaje inicializado')
+    // Safe logging - avoid TDZ during module initialization
+    try {
+      logger?.systemInit?.('Predictor de Ruta de Aprendizaje inicializado')
+    } catch (e) {
+      // Logger not ready yet
+    }
   }
 
   /**

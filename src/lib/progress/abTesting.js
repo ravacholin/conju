@@ -46,7 +46,12 @@ export class ABTestingManager {
     // Configurar experimento principal: SM-2 vs FSRS
     this.setupMainSRSExperiment()
 
-    logger.systemInit('A/B Testing Manager initialized')
+    // Safe logging - avoid TDZ during module initialization
+    try {
+      logger?.systemInit?.('A/B Testing Manager initialized')
+    } catch (e) {
+      // Logger not ready yet
+    }
   }
 
   /**
@@ -573,7 +578,12 @@ if (typeof window !== 'undefined') {
     manager: abTestingManager
   }
 
-  logger.systemInit('A/B Testing Debug Interface')
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('A/B Testing Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }
 
 export default abTestingManager

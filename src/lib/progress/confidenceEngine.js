@@ -730,7 +730,12 @@ if (typeof window !== 'undefined') {
     reset: () => confidenceEngine.reset()
   }
   
-  logger.systemInit('Confidence Engine Debug Interface')
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Confidence Engine Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }
 
 export default confidenceEngine

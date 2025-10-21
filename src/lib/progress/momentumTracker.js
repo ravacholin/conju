@@ -777,7 +777,12 @@ export const momentumTracker = new MomentumTracker()
 // Utility functions
 export function initializeMomentumTracking() {
   momentumTracker.reset()
-  logger.systemInit('Momentum Tracker')
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Momentum Tracker')
+  } catch (e) {
+    // Logger not ready yet
+  }
   return momentumTracker
 }
 
@@ -807,6 +812,11 @@ if (typeof window !== 'undefined') {
     getInsights: () => momentumTracker.getMomentumInsights(),
     reset: () => momentumTracker.reset()
   }
-  
-  logger.systemInit('Momentum Tracker Debug Interface')
+
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Momentum Tracker Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }

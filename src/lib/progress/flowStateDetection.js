@@ -614,6 +614,11 @@ if (typeof window !== 'undefined') {
     getDetailedState: () => flowDetector.getDetailedState(),
     reset: () => flowDetector.reset()
   }
-  
-  logger.systemInit('Flow Detector Debug Interface')
+
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Flow Detector Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }

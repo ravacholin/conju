@@ -828,7 +828,12 @@ if (typeof window !== 'undefined') {
     reset: () => temporalIntelligence.reset()
   }
   
-  logger.systemInit('Temporal Intelligence Debug Interface')
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Temporal Intelligence Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }
 
 export default temporalIntelligence

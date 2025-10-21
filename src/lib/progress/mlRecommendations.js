@@ -34,7 +34,12 @@ export class MLRecommendationEngine {
     this.recommendationCache = new Map()
     this.cacheTimeout = 5 * 60 * 1000 // 5 minutos
 
-    logger.systemInit('ML Recommendation Engine initialized')
+    // Safe logging - avoid TDZ during module initialization
+    try {
+      logger?.systemInit?.('ML Recommendation Engine initialized')
+    } catch (e) {
+      // Logger not ready yet
+    }
   }
 
   /**

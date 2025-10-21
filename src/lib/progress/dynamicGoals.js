@@ -1012,8 +1012,13 @@ if (typeof window !== 'undefined') {
     processResponse: processResponseForGoals,
     reset: () => dynamicGoalsSystem.reset()
   }
-  
-  logger.systemInit('Dynamic Goals Debug Interface')
+
+  // Safe logging - avoid TDZ during module initialization
+  try {
+    logger?.systemInit?.('Dynamic Goals Debug Interface')
+  } catch (e) {
+    // Logger not ready yet
+  }
 }
 
 export default dynamicGoalsSystem

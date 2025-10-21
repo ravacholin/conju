@@ -40,7 +40,12 @@ export class IntelligentFSRS {
       temporalAdjustments: 0
     }
 
-    logger.systemInit('Intelligent FSRS initialized')
+    // Safe logging - avoid TDZ during module initialization
+    try {
+      logger?.systemInit?.('Intelligent FSRS initialized')
+    } catch (e) {
+      // Logger not ready yet
+    }
   }
 
   applyConfig(config) {
