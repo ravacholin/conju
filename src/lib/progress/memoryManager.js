@@ -137,7 +137,12 @@ class MemoryManager {
     if (this.isCleaningUp) return
     this.isCleaningUp = true
 
-    logger.info('Iniciando cleanup completo de memoria')
+    // Safe logging - avoid TDZ errors
+    try {
+      logger?.info?.('Iniciando cleanup completo de memoria')
+    } catch (e) {
+      // Logger not ready yet
+    }
 
     // Limpiar todos los intervals
     for (const intervalId of this.intervals.keys()) {
@@ -161,7 +166,12 @@ class MemoryManager {
       }
     }
 
-    logger.info('Cleanup completo de memoria finalizado')
+    // Safe logging - avoid TDZ errors
+    try {
+      logger?.info?.('Cleanup completo de memoria finalizado')
+    } catch (e) {
+      // Logger not ready yet
+    }
     this.isCleaningUp = false
   }
 
