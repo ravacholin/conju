@@ -213,29 +213,39 @@ export const perf = {
  * @returns {Object} - Logger object with context pre-filled
  */
 export function createLogger(context) {
+  // Safe wrapper to prevent TDZ errors during module initialization
+  const safeCall = (fn, ...args) => {
+    try {
+      return fn(...args)
+    } catch (e) {
+      // Logger not ready yet - silent fail
+      return undefined
+    }
+  }
+
   return {
-    debug: (message, data) => debug(context, message, data),
-    info: (message, data) => info(context, message, data),
-    warn: (message, data) => warn(context, message, data),
-    error: (message, errorData) => error(context, message, errorData),
+    debug: (message, data) => safeCall(debug, context, message, data),
+    info: (message, data) => safeCall(info, context, message, data),
+    warn: (message, data) => safeCall(warn, context, message, data),
+    error: (message, errorData) => safeCall(error, context, message, errorData),
 
     // Legacy methods from old ProgressLogger for compatibility
-    systemInit: (message) => info(context, `🚀 ${message}`),
-    flow: (message, data) => debug(context, `🔥 [Flow] ${message}`, data),
-    momentum: (message, data) => debug(context, `📈 [Momentum] ${message}`, data),
-    confidence: (message, data) => debug(context, `🎯 [Confidence] ${message}`, data),
-    goals: (message, data) => debug(context, `🏆 [Goals] ${message}`, data),
-    temporal: (message, data) => debug(context, `⏰ [Temporal] ${message}`, data),
+    systemInit: (message) => safeCall(info, context, `🚀 ${message}`),
+    flow: (message, data) => safeCall(debug, context, `🔥 [Flow] ${message}`, data),
+    momentum: (message, data) => safeCall(debug, context, `📈 [Momentum] ${message}`, data),
+    confidence: (message, data) => safeCall(debug, context, `🎯 [Confidence] ${message}`, data),
+    goals: (message, data) => safeCall(debug, context, `🏆 [Goals] ${message}`, data),
+    temporal: (message, data) => safeCall(debug, context, `⏰ [Temporal] ${message}`, data),
     performance: (message, timing) => {
       const timeStr = timing ? ` (${timing}ms)` : ''
-      debug(context, `⚡ [Performance] ${message}${timeStr}`)
+      safeCall(debug, context, `⚡ [Performance] ${message}${timeStr}`)
     },
-    cleanup: (message, details) => debug(context, `🧹 [Cleanup] ${message}`, details),
+    cleanup: (message, details) => safeCall(debug, context, `🧹 [Cleanup] ${message}`, details),
 
     perf: {
-      start: (key) => perf.start(`${context}-${key}`),
-      end: (key, operation, threshold) => perf.end(`${context}-${key}`, context, operation, threshold),
-      measure: (operation, fn, threshold) => perf.measure(context, operation, fn, threshold)
+      start: (key) => safeCall(perf.start, `${context}-${key}`),
+      end: (key, operation, threshold) => safeCall(perf.end, `${context}-${key}`, context, operation, threshold),
+      measure: (operation, fn, threshold) => safeCall(perf.measure, context, operation, fn, threshold)
     }
   }
 }
