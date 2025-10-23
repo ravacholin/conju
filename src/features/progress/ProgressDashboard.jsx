@@ -98,7 +98,8 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
 
     settings.set({
       practiceMode: 'review',
-      reviewSessionType: 'due'
+      reviewSessionType: 'due',
+      reviewSessionFilter: {}
     })
     onNavigateToDrill()
   }, [onNavigateToDrill, settings])
