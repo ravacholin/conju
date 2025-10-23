@@ -126,7 +126,7 @@ export async function initDB() {
     // Importar openDB dinámicamente para permitir mocks por prueba
     const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion, newVersion, transaction) {
         if (isDev) logger.info('initDB', 'Actualizando estructura de base de datos')
 
         // Crear tabla de usuarios
@@ -177,12 +177,20 @@ export async function initDB() {
         }
 
         // Crear tabla de schedules
+        let scheduleStore
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.SCHEDULES)) {
-          const scheduleStore = db.createObjectStore(STORAGE_CONFIG.STORES.SCHEDULES, { keyPath: 'id' })
+          scheduleStore = db.createObjectStore(STORAGE_CONFIG.STORES.SCHEDULES, { keyPath: 'id' })
           scheduleStore.createIndex('userId', 'userId', { unique: false })
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
+          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de schedules creada')
+        } else if (transaction) {
+          scheduleStore = transaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+        }
+
+        if (scheduleStore && !scheduleStore.indexNames.contains('userId-nextDue')) {
+          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
         }
 
         // Crear tabla de learning sessions (analytics)
@@ -926,15 +934,27 @@ export async function getDueSchedules(userId, beforeDate) {
     const db = await initDB()
     const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
     const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
-    const index = store.index('nextDue')
-    
-    // Obtener todos los schedules ordenados por fecha
-    const allSchedules = await index.getAll()
-    
-    // Filtrar por usuario y fecha
-    const result = allSchedules.filter(s =>
-      s.userId === userId && new Date(s.nextDue) <= beforeDate
-    )
+    const index = store.index('userId-nextDue')
+
+    const upperBound = beforeDate instanceof Date ? beforeDate : new Date(beforeDate)
+    if (Number.isNaN(upperBound.getTime())) {
+      throw new Error('getDueSchedules requiere una fecha válida')
+    }
+    const lowerBound = new Date(0)
+    const rangeFactory = globalThis.IDBKeyRange || globalThis.webkitIDBKeyRange
+    if (!rangeFactory) {
+      throw new Error('IDBKeyRange no está disponible en este entorno')
+    }
+
+    const keyRange = rangeFactory.bound([userId, lowerBound], [userId, upperBound])
+
+    const dueSchedules = await index.getAll(keyRange)
+
+    const result = dueSchedules.filter(schedule => {
+      if (!schedule?.nextDue) return false
+      const nextDueDate = schedule.nextDue instanceof Date ? schedule.nextDue : new Date(schedule.nextDue)
+      return nextDueDate <= upperBound
+    })
 
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getDueSchedules')
     return result
