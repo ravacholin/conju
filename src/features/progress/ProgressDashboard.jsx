@@ -42,7 +42,9 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     systemReady,
     refresh,
     practiceReminders,
-    pronunciationStats
+    pronunciationStats,
+    sectionsStatus,
+    initialSectionsReady
   } = useProgressDashboardData()
 
   const handleShowToast = React.useCallback((toastConfig) => {
@@ -106,7 +108,45 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   // Manual sync only - removed auto-sync to prevent double load on mount
   // Users can manually sync via the sync button if needed
 
-  if (loading) {
+  const getSectionState = React.useCallback((keys) => {
+    const list = Array.isArray(keys) ? keys : [keys]
+
+    if (list.some((key) => sectionsStatus?.[key] === 'error')) {
+      return 'error'
+    }
+
+    if (list.some((key) => sectionsStatus?.[key] !== 'success')) {
+      return 'loading'
+    }
+
+    return 'success'
+  }, [sectionsStatus])
+
+  const renderSection = (state, component, placeholderText, errorText) => {
+    if (state === 'success') {
+      return component
+    }
+
+    if (state === 'error') {
+      return (
+        <div className="section-placeholder section-placeholder-error">
+          <span>{errorText || 'No pudimos cargar esta sección.'}</span>
+          <button type="button" className="section-placeholder-action" onClick={refresh}>
+            Reintentar
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <div className="section-placeholder">
+        <div className="section-placeholder-spinner" />
+        <span>{placeholderText}</span>
+      </div>
+    )
+  }
+
+  if (loading && !initialSectionsReady) {
     return (
       <div className="progress-dashboard loading">
         <div className="spinner"></div>
@@ -130,9 +170,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     )
   }
 
-  if (!heatMapData && !error) {
-    return null
-  }
+  const overviewState = getSectionState(['userStats'])
+  const remindersState = getSectionState(['userStats', 'weeklyGoals', 'weeklyProgress', 'dailyChallenges'])
+  const pronunciationState = getSectionState(['pronunciationStats'])
+  const heatMapState = getSectionState(['heatMap'])
+  const smartPracticeState = getSectionState(['heatMap', 'recommendations'])
+  const insightsState = getSectionState(['userStats', 'heatMap', 'studyPlan', 'advancedAnalytics'])
+  const errorIntelState = getSectionState(['errorIntel'])
 
   return (
     <div className="progress-dashboard">
@@ -165,63 +209,112 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       )}
 
       <SafeComponent name="Progress Overview">
-        <ProgressOverview
-          userStats={userStats}
-          onNavigateHome={onNavigateHome}
-          onNavigateToDrill={onNavigateToDrill}
-          syncing={syncing}
-          onSync={handleSync}
-          syncEnabled={syncAvailable}
-          onRefresh={refresh}
-        />
+        {renderSection(
+          overviewState,
+          (
+            <ProgressOverview
+              userStats={userStats}
+              onNavigateHome={onNavigateHome}
+              onNavigateToDrill={onNavigateToDrill}
+              syncing={syncing}
+              onSync={handleSync}
+              syncEnabled={syncAvailable}
+              onRefresh={refresh}
+            />
+          ),
+          'Cargando resumen de progreso...',
+          'No pudimos obtener tus estadísticas.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Practice Reminders">
-        <PracticeReminders
-          reminders={practiceReminders}
-          userStats={userStats}
-          onNavigateToDrill={onNavigateToDrill}
-          onShowToast={handleShowToast}
-        />
+        {renderSection(
+          remindersState,
+          (
+            <PracticeReminders
+              reminders={practiceReminders}
+              userStats={userStats}
+              onNavigateToDrill={onNavigateToDrill}
+              onShowToast={handleShowToast}
+            />
+          ),
+          'Preparando recordatorios personalizados...',
+          'No pudimos generar tus recordatorios.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Pronunciation Lab">
-        <PronunciationStatsWidget
-          stats={pronunciationStats}
-          onNavigateToDrill={onNavigateToDrill}
-        />
+        {renderSection(
+          pronunciationState,
+          (
+            <PronunciationStatsWidget
+              stats={pronunciationStats}
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          ),
+          'Analizando estadísticas de pronunciación...',
+          'No pudimos cargar las estadísticas de pronunciación.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Heat Map & SRS">
-        <HeatMapSRS
-          data={heatMapData}
-          onNavigateToDrill={onNavigateToDrill}
-        />
+        {renderSection(
+          heatMapState,
+          (
+            <HeatMapSRS
+              data={heatMapData}
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          ),
+          'Cargando mapa de calor...',
+          'No pudimos cargar el mapa de calor.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Smart Practice">
-        <SmartPractice
-          heatMapData={heatMapData}
-          userStats={userStats}
-          onNavigateToDrill={onNavigateToDrill}
-        />
+        {renderSection(
+          smartPracticeState,
+          (
+            <SmartPractice
+              heatMapData={heatMapData}
+              userStats={userStats}
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          ),
+          'Generando práctica inteligente...',
+          'No pudimos preparar la práctica inteligente.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Study Insights">
-        <StudyInsights
-          userStats={userStats}
-          heatMapData={heatMapData}
-          studyPlan={studyPlan}
-          onNavigateToDrill={onNavigateToDrill}
-        />
+        {renderSection(
+          insightsState,
+          (
+            <StudyInsights
+              userStats={userStats}
+              heatMapData={heatMapData}
+              studyPlan={studyPlan}
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          ),
+          'Calculando recomendaciones avanzadas...',
+          'No pudimos calcular las analíticas de estudio.'
+        )}
       </SafeComponent>
 
       <SafeComponent name="Error Intelligence">
-        <ErrorIntelligence
-          data={errorIntel}
-          compact
-          onNavigateToDrill={onNavigateToDrill}
-        />
+        {renderSection(
+          errorIntelState,
+          (
+            <ErrorIntelligence
+              data={errorIntel}
+              compact
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          ),
+          'Buscando patrones de error...',
+          'No pudimos cargar el módulo de errores.'
+        )}
       </SafeComponent>
     </div>
   )

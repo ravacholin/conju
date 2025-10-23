@@ -27,6 +27,10 @@ vi.mock('./useProgressDashboardData.js', () => ({
   default: (...args) => useProgressDashboardDataMock(...args)
 }))
 
+vi.mock('../../hooks/useSRSQueue.js', () => ({
+  useSRSQueue: () => ({ stats: null })
+}))
+
 import ProgressDashboard from './ProgressDashboard.jsx'
 
 const createHookState = (overrides = {}) => ({
@@ -40,6 +44,19 @@ const createHookState = (overrides = {}) => ({
   refresh: vi.fn(),
   practiceReminders: [],
   pronunciationStats: { totalAttempts: 0, recentAttempts: [] },
+  sectionsStatus: {
+    userStats: 'success',
+    weeklyGoals: 'success',
+    weeklyProgress: 'success',
+    dailyChallenges: 'success',
+    pronunciationStats: 'success',
+    heatMap: 'success',
+    recommendations: 'success',
+    studyPlan: 'success',
+    advancedAnalytics: 'success',
+    errorIntel: 'success'
+  },
+  initialSectionsReady: true,
   ...overrides
 })
 
@@ -62,10 +79,18 @@ describe('ProgressDashboard (smoke)', () => {
   })
 
   it('defers rendering when data has not been loaded yet', () => {
-    useProgressDashboardDataMock.mockReturnValue(createHookState({ heatMapData: null }))
+    useProgressDashboardDataMock.mockReturnValue(
+      createHookState({
+        heatMapData: null,
+        loading: true,
+        initialSectionsReady: false,
+        sectionsStatus: {}
+      })
+    )
 
-    const { container } = render(<ProgressDashboard />)
-    expect(container).toBeEmptyDOMElement()
+    render(<ProgressDashboard />)
+
+    expect(screen.getByText('Cargando progreso...')).toBeInTheDocument()
   })
 
   it('passes error intelligence data from the hook without extra fetches', () => {
