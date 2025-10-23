@@ -140,11 +140,44 @@ export default function useProgressDashboardData() {
   const [refreshing, setRefreshing] = useState(false)
   const [systemReady, setSystemReady] = useState(false)
   const [personFilter] = useState('')
+  const [sectionStatus, setSectionStatus] = useState({})
+  const [initialSectionsReady, setInitialSectionsReady] = useState(false)
 
   // AsyncController for managing cancellable operations
   const asyncController = useRef(new AsyncController())
   const hasInitialLoad = useRef(false)
   const lastPersonFilterRef = useRef(personFilter)
+  const sectionStatusRef = useRef({})
+  const firstCoreLoadedRef = useRef(false)
+
+  const updateSectionStatus = useCallback((key, status) => {
+    if (!key) {
+      return
+    }
+
+    sectionStatusRef.current = {
+      ...sectionStatusRef.current,
+      [key]: status
+    }
+
+    setSectionStatus(prev => {
+      if (prev[key] === status) {
+        return prev
+      }
+      return {
+        ...prev,
+        [key]: status
+      }
+    })
+
+    if (status === 'success' && CORE_DATA_KEYS.includes(key)) {
+      if (!firstCoreLoadedRef.current) {
+        firstCoreLoadedRef.current = true
+        setInitialSectionsReady(true)
+        setLoading(false)
+      }
+    }
+  }, [setInitialSectionsReady, setLoading])
 
   const getOperationDefinitions = (userId) => ({
     heatMap: {
@@ -545,14 +578,23 @@ export default function useProgressDashboardData() {
   )
 
   const loadData = useCallback(async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true)
-      } else {
-        setLoading(true)
-        setError(null)
-      }
+    if (isRefresh) {
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+      setError(null)
+      setInitialSectionsReady(false)
+      firstCoreLoadedRef.current = false
+      const trackedKeys = [...CORE_DATA_KEYS, ...HEAVY_ANALYTICS_KEYS]
+      const initialStatus = trackedKeys.reduce((acc, key) => {
+        acc[key] = 'loading'
+        return acc
+      }, {})
+      sectionStatusRef.current = initialStatus
+      setSectionStatus(initialStatus)
+    }
 
+    try {
       asyncController.current.cancelAll()
 
       const userId = getCurrentUserId()
@@ -568,49 +610,104 @@ export default function useProgressDashboardData() {
         progressDataCache.warmup(userId, warmupLoaders)
       }
 
-      // Load core data first (fast, essential for initial render)
-      await runOperations(CORE_DATA_KEYS, { userId })
-
-      // Load heavy analytics in background after initial render (lazy)
-      if (!isRefresh) {
-        // Failsafe: if lazy loading fails or takes too long, load synchronously
-        let lazyLoadFailed = false
-        const lazyLoadTimeout = setTimeout(() => {
-          if (!lazyLoadFailed) {
-            logger.warn('loadData', 'Lazy loading taking too long, falling back to synchronous load')
-            lazyLoadFailed = true
-            runOperations(HEAVY_ANALYTICS_KEYS, { userId })
-              .catch(err => logger.error('loadData', 'Failsafe synchronous load failed', err))
-          }
-        }, 5000) // 5 second failsafe timeout
-
-        // Use requestIdleCallback for non-critical analytics
-        const loadHeavyAnalytics = () => {
-          if (lazyLoadFailed) return // Already loaded by failsafe
-
-          runOperations(HEAVY_ANALYTICS_KEYS, { userId })
-            .then(() => {
-              clearTimeout(lazyLoadTimeout)
-            })
-            .catch(err => {
-              logger.error('loadData', 'Lazy heavy analytics failed, triggering failsafe', err)
-              lazyLoadFailed = true
-              clearTimeout(lazyLoadTimeout)
-              // Immediate retry with synchronous load
-              return runOperations(HEAVY_ANALYTICS_KEYS, { userId })
-                .catch(retryErr => logger.error('loadData', 'Failsafe retry also failed', retryErr))
-            })
+      const loadTrackedKey = async (key, { errorLog = 'warn', updateLoading = true } = {}) => {
+        const currentStatus = sectionStatusRef.current[key]
+        if ((updateLoading || currentStatus === 'error') && currentStatus !== 'loading') {
+          updateSectionStatus(key, 'loading')
         }
+
+        try {
+          await runOperations([key], { userId })
+          updateSectionStatus(key, 'success')
+          return { key, success: true }
+        } catch (error) {
+          updateSectionStatus(key, 'error')
+          if (errorLog === 'error') {
+            logger.error('loadData', `Failed to load section ${key}`, error)
+          } else {
+            logger.warn('loadData', `Failed to load section ${key}`, error)
+          }
+          return { key, success: false, error }
+        }
+      }
+
+      const coreResults = await Promise.all(
+        CORE_DATA_KEYS.map(key => loadTrackedKey(key, { updateLoading: !isRefresh }))
+      )
+      const hasCoreSuccess = coreResults.some(result => result.success)
+
+      if (!hasCoreSuccess) {
+        const firstError = coreResults.find(result => !result.success)?.error
+        throw firstError || new Error('No se pudieron cargar los datos principales.')
+      }
+
+      if (!isRefresh) {
+        let lazyLoadCompleted = false
+        let lazyLoadTimeoutId = null
+        let fallbackTriggered = false
+
+        const finalizeLazyLoad = () => {
+          if (lazyLoadCompleted) {
+            return
+          }
+          lazyLoadCompleted = true
+          if (lazyLoadTimeoutId) {
+            clearTimeout(lazyLoadTimeoutId)
+            lazyLoadTimeoutId = null
+          }
+        }
+
+        const startHeavyLoad = () => {
+          if (lazyLoadCompleted) {
+            return
+          }
+
+          Promise.all(HEAVY_ANALYTICS_KEYS.map(key => loadTrackedKey(key, { errorLog: 'error' })))
+            .then(results => {
+              if (fallbackTriggered) {
+                return null
+              }
+
+              const failedKeys = results.filter(result => !result.success).map(result => result.key)
+              if (failedKeys.length > 0) {
+                logger.error('loadData', 'Lazy heavy analytics failed, triggering failsafe', { failedKeys })
+                return Promise.all(
+                  failedKeys.map(key => loadTrackedKey(key, { errorLog: 'error' }))
+                )
+              }
+              return null
+            })
+            .finally(finalizeLazyLoad)
+        }
+
+        lazyLoadTimeoutId = setTimeout(() => {
+          if (lazyLoadCompleted) {
+            return
+          }
+
+          const pendingKeys = HEAVY_ANALYTICS_KEYS.filter(
+            key => sectionStatusRef.current[key] !== 'success'
+          )
+
+          if (pendingKeys.length === 0) {
+            finalizeLazyLoad()
+            return
+          }
+
+          fallbackTriggered = true
+          logger.warn('loadData', 'Lazy loading taking too long, falling back to synchronous load')
+          Promise.all(pendingKeys.map(key => loadTrackedKey(key, { errorLog: 'error' })))
+            .finally(finalizeLazyLoad)
+        }, 5000)
 
         if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-          window.requestIdleCallback(loadHeavyAnalytics, { timeout: 3000 })
+          window.requestIdleCallback(startHeavyLoad, { timeout: 3000 })
         } else {
-          // Fallback: load after a small delay
-          setTimeout(loadHeavyAnalytics, 100)
+          setTimeout(startHeavyLoad, 100)
         }
       } else {
-        // On refresh, load everything synchronously (no lazy loading)
         await runOperations(HEAVY_ANALYTICS_KEYS, { userId })
+        HEAVY_ANALYTICS_KEYS.forEach(key => updateSectionStatus(key, 'success'))
       }
 
       setError(null)
@@ -621,7 +718,7 @@ export default function useProgressDashboardData() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [runOperations])
+  }, [runOperations, updateSectionStatus])
 
   const refreshFromEvent = useCallback(
     async (detail = {}, operationKeysOverride) => {
@@ -642,9 +739,20 @@ export default function useProgressDashboardData() {
       setRefreshing(true)
 
       try {
-        return await runOperations(operationKeys, { userId })
+        operationKeys.forEach((key) => {
+          if (sectionStatusRef.current[key] !== 'loading') {
+            updateSectionStatus(key, 'loading')
+          }
+        })
+
+        const result = await runOperations(operationKeys, { userId })
+
+        operationKeys.forEach((key) => updateSectionStatus(key, 'success'))
+
+        return result
       } catch (error) {
         logger.warn('refreshFromEvent', 'Partial dashboard refresh failed, falling back to full reload', error)
+        operationKeys.forEach((key) => updateSectionStatus(key, 'error'))
         await loadData(true)
       } finally {
         setRefreshing(false)
@@ -652,7 +760,7 @@ export default function useProgressDashboardData() {
 
       return undefined
     },
-    [loadData, runOperations]
+    [loadData, runOperations, updateSectionStatus]
   )
 
   const completeChallenge = async (challengeId) => {
@@ -971,6 +1079,8 @@ export default function useProgressDashboardData() {
     error,
     refreshing,
     systemReady,
+    sectionsStatus: sectionStatus,
+    initialSectionsReady,
     practiceReminders,
     // actions
     loadData,
