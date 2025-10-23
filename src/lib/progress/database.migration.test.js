@@ -10,6 +10,7 @@ import {
   getAttemptsByUser,
   getMasteryByUser,
   getByIndex,
+  getDueSchedules,
   migrateUserIdInLocalDB,
   validateUserIdMigration
 } from './database.js'
@@ -141,5 +142,55 @@ describe('migrateUserIdInLocalDB', () => {
     expect((await getAttemptsByUser(newUserId)).length).toBe(0)
     expect((await getMasteryByUser(newUserId)).length).toBe(0)
     expect((await getByIndex(STORAGE_CONFIG.STORES.SCHEDULES, 'userId', newUserId)).length).toBe(0)
+  })
+
+  it('returns only migrated user schedules due before the cutoff date', async () => {
+    const now = Date.now()
+    const cutoff = new Date(now + 5 * 60 * 1000)
+
+    await saveSchedule({
+      id: `${oldUserId}|cell|due`,
+      userId: oldUserId,
+      mood: 'indicative',
+      tense: 'present',
+      person: 'yo',
+      interval: 1,
+      reps: 1,
+      nextDue: new Date(now + 60 * 1000),
+      updatedAt: new Date(now - 60 * 1000)
+    })
+
+    await saveSchedule({
+      id: `${oldUserId}|cell|future`,
+      userId: oldUserId,
+      mood: 'indicative',
+      tense: 'present',
+      person: 'yo',
+      interval: 2,
+      reps: 2,
+      nextDue: new Date(now + 30 * 60 * 1000),
+      updatedAt: new Date(now - 30 * 60 * 1000)
+    })
+
+    await saveSchedule({
+      id: `other-user|cell|due`,
+      userId: 'other-user',
+      mood: 'indicative',
+      tense: 'present',
+      person: 'yo',
+      interval: 1,
+      reps: 1,
+      nextDue: new Date(now + 60 * 1000),
+      updatedAt: new Date(now - 60 * 1000)
+    })
+
+    await migrateUserIdInLocalDB(oldUserId, newUserId)
+
+    const dueSchedules = await getDueSchedules(newUserId, cutoff)
+
+    expect(dueSchedules).toHaveLength(1)
+    const [schedule] = dueSchedules
+    expect(schedule.userId).toBe(newUserId)
+    expect(new Date(schedule.nextDue).getTime()).toBeLessThanOrEqual(cutoff.getTime())
   })
 })

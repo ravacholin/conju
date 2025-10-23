@@ -9,6 +9,7 @@ const isDev = import.meta?.env?.DEV
 // Timeout configuration for IndexedDB transactions
 const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
 const CACHE_TTL_MS = 4000
+const MIN_INDEXEDDB_DATE = new Date(-8640000000000000)
 
 // Estado de la base de datos
 let dbInstance = null
@@ -126,7 +127,7 @@ export async function initDB() {
     // Importar openDB dinámicamente para permitir mocks por prueba
     const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion, newVersion, upgradeTransaction) {
         if (isDev) logger.info('initDB', 'Actualizando estructura de base de datos')
 
         // Crear tabla de usuarios
@@ -182,7 +183,14 @@ export async function initDB() {
           scheduleStore.createIndex('userId', 'userId', { unique: false })
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de schedules creada')
+        } else {
+          const scheduleStore = upgradeTransaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+          if (!scheduleStore.indexNames.contains('userId-nextDue')) {
+            scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
+            if (isDev) logger.info('initDB', 'Índice compuesto userId-nextDue agregado a schedules')
+          }
         }
 
         // Crear tabla de learning sessions (analytics)
@@ -872,7 +880,18 @@ export async function getMasteryByUser(userId) {
  * @returns {Promise<void>}
  */
 export async function saveSchedule(schedule) {
-  await saveToDB(STORAGE_CONFIG.STORES.SCHEDULES, schedule)
+  let normalizedNextDue = schedule.nextDue
+  if (typeof schedule.nextDue !== 'undefined' && schedule.nextDue !== null) {
+    const candidate = schedule.nextDue instanceof Date ? schedule.nextDue : new Date(schedule.nextDue)
+    normalizedNextDue = Number.isNaN(candidate?.getTime()) ? schedule.nextDue : candidate
+  }
+
+  const payload = {
+    ...schedule,
+    nextDue: normalizedNextDue
+  }
+
+  await saveToDB(STORAGE_CONFIG.STORES.SCHEDULES, payload)
 }
 
 /**
@@ -926,15 +945,27 @@ export async function getDueSchedules(userId, beforeDate) {
     const db = await initDB()
     const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
     const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
-    const index = store.index('nextDue')
-    
-    // Obtener todos los schedules ordenados por fecha
-    const allSchedules = await index.getAll()
-    
-    // Filtrar por usuario y fecha
-    const result = allSchedules.filter(s =>
-      s.userId === userId && new Date(s.nextDue) <= beforeDate
-    )
+    const before = beforeDate instanceof Date ? beforeDate : new Date(beforeDate)
+    if (!(before instanceof Date) || Number.isNaN(before.getTime())) {
+      await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getDueSchedules')
+      return []
+    }
+
+    const normalizedBefore = before
+    const hasCompositeIndex = store.indexNames.contains('userId-nextDue')
+    const index = hasCompositeIndex ? store.index('userId-nextDue') : store.index('userId')
+
+    let schedules
+    if (hasCompositeIndex && typeof IDBKeyRange !== 'undefined') {
+      const lowerBound = [userId, MIN_INDEXEDDB_DATE]
+      const range = IDBKeyRange.bound(lowerBound, [userId, normalizedBefore])
+      schedules = await index.getAll(range)
+    } else {
+      schedules = await index.getAll(userId)
+      schedules = schedules.filter(s => new Date(s.nextDue) <= normalizedBefore)
+    }
+
+    const result = schedules.filter(s => s.userId === userId && new Date(s.nextDue) <= normalizedBefore)
 
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getDueSchedules')
     return result

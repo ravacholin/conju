@@ -64,7 +64,7 @@ export async function initDB() {
     // Import openDB dynamically to allow mocks per test
     const { openDB } = await import('idb')
     dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
-      upgrade(db) {
+      upgrade(db, oldVersion, newVersion, upgradeTransaction) {
         if (isDev) logger.info('initDB', 'Updating database structure')
 
         // Create users table
@@ -120,7 +120,14 @@ export async function initDB() {
           scheduleStore.createIndex('userId', 'userId', { unique: false })
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
           if (isDev) logger.info('initDB', 'Schedules table created')
+        } else {
+          const scheduleStore = upgradeTransaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+          if (!scheduleStore.indexNames.contains('userId-nextDue')) {
+            scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
+            if (isDev) logger.info('initDB', 'Composite userId-nextDue index added to schedules')
+          }
         }
 
         // Create learning sessions table (analytics)
