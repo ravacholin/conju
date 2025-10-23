@@ -4,10 +4,16 @@ import { vi } from 'vitest'
 
 const useProgressDashboardDataMock = vi.fn()
 const errorIntelligenceSpy = vi.fn()
+const initializePlanMock = vi.fn()
+const getPlanProgressMock = vi.fn()
+const getActivePlanMock = vi.fn()
+const markSessionAsStartedMock = vi.fn()
+const generatePlanMock = vi.fn()
 
 vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
-  isSyncEnabled: vi.fn(() => true)
+  isSyncEnabled: vi.fn(() => true),
+  getCurrentUserId: vi.fn(() => null)
 }))
 
 vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div data-testid="progress-overview" /> }))
@@ -21,6 +27,27 @@ vi.mock('./ErrorIntelligence.jsx', () => ({
     errorIntelligenceSpy(props)
     return <div data-testid="error-intelligence" />
   }
+}))
+vi.mock('../../hooks/useSRSQueue.js', () => ({
+  useSRSQueue: () => ({
+    queue: [],
+    loading: false,
+    error: '',
+    stats: { total: 0, overdue: 0, urgent: 0, scheduled: 0 },
+    lastUpdated: null,
+    reload: vi.fn()
+  })
+}))
+
+vi.mock('../../lib/progress/planTracking.js', () => ({
+  initializePlan: (...args) => initializePlanMock(...args),
+  getPlanProgress: (...args) => getPlanProgressMock(...args),
+  getActivePlan: (...args) => getActivePlanMock(...args),
+  markSessionAsStarted: (...args) => markSessionAsStartedMock(...args)
+}))
+
+vi.mock('../../lib/progress/studyPlans.js', () => ({
+  generatePersonalizedStudyPlan: (...args) => generatePlanMock(...args)
 }))
 
 vi.mock('./useProgressDashboardData.js', () => ({
@@ -45,6 +72,17 @@ const createHookState = (overrides = {}) => ({
 
 beforeEach(() => {
   vi.clearAllMocks()
+  getPlanProgressMock.mockReturnValue({
+    completed: 0,
+    total: 0,
+    percentage: 0,
+    nextSession: null,
+    activePlan: null
+  })
+  getActivePlanMock.mockReturnValue(null)
+  initializePlanMock.mockReturnValue(null)
+  markSessionAsStartedMock.mockReturnValue(true)
+  generatePlanMock.mockResolvedValue(null)
   useProgressDashboardDataMock.mockReturnValue(createHookState())
 })
 
@@ -81,5 +119,54 @@ describe('ProgressDashboard (smoke)', () => {
     expect(useProgressDashboardDataMock).toHaveBeenCalledTimes(1)
     expect(errorIntelligenceSpy).toHaveBeenCalledTimes(1)
     expect(errorIntelligenceSpy.mock.calls[0][0].data).toBe(errorIntelData)
+  })
+
+  it('renders the study plan summary when a plan is available', () => {
+    const samplePlan = {
+      generatedAt: '2024-01-01T00:00:00.000Z',
+      overview: { focusArea: 'Verbos irregulares' },
+      timeline: { sessionsPerWeek: 4 },
+      sessionBlueprints: {
+        sessions: [
+          {
+            id: 'session-1',
+            title: 'Repaso intensivo',
+            estimatedDuration: '20 min',
+            difficulty: 'Medio',
+            drillConfig: { practiceMode: 'mixed' }
+          }
+        ]
+      }
+    }
+
+    getActivePlanMock.mockReturnValue({ planId: 'plan-123', generatedAt: samplePlan.generatedAt })
+    getPlanProgressMock.mockReturnValue({
+      completed: 1,
+      total: 3,
+      percentage: 33,
+      nextSession: {
+        sessionId: 'session-1',
+        status: 'pending',
+        config: { practiceMode: 'mixed' }
+      },
+      activePlan: { planId: 'plan-123', generatedAt: samplePlan.generatedAt }
+    })
+
+    useProgressDashboardDataMock.mockReturnValue(createHookState({ studyPlan: samplePlan }))
+
+    render(<ProgressDashboard />)
+
+    expect(screen.getByTestId('plan-summary-card')).toBeInTheDocument()
+    expect(screen.getByText(/Plan personalizado activo/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Iniciar plan/i })).toBeInTheDocument()
+  })
+
+  it('offers plan generation when no study plan exists', () => {
+    useProgressDashboardDataMock.mockReturnValue(createHookState({ studyPlan: null }))
+
+    render(<ProgressDashboard />)
+
+    expect(screen.getByTestId('plan-summary-empty')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Generar plan/i })).toBeInTheDocument()
   })
 })
