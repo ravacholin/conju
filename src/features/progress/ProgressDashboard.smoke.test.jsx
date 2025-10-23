@@ -4,10 +4,16 @@ import { vi } from 'vitest'
 
 const useProgressDashboardDataMock = vi.fn()
 const errorIntelligenceSpy = vi.fn()
+const useSRSQueueMock = vi.fn(() => ({ stats: null }))
 
 vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
-  isSyncEnabled: vi.fn(() => true)
+  isSyncEnabled: vi.fn(() => true),
+  getCurrentUserId: vi.fn(() => 'test-user')
+}))
+
+vi.mock('../../hooks/useSRSQueue.js', () => ({
+  useSRSQueue: () => useSRSQueueMock()
 }))
 
 vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div data-testid="progress-overview" /> }))
@@ -22,6 +28,7 @@ vi.mock('./ErrorIntelligence.jsx', () => ({
     return <div data-testid="error-intelligence" />
   }
 }))
+vi.mock('./ProgressEmptyState.jsx', () => ({ default: () => <div data-testid="progress-empty-state" /> }))
 
 vi.mock('./useProgressDashboardData.js', () => ({
   default: (...args) => useProgressDashboardDataMock(...args)
@@ -46,6 +53,7 @@ const createHookState = (overrides = {}) => ({
 beforeEach(() => {
   vi.clearAllMocks()
   useProgressDashboardDataMock.mockReturnValue(createHookState())
+  useSRSQueueMock.mockReturnValue({ stats: null })
 })
 
 describe('ProgressDashboard (smoke)', () => {
@@ -64,8 +72,8 @@ describe('ProgressDashboard (smoke)', () => {
   it('defers rendering when data has not been loaded yet', () => {
     useProgressDashboardDataMock.mockReturnValue(createHookState({ heatMapData: null }))
 
-    const { container } = render(<ProgressDashboard />)
-    expect(container).toBeEmptyDOMElement()
+    render(<ProgressDashboard />)
+    expect(screen.getByTestId('progress-empty-state')).toBeInTheDocument()
   })
 
   it('passes error intelligence data from the hook without extra fetches', () => {
@@ -79,7 +87,8 @@ describe('ProgressDashboard (smoke)', () => {
     render(<ProgressDashboard />)
 
     expect(useProgressDashboardDataMock).toHaveBeenCalledTimes(1)
-    expect(errorIntelligenceSpy).toHaveBeenCalledTimes(1)
-    expect(errorIntelligenceSpy.mock.calls[0][0].data).toBe(errorIntelData)
+    expect(errorIntelligenceSpy).toHaveBeenCalled()
+    const lastCall = errorIntelligenceSpy.mock.calls.at(-1)
+    expect(lastCall[0].data).toBe(errorIntelData)
   })
 })

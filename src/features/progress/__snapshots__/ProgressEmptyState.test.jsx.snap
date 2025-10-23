@@ -1,0 +1,56 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgressEmptyState > matches snapshot 1`] = `
+<div
+  class="progress-empty-state"
+  data-testid="progress-empty-state"
+>
+  <img
+    alt="Sin datos de progreso"
+    class="empty-state-illustration"
+    src="/icons/lightbulb.png"
+  />
+  <div
+    class="empty-state-copy"
+  >
+    <h2
+      class="empty-state-title"
+    >
+      Aún no tenemos datos de tu progreso
+    </h2>
+    <p
+      class="empty-state-description"
+    >
+      Sin sesiones sincronizadas no podemos generar estadísticas. Sincronizá tus avances o comenzá una práctica guiada para que el tablero cobre vida.
+    </p>
+  </div>
+  <div
+    class="empty-state-actions"
+  >
+    <button
+      class="empty-action primary"
+      type="button"
+    >
+      Iniciar práctica
+    </button>
+    <button
+      class="empty-action secondary"
+      type="button"
+    >
+      Sincronizar progreso
+    </button>
+    <button
+      class="empty-action ghost"
+      type="button"
+    >
+      Reintentar carga
+    </button>
+    <button
+      class="empty-action ghost"
+      type="button"
+    >
+      Volver al inicio
+    </button>
+  </div>
+</div>
+`;

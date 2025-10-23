@@ -14,6 +14,7 @@ import StudyInsights from './StudyInsights.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
+import ProgressEmptyState from './ProgressEmptyState.jsx'
 
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -131,7 +132,17 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   }
 
   if (!heatMapData && !error) {
-    return null
+    return (
+      <ProgressEmptyState
+        onSync={handleSync}
+        syncEnabled={syncAvailable}
+        syncing={syncing}
+        onNavigateToDrill={onNavigateToDrill}
+        onNavigateHome={onNavigateHome}
+        systemReady={systemReady}
+        onRefresh={refresh}
+      />
+    )
   }
 
   return (
