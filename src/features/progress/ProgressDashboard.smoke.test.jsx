@@ -7,12 +7,25 @@ const errorIntelligenceSpy = vi.fn()
 
 vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
-  isSyncEnabled: vi.fn(() => true)
+  isSyncEnabled: vi.fn(() => true),
+  getCurrentUserId: vi.fn(() => 'test-user')
+}))
+
+vi.mock('../../hooks/useSRSQueue.js', () => ({
+  useSRSQueue: () => ({
+    queue: [],
+    loading: false,
+    error: '',
+    stats: null,
+    lastUpdated: null,
+    reload: vi.fn()
+  })
 }))
 
 vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div data-testid="progress-overview" /> }))
 vi.mock('./PracticeReminders.jsx', () => ({ default: () => <div data-testid="practice-reminders" /> }))
 vi.mock('./PronunciationStatsWidget.jsx', () => ({ default: () => <div data-testid="pronunciation-widget" /> }))
+vi.mock('./AccuracyTrendCard.jsx', () => ({ default: () => <div data-testid="accuracy-trend-card" /> }))
 vi.mock('./HeatMapSRS.jsx', () => ({ default: () => <div data-testid="heat-map" /> }))
 vi.mock('./SmartPractice.jsx', () => ({ default: () => <div data-testid="smart-practice" /> }))
 vi.mock('./StudyInsights.jsx', () => ({ default: () => <div data-testid="study-insights" /> }))
@@ -54,6 +67,7 @@ describe('ProgressDashboard (smoke)', () => {
 
     expect(screen.getByTestId('progress-overview')).toBeInTheDocument()
     expect(screen.getByTestId('practice-reminders')).toBeInTheDocument()
+    expect(screen.getByTestId('accuracy-trend-card')).toBeInTheDocument()
     expect(screen.getByTestId('pronunciation-widget')).toBeInTheDocument()
     expect(screen.getByTestId('heat-map')).toBeInTheDocument()
     expect(screen.getByTestId('smart-practice')).toBeInTheDocument()

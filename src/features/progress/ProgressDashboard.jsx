@@ -13,6 +13,7 @@ import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
+import AccuracyTrendCard from './AccuracyTrendCard.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
 
 import './progress-streamlined.css'
@@ -183,6 +184,10 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           onNavigateToDrill={onNavigateToDrill}
           onShowToast={handleShowToast}
         />
+      </SafeComponent>
+
+      <SafeComponent name="Accuracy Trend">
+        <AccuracyTrendCard stats={pronunciationStats} />
       </SafeComponent>
 
       <SafeComponent name="Pronunciation Lab">
