@@ -308,7 +308,11 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   // Handle SRS practice
   const handleSRSPractice = () => {
     if (onNavigateToDrill) {
-      settings.set({ practiceMode: 'review', reviewSessionType: 'due' })
+      settings.set({
+        practiceMode: 'review',
+        reviewSessionType: 'due',
+        reviewSessionFilter: {}
+      })
       onNavigateToDrill()
     }
   }

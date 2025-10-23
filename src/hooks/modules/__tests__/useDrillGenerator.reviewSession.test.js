@@ -246,4 +246,33 @@ describe('useDrillGenerator - review filters', () => {
     expect(generated).toBeTruthy()
     expect(generated.person).toBe('1s')
   })
+
+  it('generates due items across moods when the review filter has been reset', async () => {
+    settingsState.reviewSessionType = 'due'
+    settingsState.reviewSessionFilter = null
+
+    mockDueItems = [
+      { mood: 'subjunctive', tense: 'pres', person: '1s', nextDue: new Date('2023-12-31T09:00:00Z').toISOString() },
+      { mood: 'indicative', tense: 'fut', person: '3p', nextDue: new Date('2024-01-01T13:00:00Z').toISOString() }
+    ]
+
+    mockForms = [
+      { lemma: 'hablar', mood: 'subjunctive', tense: 'pres', person: '1s', value: 'hable' },
+      { lemma: 'hablar', mood: 'indicative', tense: 'fut', person: '3p', value: 'hablarán' }
+    ]
+
+    mockGetDueItems.mockImplementation(async () => mockDueItems)
+    mockGenerateAllFormsForRegion.mockImplementation(async () => mockForms)
+
+    const { result } = renderHook(() => useDrillGenerator())
+
+    let generated
+    await act(async () => {
+      generated = await result.current.generateNextItem()
+    })
+
+    expect(generated).toBeTruthy()
+    expect(generated.mood).toBe('subjunctive')
+    expect(generated.tense).toBe('pres')
+  })
 })
