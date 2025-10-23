@@ -270,6 +270,11 @@ const STORES = {
 - `getByIndex(storeName, indexName, value)` - Busca datos por índice
 - `deleteFromDB(storeName, id)` - Elimina datos por ID
 
+#### Índices Relevantes
+
+- **Schedules**
+  - `'userId-nextDue'`: índice compuesto creado durante `initDB()` para consultar rápidamente los schedules vencidos de un usuario. `getDueSchedules()` lo utiliza junto con `IDBKeyRange.bound([userId, fechaInferior], [userId, fechaCorte])` para evitar escaneos completos de la tabla.
+
 ---
 
 ### 📈 **Cálculo de Mastery**
