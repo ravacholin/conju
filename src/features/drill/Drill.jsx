@@ -629,9 +629,9 @@ export default function Drill({
       {/* Session Progress HUD - For personalized sessions */}
       <SessionProgressHUD />
 
-      {/* Adaptive Difficulty Indicator - Shows flow state and difficulty adjustments */}
+      {/* Adaptive Difficulty Indicator - Positioned below drill box */}
       {settings.enableProgressIntegration !== false && (
-        <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 100 }}>
+        <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
           <AdaptiveDifficultyIndicator compact={false} />
         </div>
       )}
