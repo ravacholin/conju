@@ -625,7 +625,7 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
                 <span className="group-label-large">{group}</span>
               </div>
               <div className="arrow">→</div>
-              <div className="irregular-stem-large">{yoStem}-</div>
+              <div className="irregular-yo-form-large">{yoValue}</div>
             </div>
           );
         })}

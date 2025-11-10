@@ -26,9 +26,9 @@ export const SIMPLIFIED_GROUPS = {
 
   // Grupo 2: Irregulares en primera persona que se propagan
   'FIRST_PERSON_IRREGULAR': {
-    id: 'FIRST_PERSON_IRREGULAR', 
+    id: 'FIRST_PERSON_IRREGULAR',
     name: 'Irregulares en YO',
-    description: 'tengo, salgo, protejo, conozco',
+    description: 'conozco, salgo, hago',
     explanation: 'Verbos irregulares en 1ª persona que afectan todo el subjuntivo',
     // Familias técnicas que incluye
     includedFamilies: [
@@ -40,8 +40,8 @@ export const SIMPLIFIED_GROUPS = {
     ],
     // Tiempos donde este grupo es relevante
     relevantTenses: ['pres', 'subjPres'],
-    // Verbos ejemplares para mostrar
-    exampleVerbs: ['tener', 'salir', 'proteger', 'seguir', 'conocer', 'parecer'],
+    // Verbos ejemplares para mostrar - USAR PROTOTIPOS PEDAGÓGICOS: conocer (-zco), salir/hacer (-go)
+    exampleVerbs: ['conocer', 'salir', 'hacer'],
     color: '#2196F3' // Azul para irregulares en yo
   },
 
