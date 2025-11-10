@@ -786,7 +786,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   };
 
   const getConjugation = (verbObj, person, mood = 'indicative') => {
-    if (!verbObj || !verbObj.paradigms) return '';
+    if (!verbObj || !verbObj.paradigms) {
+      return verbObj?.lemma || '';
+    }
 
     // Para gerundios y participios, generar la forma regular si no existe
     if (tense.tense === 'ger' || tense.tense === 'part') {
@@ -818,10 +820,18 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
     const englishMood = moodMap[mood] || mood;
 
+    // Buscar el paradigma correcto
     const paradigm = verbObj.paradigms.find(p => p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense));
-    if (!paradigm || !paradigm.forms) return '';
+    if (!paradigm || !paradigm.forms) {
+      // Fallback: devolver el infinitivo si no encontramos el paradigma
+      return verbObj.lemma;
+    }
+
+    // Buscar la forma específica
     const form = paradigm.forms.find(f => f.mood === englishMood && f.tense === tense.tense && f.person === person);
-    return form?.value || '';
+
+    // Si no encontramos la forma exacta, retornar el infinitivo como fallback
+    return form?.value || verbObj.lemma;
   };
 
   // Helpers to compute expected regular forms and highlight irregular fragments
@@ -888,9 +898,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
             : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s'))
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
       const conjugation = getConjugation(verbObj, personHint, tense.mood);
-      
-      // Debug: log what we're getting
-      
+
       // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
       const startsWithVerb = /^__VERB__/.test(sentenceTemplate);
       const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
