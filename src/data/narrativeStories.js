@@ -18,20 +18,21 @@ export const storyData = {
         comer: '__VERB__ con su equipo a las 2.',
         vivir: '__VERB__ cerca de la oficina.',
         
-        // IRREGULARES EN YO - Narrativa coherente de rutina personal
-        salir: 'Yo __VERB__ de casa a las 8.',
-        poner: 'Yo __VERB__ música mientras trabajo.',
-        hacer: 'Yo __VERB__ ejercicio por la tarde.',
+        // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos (-go, -zco)
+        salir: 'Yo __VERB__ de casa temprano.',
+        hacer: 'Yo __VERB__ ejercicio por la mañana.',
+        conocer: 'Yo __VERB__ bien el barrio.',
+        poner: 'Yo __VERB__ la mesa para comer.',
         
         // DIPTONGOS - Narrativa coherente de flexibilidad laboral
         poder: 'María __VERB__ trabajar desde casa.',
-        querer: '__VERB__ cambiar de proyecto.',
-        pedir: '__VERB__ ayuda cuando la necesita.',
+        querer: 'Ella __VERB__ cambiar de proyecto.',
+        pedir: 'Pedro __VERB__ ayuda cuando la necesita.',
         
         // MUY IRREGULARES - Narrativa coherente de descripción personal/profesional
         ser: 'Carlos __VERB__ programador.',
-        estar: '__VERB__ en una reunión.',
-        ir: '__VERB__ al trabajo en metro.',
+        estar: 'Ana __VERB__ en una reunión.',
+        ir: 'María __VERB__ al trabajo en metro.',
     }
   },
   pretIndef: {

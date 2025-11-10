@@ -615,6 +615,9 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
           const yoForm = paradigm?.forms?.find(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s');
           const yoValue = yoForm?.value || verb;
 
+          // Extraer la raíz irregular de la forma YO (quitar la 'o' final)
+          const yoStem = yoValue.endsWith('o') ? yoValue.slice(0, -1) : yoValue;
+
           return (
             <div key={`yo-irregular-${index}`} className="strong-verb-item">
               <div className="verb-lemma-large">
@@ -622,7 +625,7 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
                 <span className="group-label-large">{group}</span>
               </div>
               <div className="arrow">→</div>
-              <div className="irregular-stem-large">{yoValue}</div>
+              <div className="irregular-stem-large">{yoStem}-</div>
             </div>
           );
         })}

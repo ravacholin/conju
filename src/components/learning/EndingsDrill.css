@@ -184,25 +184,26 @@
     }
 }
 
-/* Endings reference table - styled to be less prominent */
+/* Endings reference table - INCREASED VISIBILITY for better readability */
 .endings-reference {
     margin-top: 2rem;
     width: 100%;
     max-width: 350px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     padding: 1rem;
 }
 
 .endings-reference h4 {
-    font-weight: 400;
-    color: var(--muted);
+    font-weight: 500;
+    color: var(--text);
     margin-top: 0;
     margin-bottom: 1rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    opacity: 0.9;
 }
 
 .endings-reference-table {
@@ -217,7 +218,7 @@
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0.6;
+    opacity: 0.85;
     transform: translateX(0);
 }
 
