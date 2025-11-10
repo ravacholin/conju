@@ -729,18 +729,42 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
                 const actualForm = personToFormMap[pronoun.key];
                 const analysis = irregularityAnalysis?.analysis.find(a => a.person === pronoun.key);
                 const isIrregular = analysis?.isIrregular;
-                
+
+                // Get the regular ending for this pronoun as reference
+                const verbEnding = verb?.lemma?.slice(-2) || 'ar'; // ar, er, or ir
+                const regularEndings = getRegularEndings(verbEnding, tense.tense);
+                const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+                const normalizedPerson = pronoun.key === '2s_vos' ? '2s_tu' : pronoun.key;
+                const idx = baseOrder.indexOf(normalizedPerson);
+                let regularEnding = idx >= 0 ? regularEndings[idx] : '';
+
+                // Adjust for voseo in present indicative
+                if (pronoun.key === '2s_vos' && tense.tense === 'pres') {
+                  if (verbEnding === 'ar' && regularEnding === 'as') regularEnding = 'ás';
+                  else if (verbEnding === 'er' && regularEnding === 'es') regularEnding = 'és';
+                  else if (verbEnding === 'ir' && regularEnding === 'es') regularEnding = 'ís';
+                }
+
                 return (
                   <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular' : ''}`}>
                     <span className="ending-person">{pronoun.text}</span>
                     {irregularityAnalysis?.hasIrregularities ? (
                       <div className="form-comparison">
                         <span className="ending-value">
-                          {isIrregular && analysis ? renderWithHighlights(actualForm, analysis.expected) : actualForm}
+                          {isIrregular && analysis ? (
+                            <>
+                              <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '0.5rem' }}>
+                                {regularEnding}
+                              </span>
+                              {renderWithHighlights(actualForm, analysis.expected)}
+                            </>
+                          ) : (
+                            <span>{regularEnding}</span>
+                          )}
                         </span>
                       </div>
                     ) : (
-                      <span className="ending-value">{endingFor(tense.tense, pronoun.key)}</span>
+                      <span className="ending-value">{regularEnding}</span>
                     )}
                   </div>
                 );
