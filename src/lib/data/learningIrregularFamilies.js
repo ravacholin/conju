@@ -10,14 +10,29 @@ export const LEARNING_IRREGULAR_FAMILIES = {
   // Criterio pedagógico: patrones útiles y frecuentes
   // ========================================
   
-  // 1) IRREGULARES EN YO (primera persona con -g)
+  // 1) IRREGULARES EN YO con -zco (primera persona añade -zco)
+  'LEARNING_YO_ZCO_PRESENT': {
+    id: 'LEARNING_YO_ZCO_PRESENT',
+    name: 'Irregulares -zco en YO (presente)',
+    description: 'Verbos -cer/-cir que añaden -zco en la primera persona: conozco, parezco, conduzco',
+    paradigmatic: 'conocer',
+    examples: ['conocer', 'parecer', 'conducir', 'traducir', 'producir', 'nacer', 'crecer', 'ofrecer', 'agradecer', 'establecer', 'merecer', 'obedecer', 'reconocer', 'desaparecer', 'pertenecer', 'aparecer', 'permanecer', 'reducir', 'introducir', 'deducir', 'seducir', 'reproducir'], // Más variedad para drills libres
+    priorityExamples: ['conocer', 'parecer', 'conducir'], // Verbos más representativos y pedagógicos para presentación
+    pattern: 'conocer: conozco, conoces, conoce, conocemos, conocéis, conocen (solo YO cambia)',
+    affectedTenses: ['pres', 'subjPres'],
+    level: 'A2',
+    concept: 'yo_irregular_zco',
+    pedagogicalNote: 'Verbos -cer/-cir con vocal antes añaden -zco en yo. La irregularidad se extiende a todo el subjuntivo. Patrón muy productivo.'
+  },
+
+  // 2) IRREGULARES EN YO con -go (primera persona añade -g)
   'LEARNING_YO_G_PRESENT': {
     id: 'LEARNING_YO_G_PRESENT',
-    name: 'Irregulares en YO (presente)',
+    name: 'Irregulares -go en YO (presente)',
     description: 'Verbos muy frecuentes que añaden -g en la primera persona: salgo, pongo, hago',
     paradigmatic: 'salir',
-    examples: ['salir', 'poner', 'hacer', 'tener', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'seguir', 'conseguir', 'perseguir', 'distinguir'], // Más variedad para drills libres
-    priorityExamples: ['salir', 'poner', 'hacer'], // Verbos más representativos y pedagógicos
+    examples: ['salir', 'poner', 'hacer', 'tener', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'seguir', 'conseguir', 'perseguir', 'distinguir', 'obtener', 'mantener', 'contener', 'sostener', 'componer', 'proponer', 'disponer', 'exponer', 'suponer', 'reponer', 'prevenir', 'convenir', 'intervenir'], // Más variedad para drills libres
+    priorityExamples: ['salir', 'poner', 'hacer'], // Verbos más representativos y pedagógicos (NO incluir ser, tener, estar aquí en priorityExamples)
     pattern: 'salir: salgo, sales, sale, salimos, salís, salen (solo YO cambia)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
@@ -25,7 +40,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     pedagogicalNote: 'La irregularidad en YO se extiende a todo el subjuntivo. Patrón muy productivo.'
   },
 
-  // 2) VERBOS QUE DIPTONGAN (cambios vocálicos sistemáticos)
+  // 3) VERBOS QUE DIPTONGAN (cambios vocálicos sistemáticos)
   'LEARNING_DIPHTHONGS': {
     id: 'LEARNING_DIPHTHONGS',
     name: 'Verbos que diptongan',
@@ -41,7 +56,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     pedagogicalNote: 'Tres tipos principales: o→ue (poder), e→ie (querer), e→i (pedir). Solo en sílabas tónicas (acentuadas).'
   },
 
-  // 3) MUY IRREGULARES (casos especiales frecuentes)
+  // 4) MUY IRREGULARES (casos especiales frecuentes)
   'LEARNING_VERY_IRREGULAR': {
     id: 'LEARNING_VERY_IRREGULAR',
     name: 'Muy irregulares',
@@ -210,7 +225,33 @@ export function getLearningFamilyById(id) {
 // Mapeo de verbos a familias pedagógicas REORGANIZADO
 export const LEARNING_VERB_TO_FAMILIES = {
   // ========================================
-  // 1) IRREGULARES EN YO (presente con -g)
+  // 1) IRREGULARES EN YO con -zco (presente con -zco)
+  // ========================================
+  'conocer': ['LEARNING_YO_ZCO_PRESENT'],
+  'parecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'conducir': ['LEARNING_YO_ZCO_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'traducir': ['LEARNING_YO_ZCO_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'producir': ['LEARNING_YO_ZCO_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'nacer': ['LEARNING_YO_ZCO_PRESENT'],
+  'crecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'ofrecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'agradecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'establecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'merecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'obedecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'reconocer': ['LEARNING_YO_ZCO_PRESENT'],
+  'desaparecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'pertenecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'aparecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'permanecer': ['LEARNING_YO_ZCO_PRESENT'],
+  'reducir': ['LEARNING_YO_ZCO_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'introducir': ['LEARNING_YO_ZCO_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES'],
+  'deducir': ['LEARNING_YO_ZCO_PRESENT'],
+  'seducir': ['LEARNING_YO_ZCO_PRESENT'],
+  'reproducir': ['LEARNING_YO_ZCO_PRESENT'],
+
+  // ========================================
+  // 2) IRREGULARES EN YO con -go (presente con -g)
   // ========================================
   'tener': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'poner': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR', 'LEARNING_IRREG_PARTICIPLES'],
@@ -223,7 +264,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'oír': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'decir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR', 'LEARNING_IRREG_GERUNDS', 'LEARNING_IRREG_PARTICIPLES'],
   'seguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_DIPHTHONGS', 'LEARNING_IRREG_GERUNDS'],
-  'conseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'], 
+  'conseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'perseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'distinguir': ['LEARNING_YO_G_PRESENT'],
   // Verbos compuestos también tienen -g
@@ -361,7 +402,10 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'DIPHT_E_IE': 'LEARNING_DIPHTHONGS',
   'DIPHT_O_UE': 'LEARNING_DIPHTHONGS',
 
-  // YO irregular → nueva familia de YO con -g
+  // YO irregular con -zco → nueva familia de -zco
+  'ZCO_VERBS': 'LEARNING_YO_ZCO_PRESENT',
+
+  // YO irregular con -g → nueva familia de YO con -g
   'G_VERBS': 'LEARNING_YO_G_PRESENT',
 
   // Muy irregulares → nueva familia para ser/estar/ir/dar
@@ -390,6 +434,7 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
 // MAPEO INVERSO: PEDAGÓGICAS A ANTIGUAS (para el generator)
 const LEARNING_TO_OLD_FAMILY_MAP = {
   // Nuevas familias del presente
+  'LEARNING_YO_ZCO_PRESENT': 'ZCO_VERBS',
   'LEARNING_YO_G_PRESENT': 'G_VERBS',
   'LEARNING_DIPHTHONGS': 'STEM_CHANGES', // Usar grupo simplificado que incluye TODAS las familias de diptongos
   'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',

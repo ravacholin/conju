@@ -550,6 +550,97 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
   )
 }
 
+// Función para renderizar verbos irregulares en YO (presente) mostrando la forma conjugada en YO
+function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
+  if (!tense || tense.tense !== 'pres' || tense.mood !== 'indicativo') {
+    return null;
+  }
+
+  // Verificar si al menos un verbo tiene irregularidad en yo (termina en -go o -zco)
+  const hasYoIrregular = exampleVerbs.some(verbObj => {
+    if (!verbObj?.paradigms) return false;
+    const paradigm = verbObj.paradigms.find(p =>
+      p.forms?.some(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s')
+    );
+    if (!paradigm) return false;
+    const yoForm = paradigm.forms.find(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s');
+    if (!yoForm?.value) return false;
+    // Detectar si es irregular en yo (-go o -zco)
+    return yoForm.value.endsWith('go') || yoForm.value.endsWith('zco');
+  });
+
+  if (!hasYoIrregular) return null;
+
+  // Obtener terminaciones según dialecto
+  const getDialectEndings = () => {
+    const baseEndings = ['o', 'es', 'e', 'emos', 'éis', 'en'];
+
+    // Si usa voseo, no mostrar vosotros
+    if (settings?.useVoseo) {
+      return ['o', 'és/ís', 'e', 'emos', 'en']; // voseo forms
+    }
+
+    // Si no usa vosotros, no mostrarlo
+    if (!settings?.useVosotros) {
+      return ['o', 'es', 'e', 'emos', 'en']; // sin vosotros
+    }
+
+    return baseEndings; // mostrar todas incluyendo vosotros
+  };
+
+  const dialectEndings = getDialectEndings();
+
+  return (
+    <div className="deconstruction-item strong-preterite-group">
+      <div className="strong-verbs-container">
+        {exampleVerbs
+          .sort((a, b) => {
+            // Ordenar por terminación: -ar, -er, -ir
+            const getEndingOrder = (verb) => {
+              if (verb.lemma.endsWith('ar')) return 0;
+              if (verb.lemma.endsWith('er')) return 1;
+              if (verb.lemma.endsWith('ir')) return 2;
+              return 3;
+            };
+            return getEndingOrder(a) - getEndingOrder(b);
+          })
+          .map((verbObj, index) => {
+          const verb = verbObj.lemma;
+          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+
+          // Obtener la forma YO conjugada
+          const paradigm = verbObj.paradigms?.find(p =>
+            p.forms?.some(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s')
+          );
+          const yoForm = paradigm?.forms?.find(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s');
+          const yoValue = yoForm?.value || verb;
+
+          return (
+            <div key={`yo-irregular-${index}`} className="strong-verb-item">
+              <div className="verb-lemma-large">
+                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                <span className="group-label-large">{group}</span>
+              </div>
+              <div className="arrow">→</div>
+              <div className="irregular-stem-large">{yoValue}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="plus-symbol">+</div>
+
+      <div className="strong-endings-carousel">
+        {dialectEndings.map((ending, idx) => (
+          <span key={`ending-${idx}`} className="strong-ending-item">
+            {ending}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Función para renderizar la deconstrucción especial de pretéritos fuertes agrupados
 function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
   const strongVerbs = exampleVerbs.filter(verbObj =>
@@ -984,6 +1075,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     const nonFiniteBlock = renderNonFiniteIrregularDeconstruction(exampleVerbs, tense)
                     if (nonFiniteBlock) {
                       return nonFiniteBlock
+                    }
+
+                    // Verificar si tenemos verbos irregulares en YO (presente) para renderizarlos con forma conjugada
+                    const yoIrregularBlock = renderIrregularYoDeconstruction(exampleVerbs, tense, settings)
+                    if (yoIrregularBlock) {
+                      return yoIrregularBlock
                     }
 
                     // Verificar si tenemos pretéritos fuertes para renderizarlos agrupados

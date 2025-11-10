@@ -174,8 +174,9 @@ async function selectExampleVerbs({ verbType, selectedFamilies, tense, region })
   }
 
   if (uniqueVerbs.length < 3) {
+    // Emergency fallbacks - use more representative irregular yo verbs (conocer, salir, hacer) instead of ser/tener
     const emergencyFallbacks = verbType === 'irregular'
-      ? ['ser', 'tener', 'hacer', 'ir']
+      ? ['conocer', 'salir', 'hacer', 'estar', 'poner']
       : ['hablar', 'comer', 'vivir']
     for (const lemma of emergencyFallbacks) {
       if (uniqueVerbs.length >= 3) break
