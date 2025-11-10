@@ -12,8 +12,12 @@ const buildIrregularCategories = (tenseKey, availableFamilies) => {
   if (tenseKey === 'pres') {
     categories.yo_irregular_g = {
       name: 'Irregulares en YO',
-      description: 'Verbos muy frecuentes que añaden -g: salgo, pongo, hago',
-      families: availableFamilies.filter(f => f.id === 'LEARNING_YO_G_PRESENT')
+      description: 'Primera persona irregular: conozco, salgo, estoy',
+      families: [
+        ...availableFamilies.filter(f => f.id === 'LEARNING_YO_ZCO_PRESENT'),
+        ...availableFamilies.filter(f => f.id === 'LEARNING_YO_G_PRESENT'),
+        ...availableFamilies.filter(f => f.id === 'LEARNING_VERY_IRREGULAR')
+      ]
     }
     categories.diphthongs = {
       name: 'Verbos que diptongan',
