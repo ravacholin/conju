@@ -130,7 +130,8 @@ export function SafeTemplate({ template, replacements = {}, highlightClass = 'hi
     }
     
     // Add placeholder replacement
-    const replacement = replacements[key] || placeholder
+    // Use 'in' operator to check for key existence to allow empty string replacements
+    const replacement = key in replacements ? replacements[key] : placeholder
     parts.push({
       type: 'replacement',
       content: replacement,
