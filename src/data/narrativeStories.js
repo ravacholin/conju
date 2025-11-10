@@ -8,29 +8,28 @@ export const storyData = {
   pres: {
     title: 'Rutinas de trabajo',
     sentences: {
-        ar: 'Juan __VERB__ por teléfono cada mañana.',
-        er: '__VERB__ con su equipo a las 2.',
-        ir: '__VERB__ cerca de la oficina.',
+        ar: 'Yo __VERB__ por teléfono cada mañana.',
+        er: 'Yo __VERB__ con mi equipo a las 2.',
+        ir: 'Yo __VERB__ cerca de la oficina.',
     },
     verbSpecific: {
         // VERBOS REGULARES - Narrativa coherente de rutina laboral
         hablar: 'Juan __VERB__ por teléfono cada mañana.',
         comer: '__VERB__ con su equipo a las 2.',
         vivir: '__VERB__ cerca de la oficina.',
-        
+
         // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos (-zco, -go, -oy)
         conocer: 'Yo __VERB__ bien el barrio.',
         salir: 'Yo __VERB__ de casa temprano.',
         estar: 'Yo __VERB__ listo para empezar.',
-        
+
         // DIPTONGOS - Narrativa coherente de flexibilidad laboral
         poder: 'María __VERB__ trabajar desde casa.',
         querer: 'Ella __VERB__ cambiar de proyecto.',
         pedir: 'Pedro __VERB__ ayuda cuando la necesita.',
-        
+
         // MUY IRREGULARES - Narrativa coherente de descripción personal/profesional
         ser: 'Carlos __VERB__ programador.',
-        estar: 'Ana __VERB__ en una reunión.',
         ir: 'María __VERB__ al trabajo en metro.',
     }
   },
