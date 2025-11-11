@@ -556,7 +556,7 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
     return null;
   }
 
-  // Verificar si al menos un verbo tiene irregularidad en yo (termina en -go o -zco)
+  // Verificar si al menos un verbo tiene irregularidad en yo (termina en -go, -zco, o -oy)
   const hasYoIrregular = exampleVerbs.some(verbObj => {
     if (!verbObj?.paradigms) return false;
     const paradigm = verbObj.paradigms.find(p =>
@@ -565,34 +565,39 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
     if (!paradigm) return false;
     const yoForm = paradigm.forms.find(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s');
     if (!yoForm?.value) return false;
-    // Detectar si es irregular en yo (-go o -zco)
-    return yoForm.value.endsWith('go') || yoForm.value.endsWith('zco');
+    // Detectar si es irregular en yo (-go, -zco, -oy)
+    return yoForm.value.endsWith('go') || yoForm.value.endsWith('zco') || yoForm.value.endsWith('oy');
   });
 
   if (!hasYoIrregular) return null;
 
-  // Obtener terminaciones según dialecto
-  const getDialectEndings = () => {
-    const baseEndings = ['o', 'es', 'e', 'emos', 'éis', 'en'];
+  // Obtener las formas conjugadas completas para cada verbo según dialecto
+  const getDialectForms = (verbObj) => {
+    const paradigm = verbObj.paradigms?.find(p =>
+      p.forms?.some(f => f.mood === 'indicative' && f.tense === 'pres')
+    );
+    if (!paradigm) return [];
 
-    // Si usa voseo, no mostrar vosotros
-    if (settings?.useVoseo) {
-      return ['o', 'és/ís', 'e', 'emos', 'en']; // voseo forms
-    }
+    const pronounOrder = [
+      '1s',
+      settings?.useVoseo ? '2s_vos' : '2s_tu',
+      '3s',
+      '1p',
+      (!settings?.useVoseo && settings?.useVosotros) ? '2p_vosotros' : null,
+      '3p'
+    ].filter(Boolean);
 
-    // Si no usa vosotros, no mostrarlo
-    if (!settings?.useVosotros) {
-      return ['o', 'es', 'e', 'emos', 'en']; // sin vosotros
-    }
-
-    return baseEndings; // mostrar todas incluyendo vosotros
+    return pronounOrder.map(person => {
+      const form = paradigm.forms?.find(f =>
+        f.mood === 'indicative' && f.tense === 'pres' && f.person === person
+      );
+      return form?.value || '';
+    });
   };
-
-  const dialectEndings = getDialectEndings();
 
   return (
     <div className="deconstruction-item strong-preterite-group">
-      <div className="strong-verbs-container">
+      <div className="irregular-yo-verbs-full-conjugation">
         {exampleVerbs
           .sort((a, b) => {
             // Ordenar por terminación: -ar, -er, -ir
@@ -607,38 +612,32 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
           .map((verbObj, index) => {
           const verb = verbObj.lemma;
           const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+          const forms = getDialectForms(verbObj);
 
-          // Obtener la forma YO conjugada
-          const paradigm = verbObj.paradigms?.find(p =>
-            p.forms?.some(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s')
-          );
-          const yoForm = paradigm?.forms?.find(f => f.mood === 'indicative' && f.tense === 'pres' && f.person === '1s');
-          const yoValue = yoForm?.value || verb;
-
-          // Extraer la raíz irregular de la forma YO (quitar la 'o' final)
-          const yoStem = yoValue.endsWith('o') ? yoValue.slice(0, -1) : yoValue;
+          // Obtener la forma YO conjugada para destacarla
+          const yoForm = forms[0]; // Primera forma es siempre 1s
 
           return (
-            <div key={`yo-irregular-${index}`} className="strong-verb-item">
-              <div className="verb-lemma-large">
-                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                <span className="group-label-large">{group}</span>
+            <div key={`yo-irregular-${index}`} className="irregular-yo-verb-complete">
+              <div className="verb-header">
+                <div className="verb-lemma-large">
+                  <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                  <span className="group-label-large">{group}</span>
+                </div>
+                <div className="arrow">→</div>
+                <div className="yo-form-highlight">{yoForm}</div>
               </div>
-              <div className="arrow">→</div>
-              <div className="irregular-yo-form-large">{yoValue}</div>
+
+              <div className="all-forms-display">
+                {forms.map((form, idx) => (
+                  <span key={`form-${idx}`} className={`form-item ${idx === 0 ? 'yo-form-irregular' : ''}`}>
+                    {form}
+                  </span>
+                ))}
+              </div>
             </div>
           );
         })}
-      </div>
-
-      <div className="plus-symbol">+</div>
-
-      <div className="strong-endings-carousel">
-        {dialectEndings.map((ending, idx) => (
-          <span key={`ending-${idx}`} className="strong-ending-item">
-            {ending}
-          </span>
-        ))}
       </div>
     </div>
   );

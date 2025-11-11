@@ -18,10 +18,12 @@ export const storyData = {
         comer: '__VERB__ con su equipo a las 2.',
         vivir: '__VERB__ cerca de la oficina.',
 
-        // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos (-zco, -go, -oy)
-        conocer: 'Yo __VERB__ bien el barrio.',
-        salir: 'Yo __VERB__ de casa temprano.',
-        estar: 'Yo __VERB__ listo para empezar.',
+        // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos (-go, -zco, -oy)
+        conocer: 'Yo __VERB__ a todos mis vecinos.',
+        salir: 'Yo __VERB__ de casa a las 7.',
+        estar: 'Yo __VERB__ en el trabajo todo el día.',
+        hacer: 'Yo __VERB__ ejercicio por la mañana.',
+        poner: 'Yo __VERB__ la mesa para comer.',
 
         // DIPTONGOS - Narrativa coherente de flexibilidad laboral
         poder: 'María __VERB__ trabajar desde casa.',

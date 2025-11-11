@@ -120,6 +120,33 @@ const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
 async function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense, region })
 
+  // PRIORITY 1: For irregular YO verbs in present, use the perfect examples
+  if (verbType === 'irregular' && tense === 'pres' && Array.isArray(selectedFamilies)) {
+    const hasYoG = selectedFamilies.includes('LEARNING_YO_G_PRESENT')
+    const hasYoZco = selectedFamilies.includes('LEARNING_YO_ZCO_PRESENT')
+    const hasVeryIrregular = selectedFamilies.includes('LEARNING_VERY_IRREGULAR')
+
+    // If user selected YO irregulars, force the perfect examples
+    if (hasYoG || hasYoZco || hasVeryIrregular) {
+      const perfectExamples = ['conocer', 'salir', 'estar'] // conozco (-zco), salgo (-go), estoy (-oy)
+      const verbs = []
+
+      for (const lemma of perfectExamples) {
+        try {
+          const verb = await getVerbByLemma(lemma)
+          if (verb) verbs.push(verb)
+        } catch (error) {
+          logger.warn(`No se pudo cargar verbo prioritario ${lemma}`, error)
+        }
+      }
+
+      if (verbs.length === 3) {
+        logger.debug('Using perfect YO irregular examples:', verbs.map(v => v.lemma))
+        return verbs
+      }
+    }
+  }
+
   let selectedVerbs = []
   try {
     selectedVerbs = getExampleVerbs({ verbType, families: selectedFamilies, tense, region })
@@ -174,9 +201,9 @@ async function selectExampleVerbs({ verbType, selectedFamilies, tense, region })
   }
 
   if (uniqueVerbs.length < 3) {
-    // Emergency fallbacks - use more representative irregular yo verbs (conocer, salir, hacer) instead of ser/tener
+    // Emergency fallbacks - use perfect irregular yo verbs (conocer, salir, estar)
     const emergencyFallbacks = verbType === 'irregular'
-      ? ['conocer', 'salir', 'hacer', 'estar', 'poner']
+      ? ['conocer', 'salir', 'estar', 'hacer', 'poner']
       : ['hablar', 'comer', 'vivir']
     for (const lemma of emergencyFallbacks) {
       if (uniqueVerbs.length >= 3) break
