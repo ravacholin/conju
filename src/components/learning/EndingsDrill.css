@@ -240,6 +240,33 @@
     color: var(--text);
 }
 
+/* Styles for full conjugated forms in reference table */
+.ending-value.full-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.expected-form-strike {
+    text-decoration: line-through;
+    opacity: 0.4;
+    font-size: 0.85em;
+}
+
+.actual-form-highlight {
+    font-weight: 700;
+}
+
+.regular-form {
+    font-weight: 500;
+}
+
+/* Highlight irregular rows */
+.ending-row.irregular {
+    background: rgba(108, 237, 108, 0.05);
+    border-left: 2px solid rgba(108, 237, 108, 0.3);
+}
+
 .ending-row.highlighted .ending-person,
 .ending-row.highlighted .ending-value {
     color: var(--text);

@@ -723,48 +723,33 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
           )}
 
           <div className="endings-reference">
-            <h4>Terminaciones de referencia</h4>
+            <h4>Formas de referencia</h4>
             <div className="endings-reference-table">
               {PRONOUNS_DISPLAY.map((pronoun) => {
                 const actualForm = personToFormMap[pronoun.key];
                 const analysis = irregularityAnalysis?.analysis.find(a => a.person === pronoun.key);
                 const isIrregular = analysis?.isIrregular;
 
-                // Get the regular ending for this pronoun as reference
-                const verbEnding = verb?.lemma?.slice(-2) || 'ar'; // ar, er, or ir
-                const regularEndings = getRegularEndings(verbEnding, tense.tense);
-                const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
-                const normalizedPerson = pronoun.key === '2s_vos' ? '2s_tu' : pronoun.key;
-                const idx = baseOrder.indexOf(normalizedPerson);
-                let regularEnding = idx >= 0 ? regularEndings[idx] : '';
-
-                // Adjust for voseo in present indicative
-                if (pronoun.key === '2s_vos' && tense.tense === 'pres') {
-                  if (verbEnding === 'ar' && regularEnding === 'as') regularEnding = 'ás';
-                  else if (verbEnding === 'er' && regularEnding === 'es') regularEnding = 'és';
-                  else if (verbEnding === 'ir' && regularEnding === 'es') regularEnding = 'ís';
-                }
-
                 return (
                   <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular' : ''}`}>
                     <span className="ending-person">{pronoun.text}</span>
                     {irregularityAnalysis?.hasIrregularities ? (
                       <div className="form-comparison">
-                        <span className="ending-value">
+                        <span className="ending-value full-form">
                           {isIrregular && analysis ? (
                             <>
-                              <span style={{ textDecoration: 'line-through', opacity: 0.5, marginRight: '0.5rem' }}>
-                                {regularEnding}
+                              <span className="expected-form-strike">{analysis.expected}</span>
+                              <span className="actual-form-highlight">
+                                {renderWithHighlights(actualForm, analysis.expected)}
                               </span>
-                              {renderWithHighlights(actualForm, analysis.expected)}
                             </>
                           ) : (
-                            <span>{regularEnding}</span>
+                            <span className="regular-form">{actualForm}</span>
                           )}
                         </span>
                       </div>
                     ) : (
-                      <span className="ending-value">{regularEnding}</span>
+                      <span className="ending-value full-form">{actualForm}</span>
                     )}
                   </div>
                 );
