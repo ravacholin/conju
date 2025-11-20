@@ -6,7 +6,7 @@ import { getDatabase } from './db.js'
 import { authMiddleware } from './auth.js'
 import { createRoutes } from './routes.js'
 import { createAuthRoutes } from './auth-routes.js'
-const socialRoutes = require('./social-routes.js')
+import socialRoutes from './social-routes.js'
 
 const PORT = process.env.PORT || 8787
 const API_PREFIX = process.env.API_PREFIX || '/api'

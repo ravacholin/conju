@@ -216,18 +216,7 @@ export const additionalVerbs = [
       ]
     }]
   },
-  {
-    id: 'recibir',
-    lemma: 'recibir',
-    type: 'regular',
-    paradigms: [{
-      regionTags: ['rioplatense', 'la_general', 'peninsular'],
-      forms: [
-        { mood: 'nonfinite', tense: 'part', person: 'inv', value: 'recibido' },
-        { mood: 'nonfinite', tense: 'ger', person: 'inv', value: 'recibiendo' }
-      ]
-    }]
-  },
+
   {
     id: 'sufrir',
     lemma: 'sufrir',

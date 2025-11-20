@@ -183,26 +183,62 @@ export async function flushSyncQueue() {
     return { flushed: 0 }
   }
 
+  // Group by type
+  const groups = {
+    attempts: [],
+    mastery: [],
+    schedules: [],
+    sessions: []
+  }
+
   const pending = [...q]
+  // Clear queue immediately to avoid duplicates if new items are added during sync
+  // If sync fails, we re-enqueue
   setQueue([])
-  let ok = 0
 
   for (const entry of pending) {
-    try {
-      await postJSON(`/progress/${entry.type}`, entry.payload)
-      ok++
-    } catch (error) {
-      logger.warn('flushSyncQueue', `Error procesando ${entry.type}`, error)
-      // Re-encolar si vuelve a fallar
-      enqueue(entry.type, entry.payload)
+    if (groups[entry.type]) {
+      groups[entry.type].push(entry.payload)
+    } else {
+      // Fallback for unknown types (shouldn't happen)
+      logger.warn('flushSyncQueue', `Unknown type ${entry.type}`, entry)
     }
   }
 
-  if (isDev) {
-    logger.info('flushSyncQueue', `Cola vaciada: ${ok}/${pending.length} exitosos`)
+  let flushedCount = 0
+  const failedItems = []
+
+  // Process each group in bulk
+  for (const [type, records] of Object.entries(groups)) {
+    if (records.length === 0) continue
+
+    try {
+      const result = await tryBulk(type, records)
+      if (result.success) {
+        flushedCount += records.length
+      } else {
+        throw new Error('Bulk sync failed')
+      }
+    } catch (error) {
+      logger.warn('flushSyncQueue', `Error syncing batch of ${type}`, error)
+      // Re-enqueue failed records
+      records.forEach(payload => {
+        failedItems.push({ type, payload, enqueuedAt: Date.now() })
+      })
+    }
   }
 
-  return { flushed: ok }
+  // If there were failures, add them back to the queue
+  if (failedItems.length > 0) {
+    const currentQueue = getQueue()
+    setQueue([...failedItems, ...currentQueue])
+  }
+
+  if (isDev) {
+    logger.info('flushSyncQueue', `Cola procesada: ${flushedCount}/${pending.length} items sincronizados`)
+  }
+
+  return { flushed: flushedCount }
 }
 
 // ============================================
@@ -447,9 +483,9 @@ export async function tryBulk(type, records) {
  */
 export function getSyncSuccessMessage(strategy, results, accountSyncResult) {
   const legacyUploaded = (results.attempts?.uploaded || 0) +
-                        (results.mastery?.uploaded || 0) +
-                        (results.schedules?.uploaded || 0) +
-                        (results.sessions?.uploaded || 0)
+    (results.mastery?.uploaded || 0) +
+    (results.schedules?.uploaded || 0) +
+    (results.sessions?.uploaded || 0)
 
   const accountDownloaded = accountSyncResult?.downloaded ?
     (accountSyncResult.downloaded.attempts || 0) +

@@ -30,6 +30,24 @@ export function createRoutes() {
         return now
       }
       db.transaction(() => {
+        let stmt
+        switch (table) {
+          case 'attempts':
+            stmt = db.prepare('INSERT INTO attempts (id, user_id, created_at, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, payload=excluded.payload')
+            break
+          case 'mastery':
+            stmt = db.prepare('INSERT INTO mastery (id, user_id, updated_at, payload) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, payload=excluded.payload')
+            break
+          case 'schedules':
+            stmt = db.prepare('INSERT INTO schedules (id, user_id, next_due, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, next_due=excluded.next_due, updated_at=excluded.updated_at, payload=excluded.payload')
+            break
+          case 'sessions':
+            stmt = db.prepare('INSERT INTO sessions (id, user_id, updated_at, timestamp, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, timestamp=excluded.timestamp, payload=excluded.payload')
+            break
+        }
+
+        if (!stmt) return
+
         for (const rec of records) {
           if (!rec) continue
           const key = table === 'sessions' ? (rec.id || rec.sessionId) : rec.id
@@ -37,30 +55,23 @@ export function createRoutes() {
           const id = String(key)
           // Force server-side user id
           const payload = JSON.stringify({ ...rec, userId })
+
+          let info
           switch (table) {
             case 'attempts': {
               const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
                 useNowWhenMissing: true
               })
-              const stmt = db.prepare('INSERT INTO attempts (id, user_id, created_at, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, payload=excluded.payload')
-              const info = stmt.run(id, userId, createdAt, now, payload)
-              if (info.changes === 1) uploaded++
-              else updated++
+              info = stmt.run(id, userId, createdAt, now, payload)
               break
             }
             case 'mastery': {
-              const stmt = db.prepare('INSERT INTO mastery (id, user_id, updated_at, payload) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, payload=excluded.payload')
-              const info = stmt.run(id, userId, now, payload)
-              if (info.changes === 1) uploaded++
-              else updated++
+              info = stmt.run(id, userId, now, payload)
               break
             }
             case 'schedules': {
               const nextDue = normalizeDate(rec.nextDue, 'nextDue', id)
-              const stmt = db.prepare('INSERT INTO schedules (id, user_id, next_due, updated_at, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, next_due=excluded.next_due, updated_at=excluded.updated_at, payload=excluded.payload')
-              const info = stmt.run(id, userId, nextDue, now, payload)
-              if (info.changes === 1) uploaded++
-              else updated++
+              info = stmt.run(id, userId, nextDue, now, payload)
               break
             }
             case 'sessions': {
@@ -70,13 +81,13 @@ export function createRoutes() {
               const timestamp = rec.timestamp === null || rec.timestamp === undefined
                 ? updatedAt
                 : normalizeDate(rec.timestamp, 'timestamp', id)
-              const stmt = db.prepare('INSERT INTO sessions (id, user_id, updated_at, timestamp, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, timestamp=excluded.timestamp, payload=excluded.payload')
-              const info = stmt.run(id, userId, updatedAt, timestamp, payload)
-              if (info.changes === 1) uploaded++
-              else updated++
+              info = stmt.run(id, userId, updatedAt, timestamp, payload)
               break
             }
           }
+
+          if (info && info.changes === 1) uploaded++
+          else updated++
         }
       })()
 

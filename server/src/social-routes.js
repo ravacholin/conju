@@ -1,9 +1,13 @@
 // Social Features API Routes
 // Handles leaderboards, challenges, and community stats
 
-const express = require('express')
+// Social Features API Routes
+// Handles leaderboards, challenges, and community stats
+
+import express from 'express'
+import crypto from 'crypto'
+
 const router = express.Router()
-const crypto = require('crypto')
 
 /**
  * GET /api/social/leaderboard
@@ -298,4 +302,4 @@ router.get('/challenges/active/:userId', async (req, res) => {
   }
 })
 
-module.exports = router
+export default router

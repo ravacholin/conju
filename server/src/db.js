@@ -8,6 +8,10 @@ const DB_PATH = join(DB_DIR, 'progress-sync.db')
 
 export const db = new Database(DB_PATH)
 
+export function getDatabase() {
+  return db
+}
+
 export function migrate() {
   db.pragma('journal_mode = WAL')
   db.exec(`
