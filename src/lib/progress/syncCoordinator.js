@@ -4,7 +4,8 @@ import {
   getFromDB,
   getAllFromDB,
   initDB,
-  getLearningSessionsByUser
+  getLearningSessionsByUser,
+  getUnsyncedItems
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import { getSyncConfigDebug } from '../config/syncConfig.js'
@@ -340,10 +341,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
   try {
     if (include.includes('attempts')) {
       safeLogger.debug('syncNow: obteniendo attempts para usuario actual')
-      const all = await getAttemptsByUser(userId)
-      safeLogger.debug('syncNow: attempts encontrados', { total: all.length })
+      // Optimized: fetch only unsynced items
+      const unsynced = await getUnsyncedItems(STORAGE_CONFIG.STORES.ATTEMPTS, userId)
+      safeLogger.debug('syncNow: attempts sin sincronizar encontrados', { count: unsynced.length })
 
-      let unsynced = all.filter((a) => !a.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       safeLogger.debug('syncNow: attempts sin sincronizar', { pending: unsynced.length })
 
@@ -361,10 +362,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
 
     if (include.includes('mastery')) {
       safeLogger.debug('syncNow: obteniendo mastery para usuario actual')
-      const all = await getMasteryByUser(userId)
-      safeLogger.debug('syncNow: mastery encontrados', { total: all.length })
+      // Optimized: fetch only unsynced items
+      const unsynced = await getUnsyncedItems(STORAGE_CONFIG.STORES.MASTERY, userId)
+      safeLogger.debug('syncNow: mastery sin sincronizar encontrados', { count: unsynced.length })
 
-      let unsynced = all.filter((m) => !m.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       safeLogger.debug('syncNow: mastery sin sincronizar', { pending: unsynced.length })
 
@@ -382,11 +383,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
 
     if (include.includes('schedules')) {
       safeLogger.debug('syncNow: obteniendo schedules para usuario actual')
-      const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
-      const userSchedules = allSchedules.filter((s) => s.userId === userId)
-      safeLogger.debug('syncNow: schedules encontrados', { total: userSchedules.length })
+      // Optimized: fetch only unsynced items
+      const unsynced = await getUnsyncedItems(STORAGE_CONFIG.STORES.SCHEDULES, userId)
+      safeLogger.debug('syncNow: schedules sin sincronizar encontrados', { count: unsynced.length })
 
-      let unsynced = userSchedules.filter((s) => !s.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       safeLogger.debug('syncNow: schedules sin sincronizar', { pending: unsynced.length })
 
@@ -404,10 +404,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
 
     if (include.includes('sessions')) {
       safeLogger.debug('syncNow: obteniendo sesiones para usuario actual')
-      const allSessions = await getLearningSessionsByUser(userId)
-      safeLogger.debug('syncNow: sesiones encontradas', { total: allSessions.length })
+      // Optimized: fetch only unsynced items
+      const unsynced = await getUnsyncedItems(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, userId)
+      safeLogger.debug('syncNow: sesiones sin sincronizar encontradas', { count: unsynced.length })
 
-      let unsynced = allSessions.filter((s) => !s.syncedAt)
       unsynced.sort((a, b) => (b?.syncPriority ? 1 : 0) - (a?.syncPriority ? 1 : 0))
       safeLogger.debug('syncNow: sesiones sin sincronizar', { pending: unsynced.length })
 
@@ -475,13 +475,13 @@ export const flushSyncQueue = flushSyncQueueFromService
 if (typeof window !== 'undefined') {
   try {
     window.addEventListener('online', () => {
-      flushSyncQueueFromService().catch(() => {})
-      syncNow().catch(() => {})
+      flushSyncQueueFromService().catch(() => { })
+      syncNow().catch(() => { })
     })
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         setTimeout(() => {
-          syncNow().catch(() => {})
+          syncNow().catch(() => { })
         }, 500)
       }
     })

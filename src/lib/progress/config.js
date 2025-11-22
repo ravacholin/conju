@@ -7,21 +7,21 @@ export const PROGRESS_CONFIG = {
   HINT_PENALTY: 5, // Puntos por pista usada
   MAX_HINT_PENALTY: 15, // Penalización máxima por intento
   MIN_CONFIDENCE_N: 8, // Número mínimo de intentos para confianza
-  
+
   // Niveles de mastery
   MASTERY_LEVELS: {
     ACHIEVED: 80, // Dominio logrado
     ATTENTION: 60, // Necesita atención
     CRITICAL: 0   // Crítico
   },
-  
+
   // Umbrales de confianza
   CONFIDENCE_LEVELS: {
     HIGH: 20,  // N >= 20
     MEDIUM: 8, // N >= 8
     LOW: 0     // N < 8
   },
-  
+
   // Intervalos SRS (Legacy SM-2)
   SRS_INTERVALS: [1, 3, 7, 14, 30, 90], // Días
 
@@ -109,7 +109,7 @@ export const PROGRESS_CONFIG = {
       PRETRAIN_ENABLED: true    // Usar parámetros preentrenados como base
     }
   },
-  
+
   // Configuración de UI
   UI: {
     HEATMAP_COLORS: {
@@ -118,26 +118,26 @@ export const PROGRESS_CONFIG = {
       LOW: '#dc3545',     // Rojo para 0-59%
       NO_DATA: '#6c757d'  // Gris para sin datos
     },
-    
+
     COMPETENCY_RADAR: {
       AXES: 5, // Número de ejes en el radar
       MAX_VALUE: 100 // Valor máximo para cada eje
     }
   },
-  
+
   // Configuración de sincronización
   SYNC: {
     AUTO_SYNC_INTERVAL: 5 * 60 * 1000, // 5 minutos
     MAX_SYNC_RETRIES: 3,
     BATCH_SIZE: 100 // Número de registros por lote
   },
-  
+
   // Configuración de diagnóstico
   DIAGNOSIS: {
     TEST_DURATION: 3 * 60 * 1000, // 3 minutos
     RECALIBRATION_INTERVAL: 30 * 24 * 60 * 60 * 1000 // 30 días
   },
-  
+
   // Configuración de objetivos
   GOALS: {
     WEEKLY: {
@@ -148,7 +148,7 @@ export const PROGRESS_CONFIG = {
       DEFAULT_FOCUS_TIME: 60 // minutos
     }
   },
-  
+
   // Configuración de Inteligencia Emocional
   EMOTIONAL_INTELLIGENCE: {
     // Flow State Detection Thresholds
@@ -162,7 +162,7 @@ export const PROGRESS_CONFIG = {
       VELOCITY_CONSISTENCY: 0.3,  // Variación en velocidad <30% = consistent
       ACCURACY_CONSISTENCY: 0.2   // Variación en accuracy <20% = consistent
     },
-    
+
     // Momentum Tracking Configuration
     MOMENTUM: {
       FACTORS: {
@@ -181,7 +181,7 @@ export const PROGRESS_CONFIG = {
         CONFIDENCE_CRISIS: 0.25      // <25% momentum score
       }
     },
-    
+
     // Confidence Engine Configuration
     CONFIDENCE: {
       THRESHOLDS: {
@@ -197,7 +197,7 @@ export const PROGRESS_CONFIG = {
         SLOW_THRESHOLD: 6000      // ms - Muy lento (vacilación)
       }
     },
-    
+
     // Temporal Intelligence Configuration  
     TEMPORAL: {
       CIRCADIAN: {
@@ -212,7 +212,7 @@ export const PROGRESS_CONFIG = {
       MORNING_PEAK_START: 9,            // hora
       MORNING_PEAK_END: 11              // hora
     },
-    
+
     // Dynamic Goals Configuration
     GOALS: {
       ACTIVE_GOALS_MIN: 3,
@@ -228,19 +228,19 @@ export const PROGRESS_CONFIG = {
       }
     }
   },
-  
+
   // Configuración de Logging
   LOGGING: {
     ENABLED: (typeof globalThis !== 'undefined' && globalThis.process?.env?.NODE_ENV === 'development'),
     LEVELS: {
       ERROR: 0,
-      WARN: 1, 
+      WARN: 1,
       INFO: 2,
       DEBUG: 3
     },
     DEFAULT_LEVEL: 2 // INFO
   },
-  
+
   // Configuración de Auto-save
   AUTO_SAVE: {
     CONFIDENCE_ENGINE: 30000,    // 30 segundos
@@ -397,7 +397,7 @@ export const ERROR_TAGS = {
 // Configuración de almacenamiento
 export const STORAGE_CONFIG = {
   DB_NAME: 'SpanishConjugatorProgress',
-  DB_VERSION: 4, // Increment version when adding new stores like events
+  DB_VERSION: 5, // Increment version when adding new stores like events
   STORES: {
     USERS: 'users',
     VERBS: 'verbs',

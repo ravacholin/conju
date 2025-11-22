@@ -11,10 +11,12 @@ function App() {
   }, [])
 
   return (
-    <GlobalErrorBoundary>
-      <AppRouter />
-      <GamificationNotifications />
-    </GlobalErrorBoundary>
+    <div className="app-container">
+      <GlobalErrorBoundary>
+        <AppRouter />
+        <GamificationNotifications />
+      </GlobalErrorBoundary>
+    </div>
   )
 }
 

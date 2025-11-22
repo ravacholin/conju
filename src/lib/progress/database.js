@@ -8,7 +8,7 @@ const isDev = import.meta?.env?.DEV
 
 // Timeout configuration for IndexedDB transactions
 const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
-const CACHE_TTL_MS = 4000
+const CACHE_TTL_MS = 60000 // 60 seconds
 
 // Estado de la base de datos
 let dbInstance = null
@@ -98,13 +98,13 @@ export async function initDB() {
   // Pre-chequeo: forzar que posibles mocks de idb se manifiesten (propaga si falla)
   const { openDB } = await import('idb')
   if (typeof openDB === 'function') {
-    await openDB('progress-probe', 1, { upgrade() {} })
+    await openDB('progress-probe', 1, { upgrade() { } })
   }
-  
+
   if (dbInstance) {
     return dbInstance
   }
-  
+
   if (isInitializing) {
     // Esperar a que termine la inicialización en curso
     await new Promise(resolve => {
@@ -117,7 +117,7 @@ export async function initDB() {
     })
     return dbInstance
   }
-  
+
   isInitializing = true
 
   try {
@@ -158,22 +158,36 @@ export async function initDB() {
         }
 
         // Crear tabla de intentos
+        let attemptStore
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
-          const attemptStore = db.createObjectStore(STORAGE_CONFIG.STORES.ATTEMPTS, { keyPath: 'id' })
+          attemptStore = db.createObjectStore(STORAGE_CONFIG.STORES.ATTEMPTS, { keyPath: 'id' })
           attemptStore.createIndex('itemId', 'itemId', { unique: false })
           attemptStore.createIndex('createdAt', 'createdAt', { unique: false })
           attemptStore.createIndex('correct', 'correct', { unique: false })
           attemptStore.createIndex('userId', 'userId', { unique: false })
+          attemptStore.createIndex('syncedAt', 'syncedAt', { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de intentos creada')
+        } else if (transaction) {
+          attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+          if (!attemptStore.indexNames.contains('syncedAt')) {
+            attemptStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+          }
         }
 
         // Crear tabla de mastery
+        let masteryStore
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.MASTERY)) {
-          const masteryStore = db.createObjectStore(STORAGE_CONFIG.STORES.MASTERY, { keyPath: 'id' })
+          masteryStore = db.createObjectStore(STORAGE_CONFIG.STORES.MASTERY, { keyPath: 'id' })
           masteryStore.createIndex('userId', 'userId', { unique: false })
           masteryStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
           masteryStore.createIndex('updatedAt', 'updatedAt', { unique: false })
+          masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de mastery creada')
+        } else if (transaction) {
+          masteryStore = transaction.objectStore(STORAGE_CONFIG.STORES.MASTERY)
+          if (!masteryStore.indexNames.contains('syncedAt')) {
+            masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+          }
         }
 
         // Crear tabla de schedules
@@ -184,9 +198,13 @@ export async function initDB() {
           scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
           scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
           scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+          scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de schedules creada')
         } else if (transaction) {
           scheduleStore = transaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+          if (!scheduleStore.indexNames.contains('syncedAt')) {
+            scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+          }
         }
 
         if (scheduleStore && !scheduleStore.indexNames.contains('userId-nextDue')) {
@@ -194,13 +212,20 @@ export async function initDB() {
         }
 
         // Crear tabla de learning sessions (analytics)
+        let sessionStore
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)) {
-          const sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
+          sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
           sessionStore.createIndex('userId', 'userId', { unique: false })
           sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
           sessionStore.createIndex('updatedAt', 'updatedAt', { unique: false })
           sessionStore.createIndex('mode-tense', ['mode', 'tense'], { unique: false })
+          sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de learning sessions creada')
+        } else if (transaction) {
+          sessionStore = transaction.objectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
+          if (!sessionStore.indexNames.contains('syncedAt')) {
+            sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+          }
         }
 
         if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.CHALLENGES)) {
@@ -218,6 +243,52 @@ export async function initDB() {
           eventStore.createIndex('createdAt', 'createdAt', { unique: false })
           eventStore.createIndex('sessionId', 'sessionId', { unique: false })
           if (isDev) logger.info('initDB', 'Tabla de eventos auxiliares creada')
+        }
+
+        // Add compound index for attempts if it doesn't exist
+        if (transaction && db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
+          const attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+          if (!attemptStore.indexNames.contains('userId-createdAt')) {
+            attemptStore.createIndex('userId-createdAt', ['userId', 'createdAt'], { unique: false })
+            if (isDev) logger.info('initDB', 'Índice userId-createdAt creado en attempts')
+          }
+        }
+
+        // Migration: Ensure syncedAt exists for all records in syncable stores
+        if (oldVersion < 5) {
+          const storesToMigrate = [
+            STORAGE_CONFIG.STORES.ATTEMPTS,
+            STORAGE_CONFIG.STORES.MASTERY,
+            STORAGE_CONFIG.STORES.SCHEDULES,
+            STORAGE_CONFIG.STORES.LEARNING_SESSIONS
+          ]
+
+          for (const storeName of storesToMigrate) {
+            if (db.objectStoreNames.contains(storeName)) {
+              const store = transaction.objectStore(storeName)
+              // Iterate and update records without syncedAt
+              // Note: In a real large DB, we might want to do this more carefully,
+              // but for client-side IDB, this is usually acceptable during upgrade.
+              store.openCursor().then(async function iterate(cursor) {
+                if (!cursor) return
+                const record = cursor.value
+                let changed = false
+                if (record.syncedAt === undefined) {
+                  record.syncedAt = 0 // 0 indicates unsynced
+                  changed = true
+                }
+                // Ensure createdAt is a Date object for proper indexing
+                if (typeof record.createdAt === 'string') {
+                  record.createdAt = new Date(record.createdAt)
+                  changed = true
+                }
+                if (changed) {
+                  cursor.update(record)
+                }
+                await cursor.continue().then(iterate)
+              })
+            }
+          }
         }
 
         if (isDev) logger.info('initDB', 'Estructura de base de datos actualizada')
@@ -245,18 +316,23 @@ export async function saveToDB(storeName, data) {
     const db = await initDB()
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)
-    
+
     // Si no tiene ID, generar uno
     if (!data.id) {
       data.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     }
-    
+
     // Añadir timestamps si no existen
     if (!data.createdAt) {
       data.createdAt = new Date()
     }
     data.updatedAt = new Date()
-    
+
+    // Initialize syncedAt if missing (0 = unsynced)
+    if (data.syncedAt === undefined) {
+      data.syncedAt = 0
+    }
+
     await store.put(data)
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `saveToDB(${storeName})`)
 
@@ -783,11 +859,38 @@ export async function getRecentAttempts(userId, limit = 100) {
     const db = await initDB()
     const tx = db.transaction(STORAGE_CONFIG.STORES.ATTEMPTS, 'readonly')
     const store = tx.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+
+    // Use compound index if available (DB v5+)
+    if (store.indexNames.contains('userId-createdAt')) {
+      const index = store.index('userId-createdAt')
+      // Range for this user, all dates. 
+      // Note: We use a very wide date range. 
+      // Lower bound: new Date(0) (1970)
+      // Upper bound: new Date(8640000000000000) (Max valid date)
+      const range = IDBKeyRange.bound(
+        [userId, new Date(0)],
+        [userId, new Date(8640000000000000)]
+      )
+
+      const attempts = []
+      // Iterate backwards (prev) to get most recent first
+      let cursor = await index.openCursor(range, 'prev')
+
+      while (cursor && attempts.length < limit) {
+        attempts.push(cursor.value)
+        cursor = await cursor.continue()
+      }
+
+      await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, 'getRecentAttempts')
+      return attempts
+    }
+
+    // Fallback for older DB versions or missing index
     const index = store.index('createdAt')
-    
+
     // Obtener todos los intentos ordenados por fecha
     const allAttempts = await index.getAll()
-    
+
     // Filtrar por usuario y ordenar por fecha descendente
     const userAttempts = allAttempts
       .filter(a => a.userId === userId)
@@ -798,6 +901,44 @@ export async function getRecentAttempts(userId, limit = 100) {
     return userAttempts
   } catch (error) {
     logger.error('getRecentAttempts', 'Error al obtener intentos recientes', error)
+    return []
+  }
+}
+
+/**
+ * Obtiene ítems pendientes de sincronización
+ * @param {string} storeName - Nombre de la tabla
+ * @param {string} userId - ID del usuario (opcional, para filtrar)
+ * @param {number} limit - Límite de ítems (opcional)
+ * @returns {Promise<Object[]>}
+ */
+export async function getUnsyncedItems(storeName, userId, limit = 100) {
+  try {
+    const db = await initDB()
+    const tx = db.transaction(storeName, 'readonly')
+    const store = tx.objectStore(storeName)
+
+    if (!store.indexNames.contains('syncedAt')) {
+      // Fallback: scan all items (slow but works if index missing)
+      const all = await store.getAll()
+      return all.filter(item => !item.syncedAt && (!userId || item.userId === userId)).slice(0, limit)
+    }
+
+    const index = store.index('syncedAt')
+    // Query for syncedAt = 0 (unsynced)
+    const range = IDBKeyRange.only(0)
+
+    // If we need to filter by userId, we still have to fetch all unsynced and filter.
+    // Usually unsynced count is low, so this is fine.
+    const unsynced = await index.getAll(range)
+
+    const filtered = userId
+      ? unsynced.filter(item => item.userId === userId)
+      : unsynced
+
+    return filtered.slice(0, limit)
+  } catch (error) {
+    logger.error('getUnsyncedItems', `Error al obtener ítems sin sincronizar de ${storeName}`, error)
     return []
   }
 }
@@ -842,10 +983,10 @@ export async function getMasteryByCell(userId, mood, tense, person) {
     const tx = db.transaction(STORAGE_CONFIG.STORES.MASTERY, 'readonly')
     const store = tx.objectStore(STORAGE_CONFIG.STORES.MASTERY)
     const index = store.index('mood-tense-person')
-    
+
     // Buscar todos los mastery scores para esta celda
     let result = await index.getAll([mood, tense, person])
-    
+
     // Filtrar por usuario
     result = result.filter(m => m.userId === userId)
 
@@ -906,10 +1047,10 @@ export async function getScheduleByCell(userId, mood, tense, person) {
     const tx = db.transaction(STORAGE_CONFIG.STORES.SCHEDULES, 'readonly')
     const store = tx.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
     const index = store.index('mood-tense-person')
-    
+
     // Buscar todos los schedules para esta celda
     let result = await index.getAll([mood, tense, person])
-    
+
     // Filtrar por usuario
     result = result.filter(s => s.userId === userId)
 
