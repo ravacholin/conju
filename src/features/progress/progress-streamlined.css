@@ -90,9 +90,11 @@
 }
 
 .srs-banner-action:hover {
-  background: #000000;
-  border: 1px solid #000000;
+  background: #111111;
+  border-color: #ffffff;
   color: #ffffff;
+  box-shadow: 4px 4px 0 #ffffff;
+  transform: translate(-2px, -2px);
 }
 
 /* Loading and Error States */
@@ -227,7 +229,8 @@
   width: 54px;
   height: 54px;
   opacity: 1;
-  filter: invert(1);
+  filter: brightness(0) invert(1) !important;
+  /* Force white icon regardless of original color */
   transition: all 0.3s ease;
 }
 
@@ -238,8 +241,9 @@
 
 .nav-btn:hover .nav-icon {
   opacity: 1;
-  filter: invert(0);
-  /* Invert back on hover if needed, or keep white */
+  filter: brightness(0) invert(1) !important;
+  /* Keep white on hover */
+  transform: scale(1.1);
 }
 
 .header-actions {
@@ -249,8 +253,8 @@
 }
 
 .action-btn {
-  background: transparent;
-  border: 1px solid #333;
+  background: #0a0a0a;
+  border: 1px solid #666;
   border-radius: 0;
   padding: 0.5rem;
   cursor: pointer;
@@ -258,13 +262,14 @@
 }
 
 .action-btn:hover {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
   transform: translateY(-1px);
+  box-shadow: 2px 2px 0 #ffffff;
 }
 
 .action-btn:hover .btn-icon {
-  filter: invert(0);
+  filter: invert(1);
 }
 
 .btn-icon {
