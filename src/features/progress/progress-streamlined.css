@@ -27,7 +27,7 @@
 }
 
 .srs-review-banner:hover {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
   box-shadow: 6px 6px 0 #ffffff;
   transform: translate(-4px, -4px);
@@ -35,11 +35,11 @@
 
 .srs-review-banner:hover .srs-banner-text,
 .srs-review-banner:hover .srs-banner-text strong {
-  color: #000000;
+  color: #ffffff;
 }
 
 .srs-review-banner:hover .srs-banner-icon {
-  filter: invert(0);
+  filter: invert(1);
 }
 
 .srs-banner-content {
@@ -603,7 +603,7 @@
 }
 
 .stat-card:hover {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
   transform: translate(-4px, -4px);
   box-shadow: 6px 6px 0 #ffffff;
@@ -615,15 +615,15 @@
 .stat-card:hover .goal-heading,
 .stat-card:hover .goal-progress-text,
 .stat-card:hover .goal-percentage {
-  color: #000000;
+  color: #ffffff;
 }
 
 .stat-card:hover .section-icon {
-  filter: invert(0);
+  filter: invert(1);
 }
 
 .stat-card:hover .goal-icon {
-  border-color: #000000;
+  border-color: #ffffff;
 }
 
 

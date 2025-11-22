@@ -465,7 +465,7 @@ body {
 
 /* Neo-Brutalist hover effect: sharp offset shadow */
 .option-card:hover {
-  background: #0a0a0a;
+  background: #111111;
   border-color: #ffffff;
   transform: translate(-4px, -4px);
   box-shadow: 6px 6px 0 #ffffff;

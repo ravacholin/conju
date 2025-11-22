@@ -49,22 +49,22 @@
 
 /* Selected state for tense cards */
 .learn-flow .option-card.selected {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
-  color: #000000;
+  color: #ffffff;
   transform: translate(-4px, -4px);
   box-shadow: 6px 6px 0 #ffffff;
   z-index: 10;
 }
 
 .learn-flow .option-card.selected:hover {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
 }
 
 .learn-flow .option-card.selected h3,
 .learn-flow .option-card.selected p {
-  color: #000000;
+  color: #ffffff;
 }
 
 /* Settings panel styling */
@@ -132,9 +132,9 @@
 }
 
 .learn-flow .radio-group label:hover {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
-  color: #000000;
+  color: #ffffff;
 }
 
 .learn-flow .radio-group input[type="radio"] {
@@ -143,9 +143,9 @@
 }
 
 .learn-flow .radio-group label:has(input[type="radio"]:checked) {
-  background: #ffffff;
+  background: #111111;
   border-color: #ffffff;
-  color: #000000;
+  color: #ffffff;
   font-weight: 700;
   box-shadow: 4px 4px 0 #333;
   transform: translate(-2px, -2px);
