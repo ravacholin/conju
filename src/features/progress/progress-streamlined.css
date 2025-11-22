@@ -13,13 +13,13 @@
 
 /* SRS Review Queue Banner */
 .srs-review-banner {
-  background: var(--panel);
-  border: 2px solid var(--accent-blue);
-  border-radius: 12px;
+  background: #0a0a0a;
+  border: 1px solid #ffffff;
+  border-radius: 0;
   padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s ease;
+  box-shadow: none;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -27,9 +27,19 @@
 }
 
 .srs-review-banner:hover {
-  background: var(--hover);
-  border-color: var(--accent-blue);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 6px 6px 0 #ffffff;
+  transform: translate(-4px, -4px);
+}
+
+.srs-review-banner:hover .srs-banner-text,
+.srs-review-banner:hover .srs-banner-text strong {
+  color: #000000;
+}
+
+.srs-review-banner:hover .srs-banner-icon {
+  filter: invert(0);
 }
 
 .srs-banner-content {
@@ -42,43 +52,47 @@
 .srs-banner-icon {
   width: 40px;
   height: 40px;
-  filter: brightness(0) invert(1);
+  filter: invert(1);
 }
 
 .srs-banner-text {
-  color: var(--text);
+  color: #ffffff;
   font-size: 1.1rem;
   line-height: 1.5;
+  font-family: 'Inter', sans-serif;
 }
 
 .srs-banner-text strong {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent-blue);
+  color: #ffffff;
 }
 
 .srs-urgent {
-  color: var(--accent-orange);
+  color: #ffaa00;
   font-weight: 600;
+  font-family: 'Courier New', monospace;
 }
 
 .srs-banner-action {
-  background: var(--accent-blue);
-  color: var(--text);
-  border: none;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .srs-banner-action:hover {
-  background: var(--hover);
-  border: 1px solid var(--accent-blue);
-  color: var(--accent-blue);
+  background: #000000;
+  border: 1px solid #000000;
+  color: #ffffff;
 }
 
 /* Loading and Error States */
@@ -94,9 +108,9 @@
 }
 
 .spinner {
-  border: 3px solid rgba(245, 245, 245, 0.1);
+  border: 3px solid #333;
   border-radius: 50%;
-  border-top: 3px solid var(--accent-blue);
+  border-top: 3px solid #ffffff;
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
@@ -104,14 +118,19 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .section-placeholder {
-  background: rgba(17, 17, 17, 0.55);
-  border: 1px dashed rgba(245, 245, 245, 0.18);
-  border-radius: 20px;
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px dashed #333;
+  border-radius: 0;
   padding: 2rem;
   min-height: 200px;
   display: flex;
@@ -120,42 +139,43 @@
   justify-content: center;
   gap: 1rem;
   text-align: center;
-  color: rgba(245, 245, 245, 0.75);
-  backdrop-filter: blur(10px);
+  color: #888;
+  backdrop-filter: none;
 }
 
 .section-placeholder-spinner {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 3px solid rgba(245, 245, 245, 0.15);
-  border-top-color: var(--accent-blue);
+  border: 3px solid #333;
+  border-top-color: #ffffff;
   animation: spin 1s linear infinite;
 }
 
 .section-placeholder-error {
-  border-color: rgba(255, 99, 71, 0.45);
-  color: var(--accent-red);
+  border-color: #ff0000;
+  color: #ff0000;
 }
 
 .section-placeholder-action {
   background: transparent;
-  border: 1px solid rgba(245, 245, 245, 0.35);
-  border-radius: 999px;
+  border: 1px solid #ffffff;
+  border-radius: 0;
   padding: 0.5rem 1.5rem;
   color: inherit;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-transform: uppercase;
 }
 
 .section-placeholder-action:hover {
-  background: rgba(245, 245, 245, 0.1);
-  border-color: rgba(245, 245, 245, 0.55);
+  background: #ffffff;
+  color: #000000;
 }
 
 .progress-dashboard.error h2 {
-  color: var(--accent-red);
+  color: #ff0000;
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -165,12 +185,12 @@
 
 /* Progress Overview Section */
 .progress-overview {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 2rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .overview-header {
@@ -206,8 +226,8 @@
 .nav-icon {
   width: 54px;
   height: 54px;
-  opacity: 0.95;
-  filter: grayscale(100%);
+  opacity: 1;
+  filter: invert(1);
   transition: all 0.3s ease;
 }
 
@@ -218,7 +238,8 @@
 
 .nav-btn:hover .nav-icon {
   opacity: 1;
-  filter: grayscale(0%);
+  filter: invert(0);
+  /* Invert back on hover if needed, or keep white */
 }
 
 .header-actions {
@@ -228,47 +249,53 @@
 }
 
 .action-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(245, 245, 245, 0.2);
+  background: #ffffff;
+  border-color: #ffffff;
   transform: translateY(-1px);
+}
+
+.action-btn:hover .btn-icon {
+  filter: invert(0);
 }
 
 .btn-icon {
   width: 20px;
   height: 20px;
-  filter: grayscale(100%);
+  filter: invert(1);
 }
 
 .spinner-small {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(245, 245, 245, 0.2);
-  border-top: 2px solid var(--accent-blue);
+  border: 2px solid #333;
+  border-top: 2px solid #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 .overview-header h1 {
-  color: var(--text);
+  color: #ffffff;
   font-size: 2.5rem;
-  font-weight: 200;
+  font-weight: 800;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
 }
 
 .overview-header p {
-  color: var(--muted);
+  color: #888;
   font-size: 1.125rem;
-  font-weight: 350;
+  font-weight: 400;
+  font-family: 'Courier New', monospace;
 }
 
 /* Overview Stats Grid */
@@ -279,17 +306,17 @@
 }
 
 .stat-card {
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  background: #0a0a0a;
+  backdrop-filter: none;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .goal-card {
@@ -317,8 +344,9 @@
 }
 
 .goal-icon {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 0.75rem;
   display: flex;
   align-items: center;
@@ -327,21 +355,24 @@
 
 .goal-heading {
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0 0 0.25rem;
-  color: var(--text);
+  color: #ffffff;
+  text-transform: uppercase;
 }
 
 .goal-progress-text {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: #888;
+  font-family: 'Courier New', monospace;
 }
 
 .goal-percentage {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--accent-blue, #7de9b8);
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
 }
 
 .goal-progress {
@@ -352,14 +383,16 @@
 
 .goal-progress-label {
   font-size: 0.85rem;
-  color: var(--muted-2, rgba(255, 255, 255, 0.65));
+  color: #666;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
 }
 
 /* Pronunciation widget */
 .pronunciation-widget {
-  background: rgba(17, 17, 17, 0.72);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 1.75rem 2rem;
   display: flex;
   flex-direction: column;
@@ -375,31 +408,37 @@
 
 .pronunciation-header h2 {
   font-size: 1.75rem;
-  font-weight: 500;
+  font-weight: 700;
   margin: 0;
-  color: var(--text);
+  color: #ffffff;
+  text-transform: uppercase;
 }
 
 .pronunciation-subtitle {
   margin: 0.35rem 0 0;
-  color: var(--muted);
+  color: #888;
   font-size: 0.95rem;
+  font-family: 'Courier New', monospace;
 }
 
 .pronunciation-practice-btn {
-  background: linear-gradient(135deg, rgba(125, 233, 184, 0.25), rgba(125, 233, 184, 0.55));
-  color: var(--text);
-  border: 1px solid rgba(125, 233, 184, 0.5);
-  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 0;
   padding: 0.55rem 1.5rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .pronunciation-practice-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(125, 233, 184, 0.18);
+  background: #ffffff;
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #ffffff;
 }
 
 .pronunciation-summary {
@@ -409,9 +448,9 @@
 }
 
 .pronunciation-card {
-  background: rgba(21, 21, 21, 0.85);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 1rem 1.25rem;
   display: flex;
   flex-direction: column;
@@ -419,23 +458,25 @@
 }
 
 .pronunciation-card-label {
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 0.75rem;
+  color: #666;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
+  font-family: 'Courier New', monospace;
 }
 
 .pronunciation-card-value {
   font-size: 1.5rem;
-  color: var(--text);
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .pronunciation-history h3 {
   margin: 0 0 1rem;
   font-size: 1.05rem;
-  font-weight: 500;
-  color: var(--text);
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
 }
 
 .pronunciation-history ul {
@@ -448,21 +489,21 @@
 }
 
 .pronunciation-history li {
-  border-radius: 14px;
+  border-radius: 0;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(245, 245, 245, 0.05);
-  background: rgba(19, 19, 19, 0.7);
+  border: 1px solid #333;
+  background: #0a0a0a;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
 }
 
 .attempt-correct {
-  border-color: rgba(125, 233, 184, 0.4);
+  border-left: 4px solid #00ff00;
 }
 
 .attempt-incorrect {
-  border-color: rgba(255, 107, 107, 0.3);
+  border-left: 4px solid #ff0000;
 }
 
 .attempt-summary {
@@ -470,17 +511,19 @@
   justify-content: space-between;
   gap: 1rem;
   font-weight: 500;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .attempt-target {
   font-size: 1rem;
+  font-weight: 700;
 }
 
 .attempt-recognized {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.72);
+  color: #aaa;
   text-align: right;
+  font-family: 'Courier New', monospace;
 }
 
 .attempt-metrics {
@@ -488,13 +531,15 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: #888;
+  font-family: 'Courier New', monospace;
 }
 
 .pronunciation-empty {
   margin: 0;
-  color: var(--muted);
+  color: #666;
   font-size: 0.95rem;
+  font-family: 'Courier New', monospace;
 }
 
 @media (max-width: 640px) {
@@ -519,26 +564,28 @@
   flex-direction: column;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: #888;
+  font-family: 'Courier New', monospace;
 }
 
 .goal-field select,
 .goal-field input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 245, 0.12);
-  border-radius: 10px;
-  color: var(--text);
+  background: #000000;
+  border: 1px solid #333;
+  border-radius: 0;
+  color: #ffffff;
   padding: 0.55rem 0.75rem;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, background 0.2s ease;
+  font-family: 'Courier New', monospace;
 }
 
 .goal-field select:focus,
 .goal-field input:focus {
   outline: none;
-  border-color: rgba(125, 233, 184, 0.6);
-  background: rgba(125, 233, 184, 0.08);
+  border-color: #ffffff;
+  background: #000000;
 }
 
 .goal-field input::-webkit-inner-spin-button,
@@ -548,15 +595,7 @@
 }
 
 .stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(245, 245, 245, 0.02) 50%, transparent);
-  transition: left 0.6s ease;
-  pointer-events: none;
+  display: none;
 }
 
 .stat-card:hover::before {
@@ -564,20 +603,38 @@
 }
 
 .stat-card:hover {
-  background: rgba(21, 21, 21, 0.9);
-  border-color: rgba(245, 245, 245, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: #ffffff;
+  border-color: #ffffff;
+  transform: translate(-4px, -4px);
+  box-shadow: 6px 6px 0 #ffffff;
+  z-index: 10;
 }
+
+.stat-card:hover .stat-value,
+.stat-card:hover .stat-label,
+.stat-card:hover .goal-heading,
+.stat-card:hover .goal-progress-text,
+.stat-card:hover .goal-percentage {
+  color: #000000;
+}
+
+.stat-card:hover .section-icon {
+  filter: invert(0);
+}
+
+.stat-card:hover .goal-icon {
+  border-color: #000000;
+}
+
 
 .stat-card.primary-action {
   cursor: pointer;
-  border-color: rgba(125, 233, 184, 0.2);
+  border-color: #ffffff;
 }
 
 .stat-card.primary-action:hover {
-  border-color: rgba(125, 233, 184, 0.4);
-  box-shadow: 0 8px 32px rgba(125, 233, 184, 0.1);
+  border-color: #ffffff;
+  box-shadow: 6px 6px 0 #ffffff;
 }
 
 .stat-icon {
@@ -587,8 +644,8 @@
 .section-icon {
   width: 36px;
   height: 36px;
-  filter: grayscale(100%);
-  opacity: 0.8;
+  filter: invert(1);
+  opacity: 1;
 }
 
 .stat-content {
@@ -597,33 +654,35 @@
 
 .stat-value {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 700;
+  color: #ffffff;
   margin-bottom: 0.25rem;
 }
 
 .stat-value.highlight {
-  color: var(--mastery-high);
+  color: #ffffff;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: var(--muted);
+  color: #888;
   font-weight: 400;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
 }
 
 .stat-arrow {
   font-size: 1.5rem;
-  color: var(--mastery-high);
-  opacity: 0.7;
+  color: #ffffff;
+  opacity: 1;
 }
 
 /* Heat Map + SRS Section */
 .heatmap-srs {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 2rem;
 }
 
@@ -632,29 +691,31 @@
 }
 
 .section-header h2 {
-  color: var(--text);
+  color: #ffffff;
   font-size: 2rem;
-  font-weight: 300;
+  font-weight: 700;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid rgba(245, 245, 245, 0.08);
+  border-bottom: 1px solid #333;
   padding-bottom: 1rem;
+  text-transform: uppercase;
 }
 
 .section-header p {
-  color: var(--muted);
+  color: #888;
   font-size: 1rem;
-  font-weight: 350;
+  font-weight: 400;
+  font-family: 'Courier New', monospace;
 }
 
 /* Practice Reminders */
 .practice-reminders {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -665,9 +726,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 1.25rem;
 }
 
@@ -675,8 +736,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  color: var(--muted);
+  color: #888;
   font-size: 0.9rem;
+  font-family: 'Courier New', monospace;
 }
 
 .setting-row.days-picker {
@@ -690,12 +752,13 @@
 }
 
 .setting-field input[type='time'] {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 245, 0.12);
-  border-radius: 10px;
-  color: var(--text);
+  background: #000000;
+  border: 1px solid #333;
+  border-radius: 0;
+  color: #ffffff;
   padding: 0.6rem 0.75rem;
   font-size: 0.95rem;
+  font-family: 'Courier New', monospace;
 }
 
 .setting-field input[type='time']:disabled {
@@ -723,19 +786,20 @@
 }
 
 .weekday {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 0.45rem 0.25rem;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: #888;
   transition: all 0.2s ease;
+  font-family: 'Courier New', monospace;
 }
 
 .weekday.active {
-  color: var(--text);
-  background: rgba(125, 233, 184, 0.15);
-  border-color: rgba(125, 233, 184, 0.4);
+  color: #000000;
+  background: #ffffff;
+  border-color: #ffffff;
 }
 
 .weekday:disabled {
@@ -753,9 +817,9 @@
 }
 
 .reminder-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 0;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -763,20 +827,20 @@
 }
 
 .reminder-card.priority-high {
-  border-color: rgba(255, 87, 87, 0.6);
-  box-shadow: 0 6px 24px rgba(255, 87, 87, 0.12);
+  border-left: 4px solid #ff0000;
+  box-shadow: none;
 }
 
 .reminder-card.priority-medium {
-  border-color: rgba(255, 198, 87, 0.45);
+  border-left: 4px solid #ffaa00;
 }
 
 .reminder-card.priority-low {
-  border-color: rgba(125, 233, 184, 0.25);
+  border-left: 4px solid #00ff00;
 }
 
 .reminder-text {
-  color: var(--text);
+  color: #ffffff;
   font-size: 1rem;
   line-height: 1.5;
 }
@@ -788,14 +852,16 @@
 }
 
 .reminder-button {
-  background: rgba(125, 233, 184, 0.18);
-  border: 1px solid rgba(125, 233, 184, 0.45);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #ffffff;
+  border-radius: 0;
   padding: 0.55rem 1rem;
-  color: var(--text);
+  color: #ffffff;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .reminder-button.secondary {
