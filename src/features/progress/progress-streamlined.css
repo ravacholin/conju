@@ -111,7 +111,7 @@
 
 .spinner {
   border: 3px solid #333;
-  border-radius: 50%;
+  border-radius: 0;
   border-top: 3px solid #ffffff;
   width: 40px;
   height: 40px;
@@ -148,7 +148,7 @@
 .section-placeholder-spinner {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: 0;
   border: 3px solid #333;
   border-top-color: #ffffff;
   animation: spin 1s linear infinite;
@@ -283,7 +283,7 @@
   height: 20px;
   border: 2px solid #333;
   border-top: 2px solid #ffffff;
-  border-radius: 50%;
+  border-radius: 0;
   animation: spin 1s linear infinite;
 }
 
@@ -886,7 +886,7 @@
 .reminder-empty {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   text-align: center;
   color: var(--muted);
@@ -901,7 +901,7 @@
 .srs-summary {
   background: rgba(125, 233, 184, 0.1);
   border: 1px solid rgba(125, 233, 184, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
@@ -966,7 +966,7 @@
   margin-top: 1rem;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid rgba(245, 245, 245, 0.05);
 }
 
@@ -986,7 +986,7 @@
 .srs-combo-item {
   background: rgba(125, 233, 184, 0.05);
   border: 1px solid rgba(125, 233, 184, 0.15);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1045,7 +1045,7 @@
   background: rgba(21, 21, 21, 0.8);
   backdrop-filter: blur(8px);
   color: var(--text);
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
@@ -1065,7 +1065,7 @@
 
 .refresh-range {
   padding: 0.5rem 1.25rem;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid rgba(142, 180, 227, 0.3);
   background: rgba(142, 180, 227, 0.12);
   color: var(--accent-blue);
@@ -1095,7 +1095,7 @@
 
 .mood-section {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
 }
@@ -1130,7 +1130,7 @@
 
 .data-cell {
   border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   text-align: center;
   min-height: 100px;
@@ -1225,7 +1225,7 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .legend-item {
@@ -1239,7 +1239,7 @@
 .legend-color {
   width: 16px;
   height: 16px;
-  border-radius: 4px;
+  border-radius: 0;
   border: 1px solid rgba(245, 245, 245, 0.1);
 }
 
@@ -1274,7 +1274,7 @@
   background: rgba(17, 17, 17, 0.7);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  border-radius: 0;
   padding: 2rem;
 }
 
@@ -1289,7 +1289,7 @@
   background: rgba(21, 21, 21, 0.8);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1377,7 +1377,7 @@
   justify-content: center;
   background: rgba(0, 123, 255, 0.2);
   border: 1px solid rgba(0, 123, 255, 0.4);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 0.2rem 0.4rem;
 }
 
@@ -1406,7 +1406,7 @@
   padding: 1rem;
   background: rgba(0, 123, 255, 0.05);
   border: 1px solid rgba(0, 123, 255, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .ml-metrics h4 {
@@ -1468,7 +1468,7 @@
   background: rgba(125, 233, 184, 0.15);
   color: rgba(125, 233, 184, 0.95);
   border: 1px solid rgba(125, 233, 184, 0.3);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 0.4rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -1485,7 +1485,7 @@
 .error-insights {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.5rem;
 }
 
@@ -1515,7 +1515,7 @@
 .error-item {
   background: rgba(255, 159, 122, 0.1);
   border: 1px solid rgba(255, 159, 122, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.5rem 1rem;
   display: flex;
   justify-content: space-between;
@@ -1547,7 +1547,7 @@
   background: rgba(17, 17, 17, 0.7);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  border-radius: 0;
   padding: 2rem;
 }
 
@@ -1604,7 +1604,7 @@
 .insight-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.5rem;
   text-align: center;
 }
@@ -1631,7 +1631,7 @@
 .area-highlight {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   display: flex;
   gap: 1rem;
@@ -1678,7 +1678,7 @@
 .progress-motivation {
   background: rgba(142, 180, 227, 0.05);
   border: 1px solid rgba(142, 180, 227, 0.15);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.5rem;
 }
 
@@ -1782,7 +1782,7 @@
   background: rgba(17, 17, 17, 0.7);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  border-radius: 0;
   padding: 2rem;
 }
 
@@ -1806,7 +1806,7 @@
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .summary-pill {
@@ -1817,7 +1817,7 @@
   padding: 0.75rem 1.25rem;
   background: rgba(21, 21, 21, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   flex: 1;
   min-width: 140px;
 }
@@ -1844,7 +1844,7 @@
   background: rgba(21, 21, 21, 0.8);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   transition: all 0.3s ease;
 }
@@ -1902,7 +1902,7 @@
   width: 100%;
   height: 8px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
   margin-bottom: 0.5rem;
 }
@@ -1910,7 +1910,7 @@
 .progress-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, rgba(125, 233, 184, 0.6), rgba(125, 233, 184, 0.9));
-  border-radius: 4px;
+  border-radius: 0;
   transition: width 0.3s ease;
 }
 
@@ -1935,7 +1935,7 @@
 .challenge-status {
   font-size: 0.85rem;
   padding: 0.4rem 1rem;
-  border-radius: 20px;
+  border-radius: 0;
   font-weight: 500;
 }
 
@@ -1955,7 +1955,7 @@
   background: rgba(142, 180, 227, 0.15);
   color: rgba(142, 180, 227, 0.95);
   border: 1px solid rgba(142, 180, 227, 0.3);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 0.4rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 500;
