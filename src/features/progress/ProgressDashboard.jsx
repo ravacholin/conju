@@ -15,7 +15,7 @@ import PracticeReminders from './PracticeReminders.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
 import AccuracyTrendCard from './AccuracyTrendCard.jsx'
 import ErrorIntelligence from './ErrorIntelligence.jsx'
-import SRSReviewQueue from './SRSReviewQueue.jsx'
+
 
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -211,7 +211,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         </div>
       )}
 
-      <SRSReviewQueue onNavigateToDrill={onNavigateToDrill} />
+
 
       <SafeComponent name="Progress Overview">
         {renderSection(
