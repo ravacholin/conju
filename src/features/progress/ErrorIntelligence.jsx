@@ -4,7 +4,6 @@ import { getErrorIntelligence } from '../../lib/progress/analytics.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
-import './error-intelligence.css'
 
 const logger = createLogger('features:ErrorIntelligence')
 
@@ -85,56 +84,51 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   }
 
   return (
-    <div className="error-intelligence">
-      <div className="error-header">
-        <div className="error-rate-container">
-          <strong className="error-rate-label">Tasa de error (últimos 7 días):</strong>
-          <span className="error-rate-value">
+    <div className="error-intelligence" style={{ display: 'grid', gap: '1.25rem', fontSize: isCompact ? '0.95rem' : undefined }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+          <strong style={{ fontSize: '1.05rem' }}>Tasa de error (últimos 7 días):</strong>
+          <span style={{ fontFamily: 'monospace' }}>
             {Math.round(((data.summary?.errorRate7 || 0) * 100))}%
           </span>
-          <span className="error-rate-meta">
+          <span style={{ opacity: 0.75, fontSize: 12 }}>
             {data.summary?.incorrect7 || 0} / {data.summary?.total7 || 0}
           </span>
           {data.summary && (
-            <span className={`error-trend ${data.summary.trend || 'stable'}`}>
+            <span style={{ marginLeft: 8, fontSize: 12, color: data.summary.trend === 'up' ? '#ff6b6b' : data.summary.trend === 'down' ? '#5ee6a5' : '#ffd166' }}>
               {data.summary.trend === 'up' ? '▲ peor' : data.summary.trend === 'down' ? '▼ mejor' : '■ estable'}
             </span>
           )}
         </div>
       </div>
+      {/* (Se elimina "Temas prioritarios" para evitar redundancia con módulos superiores) */}
 
       {/* Heatmap Modo x Tiempo por tasa de error */}
-      <section className="error-heatmap-section">
-        <h4>Mapa de errores (Modo × Tiempo)</h4>
-        <div className="error-heatmap-container">
-          <table className="error-heatmap-table">
+      <section>
+        <h4 style={{ margin: '0 0 0.5rem 0' }}>Mapa de errores (Modo × Tiempo)</h4>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ borderCollapse: 'collapse', width: '100%' }}>
             <thead>
               <tr>
-                <th>Modo / Tiempo</th>
+                <th style={{ textAlign: 'left', padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>Modo / Tiempo</th>
                 {heatmapMatrix.tenses.map(t => (
-                  <th key={t}>{formatTense(t)}</th>
+                  <th key={t} style={{ padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>{formatTense(t)}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {heatmapMatrix.moods.map(mood => (
                 <tr key={mood}>
-                  <td>{formatMood(mood)}</td>
+                  <td style={{ padding: isCompact ? '4px 6px' : '6px 8px', opacity: 0.9, whiteSpace: 'nowrap' }}>{formatMood(mood)}</td>
                   {heatmapMatrix.tenses.map(tense => {
                     const c = heatmapMatrix.map.get(`${mood}|${tense}`)
                     const rate = c?.errorRate || 0
                     const intensity = Math.round(rate * 100)
                     const bg = `rgba(220, 53, 69, ${Math.min(0.75, rate + 0.08)})`
                     return (
-                      <td
-                        key={tense}
-                        title={`${Math.round(rate * 100)}% · ${c?.attempts || 0} ej.`}
+                      <td key={tense} title={`${Math.round(rate * 100)}% · ${c?.attempts || 0} ej.`}
                         onClick={() => c && startMicroDrill({ mood, tense })}
-                        className={c ? 'interactive' : ''}
-                        style={{
-                          background: rate > 0 ? bg : undefined
-                        }}
-                      >
+                        style={{ cursor: c ? 'pointer' : 'default', padding: isCompact ? 4 : 6, border: '1px solid rgba(245,245,245,0.06)', background: rate > 0 ? bg : 'rgba(17,17,17,0.5)', textAlign: 'center', fontSize: isCompact ? 11 : 12 }}>
                         {c ? `${intensity}%` : '—'}
                       </td>
                     )
@@ -148,16 +142,22 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
 
       {/* Leeches prioritarios */}
       {data.leeches?.length > 0 && (
-        <section className="leeches-section">
-          <h4>Rescate de leeches</h4>
-          <div className="leeches-grid">
+        <section>
+          <h4 style={{ margin: '0 0 0.5rem 0' }}>Rescate de leeches</h4>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
             {data.leeches.map((l, i) => (
-              <div key={i} className="leech-card">
-                <div className="leech-combo">{formatCombo(l)}</div>
-                <div className="leech-meta">Lapses: {l.lapses} · Ease: {Math.round((l.ease || 0) * 100) / 100}</div>
-                <div className="leech-meta">Próx.: {formatDue(l.nextDue)}</div>
-                <div className="leech-actions">
-                  <button className="btn-compact" onClick={() => startMicroDrill({ mood: l.mood, tense: l.tense })}>Practicar</button>
+              <div key={i} style={{
+                background: 'rgba(17,17,17,0.7)',
+                border: '1px solid rgba(245,245,245,0.08)',
+                borderRadius: 12,
+                padding: isCompact ? '8px 10px' : '10px 12px',
+                minWidth: isCompact ? 200 : 220
+              }}>
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>{formatCombo(l)}</div>
+                <div style={{ fontSize: 12, opacity: 0.8 }}>Lapses: {l.lapses} · Ease: {Math.round((l.ease || 0) * 100) / 100}</div>
+                <div style={{ fontSize: 12, opacity: 0.8 }}>Próx.: {formatDue(l.nextDue)}</div>
+                <div style={{ marginTop: 8 }}>
+                  <button className="btn btn-compact" onClick={() => startMicroDrill({ mood: l.mood, tense: l.tense })}>Practicar</button>
                 </div>
               </div>
             ))}
