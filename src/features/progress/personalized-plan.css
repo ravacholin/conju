@@ -26,7 +26,7 @@
   background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.5rem 1rem;
   cursor: pointer;
   font-size: 0.875rem;
@@ -60,7 +60,7 @@
   background: rgba(21, 21, 21, 0.8);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
 }
 
@@ -104,7 +104,7 @@
 
 .plan-goal-card {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   color: var(--text);
@@ -127,7 +127,7 @@
   color: rgba(125, 233, 184, 0.85);
   background: rgba(125, 233, 184, 0.12);
   padding: 0.1rem 0.4rem;
-  border-radius: 999px;
+  border-radius: 0;
 }
 
 .plan-goal-description {
@@ -151,7 +151,7 @@
 
 .plan-week {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   color: var(--text);
@@ -195,7 +195,7 @@
 
 .plan-session-block {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   color: var(--text);
@@ -215,7 +215,7 @@
 
 .plan-scheduling {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
@@ -223,7 +223,7 @@
 
 .plan-placeholder {
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 0;
   background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
   border: 1px solid rgba(245, 245, 245, 0.08);
@@ -252,7 +252,7 @@
   flex: 1;
   height: 6px;
   background: rgba(245, 245, 245, 0.08);
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
   min-width: 120px;
   max-width: 200px;
