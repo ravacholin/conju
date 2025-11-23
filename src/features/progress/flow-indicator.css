@@ -55,7 +55,7 @@
   gap: 8px;
   background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(10px);
-  border-radius: 25px;
+  border-radius: 0;
   border: 2px solid var(--flow-color, var(--border));
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
@@ -106,7 +106,7 @@
   height: 28px;
   background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(10px);
-  border-radius: 50%;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,7 +142,7 @@
   width: 320px;
   background: rgba(17, 17, 17, 0.92);
   backdrop-filter: blur(15px);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(245, 245, 245, 0.08);
@@ -241,7 +241,7 @@
   gap: 10px;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .momentum-icon-large {
@@ -279,14 +279,14 @@
   flex: 1;
   height: 6px;
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
 }
 
 .metric-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 0;
   transition: width 0.5s ease;
 }
 
@@ -348,7 +348,7 @@
   align-items: center;
   padding: 6px 12px;
   background: rgba(0, 0, 0, 0.02);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .stat-label {

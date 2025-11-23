@@ -13,7 +13,7 @@
   padding: 16px 20px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .viz-selector {
@@ -27,7 +27,7 @@
   border: 1px solid rgba(245, 245, 245, 0.15);
   background: rgba(17, 17, 17, 0.7);
   color: var(--muted);
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
@@ -60,7 +60,7 @@
   padding: 8px 12px;
   background: rgba(17, 17, 17, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.15);
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--text);
   font-size: 14px;
   cursor: pointer;
@@ -77,7 +77,7 @@
 .visualization-container {
   background: rgba(17, 17, 17, 0.4);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px;
   min-height: 600px;
 }
@@ -92,7 +92,7 @@
 .constellation-canvas {
   flex: 1;
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   background: rgba(25, 25, 112, 0.3);
   cursor: crosshair;
 }
@@ -101,7 +101,7 @@
   position: absolute;
   background: rgba(17, 17, 17, 0.95);
   border: 1px solid rgba(245, 245, 245, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 12px;
   pointer-events: none;
   z-index: 100;
@@ -128,7 +128,7 @@
   width: 200px;
   background: rgba(17, 17, 17, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 16px;
   height: fit-content;
 }
@@ -151,7 +151,7 @@
 .legend-color {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: 0;
   flex-shrink: 0;
 }
 
@@ -209,7 +209,7 @@
 
 .timeline-svg {
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(17, 17, 17, 0.3);
 }
 
@@ -217,7 +217,7 @@
   margin-top: 24px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
 }
 
@@ -245,7 +245,7 @@
   padding: 8px 12px;
   background: rgba(17, 17, 17, 0.5);
   border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 .stat-label {
@@ -281,13 +281,13 @@
   flex: 1;
   height: 8px;
   background: rgba(245, 245, 245, 0.1);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .error-bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 0;
   transition: width 0.3s ease;
 }
 
@@ -331,14 +331,14 @@
   width: 100px;
   height: 12px;
   background: rgba(220, 53, 69, 0.5);
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid rgba(245, 245, 245, 0.1);
 }
 
 .heatmap-canvas {
   width: 100%;
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(17, 17, 17, 0.3);
   cursor: pointer;
 }
@@ -347,7 +347,7 @@
   margin-top: 16px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 16px;
 }
 
@@ -367,7 +367,7 @@
 .cell-stats > div {
   padding: 6px 10px;
   background: rgba(17, 17, 17, 0.5);
-  border-radius: 4px;
+  border-radius: 0;
   font-family: 'SF Mono', Consolas, monospace;
 }
 
@@ -399,7 +399,7 @@
 .network-svg {
   flex: 1;
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(17, 17, 17, 0.3);
 }
 
@@ -407,7 +407,7 @@
   width: 280px;
   background: rgba(17, 17, 17, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   height: fit-content;
 }
@@ -432,7 +432,7 @@
   align-items: center;
   padding: 6px 10px;
   background: rgba(17, 17, 17, 0.5);
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 13px;
 }
 
@@ -453,7 +453,7 @@
   padding: 6px 8px;
   margin-bottom: 6px;
   background: rgba(245, 245, 245, 0.02);
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 12px;
 }
 
@@ -469,7 +469,7 @@
   background: var(--accent-red);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;

@@ -1,7 +1,7 @@
 .srs-review-queue {
   background: #111827;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 20px;
   margin-bottom: 24px;
   color: #f9fafb;
@@ -29,7 +29,7 @@
 .srs-review-queue__refresh {
   background: rgba(59, 130, 246, 0.12);
   border: 1px solid rgba(59, 130, 246, 0.35);
-  border-radius: 999px;
+  border-radius: 0;
   color: #93c5fd;
   padding: 8px 16px;
   font-weight: 500;
@@ -54,7 +54,7 @@
 
 .stat {
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 12px 16px;
   flex: 1;
 }
@@ -86,7 +86,7 @@
 .btn-action {
   background: rgba(55, 65, 81, 0.4);
   border: 1px solid rgba(148, 163, 184, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   color: #e5e7eb;
   padding: 10px 18px;
   font-weight: 500;
@@ -141,7 +141,7 @@
   gap: 16px;
   align-items: center;
   background: rgba(15, 23, 42, 0.85);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 14px 18px;
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -194,7 +194,7 @@
   background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.3);
   color: #bfdbfe;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 8px 18px;
   font-weight: 500;
   cursor: pointer;
