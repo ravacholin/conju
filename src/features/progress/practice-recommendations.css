@@ -5,7 +5,7 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  border-radius: 0;
   padding: 2.5rem 2rem;
   box-shadow: 
     0 16px 64px rgba(0, 0, 0, 0.5),
@@ -59,7 +59,7 @@
 .focus-mode-selector .mode-select {
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-2);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(21, 21, 21, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -116,7 +116,7 @@
   height: 32px;
   border: 3px solid rgba(245, 245, 245, 0.1);
   border-top: 3px solid var(--accent-blue);
-  border-radius: 50%;
+  border-radius: 0;
   animation: spin 1s linear infinite;
 }
 
@@ -130,7 +130,7 @@
   color: var(--bg);
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
@@ -154,7 +154,7 @@
   padding: 2rem;
   background: rgba(125, 233, 184, 0.08);
   border: 1px solid rgba(125, 233, 184, 0.2);
-  border-radius: 16px;
+  border-radius: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -177,7 +177,7 @@
 
 .recommendation-card {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -262,7 +262,7 @@
 
 .priority-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -310,7 +310,7 @@
 .duration-badge,
 .target-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 0.75rem;
   font-weight: 450;
   border: 1px solid rgba(245, 245, 245, 0.1);
@@ -362,7 +362,7 @@
 .session-planner {
   background: rgba(142, 180, 227, 0.05);
   border: 1px solid rgba(142, 180, 227, 0.15);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 2rem;
   margin: 2rem 0;
   backdrop-filter: blur(8px);
@@ -388,7 +388,7 @@
 .session-btn {
   padding: 0.75rem 1.25rem;
   border: 1px solid rgba(142, 180, 227, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
   background: rgba(21, 21, 21, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -422,7 +422,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(142, 180, 227, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.25rem;
   margin-top: 1.25rem;
   box-shadow: 
@@ -460,7 +460,7 @@
   padding: 0.75rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.85rem;
   transition: all 0.2s ease;
 }
@@ -493,7 +493,7 @@
   color: var(--bg);
   border: none;
   padding: 0.875rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -523,7 +523,7 @@
   color: var(--muted);
   border: 1px solid var(--border-2);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
@@ -552,7 +552,7 @@
 @media (max-width: 768px) {
   .practice-recommendations {
     padding: 1.5rem;
-    border-radius: 16px;
+    border-radius: 0;
     margin-bottom: 1.5rem;
   }
 
@@ -632,7 +632,7 @@
   border: 1px solid rgba(79, 172, 254, 0.3);
   color: white;
   padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-weight: 600;
   font-size: 0.9rem;
   display: flex;
@@ -667,7 +667,7 @@
   border: 1px solid rgba(245, 245, 245, 0.12);
   color: rgba(245, 245, 245, 0.8);
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-weight: 500;
   font-size: 0.85rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

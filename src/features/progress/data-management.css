@@ -38,7 +38,7 @@
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 0.5rem;
+  border-radius: 0;
   transition: all 0.2s;
 }
 
@@ -120,7 +120,7 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   color: #e2e8f0;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0;
   font-size: 0.95rem;
 }
 
@@ -135,7 +135,7 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   color: #e2e8f0;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0;
   cursor: pointer;
 }
 
@@ -159,7 +159,7 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   color: #e2e8f0;
   padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
+  border-radius: 0;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
@@ -198,7 +198,7 @@
 .import-form input[type="file"] {
   background: rgba(15, 23, 42, 0.6);
   border: 2px dashed rgba(148, 163, 184, 0.3);
-  border-radius: 0.75rem;
+  border-radius: 0;
   padding: 1.5rem;
   color: #e2e8f0;
   cursor: pointer;
@@ -256,7 +256,7 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   color: #e2e8f0;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0;
   font-size: 0.95rem;
 }
 
@@ -264,7 +264,7 @@
   margin-top: 2rem;
   padding: 1.5rem;
   background: rgba(15, 23, 42, 0.6);
-  border-radius: 0.75rem;
+  border-radius: 0;
   border: 1px solid rgba(148, 163, 184, 0.1);
 }
 
@@ -283,7 +283,7 @@
 .backup-info {
   padding: 1.5rem;
   background: rgba(15, 23, 42, 0.4);
-  border-radius: 0.75rem;
+  border-radius: 0;
   border-left: 4px solid #60a5fa;
 }
 
@@ -329,7 +329,7 @@
   gap: 1rem;
   background: rgba(15, 23, 42, 0.95);
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 0;
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
@@ -338,7 +338,7 @@
   height: 2rem;
   border: 2px solid rgba(148, 163, 184, 0.2);
   border-top-color: #60a5fa;
-  border-radius: 50%;
+  border-radius: 0;
   animation: spin 1s linear infinite;
 }
 

@@ -23,7 +23,7 @@
   height: 60px;
   border: 3px solid rgba(23, 162, 184, 0.2);
   border-top: 3px solid #17a2b8;
-  border-radius: 50%;
+  border-radius: 0;
   animation: forensicScan 1.5s linear infinite;
   margin: 0 auto 20px;
 }
@@ -40,7 +40,7 @@
   align-items: center;
   background: rgba(23, 162, 184, 0.15);
   border: 1px solid rgba(23, 162, 184, 0.3);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 24px;
   margin-bottom: 32px;
   backdrop-filter: blur(10px);
@@ -86,7 +86,7 @@
 .time-filter select {
   padding: 8px 12px;
   border: 1px solid rgba(245, 245, 245, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(17, 17, 17, 0.8);
   color: var(--text);
   font-size: 14px;
@@ -105,14 +105,14 @@
   gap: 4px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 4px;
 }
 
 .view-mode-selector button {
   padding: 8px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 0;
   background: transparent;
   color: var(--muted);
   cursor: pointer;
@@ -144,7 +144,7 @@
 .error-sidebar {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px;
   height: fit-content;
 }
@@ -167,7 +167,7 @@
   gap: 12px;
   padding: 16px 12px;
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s ease;
   background: rgba(17, 17, 17, 0.4);
@@ -230,7 +230,7 @@
 .severity-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 0;
   animation: pulse 2s infinite;
 }
 
@@ -260,7 +260,7 @@
 .analysis-main {
   background: rgba(17, 17, 17, 0.4);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 32px;
   overflow-y: auto;
 }
@@ -297,7 +297,7 @@
 .error-summary-card {
   background: rgba(17, 17, 17, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px;
   margin-bottom: 32px;
 }
@@ -387,14 +387,14 @@
   flex: 1;
   height: 8px;
   background: rgba(245, 245, 245, 0.1);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
 }
 
 .impact-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 0;
   transition: width 0.5s ease;
 }
 
@@ -496,7 +496,7 @@
   padding: 16px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 10px;
+  border-radius: 0;
   overflow-x: auto;
 }
 
@@ -510,7 +510,7 @@
 
 .bar {
   background: #17a2b8;
-  border-radius: 2px 2px 0 0;
+  border-radius: 0;
   width: 16px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -554,7 +554,7 @@
   padding: 16px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 10px;
+  border-radius: 0;
   transition: all 0.2s ease;
 }
 
@@ -606,14 +606,14 @@
   padding: 20px;
   background: rgba(220, 53, 69, 0.08);
   border: 1px solid rgba(220, 53, 69, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .period-date {
   background: rgba(220, 53, 69, 0.2);
   color: #dc3545;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 0;
   font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
@@ -681,7 +681,7 @@
 .trigger-card {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: all 0.2s ease;
 }
@@ -714,7 +714,7 @@
   background: rgba(23, 162, 184, 0.2);
   color: #17a2b8;
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
 }
@@ -736,7 +736,7 @@
   margin-bottom: 12px;
   padding: 12px;
   background: rgba(245, 245, 245, 0.02);
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .example .incorrect {
@@ -760,7 +760,7 @@
 .pattern-explanation {
   background: rgba(111, 66, 193, 0.1);
   border: 1px solid rgba(111, 66, 193, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 12px;
   font-size: 14px;
   color: #6f42c1;
@@ -824,7 +824,7 @@
 .error-chain {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: all 0.2s ease;
 }
@@ -846,7 +846,7 @@
   background: rgba(220, 53, 69, 0.2);
   color: #dc3545;
   padding: 6px 12px;
-  border-radius: 16px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -874,7 +874,7 @@
 .chain-intervention {
   background: rgba(40, 167, 69, 0.1);
   border: 1px solid rgba(40, 167, 69, 0.2);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 12px;
   font-size: 14px;
   color: #28a745;
@@ -895,7 +895,7 @@
 .context-factor {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: all 0.2s ease;
 }
@@ -935,7 +935,7 @@
 .impact-level {
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -990,14 +990,14 @@
   flex: 1;
   height: 6px;
   background: rgba(245, 245, 245, 0.1);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .corr-bar {
   height: 100%;
   background: #17a2b8;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 .corr-value {
@@ -1028,7 +1028,7 @@
 .env-factor {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
 }
 
@@ -1064,7 +1064,7 @@
   flex: 1;
   height: 8px;
   background: rgba(245, 245, 245, 0.1);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -1072,7 +1072,7 @@
 .day-fill {
   height: 100%;
   background: #17a2b8;
-  border-radius: 4px;
+  border-radius: 0;
   transition: width 0.3s ease;
 }
 
@@ -1122,7 +1122,7 @@
   gap: 12px;
   padding: 12px;
   background: rgba(245, 245, 245, 0.02);
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .state-icon {
@@ -1157,7 +1157,7 @@
 .state-impact .impact {
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 11px;
 }
 
@@ -1202,7 +1202,7 @@
 .risk-card {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: all 0.2s ease;
 }
@@ -1250,7 +1250,7 @@
 
 .risk-level {
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1325,7 +1325,7 @@
 .projection-card {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 20px;
   transition: all 0.2s ease;
 }
@@ -1355,7 +1355,7 @@
   background: rgba(40, 167, 69, 0.2);
   color: #28a745;
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
 }
@@ -1376,7 +1376,7 @@
   gap: 12px;
   padding: 12px;
   background: rgba(245, 245, 245, 0.02);
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .point-time {
@@ -1430,7 +1430,7 @@
 .actionable-insight {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 24px;
   transition: all 0.2s ease;
 }
@@ -1458,7 +1458,7 @@
 .priority {
   font-weight: 600;
   padding: 3px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 11px;
   text-transform: uppercase;
 }
@@ -1542,7 +1542,7 @@
   background: #28a745;
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
@@ -1568,7 +1568,7 @@
   padding: 20px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   transition: all 0.2s ease;
 }
 
@@ -1582,7 +1582,7 @@
   height: 32px;
   background: #17a2b8;
   color: white;
-  border-radius: 50%;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1611,7 +1611,7 @@
   background: rgba(255, 193, 7, 0.2);
   color: #ffc107;
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   display: inline-block;

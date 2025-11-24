@@ -3,7 +3,7 @@
 .srs-panel {
   background: #1a1a1a;
   border: 1px solid #333;
-  border-radius: 12px;
+  border-radius: 0;
   padding: 2rem;
   margin-bottom: 2rem;
   width: 100%;
@@ -12,7 +12,7 @@
 /* Gamification Section */
 .srs-gamification-section {
   margin: 16px 0;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -28,17 +28,17 @@
 }
 
 .srs-analytics-section {
-  border-radius: 16px;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .srs-journey-section {
-  border-radius: 16px;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .srs-notifications-section {
-  border-radius: 16px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -82,7 +82,7 @@
   gap: 0.75rem;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 0.75rem 1rem;
   margin-top: 0.5rem;
 }
@@ -102,7 +102,7 @@
 .toggle-details-btn {
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
   color: var(--muted);
@@ -141,7 +141,7 @@
   height: 24px;
   border: 2px solid var(--border);
   border-top: 2px solid var(--accent);
-  border-radius: 50%;
+  border-radius: 0;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
 }
@@ -157,7 +157,7 @@
 .srs-stat-card {
   background: #2a2a2a;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -170,7 +170,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  border-radius: 16px 16px 0 0;
+  border-radius: 0;
 }
 
 .stat-indicator.urgent-indicator {
@@ -218,7 +218,7 @@
 .progress-ring {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 0;
   position: relative;
   background: #404040;
   display: flex;
@@ -234,7 +234,7 @@
   right: 3px;
   bottom: 3px;
   background: #1a1a1a;
-  border-radius: 50%;
+  border-radius: 0;
 }
 
 .progress-text {
@@ -264,7 +264,7 @@
   margin-top: 0.5rem;
   padding: 0.25rem 0.5rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border-radius: 0;
   text-align: center;
 }
 
@@ -292,7 +292,7 @@
   padding: 0;
   background: #2a2a2a;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   transition: all 0.2s ease;
   overflow: hidden;
   position: relative;
@@ -349,7 +349,7 @@
   padding: 2rem 1rem;
   background: #2a2a2a;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   margin-bottom: 1rem;
 }
 
@@ -407,7 +407,7 @@
   padding: 0.6rem 1.2rem !important;
   font-size: 0.9rem !important;
   min-width: auto !important;
-  border-radius: 12px !important;
+  border-radius: 0;
 }
 
 .btn {
@@ -415,7 +415,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid;
   font-size: 0.9rem;
   font-weight: 500;
@@ -445,7 +445,7 @@
 
 .btn-badge {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 2px 8px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -456,7 +456,7 @@
 .srs-details {
   background: #2a2a2a;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 1.5rem;
   margin-top: 2rem;
 }
@@ -499,7 +499,7 @@
   align-items: center;
   font-size: 0.8rem;
   padding: 0.4rem 0.75rem;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid;
   font-weight: 400;
 }
@@ -540,7 +540,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid #404040;
   background: #2a2a2a;
   transition: all 0.2s ease;
@@ -624,7 +624,7 @@
 .mastery-value {
   font-size: 0.9rem;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 0;
   padding: 0.2rem 0.5rem;
 }
 
@@ -638,7 +638,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
   color: white;
 }
 
@@ -665,7 +665,7 @@
   font-size: 0.7rem;
   font-weight: 600;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 0;
   margin-bottom: 4px;
   display: inline-block;
 }
@@ -719,7 +719,7 @@
   padding: 3rem 2rem;
   background: #2a2a2a;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   margin-top: 1rem;
 }
 
@@ -763,7 +763,7 @@
   gap: 0.5rem;
   background: #333;
   border: 1px solid #404040;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
   color: var(--muted);

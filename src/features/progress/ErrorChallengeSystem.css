@@ -9,7 +9,7 @@
 .challenge-header {
   background: rgba(111, 66, 193, 0.2);
   border: 1px solid rgba(111, 66, 193, 0.3);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 24px;
   margin-bottom: 32px;
   backdrop-filter: blur(10px);
@@ -31,7 +31,7 @@
   padding: 16px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 12px;
+  border-radius: 0;
   min-width: 160px;
   transition: all 0.2s ease;
 }
@@ -78,7 +78,7 @@
   height: 12px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 6px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
 }
@@ -86,7 +86,7 @@
 .level-bar-fill {
   height: 100%;
   background: #28a745;
-  border-radius: 6px;
+  border-radius: 0;
   transition: width 0.5s ease;
   box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
 }
@@ -102,7 +102,7 @@
 .badges-showcase {
   background: rgba(17, 17, 17, 0.4);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px;
   margin-bottom: 32px;
 }
@@ -127,7 +127,7 @@
   padding: 12px;
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 10px;
+  border-radius: 0;
   transition: all 0.2s ease;
 }
 
@@ -177,7 +177,7 @@
 .challenge-category {
   background: rgba(17, 17, 17, 0.3);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 28px;
   transition: all 0.3s ease;
 }
@@ -226,7 +226,7 @@
   padding: 6px 12px;
   background: rgba(111, 66, 193, 0.1);
   border: 1px solid rgba(111, 66, 193, 0.2);
-  border-radius: 16px;
+  border-radius: 0;
   font-size: 12px;
   color: #6f42c1;
   font-weight: 500;
@@ -242,7 +242,7 @@
 .challenge-card {
   background: rgba(17, 17, 17, 0.8);
   border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 24px;
   transition: all 0.3s ease;
   position: relative;
@@ -371,7 +371,7 @@
   padding: 6px 10px;
   background: rgba(40, 167, 69, 0.1);
   border: 1px solid rgba(40, 167, 69, 0.2);
-  border-radius: 16px;
+  border-radius: 0;
   font-size: 12px;
   color: #28a745;
   font-weight: 500;
@@ -395,14 +395,14 @@
   position: relative;
   height: 8px;
   background: rgba(245, 245, 245, 0.1);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
   background: var(--accent-red);
-  border-radius: 4px;
+  border-radius: 0;
   transition: width 0.3s ease;
 }
 
@@ -426,7 +426,7 @@
   background: var(--accent-red);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 0;
   cursor: pointer;
   font-weight: 600;
   font-size: 15px;
@@ -445,7 +445,7 @@
   padding: 14px;
   background: rgba(40, 167, 69, 0.2);
   border: 1px solid rgba(40, 167, 69, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   text-align: center;
   color: #28a745;
   font-weight: 600;
@@ -456,7 +456,7 @@
   padding: 14px;
   background: rgba(255, 193, 7, 0.2);
   border: 1px solid rgba(255, 193, 7, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   text-align: center;
   color: #ffc107;
   font-weight: 600;
@@ -474,7 +474,7 @@
   padding: 14px;
   background: rgba(108, 117, 125, 0.2);
   border: 1px solid rgba(108, 117, 125, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   text-align: center;
   color: #6c757d;
   font-weight: 600;
@@ -486,7 +486,7 @@
   right: 16px;
   background: rgba(17, 17, 17, 0.9);
   border: 1px solid rgba(245, 245, 245, 0.2);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 6px 12px;
   font-size: 12px;
   color: var(--muted);
@@ -544,7 +544,7 @@
   width: 6px;
   height: 6px;
   background: #ffd700;
-  border-radius: 50%;
+  border-radius: 0;
   animation: particleExplode 2s ease-out infinite;
   animation-delay: var(--delay);
   transform: rotate(var(--angle)) translateX(80px);
@@ -568,7 +568,7 @@
 .unlock-badge {
   background: rgba(255, 215, 0, 0.2);
   border: 2px solid #ffd700;
-  border-radius: 20px;
+  border-radius: 0;
   padding: 40px;
   backdrop-filter: blur(10px);
 }
@@ -623,7 +623,7 @@
   padding: 80px 40px;
   background: rgba(40, 167, 69, 0.1);
   border: 1px solid rgba(40, 167, 69, 0.2);
-  border-radius: 20px;
+  border-radius: 0;
   margin-top: 40px;
 }
 

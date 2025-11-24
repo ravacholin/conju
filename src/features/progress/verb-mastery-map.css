@@ -11,7 +11,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 3rem 2rem;
   text-align: center;
   box-shadow: 
@@ -46,7 +46,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 2rem;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
@@ -165,7 +165,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -310,7 +310,7 @@
   border: 1px solid rgba(245, 245, 245, 0.15);
   color: var(--text);
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 0.9rem;
   z-index: 1000;
   pointer-events: none;
@@ -347,7 +347,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.5rem;
   margin-top: 1.618rem;
   box-shadow: 
@@ -374,7 +374,7 @@
 .legend-color {
   width: 14px;
   height: 14px;
-  border-radius: 3px;
+  border-radius: 0;
   border: 1px solid rgba(245, 245, 245, 0.1);
 }
 

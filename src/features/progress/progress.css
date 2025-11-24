@@ -96,7 +96,7 @@
   margin-top: 1rem;
   background: rgba(125, 233, 184, 0.1);
   border: 1px solid rgba(125, 233, 184, 0.2);
-  border-radius: 12px;
+  border-radius: 0;
   color: rgba(125, 233, 184, 0.9);
   font-size: 0.875rem;
   font-weight: 450;
@@ -157,7 +157,7 @@
 .summary-pill {
   background: rgba(17, 17, 17, 0.6);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
@@ -185,7 +185,7 @@
 .challenge-card {
   background: rgba(17, 17, 17, 0.68);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -239,7 +239,7 @@
   flex: 1;
   height: 8px;
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -282,7 +282,7 @@
   background: rgba(125, 233, 184, 0.15);
   color: rgba(125, 233, 184, 0.95);
   border: 1px solid rgba(125, 233, 184, 0.4);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 0.55rem 1.25rem;
   font-weight: 600;
   cursor: pointer;
@@ -306,7 +306,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -381,7 +381,7 @@
   padding: 1rem;
   background: rgba(255, 159, 122, 0.08);
   border: 1px solid rgba(255, 159, 122, 0.15);
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 .error-count {
@@ -417,7 +417,7 @@
   padding: 0.875rem 1.25rem;
   background: rgba(125, 233, 184, 0.1);
   border: 1px solid rgba(125, 233, 184, 0.2);
-  border-radius: 10px;
+  border-radius: 0;
   color: rgba(125, 233, 184, 0.9);
   font-size: 0.875rem;
   font-weight: 500;
@@ -452,7 +452,7 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 24px;
+  border-radius: 0;
   box-shadow: 
     0 16px 64px rgba(0, 0, 0, 0.5),
     0 1px 0 rgba(245, 245, 245, 0.05) inset;
@@ -499,7 +499,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  border-radius: 0;
   padding: 2rem;
   text-align: center;
   box-shadow: 
@@ -595,7 +595,7 @@
   background: rgba(142, 180, 227, 0.05);
   border: 1px solid rgba(142, 180, 227, 0.15);
   padding: 2rem;
-  border-radius: 16px;
+  border-radius: 0;
   border-left: 4px solid var(--accent-blue);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -642,7 +642,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: var(--text);
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.9rem;
@@ -676,7 +676,7 @@
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 1px;
   min-width: 800px;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   background: rgba(245, 245, 245, 0.03);
   padding: 1px;
@@ -795,7 +795,7 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 12px;
+  border-radius: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -812,7 +812,7 @@
 .legend-color {
   width: 16px;
   height: 16px;
-  border-radius: 4px;
+  border-radius: 0;
   border: 1px solid rgba(245, 245, 245, 0.1);
 }
 
@@ -845,7 +845,7 @@
   border: 1px solid rgba(245, 245, 245, 0.15);
   color: var(--text);
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 0;
   font-size: 0.9rem;
   z-index: 1000;
   pointer-events: none;
@@ -878,7 +878,7 @@
 
 .radar-canvas {
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 12px;
+  border-radius: 0;
   background: rgba(21, 21, 21, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -915,7 +915,7 @@
   background: rgba(255, 255, 255, 0.02);
   margin: 0 -0.5rem;
   padding: 0.75rem 0.5rem;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .stat-label {
@@ -958,7 +958,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.618rem;
   text-align: center;
   box-shadow: 
@@ -1030,7 +1030,7 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.618rem;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
@@ -1096,7 +1096,7 @@
 
 .spinner {
   border: 3px solid rgba(245, 245, 245, 0.1);
-  border-radius: 50%;
+  border-radius: 0;
   border-top: 3px solid var(--accent-blue);
   width: 32px;
   height: 32px;
@@ -1114,7 +1114,7 @@
   padding: 3rem;
   background: rgba(255, 159, 122, 0.08);
   border: 1px solid rgba(255, 159, 122, 0.2);
-  border-radius: 16px;
+  border-radius: 0;
   color: var(--accent-red);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1125,7 +1125,7 @@
   padding: 3rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 16px;
+  border-radius: 0;
   color: var(--muted-2);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);

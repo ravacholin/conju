@@ -29,7 +29,7 @@ const refreshButtonStyles = `
     align-items: center;
     gap: 0.5rem;
     padding: 0.55rem 1.1rem;
-    border-radius: 999px;
+    border-radius: 0;
     border: 1px solid rgba(79, 70, 229, 0.3);
     background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(129, 140, 248, 0.12));
     color: #1a237e;
@@ -53,7 +53,7 @@ const refreshButtonStyles = `
     content: '';
     width: 0.75rem;
     height: 0.75rem;
-    border-radius: 999px;
+    border-radius: 0;
     border: 2px solid rgba(79, 70, 229, 0.3);
     border-top-color: rgba(79, 70, 229, 0.85);
     animation: dashboard-spin 0.9s linear infinite;
@@ -83,7 +83,7 @@ export default function ProgressHeader({
   onNavigateToDrill,
   loading = false,
   refreshing = false,
-  onRefresh = () => {},
+  onRefresh = () => { },
   syncing = false,
   _onSync,
   syncEnabled = true,

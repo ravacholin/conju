@@ -595,7 +595,7 @@
 
 .error-rate-bar {
   width: 8px;
-  border-radius: 0 4px 0 0;
+  border-radius: 0;
   min-height: 10px;
   transition: height 0.3s ease;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.1));

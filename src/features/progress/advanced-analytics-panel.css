@@ -12,7 +12,7 @@
 
 .advanced-card {
   border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0.75rem;
+  border-radius: 0;
   padding: 1.2rem;
   background: rgba(14, 14, 14, 0.9);
   color: var(--text);
@@ -55,7 +55,7 @@
 .advanced-retention-item {
   background: rgba(20, 20, 20, 0.92);
   border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 0.5rem;
+  border-radius: 0;
   padding: 0.5rem;
   text-align: center;
   font-size: 0.8rem;
@@ -102,7 +102,7 @@
 .advanced-mastery div {
   background: rgba(20, 20, 20, 0.92);
   border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 0.5rem;
+  border-radius: 0;
   padding: 0.6rem;
   text-align: center;
 }
