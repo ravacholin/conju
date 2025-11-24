@@ -182,13 +182,18 @@
   font-weight: 600;
 }
 
-/* Irregular forms: show base in white, irregular fragments in blue */
+/* Irregular forms: show base in white, irregular fragments in orange with emphasis */
 .verb-deconstruction.irregular .conjugated-form {
   color: var(--text);
 }
 
 .verb-deconstruction.irregular .conjugated-form .irreg-frag {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
 }
 
 .verb-deconstruction.irregular .form-separator {
