@@ -9,7 +9,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
   // FAMILIAS REORGANIZADAS PARA EL PRESENTE
   // Criterio pedagógico: patrones útiles y frecuentes
   // ========================================
-  
+
   // 1) IRREGULARES EN YO con -zco (primera persona añade -zco)
   'LEARNING_YO_ZCO_PRESENT': {
     id: 'LEARNING_YO_ZCO_PRESENT',
@@ -44,16 +44,16 @@ export const LEARNING_IRREGULAR_FAMILIES = {
   'LEARNING_DIPHTHONGS': {
     id: 'LEARNING_DIPHTHONGS',
     name: 'Verbos que diptongan',
-    description: 'Cambios vocálicos sistemáticos: e→ie (querer), e→i (pedir), o→ue (poder)',
-    paradigmatic: 'querer',
-    // Priorizar un ejemplo por cada grupo: o→ue (poder), e→ie (querer), e→i (pedir)
-    examples: ['poder', 'querer', 'pedir', 'volver', 'pensar', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'dormir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
-    priorityExamples: ['poder', 'querer', 'pedir'], // Casos más representativos: o→ue, e→ie, e→i (NO jugar u→ue que es excepcional)
-    pattern: 'querer: quiero, quieres, quiere, queremos, queréis, quieren (nosotros/vosotros no diptongan)',
+    description: 'Cambios vocálicos sistemáticos: e→ie (pensar), e→i (pedir), o→ue (dormir)',
+    paradigmatic: 'pensar',
+    // Priorizar un ejemplo por cada grupo: e→ie (pensar), e→i (pedir), o→ue (dormir)
+    examples: ['pensar', 'pedir', 'dormir', 'querer', 'poder', 'volver', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
+    priorityExamples: ['pensar', 'pedir', 'dormir'], // Casos más representativos: e→ie, e→i, o→ue
+    pattern: 'pensar: pienso, piensas, piensa, pensamos, pensáis, piensan (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
     concept: 'diphthongs_all',
-    pedagogicalNote: 'Tres tipos principales: o→ue (poder), e→ie (querer), e→i (pedir). Solo en sílabas tónicas (acentuadas).'
+    pedagogicalNote: 'Tres tipos principales: e→ie (pensar), e→i (pedir), o→ue (dormir). Solo en sílabas tónicas (acentuadas).'
   },
 
   // 4) MUY IRREGULARES (casos especiales frecuentes)
@@ -93,7 +93,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
 
   'LEARNING_ORTH_GAR': {
     id: 'LEARNING_ORTH_GAR',
-    name: 'Ortográfico: -gar → -gu', 
+    name: 'Ortográfico: -gar → -gu',
     description: 'Verbos -gar súper frecuentes: g → gu delante de e',
     paradigmatic: 'llegar',
     examples: ['llegar', 'pagar', 'apagar'],
@@ -112,7 +112,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Verbos frecuentes con raíces completamente irregulares en pretérito: estar, querer, hacer',
     paradigmatic: 'estar',
     examples: ['estar', 'querer', 'hacer', 'tener', 'poder', 'poner', 'venir', 'saber', 'caber', 'haber', 'andar', 'conducir', 'producir', 'traducir', 'reducir', 'introducir', 'decir', 'traer'], // Muchos más pretéritos fuertes para variedad
-    priorityExamples: ['estar', 'hacer', 'querer'], // Más frecuentes y pedagógicos: estuv-, hic-, quis-
+    priorityExamples: ['estar', 'tener', 'hacer'], // Más frecuentes y pedagógicos: estuv-, tuv-, hic-
     pattern: 'estar: estuve, estuviste, estuvo (raíz nueva + terminaciones sin acento)',
     affectedTenses: ['pretIndef', 'subjImpf'],
     level: 'B1',
@@ -122,7 +122,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
 
   // Irregulares solo en terceras personas (cambios vocálicos)
   'LEARNING_PRET_3AS_PERSONAS': {
-    id: 'LEARNING_PRET_3AS_PERSONAS', 
+    id: 'LEARNING_PRET_3AS_PERSONAS',
     name: 'Irregulares en 3ª persona',
     description: 'Verbos que cambian solo en 3ª persona: e→i (pidió), o→u (durmió), i→y (leyó)',
     paradigmatic: 'pedir',
@@ -161,12 +161,12 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'tener→tendr-, decir→dir-, poder→podr-, saber→sabr-',
     paradigmatic: 'tener',
     examples: ['tener', 'salir', 'venir', 'poner', 'valer', 'poder', 'saber', 'haber', 'hacer', 'decir', 'querer', 'caber'],
-    priorityExamples: ['tener', 'decir', 'poder'],
+    priorityExamples: ['tener', 'hacer', 'decir'],
     pattern: 'tener: tendré, tendrás, tendrá / tendría, tendrías, tendría',
     affectedTenses: ['fut', 'cond'],
     level: 'B1',
     concept: 'future_cond_irregular',
-    pedagogicalNote: 'Los 12 verbos de raíz irregular comparten las mismas terminaciones regulares pero con cambios en la raíz (tendr-, dir-, podr-, sabr-).' 
+    pedagogicalNote: 'Los 12 verbos de raíz irregular comparten las mismas terminaciones regulares pero con cambios en la raíz (tendr-, dir-, podr-, sabr-).'
   },
 
   'LEARNING_IRREG_GERUNDS': {
@@ -189,7 +189,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'hecho, visto, escrito, puesto, vuelto, muerto…',
     paradigmatic: 'hacer',
     examples: ['hacer', 'ver', 'escribir', 'poner', 'volver', 'morir', 'abrir', 'cubrir', 'decir', 'romper', 'resolver'],
-    priorityExamples: ['hacer', 'ver', 'poner'],
+    priorityExamples: ['hacer', 'ver', 'escribir'],
     pattern: 'hacer → hecho / ver → visto / poner → puesto',
     affectedTenses: ['part'],
     level: 'B1',
@@ -203,7 +203,7 @@ export function getLearningFamiliesByLevel(level) {
   const levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
   const maxIndex = levelOrder.indexOf(level)
   if (maxIndex === -1) return Object.values(LEARNING_IRREGULAR_FAMILIES)
-  
+
   return Object.values(LEARNING_IRREGULAR_FAMILIES).filter(family => {
     const familyIndex = levelOrder.indexOf(family.level)
     return familyIndex <= maxIndex
@@ -290,7 +290,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'perder': ['LEARNING_DIPHTHONGS'],
   'sentir': ['LEARNING_DIPHTHONGS', 'LEARNING_IRREG_GERUNDS'],
   'preferir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
-  
+
   // o→ue  
   'poder': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR', 'LEARNING_IRREG_GERUNDS'],
   'volver': ['LEARNING_DIPHTHONGS', 'LEARNING_IRREG_PARTICIPLES'],
@@ -299,12 +299,12 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'recordar': ['LEARNING_DIPHTHONGS'],
   'dormir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'morir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS', 'LEARNING_IRREG_PARTICIPLES'],
-  
+
   // e→i (verbos -ir)
   'pedir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'servir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'repetir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
-  
+
   // Más verbos e→i 
   'competir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'impedir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
@@ -315,13 +315,13 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'vestir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'elegir': ['LEARNING_DIPHTHONGS'],
   'corregir': ['LEARNING_DIPHTHONGS'],
-  
+
   // Más verbos o→ue
   'mostrar': ['LEARNING_DIPHTHONGS'],
   'costar': ['LEARNING_DIPHTHONGS'],
   'sonar': ['LEARNING_DIPHTHONGS'],
   'volar': ['LEARNING_DIPHTHONGS'],
-  
+
   // Más verbos e→ie
   'despertar': ['LEARNING_DIPHTHONGS'],
   'comenzar': ['LEARNING_DIPHTHONGS'],
@@ -335,7 +335,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'advertir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   'referir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
   'sugerir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
-  
+
   // u→ue (incluido en diptongos)
   'jugar': ['LEARNING_DIPHTHONGS'],
 
@@ -344,7 +344,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // ========================================
   'ser': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR'],
   'estar': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES'],
-  'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR', 'LEARNING_IRREG_GERUNDS'], 
+  'ir': ['LEARNING_VERY_IRREGULAR', 'LEARNING_IMPF_IRREGULAR', 'LEARNING_IRREG_GERUNDS'],
   'dar': ['LEARNING_VERY_IRREGULAR'],
   'saber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'caber': ['LEARNING_VERY_IRREGULAR', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
@@ -353,7 +353,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // ========================================
   // FAMILIAS PARA OTROS TIEMPOS (mantenidas)
   // ========================================
-  
+
   // Verbos de pretérito fuerte adicionales
   'andar': ['LEARNING_PRET_MUY_IRREGULARES'],
   'conducir': ['LEARNING_PRET_MUY_IRREGULARES'],
@@ -361,7 +361,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'traducir': ['LEARNING_PRET_MUY_IRREGULARES'],
   'reducir': ['LEARNING_PRET_MUY_IRREGULARES'],
   'introducir': ['LEARNING_PRET_MUY_IRREGULARES'],
-  
+
   // Verbos con hiatos y otros cambios en 3ª persona
   'construir': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'destruir': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
@@ -378,7 +378,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'creer': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'poseer': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'proveer': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
-  
+
   // Ortográficos
   'buscar': ['LEARNING_ORTH_CAR'],
   'sacar': ['LEARNING_ORTH_CAR'],
@@ -455,7 +455,7 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
 export function categorizeLearningVerb(lemma, verbData) {
   // CRÍTICO: Usar el sistema original para obtener TODAS las familias
   const originalFamilies = categorizeVerb(lemma, verbData)
-  
+
   // Mapear a familias pedagógicas
   const learningFamilies = []
   originalFamilies.forEach(oldFamily => {
@@ -464,7 +464,7 @@ export function categorizeLearningVerb(lemma, verbData) {
       learningFamilies.push(newFamily)
     }
   })
-  
+
   return learningFamilies
 }
 
@@ -485,7 +485,7 @@ export function convertLearningFamilyToOld(learningFamilyId) {
 export function getLearningFamiliesForTense(tense) {
   // Obtener familias originales para el tiempo
   const originalFamilies = getFamiliesForTense(tense)
-  
+
   // Mapear a familias pedagógicas
   const learningFamilies = []
   originalFamilies.forEach(originalFamily => {
@@ -497,6 +497,6 @@ export function getLearningFamiliesForTense(tense) {
       }
     }
   })
-  
+
   return learningFamilies
 }
