@@ -9,7 +9,7 @@ import './IrregularEndingsDrill.css'; // Irregular verb specific styles
 
 const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
-function getPronounsForDialect(settings){
+function getPronounsForDialect(settings) {
   const arr = [
     { key: '1s', text: 'yo' },
     settings?.useVoseo ? { key: '2s_vos', text: 'vos' } : { key: '2s_tu', text: 'tú' },
@@ -24,7 +24,7 @@ function getPronounsForDialect(settings){
 }
 
 function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
+  let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
@@ -153,9 +153,9 @@ const storyData = {
   },
   pretIndef: {
     deconstructions: [
-        { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
-        { group: '-er', verb: 'comer', stem: 'com', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
-        { group: '-ir', verb: 'escribir', stem: 'escrib', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+      { group: '-ar', verb: 'hablar', stem: 'habl', endings: ['é', 'aste', 'ó', 'amos', 'asteis', 'aron'] },
+      { group: '-er', verb: 'comer', stem: 'com', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
+      { group: '-ir', verb: 'escribir', stem: 'escrib', endings: ['í', 'iste', 'ió', 'imos', 'isteis', 'ieron'] },
     ],
   },
   impf: {
@@ -172,7 +172,7 @@ const storyData = {
       { group: '-ir', verb: 'vivir', stem: 'vivir', endings: ['é', 'ás', 'á', 'emos', 'éis', 'án'] },
     ],
   },
-   cond: {
+  cond: {
     deconstructions: [
       { group: '-ar', verb: 'viajar', stem: 'viajar', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
       { group: '-er', verb: 'comer', stem: 'comer', endings: ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían'] },
@@ -232,18 +232,18 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
   const verbForms = useMemo(() => {
     if (!verb || !tense) return [];
-    
+
     // Map Spanish mood to English mood for data lookup
     const englishMood = moodMapping[tense.mood] || tense.mood;
-    
+
     const paradigm = verb.paradigms?.find(p =>
-        p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense)
+      p.forms?.some(f => f.mood === englishMood && f.tense === tense.tense)
     );
-    
+
     if (!paradigm) return [];
-    const allowed = new Set(PRONOUNS_DISPLAY.map(p=>p.key));
+    const allowed = new Set(PRONOUNS_DISPLAY.map(p => p.key));
     const filteredForms = paradigm.forms?.filter(f => f.mood === englishMood && f.tense === tense.tense && allowed.has(f.person)) || [];
-    
+
     return filteredForms;
   }, [verb?.lemma, tense?.mood, tense?.tense, PRONOUNS_DISPLAY]);
 
@@ -276,7 +276,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
   const deconstruction = useMemo(() => {
     if (!verb || !tense) return null;
-    
+
     // For irregular verbs, show custom analysis
     if (irregularityAnalysis?.hasIrregularities) {
       const lemma = verb.lemma;
@@ -284,7 +284,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       const familyDescriptions = irregularityAnalysis.families.map(family => {
         const familyMap = {
           'LEARNING_YO_G': 'YO irregular con -g',
-          'LEARNING_E_IE': 'Diptongo e→ie', 
+          'LEARNING_E_IE': 'Diptongo e→ie',
           'LEARNING_O_UE': 'Diptongo o→ue',
           'LEARNING_YO_ZCO': 'YO irregular con -zco',
           'LEARNING_E_I': 'Cambio e→i',
@@ -295,7 +295,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         };
         return familyMap[family] || family;
       }).join(', ');
-      
+
       return {
         group: `-${verbEnding}`,
         verb: lemma,
@@ -305,7 +305,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         irregularityType: familyDescriptions
       };
     }
-    
+
     // For regular verbs, use original logic
     const tenseData = storyData[tense.tense];
     if (!tenseData) return null;
@@ -320,8 +320,8 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     const correctAnswer = currentForm.value;
     const altAnswers = currentForm.alt || [];
     const userAnswer = inputValue.trim();
-    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase() || 
-                     (Array.isArray(altAnswers) && altAnswers.map(a => a.toLowerCase()).includes(userAnswer.toLowerCase()));
+    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase() ||
+      (Array.isArray(altAnswers) && altAnswers.map(a => a.toLowerCase()).includes(userAnswer.toLowerCase()));
 
     setResult({ correct: isCorrect, value: correctAnswer });
 
@@ -388,10 +388,10 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         const lower = (s) => (s || '').toLowerCase()
         const spanish = voices.filter(v => lower(v.lang).startsWith('es'))
         if (spanish.length === 0) return null
-        const prefNames = ['mónica','monica','paulina','luciana','helena','elvira','google español','google us español','google español de estados','microsoft sabina','microsoft helena']
+        const prefNames = ['mónica', 'monica', 'paulina', 'luciana', 'helena', 'elvira', 'google español', 'google us español', 'google español de estados', 'microsoft sabina', 'microsoft helena']
         const preferOrder = (region === 'rioplatense')
-          ? ['es-ar','es-419','es-mx','es-es']
-          : ['es-es','es-mx','es-419','es-us']
+          ? ['es-ar', 'es-419', 'es-mx', 'es-es']
+          : ['es-es', 'es-mx', 'es-419', 'es-us']
         const byLangExact = spanish.find(v => lower(v.lang) === lower(targetLang))
         if (byLangExact) return byLangExact
         for (const lang of preferOrder) {
@@ -498,14 +498,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
   const detectRealStem = (verb, tenseKey) => {
     if (!verb || !verbForms.length) return null;
-    
+
     // For future and conditional, the stem is the infinitive for regular verbs,
     // or an irregular stem that we need to detect
     if (tenseKey === 'fut' || tenseKey === 'cond') {
       const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
       const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
       const expectedEndings = tenseKey === 'fut' ? endings : condEndings;
-      
+
       // Try to find the stem by looking for common prefix
       let candidateStem = '';
       const firstForm = verbForms.find(f => f.person === '1s');
@@ -514,7 +514,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         // Try different stem lengths
         for (let i = 1; i < value.length; i++) {
           const potentialStem = value.slice(0, i);
-          
+
           // Check if this stem works for all forms
           const worksForAll = verbForms.every(form => {
             const personIndex = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'].indexOf(form.person);
@@ -522,7 +522,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             const expectedEnding = expectedEndings[personIndex];
             return form.value === potentialStem + expectedEnding;
           });
-          
+
           if (worksForAll) {
             candidateStem = potentialStem;
             break;
@@ -531,21 +531,21 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       }
       return candidateStem || verb.lemma; // fallback to full infinitive
     }
-    
+
     // For other tenses, use simpler logic - remove infinitive ending
     return verb.lemma.slice(0, -2); // remove -ar/-er/-ir
   };
 
   const endingFor = (tenseKey, pronounKey) => {
     const formVal = personToFormMap[pronounKey];
-    
+
     // Use intelligent stem detection instead of hardcoded stems
     const detectedStem = detectRealStem(verb, tenseKey);
-    
+
     if (formVal && detectedStem && formVal.startsWith(detectedStem)) {
       return formVal.slice(detectedStem.length);
     }
-    
+
     // Fallback: try to extract ending from verb lemma
     if (formVal && verb?.lemma) {
       const basicStem = verb.lemma.slice(0, -2); // Remove -ar/-er/-ir
@@ -553,7 +553,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         return formVal.slice(basicStem.length);
       }
     }
-    
+
     return '';
   };
 
@@ -587,7 +587,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     }
     return nodes;
   };
-  
+
   if (!verb || !deconstruction || !currentPronoun) {
     return (
       <div className="App">
@@ -663,14 +663,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
 
           <div className="verb-lemma">{verb.lemma}</div>
-          
+
           {/* No panel extra: mantener el layout idéntico al de regulares */}
           <div className="person-display">{currentPronoun.text}</div>
 
           <div className="input-container">
-            <input 
+            <input
               ref={inputRef}
-              type="text" 
+              type="text"
               className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -692,12 +692,12 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
               </div>
             )}
           </div>
-          
+
           <div className="action-buttons">
             {!result ? (
-                <button className="btn" onClick={handleSubmit} disabled={!inputValue.trim()}>Continuar</button>
+              <button className="btn" onClick={handleSubmit} disabled={!inputValue.trim()}>Continuar</button>
             ) : (
-                <button className="btn" onClick={handleContinue}>Continuar</button>
+              <button className="btn" onClick={handleContinue}>Continuar</button>
             )}
           </div>
 
@@ -749,7 +749,21 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
                         </span>
                       </div>
                     ) : (
-                      <span className="ending-value full-form">{actualForm}</span>
+                      <span className="ending-value full-form">
+                        {(() => {
+                          const ending = endingFor(tense.tense, pronoun.key);
+                          if (ending && actualForm.endsWith(ending)) {
+                            const stem = actualForm.slice(0, actualForm.length - ending.length);
+                            return (
+                              <>
+                                <span className="stem">{stem}</span>
+                                <span className="ending-suffix">{ending}</span>
+                              </>
+                            );
+                          }
+                          return actualForm;
+                        })()}
+                      </span>
                     )}
                   </div>
                 );

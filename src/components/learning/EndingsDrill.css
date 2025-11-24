@@ -290,3 +290,15 @@
 .learning-drill.group-ar::before,
 .learning-drill.group-er::before,
 .learning-drill.group-ir::before { display: none; content: none; }
+
+/* Highlighted endings in reference table */
+.ending-suffix {
+    color: #4ade80;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.stem {
+    opacity: 0.7;
+    font-weight: 400;
+}
