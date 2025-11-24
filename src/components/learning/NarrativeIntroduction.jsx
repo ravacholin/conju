@@ -16,6 +16,44 @@ import './NarrativeIntroduction.css';
 import { useSettings } from '../../state/settings.js';
 import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 
+// Helper function to highlight stem vowel changes in infinitive forms
+function highlightStemVowel(lemma) {
+  // Check if this verb has vowel change metadata
+  const diphthongFamily = LEARNING_IRREGULAR_FAMILIES['LEARNING_DIPHTHONGS'];
+  const vowelChangeData = diphthongFamily?.vowelChanges?.[lemma];
+
+  if (!vowelChangeData) {
+    // No stem change data, return plain infinitive
+    return { stem: lemma.slice(0, -2), ending: lemma.slice(-2), hasHighlight: false };
+  }
+
+  const { stemVowel } = vowelChangeData;
+  const stem = lemma.slice(0, -2);
+  const ending = lemma.slice(-2);
+
+  // Find the position of the stem vowel (last occurrence in the stem)
+  const vowelIndex = stem.lastIndexOf(stemVowel);
+
+  if (vowelIndex === -1) {
+    // Vowel not found, fallback to plain rendering
+    return { stem, ending, hasHighlight: false };
+  }
+
+  // Split the stem into before-vowel, vowel, and after-vowel
+  const beforeVowel = stem.slice(0, vowelIndex);
+  const vowel = stem.slice(vowelIndex, vowelIndex + stemVowel.length);
+  const afterVowel = stem.slice(vowelIndex + stemVowel.length);
+
+  return {
+    beforeVowel,
+    vowel,
+    afterVowel,
+    ending,
+    hasHighlight: true,
+    changeType: vowelChangeData.type
+  };
+}
+
 // Extraer formas conjugadas reales de la base de datos
 function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
   if (!verbObj || !verbObj.paradigms) {
@@ -29,16 +67,16 @@ function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
 
 
   if (!paradigm || !paradigm.forms) return [];
-  
+
   // Extraer formas para el dialecto (orden: 1s, 2s_vos, 3s, 1p, 3p)
   const persons = ['1s', '2s_vos', '3s', '1p', '3p'];
   const forms = [];
-  
+
   persons.forEach(person => {
     const form = paradigm.forms.find(f =>
       f.mood === mood && f.tense === tense && f.person === person
     );
-    
+
     if (form && form.value) {
       forms.push(form.value);
     } else {
@@ -67,7 +105,7 @@ function extractRealConjugatedForms(verbObj, tense, mood = 'indicative') {
       }
     }
   });
-  
+
   return forms;
 }
 
@@ -153,8 +191,8 @@ const PARTICIPLE_MAP = new Map(IRREGULAR_PARTICIPLES.map(item => [item.lemma, it
 // Función para detectar si un verbo es un pretérito fuerte (muy irregular)
 function isStrongPreterite(verbObj, tense) {
   return tense.mood === 'indicativo' &&
-         tense.tense === 'pretIndef' &&
-         Object.prototype.hasOwnProperty.call(STRONG_PRETERITE_STEMS, verbObj.lemma);
+    tense.tense === 'pretIndef' &&
+    Object.prototype.hasOwnProperty.call(STRONG_PRETERITE_STEMS, verbObj.lemma);
 }
 
 // Función para obtener la raíz irregular del pretérito fuerte
@@ -201,7 +239,7 @@ function getStandardEndings(group, tense) {
       ir: ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran']
     }
   };
-  
+
   return endings[tense]?.[group] || endings.pres[group] || [];
 }
 
@@ -272,18 +310,30 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
             return getEndingOrder(a) - getEndingOrder(b);
           })
           .map((verbObj, index) => {
-          const verb = verbObj.lemma;
-          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+            const verb = verbObj.lemma;
+            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+            const highlightData = highlightStemVowel(verb);
 
-          return (
-            <div key={`third-${index}`} className="third-person-verb-item">
-              <div className="verb-lemma-large">
-                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                <span className="group-label-large">{group}</span>
+            return (
+              <div key={`third-${index}`} className="third-person-verb-item">
+                <div className="verb-lemma-large">
+                  {highlightData.hasHighlight ? (
+                    <>
+                      <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
+                      <span className="stem-vowel-highlight">{highlightData.vowel}</span>
+                      <span className="lemma-stem-large">{highlightData.afterVowel}</span>
+                      <span className="group-label-large">{group}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="lemma-stem-large">{highlightData.stem}</span>
+                      <span className="group-label-large">{group}</span>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       {/* Sección de formas regulares - con raíz normal */}
@@ -320,22 +370,22 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
               return getEndingOrder(a) - getEndingOrder(b);
             })
             .slice(0, 3).map((verbObj, index) => {
-            const changes = getStemChange(verbObj);
+              const changes = getStemChange(verbObj);
 
-            return (
-              <div key={`irreg-${index}`} className="irregular-stem-comparison">
-                <div className="stem-change-display">
-                  <span className="normal-stem">{changes.normalStem}</span>
-                  <span className="arrow">→</span>
-                  <span className="irregular-stem-highlight">{changes.irregularStem}</span>
+              return (
+                <div key={`irreg-${index}`} className="irregular-stem-comparison">
+                  <div className="stem-change-display">
+                    <span className="normal-stem">{changes.normalStem}</span>
+                    <span className="arrow">→</span>
+                    <span className="irregular-stem-highlight">{changes.irregularStem}</span>
+                  </div>
+                  <div className="resulting-forms">
+                    <span className="irregular-form">{changes.thirdSing}</span>
+                    <span className="irregular-form">{changes.thirdPlur}</span>
+                  </div>
                 </div>
-                <div className="resulting-forms">
-                  <span className="irregular-form">{changes.thirdSing}</span>
-                  <span className="irregular-form">{changes.thirdPlur}</span>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
     </div>
@@ -432,18 +482,18 @@ function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, setti
             return getEndingOrder(a) - getEndingOrder(b);
           })
           .map((verbObj, index) => {
-          const verb = verbObj.lemma
-          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
+            const verb = verbObj.lemma
+            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
 
-          return (
-            <div key={`regular-verb-${index}`} className="future-root-item">
-              <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-              <span className="group-label-large">{group}</span>
-              <span className="arrow">→</span>
-              <span className="future-root-highlight">{verb}-</span>
-            </div>
-          )
-        })}
+            return (
+              <div key={`regular-verb-${index}`} className="future-root-item">
+                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                <span className="group-label-large">{group}</span>
+                <span className="arrow">→</span>
+                <span className="future-root-highlight">{verb}-</span>
+              </div>
+            )
+          })}
       </div>
 
       <div className="root-endings">
@@ -520,20 +570,20 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
             return getEndingOrder(a) - getEndingOrder(b);
           })
           .map((verbObj, index) => {
-          const verb = verbObj.lemma
-          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
-          const stem = verb.slice(0, -2)
-          const ending = getRegularEnding(verb)
+            const verb = verbObj.lemma
+            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
+            const stem = verb.slice(0, -2)
+            const ending = getRegularEnding(verb)
 
-          return (
-            <div key={`regular-nonfinite-${index}`} className="future-root-item">
-              <span className="lemma-stem-large">{stem}</span>
-              <span className="group-label-large">{group}</span>
-              <span className="arrow">→</span>
-              <span className="future-root-highlight">{stem + ending}</span>
-            </div>
-          )
-        })}
+            return (
+              <div key={`regular-nonfinite-${index}`} className="future-root-item">
+                <span className="lemma-stem-large">{stem}</span>
+                <span className="group-label-large">{group}</span>
+                <span className="arrow">→</span>
+                <span className="future-root-highlight">{stem + ending}</span>
+              </div>
+            )
+          })}
       </div>
 
       <div className="root-endings">
@@ -610,34 +660,46 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
             return getEndingOrder(a) - getEndingOrder(b);
           })
           .map((verbObj, index) => {
-          const verb = verbObj.lemma;
-          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-          const forms = getDialectForms(verbObj);
+            const verb = verbObj.lemma;
+            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+            const forms = getDialectForms(verbObj);
+            const highlightData = highlightStemVowel(verb);
 
-          // Obtener la forma YO conjugada para destacarla
-          const yoForm = forms[0]; // Primera forma es siempre 1s
+            // Obtener la forma YO conjugada para destacarla
+            const yoForm = forms[0]; // Primera forma es siempre 1s
 
-          return (
-            <div key={`yo-irregular-${index}`} className="irregular-yo-verb-complete">
-              <div className="verb-header">
-                <div className="verb-lemma-large">
-                  <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                  <span className="group-label-large">{group}</span>
+            return (
+              <div key={`yo-irregular-${index}`} className="irregular-yo-verb-complete">
+                <div className="verb-header">
+                  <div className="verb-lemma-large">
+                    {highlightData.hasHighlight ? (
+                      <>
+                        <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
+                        <span className="stem-vowel-highlight">{highlightData.vowel}</span>
+                        <span className="lemma-stem-large">{highlightData.afterVowel}</span>
+                        <span className="group-label-large">{group}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                        <span className="group-label-large">{group}</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="arrow">→</div>
+                  <div className="yo-form-highlight">{yoForm}</div>
                 </div>
-                <div className="arrow">→</div>
-                <div className="yo-form-highlight">{yoForm}</div>
-              </div>
 
-              <div className="all-forms-display">
-                {forms.map((form, idx) => (
-                  <span key={`form-${idx}`} className={`form-item ${idx === 0 ? 'yo-form-irregular' : ''}`}>
-                    {form}
-                  </span>
-                ))}
+                <div className="all-forms-display">
+                  {forms.map((form, idx) => (
+                    <span key={`form-${idx}`} className={`form-item ${idx === 0 ? 'yo-form-irregular' : ''}`}>
+                      {form}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );
@@ -685,21 +747,21 @@ function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
             return getEndingOrder(a) - getEndingOrder(b);
           })
           .map((verbObj, index) => {
-          const verb = verbObj.lemma;
-          const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-          const irregularStem = getIrregularStem(verb);
+            const verb = verbObj.lemma;
+            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+            const irregularStem = getIrregularStem(verb);
 
-          return (
-            <div key={`strong-verb-${index}`} className="strong-verb-item">
-              <div className="verb-lemma-large">
-                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                <span className="group-label-large">{group}</span>
+            return (
+              <div key={`strong-verb-${index}`} className="strong-verb-item">
+                <div className="verb-lemma-large">
+                  <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+                  <span className="group-label-large">{group}</span>
+                </div>
+                <div className="arrow">→</div>
+                <div className="irregular-stem-large">{irregularStem}-</div>
               </div>
-              <div className="arrow">→</div>
-              <div className="irregular-stem-large">{irregularStem}-</div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
 
       <div className="plus-symbol">+</div>
@@ -763,7 +825,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
     const initialDelay = setTimeout(() => {
       setVisibleSentence(0); // Show first sentence
-      
+
       const timer = setInterval(() => {
         setVisibleSentence(prev => {
           if (prev < numSentences - 1) {
@@ -837,15 +899,15 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     if (!verbObj) return null;
     const para = verbObj.paradigms?.find(p => p.forms?.some(f => f.mood === mood && f.tense === tense));
     if (!para) return null;
-    
+
     const forms = para.forms.filter(f => f.mood === mood && f.tense === tense);
     if (forms.length === 0) return null;
-    
+
     if (tense === 'fut' || tense === 'cond') {
       const endings = ['é', 'ás', 'á', 'emos', 'éis', 'án']; // future endings
       const condEndings = ['ía', 'ías', 'ía', 'íamos', 'íais', 'ían']; // conditional endings
       const expectedEndings = tense === 'fut' ? endings : condEndings;
-      
+
       let candidateStem = '';
       const firstForm = forms.find(f => f.person === '1s');
       if (firstForm) {
@@ -858,7 +920,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
             const expectedEnding = expectedEndings[personIndex];
             return form.value === potentialStem + expectedEnding;
           });
-          
+
           if (worksForAll) {
             candidateStem = potentialStem;
             break;
@@ -867,7 +929,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       }
       return candidateStem || verbObj.lemma;
     }
-    
+
     return verbObj.lemma.slice(0, -2);
   };
 
@@ -987,8 +1049,8 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       const personHint = (['fut', 'cond', 'ger', 'part'].includes(tense.tense) && /\byo\b/i.test(sentenceTemplate))
         ? '1s'
         : (/^\s*Yo\b/i.test(sentenceTemplate)
-            ? '1s'
-            : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s'))
+          ? '1s'
+          : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s'))
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
       const conjugation = getConjugation(verbObj, personHint, tense.mood);
 
@@ -1016,7 +1078,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         irreg: replacementIrregular || replacementRoot || conjDisplay
       }
 
-      
+
       const isVisible = index <= visibleSentence;
       return (
         <p
@@ -1025,7 +1087,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           style={{ opacity: isVisible ? 1 : 0, visibility: isVisible ? 'visible' : 'hidden' }}
           aria-hidden={!isVisible}
         >
-          <SafeTemplate 
+          <SafeTemplate
             template={sentenceTemplate}
             replacements={replacements}
             highlightClass="highlight"
@@ -1118,98 +1180,128 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                         return getEndingOrder(a) - getEndingOrder(b);
                       })
                       .map((verbObj, index) => {
-                      const pronouns = pronounsForDialect();
-                      const verb = verbObj.lemma;
-                      const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-                      const lemmaStem = (v) => {
-                        if (typeof v !== 'string') return '';
-                        if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
-                          return v.slice(0, -2);
-                        }
-                        return v;
-                      };
+                        const pronouns = pronounsForDialect();
+                        const verb = verbObj.lemma;
+                        const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+                        const lemmaStem = (v) => {
+                          if (typeof v !== 'string') return '';
+                          if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
+                            return v.slice(0, -2);
+                          }
+                          return v;
+                        };
 
-                    const isIrregular = verbObj.type === 'irregular';
+                        const isIrregular = verbObj.type === 'irregular';
 
-                    // Convertir mood de español a inglés para la búsqueda en BD
-                    const moodMapping = {
-                      'indicativo': 'indicative',
-                      'subjuntivo': 'subjunctive',
-                      'imperativo': 'imperative',
-                      'condicional': 'conditional'
-                    };
-                    const englishMood = moodMapping[tense.mood] || tense.mood;
+                        // Convertir mood de español a inglés para la búsqueda en BD
+                        const moodMapping = {
+                          'indicativo': 'indicative',
+                          'subjuntivo': 'subjunctive',
+                          'imperativo': 'imperative',
+                          'condicional': 'conditional'
+                        };
+                        const englishMood = moodMapping[tense.mood] || tense.mood;
 
-                    const realForms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
+                        const realForms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
 
-                    if (isIrregular && realForms && realForms.length > 0) {
-                      const expectedForms = expectedRegularForms(verbObj);
-                      return (
-                        <div key={`${group}-${index}`} className="deconstruction-item">
-                          <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
-                          <div className="verb-deconstruction irregular">
-                            <span className="irregular-forms">
-                              {realForms.map((form, idx) => (
-                                <span key={`${group}-${idx}-${form}`} className="conjugated-form">
-                                  {renderWithIrregularHighlights(form, expectedForms[idx] || '')}
-                                  {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
+                        if (isIrregular && realForms && realForms.length > 0) {
+                          const expectedForms = expectedRegularForms(verbObj);
+                          const highlightData = highlightStemVowel(verb);
+                          return (
+                            <div key={`${group}-${index}`} className="deconstruction-item">
+                              <div className="verb-lemma">
+                                {highlightData.hasHighlight ? (
+                                  <>
+                                    <span className="lemma-stem">{highlightData.beforeVowel}</span>
+                                    <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
+                                    <span className="lemma-stem">{highlightData.afterVowel}</span>
+                                    <span className="group-label">{group.toUpperCase()}</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="lemma-stem">{lemmaStem(verb)}</span>
+                                    <span className="group-label">{group}</span>
+                                  </>
+                                )}
+                              </div>
+                              <div className="verb-deconstruction irregular">
+                                <span className="irregular-forms">
+                                  {realForms.map((form, idx) => (
+                                    <span key={`${group}-${idx}-${form}`} className="conjugated-form">
+                                      {renderWithIrregularHighlights(form, expectedForms[idx] || '')}
+                                      {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
+                                    </span>
+                                  ))}
                                 </span>
-                              ))}
-                            </span>
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        const formMap = getFormMapForVerb(verbObj);
+                        let realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
+
+                        // Para condicional y futuro regulares, usar el infinitivo completo en lugar de la raíz
+                        const isConditionalOrFutureRegular =
+                          ((tense.tense === 'cond' && tense.mood === 'condicional') ||
+                            (tense.tense === 'fut' && tense.mood === 'indicativo')) &&
+                          verbObj.type === 'regular';
+
+                        if (isConditionalOrFutureRegular) {
+                          realStem = verb; // Usar infinitivo completo (hablar, comer, vivir)
+                        }
+
+                        const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
+
+                        const dialectEndings = pronouns.map(p => {
+                          const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+                          const grp = group.slice(-2);
+                          const key = p === '2s_vos' ? '2s_tu' : p;
+                          let base = standardEndings?.[baseOrder.indexOf(key)] || '';
+
+                          if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
+                            if (grp === 'ar' && base === 'as') base = 'ás';
+                            else if (grp === 'er' && base === 'es') base = 'és';
+                            else if (grp === 'ir' && base === 'es') base = 'ís';
+                          }
+
+                          if (base) return base;
+
+                          const formVal = formMap[p];
+                          return endingFromForm(formVal, realStem, base);
+                        });
+
+                        const highlightData = highlightStemVowel(verb);
+                        return (
+                          <div key={`${group}-${index}`} className="deconstruction-item">
+                            <div className="verb-lemma">
+                              {highlightData.hasHighlight ? (
+                                <>
+                                  <span className="lemma-stem">{highlightData.beforeVowel}</span>
+                                  <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
+                                  <span className="lemma-stem">{highlightData.afterVowel}</span>
+                                  <span className="group-label">{group.toUpperCase()}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="lemma-stem">{lemmaStem(verb)}</span>
+                                  <span className="group-label">{group}</span>
+                                </>
+                              )}
+                            </div>
+                            <div className="verb-deconstruction">
+                              <span className="verb-stem">{realStem}-</span>
+                              <span className="verb-endings">
+                                <span className="ending-carousel">
+                                  {dialectEndings.map((ending, idx) => (
+                                    <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
+                                  ))}
+                                </span>
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    
-                    const formMap = getFormMapForVerb(verbObj);
-                    let realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
-
-                    // Para condicional y futuro regulares, usar el infinitivo completo en lugar de la raíz
-                    const isConditionalOrFutureRegular =
-                      ((tense.tense === 'cond' && tense.mood === 'condicional') ||
-                       (tense.tense === 'fut' && tense.mood === 'indicativo')) &&
-                      verbObj.type === 'regular';
-
-                    if (isConditionalOrFutureRegular) {
-                      realStem = verb; // Usar infinitivo completo (hablar, comer, vivir)
-                    }
-
-                    const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
-                    
-                    const dialectEndings = pronouns.map(p => {
-                      const baseOrder = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
-                      const grp = group.slice(-2);
-                      const key = p === '2s_vos' ? '2s_tu' : p;
-                      let base = standardEndings?.[baseOrder.indexOf(key)] || '';
-                      
-                      if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
-                        if (grp === 'ar' && base === 'as') base = 'ás';
-                        else if (grp === 'er' && base === 'es') base = 'és';
-                        else if (grp === 'ir' && base === 'es') base = 'ís';
-                      }
-                      
-                      if (base) return base;
-                      
-                      const formVal = formMap[p];
-                      return endingFromForm(formVal, realStem, base);
-                    });
-                    
-                    return (
-                      <div key={`${group}-${index}`} className="deconstruction-item">
-                        <div className="verb-lemma"><span className="lemma-stem">{lemmaStem(verb)}</span><span className="group-label">{group}</span></div>
-                        <div className="verb-deconstruction">
-                          <span className="verb-stem">{realStem}-</span>
-                          <span className="verb-endings">
-                            <span className="ending-carousel">
-                              {dialectEndings.map((ending, idx) => (
-                                <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
-                              ))}
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      );
-                    });
+                        );
+                      });
                   })()}
                 </div>
               </div>

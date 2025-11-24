@@ -46,18 +46,20 @@
 .page-transition {
   opacity: 0;
   transform: translateY(12px) scale(0.98);
-  transition: opacity 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              transform 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .page-transition.page-in {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
+
 .page-transition.page-out {
   opacity: 0;
   transform: translateY(-8px) scale(1.02);
   transition: opacity 280ms cubic-bezier(0.55, 0.06, 0.68, 0.19),
-              transform 280ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+    transform 280ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
 }
 
 /* Story section */
@@ -67,7 +69,8 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(245, 245, 245, 0.08);
   border-radius: 16px;
-  padding: 1rem 1.25rem; /* menos espacio vertical */
+  padding: 1rem 1.25rem;
+  /* menos espacio vertical */
   margin-bottom: 0.85rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
@@ -75,7 +78,8 @@
 .story-placeholder h3 {
   font-size: 1.2rem;
   font-weight: 400;
-  margin-bottom: 0.75rem; /* reducir espacio bajo el título */
+  margin-bottom: 0.75rem;
+  /* reducir espacio bajo el título */
   color: var(--text);
   letter-spacing: -0.01em;
 }
@@ -83,9 +87,11 @@
 .story-sentence {
   font-size: 0.95rem;
   line-height: 1.5;
-  margin-bottom: 0.5rem; /* compactar separación entre frases */
+  margin-bottom: 0.5rem;
+  /* compactar separación entre frases */
   color: var(--text);
-  opacity: 0; /* hidden until animated in */
+  opacity: 0;
+  /* hidden until animated in */
   transform: translateY(16px) scale(0.96);
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   letter-spacing: -0.005em;
@@ -102,8 +108,15 @@
 }
 
 @keyframes storySentenceIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .story-sentence .highlight {
@@ -142,7 +155,8 @@
 
 .verb-lemma {
   font-size: 0.85rem;
-  color: var(--text); /* show stem in white */
+  color: var(--text);
+  /* show stem in white */
   letter-spacing: -0.01em;
   animation: slideInFromTop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s both;
 }
@@ -154,7 +168,8 @@
 .group-label {
   color: var(--accent-blue);
   opacity: 0.9;
-  margin-left: 0rem; /* glue suffix to stem (e.g., habl-ar) */
+  margin-left: 0rem;
+  /* glue suffix to stem (e.g., habl-ar) */
 }
 
 .verb-deconstruction {
@@ -168,9 +183,18 @@
 }
 
 /* Irregular forms: show base in white, irregular fragments in blue */
-.verb-deconstruction.irregular .conjugated-form { color: var(--text); }
-.verb-deconstruction.irregular .conjugated-form .irreg-frag { color: var(--accent-blue); }
-.verb-deconstruction.irregular .form-separator { color: var(--text); opacity: 0.9; }
+.verb-deconstruction.irregular .conjugated-form {
+  color: var(--text);
+}
+
+.verb-deconstruction.irregular .conjugated-form .irreg-frag {
+  color: var(--accent-blue);
+}
+
+.verb-deconstruction.irregular .form-separator {
+  color: var(--text);
+  opacity: 0.9;
+}
 
 .verb-stem {
   color: var(--accent-green);
@@ -206,22 +230,41 @@
   transform: translateY(18px) scale(0.85);
 }
 
-.ending-item:nth-child(1) { animation-delay: 0.8s; }
-.ending-item:nth-child(2) { animation-delay: 0.9s; }
-.ending-item:nth-child(3) { animation-delay: 1.0s; }
-.ending-item:nth-child(4) { animation-delay: 1.1s; }
-.ending-item:nth-child(5) { animation-delay: 1.2s; }
-.ending-item:nth-child(6) { animation-delay: 1.3s; }
+.ending-item:nth-child(1) {
+  animation-delay: 0.8s;
+}
+
+.ending-item:nth-child(2) {
+  animation-delay: 0.9s;
+}
+
+.ending-item:nth-child(3) {
+  animation-delay: 1.0s;
+}
+
+.ending-item:nth-child(4) {
+  animation-delay: 1.1s;
+}
+
+.ending-item:nth-child(5) {
+  animation-delay: 1.2s;
+}
+
+.ending-item:nth-child(6) {
+  animation-delay: 1.3s;
+}
 
 @keyframes fadeInUpBounce {
   0% {
     opacity: 0;
     transform: translateY(20px) scale(0.8);
   }
+
   60% {
     opacity: 0.8;
     transform: translateY(-2px) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -233,6 +276,7 @@
     opacity: 0;
     transform: translateY(-15px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -244,6 +288,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -263,40 +308,45 @@
     font-size: 2.5rem;
     margin-bottom: 0.75rem;
   }
-  
+
   .narrative-header .subtitle {
     font-size: 1rem;
   }
-  
+
   /* Ajuste: menos padding vertical en el cuadro de narrativa en móvil */
-  .story-placeholder { padding: 0.9rem 1.1rem; }
-  .deconstruction-placeholder { padding: 1.25rem; }
-  
+  .story-placeholder {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .deconstruction-placeholder {
+    padding: 1.25rem;
+  }
+
   .story-placeholder h3 {
     font-size: 1.25rem;
     margin-bottom: 0.7rem;
   }
-  
+
   .story-sentence {
     font-size: 1rem;
     margin-bottom: 0.55rem;
   }
-  
+
   .verb-deconstruction {
     font-size: 1.2rem;
     flex-wrap: wrap;
     gap: 0.75rem;
   }
-  
+
   .deconstruction-list {
     grid-template-columns: 1fr;
   }
-  
+
   .ending-carousel {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .narrative-content {
     margin-bottom: 2rem;
   }
@@ -306,14 +356,19 @@
   .narrative-header h1 {
     font-size: 2rem;
   }
-  
-  .story-placeholder { padding: 0.75rem 0.9rem; }
-  .deconstruction-placeholder { padding: 0.95rem; }
-  
+
+  .story-placeholder {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .deconstruction-placeholder {
+    padding: 0.95rem;
+  }
+
   .verb-deconstruction {
     font-size: 1rem;
   }
-  
+
   .verb-stem,
   .ending-item {
     padding: 0.4rem 0.75rem;
@@ -509,6 +564,7 @@
     opacity: 0;
     transform: translateY(15px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -530,15 +586,24 @@
   animation: verbItemSlideIn 0.5s ease-out both;
 }
 
-.strong-verb-item:nth-child(1) { animation-delay: 0.1s; }
-.strong-verb-item:nth-child(2) { animation-delay: 0.2s; }
-.strong-verb-item:nth-child(3) { animation-delay: 0.3s; }
+.strong-verb-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.strong-verb-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.strong-verb-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 @keyframes verbItemSlideIn {
   from {
     opacity: 0;
     transform: translateX(-15px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -569,6 +634,28 @@
   opacity: 0.9;
   font-weight: 500;
 }
+
+/* Highlighting for changing stem vowels in infinitives */
+.stem-vowel-highlight {
+  color: var(--accent-orange);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Larger highlighting for initial presentation */
+.stem-vowel-highlight-large {
+  color: var(--accent-orange);
+  font-weight: 700;
+  font-size: 1.2em;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-orange);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
 
 .strong-verb-item .arrow {
   color: var(--accent-blue);
@@ -606,8 +693,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .strong-endings-carousel {
@@ -631,22 +725,41 @@
   transform: translateY(15px) scale(0.9);
 }
 
-.strong-ending-item:nth-child(1) { animation-delay: 0.7s; }
-.strong-ending-item:nth-child(2) { animation-delay: 0.8s; }
-.strong-ending-item:nth-child(3) { animation-delay: 0.9s; }
-.strong-ending-item:nth-child(4) { animation-delay: 1.0s; }
-.strong-ending-item:nth-child(5) { animation-delay: 1.1s; }
-.strong-ending-item:nth-child(6) { animation-delay: 1.2s; }
+.strong-ending-item:nth-child(1) {
+  animation-delay: 0.7s;
+}
+
+.strong-ending-item:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+.strong-ending-item:nth-child(3) {
+  animation-delay: 0.9s;
+}
+
+.strong-ending-item:nth-child(4) {
+  animation-delay: 1.0s;
+}
+
+.strong-ending-item:nth-child(5) {
+  animation-delay: 1.1s;
+}
+
+.strong-ending-item:nth-child(6) {
+  animation-delay: 1.2s;
+}
 
 @keyframes strongEndingBounce {
   0% {
     opacity: 0;
     transform: translateY(15px) scale(0.9);
   }
+
   60% {
     opacity: 0.9;
     transform: translateY(-3px) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -735,6 +848,7 @@
     opacity: 0;
     transform: translateY(15px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -756,9 +870,17 @@
   animation: verbItemSlideIn 0.5s ease-out both;
 }
 
-.third-person-verb-item:nth-child(1) { animation-delay: 0.1s; }
-.third-person-verb-item:nth-child(2) { animation-delay: 0.2s; }
-.third-person-verb-item:nth-child(3) { animation-delay: 0.3s; }
+.third-person-verb-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.third-person-verb-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.third-person-verb-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 .third-person-verb-item .verb-lemma {
   font-size: 0.9rem;
@@ -833,15 +955,24 @@
   animation: irregularFormFadeIn 0.5s ease-out both;
 }
 
-.irregular-form-example:nth-child(1) { animation-delay: 0.4s; }
-.irregular-form-example:nth-child(2) { animation-delay: 0.5s; }
-.irregular-form-example:nth-child(3) { animation-delay: 0.6s; }
+.irregular-form-example:nth-child(1) {
+  animation-delay: 0.4s;
+}
+
+.irregular-form-example:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.irregular-form-example:nth-child(3) {
+  animation-delay: 0.6s;
+}
 
 @keyframes irregularFormFadeIn {
   from {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -929,20 +1060,33 @@
   transform: translateY(15px) scale(0.9);
 }
 
-.regular-ending-item:nth-child(1) { animation-delay: 0.2s; }
-.regular-ending-item:nth-child(2) { animation-delay: 0.3s; }
-.regular-ending-item:nth-child(3) { animation-delay: 0.4s; }
-.regular-ending-item:nth-child(4) { animation-delay: 0.5s; }
+.regular-ending-item:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.regular-ending-item:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.regular-ending-item:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.regular-ending-item:nth-child(4) {
+  animation-delay: 0.5s;
+}
 
 @keyframes regularEndingBounce {
   0% {
     opacity: 0;
     transform: translateY(15px) scale(0.9);
   }
+
   60% {
     opacity: 0.9;
     transform: translateY(-3px) scale(1.05);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);

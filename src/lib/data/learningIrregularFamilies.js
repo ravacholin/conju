@@ -53,7 +53,34 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     affectedTenses: ['pres', 'subjPres'],
     level: 'A2',
     concept: 'diphthongs_all',
-    pedagogicalNote: 'Tres tipos principales: e→ie (pensar), e→i (pedir), o→ue (dormir). Solo en sílabas tónicas (acentuadas).'
+    pedagogicalNote: 'Tres tipos principales: e→ie (pensar), e→i (pedir), o→ue (dormir). Solo en sílabas tónicas (acentuadas).',
+    // Metadata for highlighting stem vowel changes
+    vowelChanges: {
+      'pensar': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'pedir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'dormir': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'querer': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'poder': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'volver': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'servir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'contar': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'encontrar': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'recordar': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'mostrar': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'cerrar': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'empezar': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'comenzar': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'sentir': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'preferir': { type: 'e→ie', stemVowel: 'e', changedVowel: 'ie' },
+      'repetir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'competir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'medir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'vestir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'elegir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'corregir': { type: 'e→i', stemVowel: 'e', changedVowel: 'i' },
+      'morir': { type: 'o→ue', stemVowel: 'o', changedVowel: 'ue' },
+      'jugar': { type: 'u→ue', stemVowel: 'u', changedVowel: 'ue' }
+    }
   },
 
   // 4) MUY IRREGULARES (casos especiales frecuentes)
