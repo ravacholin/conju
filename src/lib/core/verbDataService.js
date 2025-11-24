@@ -6,6 +6,7 @@ import { getVerbs, getVerbsSync, areVerbsLoaded } from '../../data/verbsLazy.js'
 import { buildNonfiniteFormsForLemma } from './nonfiniteBuilder.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
+import { convertLearningFamilyToOld, LEARNING_IRREGULAR_FAMILIES } from '../data/learningIrregularFamilies.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { getAllVerbsWithRedundancy, getRedundancyManager } from './VerbDataRedundancyManager.js'
 import { validateAndHealVerbs, getIntegrityGuard } from './DataIntegrityGuard.js'
@@ -579,6 +580,7 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
 
     let filteredCount = candidateVerbs.length
     let errorCount = 0
+    let appliedLearningFamilyPrioritization = false
 
     // Filter by verb type with error handling
     try {
@@ -600,6 +602,41 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
             return false
           }
         })
+
+        // Prioritize examples explicitly defined in the learning families
+        if (families && families.length > 0) {
+          const targetLemmas = []
+          families.forEach(familyId => {
+            const family = LEARNING_IRREGULAR_FAMILIES[familyId]
+            if (family) {
+              if (Array.isArray(family.priorityExamples)) {
+                targetLemmas.push(...family.priorityExamples)
+              }
+              if (Array.isArray(family.examples)) {
+                targetLemmas.push(...family.examples)
+              }
+            }
+          })
+
+          if (targetLemmas.length > 0) {
+            // If we have specific target lemmas from the family definition, 
+            // filter the candidates to prioritize these verbs.
+            const specificVerbs = candidateVerbs.filter(v => targetLemmas.includes(v.lemma))
+
+            // Only apply this strict filter if we actually found matches
+            if (specificVerbs.length > 0) {
+              candidateVerbs = specificVerbs
+              appliedLearningFamilyPrioritization = true
+
+              // Sort them to match the order in priorityExamples if possible
+              candidateVerbs.sort((a, b) => {
+                const idxA = targetLemmas.indexOf(a.lemma)
+                const idxB = targetLemmas.indexOf(b.lemma)
+                return idxA - idxB
+              })
+            }
+          }
+        }
       }
 
       filteredCount = candidateVerbs.length
@@ -609,7 +646,8 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
     }
 
     // Filter by families if specified with enhanced error handling
-    if (families.length > 0) {
+    // SKIP this filter if we already applied learning family prioritization
+    if (families.length > 0 && !appliedLearningFamilyPrioritization) {
       try {
         candidateVerbs = candidateVerbs.filter(verb => {
           try {
@@ -620,11 +658,14 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
 
             return families.some(selectedFamily => {
               try {
-                const expandedFamilies = expandSimplifiedGroup(selectedFamily)
+                // CRITICAL FIX: Convert learning family ID to technical/simplified ID first
+                const technicalFamilyId = convertLearningFamilyToOld(selectedFamily) || selectedFamily
+
+                const expandedFamilies = expandSimplifiedGroup(technicalFamilyId)
                 if (expandedFamilies.length > 0) {
                   return verbFamilies.some(vf => expandedFamilies.includes(vf))
                 } else {
-                  return verbFamilies.includes(selectedFamily)
+                  return verbFamilies.includes(technicalFamilyId)
                 }
               } catch (familyError) {
                 logger.warn('getExampleVerbs', `Error processing family ${selectedFamily} for verb ${verb.lemma}`, familyError)
@@ -645,36 +686,39 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
     }
 
     // For learning purposes, prioritize common verbs
-    const priorityVerbs = [
-      'ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber',
-      'querer', 'poner', 'parecer', 'creer', 'seguir', 'venir', 'pensar', 'salir', 'volver',
-      'conocer', 'vivir', 'sentir', 'empezar', 'hablar', 'comer'
-    ]
+    // SKIP this sort if we already applied learning family prioritization
+    if (!appliedLearningFamilyPrioritization) {
+      const priorityVerbs = [
+        'ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver', 'dar', 'saber',
+        'querer', 'poner', 'parecer', 'creer', 'seguir', 'venir', 'pensar', 'salir', 'volver',
+        'conocer', 'vivir', 'sentir', 'empezar', 'hablar', 'comer'
+      ]
 
-    // Sort by priority with error handling
-    try {
-      candidateVerbs.sort((a, b) => {
-        try {
-          const aPriority = priorityVerbs.indexOf(a.lemma)
-          const bPriority = priorityVerbs.indexOf(b.lemma)
+      // Sort by priority with error handling
+      try {
+        candidateVerbs.sort((a, b) => {
+          try {
+            const aPriority = priorityVerbs.indexOf(a.lemma)
+            const bPriority = priorityVerbs.indexOf(b.lemma)
 
-          if (aPriority !== -1 && bPriority !== -1) {
-            return aPriority - bPriority
-          } else if (aPriority !== -1) {
-            return -1
-          } else if (bPriority !== -1) {
-            return 1
-          } else {
-            return a.lemma.localeCompare(b.lemma)
+            if (aPriority !== -1 && bPriority !== -1) {
+              return aPriority - bPriority
+            } else if (aPriority !== -1) {
+              return -1
+            } else if (bPriority !== -1) {
+              return 1
+            } else {
+              return a.lemma.localeCompare(b.lemma)
+            }
+          } catch (sortError) {
+            logger.warn('getExampleVerbs', `Error sorting verbs ${a?.lemma} vs ${b?.lemma}`, sortError)
+            return 0
           }
-        } catch (sortError) {
-          logger.warn('getExampleVerbs', `Error sorting verbs ${a?.lemma} vs ${b?.lemma}`, sortError)
-          return 0
-        }
-      })
-    } catch (sortError) {
-      logger.warn('getExampleVerbs', 'Error sorting example verbs', sortError)
-      errorCount++
+        })
+      } catch (sortError) {
+        logger.warn('getExampleVerbs', 'Error sorting example verbs', sortError)
+        errorCount++
+      }
     }
 
     const results = candidateVerbs.slice(0, 15)
@@ -1312,5 +1356,5 @@ export function clearVerbDataCaches() {
 // Preload function for progressive enhancement
 export function preloadVerbData() {
   // Start loading verbs in background
-  getAllVerbs().catch(() => {})
+  getAllVerbs().catch(() => { })
 }
