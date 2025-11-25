@@ -1017,18 +1017,67 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
       const conjugation = getConjugation(verbObj, personHint, tense.mood);
 
+      // Calcular la forma regular esperada para poder hacer el diff
+      let expectedRegular = '';
+      if (verbObj.type === 'irregular') {
+        const group = verbObj.lemma.endsWith('ar') ? 'ar' : verbObj.lemma.endsWith('er') ? 'er' : 'ir';
+        const standardEndings = getStandardEndings(group, tense.tense);
+        const stem = (tense.tense === 'fut' || tense.tense === 'cond') ? verbObj.lemma : verbObj.lemma.slice(0, -2);
+
+        const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+        // Mapear personHint a índice
+        let pKey = personHint;
+        if (pKey === '2s_vos') pKey = '2s_tu'; // Simplificación para búsqueda en array estándar
+
+        const idx = baseOrder.indexOf(pKey);
+        if (idx !== -1 && standardEndings && standardEndings[idx]) {
+          expectedRegular = stem + standardEndings[idx];
+        }
+      }
+
       // Capitalizar si el verbo inicia la oración (posiblemente tras signos de apertura)
       const startsWithVerb = /^__VERB__/.test(sentenceTemplate);
-      const conjDisplay = startsWithVerb && typeof conjugation === 'string' && conjugation.length
-        ? conjugation.charAt(0).toUpperCase() + conjugation.slice(1)
-        : conjugation;
+
+      // Preparar el contenido del verbo, ya sea string simple o nodos con highlight
+      let verbContent = conjugation;
+
+      if (verbObj.type === 'irregular' && expectedRegular && typeof conjugation === 'string') {
+        // Generar nodos con highlight
+        const nodes = renderWithIrregularHighlights(conjugation, expectedRegular);
+
+        // Si hay que capitalizar, necesitamos manejarlo con cuidado en los nodos
+        if (startsWithVerb) {
+          // Si es un array de nodos
+          if (Array.isArray(nodes) && nodes.length > 0) {
+            // Clonar el primer nodo para capitalizar su contenido
+            const firstNode = nodes[0];
+            if (React.isValidElement(firstNode)) {
+              const children = firstNode.props.children;
+              if (typeof children === 'string' && children.length > 0) {
+                const capped = children.charAt(0).toUpperCase() + children.slice(1);
+                nodes[0] = React.cloneElement(firstNode, {}, capped);
+              }
+            }
+            verbContent = nodes;
+          } else if (typeof nodes === 'string') {
+            verbContent = nodes.charAt(0).toUpperCase() + nodes.slice(1);
+          }
+        } else {
+          verbContent = nodes;
+        }
+      } else {
+        // Caso regular o fallback
+        if (startsWithVerb && typeof conjugation === 'string' && conjugation.length) {
+          verbContent = conjugation.charAt(0).toUpperCase() + conjugation.slice(1);
+        }
+      }
 
       let replacementRoot = null
       let replacementIrregular = null
       if (tense?.tense === 'fut' || tense?.tense === 'cond') {
         replacementRoot = FUTURE_ROOT_MAP.get(verbObj.lemma) || null
         // Use the full conjugation as irregular form highlight
-        replacementIrregular = conjDisplay
+        replacementIrregular = verbContent
       } else if (tense?.tense === 'ger') {
         replacementIrregular = GERUND_MAP.get(verbObj.lemma) || null
       } else if (tense?.tense === 'part') {
@@ -1036,9 +1085,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       }
 
       const replacements = {
-        verb: conjDisplay,
-        root: replacementRoot || (replacementIrregular ? replacementIrregular : conjDisplay),
-        irreg: replacementIrregular || replacementRoot || conjDisplay
+        verb: verbContent,
+        root: replacementRoot || (replacementIrregular ? replacementIrregular : verbContent),
+        irreg: replacementIrregular || replacementRoot || verbContent
       }
 
 
