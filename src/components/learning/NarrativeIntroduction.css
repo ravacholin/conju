@@ -196,6 +196,16 @@
   text-underline-offset: 2px;
 }
 
+/* Global irregular fragment style for narrative sentences */
+.irreg-frag {
+  color: var(--accent-orange) !important;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
 .verb-deconstruction.irregular .form-separator {
   color: var(--text);
   opacity: 0.9;
