@@ -662,7 +662,23 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
 
-          <div className="verb-lemma">{verb.lemma}</div>
+          {(() => {
+            const highlightData = highlightStemVowel(verb.lemma);
+            return (
+              <div className="verb-lemma">
+                {highlightData.hasHighlight ? (
+                  <>
+                    {highlightData.beforeVowel}
+                    <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
+                    {highlightData.afterVowel}
+                    <span style={{ color: 'var(--accent-blue)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
+                  </>
+                ) : (
+                  verb.lemma
+                )}
+              </div>
+            );
+          })()}
 
           {/* No panel extra: mantener el layout idéntico al de regulares */}
           <div className="person-display">{currentPronoun.text}</div>

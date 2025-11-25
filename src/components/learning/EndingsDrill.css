@@ -15,20 +15,22 @@
 .page-transition {
     opacity: 0;
     transform: translateY(15px) scale(0.95);
-    transition: opacity 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                transform 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 400ms ease, 
-                border-color 400ms ease;
+    transition: opacity 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 400ms ease,
+        border-color 400ms ease;
 }
+
 .page-transition.page-in {
     opacity: 1;
     transform: translateY(0) scale(1);
 }
+
 .page-transition.page-out {
     opacity: 0;
     transform: translateY(-10px) scale(1.05);
     transition: opacity 300ms cubic-bezier(0.55, 0.06, 0.68, 0.19),
-                transform 300ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+        transform 300ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
 }
 
 .learning-drill .drill-header {
@@ -36,7 +38,8 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center !important; /* center the title */
+    justify-content: center !important;
+    /* center the title */
     margin-bottom: 2rem;
 }
 
@@ -47,14 +50,17 @@
     transform: translateY(-50%);
     background: transparent;
     border: none;
-    padding: 0; /* evitar cambios de altura en hover */
+    padding: 0;
+    /* evitar cambios de altura en hover */
     cursor: pointer;
-    width: 64px; /* tamaño fijo del botón para no mover el header */
+    width: 64px;
+    /* tamaño fijo del botón para no mover el header */
     height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.15s ease, color 0.15s ease; /* sin transform en hover */
+    transition: background-color 0.15s ease, color 0.15s ease;
+    /* sin transform en hover */
 }
 
 .learning-drill .back-to-menu-btn .back-icon {
@@ -68,12 +74,23 @@
     transform: translateY(-50%) !important;
 }
 
-.verb-lemma {
-    font-size: 2.5rem;
-    font-weight: 300;
+.learning-drill .verb-lemma {
+    font-size: 1.8rem;
+    font-weight: 500;
     color: var(--text);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
     animation: slideInFromTop 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s both;
+}
+
+/* Stem vowel highlighting for diphthong verbs */
+.learning-drill .stem-vowel-highlight {
+    color: var(--accent-orange);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-orange);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
 }
 
 .person-display {
@@ -117,12 +134,19 @@
 .result.correct .correct-answer-display .ending-highlight {
     color: var(--text);
     font-weight: 600;
-    border-bottom: 1px dotted rgba(255,255,255,0.25);
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.25);
 }
 
 @keyframes flash-success {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* Enhanced entry animations */
@@ -131,6 +155,7 @@
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -142,6 +167,7 @@
         opacity: 0;
         transform: translateX(15px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateX(0) scale(1);
@@ -153,6 +179,7 @@
         opacity: 0;
         transform: translateY(15px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -164,6 +191,7 @@
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -175,9 +203,11 @@
         opacity: 0;
         transform: scale(0.8) translateY(-10px);
     }
+
     60% {
         transform: scale(1.05) translateY(2px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -282,14 +312,17 @@
 .learning-drill.group-ar,
 .learning-drill.group-er,
 .learning-drill.group-ir {
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 12px 48px rgba(0,0,0,0.4);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 12px 48px rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Remove color ribbons entirely */
 .learning-drill.group-ar::before,
 .learning-drill.group-er::before,
-.learning-drill.group-ir::before { display: none; content: none; }
+.learning-drill.group-ir::before {
+    display: none;
+    content: none;
+}
 
 /* Highlighted endings in reference table */
 .ending-suffix {
