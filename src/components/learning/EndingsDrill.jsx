@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, laz
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
+import { highlightStemVowel } from './highlightHelpers.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
