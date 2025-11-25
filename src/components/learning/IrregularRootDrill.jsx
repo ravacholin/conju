@@ -7,7 +7,7 @@ import {
   buildFutureConditionalForm,
   getPronounLabel
 } from '../../lib/data/irregularPatterns.js'
-import { recordLearningAttempt } from '../../lib/progress/learningAttempts'
+
 import { TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { normalize } from '../../lib/utils/accentUtils.js'
 import AccentKeypad from '../shared/AccentKeypad.jsx'
