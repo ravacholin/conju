@@ -5,6 +5,7 @@ import { getVerbByLemma, preloadNonfiniteSets } from '../../lib/core/verbDataSer
 import { IRREGULAR_PARTICIPLES } from '../../lib/data/irregularPatterns.js'
 import './LearningDrill.css'
 import './NonfiniteGuidedDrill.css'
+import { highlightStemVowel } from './highlightHelpers.js'
 
 const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü']
 
@@ -144,7 +145,7 @@ function shuffle(list) {
   const arr = [...list]
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+      ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
   return arr
 }
@@ -443,7 +444,23 @@ function NonfiniteGuidedDrill({
             </div>
           </div>
 
-          <div className="verb-lemma">{currentTask.lemma}</div>
+          {(() => {
+            const highlightData = highlightStemVowel(currentTask.lemma);
+            return (
+              <div className="verb-lemma">
+                {highlightData.hasHighlight ? (
+                  <>
+                    {highlightData.beforeVowel}
+                    <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
+                    {highlightData.afterVowel}
+                    <span style={{ color: 'var(--accent-blue)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
+                  </>
+                ) : (
+                  currentTask.lemma
+                )}
+              </div>
+            );
+          })()}
           <div className="person-display nonfinite-hint">
             <span className="hint-pill">{hintLabel}</span>
             <span>{currentTask.hint}</span>

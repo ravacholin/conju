@@ -7,11 +7,13 @@ import {
   buildFutureConditionalForm,
   getPronounLabel
 } from '../../lib/data/irregularPatterns.js'
+import { recordLearningAttempt } from '../../lib/progress/learningAttempts'
 import { TENSE_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { normalize } from '../../lib/utils/accentUtils.js'
 import AccentKeypad from '../shared/AccentKeypad.jsx'
 import './LearningDrill.css'
 import './IrregularRootDrill.css'
+import { highlightStemVowel } from './highlightHelpers.js'
 
 const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
@@ -403,7 +405,23 @@ function IrregularRootDrill({
 
             <div className="irregular-verb">
               <span className="verb-label">Verbo</span>
-              <span className="verb-lemma">{currentQuestion.lemma}</span>
+              {(() => {
+                const highlightData = highlightStemVowel(currentQuestion.lemma);
+                return (
+                  <span className="verb-lemma">
+                    {highlightData.hasHighlight ? (
+                      <>
+                        {highlightData.beforeVowel}
+                        <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
+                        {highlightData.afterVowel}
+                        <span style={{ color: 'var(--accent-blue)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
+                      </>
+                    ) : (
+                      currentQuestion.lemma
+                    )}
+                  </span>
+                );
+              })()}
             </div>
 
             {mode === 'future_cond' && renderFutureCondDetails(currentQuestion)}
