@@ -120,11 +120,12 @@
 }
 
 .story-sentence .highlight {
-  color: var(--accent-blue);
-  font-weight: 500;
-  background: rgba(142, 180, 227, 0.1);
+  color: var(--accent-orange);
+  font-weight: 700;
+  background: rgba(253, 126, 20, 0.15);
   padding: 0.2em 0.4em;
   border-radius: 6px;
+  border: 1px solid rgba(253, 126, 20, 0.2);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
