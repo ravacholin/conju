@@ -206,6 +206,61 @@ function getStandardEndings(group, tense) {
   return endings[tense]?.[group] || endings.pres[group] || [];
 }
 
+// Helpers to compute expected regular forms and highlight irregular fragments
+const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
+const stripAccents = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+const renderWithIrregularHighlights = (actual, expected) => {
+  if (!actual || !expected) return actual;
+  if (stripAccents(actual) === stripAccents(expected)) return actual;
+  const parts = diffChars(expected, actual);
+  const nodes = [];
+  for (let idx = 0; idx < parts.length; idx++) {
+    const p = parts[idx];
+    if (p.added) {
+      let val = p.value || '';
+      // Para diptongos en presente (e→ie, o→ue): resaltar "ie" o "ue" completos
+      // Si el diff marcó solo la i/u añadida y la e quedó como parte sin cambio,
+      // unimos esa primera 'e' a la porción resaltada.
+      const next = parts[idx + 1];
+      if ((val.endsWith('i') || val.endsWith('u')) && next && !next.added && !next.removed && typeof next.value === 'string' && next.value.startsWith('e')) {
+        val += 'e';
+        parts[idx + 1] = { ...next, value: next.value.slice(1) };
+      }
+      nodes.push(<span key={idx} className="irreg-frag">{val}</span>);
+    } else if (p.removed) {
+      // omitimos
+    } else {
+      if (!p.value) continue;
+      nodes.push(<span key={idx}>{p.value}</span>);
+    }
+  }
+  return nodes;
+};
+
+const renderHighlightedLemma = (verb) => {
+  const highlightData = highlightStemVowel(verb);
+  const group = verb.slice(-2);
+  const groupLabel = group.endsWith('ar') ? '-ar' : group.endsWith('er') ? '-er' : '-ir';
+
+  if (highlightData.hasHighlight) {
+    return (
+      <>
+        <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
+        <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
+        <span className="lemma-stem-large">{highlightData.afterVowel}</span>
+        <span className="group-label-large">{groupLabel}</span>
+      </>
+    );
+  }
+  return (
+    <>
+      <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+      <span className="group-label-large">{groupLabel}</span>
+    </>
+  );
+};
+
 // Función para renderizar verbos irregulares solo en terceras personas
 function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
   const thirdPersonIrregularVerbs = exampleVerbs.filter(verbObj => {
@@ -940,60 +995,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     return form?.value || verbObj.lemma;
   };
 
-  // Helpers to compute expected regular forms and highlight irregular fragments
-  const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
-  const stripAccents = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  const renderWithIrregularHighlights = (actual, expected) => {
-    if (!actual || !expected) return actual;
-    if (stripAccents(actual) === stripAccents(expected)) return actual;
-    const parts = diffChars(expected, actual);
-    const nodes = [];
-    for (let idx = 0; idx < parts.length; idx++) {
-      const p = parts[idx];
-      if (p.added) {
-        let val = p.value || '';
-        // Para diptongos en presente (e→ie, o→ue): resaltar "ie" o "ue" completos
-        // Si el diff marcó solo la i/u añadida y la e quedó como parte sin cambio,
-        // unimos esa primera 'e' a la porción resaltada.
-        const next = parts[idx + 1];
-        if ((val.endsWith('i') || val.endsWith('u')) && next && !next.added && !next.removed && typeof next.value === 'string' && next.value.startsWith('e')) {
-          val += 'e';
-          parts[idx + 1] = { ...next, value: next.value.slice(1) };
-        }
-        nodes.push(<span key={idx} className="irreg-frag">{val}</span>);
-      } else if (p.removed) {
-        // omitimos
-      } else {
-        if (!p.value) continue;
-        nodes.push(<span key={idx}>{p.value}</span>);
-      }
-    }
-    return nodes;
-  };
-
-  const renderHighlightedLemma = (verb) => {
-    const highlightData = highlightStemVowel(verb);
-    const group = verb.slice(-2);
-    const groupLabel = group.endsWith('ar') ? '-ar' : group.endsWith('er') ? '-er' : '-ir';
-
-    if (highlightData.hasHighlight) {
-      return (
-        <>
-          <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
-          <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
-          <span className="lemma-stem-large">{highlightData.afterVowel}</span>
-          <span className="group-label-large">{groupLabel}</span>
-        </>
-      );
-    }
-    return (
-      <>
-        <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-        <span className="group-label-large">{groupLabel}</span>
-      </>
-    );
-  };
   const expectedRegularForms = (verbObj) => {
     if (!verbObj) return [];
     const persons = ['1s', '2s_vos', '3s', '1p', '3p'];
