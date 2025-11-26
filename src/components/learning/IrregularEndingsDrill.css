@@ -1,10 +1,14 @@
 /* Irregular Endings UI — mirror regular layout, minimal */
 
 /* badge eliminado del layout del drill */
-.irregularity-badge { display: none; }
+.irregularity-badge {
+  display: none;
+}
 
 /* panel explicativo removido: mantener layout limpio */
-.irregularity-explanation { display: none; }
+.irregularity-explanation {
+  display: none;
+}
 
 .irregularity-explanation h4 {
   color: var(--text);
@@ -26,7 +30,10 @@
 
 /* Tabla de formas irregulares */
 /* sin estilo especial por fila; idéntico a regulares */
-.irregular-row { background: transparent; border: none; }
+.irregular-row {
+  background: transparent;
+  border: none;
+}
 
 .form-comparison {
   display: flex;
@@ -35,11 +42,19 @@
 }
 
 /* usar la misma tipografía que ending-value */
-.actual-form { all: unset; }
-.actual-form.irregular, .actual-form.regular { all: unset; }
+.actual-form {
+  all: unset;
+}
+
+.actual-form.irregular,
+.actual-form.regular {
+  all: unset;
+}
 
 /* marker removed from JSX; keep no-op just in case */
-.irregular-marker { display: none; }
+.irregular-marker {
+  display: none;
+}
 
 .expected-regular {
   display: block;
@@ -50,7 +65,9 @@
 
 /* Highlight current irregular row subtly, no pulse */
 /* highlighted igual que regulares (se maneja en EndingsDrill.css) */
-.irregular-row.highlighted { background: transparent; }
+.irregular-row.highlighted {
+  background: transparent;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -58,34 +75,35 @@
     padding: 10px 12px;
     margin: 10px 0;
   }
-  
+
   .form-comparison {
     font-size: 0.95em;
   }
-  
+
   .irregularity-badge {
     font-size: 0.7rem;
     padding: 2px 6px;
   }
 }
+
 .ending-value .irreg-frag {
-  color: var(--accent-blue);
-  background: rgba(0, 123, 255, 0.14);
-  border-bottom: 2px solid var(--accent-blue);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.14);
+  border-bottom: 2px solid var(--accent-orange);
   padding: 0 2px;
   border-radius: 3px;
   font-weight: 700;
-  text-shadow: 0 0 0.5px rgba(0,0,0,0.25);
+  text-shadow: 0 0 0.5px rgba(0, 0, 0, 0.25);
 }
 
 /* Resalta toda la fila cuando la forma correspondiente es irregular */
 .ending-row.irregular {
-  background: rgba(0, 123, 255, 0.10);
-  border: 1px solid rgba(0, 123, 255, 0.35);
+  background: rgba(253, 126, 20, 0.10);
+  border: 1px solid rgba(253, 126, 20, 0.35);
 }
 
 .ending-row.irregular .ending-person {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
 }
 
 .ending-row.irregular .ending-value {

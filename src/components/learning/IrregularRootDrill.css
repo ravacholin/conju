@@ -80,12 +80,12 @@
 .root-meta .root-highlight {
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--accent-green, #6ee7b7);
+  color: var(--accent-orange);
 }
 
 .nonfinite-highlight {
   font-weight: 700;
-  color: var(--accent-green, #6ee7b7);
+  color: var(--accent-orange);
   letter-spacing: 0.08em;
 }
 

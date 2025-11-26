@@ -167,7 +167,7 @@
 }
 
 .group-label {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
   opacity: 0.9;
   margin-left: 0rem;
   /* glue suffix to stem (e.g., habl-ar) */
@@ -213,11 +213,11 @@
 }
 
 .verb-stem {
-  color: var(--accent-green);
-  background: rgba(40, 167, 69, 0.1);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.1);
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
-  border: 1px solid rgba(40, 167, 69, 0.2);
+  border: 1px solid rgba(253, 126, 20, 0.2);
   animation: fadeInScale 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
 }
 
@@ -420,11 +420,11 @@
 .irregular-yo-verb-complete .yo-form-highlight {
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--accent-green);
-  background: rgba(108, 237, 108, 0.1);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.1);
   padding: 0.4rem 0.9rem;
   border-radius: 8px;
-  border: 1px solid rgba(108, 237, 108, 0.3);
+  border: 1px solid rgba(253, 126, 20, 0.3);
   font-family: 'Courier New', monospace;
 }
 
@@ -448,15 +448,15 @@
 
 .irregular-yo-verb-complete .form-item.yo-form-irregular {
   font-weight: 600;
-  color: var(--accent-green);
-  background: rgba(108, 237, 108, 0.08);
-  border: 1px solid rgba(108, 237, 108, 0.2);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.08);
+  border: 1px solid rgba(253, 126, 20, 0.2);
 }
 
 /* Estilos para pretéritos fuertes agrupados */
 .deconstruction-item.strong-preterite-group {
   background: rgba(17, 17, 17, 0.8);
-  border: 1px solid rgba(142, 180, 227, 0.2);
+  border: 1px solid rgba(253, 126, 20, 0.2);
   border-radius: 16px;
   padding: 1.2rem;
   margin-bottom: 1rem;
@@ -470,7 +470,7 @@
 
 .deconstruction-item.future-root-group {
   background: rgba(17, 17, 17, 0.78);
-  border: 1px solid rgba(110, 231, 183, 0.2);
+  border: 1px solid rgba(253, 126, 20, 0.2);
   border-radius: 16px;
   padding: 1.2rem;
   margin-bottom: 1rem;
@@ -493,8 +493,8 @@
   flex-direction: column;
   gap: 0.45rem;
   align-items: center;
-  background: rgba(40, 120, 170, 0.12);
-  border: 1px solid rgba(110, 231, 183, 0.22);
+  background: rgba(253, 126, 20, 0.12);
+  border: 1px solid rgba(253, 126, 20, 0.22);
   padding: 0.9rem 1.1rem;
   border-radius: 14px;
   min-width: 140px;
@@ -503,7 +503,7 @@
 .future-root-highlight {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--accent-green, #6ee7b7);
+  color: var(--accent-orange);
   letter-spacing: 0.08em;
 }
 
@@ -529,7 +529,7 @@
 
 .deconstruction-item.nonfinite-irregular-group {
   background: rgba(17, 17, 17, 0.78);
-  border: 1px solid rgba(244, 114, 182, 0.2);
+  border: 1px solid rgba(253, 126, 20, 0.2);
   border-radius: 16px;
   padding: 1.1rem;
   margin-bottom: 1rem;
@@ -558,20 +558,20 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: rgba(68, 51, 121, 0.18);
+  background: rgba(253, 126, 20, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.7rem 1rem;
   border-radius: 12px;
 }
 
 .nonfinite-item .arrow {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
   font-weight: 600;
 }
 
 .nonfinite-highlight {
   font-weight: 700;
-  color: var(--accent-pink, #f472b6);
+  color: var(--accent-orange);
   letter-spacing: 0.06em;
 }
 
@@ -646,19 +646,19 @@
 }
 
 .group-label-large {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
   opacity: 0.9;
   font-weight: 500;
 }
 
 /* Highlighting for changing stem vowels in infinitives */
-.stem-vowel-highlight {
+.irregular-stem-highlight {
   color: var(--accent-orange);
   font-weight: 700;
   text-decoration: underline;
   text-decoration-color: var(--accent-orange);
   text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
+  text-underline-offset: 2px;
 }
 
 /* Larger highlighting for initial presentation */
@@ -674,7 +674,7 @@
 
 
 .strong-verb-item .arrow {
-  color: var(--accent-blue);
+  color: var(--accent-orange);
   font-weight: 600;
   font-size: 1.3rem;
 }
@@ -682,22 +682,22 @@
 .irregular-stem {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--accent-green);
-  background: rgba(40, 167, 69, 0.15);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.15);
   padding: 0.3rem 0.6rem;
   border-radius: 8px;
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  border: 1px solid rgba(253, 126, 20, 0.3);
   font-family: 'Courier New', monospace;
 }
 
 .irregular-stem-large {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--accent-green);
-  background: rgba(40, 167, 69, 0.15);
+  color: var(--accent-orange);
+  background: rgba(253, 126, 20, 0.15);
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
-  border: 1px solid rgba(40, 167, 69, 0.3);
+  border: 1px solid rgba(253, 126, 20, 0.3);
   font-family: 'Courier New', monospace;
 }
 

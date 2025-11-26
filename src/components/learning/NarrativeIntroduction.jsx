@@ -280,19 +280,7 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
             return (
               <div key={`third-${index}`} className="third-person-verb-item">
                 <div className="verb-lemma-large">
-                  {highlightData.hasHighlight ? (
-                    <>
-                      <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
-                      <span className="stem-vowel-highlight">{highlightData.vowel}</span>
-                      <span className="lemma-stem-large">{highlightData.afterVowel}</span>
-                      <span className="group-label-large">{group}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="lemma-stem-large">{highlightData.stem}</span>
-                      <span className="group-label-large">{group}</span>
-                    </>
-                  )}
+                  {renderHighlightedLemma(verb)}
                 </div>
               </div>
             );
@@ -385,7 +373,9 @@ function renderFutureRootDeconstruction(exampleVerbs, tense, settings) {
           const { lemma, root } = item
           return (
             <div key={`future-root-${index}`} className="future-root-item">
-              <span className="lemma-stem-large">{lemma}</span>
+              <div className="verb-lemma-large">
+                {renderHighlightedLemma(lemma)}
+              </div>
               <span className="arrow">→</span>
               <span className="future-root-highlight">{root}-</span>
               <span className="future-root-example">
@@ -450,8 +440,9 @@ function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, setti
 
             return (
               <div key={`regular-verb-${index}`} className="future-root-item">
-                <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                <span className="group-label-large">{group}</span>
+                <div className="verb-lemma-large">
+                  {renderHighlightedLemma(verb)}
+                </div>
                 <span className="arrow">→</span>
                 <span className="future-root-highlight">{verb}-</span>
               </div>
@@ -488,7 +479,9 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
       <div className="nonfinite-grid">
         {relevant.map((item, index) => (
           <div key={`nonfinite-${index}`} className="nonfinite-item">
-            <span className="lemma-stem-large">{item.lemma}</span>
+            <div className="verb-lemma-large">
+              {renderHighlightedLemma(item.lemma)}
+            </div>
             <span className="arrow">→</span>
             <span className="nonfinite-highlight">{map.get(item.lemma)}</span>
           </div>
@@ -540,8 +533,9 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
 
             return (
               <div key={`regular-nonfinite-${index}`} className="future-root-item">
-                <span className="lemma-stem-large">{stem}</span>
-                <span className="group-label-large">{group}</span>
+                <div className="verb-lemma-large">
+                  {renderHighlightedLemma(verb)}
+                </div>
                 <span className="arrow">→</span>
                 <span className="future-root-highlight">{stem + ending}</span>
               </div>
@@ -631,26 +625,21 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
             // Obtener la forma YO conjugada para destacarla
             const yoForm = forms[0]; // Primera forma es siempre 1s
 
+            // Calcular forma regular esperada para highlighting
+            const stem = verb.slice(0, -2);
+            const endings = getStandardEndings(group.slice(1), 'pres'); // group is '-ar' etc
+            const expectedYo = stem + (endings?.[0] || 'o');
+
             return (
               <div key={`yo-irregular-${index}`} className="irregular-yo-verb-complete">
                 <div className="verb-header">
                   <div className="verb-lemma-large">
-                    {highlightData.hasHighlight ? (
-                      <>
-                        <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
-                        <span className="stem-vowel-highlight">{highlightData.vowel}</span>
-                        <span className="lemma-stem-large">{highlightData.afterVowel}</span>
-                        <span className="group-label-large">{group}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                        <span className="group-label-large">{group}</span>
-                      </>
-                    )}
+                    {renderHighlightedLemma(verb)}
                   </div>
                   <div className="arrow">→</div>
-                  <div className="yo-form-highlight">{yoForm}</div>
+                  <div className="yo-form-highlight">
+                    {renderWithIrregularHighlights(yoForm, expectedYo)}
+                  </div>
                 </div>
 
                 <div className="all-forms-display">
@@ -717,8 +706,7 @@ function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
             return (
               <div key={`strong-verb-${index}`} className="strong-verb-item">
                 <div className="verb-lemma-large">
-                  <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
-                  <span className="group-label-large">{group}</span>
+                  {renderHighlightedLemma(verb)}
                 </div>
                 <div className="arrow">→</div>
                 <div className="irregular-stem-large">{irregularStem}-</div>
@@ -955,6 +943,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   // Helpers to compute expected regular forms and highlight irregular fragments
   const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
   const stripAccents = (s) => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
   const renderWithIrregularHighlights = (actual, expected) => {
     if (!actual || !expected) return actual;
     if (stripAccents(actual) === stripAccents(expected)) return actual;
@@ -981,6 +970,29 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       }
     }
     return nodes;
+  };
+
+  const renderHighlightedLemma = (verb) => {
+    const highlightData = highlightStemVowel(verb);
+    const group = verb.slice(-2);
+    const groupLabel = group.endsWith('ar') ? '-ar' : group.endsWith('er') ? '-er' : '-ir';
+
+    if (highlightData.hasHighlight) {
+      return (
+        <>
+          <span className="lemma-stem-large">{highlightData.beforeVowel}</span>
+          <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
+          <span className="lemma-stem-large">{highlightData.afterVowel}</span>
+          <span className="group-label-large">{groupLabel}</span>
+        </>
+      );
+    }
+    return (
+      <>
+        <span className="lemma-stem-large">{verb.slice(0, -2)}</span>
+        <span className="group-label-large">{groupLabel}</span>
+      </>
+    );
   };
   const expectedRegularForms = (verbObj) => {
     if (!verbObj) return [];
@@ -1221,20 +1233,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                           const highlightData = highlightStemVowel(verb);
                           return (
                             <div key={`${group}-${index}`} className="deconstruction-item">
+
                               <div className="verb-lemma">
-                                {highlightData.hasHighlight ? (
-                                  <>
-                                    <span className="lemma-stem">{highlightData.beforeVowel}</span>
-                                    <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
-                                    <span className="lemma-stem">{highlightData.afterVowel}</span>
-                                    <span className="group-label">{group.toUpperCase()}</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <span className="lemma-stem">{lemmaStem(verb)}</span>
-                                    <span className="group-label">{group}</span>
-                                  </>
-                                )}
+                                {renderHighlightedLemma(verb)}
                               </div>
                               <div className="verb-deconstruction irregular">
                                 <span className="irregular-forms">
@@ -1287,19 +1288,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                         return (
                           <div key={`${group}-${index}`} className="deconstruction-item">
                             <div className="verb-lemma">
-                              {highlightData.hasHighlight ? (
-                                <>
-                                  <span className="lemma-stem">{highlightData.beforeVowel}</span>
-                                  <span className="stem-vowel-highlight-large">{highlightData.vowel.toUpperCase()}</span>
-                                  <span className="lemma-stem">{highlightData.afterVowel}</span>
-                                  <span className="group-label">{group.toUpperCase()}</span>
-                                </>
-                              ) : (
-                                <>
-                                  <span className="lemma-stem">{lemmaStem(verb)}</span>
-                                  <span className="group-label">{group}</span>
-                                </>
-                              )}
+                              {renderHighlightedLemma(verb)}
                             </div>
                             <div className="verb-deconstruction">
                               <span className="verb-stem">{realStem}-</span>
