@@ -213,11 +213,11 @@
 }
 
 .verb-stem {
-  color: var(--accent-orange);
-  background: rgba(253, 126, 20, 0.1);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
   padding: 0.4rem 0.8rem;
   border-radius: 10px;
-  border: 1px solid rgba(253, 126, 20, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   animation: fadeInScale 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
 }
 
@@ -505,6 +505,28 @@
   font-weight: 700;
   color: var(--accent-orange);
   letter-spacing: 0.08em;
+}
+
+.regular-stem-base {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.regular-stem-suffix {
+  font-size: 1.2rem;
+  color: rgba(245, 245, 245, 0.5);
+}
+
+.regular-ending-highlight {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  letter-spacing: 0.05em;
+  text-decoration: underline;
+  text-decoration-color: rgba(253, 126, 20, 0.4);
+  text-underline-offset: 3px;
 }
 
 .future-root-example {

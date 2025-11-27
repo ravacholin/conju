@@ -672,7 +672,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
                     {highlightData.beforeVowel}
                     <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
                     {highlightData.afterVowel}
-                    <span style={{ color: 'var(--accent-blue)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
+                    <span style={{ color: 'var(--accent-orange)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
                   </>
                 ) : (
                   verb.lemma

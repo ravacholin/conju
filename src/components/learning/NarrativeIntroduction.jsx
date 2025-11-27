@@ -499,7 +499,8 @@ function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, setti
                   {renderHighlightedLemma(verb)}
                 </div>
                 <span className="arrow">→</span>
-                <span className="future-root-highlight">{verb}-</span>
+                <span className="regular-stem-base">{verb}</span>
+                <span className="regular-stem-suffix">-</span>
               </div>
             )
           })}
@@ -592,7 +593,8 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
                   {renderHighlightedLemma(verb)}
                 </div>
                 <span className="arrow">→</span>
-                <span className="future-root-highlight">{stem + ending}</span>
+                <span className="regular-stem-base">{stem}</span>
+                <span className="regular-ending-highlight">{ending}</span>
               </div>
             )
           })}
