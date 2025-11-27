@@ -117,22 +117,7 @@
   margin: 2px 0;
 }
 
-:root {
-  --bg: #050505;
-  --panel: #111111;
-  --text: #ffffff;
-  --muted: #888888;
-  --muted-2: #555555;
-  --border: #333333;
-  --border-2: #ffffff;
-  --hover: #1a1a1a;
-  --accent: #ffffff;
-  --accent-blue: #ffffff;
-  --focus-ring: #ffffff;
-  --accent-green: #00ff00;
-  --accent-orange: #ffaa00;
-  --accent-red: #ff0000;
-}
+
 
 /* Reset and base styles */
 * {
@@ -191,10 +176,11 @@ body {
   justify-content: center;
   align-items: center;
   padding: 1rem 1.618rem;
-  background: rgba(5, 5, 5, 0.9);
+  background: rgba(5, 5, 5, 0.95);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(0px);
+  /* No blur for brutalism */
+  -webkit-backdrop-filter: blur(0px);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -247,19 +233,18 @@ body {
 
 .icon-btn:hover {
   transform: translate(-2px, -2px);
-  border: 1px solid #ffffff;
-  background: transparent;
-  color: #ffffff;
-  box-shadow: 2px 2px 0 #ffffff;
+  border: 1px solid var(--border-active);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--shadow-hard-sm);
 }
 
 .icon-btn:hover img {
   filter: invert(0);
-  /* Keep white on black bg */
 }
 
 .quick-switch-panel {
-  background: #0a0a0a;
+  background: var(--bg);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid var(--border);
@@ -267,7 +252,7 @@ body {
   padding: 2rem;
   margin: 1rem auto;
   max-width: 600px;
-  box-shadow: 8px 8px 0 #1a1a1a;
+  box-shadow: var(--shadow-hard);
 }
 
 .quick-switch-panel .setting-group {
@@ -279,8 +264,8 @@ body {
   border-radius: 0;
   border: 1px solid var(--border);
   background: #000000;
-  color: #ffffff;
-  font-family: 'Courier New', monospace;
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
 .back-to-menu-btn {
@@ -302,11 +287,11 @@ body {
 }
 
 .back-to-menu-btn:hover {
-  color: #ffffff;
-  background: transparent;
-  border-color: #ffffff;
+  color: var(--bg);
+  background: var(--text);
+  border-color: var(--text);
   transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 #ffffff;
+  box-shadow: var(--shadow-hard);
 }
 
 .back-to-menu-btn:active {
@@ -352,7 +337,7 @@ body {
   margin: 0.25rem 0 1.5rem;
   color: #666;
   font-size: 0.75rem;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -413,7 +398,7 @@ body {
   border-bottom: none;
   display: block;
   padding-bottom: 0;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .onboarding p {
@@ -441,10 +426,10 @@ body {
 }
 
 .option-card {
-  background: rgba(10, 10, 10, 0.8);
-  /* Slight transparency */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: var(--panel);
+  /* No transparency */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--border);
   border-radius: 0;
   padding: 2rem;
@@ -465,10 +450,10 @@ body {
 
 /* Neo-Brutalist hover effect: sharp offset shadow */
 .option-card:hover {
-  background: #111111;
-  border-color: #ffffff;
+  background: var(--panel);
+  border-color: var(--border-active);
   transform: translate(-4px, -4px);
-  box-shadow: 6px 6px 0 #ffffff;
+  box-shadow: var(--shadow-hard);
   z-index: 10;
 }
 
@@ -505,7 +490,7 @@ body {
   font-size: 0.85rem;
   opacity: 1;
   color: #666;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   line-height: 1.4;
   padding-left: 0;
   border-left: none;
@@ -612,7 +597,7 @@ body {
   font-size: 0.9rem;
   opacity: 0.8;
   color: var(--muted-2);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   line-height: 1.4;
   padding-left: 0.75rem;
   border-left: 3px solid rgba(255, 255, 255, 0.15);
@@ -629,7 +614,7 @@ body {
   font-size: 0.8rem;
   color: var(--muted-2);
   margin-top: 0.25rem;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-weight: 400;
   line-height: 1.3;
 }
@@ -638,9 +623,9 @@ body {
 
 /* Drill container */
 .drill-container {
-  background: rgba(10, 10, 10, 0.8);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: var(--panel);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border: 1px solid var(--border);
   border-radius: 0;
   padding: 2.5rem 2rem;
@@ -668,7 +653,7 @@ body {
   border-radius: 0;
   font-size: 0.9rem;
   transition: all 0.2s ease;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .micro-controls {
@@ -688,7 +673,7 @@ body {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .verb-lemma {
@@ -708,7 +693,7 @@ body {
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .person-display {
@@ -749,7 +734,7 @@ body {
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 10px;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .reverse-divider {
@@ -793,7 +778,7 @@ body {
   border-radius: 0;
   background: #000000;
   color: var(--text);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .reverse-select {
@@ -1924,7 +1909,7 @@ body {
   /* Reducir espaciado en chrono panel */
   .chrono-panel {
     gap: 0.5rem !important;
-    padding: 1rem !importan;
+    padding: 1rem !important;
   }
 
   .chrono-item {
@@ -2647,7 +2632,9 @@ body {
 }
 
 .requirements-list {
-  space-y: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .requirement-item {

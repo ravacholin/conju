@@ -10,17 +10,42 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Brutalist Dark Palette */
+  --bg: #050505;
+  --panel: #111111;
+  --text: #ffffff;
+  --muted: #888888;
+  --muted-2: #555555;
+  --border: #333333;
+  --border-active: #ffffff;
+
+  /* Accents */
+  --accent-primary: #ffffff;
+  --accent-success: #00ff00;
+  --accent-error: #ff0000;
+  --accent-warning: #ffaa00;
+
+  /* UI Elements */
+  --focus-ring: #ffffff;
+  --shadow-hard: 4px 4px 0px 0px #ffffff;
+  --shadow-hard-sm: 2px 2px 0px 0px #ffffff;
+
+  /* Typography */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Courier New', monospace;
+}
+
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  /* Premium sans for UI */
+  font-family: var(--font-ui);
   font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  background-color: #050505;
-  color: #ffffff;
+  background-color: var(--bg);
+  color: var(--text);
   /* Subtle technical grid background */
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -33,5 +58,25 @@ body {
   width: 100%;
   min-height: 100vh;
   background-color: transparent;
-  /* Let body grid show through */
+}
+
+/* Global Brutalist Enforcements */
+button,
+input,
+select,
+textarea,
+.card,
+.panel,
+.btn {
+  border-radius: 0 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }

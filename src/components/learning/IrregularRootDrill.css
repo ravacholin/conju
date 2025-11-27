@@ -3,13 +3,13 @@
   max-width: 720px;
   margin: 0 auto;
   padding: 2rem;
-  border-radius: 20px;
-  background: rgba(14, 14, 14, 0.78);
-  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-hard);
 }
 
 .irregular-root-card .drill-header {
@@ -28,8 +28,8 @@
 }
 
 .chrono-badge {
-  background: rgba(245, 245, 245, 0.08);
-  border-radius: 999px;
+  background: var(--bg);
+  border-radius: 0;
   padding: 0.35rem 0.9rem;
   font-size: 0.85rem;
   color: var(--text);
@@ -58,9 +58,9 @@
   flex-direction: column;
   gap: 0.45rem;
   padding: 1rem 1.15rem;
-  border-radius: 14px;
-  background: rgba(20, 20, 20, 0.72);
-  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
 }
 
 .root-meta .root-line {
@@ -108,9 +108,9 @@
 
 .root-form .conjugation-input {
   width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(245, 245, 245, 0.15);
-  background: rgba(6, 6, 6, 0.82);
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: #000000;
   color: var(--text);
   padding: 0.85rem 1rem;
   font-size: 1.05rem;
@@ -160,9 +160,9 @@
   margin: 0 auto;
   text-align: center;
   padding: 3rem 1.5rem;
-  border-radius: 20px;
-  background: rgba(14, 14, 14, 0.78);
-  border: 1px solid rgba(245, 245, 245, 0.08);
+  border-radius: 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 1rem;
