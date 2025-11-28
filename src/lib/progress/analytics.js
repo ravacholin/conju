@@ -1,11 +1,12 @@
 // Análisis de progreso para el sistema de progreso
 
-import { getMasteryByUser, getAttemptsByUser, getAllFromDB } from './database.js'
+import { getAttemptsByUser, getAllFromDB } from './database.js'
 import { PROGRESS_CONFIG } from './config.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { createLogger } from '../utils/logger.js'
+import { getMasterySnapshotForUser } from './mastery.js'
 
 const logger = createLogger('progress:analytics')
 
@@ -67,7 +68,7 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
 
     // Obtener mastery y distribución de intentos para ponderar promedios
     const [masteryRecords, attempts] = await Promise.all([
-      getMasteryByUser(userId),
+      getMasterySnapshotForUser(userId),
       getAttemptsByUser(userId)
     ])
 
@@ -202,7 +203,7 @@ export async function getErrorRadarData(userId) {
   try {
     const [attempts, mastery] = await Promise.all([
       getAttemptsByUser(userId),
-      getMasteryByUser(userId)
+      getMasterySnapshotForUser(userId)
     ])
 
     const recent = attempts.slice(-400)
@@ -383,7 +384,7 @@ export async function getErrorIntelligence(userId, signal) {
     ensureNotCancelled(signal)
     const [attempts, mastery] = await Promise.all([
       getAttemptsByUser(userId),
-      getMasteryByUser(userId)
+      getMasterySnapshotForUser(userId)
     ])
     ensureNotCancelled(signal)
     const DECAY_TAU = 10
@@ -581,7 +582,7 @@ export async function getErrorIntelligence(userId, signal) {
 export async function getProgressLineData(userId) {
   try {
     // Obtener todos los mastery records del usuario
-    const masteryRecords = await getMasteryByUser(userId)
+    const masteryRecords = await getMasterySnapshotForUser(userId)
     
     if (masteryRecords.length === 0) {
       return []
@@ -741,7 +742,7 @@ export async function getAdvancedAnalytics(userId, signal) {
     ensureNotCancelled(signal)
     const [attempts, mastery] = await Promise.all([
       getAttemptsByUser(userId),
-      getMasteryByUser(userId)
+      getMasterySnapshotForUser(userId)
     ])
 
     ensureNotCancelled(signal)

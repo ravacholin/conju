@@ -1,12 +1,13 @@
 // Funciones de cálculo de mastery para el sistema de progreso
 
-import { getAttemptsByItem } from './database.js'
+import { getAttemptsByItem, getAttemptsByUser } from './database.js'
 import { PROGRESS_CONFIG, VERB_DIFFICULTY, FREQUENCY_DIFFICULTY_BONUS } from './config.js'
 import { calculateRecencyWeight } from './helpers.js'
 // import { applyPenalties } from './penalties.js'
 // import { getIrregularTenses, getVerbIrregularityStats } from '../utils/irregularityUtils.js'
 import { getVerbIrregularityStats } from '../utils/irregularityUtils.js'
 import { createLogger } from '../utils/logger.js'
+import { getVerbMetadata } from './verbMetadataProvider.js'
 
 const logger = createLogger('progress:mastery')
 
@@ -86,65 +87,66 @@ export function getVerbTenseDifficulty(verb, tense) {
  * @param {Object} verb - Objeto verbo asociado
  * @returns {Promise<{score: number, n: number, weightedAttempts: number}>} Mastery score y estadísticas
  */
-export async function calculateMasteryForItem(itemId, verb) {
-  // Obtener todos los intentos para este ítem
-  const attempts = await getAttemptsByItem(itemId) || []
-
-  if (attempts.length === 0) {
-    // Si no hay intentos, devolver mastery score neutral
+export function calculateMasteryFromAttempts(attempts, verb) {
+  if (!attempts || attempts.length === 0) {
     return { score: 50, n: 0, weightedAttempts: 0 }
   }
-  
+
   // Calcular la dificultad del verbo
   const difficulty = getVerbDifficulty(verb)
-  
+
   // Acumuladores para el cálculo
   let weightedCorrectSum = 0
   let weightedTotalSum = 0
   let totalHintPenalty = 0
   let weightedAttempts = 0
-  
+
   // Procesar cada intento
   for (const attempt of attempts) {
     // Calcular peso por recencia
     const weight = calculateRecencyWeight(new Date(attempt.createdAt))
-    
+
     // Calcular valor ponderado
     const weightedValue = weight * difficulty
-    
+
     // Sumar a los totales
     weightedTotalSum += weightedValue
     weightedCorrectSum += weightedValue * (attempt.correct ? 1 : 0)
     weightedAttempts += weight
-    
+
     // Acumular penalización por pistas (solo para intentos correctos)
     if (attempt.correct) {
       // Calcular penalización por pistas
       const hintPenalty = Math.min(
-        PROGRESS_CONFIG.MAX_HINT_PENALTY, 
+        PROGRESS_CONFIG.MAX_HINT_PENALTY,
         (attempt.hintsUsed || 0) * PROGRESS_CONFIG.HINT_PENALTY
       )
       totalHintPenalty += hintPenalty
     }
   }
-  
+
   // Calcular mastery score base (0-100)
   let baseScore = 100
   if (weightedTotalSum > 0) {
     baseScore = 100 * (weightedCorrectSum / weightedTotalSum)
   }
-  
+
   // Aplicar penalización por pistas
   const finalScore = Math.max(0, baseScore - totalHintPenalty)
-  
+
   // Redondear a 2 decimales
   const roundedScore = Math.round(finalScore * 100) / 100
-  
+
   return {
     score: roundedScore,
     n: attempts.length,
     weightedAttempts: Math.round(weightedAttempts * 100) / 100
   }
+}
+
+export async function calculateMasteryForItem(itemId, verb) {
+  const attempts = await getAttemptsByItem(itemId) || []
+  return calculateMasteryFromAttempts(attempts, verb)
 }
 
 /**
@@ -223,6 +225,99 @@ export function calculateMasteryForTimeOrMood(cells, weights) {
   
   // Redondear a 2 decimales
   return Math.round(aggregateScore * 100) / 100
+}
+
+function normalizeVerbFromAttempt(attempt) {
+  const lemma = attempt?.lemma || attempt?.verb || attempt?.verbId || 'unknown_verb'
+  const metadata = getVerbMetadata(lemma)
+  if (metadata) {
+    return metadata
+  }
+  return {
+    lemma,
+    type: attempt?.verbType || 'regular',
+    frequency: attempt?.frequency || 'medium'
+  }
+}
+
+export async function getMasterySnapshotForUser(userId, options = {}) {
+  const attempts = options.attempts || await getAttemptsByUser(userId) || []
+
+  if (!attempts || attempts.length === 0) {
+    return []
+  }
+
+  const cells = new Map()
+
+  for (const attempt of attempts) {
+    const mood = attempt?.mood
+    const tense = attempt?.tense
+    const person = attempt?.person || ''
+    if (!mood || !tense) continue
+
+    const key = `${mood}|${tense}|${person}`
+    if (!cells.has(key)) {
+      cells.set(key, {
+        mood,
+        tense,
+        person,
+        items: new Map(),
+        lastAttempt: 0
+      })
+    }
+
+    const cell = cells.get(key)
+    const itemId = attempt.itemId || `${attempt.verbId || attempt.lemma || 'item'}-${mood}-${tense}-${person}`
+    const verbId = attempt.verbId || attempt.lemma || itemId
+    if (!cell.items.has(itemId)) {
+      cell.items.set(itemId, { verb: normalizeVerbFromAttempt({ ...attempt, verbId }), attempts: [] })
+    }
+
+    const normalizedAttempt = {
+      ...attempt,
+      createdAt: attempt.createdAt || attempt.timestamp || new Date().toISOString()
+    }
+    cell.items.get(itemId).attempts.push(normalizedAttempt)
+    const ts = new Date(normalizedAttempt.createdAt).getTime()
+    if (Number.isFinite(ts) && ts > cell.lastAttempt) {
+      cell.lastAttempt = ts
+    }
+  }
+
+  const masteryRecords = []
+
+  for (const cell of cells.values()) {
+    let totalScore = 0
+    let totalAttempts = 0
+    let totalWeightedAttempts = 0
+
+    for (const { attempts: itemAttempts, verb } of cell.items.values()) {
+      const mastery = calculateMasteryFromAttempts(itemAttempts, verb)
+      totalScore += mastery.score * mastery.weightedAttempts
+      totalAttempts += mastery.n
+      totalWeightedAttempts += mastery.weightedAttempts
+    }
+
+    const score = totalWeightedAttempts > 0
+      ? totalScore / totalWeightedAttempts
+      : 50
+
+    masteryRecords.push({
+      id: `${userId}|${cell.mood}|${cell.tense}|${cell.person}`,
+      userId,
+      mood: cell.mood,
+      tense: cell.tense,
+      person: cell.person || null,
+      score: Math.round(score * 100) / 100,
+      n: totalAttempts,
+      weightedAttempts: Math.round(totalWeightedAttempts * 100) / 100,
+      updatedAt: cell.lastAttempt ? new Date(cell.lastAttempt).toISOString() : new Date().toISOString(),
+      lastAttempt: cell.lastAttempt || null,
+      count: totalAttempts
+    })
+  }
+
+  return masteryRecords
 }
 
 /**

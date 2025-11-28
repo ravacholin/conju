@@ -54,6 +54,7 @@ export {
 // Mastery (optimized with incremental caching)
 export {
   getVerbDifficulty,
+  getMasterySnapshotForUser,
   calculateMasteryForTimeOrMood,
   getConfidenceLevel,
   classifyMasteryLevel
