@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { getDueSchedules, getMasteryByUser } from '../lib/progress/database.js'
+import { getDueSchedules } from '../lib/progress/database.js'
 import { getCurrentUserId } from '../lib/progress/userManager/index.js'
 import { formatMoodTense } from '../lib/utils/verbLabels.js'
+import { getMasterySnapshotForUser } from '../lib/progress/mastery.js'
 
 function computeUrgency(nextDue, now) {
   const diffHours = (new Date(nextDue) - now) / (1000 * 60 * 60)
@@ -43,7 +44,7 @@ export function useSRSQueue() {
       const now = new Date()
       const [dueSchedules, masteryData] = await Promise.all([
         getDueSchedules(userId, now),
-        getMasteryByUser(userId)
+        getMasterySnapshotForUser(userId)
       ])
 
       const masteryMap = new Map((masteryData || []).map((record) => [

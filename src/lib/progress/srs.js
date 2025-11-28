@@ -7,6 +7,7 @@ import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
 import { handleSRSReviewComplete } from './gamification.js'
 import { calculateNextIntervalFSRS, isFSRSEnabled } from './fsrs.js'
 import { getActiveSRSConfig, getActiveSRSIntervals } from './expertMode.js'
+import { calculateMasteryForCell, calculateMasteryForItem, calculateMasteryForTimeOrMood } from './mastery.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:srs')
@@ -308,12 +309,8 @@ export function isItemDue(schedule, currentDate = new Date()) {
  * @param {Object} verb - Verbo asociado
  * @returns {number} Mastery score (0-100)
  */
-export function calculateItemMastery() {
-  // En una implementación completa, esto calcularía el mastery score
-  // basado en el intento y las características del verbo
-  
-  // Por ahora, devolvemos un valor por defecto
-  return 50
+export function calculateItemMastery(itemId, verb) {
+  return calculateMasteryForItem(itemId, verb)
 }
 
 /**
@@ -322,12 +319,8 @@ export function calculateItemMastery() {
  * @param {Object} verbsMap - Mapa de verbos por ID
  * @returns {number} Mastery score (0-100)
  */
-export function calculateCellMastery() {
-  // En una implementación completa, esto calcularía el mastery score
-  // para una celda basado en todos los intentos
-  
-  // Por ahora, devolvemos un valor por defecto
-  return 50
+export function calculateCellMastery(items, verbsMap, mood, tense, person) {
+  return calculateMasteryForCell(items, verbsMap, mood, tense, person)
 }
 
 /**
@@ -336,12 +329,8 @@ export function calculateCellMastery() {
  * @param {Object} weights - Pesos para cada celda
  * @returns {number} Mastery score (0-100)
  */
-export function calculateTimeOrMoodMastery() {
-  // En una implementación completa, esto calcularía el mastery score
-  // para un tiempo o modo completo basado en las celdas
-  
-  // Por ahora, devolvemos un valor por defecto
-  return 50
+export function calculateTimeOrMoodMastery(cells, weights) {
+  return calculateMasteryForTimeOrMood(cells, weights)
 }
 
 /**
