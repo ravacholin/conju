@@ -47,6 +47,28 @@ export const PROGRESS_CONFIG = {
     FUZZ_RATIO: 0.10 // ±10%
   },
 
+  // Configuración de clustering por familias irregulares
+  SRS_CLUSTERING: {
+    FAMILY: {
+      TRANSFER_COEFFICIENT: 0.3,
+      FAMILY_INTERVAL_BOOST: 1.3,
+      FAMILY_EASE_BOOST: 0.2,
+      MIN_FAMILY_SIZE: 3,
+      MIN_MASTERY_FOR_BOOST: 0.3,
+      FAMILY_MASTERY_THRESHOLD: 0.7,
+      FAMILY_RECENCY_TAU: 14,
+      MAX_FAMILY_BOOST: 2.0
+    },
+    CLUSTER_PROMOTION: {
+      PRACTICE_WEIGHT: 0.15,
+      PROMOTION_THRESHOLD: 0.6,
+      INTERVAL_BONUS: 0.25,
+      MAX_CLUSTER_BOOST: 1.35,
+      DROP_THRESHOLD: 0.35,
+      FLOOR_MULTIPLIER: 0.9
+    }
+  },
+
   // Configuración FSRS (Free Spaced Repetition Scheduler)
   FSRS: {
     VERSION: 6,

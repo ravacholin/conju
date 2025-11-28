@@ -636,7 +636,13 @@ export const PROGRESS_CONFIG = {
   
   // Intervalos SRS
   SRS_INTERVALS: [1, 3, 7, 14, 30, 90], // Días
-  
+
+  // Ajustes por clustering de familias irregulares
+  SRS_CLUSTERING: {
+    FAMILY: { /* ver config.js para valores por defecto */ },
+    CLUSTER_PROMOTION: { /* refuerza intervalos cuando un clúster tiene buen desempeño */ }
+  },
+
   // Configuración de UI
   UI: {
     HEATMAP_COLORS: {
