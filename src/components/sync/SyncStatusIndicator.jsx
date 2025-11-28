@@ -19,28 +19,28 @@ function SyncStatusIndicator() {
   const getStatusConfig = () => {
     if (syncStatus.syncError) {
       return {
-        icon: 'ERR',
-        label: 'ERROR DE SYNC',
+        icon: '⚠️',
+        label: 'Error de sync',
         className: 'error',
-        color: '#ff0000'
+        color: '#ff4444'
       };
     }
 
     if (syncStatus.isSyncing) {
       return {
-        icon: 'SYNC',
-        label: 'SINCRONIZANDO...',
+        icon: '🔄',
+        label: 'Sincronizando...',
         className: 'syncing',
-        color: '#ffff00'
+        color: '#ffaa00'
       };
     }
 
     if (!syncStatus.isOnline) {
       return {
-        icon: 'OFF',
-        label: 'SIN CONEXIÓN',
+        icon: '📴',
+        label: 'Sin conexión',
         className: 'offline',
-        color: '#555555'
+        color: '#999'
       };
     }
 
@@ -50,22 +50,22 @@ function SyncStatusIndicator() {
 
       if (minutesAgo < 5) {
         return {
-          icon: 'OK',
-          label: 'SINCRONIZADO',
+          icon: '✓',
+          label: 'Sincronizado',
           className: 'synced',
-          color: '#00ff00'
+          color: '#44ff44'
         };
       } else if (minutesAgo < 60) {
         return {
-          icon: 'OLD',
-          label: `SYNC HACE ${minutesAgo}M`,
+          icon: '⏱️',
+          label: `Sync hace ${minutesAgo}m`,
           className: 'stale',
           color: '#ffaa00'
         };
       } else {
         return {
-          icon: 'OLD',
-          label: 'SYNC ANTIGUO',
+          icon: '⏱️',
+          label: 'Sync antiguo',
           className: 'stale',
           color: '#ff8800'
         };
@@ -73,10 +73,10 @@ function SyncStatusIndicator() {
     }
 
     return {
-      icon: '?',
-      label: 'NO SINCRONIZADO',
+      icon: '○',
+      label: 'No sincronizado',
       className: 'unknown',
-      color: '#333333'
+      color: '#999'
     };
   };
 
@@ -126,29 +126,29 @@ function SyncStatusIndicator() {
 
             {!syncStatus.isOnline && (
               <div className="status-row warning">
-                <span className="label">[!]</span>
-                <span className="value">SIN INTERNET</span>
+                <span className="label">⚠️</span>
+                <span className="value">Sin conexión a internet</span>
               </div>
             )}
 
             {syncStatus.syncError && (
               <div className="status-row error">
-                <span className="label">ERR:</span>
+                <span className="label">Error:</span>
                 <span className="value">{syncStatus.syncError}</span>
               </div>
             )}
 
             {syncStatus.isLocalSync && (
               <div className="status-row info">
-                <span className="label">[i]</span>
-                <span className="value">MODO LOCAL</span>
+                <span className="label">ℹ️</span>
+                <span className="value">Modo local activado</span>
               </div>
             )}
 
             {syncStatus.lastResult?.uploaded > 0 && (
               <div className="status-row success">
-                <span className="label">[^]</span>
-                <span className="value">{syncStatus.lastResult.uploaded} SUBIDOS</span>
+                <span className="label">↑</span>
+                <span className="value">{syncStatus.lastResult.uploaded} registros subidos</span>
               </div>
             )}
           </div>

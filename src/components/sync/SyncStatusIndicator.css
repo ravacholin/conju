@@ -1,4 +1,4 @@
-/* SyncStatusIndicator - Brutalist Edition */
+/* SyncStatusIndicator - Indicador flotante de estado de sincronización */
 
 .sync-status-indicator {
   position: fixed;
@@ -7,141 +7,117 @@
   z-index: 9999;
   cursor: pointer;
   user-select: none;
-  font-family: var(--font-mono, monospace);
 }
 
 .sync-status-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 0;
-  /* Brutalist: No curves */
-  background: #000000;
-  border: 2px solid #ffffff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: bold;
-  transition: all 0.1s steps(2);
-  /* Brutalist: snappy transitions */
-  box-shadow: 4px 4px 0px 0px #ffffff;
-  /* Hard shadow */
-  color: #ffffff;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .sync-status-indicator:hover .sync-status-icon {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #ffffff;
-}
-
-.sync-status-indicator:active .sync-status-icon {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Estados del indicador */
 .sync-status-indicator.synced .sync-status-icon {
-  border-color: #ffffff;
-  color: #00ff00;
-  /* Neon Green */
+  border-color: #44ff44;
+  background: rgba(0, 50, 0, 0.8);
 }
 
 .sync-status-indicator.syncing .sync-status-icon {
-  border-color: #ffffff;
-  color: #ffff00;
-  /* Neon Yellow */
-  background: #000000;
-  animation: brutal-pulse 0.5s steps(2) infinite;
+  border-color: #ffaa00;
+  background: rgba(50, 40, 0, 0.8);
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 .sync-status-indicator.error .sync-status-icon {
-  border-color: #ff0000;
-  /* Red */
-  color: #ff0000;
-  background: #000000;
-  animation: brutal-shake 0.2s steps(2) infinite;
+  border-color: #ff4444;
+  background: rgba(50, 0, 0, 0.8);
+  animation: shake 0.5s ease-in-out;
 }
 
 .sync-status-indicator.offline .sync-status-icon {
-  border-color: #555555;
-  color: #555555;
-  background: #000000;
-  box-shadow: 4px 4px 0px 0px #555555;
+  border-color: #999;
+  background: rgba(30, 30, 30, 0.8);
 }
 
 .sync-status-indicator.stale .sync-status-icon {
   border-color: #ffaa00;
-  color: #ffaa00;
+  background: rgba(40, 30, 0, 0.8);
 }
 
 .sync-status-indicator.unknown .sync-status-icon {
-  border-color: #333333;
-  color: #333333;
+  border-color: #666;
+  background: rgba(20, 20, 20, 0.8);
 }
 
-/* Animación de sincronización - Brutalist Pulse */
-@keyframes brutal-pulse {
-
-  0%,
-  100% {
-    background-color: #000000;
-    color: #ffff00;
+/* Animación de sincronización */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
   }
-
   50% {
-    background-color: #ffff00;
-    color: #000000;
+    transform: scale(1.05);
+    opacity: 0.9;
   }
 }
 
-/* Animación de error - Brutalist Shake */
-@keyframes brutal-shake {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-
-  25% {
-    transform: translate(-2px, 2px);
-  }
-
-  75% {
-    transform: translate(2px, -2px);
-  }
+/* Animación de error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 /* Tooltip expandido */
 .sync-status-tooltip {
   position: absolute;
-  top: 56px;
+  top: 50px;
   right: 0;
-  min-width: 300px;
-  background: #000000;
-  border: 2px solid #ffffff;
-  border-radius: 0;
-  padding: 16px;
-  box-shadow: 8px 8px 0px 0px #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  min-width: 280px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tooltip-header {
   margin-bottom: 8px;
   padding-bottom: 8px;
-  border-bottom: 2px solid #333;
-  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
   font-size: 14px;
-  text-transform: uppercase;
-  font-weight: bold;
-  letter-spacing: 1px;
 }
 
 .tooltip-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .status-row {
@@ -150,38 +126,35 @@
   align-items: center;
   font-size: 12px;
   padding: 4px 0;
-  font-family: var(--font-mono, monospace);
 }
 
 .status-row .label {
-  color: #888888;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 .status-row .value {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.9);
   text-align: right;
-  font-weight: bold;
+  max-width: 180px;
+  word-break: break-word;
 }
 
 .status-row.warning .value {
   color: #ffaa00;
-  background: #221100;
-  padding: 0 4px;
 }
 
 .status-row.error .value {
-  color: #ff0000;
-  background: #220000;
-  padding: 0 4px;
+  color: #ff4444;
+  font-size: 11px;
 }
 
 .status-row.success .value {
-  color: #00ff00;
+  color: #44ff44;
 }
 
 .status-row.info .value {
-  color: #00ffff;
+  color: #4488ff;
 }
 
 /* Responsive - mobile */
@@ -192,15 +165,13 @@
   }
 
   .sync-status-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-    box-shadow: 3px 3px 0px 0px #ffffff;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
   .sync-status-tooltip {
-    min-width: 260px;
+    min-width: 240px;
     right: -4px;
-    box-shadow: 6px 6px 0px 0px #ffffff;
   }
 }
