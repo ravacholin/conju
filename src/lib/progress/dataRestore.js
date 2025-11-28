@@ -1,7 +1,7 @@
 // Sistema de restauración de datos de progreso
 // Parte de la Fase 5: Exportación y respaldo de datos
 
-import { saveToDB } from './database.js'
+import { saveToDB, getFromDB, getByIndex, getOneByIndex, getAllFromDB } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'
 
@@ -147,29 +147,68 @@ async function restoreDataType(dataType, records, userId, overwriteExisting) {
  * @returns {Promise<boolean>} Si el registro existe
  */
 async function checkRecordExists(dataType, record) {
-  // Implementación simplificada - en producción sería más robusta
   try {
-    // Para attempts, verificar por timestamp e itemId
-    if (dataType === 'attempts' && record.timestamp && record.itemId) {
-      // Verificación básica por timestamp (podría mejorarse)
-      return false // Por ahora, permitir duplicados
+    const storeName = STORE_MAP[dataType]
+    if (!storeName) return false
+
+    if (record.id) {
+      const existingById = await getFromDB(storeName, record.id)
+      if (existingById) return true
     }
-    
-    // Para mastery, verificar por mood, tense, person
-    if (dataType === 'mastery' && record.mood && record.tense) {
-      return false // Por ahora, permitir duplicados
+
+    if (dataType === 'attempts') {
+      const { itemId, timestamp, createdAt, userId } = record
+      const targetTimestamp = normalizeTimestamp(timestamp || createdAt)
+
+      if (itemId && targetTimestamp !== null) {
+        const attempts = await getByIndex(storeName, 'itemId', itemId)
+        return attempts.some(attempt => {
+          const attemptTimestamp = normalizeTimestamp(attempt.timestamp || attempt.createdAt)
+          const sameUser = !userId || attempt.userId === userId
+          return sameUser && attempt.itemId === itemId && attemptTimestamp === targetTimestamp
+        })
+      }
+      return false
     }
-    
-    // Para schedules, verificar por itemId
-    if (dataType === 'schedules' && record.itemId) {
-      return false // Por ahora, permitir duplicados
+
+    if (dataType === 'mastery') {
+      const { mood, tense, person, userId } = record
+      if (mood && tense && person) {
+        const mastery = await getOneByIndex(storeName, 'mood-tense-person', [mood, tense, person])
+        return Boolean(mastery && (!userId || mastery.userId === userId))
+      }
+      return false
     }
-    
+
+    if (dataType === 'schedules') {
+      const { itemId, userId } = record
+      if (itemId) {
+        const schedules = userId
+          ? await getByIndex(storeName, 'userId', userId)
+          : await getAllFromDB(storeName)
+
+        return schedules.some(schedule =>
+          schedule.itemId === itemId && (!userId || schedule.userId === userId)
+        )
+      }
+      return false
+    }
+
     return false
   } catch (error) {
     logger.warn('Error al verificar existencia de registro:', error)
     return false
   }
+}
+
+function normalizeTimestamp(value) {
+  if (!value) return null
+  if (value instanceof Date) {
+    return value.getTime()
+  }
+
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? null : parsed.getTime()
 }
 
 /**
