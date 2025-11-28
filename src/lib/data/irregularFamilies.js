@@ -334,6 +334,57 @@ export const IRREGULAR_FAMILIES = {
   }
 }
 
+export const IRREGULARITY_CLUSTERS = {
+  STEM_CHANGERS: {
+    id: 'STEM_CHANGERS',
+    name: 'Cambios de raíz',
+    description: 'Diptongación y alternancias vocálicas',
+    families: ['DIPHT_E_IE', 'DIPHT_O_UE', 'DIPHT_U_UE', 'E_I_IR', 'O_U_GER_IR']
+  },
+  ORTHOGRAPHIC_SHIFTS: {
+    id: 'ORTHOGRAPHIC_SHIFTS',
+    name: 'Cambios ortográficos',
+    description: 'Ajustes ortográficos para mantener el sonido',
+    families: ['ORTH_CAR', 'ORTH_GAR', 'ORTH_ZAR', 'ORTH_GUAR']
+  },
+  YO_IRREGULARS: {
+    id: 'YO_IRREGULARS',
+    name: 'Irregulares en yo',
+    description: 'Consonante alternante y terminaciones en -go/-zco/-zo',
+    families: ['G_VERBS', 'JO_VERBS', 'GU_DROP', 'ZCO_VERBS', 'ZO_VERBS']
+  },
+  ACCENT_MORPHOLOGY: {
+    id: 'ACCENT_MORPHOLOGY',
+    name: 'Cambios de acento',
+    description: 'Hiatos, diéresis y tildes móviles',
+    families: ['UIR_Y', 'HIATUS_Y', 'IAR_VERBS', 'UAR_VERBS', 'ACCENT_CHANGES']
+  },
+  STRONG_PRETERITE: {
+    id: 'STRONG_PRETERITE',
+    name: 'Temas fuertes de pretérito',
+    description: 'Raíces alternativas y formas supletivas en indefinido',
+    families: ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
+  },
+  SUPPLETIVE_AND_DEFECTIVE: {
+    id: 'SUPPLETIVE_AND_DEFECTIVE',
+    name: 'Supletivos y defectivos',
+    description: 'Paradigmas incompletos o de raíces múltiples',
+    families: ['DEFECTIVE_VERBS', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG']
+  },
+  NONFINITE_SPECIALS: {
+    id: 'NONFINITE_SPECIALS',
+    name: 'Formas no personales irregulares',
+    description: 'Participios dobles y gerundios especiales',
+    families: ['IRREG_GERUNDS', 'IRREG_PARTICIPLES', 'DOUBLE_PARTICIPLES']
+  },
+  IMPERATIVE_AND_FUTURE: {
+    id: 'IMPERATIVE_AND_FUTURE',
+    name: 'Imperativo y futuro irregulares',
+    description: 'Patrones compartidos entre futuro/condicional e imperativo',
+    families: ['IRREG_CONDITIONAL', 'IMPERATIVE_IRREG']
+  }
+}
+
 // Función para obtener las familias que afectan a un tiempo específico
 export function getFamiliesForTense(tense) {
   const families = []

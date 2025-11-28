@@ -1,38 +1,86 @@
 // SRS Family Clustering: Transfer learning between related irregular verbs
 // Implements mastery tracking at the family level to enable intelligent recommendations
 
-import { IRREGULAR_FAMILIES, categorizeVerb } from '../data/irregularFamilies.js'
-import { getScheduleByCell, saveSchedule } from './database.js'
+import { IRREGULAR_FAMILIES, IRREGULARITY_CLUSTERS, categorizeVerb } from '../data/irregularFamilies.js'
+import { getScheduleByCell } from './database.js'
 import { PROGRESS_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:srs-clustering')
 
-/**
- * Family clustering configuration
- */
-const CLUSTERING_CONFIG = {
-  // Transfer learning coefficient: how much does mastering one verb affect related verbs
-  TRANSFER_COEFFICIENT: 0.3, // 30% transfer between family members
-
-  // Family mastery threshold: minimum mastery to consider a family "known"
-  FAMILY_MASTERY_THRESHOLD: 0.7, // 70% mastery across family
-
-  // Minimum family members to enable clustering
-  MIN_FAMILY_SIZE: 3,
-
-  // Interval boost for family members when one is mastered
-  FAMILY_INTERVAL_BOOST: 1.3, // 30% longer intervals for related verbs
-
-  // Ease boost for family members
-  FAMILY_EASE_BOOST: 0.2, // +0.2 ease for verbs in mastered families
-
-  // Recency weight decay for family mastery (days)
-  FAMILY_RECENCY_TAU: 14, // 2 weeks
-
-  // Maximum family boost to prevent over-acceleration
-  MAX_FAMILY_BOOST: 2.0
+function getClusterByFamily(familyId) {
+  return Object.values(IRREGULARITY_CLUSTERS).find(cluster =>
+    cluster.families?.includes(familyId)
+  ) || null
 }
+
+function aggregateClusterPerformance(familyMasteries = []) {
+  if (!familyMasteries.length) return null
+
+  const clusters = {}
+  const practiceWeight = CLUSTER_PROMOTION_CONFIG.PRACTICE_WEIGHT ?? 0.15
+
+  for (const mastery of familyMasteries) {
+    const cluster = getClusterByFamily(mastery.familyId)
+
+    if (!cluster) continue
+
+    const weight = 1 + (mastery.practiceCount || 0) * practiceWeight
+
+    if (!clusters[cluster.id]) {
+      clusters[cluster.id] = {
+        ...cluster,
+        totalMastery: 0,
+        totalWeight: 0,
+        practiceCount: 0,
+        families: []
+      }
+    }
+
+    clusters[cluster.id].totalMastery += (mastery.mastery || 0) * weight
+    clusters[cluster.id].totalWeight += weight
+    clusters[cluster.id].practiceCount += mastery.practiceCount || 0
+    clusters[cluster.id].families.push(mastery.familyId)
+  }
+
+  const ranked = Object.values(clusters)
+    .map(cluster => ({
+      ...cluster,
+      mastery: cluster.totalWeight > 0 ? cluster.totalMastery / cluster.totalWeight : 0
+    }))
+    .sort((a, b) => b.mastery - a.mastery)
+
+  return ranked[0] || null
+}
+
+function calculateClusterMultiplier(clusterPerformance) {
+  if (!clusterPerformance) return { multiplier: 1, promotionApplied: false }
+
+  const promotionThreshold = CLUSTER_PROMOTION_CONFIG.PROMOTION_THRESHOLD ?? 0.6
+  const dropThreshold = CLUSTER_PROMOTION_CONFIG.DROP_THRESHOLD ?? 0.35
+  const floorMultiplier = CLUSTER_PROMOTION_CONFIG.FLOOR_MULTIPLIER ?? 0.9
+  const intervalBonus = CLUSTER_PROMOTION_CONFIG.INTERVAL_BONUS ?? 0.25
+  const maxBoost = CLUSTER_PROMOTION_CONFIG.MAX_CLUSTER_BOOST ?? 1.35
+  const practiceWeight = CLUSTER_PROMOTION_CONFIG.PRACTICE_WEIGHT ?? 0.15
+
+  const practiceBoost = Math.min(0.2, (clusterPerformance.practiceCount || 0) * practiceWeight / 10)
+  const adjustedMastery = Math.min(1, (clusterPerformance.mastery || 0) + practiceBoost)
+
+  if (adjustedMastery >= promotionThreshold) {
+    const overThreshold = adjustedMastery - promotionThreshold
+    const multiplier = Math.min(maxBoost, 1 + overThreshold * intervalBonus)
+    return { multiplier, promotionApplied: true }
+  }
+
+  if (adjustedMastery < dropThreshold) {
+    return { multiplier: floorMultiplier, promotionApplied: false }
+  }
+
+  return { multiplier: 1, promotionApplied: false }
+}
+
+const FAMILY_CLUSTER_CONFIG = PROGRESS_CONFIG.SRS_CLUSTERING?.FAMILY || {}
+const CLUSTER_PROMOTION_CONFIG = PROGRESS_CONFIG.SRS_CLUSTERING?.CLUSTER_PROMOTION || {}
 
 /**
  * Calculates family-level mastery for a given irregular family
@@ -54,9 +102,11 @@ export async function calculateFamilyMastery(userId, familyId, mood, tense, pers
 
   const verbs = family.examples || []
 
-  if (verbs.length < CLUSTERING_CONFIG.MIN_FAMILY_SIZE) {
+  const minFamilySize = FAMILY_CLUSTER_CONFIG.MIN_FAMILY_SIZE ?? 3
+
+  if (verbs.length < minFamilySize) {
     logger.debug('calculateFamilyMastery', `Family ${familyId} too small (${verbs.length} verbs)`)
-    return { mastery: 0, verbCount: verbs.length, masteredCount: 0 }
+    return { familyId, mastery: 0, verbCount: verbs.length, masteredCount: 0 }
   }
 
   // Get cell-level schedule (current schema doesn't differentiate by lemma)
@@ -66,7 +116,7 @@ export async function calculateFamilyMastery(userId, familyId, mood, tense, pers
 
     if (!schedule) {
       logger.debug('calculateFamilyMastery', `No schedule found for ${mood}/${tense}/${person}`)
-      return { mastery: 0, verbCount: verbs.length, masteredCount: 0 }
+      return { familyId, mastery: 0, verbCount: verbs.length, masteredCount: 0 }
     }
 
     // Calculate mastery from schedule
@@ -79,12 +129,12 @@ export async function calculateFamilyMastery(userId, familyId, mood, tense, pers
       mastery: cellMastery,
       verbCount: verbs.length,
       practiceCount: schedule.reps || 0,
-      masteredCount: cellMastery >= CLUSTERING_CONFIG.FAMILY_MASTERY_THRESHOLD ? verbs.length : 0,
+      masteredCount: cellMastery >= (FAMILY_CLUSTER_CONFIG.FAMILY_MASTERY_THRESHOLD ?? 0.7) ? verbs.length : 0,
       lastUpdated: schedule.updatedAt || new Date()
     }
   } catch (error) {
     logger.error('calculateFamilyMastery', `Error calculating family mastery for ${familyId}`, error)
-    return { mastery: 0, verbCount: verbs.length, masteredCount: 0 }
+    return { familyId, mastery: 0, verbCount: verbs.length, masteredCount: 0 }
   }
 }
 
@@ -165,43 +215,62 @@ export async function applyFamilyClusteringBoost(userId, lemma, cell, scheduleUp
 
   // Find highest family mastery (best case for transfer learning)
   const maxFamilyMastery = Math.max(...familyMasteries.map(fm => fm.mastery), 0)
+  const minMasteryForBoost = FAMILY_CLUSTER_CONFIG.MIN_MASTERY_FOR_BOOST ?? 0.3
 
-  if (maxFamilyMastery < 0.3) {
-    logger.debug('applyFamilyClusteringBoost', `${lemma}: family mastery too low (${(maxFamilyMastery * 100).toFixed(1)}%), no boost`)
-    return scheduleUpdate
+  let enhancedSchedule = { ...scheduleUpdate }
+
+  if (maxFamilyMastery >= minMasteryForBoost) {
+    // Calculate transfer boost based on family mastery
+    const transferBoost = (FAMILY_CLUSTER_CONFIG.TRANSFER_COEFFICIENT ?? 0.3) * maxFamilyMastery
+
+    // Apply interval boost (multiplicative)
+    const intervalMultiplier = Math.min(
+      FAMILY_CLUSTER_CONFIG.MAX_FAMILY_BOOST ?? 2.0,
+      1 + transferBoost * (FAMILY_CLUSTER_CONFIG.FAMILY_INTERVAL_BOOST ?? 1.3)
+    )
+
+    // Apply ease boost (additive)
+    const easeBoost = transferBoost * (FAMILY_CLUSTER_CONFIG.FAMILY_EASE_BOOST ?? 0.2)
+
+    enhancedSchedule = {
+      ...enhancedSchedule,
+      interval: Math.max(1, Math.round(scheduleUpdate.interval * intervalMultiplier)),
+      ease: Math.min(
+        PROGRESS_CONFIG.SRS_ADVANCED?.EASE_MAX ?? 3.2,
+        (scheduleUpdate.ease ?? PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5) + easeBoost
+      ),
+      // Track family clustering metadata
+      familyClusteringApplied: true,
+      familyMastery: maxFamilyMastery,
+      familyBoostMultiplier: intervalMultiplier
+    }
+  } else {
+    logger.debug('applyFamilyClusteringBoost', `${lemma}: family mastery too low (${(maxFamilyMastery * 100).toFixed(1)}%), no family boost`)
   }
 
-  // Calculate transfer boost based on family mastery
-  const transferBoost = CLUSTERING_CONFIG.TRANSFER_COEFFICIENT * maxFamilyMastery
+  const clusterPerformance = aggregateClusterPerformance(familyMasteries)
+  const { multiplier: clusterMultiplier, promotionApplied } = calculateClusterMultiplier(clusterPerformance)
 
-  // Apply interval boost (multiplicative)
-  const intervalMultiplier = Math.min(
-    CLUSTERING_CONFIG.MAX_FAMILY_BOOST,
-    1 + transferBoost * CLUSTERING_CONFIG.FAMILY_INTERVAL_BOOST
-  )
-
-  // Apply ease boost (additive)
-  const easeBoost = transferBoost * CLUSTERING_CONFIG.FAMILY_EASE_BOOST
-
-  const enhancedSchedule = {
-    ...scheduleUpdate,
-    interval: Math.max(1, Math.round(scheduleUpdate.interval * intervalMultiplier)),
-    ease: Math.min(
-      PROGRESS_CONFIG.SRS_ADVANCED?.EASE_MAX ?? 3.2,
-      scheduleUpdate.ease + easeBoost
-    ),
-    // Track family clustering metadata
-    familyClusteringApplied: true,
-    familyMastery: maxFamilyMastery,
-    familyBoostMultiplier: intervalMultiplier
+  if (clusterMultiplier !== 1) {
+    enhancedSchedule = {
+      ...enhancedSchedule,
+      interval: Math.max(1, Math.round(enhancedSchedule.interval * clusterMultiplier)),
+      clusterPromotionApplied: promotionApplied,
+      clusterContext: clusterPerformance?.id,
+      clusterMastery: clusterPerformance?.mastery,
+      clusterIntervalMultiplier: clusterMultiplier
+    }
   }
+
+  const familyMultiplier = enhancedSchedule.familyBoostMultiplier ?? 1
 
   logger.info('applyFamilyClusteringBoost', `${lemma} boosted by family mastery (${(maxFamilyMastery * 100).toFixed(1)}%)`, {
     originalInterval: scheduleUpdate.interval,
     boostedInterval: enhancedSchedule.interval,
     originalEase: scheduleUpdate.ease.toFixed(2),
     boostedEase: enhancedSchedule.ease.toFixed(2),
-    multiplier: intervalMultiplier.toFixed(2)
+    multiplier: familyMultiplier.toFixed(2),
+    clusterMultiplier: clusterMultiplier.toFixed(2)
   })
 
   return enhancedSchedule
@@ -282,7 +351,7 @@ export async function getFamilyStatistics(userId, mood, tense, person) {
 
     const familyMastery = await calculateFamilyMastery(userId, familyId, mood, tense, person)
 
-    if (familyMastery.mastery >= CLUSTERING_CONFIG.FAMILY_MASTERY_THRESHOLD) {
+    if (familyMastery.mastery >= (FAMILY_CLUSTER_CONFIG.FAMILY_MASTERY_THRESHOLD ?? 0.7)) {
       stats.masteredFamilies++
     } else if (familyMastery.mastery > 0.1) {
       stats.learningFamilies++
@@ -312,8 +381,4 @@ export async function getFamilyStatistics(userId, mood, tense, person) {
   })
 
   return stats
-}
-
-export {
-  CLUSTERING_CONFIG
 }
