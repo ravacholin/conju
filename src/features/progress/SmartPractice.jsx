@@ -161,6 +161,9 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     // Convert ML recommendations to UI format
     const mlRecs = mlRecommendations.recommendations.map((rec) => {
       // Map ML recommendation types to UI format
+      // Normalize key to handle potential inconsistencies
+      const typeKey = (rec.type || '').toLowerCase().trim();
+
       const recTypeMap = {
         'confidence_building': {
           title: 'Construir confianza',
@@ -234,8 +237,9 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
         }
       }
 
-      const mapping = recTypeMap[rec.type] || {
-        title: rec.type?.replace(/_/g, ' ') || 'Recomendación',
+      const mapping = recTypeMap[typeKey] || {
+        // Fallback: Try to translate common words or just capitalize
+        title: (rec.type || 'Recomendación').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         icon: '/icons/robot.png',
         priority: rec.priority || 0.5
       }
