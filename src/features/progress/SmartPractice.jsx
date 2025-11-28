@@ -221,6 +221,16 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
           title: 'Balance emocional',
           icon: '/icons/chart.png',
           priority: rec.priority || 0.7
+        },
+        'basic_practice': {
+          title: 'Práctica básica',
+          icon: '/icons/robot.png',
+          priority: rec.priority || 0.5
+        },
+        'variety_injection': {
+          title: 'Variedad',
+          icon: '/dice.png',
+          priority: rec.priority || 0.4
         }
       }
 
@@ -330,7 +340,28 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
                 </div>
                 <p>{rec.description}</p>
                 {rec.reason && (
-                  <p className="rec-reason">Enfoque: {rec.reason.replace(/_/g, ' ')}</p>
+                  <p className="rec-reason">
+                    Enfoque: {(() => {
+                      const reasonMap = {
+                        'easier_content_high_repetition': 'Contenido fácil, alta repetición',
+                        'mixed_difficulty_with_hints': 'Dificultad mixta con pistas',
+                        'harder_content_less_support': 'Contenido difícil, menos ayuda',
+                        'unexpected_difficulty_feedback': 'Dificultad inesperada',
+                        'shortened_session_light_review': 'Sesión corta, repaso ligero',
+                        'extended_challenging_session': 'Sesión extendida y desafiante',
+                        'easy_review_short_bursts': 'Repaso fácil en ráfagas cortas',
+                        'maintain_difficulty_extend_session': 'Mantener dificultad, extender sesión',
+                        'confidence_building_easy_wins': 'Construir confianza, victorias fáciles',
+                        'guided_practice_hints_available': 'Práctica guiada, pistas disponibles',
+                        'parameter_tuning_review_focus': 'Ajuste de parámetros, foco en repaso',
+                        'emotional_regulation_practice': 'Práctica de regulación emocional',
+                        'mixed_content_surprise_elements': 'Contenido mixto, elementos sorpresa',
+                        'balanced_mixed_content': 'Contenido mixto equilibrado',
+                        'standard_practice': 'Práctica estándar'
+                      };
+                      return reasonMap[rec.reason] || rec.reason.replace(/_/g, ' ');
+                    })()}
+                  </p>
                 )}
               </div>
             </div>
