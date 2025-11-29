@@ -21,8 +21,19 @@ const logger = createLogger('progress:cloudSync')
 const isDev = import.meta?.env?.DEV
 
 const SYNC_QUEUE_KEY = 'progress-sync-queue-v1'
+const LAST_SYNC_TIME_KEY = 'progress-last-sync-time'
 
 let lastSyncTime = null
+try {
+  if (typeof window !== 'undefined') {
+    const stored = window.localStorage.getItem(LAST_SYNC_TIME_KEY)
+    if (stored) {
+      lastSyncTime = new Date(stored)
+    }
+  }
+} catch (e) {
+  // Ignore storage errors
+}
 let syncError = null
 let lastSyncResult = null
 let isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
@@ -36,6 +47,14 @@ if (typeof window !== 'undefined') {
   window.addEventListener('offline', () => {
     isOnline = false
   })
+
+  // Trigger initial sync if online
+  if (isOnline) {
+    // Small delay to allow auth to initialize
+    setTimeout(() => {
+      syncWithCloud({ bypassIncognito: false }).catch(() => { })
+    }, 2000)
+  }
 }
 
 function hasQueuedBatches() {
@@ -56,6 +75,11 @@ function recordSyncOutcome(result) {
     lastSyncTime = new Date()
     syncError = null
     if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(LAST_SYNC_TIME_KEY, lastSyncTime.toISOString())
+      } catch (e) {
+        // Ignore storage errors
+      }
       window.dispatchEvent(new CustomEvent('progress:cloud-sync', {
         detail: { result }
       }))
@@ -277,7 +301,7 @@ export function handleConnectivityChange(online) {
   isOnline = !!online
   if (isDev) logger.info('handleConnectivityChange', `Conectividad: ${online ? 'Conectado' : 'Desconectado'}`)
   if (online) {
-    flushSyncQueue().then(() => syncWithCloud()).catch(() => {})
+    flushSyncQueue().then(() => syncWithCloud()).catch(() => { })
   }
 }
 
@@ -315,7 +339,7 @@ export function scheduleAutoSync(intervalMs = 300000) {
 
   autoSyncTimerId = timerApi.setInterval(() => {
     if (isIncognitoMode) return
-    syncWithCloud().catch(() => {})
+    syncWithCloud().catch(() => { })
   }, intervalMs)
 
   if (isDev) logger.info('scheduleAutoSync', `Programando sincronización automática cada ${Math.round(intervalMs / 60000)} minutos`)

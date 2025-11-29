@@ -241,7 +241,8 @@ export async function syncAccountData() {
     safeLogger.error('syncAccountData: error durante sincronización de cuenta', {
       message: error?.message,
       errorName: error?.name,
-      status: error?.status
+      status: error?.status,
+      stack: error?.stack
     })
     safeLogger.debug('syncAccountData: detalles de error', {
       message: error?.message || 'No message',
@@ -464,7 +465,8 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
   } catch (error) {
     safeLogger.warn('syncNow: fallo durante sincronización, encolando para más tarde', {
       message: error?.message,
-      name: error?.name
+      name: error?.name,
+      stack: error?.stack
     })
     return { success: false, error: String(error) }
   }
