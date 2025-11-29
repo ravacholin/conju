@@ -86,7 +86,7 @@ export default function StudyInsights({ userStats, heatMapData, studyPlan, onNav
 
     return {
       totalSessions: stats.totalAttempts || 0,
-      averageAccuracy: stats.overallAccuracy || 0,
+      averageAccuracy: (stats.accuracy || 0) / 100,
       strongestArea,
       weakestArea,
       totalProgress,
