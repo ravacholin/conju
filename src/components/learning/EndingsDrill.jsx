@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense } from 'react';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
@@ -8,7 +7,9 @@ import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
 
-const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
+import { safeLazy } from '../../lib/utils/lazyImport.js';
+
+const PronunciationPanel = safeLazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 function getPronounsForDialect(settings) {
   const arr = [

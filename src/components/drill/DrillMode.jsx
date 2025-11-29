@@ -66,7 +66,9 @@ import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
-const PronunciationPanel = lazy(() => import('./PronunciationPanelSafe.jsx'))
+import { safeLazy } from '../../lib/utils/lazyImport.js';
+
+const PronunciationPanel = safeLazy(() => import('./PronunciationPanelSafe.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
 const logger = {
@@ -220,7 +222,7 @@ function DrillMode({
       try {
         const { detail } = event
         logger.debug('Progress navigation event received:', detail)
-        
+
         // Handle personalized session
         if (detail && detail.type === 'personalized_session' && detail.session) {
           logger.debug('Starting personalized session:', detail.session)
@@ -316,7 +318,7 @@ function DrillMode({
         console.error('Error handling progress navigation:', error)
       }
     }
-    
+
     window.addEventListener('progress:navigate', handler)
     return () => window.removeEventListener('progress:navigate', handler)
   }, [onStartSpecificPractice, onRegenerateItem, onPracticeModeChange])

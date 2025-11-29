@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, useCallback, Suspense, lazy } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback, Suspense } from 'react'
 import { useSettings } from '../../state/settings.js'
 import {
   FUTURE_CONDITIONAL_ROOTS,
@@ -15,7 +15,9 @@ import './LearningDrill.css'
 import './IrregularRootDrill.css'
 import { highlightStemVowel } from './highlightHelpers.js'
 
-const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
+import { safeLazy } from '../../lib/utils/lazyImport.js';
+
+const PronunciationPanel = safeLazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 const ROOT_FAMILY_ID = 'LEARNING_FUT_COND_IRREGULAR'
 const GERUND_FAMILY_ID = 'LEARNING_IRREG_GERUNDS'

@@ -47,7 +47,7 @@
  * @requires learningConfig - Configuración de parámetros de aprendizaje
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SessionSummary from './SessionSummary.jsx';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
@@ -58,12 +58,12 @@ import { classifyError } from '../../lib/progress/errorClassification.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
-import { 
-  getLevelForTense, 
-  getRealTimeDifficultyConfig, 
-  DRILL_THRESHOLDS, 
+import {
+  getLevelForTense,
+  getRealTimeDifficultyConfig,
+  DRILL_THRESHOLDS,
   DIFFICULTY_PARAMS,
-  SCORING_CONFIG 
+  SCORING_CONFIG
 } from '../../lib/learning/learningConfig.js';
 import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
@@ -72,7 +72,9 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 
 const logger = createLogger('LearningDrill');
 
-const PronunciationPanel = lazy(() => import('../drill/PronunciationPanelSafe.jsx'))
+import { safeLazy } from '../../lib/utils/lazyImport.js';
+
+const PronunciationPanel = safeLazy(() => import('../drill/PronunciationPanelSafe.jsx'))
 
 const MOOD_CANONICAL_MAP = {
   indicativo: 'indicative',
@@ -107,7 +109,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [result, setResult] = useState('idle'); // idle | correct | incorrect
   const [sessionState, setSessionState] = useState('active'); // active | finished
   const [correctStreak, setCorrectStreak] = useState(0);
-  
+
   // Removed custom points system - now using official progress tracking
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -120,7 +122,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [realTimeDifficulty, setRealTimeDifficulty] = useState(DIFFICULTY_PARAMS.DEFAULT);
   const [allAttempts, setAllAttempts] = useState([]);
   const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
-  
+
   // Cola de ejercicios fallados para reintegración (almacena objetos completos de ejercicios)
   const [failedItemsQueue, setFailedItemsQueue] = useState([]);
   // Historial de ejercicios para evitar repeticiones
@@ -413,7 +415,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       handleTenseDrillStarted(tense.tense);
       logger.debug('Learning drill started', { tense: tense.tense });
     }
-    
+
     return () => {
       if (tense?.tense) {
         handleTenseDrillEnded(tense.tense);
@@ -531,14 +533,14 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     // Update real-time difficulty based on current performance
     const avgResponseTime = [...responseTimes, responseTime].reduce((a, b) => a + b, 0) / (responseTimes.length + 1);
     const currentAccuracy = (correctAnswers + (isCorrect ? 1 : 0)) / (totalAttempts + 1);
-    
+
     const newDifficulty = getRealTimeDifficultyConfig({
       accuracy: currentAccuracy * 100,
       streak: isCorrect ? correctStreak + 1 : 0,
       avgResponseTime,
       totalAttempts: totalAttempts + 1
     });
-    
+
     setRealTimeDifficulty(newDifficulty);
     logger.debug('Real-time difficulty adjusted', newDifficulty);
 
@@ -547,7 +549,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       const newStreak = correctStreak + 1;
       setCorrectStreak(newStreak);
       setCorrectAnswers(prev => prev + 1);
-      
+
       // Handle streak animations and tracking
       if (newStreak > 0 && newStreak % SCORING_CONFIG.STREAK_ANIMATION_INTERVAL === 0) {
         setShowStreakAnimation(true);
@@ -561,7 +563,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
       // Use detailed error analysis for session stats
       const primaryErrorType = detailedErrorTags[0] || gradeResult.errorTags?.[0] || 'complete_error';
       setErrorPatterns(prev => ({ ...prev, [primaryErrorType]: (prev[primaryErrorType] || 0) + 1 }));
-      
+
       // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
       setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
       logger.debug('Incorrect answer - added to retry queue', { lemma: currentItem.lemma, person: getPersonText(currentItem.person) });
@@ -613,45 +615,45 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     });
 
     if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
-        console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
-        setTimeout(() => onPhaseComplete(), 0);
+      console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
+      setTimeout(() => onPhaseComplete(), 0);
     } else {
-        // Verificar si hay ejercicios fallados para reintegrar
-        if (failedItemsQueue.length > 0) {
-          console.log('🎤 REINTEGRATING FAILED ITEM');
-          const nextFailedItem = failedItemsQueue[0];
-          setFailedItemsQueue(prev => prev.slice(1));
+      // Verificar si hay ejercicios fallados para reintegrar
+      if (failedItemsQueue.length > 0) {
+        console.log('🎤 REINTEGRATING FAILED ITEM');
+        const nextFailedItem = failedItemsQueue[0];
+        setFailedItemsQueue(prev => prev.slice(1));
 
-          // Configurar el ejercicio fallado como siguiente
-          setSwapAnim(true);
-          setTimeout(() => {
-            setSwapAnim(false);
-            setCurrentItem(nextFailedItem);
-            setInputValue('');
-            setResult('idle');
-            setStartTime(Date.now());
-            setTimeout(() => inputRef.current?.focus(), 0);
-            logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
-          }, 250);
-        } else {
-          console.log('🎤 GENERATING NEXT ITEM');
-          // subtle swap animation when moving to next random item
-          setSwapAnim(true);
-          // Reset result immediately to enable input
+        // Configurar el ejercicio fallado como siguiente
+        setSwapAnim(true);
+        setTimeout(() => {
+          setSwapAnim(false);
+          setCurrentItem(nextFailedItem);
+          setInputValue('');
           setResult('idle');
-          setTimeout(() => {
-            setSwapAnim(false);
-            generateNextItem().catch(console.error);
-          }, 250);
-          // Ensure focus is set after animation with longer delay
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.focus();
-              // Ensure cursor is visible
-              inputRef.current.setSelectionRange(0, 0);
-            }
-          }, 300);
-        }
+          setStartTime(Date.now());
+          setTimeout(() => inputRef.current?.focus(), 0);
+          logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
+        }, 250);
+      } else {
+        console.log('🎤 GENERATING NEXT ITEM');
+        // subtle swap animation when moving to next random item
+        setSwapAnim(true);
+        // Reset result immediately to enable input
+        setResult('idle');
+        setTimeout(() => {
+          setSwapAnim(false);
+          generateNextItem().catch(console.error);
+        }, 250);
+        // Ensure focus is set after animation with longer delay
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+            // Ensure cursor is visible
+            inputRef.current.setSelectionRange(0, 0);
+          }
+        }, 300);
+      }
     }
   };
 
@@ -664,7 +666,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     else if (accuracy >= 80) grade = 'B';
     else if (accuracy >= 70) grade = 'C';
     else if (accuracy >= 60) grade = 'D';
-    
+
     // Generate next session recommendations
     let recommendations = ['Continuar practicando'];
     try {
@@ -677,7 +679,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         correctAnswers,
         avgResponseTime: avgTime
       };
-      
+
       const nextRec = generateNextSessionRecommendations(userId, currentSession);
       recommendations = nextRec ? [nextRec.recommendedTense || 'Continuar practicando'] : ['Continuar practicando'];
       logger.debug('Generated recommendations', nextRec);
@@ -689,7 +691,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     // Record detailed learning session analytics
     const sessionDuration = sessionStartTimestamp ? Date.now() - sessionStartTimestamp : 0;
     const completionRate = correctStreak >= 10 ? 1 : (totalAttempts / 20); // Assuming 20 attempts for full session
-    
+
     try {
       const userId = getCurrentUserId();
       const sessionAnalytics = {
@@ -719,7 +721,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           person: error.item.person,
           errorTags: error.errorTags,
           priorityLevel: error.errorTags.includes('IRREGULAR_STEM') ? 'high' :
-                        error.errorTags.includes('ACCENT') ? 'low' : 'medium'
+            error.errorTags.includes('ACCENT') ? 'low' : 'medium'
         }))
       };
 
@@ -728,7 +730,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
     } catch (error) {
       logger.error('Error recording session analytics', error);
     }
-    
+
     return {
       grade,
       accuracy: Math.round(accuracy),
@@ -749,7 +751,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         person: error.item.person,
         errorTags: error.errorTags,
         priorityLevel: error.errorTags.includes('IRREGULAR_STEM') ? 'high' :
-                      error.errorTags.includes('ACCENT') ? 'low' : 'medium'
+          error.errorTags.includes('ACCENT') ? 'low' : 'medium'
       }))
     };
   };
@@ -791,10 +793,10 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         const lower = (s) => (s || '').toLowerCase()
         const spanish = voices.filter(v => lower(v.lang).startsWith('es'))
         if (spanish.length === 0) return null
-        const prefNames = ['mónica','monica','paulina','luciana','helena','elvira','google español','google us español','google español de estados','microsoft sabina','microsoft helena']
+        const prefNames = ['mónica', 'monica', 'paulina', 'luciana', 'helena', 'elvira', 'google español', 'google us español', 'google español de estados', 'microsoft sabina', 'microsoft helena']
         const preferOrder = (region === 'rioplatense')
-          ? ['es-ar','es-419','es-mx','es-es']
-          : ['es-es','es-mx','es-419','es-us']
+          ? ['es-ar', 'es-419', 'es-mx', 'es-es']
+          : ['es-es', 'es-mx', 'es-419', 'es-us']
         const byLangExact = spanish.find(v => lower(v.lang) === lower(targetLang))
         if (byLangExact) return byLangExact
         for (const lang of preferOrder) {
@@ -935,7 +937,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             <div className="chrono-item"><div className="chrono-value streak-value">🔥 <span className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></div><div className="chrono-label">Racha</div></div>
             <div className="chrono-item"><div className="chrono-value">{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</div><div className="chrono-label">Precisión</div></div>
             {failedItemsQueue.length > 0 && (
-              <div className="chrono-item"><div className="chrono-value" style={{color: '#ff6b6b'}}>🔄 {failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
+              <div className="chrono-item"><div className="chrono-value" style={{ color: '#ff6b6b' }}>🔄 {failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
             )}
           </div>
 
@@ -943,11 +945,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
             <>
               <div className={`verb-lemma ${swapAnim ? 'swap' : ''}`}>{currentItem.lemma}</div>
               <div className={`person-display ${swapAnim ? 'swap' : ''}`}>{getPersonText(currentItem.person)}</div>
-              
+
               <div className="input-container">
-                <input 
+                <input
                   ref={inputRef}
-                  type="text" 
+                  type="text"
                   className={`conjugation-input ${result}`}
                   placeholder="Escribe la conjugación..."
                   value={inputValue}
@@ -969,7 +971,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
                   </div>
                 )}
               </div>
-              
+
               {result !== 'idle' && (
                 <div className={`result ${result}`}>
                   <div className="result-top">
@@ -992,7 +994,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
                   </div>
                 </div>
               )}
-              
+
               <div className="action-buttons">
                 {result === 'idle' ? (
                   <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim()}>Continuar</button>
