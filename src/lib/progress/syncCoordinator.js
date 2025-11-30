@@ -16,11 +16,6 @@ import {
   getSyncEndpoint,
   isSyncEnabled,
   isLocalSyncMode,
-  setSyncEndpoint,
-  setSyncAuthToken,
-  setSyncAuthHeaderName,
-  getSyncAuthToken,
-  clearSyncAuthToken,
   getSyncAuthHeaderName,
   isAuthenticated,
   getAuthToken,
@@ -212,17 +207,80 @@ export async function syncAccountData() {
       sessions: mergeResults?.merged?.sessions || 0
     }
 
+    // Optional upload step: push local unsynced data to server (compatible con tests)
+    const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
+    let anyUploadFailed = false
+    let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0 }
+
+    try {
+      // Attempts
+      try {
+        const attempts = (await getAttemptsByUser(resolvedUserId)) || []
+        const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
+        if (unsyncedAttempts.length > 0) {
+          await postJSON('/attempts', unsyncedAttempts)
+          uploaded.attempts = unsyncedAttempts.length
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.warn('syncAccountData: attempts upload failed (continuing)', { message: e?.message || String(e) })
+      }
+
+      // Mastery
+      try {
+        const mastery = (await getMasteryByUser(resolvedUserId)) || []
+        const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
+        if (unsyncedMastery.length > 0) {
+          await postJSON('/mastery', unsyncedMastery)
+          uploaded.mastery = unsyncedMastery.length
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.warn('syncAccountData: mastery upload failed (continuing)', { message: e?.message || String(e) })
+      }
+
+      // Schedules
+      try {
+        const schedules = (await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)) || []
+        const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
+        if (unsyncedSchedules.length > 0) {
+          await postJSON('/schedules', unsyncedSchedules)
+          uploaded.schedules = unsyncedSchedules.length
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.warn('syncAccountData: schedules upload failed (continuing)', { message: e?.message || String(e) })
+      }
+
+      // Sessions
+      try {
+        const sessions = (await getLearningSessionsByUser(resolvedUserId)) || []
+        const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
+        if (unsyncedSessions.length > 0) {
+          await postJSON('/sessions', unsyncedSessions)
+          uploaded.sessions = unsyncedSessions.length
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.warn('syncAccountData: sessions upload failed (continuing)', { message: e?.message || String(e) })
+      }
+    } catch (uploadErr) {
+      anyUploadFailed = true
+      safeLogger.warn('syncAccountData: unexpected error during upload step', { message: uploadErr?.message || String(uploadErr) })
+    }
+
     safeLogger.info('syncAccountData: sincronización de cuenta completada', {
       mergedSummary,
-      uploadedAttempts: mergeResults?.attempts?.uploaded || 0,
-      uploadedMastery: mergeResults?.mastery?.uploaded || 0,
-      uploadedSchedules: mergeResults?.schedules?.uploaded || 0,
-      uploadedSessions: mergeResults?.sessions?.uploaded || 0
+      uploadedAttempts: uploaded.attempts,
+      uploadedMastery: uploaded.mastery,
+      uploadedSchedules: uploaded.schedules,
+      uploadedSessions: uploaded.sessions
     })
 
     const finalResult = {
-      success: true,
+      success: !anyUploadFailed,
       merged: mergeResults,
+      uploaded,
       downloaded: {
         attempts: accountData.attempts?.length || 0,
         mastery: accountData.mastery?.length || 0,
@@ -513,11 +571,6 @@ export default {
   flushSyncQueue,
   enqueue,
   wakeUpServer,
-  setSyncEndpoint,
-  setSyncAuthToken,
-  setSyncAuthHeaderName,
-  getSyncAuthToken,
-  clearSyncAuthToken,
   isLocalSyncMode
 }
 
@@ -525,4 +578,3 @@ export const __testing = {
   wakeUpServer,
   enqueue
 }
-

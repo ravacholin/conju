@@ -3,7 +3,7 @@ import { priorityVerbs } from '../src/data/priorityVerbs.js';
 import { additionalVerbs } from '../src/data/additionalVerbs.js';
 import { commonVerbs } from '../src/data/commonVerbs.js';
 import { missingVerbs } from '../src/data/missingVerbs.js';
-import fs from 'fs';
+// Note: fs not used here; keep script browser-compatible
 
 const VERB_COLLECTIONS = [
     { name: 'verbs.js', data: verbs },
@@ -78,7 +78,7 @@ function getEndingType(lemma) {
 }
 
 
-function normalizeForms(verb, collectionName) {
+function normalizeForms(verb, _collectionName) {
     // Schema A: verbs.js, priorityVerbs.js, additionalVerbs.js
     if (verb.paradigms && Array.isArray(verb.paradigms)) {
         return verb.paradigms[0].forms;

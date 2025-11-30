@@ -975,6 +975,7 @@ export async function performGlobalHealthCheck() {
 
 // Auto-initialize in browser environment - disabled to prevent temporal dead zone issues
 // The orchestrator will be initialized on-demand when caches are ready
+// eslint-disable-next-line no-constant-condition
 if (typeof window !== 'undefined' && false) {
   initializeOrchestrator().catch(error => {
     console.error('Failed to auto-initialize CacheOrchestrator:', error)
