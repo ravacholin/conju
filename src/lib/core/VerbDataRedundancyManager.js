@@ -15,7 +15,7 @@
  * - Circuit breaker patterns
  */
 
-import { verbs as primaryVerbs } from '../../data/verbs.js'
+import { getVerbs } from '../../data/verbsLazy.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataRedundancy')
@@ -112,14 +112,10 @@ class VerbDataRedundancyManager {
       averageResponseTime: 0
     }
 
-    // Seed caches synchronously so first consumers get full data instead of emergency fallback
-    if (Array.isArray(primaryVerbs) && primaryVerbs.length > 0) {
-      this.dataCache.set(DATA_LAYERS.PRIMARY, primaryVerbs)
-      this.layerHealth.set(DATA_LAYERS.PRIMARY, true)
-      this.currentLayer = DATA_LAYERS.PRIMARY
-    } else {
-      this.layerHealth.set(DATA_LAYERS.PRIMARY, false)
-    }
+    // Seed caches synchronously
+    // Since we moved to lazy loading, we cannot seed PRIMARY synchronously anymore.
+    // We start with PRIMARY as unavailable and rely on EMERGENCY layer until async init finishes.
+    this.layerHealth.set(DATA_LAYERS.PRIMARY, false)
 
     // Emergency layer must always be available before async initialization runs
     this.dataCache.set(DATA_LAYERS.EMERGENCY, EMERGENCY_VERBS)
@@ -180,13 +176,17 @@ class VerbDataRedundancyManager {
    * Initialize all data layers
    */
   async initializeLayers() {
-    // Primary layer - direct import
+    let loadedVerbs = null
+
+    // Primary layer - lazy import
     try {
-      if (primaryVerbs && Array.isArray(primaryVerbs) && primaryVerbs.length > 0) {
-        this.dataCache.set(DATA_LAYERS.PRIMARY, primaryVerbs)
+      loadedVerbs = await getVerbs()
+
+      if (loadedVerbs && Array.isArray(loadedVerbs) && loadedVerbs.length > 0) {
+        this.dataCache.set(DATA_LAYERS.PRIMARY, loadedVerbs)
         this.layerHealth.set(DATA_LAYERS.PRIMARY, true)
         this.currentLayer = DATA_LAYERS.PRIMARY
-        logger.info('initializeLayers', `Primary layer initialized with ${primaryVerbs.length} verbs`)
+        logger.info('initializeLayers', `Primary layer initialized with ${loadedVerbs.length} verbs`)
       } else {
         throw new Error('Primary verbs data is invalid or empty')
       }
@@ -197,8 +197,9 @@ class VerbDataRedundancyManager {
 
     // Secondary layer - backup in memory (copy of primary for now)
     try {
-      if (primaryVerbs && Array.isArray(primaryVerbs)) {
-        const backupVerbs = JSON.parse(JSON.stringify(primaryVerbs))
+      if (loadedVerbs && Array.isArray(loadedVerbs)) {
+        // Use shallow copy for performance, deep copy only if mutation risk exists (verbs are usually treated as immutable)
+        const backupVerbs = [...loadedVerbs]
         this.dataCache.set(DATA_LAYERS.SECONDARY, backupVerbs)
         this.layerHealth.set(DATA_LAYERS.SECONDARY, true)
         if (!this.currentLayer) {
@@ -206,7 +207,8 @@ class VerbDataRedundancyManager {
         }
         logger.info('initializeLayers', `Secondary layer initialized with ${backupVerbs.length} verbs`)
       } else {
-        throw new Error('Cannot create secondary backup from invalid primary data')
+        // If primary failed, we can't create secondary
+        this.layerHealth.set(DATA_LAYERS.SECONDARY, false)
       }
     } catch (error) {
       logger.warn('initializeLayers', 'Secondary layer failed', error)

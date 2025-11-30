@@ -162,11 +162,10 @@ export default function Drill({
 
     setResult(extendedResult);
     
-    try {
-      await handleResult(extendedResult);
-    } catch (error) {
+    // Fire-and-forget progress tracking to avoid blocking UI
+    handleResult(extendedResult).catch(error => {
       logger.error('Error tracking progress for attempt:', error);
-    }
+    });
     
     setIsSubmitting(false);
   };
@@ -214,11 +213,10 @@ export default function Drill({
       };
       setResult(resultObj);
       
-      try {
-        await handleResult(resultObj);
-      } catch (error) {
+      // Fire-and-forget progress tracking
+      handleResult(resultObj).catch(error => {
         logger.error('Error tracking progress for double mode attempt:', error);
-      }
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -399,6 +397,13 @@ export default function Drill({
     if (text) speak(text);
   };
 
+  if (!currentItem) {
+    return (
+      <div className="drill-container drill-loading">
+        <div className="loading-spinner">Cargando ejercicio...</div>
+      </div>
+    )
+  }
   
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
