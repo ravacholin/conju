@@ -202,10 +202,10 @@ export function CompetencyRadar({ data }) {
                 .sort((a,b)=> (a.score ?? 50) - (b.score ?? 50))[0]
               if (target && target.mood && target.tense) {
                 settings.set({ practiceMode: 'specific', specificMood: target.mood, specificTense: target.tense })
-                // Wait for settings to propagate before dispatching navigation event
+                // Wait for settings to propagate before dispatching navigation event (increased delay)
                 setTimeout(() => {
                   window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { mood: target.mood, tense: target.tense } }))
-                }, 50)
+                }, 150)
               }
             }
           } catch (error) {

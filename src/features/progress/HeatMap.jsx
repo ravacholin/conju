@@ -183,12 +183,12 @@ export function HeatMap({ data }) {
                         specificMood: mood,
                         specificTense: tense
                       })
-                      // Wait for settings to propagate before dispatching navigation event
+                      // Wait for settings to propagate before dispatching navigation event (increased delay)
                       setTimeout(() => {
                         window.dispatchEvent(new CustomEvent('progress:navigate', {
                           detail: { mood, tense }
                         }))
-                      }, 50)
+                      }, 150)
                     } catch (error) {
                       logger.error('Error clicking heat map cell:', error)
                     }

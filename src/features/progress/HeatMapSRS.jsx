@@ -283,8 +283,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificMood: mood,
         specificTense: tense
       })
-      // Wait for settings to propagate before navigating
-      setTimeout(() => onNavigateToDrill(), 50)
+      // Wait for settings to propagate before navigating (increased delay for reliability)
+      setTimeout(() => onNavigateToDrill(), 150)
     }
   }
 
@@ -302,8 +302,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
           urgency: 'all'
         }
       })
-      // Wait for settings to propagate before navigating
-      setTimeout(() => onNavigateToDrill(), 50)
+      // Wait for settings to propagate before navigating (increased delay for reliability)
+      setTimeout(() => onNavigateToDrill(), 150)
     }
   }
 
@@ -315,8 +315,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         reviewSessionType: 'due',
         reviewSessionFilter: {}
       })
-      // Wait for settings to propagate before navigating
-      setTimeout(() => onNavigateToDrill(), 50)
+      // Wait for settings to propagate before navigating (increased delay for reliability)
+      setTimeout(() => onNavigateToDrill(), 150)
     }
   }
 
