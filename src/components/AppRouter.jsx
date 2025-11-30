@@ -269,13 +269,16 @@ function AppRouter() {
   useEffect(() => {
     // Check if we're in drill mode
     if (currentMode === 'drill') {
+      // CRITICAL: Always read fresh settings from store to avoid stale closures
+      const LATEST_SETTINGS = useSettings.getState();
+
       // Detect if specific practice settings changed
       const settingsChanged =
-        prevSettingsRef.current.practiceMode !== settings.practiceMode ||
-        prevSettingsRef.current.specificMood !== settings.specificMood ||
-        prevSettingsRef.current.specificTense !== settings.specificTense ||
-        prevSettingsRef.current.verbType !== settings.verbType ||
-        prevSettingsRef.current.selectedFamily !== settings.selectedFamily;
+        prevSettingsRef.current.practiceMode !== LATEST_SETTINGS.practiceMode ||
+        prevSettingsRef.current.specificMood !== LATEST_SETTINGS.specificMood ||
+        prevSettingsRef.current.specificTense !== LATEST_SETTINGS.specificTense ||
+        prevSettingsRef.current.verbType !== LATEST_SETTINGS.verbType ||
+        prevSettingsRef.current.selectedFamily !== LATEST_SETTINGS.selectedFamily;
 
       // If settings changed and we have a current item, clear it first
       if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
@@ -284,22 +287,19 @@ function AppRouter() {
 
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem && !drillMode.isGenerating) {
-        // Get the LATEST settings at generation time to avoid stale closure values
-        const LATEST_SETTINGS = useSettings.getState();
-
-        // Add a small delay to ensure settings have propagated
+        // Add a delay to ensure settings have fully propagated through all stores
         setTimeout(() => {
           drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
-        }, 10);
+        }, 100);
       }
 
-      // Update previous settings reference
+      // Update previous settings reference with LATEST settings
       prevSettingsRef.current = {
-        practiceMode: settings.practiceMode,
-        specificMood: settings.specificMood,
-        specificTense: settings.specificTense,
-        verbType: settings.verbType,
-        selectedFamily: settings.selectedFamily
+        practiceMode: LATEST_SETTINGS.practiceMode,
+        specificMood: LATEST_SETTINGS.specificMood,
+        specificTense: LATEST_SETTINGS.specificTense,
+        verbType: LATEST_SETTINGS.verbType,
+        selectedFamily: LATEST_SETTINGS.selectedFamily
       };
     }
   }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, drillMode.currentItem, drillMode.isGenerating])

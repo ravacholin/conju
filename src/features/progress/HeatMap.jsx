@@ -178,15 +178,17 @@ export function HeatMap({ data }) {
                     try {
                       logger.debug(`Heat map clicked: ${mood}/${tense}`)
                       // Set specific practice settings
-                      settings.set({ 
-                        practiceMode: 'specific', 
-                        specificMood: mood, 
-                        specificTense: tense 
+                      settings.set({
+                        practiceMode: 'specific',
+                        specificMood: mood,
+                        specificTense: tense
                       })
-                      // Dispatch navigation event
-                      window.dispatchEvent(new CustomEvent('progress:navigate', { 
-                        detail: { mood, tense } 
-                      }))
+                      // Wait for settings to propagate before dispatching navigation event (increased delay)
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('progress:navigate', {
+                          detail: { mood, tense }
+                        }))
+                      }, 150)
                     } catch (error) {
                       logger.error('Error clicking heat map cell:', error)
                     }

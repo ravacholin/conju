@@ -108,6 +108,26 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     onNavigateToDrill()
   }, [onNavigateToDrill, settings])
 
+  // Listen for progress navigation events (from heat map clicks, etc.)
+  React.useEffect(() => {
+    const handleProgressNavigate = (event) => {
+      const { detail } = event
+      if (!detail || !onNavigateToDrill) return
+
+      try {
+        // Settings are already set by the component that dispatched the event
+        // Just navigate to drill mode - DrillMode will handle the rest
+        logger.debug('Progress navigation event received:', detail)
+        onNavigateToDrill()
+      } catch (error) {
+        logger.error('Error handling progress navigation:', error)
+      }
+    }
+
+    window.addEventListener('progress:navigate', handleProgressNavigate)
+    return () => window.removeEventListener('progress:navigate', handleProgressNavigate)
+  }, [onNavigateToDrill])
+
   // Manual sync only - removed auto-sync to prevent double load on mount
   // Users can manually sync via the sync button if needed
 

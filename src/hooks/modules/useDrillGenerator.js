@@ -91,27 +91,30 @@ export const useDrillGenerator = () => {
       return null
     }
 
-    const { reviewSessionType, reviewSessionFilter } = getReviewSessionContext(settings)
+    // CRITICAL FIX: Read fresh settings directly from store to avoid stale closures
+    const FRESH_SETTINGS = useSettings.getState()
+
+    const { reviewSessionType, reviewSessionFilter } = getReviewSessionContext(FRESH_SETTINGS)
 
     setIsGenerating(true)
 
     try {
       logger.info('generateNextItem', 'Starting item generation', {
-        verbType: settings.verbType,
-        selectedFamily: settings.selectedFamily,
-        practiceMode: settings.practiceMode,
-        specificMood: settings.specificMood,
-        specificTense: settings.specificTense,
+        verbType: FRESH_SETTINGS.verbType,
+        selectedFamily: FRESH_SETTINGS.selectedFamily,
+        practiceMode: FRESH_SETTINGS.practiceMode,
+        specificMood: FRESH_SETTINGS.specificMood,
+        specificTense: FRESH_SETTINGS.specificTense,
         reviewSessionType,
         reviewSessionFilter,
-        level: settings.level,
+        level: FRESH_SETTINGS.level,
         excludedItem: itemToExclude?.lemma,
-        doubleActive: settings.doubleActive
+        doubleActive: FRESH_SETTINGS.doubleActive
       })
 
       const poolResult = await resolveFormsPool({
-        settings,
-        region: settings.region,
+        settings: FRESH_SETTINGS,
+        region: FRESH_SETTINGS.region,
         cache: formsPoolRef.current,
         generateAllFormsForRegion,
         getFormsCacheKey,
@@ -135,22 +138,22 @@ export const useDrillGenerator = () => {
 
       const formsPool = poolResult.forms
       if (!formsPool || formsPool.length === 0) {
-        logger.error('generateNextItem', 'No forms available for region', settings.region)
+        logger.error('generateNextItem', 'No forms available for region', FRESH_SETTINGS.region)
         return null
       }
 
-      if (settings.doubleActive) {
+      if (FRESH_SETTINGS.doubleActive) {
         const helpersOk = typeof getAvailableMoodsForLevel === 'function' && typeof getAvailableTensesForLevelAndMood === 'function'
         if (!helpersOk) {
           logger.warn('generateNextItem', 'Double mode helpers missing, skipping double mode path')
         }
         if (
           helpersOk &&
-          isDoubleModeViable(formsPool, settings, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+          isDoubleModeViable(formsPool, FRESH_SETTINGS, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
         ) {
           logger.debug('generateNextItem', 'Attempting double mode generation')
           const doubleItem = await generateDoubleModeItem(
-            settings,
+            FRESH_SETTINGS,
             itemToExclude,
             formsPool,
             getAvailableMoodsForLevel,
@@ -169,15 +172,15 @@ export const useDrillGenerator = () => {
         }
       }
 
-      const configValidation = validateSpecificPracticeConfig(settings)
+      const configValidation = validateSpecificPracticeConfig(FRESH_SETTINGS)
       if (!configValidation.valid) {
         logger.error('generateNextItem', 'Invalid specific practice configuration', configValidation)
         return null
       }
 
-      const specificConstraints = buildSpecificConstraints(settings, reviewSessionType, reviewSessionFilter)
+      const specificConstraints = buildSpecificConstraints(FRESH_SETTINGS, reviewSessionType, reviewSessionFilter)
 
-      let eligibleForms = applyComprehensiveFiltering(formsPool, settings, specificConstraints)
+      let eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints)
 
       try {
         validateEligibleForms(eligibleForms, specificConstraints)
@@ -185,18 +188,18 @@ export const useDrillGenerator = () => {
         logger.warn('generateNextItem', 'No eligible forms after filtering; attempting graceful fallback', {
           reason: e?.message,
           settings: {
-            level: settings.level,
-            region: settings.region,
-            practiceMode: settings.practiceMode,
-            specificMood: settings.specificMood,
-            specificTense: settings.specificTense,
-            verbType: settings.verbType
+            level: FRESH_SETTINGS.level,
+            region: FRESH_SETTINGS.region,
+            practiceMode: FRESH_SETTINGS.practiceMode,
+            specificMood: FRESH_SETTINGS.specificMood,
+            specificTense: FRESH_SETTINGS.specificTense,
+            verbType: FRESH_SETTINGS.verbType
           }
         })
 
         try {
           const { progressiveConstraintRelaxation } = await import('./DrillFallbackStrategies.js')
-          const relaxed = progressiveConstraintRelaxation(formsPool, settings, specificConstraints)
+          const relaxed = progressiveConstraintRelaxation(formsPool, FRESH_SETTINGS, specificConstraints)
           if (relaxed) {
             eligibleForms = [relaxed]
             logger.info('generateNextItem', 'Progressive relaxation produced a candidate')
@@ -206,14 +209,14 @@ export const useDrillGenerator = () => {
         }
 
         if (!eligibleForms || eligibleForms.length === 0) {
-          const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
+          const mixedFallbackItem = fallbackToMixedPractice(formsPool, FRESH_SETTINGS)
           if (mixedFallbackItem) {
             setLastGeneratedItem(mixedFallbackItem)
             return mixedFallbackItem
           }
 
           console.log('🆘 useDrillGenerator: Mixed fallback failed, using emergency fallback')
-          const emergencyItem = await createEmergencyFallbackItem(settings)
+          const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
           setLastGeneratedItem(emergencyItem)
           return emergencyItem
         }
@@ -221,7 +224,7 @@ export const useDrillGenerator = () => {
 
       const { form: selectedForm, selectionMethod: pipelineMethod, errors } = await selectNextForm({
         eligibleForms,
-        settings,
+        settings: FRESH_SETTINGS,
         history,
         itemToExclude,
         specificConstraints,
@@ -263,12 +266,12 @@ export const useDrillGenerator = () => {
         })
       }
 
-      const integrityCheck = performIntegrityGuard(nextForm, settings, specificConstraints, selectionMethod)
+      const integrityCheck = performIntegrityGuard(nextForm, FRESH_SETTINGS, specificConstraints, selectionMethod)
 
       if (!integrityCheck.success) {
         logger.warn('generateNextItem', 'Integrity check failed, attempting fallback')
 
-        const fallbackForm = await tryIntelligentFallback(settings, eligibleForms, {
+        const fallbackForm = await tryIntelligentFallback(FRESH_SETTINGS, eligibleForms, {
           specificMood: specificConstraints.specificMood,
           specificTense: specificConstraints.specificTense,
           isSpecific: specificConstraints.isSpecific
@@ -280,21 +283,21 @@ export const useDrillGenerator = () => {
           logger.info('generateNextItem', 'Intelligent fallback succeeded')
         } else {
           logger.warn('generateNextItem', 'All fallbacks failed, using mixed practice fallback')
-          const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
+          const mixedFallbackItem = fallbackToMixedPractice(formsPool, FRESH_SETTINGS)
           if (mixedFallbackItem) {
             setLastGeneratedItem(mixedFallbackItem)
             return mixedFallbackItem
           }
 
           console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
-          const emergencyItem = await createEmergencyFallbackItem(settings)
+          const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
           setLastGeneratedItem(emergencyItem)
           return emergencyItem
         }
       }
 
       if (nextForm) {
-        const drillItem = generateDrillItem(nextForm, settings, eligibleForms)
+        const drillItem = generateDrillItem(nextForm, FRESH_SETTINGS, eligibleForms)
 
         if (drillItem) {
           drillItem.selectionMethod = selectionMethod
@@ -313,14 +316,14 @@ export const useDrillGenerator = () => {
       }
 
       logger.error('generateNextItem', 'Failed to generate drill item, attempting mixed fallback')
-      const mixedFallbackItem = fallbackToMixedPractice(formsPool, settings)
+      const mixedFallbackItem = fallbackToMixedPractice(formsPool, FRESH_SETTINGS)
       if (mixedFallbackItem) {
         setLastGeneratedItem(mixedFallbackItem)
         return mixedFallbackItem
       }
 
       console.log('🆘 useDrillGenerator: All fallbacks failed, using emergency fallback')
-      const emergencyItem = await createEmergencyFallbackItem(settings)
+      const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
 
@@ -328,26 +331,26 @@ export const useDrillGenerator = () => {
       console.error('💥 CRITICAL ERROR in useDrillGenerator:', error)
       console.error('💥 Error stack:', error.stack)
       console.error('💥 Settings causing error:', {
-        level: settings.level,
-        region: settings.region,
-        practiceMode: settings.practiceMode,
-        specificMood: settings.specificMood,
-        specificTense: settings.specificTense,
-        verbType: settings.verbType,
-        enableChunks: settings.enableChunks,
+        level: FRESH_SETTINGS.level,
+        region: FRESH_SETTINGS.region,
+        practiceMode: FRESH_SETTINGS.practiceMode,
+        specificMood: FRESH_SETTINGS.specificMood,
+        specificTense: FRESH_SETTINGS.specificTense,
+        verbType: FRESH_SETTINGS.verbType,
+        enableChunks: FRESH_SETTINGS.enableChunks,
         reviewSessionType,
         reviewSessionFilter
       })
       logger.error('generateNextItem', 'Error during item generation', error)
 
       console.log('🆘 useDrillGenerator: Creating emergency fallback after critical error')
-      const emergencyItem = await createEmergencyFallbackItem(settings)
+      const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
     } finally {
       setIsGenerating(false)
     }
-  }, [settings, isGenerating])
+  }, [isGenerating])
 
   /**
    * Check if generation is currently possible
