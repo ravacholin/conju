@@ -34,9 +34,9 @@ import {
   performIntegrityGuard,
   validateSpecificPracticeConfig
 } from './DrillValidationSystem.js'
-import { 
-  tryIntelligentFallback, 
-  fallbackToMixedPractice 
+import {
+  tryIntelligentFallback,
+  fallbackToMixedPractice
 } from './DrillFallbackStrategies.js'
 import { generateDrillItem } from './DrillItemGenerator.js'
 import {
@@ -359,14 +359,14 @@ export const useDrillGenerator = () => {
   const isGenerationViable = useCallback(async () => {
     try {
       const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
-      
+
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         return false
       }
 
       const specificConstraints = {
-        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
-                    settings.specificMood && settings.specificTense,
+        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
+          settings.specificMood && settings.specificTense,
         specificMood: settings.specificMood,
         specificTense: settings.specificTense
       }
@@ -386,21 +386,21 @@ export const useDrillGenerator = () => {
   const getGenerationStats = useCallback(async () => {
     try {
       const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
-      
+
       const specificConstraints = {
-        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') && 
-                    settings.specificMood && settings.specificTense,
+        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
+          settings.specificMood && settings.specificTense,
         specificMood: settings.specificMood,
         specificTense: settings.specificTense
       }
 
       const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
-      
+
       return {
         totalForms: allFormsForRegion.length,
         eligibleForms: eligibleForms.length,
-        filteringEfficiency: allFormsForRegion.length > 0 
-          ? Math.round((eligibleForms.length / allFormsForRegion.length) * 100) 
+        filteringEfficiency: allFormsForRegion.length > 0
+          ? Math.round((eligibleForms.length / allFormsForRegion.length) * 100)
           : 0,
         settings: {
           practiceMode: settings.practiceMode,
@@ -526,9 +526,13 @@ async function createEmergencyFallbackItem(settings) {
 
     // STEP 4: If no exact match, try relaxing tense but keeping mood
     if (targetTense !== 'pres') {
-      console.log('⚠️ No exact match found, trying', targetMood, 'presente as fallback')
+      // Smart fallback: if subjunctive, fall back to present subjunctive, not indicative
+      const fallbackTense = targetMood === 'subjunctive' ? 'subjPres' : 'pres'
+
+      console.log('⚠️ No exact match found, trying', targetMood, fallbackTense, 'as fallback')
 
       const moodForms = []
+
       for (const verb of allVerbs) {
         if (!verb.paradigms) continue
 
@@ -536,7 +540,8 @@ async function createEmergencyFallbackItem(settings) {
           if (!paradigm.forms) continue
 
           for (const form of paradigm.forms) {
-            if (form.mood === targetMood && form.tense === 'pres' && form.value) {
+            // Use fallbackTense instead of hardcoded 'pres'
+            if (form.mood === targetMood && form.tense === fallbackTense && form.value) {
               // CRITICAL FIX: Only include forms with persons allowed for this region
               if (form.mood === 'nonfinite' || allowedPersons.has(form.person)) {
                 moodForms.push({

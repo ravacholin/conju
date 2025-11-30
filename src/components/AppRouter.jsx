@@ -180,12 +180,12 @@ function AppRouter() {
   const onboardingFlowRef = useRef(onboardingFlow)
   const drillModeRef = useRef(drillMode)
   const forceFullResetRef = useRef(false)
-  
+
   // Update refs when hooks change
   useEffect(() => {
     onboardingFlowRef.current = onboardingFlow
   }, [onboardingFlow])
-  
+
   useEffect(() => {
     drillModeRef.current = drillMode
   }, [drillMode])
@@ -199,14 +199,14 @@ function AppRouter() {
       cleanupStateForStep(route.step)
       onboardingFlowRef.current.setOnboardingStep(route.step, { syncRouter: false })
     }
-    
+
     // Regenerate drill item if navigating to drill without current item
     if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
       setTimeout(() => {
         // Use the new dynamic forms generation - no need to pass cached region forms
         drillModeRef.current.generateNextItem(
-          null, 
-          onboardingFlowRef.current.getAvailableMoodsForLevel, 
+          null,
+          onboardingFlowRef.current.getAvailableMoodsForLevel,
           onboardingFlowRef.current.getAvailableTensesForLevelAndMood
         )
       }, 100)
@@ -302,7 +302,7 @@ function AppRouter() {
         selectedFamily: LATEST_SETTINGS.selectedFamily
       };
     }
-  }, [currentMode, settings.region, settings.practiceMode, settings.specificMood, settings.specificTense, settings.verbType, settings.selectedFamily, drillMode.currentItem, drillMode.isGenerating])
+  }, [currentMode, drillMode.currentItem, drillMode.isGenerating, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood])
 
   // The router now handles all popstate events
 
@@ -520,30 +520,30 @@ function AppRouter() {
     return (
       <>
         <SyncStatusIndicator />
-        <OnboardingFlow 
-        onStartPractice={handleStartPractice} 
-        setCurrentMode={setCurrentMode} 
-        formsForRegion={formsForRegion}
-        // Pass all hook functions as props
-        onboardingStep={onboardingFlow.onboardingStep}
-        selectDialect={onboardingFlow.selectDialect}
-        selectLevel={onboardingFlow.selectLevel}
-        selectPracticeMode={onboardingFlow.selectPracticeMode}
-        selectMood={onboardingFlow.selectMood}
-        selectTense={onboardingFlow.selectTense}
-        selectVerbType={onboardingFlow.selectVerbType}
-        selectFamily={onboardingFlow.selectFamily}
-        goBack={onboardingFlow.goBack}
-        goToLevelDetails={onboardingFlow.goToLevelDetails}
-        handleHome={onboardingFlow.handleHome}
-        settings={onboardingFlow.settings}
-        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
-        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
-        getModeSamples={onboardingFlow.getModeSamples}
-        getConjugationExample={onboardingFlow.getConjugationExample}
-        onGoToProgress={handleGoToProgress}
-        onStartLearningNewTense={handleStartLearningNewTense}
-      />
+        <OnboardingFlow
+          onStartPractice={handleStartPractice}
+          setCurrentMode={setCurrentMode}
+          formsForRegion={formsForRegion}
+          // Pass all hook functions as props
+          onboardingStep={onboardingFlow.onboardingStep}
+          selectDialect={onboardingFlow.selectDialect}
+          selectLevel={onboardingFlow.selectLevel}
+          selectPracticeMode={onboardingFlow.selectPracticeMode}
+          selectMood={onboardingFlow.selectMood}
+          selectTense={onboardingFlow.selectTense}
+          selectVerbType={onboardingFlow.selectVerbType}
+          selectFamily={onboardingFlow.selectFamily}
+          goBack={onboardingFlow.goBack}
+          goToLevelDetails={onboardingFlow.goToLevelDetails}
+          handleHome={onboardingFlow.handleHome}
+          settings={onboardingFlow.settings}
+          getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+          getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+          getModeSamples={onboardingFlow.getModeSamples}
+          getConjugationExample={onboardingFlow.getConjugationExample}
+          onGoToProgress={handleGoToProgress}
+          onStartLearningNewTense={handleStartLearningNewTense}
+        />
       </>
     )
   }
@@ -553,24 +553,24 @@ function AppRouter() {
       <>
         <SyncStatusIndicator />
         <DrillMode
-        currentItem={drillMode.currentItem}
-        settings={settings}
-        onDrillResult={drillMode.handleDrillResult}
-        onContinue={() => drillMode.handleContinue(formsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
-        onHome={handleHome}
-        onRegenerateItem={handleRegenerateItem}
-        onDialectChange={handleDialectChange}
-        onLevelChange={handleLevelChange}
-        onPracticeModeChange={handlePracticeModeChange}
-        onPronounPracticeChange={handlePronounPracticeChange}
-        onVerbTypeChange={handleVerbTypeChange}
-        onStartSpecificPractice={handleStartSpecificPractice}
-        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
-        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
-        onNavigateToProgress={handleGoToProgress}
-        onNavigateToStory={handleStartStoryMode}
-        onNavigateToTimeline={handleStartTimelineMode}
-      />
+          currentItem={drillMode.currentItem}
+          settings={settings}
+          onDrillResult={drillMode.handleDrillResult}
+          onContinue={() => drillMode.handleContinue(formsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
+          onHome={handleHome}
+          onRegenerateItem={handleRegenerateItem}
+          onDialectChange={handleDialectChange}
+          onLevelChange={handleLevelChange}
+          onPracticeModeChange={handlePracticeModeChange}
+          onPronounPracticeChange={handlePronounPracticeChange}
+          onVerbTypeChange={handleVerbTypeChange}
+          onStartSpecificPractice={handleStartSpecificPractice}
+          getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+          getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+          onNavigateToProgress={handleGoToProgress}
+          onNavigateToStory={handleStartStoryMode}
+          onNavigateToTimeline={handleStartTimelineMode}
+        />
       </>
     )
   }
@@ -580,9 +580,9 @@ function AppRouter() {
       <>
         <SyncStatusIndicator />
         <StoryMode
-        onBack={handleStartPractice}
-        onHome={handleHome}
-      />
+          onBack={handleStartPractice}
+          onHome={handleHome}
+        />
       </>
     )
   }
@@ -592,9 +592,9 @@ function AppRouter() {
       <>
         <SyncStatusIndicator />
         <TimelineMode
-        onBack={handleStartPractice}
-        onHome={handleHome}
-      />
+          onBack={handleStartPractice}
+          onHome={handleHome}
+        />
       </>
     )
   }
@@ -604,9 +604,9 @@ function AppRouter() {
       <>
         <SyncStatusIndicator />
         <LearnTenseFlowContainer
-        onHome={handleHome}
-        onGoToProgress={handleGoToProgress}
-      />
+          onHome={handleHome}
+          onGoToProgress={handleGoToProgress}
+        />
       </>
     )
   }
@@ -616,15 +616,15 @@ function AppRouter() {
       <>
         <SyncStatusIndicator />
         <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
-        <ProgressDashboard
-          onNavigateHome={handleProgressMenu}
-          onNavigateToDrill={() => {
-            // Navigate first, let the AppRouter's useEffect handle drill regeneration
-            // This ensures settings are fully applied before regeneration
-            router.navigate({ mode: 'drill' })
-          }}
-        />
-      </React.Suspense>
+          <ProgressDashboard
+            onNavigateHome={handleProgressMenu}
+            onNavigateToDrill={() => {
+              // Navigate first, let the AppRouter's useEffect handle drill regeneration
+              // This ensures settings are fully applied before regeneration
+              router.navigate({ mode: 'drill' })
+            }}
+          />
+        </React.Suspense>
       </>
     )
   }

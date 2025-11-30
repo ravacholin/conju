@@ -292,15 +292,13 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   const handleSRSClick = (mood, tense, event) => {
     event.stopPropagation() // Prevent cell click
     if (onNavigateToDrill) {
-      // Set SRS review mode with specific filter
+      // Practice this specific mood/tense (not generic review)
+      // This ensures clicking SRS badge practices that exact tense
       settings.set({
-        practiceMode: 'review',
-        reviewSessionType: 'specific',
-        reviewSessionFilter: {
-          mood: mood,
-          tense: tense,
-          urgency: 'all'
-        }
+        practiceMode: 'specific',
+        specificMood: mood,
+        specificTense: tense,
+        level: 'ALL' // Allow practicing regardless of user's level
       })
       // Wait for settings to propagate before navigating (increased delay for reliability)
       setTimeout(() => onNavigateToDrill(), 150)

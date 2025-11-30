@@ -173,7 +173,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
 
       result[cell.mood].totalAttempts += cell.count
     })
-    
+
     // Convert Maps back to arrays and calculate averages
     Object.keys(result).forEach(mood => {
       const tensesArray = Array.from(result[mood].tenses.values())
@@ -184,14 +184,14 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         ? Math.round(tenseScores.reduce((sum, score) => sum + score, 0) / tenseScores.length)
         : 0
     })
-    
+
     return result
   }, [data])
 
   const getMasteryColor = (score, hasData = true) => {
     if (!hasData) return 'mastery-none'
     if (score >= 85) return 'mastery-excellent'
-    if (score >= 70) return 'mastery-good' 
+    if (score >= 70) return 'mastery-good'
     if (score >= 50) return 'mastery-fair'
     return 'mastery-poor'
   }
@@ -271,7 +271,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
         <img src="/icons/map.png" alt="Mapa" className="section-icon" />
         Mapa de Dominio por Modo y Tiempo
       </h2>
-      
+
       <div className="verb-mastery-map">
         {Object.keys(masteryByMode).length === 0 ? (
           <div className="empty-state">
@@ -284,45 +284,45 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
             if (!mood.tenses || mood.tenses.length === 0) return null
 
             return (
-            <div key={moodKey} className="mood-section">
-              <div className="mood-header">
-                <div className="mood-title">
-                  <div className="mood-info">
-                    <h3>{mood.label}</h3>
-                    <p className="mood-description">{mood.description}</p>
-                  </div>
-                </div>
-                <div className="mood-stats">
-                  <div className="mood-stat">
-                    <div className="stat-value">{mood.avgScore}%</div>
-                    <div className="stat-label">Promedio</div>
-                  </div>
-                  <div className="mood-stat">
-                    <div className="stat-value">{mood.totalAttempts}</div>
-                    <div className="stat-label">Intentos</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="tense-grid">
-                {mood.tenses.map(tense => {
-                  return (
-                    <div
-                      key={tense.key}
-                      className={`tense-card ${getMasteryColor(tense.score, tense.hasData)}`}
-                      onClick={() => handleTenseClick(moodKey, tense.key)}
-                      title={`${mood.label} - ${tense.label} — Clic para practicar`}
-                    >
-                      <div className="tense-name">{tense.label}</div>
-                      <div className="tense-score">{formatPercentage(tense.score)}</div>
-                      <div className="tense-status">{getMasteryLabel(tense.score, tense.hasData)}</div>
+              <div key={moodKey} className="mood-section">
+                <div className="mood-header">
+                  <div className="mood-title">
+                    <div className="mood-info">
+                      <h3>{mood.label}</h3>
+                      <p className="mood-description">{mood.description}</p>
                     </div>
-                  )
-                })}
+                  </div>
+                  <div className="mood-stats">
+                    <div className="mood-stat">
+                      <div className="stat-value">{mood.avgScore}%</div>
+                      <div className="stat-label">Promedio</div>
+                    </div>
+                    <div className="mood-stat">
+                      <div className="stat-value">{mood.totalAttempts}</div>
+                      <div className="stat-label">Intentos</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="tense-grid">
+                  {mood.tenses.map(tense => {
+                    return (
+                      <div
+                        key={tense.key}
+                        className={`tense-card ${getMasteryColor(tense.score, tense.hasData)}`}
+                        onClick={() => handleTenseClick(moodKey, tense.key)}
+                        title={`${mood.label} - ${tense.label} — Clic para practicar`}
+                      >
+                        <div className="tense-name">{tense.label}</div>
+                        <div className="tense-score">{formatPercentage(tense.score)}</div>
+                        <div className="tense-status">{getMasteryLabel(tense.score, tense.hasData)}</div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )
-        })
+            )
+          })
         )}
 
         {/* Tooltip intentionally disabled */}

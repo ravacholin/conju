@@ -93,8 +93,8 @@ export function useDrillMode() {
 
     if (!currentActivity) {
       logger.info('handleSessionGeneration', 'No current activity, session may be completed')
-      // Session completed or no session - fallback to normal generation
-      settings.set({ practiceMode: 'mixed' })
+      // Session completed - fallback to normal generation WITHOUT changing practiceMode
+      // This preserves specific practice settings from progress navigation
       return await generateNormalItem(itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
     }
 
@@ -353,7 +353,7 @@ export function useDrillMode() {
     getAvailableTensesForLevelAndMood
   ) => {
     logger.debug('handleContinue', 'Continuing to next item')
-    
+
     // Correct argument order: (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
     await generateNextItem(currentItem, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
@@ -371,10 +371,10 @@ export function useDrillMode() {
     getAvailableTensesForLevelAndMood
   ) => {
     logger.info('clearHistoryAndRegenerate', 'Clearing history and regenerating')
-    
+
     setHistory({})
     resetProgressStats()
-    
+
     await generateNextItem(null, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
   }
 
@@ -423,7 +423,7 @@ export function useDrillMode() {
   const getDrillModeStatus = () => {
     const progressInsights = getProgressInsights()
     const validationInsights = getValidationInsights()
-    
+
     return {
       currentItem,
       history,
@@ -517,7 +517,7 @@ export function useDrillMode() {
       const { tryIntelligentFallback } = await import('./modules/DrillFallbackStrategies.js')
       return tryIntelligentFallback(settings, eligibleForms, context)
     },
-    
+
     fallbackToMixedPractice: async (allForms, settings) => {
       logger.warn('fallbackToMixedPractice', 'Legacy function called - consider using new modular API')
       const { fallbackToMixedPractice } = await import('./modules/DrillFallbackStrategies.js')
