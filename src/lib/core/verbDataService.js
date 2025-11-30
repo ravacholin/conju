@@ -1356,5 +1356,8 @@ export function clearVerbDataCaches() {
 // Preload function for progressive enhancement
 export function preloadVerbData() {
   // Start loading verbs in background
-  getAllVerbs().catch(() => { })
+  getAllVerbs().catch((error) => {
+    // Log preload failures (non-critical, data will load on-demand)
+    logger.warn('Verb preload failed (non-critical, will load on-demand)', error)
+  })
 }

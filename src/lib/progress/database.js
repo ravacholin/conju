@@ -13,6 +13,7 @@ const CACHE_TTL_MS = 60000 // 60 seconds
 // Estado de la base de datos
 let dbInstance = null
 let isInitializing = false
+let initializationPromise = null
 
 // Simple in-memory caches to avoid hitting IndexedDB repeatedly for hot paths
 const attemptsCache = new Map()
@@ -105,22 +106,17 @@ export async function initDB() {
     return dbInstance
   }
 
-  if (isInitializing) {
-    // Esperar a que termine la inicialización en curso
-    await new Promise(resolve => {
-      const checkInterval = setInterval(() => {
-        if (!isInitializing) {
-          clearInterval(checkInterval)
-          resolve()
-        }
-      }, 100)
-    })
+  // If initialization is already in progress, wait for it
+  if (isInitializing && initializationPromise) {
+    await initializationPromise
     return dbInstance
   }
 
   isInitializing = true
 
-  try {
+  // Create a new initialization promise
+  initializationPromise = (async () => {
+    try {
     if (isDev) logger.info('initDB', 'Inicializando base de datos de progreso')
 
     // Importar openDB dinámicamente para permitir mocks por prueba
@@ -295,14 +291,20 @@ export async function initDB() {
       }
     })
 
-    if (isDev) logger.info('initDB', 'Base de datos de progreso inicializada correctamente')
-    return dbInstance
-  } catch (error) {
-    logger.error('initDB', 'Error al inicializar la base de datos de progreso', error)
-    throw error
-  } finally {
-    isInitializing = false
-  }
+      if (isDev) logger.info('initDB', 'Base de datos de progreso inicializada correctamente')
+      return dbInstance
+    } catch (error) {
+      logger.error('initDB', 'Error al inicializar la base de datos de progreso', error)
+      throw error
+    } finally {
+      isInitializing = false
+      initializationPromise = null
+    }
+  })()
+
+  // Wait for initialization to complete
+  await initializationPromise
+  return dbInstance
 }
 
 /**
