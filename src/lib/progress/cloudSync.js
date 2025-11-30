@@ -52,7 +52,10 @@ if (typeof window !== 'undefined') {
   if (isOnline) {
     // Small delay to allow auth to initialize
     setTimeout(() => {
-      syncWithCloud({ bypassIncognito: false }).catch(() => { })
+      syncWithCloud({ bypassIncognito: false }).catch((error) => {
+        // Log initial sync failures for debugging
+        logger.warn('initial-sync', 'Initial sync failed (non-critical)', error)
+      })
     }, 2000)
   }
 }
@@ -301,7 +304,14 @@ export function handleConnectivityChange(online) {
   isOnline = !!online
   if (isDev) logger.info('handleConnectivityChange', `Conectividad: ${online ? 'Conectado' : 'Desconectado'}`)
   if (online) {
-    flushSyncQueue().then(() => syncWithCloud()).catch(() => { })
+    flushSyncQueue()
+      .then(() => syncWithCloud())
+      .catch((error) => {
+        // Log connectivity-related sync failures
+        logger.warn('connectivity-sync', 'Sync after connectivity change failed', error)
+        // Update sync status so UI can show the error
+        recordSyncOutcome({ success: false, error: error?.message || String(error) })
+      })
   }
 }
 
@@ -339,7 +349,10 @@ export function scheduleAutoSync(intervalMs = 300000) {
 
   autoSyncTimerId = timerApi.setInterval(() => {
     if (isIncognitoMode) return
-    syncWithCloud().catch(() => { })
+    syncWithCloud().catch((error) => {
+      // Log auto-sync failures (non-critical, will retry on next interval)
+      logger.warn('auto-sync', 'Scheduled auto-sync failed (will retry)', error)
+    })
   }, intervalMs)
 
   if (isDev) logger.info('scheduleAutoSync', `Programando sincronización automática cada ${Math.round(intervalMs / 60000)} minutos`)

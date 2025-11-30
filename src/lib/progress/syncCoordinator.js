@@ -477,18 +477,33 @@ export const flushSyncQueue = flushSyncQueueFromService
 if (typeof window !== 'undefined') {
   try {
     window.addEventListener('online', () => {
-      flushSyncQueueFromService().catch(() => { })
-      syncNow().catch(() => { })
+      flushSyncQueueFromService().catch((error) => {
+        safeLogger.warn('event:online', 'Failed to flush sync queue on online event', {
+          message: error?.message || String(error)
+        })
+      })
+      syncNow().catch((error) => {
+        safeLogger.warn('event:online', 'Failed to sync on online event', {
+          message: error?.message || String(error)
+        })
+      })
     })
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         setTimeout(() => {
-          syncNow().catch(() => { })
+          syncNow().catch((error) => {
+            safeLogger.warn('event:visibilitychange', 'Failed to sync on visibility change', {
+              message: error?.message || String(error)
+            })
+          })
         }, 500)
       }
     })
-  } catch {
-    // Ignore listener errors
+  } catch (error) {
+    // Log listener setup errors (unlikely but possible)
+    safeLogger.warn('event-listeners', 'Failed to setup sync event listeners', {
+      message: error?.message || String(error)
+    })
   }
 }
 
