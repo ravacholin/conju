@@ -12,14 +12,14 @@ export const PROGRESS_CONFIG = {
   MASTERY_LEVELS: {
     ACHIEVED: 80, // Dominio logrado
     ATTENTION: 60, // Necesita atención
-    CRITICAL: 0   // Crítico
+    CRITICAL: 0, // Crítico
   },
 
   // Umbrales de confianza
   CONFIDENCE_LEVELS: {
-    HIGH: 20,  // N >= 20
+    HIGH: 20, // N >= 20
     MEDIUM: 8, // N >= 8
-    LOW: 0     // N < 8
+    LOW: 0, // N < 8
   },
 
   // Intervalos SRS (Legacy SM-2)
@@ -38,13 +38,13 @@ export const PROGRESS_CONFIG = {
     // Micro-reaprendizaje tras fallo: intervalos en días (se permiten fracciones)
     RELEARN_STEPS: [0.25, 1], // 6h, 1d
     // Influencia de pistas y velocidad en la calidad (Q)
-    HINT_Q_PENALTY: 1,       // restar 1 punto de Q si hubo pistas
+    HINT_Q_PENALTY: 1, // restar 1 punto de Q si hubo pistas
     SPEED: {
       FAST_GUESS_MS: 900,
-      SLOW_MS: 6000
+      SLOW_MS: 6000,
     },
     // Jitter para evitar sincronías exactas
-    FUZZ_RATIO: 0.10 // ±10%
+    FUZZ_RATIO: 0.1, // ±10%
   },
 
   // Configuración de clustering por familias irregulares
@@ -57,7 +57,7 @@ export const PROGRESS_CONFIG = {
       MIN_MASTERY_FOR_BOOST: 0.3,
       FAMILY_MASTERY_THRESHOLD: 0.7,
       FAMILY_RECENCY_TAU: 14,
-      MAX_FAMILY_BOOST: 2.0
+      MAX_FAMILY_BOOST: 2.0,
     },
     CLUSTER_PROMOTION: {
       PRACTICE_WEIGHT: 0.15,
@@ -65,8 +65,8 @@ export const PROGRESS_CONFIG = {
       INTERVAL_BONUS: 0.25,
       MAX_CLUSTER_BOOST: 1.35,
       DROP_THRESHOLD: 0.35,
-      FLOOR_MULTIPLIER: 0.9
-    }
+      FLOOR_MULTIPLIER: 0.9,
+    },
   },
 
   // Configuración FSRS (Free Spaced Repetition Scheduler)
@@ -76,88 +76,88 @@ export const PROGRESS_CONFIG = {
     // Parámetros FSRS optimizados (17 parámetros del modelo)
     // Estos son valores por defecto entrenados en millones de reviews
     WEIGHTS: [
-      0.4072,  // w[0] - initial difficulty after first review
-      1.1829,  // w[1] - initial difficulty after second review
-      3.1262,  // w[2] - initial difficulty after third review
+      0.4072, // w[0] - initial difficulty after first review
+      1.1829, // w[1] - initial difficulty after second review
+      3.1262, // w[2] - initial difficulty after third review
       15.4722, // w[3] - difficulty increase factor after incorrect review
-      7.2102,  // w[4] - difficulty increase factor after correct review
-      0.5316,  // w[5] - first stability factor
-      1.0651,  // w[6] - second stability factor
-      0.0234,  // w[7] - stability decrease factor after incorrect review
-      1.616,   // w[8] - stability increase factor after correct review
-      0.1544,  // w[9] - retrievability factor
-      1.0824,  // w[10] - second retrievability factor
-      1.9813,  // w[11] - difficulty factor in stability calculation
-      0.0953,  // w[12] - difficulty factor in retrievability calculation
-      0.2975,  // w[13] - interval factor
-      2.2042,  // w[14] - second interval factor
-      0.2407,  // w[15] - third interval factor
-      2.9466,  // w[16] - fourth interval factor
-      1.4318,  // w[17] - additional stability factor
-      0.0606   // w[18] - final retrievability factor
+      7.2102, // w[4] - difficulty increase factor after correct review
+      0.5316, // w[5] - first stability factor
+      1.0651, // w[6] - second stability factor
+      0.0234, // w[7] - stability decrease factor after incorrect review
+      1.616, // w[8] - stability increase factor after correct review
+      0.1544, // w[9] - retrievability factor
+      1.0824, // w[10] - second retrievability factor
+      1.9813, // w[11] - difficulty factor in stability calculation
+      0.0953, // w[12] - difficulty factor in retrievability calculation
+      0.2975, // w[13] - interval factor
+      2.2042, // w[14] - second interval factor
+      0.2407, // w[15] - third interval factor
+      2.9466, // w[16] - fourth interval factor
+      1.4318, // w[17] - additional stability factor
+      0.0606, // w[18] - final retrievability factor
     ],
     // Configuración del algoritmo
-    REQUEST_RETENTION: 0.90,    // 90% retención objetivo (puede ser personalizable)
-    MAXIMUM_INTERVAL: 36500,    // Máximo intervalo: 100 años
-    MINIMUM_INTERVAL: 1,        // Mínimo intervalo: 1 día
-    ENABLE_FUZZ: true,          // Activar jitter para evitar sincronización
-    FUZZ_FACTOR: 0.05,          // ±5% de variación aleatoria
+    REQUEST_RETENTION: 0.9, // 90% retención objetivo (puede ser personalizable)
+    MAXIMUM_INTERVAL: 36500, // Máximo intervalo: 100 años
+    MINIMUM_INTERVAL: 1, // Mínimo intervalo: 1 día
+    ENABLE_FUZZ: true, // Activar jitter para evitar sincronización
+    FUZZ_FACTOR: 0.05, // ±5% de variación aleatoria
 
     // Factores de ajuste para ratings
-    HARD_FACTOR: 1.2,           // Factor para reviews "difícil"
-    EASY_BONUS: 1.3,            // Bonus para reviews "fácil"
+    HARD_FACTOR: 1.2, // Factor para reviews "difícil"
+    EASY_BONUS: 1.3, // Bonus para reviews "fácil"
 
     // Integración con inteligencia emocional
     CONFIDENCE_ADJUSTMENTS: {
-      STRUGGLING: 0.6,          // Reducir intervalos 40% cuando struggling
-      HESITANT: 0.8,           // Reducir intervalos 20% cuando hesitant
-      CONFIDENT: 1.1,          // Aumentar intervalos 10% cuando confident
-      OVERCONFIDENT: 1.25      // Aumentar intervalos 25% cuando overconfident
+      STRUGGLING: 0.6, // Reducir intervalos 40% cuando struggling
+      HESITANT: 0.8, // Reducir intervalos 20% cuando hesitant
+      CONFIDENT: 1.1, // Aumentar intervalos 10% cuando confident
+      OVERCONFIDENT: 1.25, // Aumentar intervalos 25% cuando overconfident
     },
 
     // Integración con temporal intelligence
     TEMPORAL_ADJUSTMENTS: {
-      PEAK_HOURS_BONUS: 1.15,   // +15% intervalos en horas pico
-      LOW_HOURS_PENALTY: 0.85,  // -15% intervalos en horas bajas
+      PEAK_HOURS_BONUS: 1.15, // +15% intervalos en horas pico
+      LOW_HOURS_PENALTY: 0.85, // -15% intervalos en horas bajas
       HIGH_FATIGUE_PENALTY: 0.75, // -25% intervalos con alta fatiga
-      FLOW_STATE_BONUS: 1.20    // +20% intervalos en flow state
+      FLOW_STATE_BONUS: 1.2, // +20% intervalos en flow state
     },
 
     // Configuración del optimizador personal
     OPTIMIZER: {
-      ENABLED: false,           // Optimización personal deshabilitada por defecto
+      ENABLED: false, // Optimización personal deshabilitada por defecto
       MIN_REVIEWS_REQUIRED: 1000, // Mínimo reviews para optimización confiable
       OPTIMIZATION_FREQUENCY: 30, // Días entre re-optimizaciones
-      PRETRAIN_ENABLED: true    // Usar parámetros preentrenados como base
-    }
+      PRETRAIN_ENABLED: true, // Usar parámetros preentrenados como base
+    },
   },
 
   // Configuración de UI
   UI: {
     HEATMAP_COLORS: {
-      HIGH: '#28a745',    // Verde para 80-100%
-      MEDIUM: '#ffc107',  // Amarillo para 60-79%
-      LOW: '#dc3545',     // Rojo para 0-59%
-      NO_DATA: '#6c757d'  // Gris para sin datos
+      HIGH: "#28a745", // Verde para 80-100%
+      MEDIUM: "#ffc107", // Amarillo para 60-79%
+      LOW: "#dc3545", // Rojo para 0-59%
+      NO_DATA: "#6c757d", // Gris para sin datos
     },
 
     COMPETENCY_RADAR: {
       AXES: 5, // Número de ejes en el radar
-      MAX_VALUE: 100 // Valor máximo para cada eje
-    }
+      MAX_VALUE: 100, // Valor máximo para cada eje
+    },
   },
 
   // Configuración de sincronización
   SYNC: {
     AUTO_SYNC_INTERVAL: 5 * 60 * 1000, // 5 minutos
     MAX_SYNC_RETRIES: 3,
-    BATCH_SIZE: 100 // Número de registros por lote
+    BATCH_SIZE: 100, // Número de registros por lote
   },
 
   // Configuración de diagnóstico
   DIAGNOSIS: {
     TEST_DURATION: 3 * 60 * 1000, // 3 minutos
-    RECALIBRATION_INTERVAL: 30 * 24 * 60 * 60 * 1000 // 30 días
+    RECALIBRATION_INTERVAL: 30 * 24 * 60 * 60 * 1000, // 30 días
   },
 
   // Configuración de objetivos
@@ -167,41 +167,41 @@ export const PROGRESS_CONFIG = {
       DEFAULT_MIN_SCORE: 75,
       DEFAULT_SESSIONS: 5,
       DEFAULT_ATTEMPTS: 50,
-      DEFAULT_FOCUS_TIME: 60 // minutos
-    }
+      DEFAULT_FOCUS_TIME: 60, // minutos
+    },
   },
 
   // Configuración de Inteligencia Emocional
   EMOTIONAL_INTELLIGENCE: {
     // Flow State Detection Thresholds
     FLOW: {
-      FAST_RESPONSE: 3000,        // ms - Respuestas rápidas indican confianza
-      SLOW_RESPONSE: 8000,        // ms - Respuestas lentas indican vacilación
-      HIGH_ACCURACY: 0.85,        // 85%+ accuracy indica dominio
-      LOW_ACCURACY: 0.60,         // <60% accuracy indica dificultad
-      FLOW_STREAK: 5,             // 5 respuestas correctas rápidas = flow
-      STRUGGLE_STREAK: 3,         // 3 errores o respuestas lentas = struggle
-      VELOCITY_CONSISTENCY: 0.3,  // Variación en velocidad <30% = consistent
-      ACCURACY_CONSISTENCY: 0.2   // Variación en accuracy <20% = consistent
+      FAST_RESPONSE: 3000, // ms - Respuestas rápidas indican confianza
+      SLOW_RESPONSE: 8000, // ms - Respuestas lentas indican vacilación
+      HIGH_ACCURACY: 0.85, // 85%+ accuracy indica dominio
+      LOW_ACCURACY: 0.6, // <60% accuracy indica dificultad
+      FLOW_STREAK: 5, // 5 respuestas correctas rápidas = flow
+      STRUGGLE_STREAK: 3, // 3 errores o respuestas lentas = struggle
+      VELOCITY_CONSISTENCY: 0.3, // Variación en velocidad <30% = consistent
+      ACCURACY_CONSISTENCY: 0.2, // Variación en accuracy <20% = consistent
     },
 
     // Momentum Tracking Configuration
     MOMENTUM: {
       FACTORS: {
-        ACCURACY: 0.30,           // 30% - Correctness matters
-        RESPONSE_TIME: 0.25,      // 25% - Speed indicates confidence  
-        CONSISTENCY: 0.20,        // 20% - Consistency builds momentum
+        ACCURACY: 0.3, // 30% - Correctness matters
+        RESPONSE_TIME: 0.25, // 25% - Speed indicates confidence
+        CONSISTENCY: 0.2, // 20% - Consistency builds momentum
         DIFFICULTY_PROGRESS: 0.15, // 15% - Handling harder content
-        RECOVERY_RATE: 0.10       // 10% - Bouncing back from errors
+        RECOVERY_RATE: 0.1, // 10% - Bouncing back from errors
       },
       THRESHOLDS: {
-        PEAK_PERFORMANCE: 0.85,      // 85%+ momentum score
-        CONFIDENCE_BUILDING: 0.70,   // 70-84% momentum score
-        STEADY_PROGRESS: 0.55,       // 55-69% momentum score
-        MINOR_SETBACK: 0.40,        // 40-54% momentum score
-        RECOVERY_MODE: 0.25,         // 25-39% momentum score
-        CONFIDENCE_CRISIS: 0.25      // <25% momentum score
-      }
+        PEAK_PERFORMANCE: 0.85, // 85%+ momentum score
+        CONFIDENCE_BUILDING: 0.7, // 70-84% momentum score
+        STEADY_PROGRESS: 0.55, // 55-69% momentum score
+        MINOR_SETBACK: 0.4, // 40-54% momentum score
+        RECOVERY_MODE: 0.25, // 25-39% momentum score
+        CONFIDENCE_CRISIS: 0.25, // <25% momentum score
+      },
     },
 
     // Confidence Engine Configuration
@@ -210,80 +210,85 @@ export const PROGRESS_CONFIG = {
         HESITANT: 0.3,
         UNCERTAIN: 0.5,
         CONFIDENT: 0.7,
-        OVERCONFIDENT: 0.9
+        OVERCONFIDENT: 0.9,
       },
       SPEED_FACTORS: {
-        OPTIMAL_MIN: 2000,        // ms - Tiempo óptimo mínimo
-        OPTIMAL_MAX: 4000,        // ms - Tiempo óptimo máximo
-        FAST_THRESHOLD: 1000,     // ms - Muy rápido (posible adivinanza)
-        SLOW_THRESHOLD: 6000      // ms - Muy lento (vacilación)
-      }
+        OPTIMAL_MIN: 2000, // ms - Tiempo óptimo mínimo
+        OPTIMAL_MAX: 4000, // ms - Tiempo óptimo máximo
+        FAST_THRESHOLD: 1000, // ms - Muy rápido (posible adivinanza)
+        SLOW_THRESHOLD: 6000, // ms - Muy lento (vacilación)
+      },
     },
 
-    // Temporal Intelligence Configuration  
+    // Temporal Intelligence Configuration
     TEMPORAL: {
       CIRCADIAN: {
-        PEAK_DETECTION_MIN_SESSIONS: 2,  // Mínimo sesiones para detectar pico
-        OPTIMAL_SESSION_DEFAULT: 20,     // minutos - Duración por defecto
-        FATIGUE_RECOVERY_RATE: 0.1,      // por minuto
-        COGNITIVE_LOAD_THRESHOLD: 0.8     // Umbral de sobrecarga
+        PEAK_DETECTION_MIN_SESSIONS: 2, // Mínimo sesiones para detectar pico
+        OPTIMAL_SESSION_DEFAULT: 20, // minutos - Duración por defecto
+        FATIGUE_RECOVERY_RATE: 0.1, // por minuto
+        COGNITIVE_LOAD_THRESHOLD: 0.8, // Umbral de sobrecarga
       },
-      POST_LUNCH_DIP_START: 13,         // hora
-      POST_LUNCH_DIP_END: 15,           // hora  
-      NIGHT_FATIGUE_START: 22,          // hora
-      MORNING_PEAK_START: 9,            // hora
-      MORNING_PEAK_END: 11              // hora
+      POST_LUNCH_DIP_START: 13, // hora
+      POST_LUNCH_DIP_END: 15, // hora
+      NIGHT_FATIGUE_START: 22, // hora
+      MORNING_PEAK_START: 9, // hora
+      MORNING_PEAK_END: 11, // hora
     },
 
     // Dynamic Goals Configuration
     GOALS: {
       ACTIVE_GOALS_MIN: 3,
       ACTIVE_GOALS_MAX: 5,
-      CACHE_EXPIRY: 5 * 60 * 1000,     // 5 minutos
+      CACHE_EXPIRY: 5 * 60 * 1000, // 5 minutos
       GOAL_TYPES: {
         ACCURACY: { DEFAULT_POINTS: 100, MIN_ATTEMPTS: 10 },
         SPEED: { DEFAULT_POINTS: 150, MIN_ATTEMPTS: 15 },
         STREAK: { DEFAULT_POINTS: 200, MIN_TARGET: 10 },
-        EXPLORATION: { DEFAULT_POINTS: 100, TIME_LIMIT: 7 * 24 * 60 * 60 * 1000 },
+        EXPLORATION: {
+          DEFAULT_POINTS: 100,
+          TIME_LIMIT: 7 * 24 * 60 * 60 * 1000,
+        },
         MASTERY: { DEFAULT_POINTS: 500, MIN_ACCURACY: 0.95, MIN_ATTEMPTS: 20 },
-        SESSION: { DEFAULT_POINTS: 150, DEFAULT_DURATION: 20 * 60 * 1000 }
-      }
-    }
+        SESSION: { DEFAULT_POINTS: 150, DEFAULT_DURATION: 20 * 60 * 1000 },
+      },
+    },
   },
 
   // Configuración de Logging
   LOGGING: {
-    ENABLED: (typeof globalThis !== 'undefined' && globalThis.process?.env?.NODE_ENV === 'development'),
+    ENABLED:
+      typeof globalThis !== "undefined" &&
+      globalThis.process?.env?.NODE_ENV === "development",
     LEVELS: {
       ERROR: 0,
       WARN: 1,
       INFO: 2,
-      DEBUG: 3
+      DEBUG: 3,
     },
-    DEFAULT_LEVEL: 2 // INFO
+    DEFAULT_LEVEL: 2, // INFO
   },
 
   // Configuración de Auto-save
   AUTO_SAVE: {
-    CONFIDENCE_ENGINE: 30000,    // 30 segundos
+    CONFIDENCE_ENGINE: 30000, // 30 segundos
     TEMPORAL_INTELLIGENCE: 60000, // 60 segundos
-    DYNAMIC_GOALS: 120000        // 120 segundos
+    DYNAMIC_GOALS: 120000, // 120 segundos
   },
 
   // Feature Flags para Phase 2 - Advanced SRS
   FEATURE_FLAGS: {
-    FSRS_ALGORITHM: false,         // Habilitar algoritmo FSRS
+    FSRS_ALGORITHM: false, // Habilitar algoritmo FSRS
     EMOTIONAL_SRS_INTEGRATION: true, // Integración con confidence/flow
-    TEMPORAL_SCHEDULING: true,      // Context-aware scheduling
-    ML_RECOMMENDATIONS: false,     // Recomendaciones predictivas ML
-    PERSONAL_OPTIMIZER: false,     // Optimizador personal de parámetros
-    ADVANCED_ANALYTICS: true,      // Analytics avanzados del SRS
-    A_B_TESTING: false,           // Framework de testing A/B
+    TEMPORAL_SCHEDULING: true, // Context-aware scheduling
+    ML_RECOMMENDATIONS: false, // Recomendaciones predictivas ML
+    PERSONAL_OPTIMIZER: false, // Optimizador personal de parámetros
+    ADVANCED_ANALYTICS: true, // Analytics avanzados del SRS
+    A_B_TESTING: false, // Framework de testing A/B
     PERSONALIZED_STUDY_PLANS: true, // Planes de estudio personalizados (Fase 3)
-    EXPERT_MODE: false,            // Modo experto con ajustes de SRS avanzados
-    SOCIAL_CHALLENGES: true,       // Funciones sociales y desafíos comunitarios
-    OFFLINE_FIRST: true,          // Arquitectura offline-first mejorada
-    SRS_FAMILY_CLUSTERING: true    // Transfer learning entre verbos de familias irregulares
+    EXPERT_MODE: false, // Modo experto con ajustes de SRS avanzados
+    SOCIAL_CHALLENGES: true, // Funciones sociales y desafíos comunitarios
+    OFFLINE_FIRST: true, // Arquitectura offline-first mejorada
+    SRS_FAMILY_CLUSTERING: true, // Transfer learning entre verbos de familias irregulares
   },
 
   // Configuración de personalización avanzada (Fase 3)
@@ -293,14 +298,14 @@ export const PROGRESS_CONFIG = {
       DEFAULT_DURATION_WEEKS: 4,
       MAX_SESSION_RECOMMENDATIONS: 6,
       MAX_GOALS_IN_PLAN: 5,
-      INCLUDE_SOCIAL_SUGGESTIONS: true
-    }
+      INCLUDE_SOCIAL_SUGGESTIONS: true,
+    },
   },
 
   // Configuración del modo experto de SRS
   EXPERT_MODE: {
     DEFAULT_ENABLED: true,
-    STORAGE_KEY: 'progress-expert-mode',
+    STORAGE_KEY: "progress-expert-mode",
     SRS: {
       EASE_START: 2.6,
       EASE_MIN: 1.2,
@@ -310,7 +315,7 @@ export const PROGRESS_CONFIG = {
       FUZZ_RATIO: 0.12,
       LEECH_THRESHOLD: 6,
       LEECH_EASE_PENALTY: 0.5,
-      HINT_Q_PENALTY: 1
+      HINT_Q_PENALTY: 1,
     },
     FSRS: {
       REQUEST_RETENTION: 0.92,
@@ -319,9 +324,9 @@ export const PROGRESS_CONFIG = {
       ENABLE_FUZZ: true,
       FUZZ_FACTOR: 0.08,
       EASY_BONUS: 1.35,
-      HARD_FACTOR: 1.1
+      HARD_FACTOR: 1.1,
     },
-    CUSTOM_INTERVALS: [1, 2, 4, 7, 14, 30, 60, 120]
+    CUSTOM_INTERVALS: [1, 2, 4, 7, 14, 30, 60, 120],
   },
 
   // Configuración para analíticas avanzadas del aprendizaje
@@ -330,13 +335,13 @@ export const PROGRESS_CONFIG = {
     ENGAGEMENT_WINDOW_DAYS: 14,
     MOMENTUM_LOOKBACK_ATTEMPTS: 40,
     TIME_OF_DAY_SEGMENTS: [
-      { key: 'morning', label: 'Mañana', startHour: 6, endHour: 11 },
-      { key: 'afternoon', label: 'Tarde', startHour: 12, endHour: 17 },
-      { key: 'evening', label: 'Noche', startHour: 18, endHour: 22 },
-      { key: 'late', label: 'Madrugada', startHour: 23, endHour: 5 }
+      { key: "morning", label: "Mañana", startHour: 6, endHour: 11 },
+      { key: "afternoon", label: "Tarde", startHour: 12, endHour: 17 },
+      { key: "evening", label: "Noche", startHour: 18, endHour: 22 },
+      { key: "late", label: "Madrugada", startHour: 23, endHour: 5 },
     ],
     RECENCY_DECAY_TAU: 7,
-    SESSION_LENGTH_BUCKETS_MINUTES: [5, 15, 30, 45]
+    SESSION_LENGTH_BUCKETS_MINUTES: [5, 15, 30, 45],
   },
 
   // Configuración de funciones sociales y comunitarias
@@ -347,13 +352,13 @@ export const PROGRESS_CONFIG = {
     DEFAULT_COMMUNITY_TARGET: {
       attempts: 2500,
       xp: 4800,
-      streak: 12
+      streak: 12,
     },
     BADGE_REWARDS: {
       contributor: 3,
       champion: 5,
-      mentor: 8
-    }
+      mentor: 8,
+    },
   },
 
   // Configuración de arquitectura offline-first
@@ -363,82 +368,82 @@ export const PROGRESS_CONFIG = {
     SYNC_RETRY_INTERVAL: 5 * 60 * 1000, // 5 minutos
     PREFETCH_REVIEWS_LIMIT: 50,
     STORAGE_KEYS: {
-      OFFLINE_QUEUE: 'progress-offline-queue',
-      SNAPSHOT: 'progress-offline-snapshot'
-    }
+      OFFLINE_QUEUE: "progress-offline-queue",
+      SNAPSHOT: "progress-offline-snapshot",
+    },
   },
 
   // Configuración A/B Testing
   AB_TESTING: {
     ENABLED: false,
     GROUPS: {
-      SM2_CONTROL: 0.5,           // 50% grupo control (SM-2)
-      FSRS_TREATMENT: 0.5         // 50% grupo tratamiento (FSRS)
+      SM2_CONTROL: 0.5, // 50% grupo control (SM-2)
+      FSRS_TREATMENT: 0.5, // 50% grupo tratamiento (FSRS)
     },
     METRICS_COLLECTION: {
       RETENTION_RATE: true,
       SESSION_DURATION: true,
       MASTERY_IMPROVEMENT: true,
-      USER_SATISFACTION: false    // Requiere UI adicional
+      USER_SATISFACTION: false, // Requiere UI adicional
     },
-    DURATION_DAYS: 30             // Duración del test A/B
-  }
-}
+    DURATION_DAYS: 30, // Duración del test A/B
+  },
+};
 
 // Configuración de dificultad por tipo de verbo
 export const VERB_DIFFICULTY = {
   REGULAR: 1.0,
   DIPHTHONG: 1.1,
   ORTHOGRAPHIC_CHANGE: 1.15,
-  HIGHLY_IRREGULAR: 1.2
-}
+  HIGHLY_IRREGULAR: 1.2,
+};
 
 // Configuración de dificultad por frecuencia
 export const FREQUENCY_DIFFICULTY_BONUS = {
   LOW: 0.05,
   MEDIUM: 0.0,
-  HIGH: 0.0
-}
+  HIGH: 0.0,
+};
 
 // Configuración de errores
 export const ERROR_TAGS = {
-  WRONG_PERSON: 'persona_equivocada',
-  WRONG_TENSE: 'tiempo_equivocado',
-  VERBAL_ENDING: 'terminación_verbal',
-  IRREGULAR_STEM: 'raíz_irregular',
-  ACCENT: 'acentuación',
-  CLITIC_PRONOUNS: 'pronombres_clíticos',
-  ORTHOGRAPHY_G_GU: 'ortografía_g/gu',
-  ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
-  ORTHOGRAPHY_Z_C: 'ortografía_z/c',
-  NUMBER_AGREEMENT: 'concordancia_número',
-  WRONG_MOOD: 'modo_equivocado',
-  OTHER_VALID_FORM: 'otra_forma_válida'
-}
+  WRONG_PERSON: "persona_equivocada",
+  WRONG_TENSE: "tiempo_equivocado",
+  VERBAL_ENDING: "terminación_verbal",
+  IRREGULAR_STEM: "raíz_irregular",
+  ACCENT: "acentuación",
+  CLITIC_PRONOUNS: "pronombres_clíticos",
+  ORTHOGRAPHY_G_GU: "ortografía_g/gu",
+  ORTHOGRAPHY_C_QU: "ortografía_c/qu",
+  ORTHOGRAPHY_Z_C: "ortografía_z/c",
+  NUMBER_AGREEMENT: "concordancia_número",
+  WRONG_MOOD: "modo_equivocado",
+  OTHER_VALID_FORM: "otra_forma_válida",
+};
 
 // Configuración de almacenamiento
 export const STORAGE_CONFIG = {
-  DB_NAME: 'SpanishConjugatorProgress',
-  DB_VERSION: 5, // Increment version when adding new stores like events
+  DB_NAME: "SpanishConjugatorProgress",
+  DB_VERSION: 6, // v6: normalize legacy null syncedAt to 0
   STORES: {
-    USERS: 'users',
-    VERBS: 'verbs',
-    ITEMS: 'items',
-    ATTEMPTS: 'attempts',
-    MASTERY: 'mastery',
-    SCHEDULES: 'schedules',
-    LEARNING_SESSIONS: 'learning_sessions',
-    CHALLENGES: 'daily_challenges',
-    EVENTS: 'events'
-  }
-}
+    USERS: "users",
+    VERBS: "verbs",
+    ITEMS: "items",
+    ATTEMPTS: "attempts",
+    MASTERY: "mastery",
+    SCHEDULES: "schedules",
+    LEARNING_SESSIONS: "learning_sessions",
+    CHALLENGES: "daily_challenges",
+    EVENTS: "events",
+  },
+};
 
 // Configuración de inicialización
 export const INIT_CONFIG = {
   WARMUP_DELAY: 1000, // 1 segundo de espera para calentamiento
   MAX_INIT_RETRIES: 3,
-  INIT_TIMEOUT: 30000 // 30 segundos de timeout
-}
+  INIT_TIMEOUT: 30000, // 30 segundos de timeout
+};
 
 // Exportar configuración completa
-export default PROGRESS_CONFIG
+export default PROGRESS_CONFIG;

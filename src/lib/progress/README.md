@@ -1,4 +1,5 @@
 # Spanish Conjugator - Sistema de Progreso y Analíticas
+
 ## Documentación Técnica Completa
 
 ### 📚 **Tabla de Contenidos**
@@ -118,20 +119,20 @@ src/features/drill/
 Ejemplo de uso del hook:
 
 ```jsx
-import useProgressDashboardData from '../../features/progress/useProgressDashboardData.js'
+import useProgressDashboardData from "../../features/progress/useProgressDashboardData.js";
 
 export default function ProgressDashboardExample() {
-  const { loading, error, refresh, heatMapData } = useProgressDashboardData()
-  if (loading) return <div>Loading…</div>
-  if (error) return <div>Error: {error}</div>
-  return <div onClick={refresh}>{heatMapData.length} celdas</div>
+  const { loading, error, refresh, heatMapData } = useProgressDashboardData();
+  if (loading) return <div>Loading…</div>;
+  if (error) return <div>Error: {error}</div>;
+  return <div onClick={refresh}>{heatMapData.length} celdas</div>;
 }
 ```
-
 
 ### 📊 **Modelos de Datos**
 
 #### Usuario (User)
+
 Representa a un usuario del sistema.
 
 ```javascript
@@ -144,6 +145,7 @@ Representa a un usuario del sistema.
 ```
 
 #### Verbo (Verb)
+
 Representa un verbo en el sistema.
 
 ```javascript
@@ -157,6 +159,7 @@ Representa un verbo en el sistema.
 ```
 
 #### Ítem (Item)
+
 Representa una celda específica de práctica (modo-tiempo-persona).
 
 ```javascript
@@ -171,6 +174,7 @@ Representa una celda específica de práctica (modo-tiempo-persona).
 ```
 
 #### Intento (Attempt)
+
 Representa un intento de práctica.
 
 ```javascript
@@ -187,6 +191,7 @@ Representa un intento de práctica.
 ```
 
 #### Mastery Score (Mastery)
+
 Representa el mastery score de una celda.
 
 ```javascript
@@ -204,6 +209,7 @@ Representa el mastery score de una celda.
 ```
 
 #### Schedule SRS (Schedule)
+
 Representa el schedule SRS para una celda.
 
 ```javascript
@@ -222,21 +228,22 @@ Representa el schedule SRS para una celda.
 ```
 
 #### Etiquetas de Error (ERROR_TAGS)
+
 Define las etiquetas de error para clasificación.
 
 ```javascript
 export const ERROR_TAGS = {
-  WRONG_PERSON: 'persona_equivocada',
-  VERBAL_ENDING: 'terminación_verbal',
-  IRREGULAR_STEM: 'raíz_irregular',
-  ACCENT: 'acentuación',
-  CLITIC_PRONOUNS: 'pronombres_clíticos',
-  ORTHOGRAPHY_G_GU: 'ortografía_g/gu',
-  ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
-  ORTHOGRAPHY_Z_C: 'ortografía_z/c',
-  NUMBER_AGREEMENT: 'concordancia_número',
-  WRONG_MOOD: 'modo_equivocado'
-}
+  WRONG_PERSON: "persona_equivocada",
+  VERBAL_ENDING: "terminación_verbal",
+  IRREGULAR_STEM: "raíz_irregular",
+  ACCENT: "acentuación",
+  CLITIC_PRONOUNS: "pronombres_clíticos",
+  ORTHOGRAPHY_G_GU: "ortografía_g/gu",
+  ORTHOGRAPHY_C_QU: "ortografía_c/qu",
+  ORTHOGRAPHY_Z_C: "ortografía_z/c",
+  NUMBER_AGREEMENT: "concordancia_número",
+  WRONG_MOOD: "modo_equivocado",
+};
 ```
 
 ---
@@ -248,17 +255,17 @@ El sistema utiliza IndexedDB para almacenamiento local con la librería `idb` pa
 #### Estructura de la Base de Datos
 
 ```javascript
-const DB_NAME = 'SpanishConjugatorProgress'
-const DB_VERSION = 1
+const DB_NAME = "SpanishConjugatorProgress";
+const DB_VERSION = 1;
 
 const STORES = {
-  USERS: 'users',
-  VERBS: 'verbs',
-  ITEMS: 'items',
-  ATTEMPTS: 'attempts',
-  MASTERY: 'mastery',
-  SCHEDULES: 'schedules'
-}
+  USERS: "users",
+  VERBS: "verbs",
+  ITEMS: "items",
+  ATTEMPTS: "attempts",
+  MASTERY: "mastery",
+  SCHEDULES: "schedules",
+};
 ```
 
 #### Funciones Principales
@@ -275,6 +282,12 @@ const STORES = {
 - **Schedules**
   - `'userId-nextDue'`: índice compuesto creado durante `initDB()` para consultar rápidamente los schedules vencidos de un usuario. `getDueSchedules()` lo utiliza junto con `IDBKeyRange.bound([userId, fechaInferior], [userId, fechaCorte])` para evitar escaneos completos de la tabla.
 
+#### Migraciones de Esquema
+
+- v6: normaliza `syncedAt: null` a `0` en stores sincronizables (`attempts`, `mastery`, `schedules`, `learning_sessions`).
+  - Motivo: `0` permite indexar y consultar por `syncedAt` con `IDBKeyRange.only(0)`, evitando escaneos completos y registros “fantasma”.
+  - Implicaciones: el estado “no sincronizado” ahora se representa como `0`; los estados sincronizados conservan `Date` (marca temporal) y consultas de “pendiente” deben filtrar por `!syncedAt` o `syncedAt === 0`.
+
 ---
 
 ### 📈 **Cálculo de Mastery**
@@ -286,6 +299,7 @@ M_C = 100 · Σ(w_i · d_i · acierto_i) / Σ(w_i · d_i) - penalización_pistas
 ```
 
 Donde:
+
 - `w_i` = peso por recencia (decaimiento exponencial)
 - `d_i` = dificultad de la forma verbal
 - `acierto_i` = 1 si correcto, 0 si incorrecto
@@ -518,6 +532,7 @@ Práctica sin logging si el usuario quiere solo "calentar".
 #### Funciones Exportadas
 
 ##### Inicialización
+
 - `initProgressSystem(userId)` - Inicializa el sistema de progreso
 - `isProgressSystemInitialized()` - Verifica si el sistema está inicializado
 - `getCurrentUserId()` - Obtiene el ID del usuario actual
@@ -525,6 +540,7 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `resetProgressSystem()` - Reinicia el sistema de progreso
 
 ##### Base de Datos
+
 - `initDB()` - Inicializa la base de datos
 - `saveToDB(storeName, data)` - Guarda datos en la base de datos
 - `getFromDB(storeName, id)` - Obtiene datos de la base de datos
@@ -533,6 +549,7 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `deleteFromDB(storeName, id)` - Elimina datos de la base de datos
 
 ##### Cálculo de Mastery
+
 - `calculateRecencyWeight(attemptDate)` - Calcula peso por recencia
 - `getVerbDifficulty(verb)` - Obtiene dificultad del verbo
 - `calculateHintPenalty(hintsUsed)` - Calcula penalización por pistas
@@ -543,6 +560,7 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `classifyMasteryLevel(score, weightedN, avgLatency)` - Clasifica nivel de mastery
 
 ##### Tracking de Eventos
+
 - `initTracking(userId)` - Inicializa tracking para un usuario
 - `trackAttemptStarted(item)` - Registra inicio de intento
 - `trackAttemptSubmitted(attemptId, result)` - Registra finalización de intento
@@ -553,16 +571,19 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `trackTenseDrillEnded(tense)` - Registra final de drill de tiempo
 
 ##### Sistema SRS
+
 - `calculateNextInterval(schedule, correct, hintsUsed)` - Calcula próximo intervalo
 - `updateSchedule(userId, cell, correct, hintsUsed)` - Actualiza schedule
 - `getDueItems(userId, currentDate)` - Obtiene ítems pendientes
 - `isItemDue(schedule, currentDate)` - Verifica si ítem necesita revisión
 
 ##### Clasificación de Errores
+
 - `classifyError(userAnswer, correctAnswer, item)` - Clasifica error específico
 - `detailedErrorAnalysis(userAnswer, correctAnswer, item)` - Análisis detallado
 
 ##### Vistas Analíticas
+
 - `getHeatMapData()` - Obtiene datos para mapa de calor
 - `getCompetencyRadarData()` - Obtiene datos para radar de competencias
 - `getProgressLineData()` - Obtiene datos para línea de progreso
@@ -572,16 +593,19 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `getRecommendations()` - Genera recomendaciones
 
 ##### Modo Docente
+
 - `generateStudentReport(userId)` - Genera informe para docente
 - `generateSessionCode()` - Genera código de sesión
 - `getClassStats(userIds)` - Obtiene estadísticas de clase
 
 ##### Diagnóstico y Recalibración
+
 - `performInitialDiagnosis()` - Realiza diagnóstico inicial
 - `scheduleMonthlyRecalibration()` - Programa recalibración mensual
 - `performRecalibration()` - Realiza recalibración
 
 ##### Sincronización con la Nube
+
 - `syncWithCloud()` - Sincroniza con la nube
 - `getSyncStatus()` - Obtiene estado de sincronización
 - `setIncognitoMode(enabled)` - Habilita/deshabilita modo incógnito
@@ -591,6 +615,7 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `importDataFromBackup(data)` - Importa datos desde respaldo
 
 ##### Utilidades
+
 - `generateId()` - Genera ID único
 - `formatDate(date)` - Formatea fecha
 - `dateDiffInDays(date1, date2)` - Calcula diferencia en días
@@ -619,58 +644,62 @@ export const PROGRESS_CONFIG = {
   HINT_PENALTY: 5, // Puntos por pista usada
   MAX_HINT_PENALTY: 15, // Penalización máxima por intento
   MIN_CONFIDENCE_N: 8, // Número mínimo de intentos para confianza
-  
+
   // Niveles de mastery
   MASTERY_LEVELS: {
     ACHIEVED: 80, // Dominio logrado
     ATTENTION: 60, // Necesita atención
-    CRITICAL: 0   // Crítico
+    CRITICAL: 0, // Crítico
   },
-  
+
   // Umbrales de confianza
   CONFIDENCE_LEVELS: {
-    HIGH: 20,  // N >= 20
+    HIGH: 20, // N >= 20
     MEDIUM: 8, // N >= 8
-    LOW: 0     // N < 8
+    LOW: 0, // N < 8
   },
-  
+
   // Intervalos SRS
   SRS_INTERVALS: [1, 3, 7, 14, 30, 90], // Días
 
   // Ajustes por clustering de familias irregulares
   SRS_CLUSTERING: {
-    FAMILY: { /* ver config.js para valores por defecto */ },
-    CLUSTER_PROMOTION: { /* refuerza intervalos cuando un clúster tiene buen desempeño */ }
+    FAMILY: {
+      /* ver config.js para valores por defecto */
+    },
+    CLUSTER_PROMOTION: {
+      /* refuerza intervalos cuando un clúster tiene buen desempeño */
+    },
   },
 
   // Configuración de UI
   UI: {
     HEATMAP_COLORS: {
-      HIGH: '#28a745',    // Verde para 80-100%
-      MEDIUM: '#ffc107',  // Amarillo para 60-79%
-      LOW: '#dc3545',     // Rojo para 0-59%
-      NO_DATA: '#6c757d'  // Gris para sin datos
+      HIGH: "#28a745", // Verde para 80-100%
+      MEDIUM: "#ffc107", // Amarillo para 60-79%
+      LOW: "#dc3545", // Rojo para 0-59%
+      NO_DATA: "#6c757d", // Gris para sin datos
     },
-    
+
     COMPETENCY_RADAR: {
       AXES: 5, // Número de ejes en el radar
-      MAX_VALUE: 100 // Valor máximo para cada eje
-    }
+      MAX_VALUE: 100, // Valor máximo para cada eje
+    },
   },
-  
+
   // Configuración de sincronización
   SYNC: {
     AUTO_SYNC_INTERVAL: 5 * 60 * 1000, // 5 minutos
     MAX_SYNC_RETRIES: 3,
-    BATCH_SIZE: 100 // Número de registros por lote
+    BATCH_SIZE: 100, // Número de registros por lote
   },
-  
+
   // Configuración de diagnóstico
   DIAGNOSIS: {
     TEST_DURATION: 3 * 60 * 1000, // 3 minutos
-    RECALIBRATION_INTERVAL: 30 * 24 * 60 * 60 * 1000 // 30 días
+    RECALIBRATION_INTERVAL: 30 * 24 * 60 * 60 * 1000, // 30 días
   },
-  
+
   // Configuración de objetivos
   GOALS: {
     WEEKLY: {
@@ -678,10 +707,10 @@ export const PROGRESS_CONFIG = {
       DEFAULT_MIN_SCORE: 75,
       DEFAULT_SESSIONS: 5,
       DEFAULT_ATTEMPTS: 50,
-      DEFAULT_FOCUS_TIME: 60 // minutos
-    }
-  }
-}
+      DEFAULT_FOCUS_TIME: 60, // minutos
+    },
+  },
+};
 ```
 
 #### Configuración de Dificultad
@@ -692,15 +721,15 @@ export const VERB_DIFFICULTY = {
   REGULAR: 1.0,
   DIPHTHONG: 1.1,
   ORTHOGRAPHIC_CHANGE: 1.15,
-  HIGHLY_IRREGULAR: 1.2
-}
+  HIGHLY_IRREGULAR: 1.2,
+};
 
 // Configuración de dificultad por frecuencia
 export const FREQUENCY_DIFFICULTY_BONUS = {
   LOW: 0.05,
   MEDIUM: 0.0,
-  HIGH: 0.0
-}
+  HIGH: 0.0,
+};
 ```
 
 ---
@@ -718,52 +747,55 @@ npm install --save-dev @types/uuid fake-indexeddb
 #### Uso Básico
 
 ```javascript
-import { 
-  initProgressSystem, 
-  calculateMasteryForItem, 
-  trackAttemptStarted, 
-  trackAttemptSubmitted 
-} from './src/lib/progress/index.js'
+import {
+  initProgressSystem,
+  calculateMasteryForItem,
+  trackAttemptStarted,
+  trackAttemptSubmitted,
+} from "./src/lib/progress/index.js";
 
 // Inicializar sistema
-const userId = await initProgressSystem()
+const userId = await initProgressSystem();
 
 // Registrar inicio de intento
-const attemptId = trackAttemptStarted(item)
+const attemptId = trackAttemptStarted(item);
 
 // Registrar finalización de intento
 await trackAttemptSubmitted(attemptId, {
   correct: true,
   latencyMs: 2500,
   hintsUsed: 0,
-  errorTags: []
-})
+  errorTags: [],
+});
 
 // Calcular mastery para un ítem
-const mastery = await calculateMasteryForItem('item-id', verb)
-console.log(`Mastery score: ${mastery.score}`)
+const mastery = await calculateMasteryForItem("item-id", verb);
+console.log(`Mastery score: ${mastery.score}`);
 ```
 
 #### Integración con Drill
 
 ```javascript
-import { useProgressTracking } from './src/features/drill/useProgressTracking.js'
+import { useProgressTracking } from "./src/features/drill/useProgressTracking.js";
 
 function DrillComponent({ currentItem, onResult }) {
-  const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
-  
+  const { handleResult, handleHintShown } = useProgressTracking(
+    currentItem,
+    onResult,
+  );
+
   const handleSubmit = async () => {
     // ... lógica de validación ...
-    
-    const result = grade(input, currentItem.form)
-    handleResult(result)
-  }
-  
+
+    const result = grade(input, currentItem.form);
+    handleResult(result);
+  };
+
   const revealHint = () => {
     // ... lógica para mostrar pista ...
-    handleHintShown()
-  }
-  
+    handleHintShown();
+  };
+
   // ... resto del componente ...
 }
 ```
@@ -771,7 +803,7 @@ function DrillComponent({ currentItem, onResult }) {
 #### Componentes de UI
 
 ```javascript
-import { ProgressDashboard } from './src/features/progress/index.js'
+import { ProgressDashboard } from "./src/features/progress/index.js";
 
 function App() {
   return (
@@ -779,7 +811,7 @@ function App() {
       {/* ... otros componentes ... */}
       <ProgressDashboard />
     </div>
-  )
+  );
 }
 ```
 
@@ -788,17 +820,20 @@ function App() {
 ### 📈 **Roadmap Técnico**
 
 #### Versión 0 (V0) - Implementado ✅
+
 - Eventos y mastery por celda
 - Mapa de calor
 - Botón "practicar 6"
 
 #### Versión 1 (V1) - En Progreso 🚧
+
 - Radar de competencias
 - Sistema SRS completo
 - Diagnósticos automáticos
 - Exportar CSV
 
 #### Versión 2 (V2) - Planificado 🔮
+
 - Objetivos semanales
 - Modo docente completo
 - Comparativas por listas de verbos
@@ -808,16 +843,19 @@ function App() {
 ### 🛡️ **Consideraciones de Seguridad**
 
 #### Protección de Datos
+
 - Todo se calcula localmente
 - Sincronización opcional con anonimización
 - Modo incógnito disponible
 
 #### Manejo de Errores
+
 - Validación de entradas
 - Manejo de excepciones
 - Logging seguro
 
 #### Privacidad
+
 - Sin recolección de datos personales
 - Sin tracking de terceros
 - Control total del usuario sobre sus datos
@@ -827,17 +865,20 @@ function App() {
 ### 🌐 **Compatibilidad**
 
 #### Navegadores Soportados
+
 - Chrome (última versión)
 - Firefox (última versión)
 - Safari (última versión)
 - Edge (última versión)
 
 #### Dispositivos Soportados
+
 - Escritorio
 - Tablet
 - Móvil (iOS y Android)
 
 #### Sistemas Operativos Soportados
+
 - Windows
 - macOS
 - Linux
@@ -849,11 +890,13 @@ function App() {
 ### 🌍 **Internacionalización**
 
 #### Idiomas Soportados
+
 - Español (es-ES)
 - Inglés (en-US) - Para interfaz
 - Portugués (pt-BR) - Futuro
 
 #### Formatos Regionales
+
 - Fechas: DD/MM/YYYY y MM/DD/YYYY
 - Números: 1.234,56 y 1,234.56
 - Monedas: €, $, R$
@@ -863,14 +906,16 @@ function App() {
 ### ⚡ **Rendimiento**
 
 #### Métricas Esperadas
+
 - Tiempo de respuesta: <50ms para cálculos
 - Uso de memoria: <20MB para caches
 - Startup time: <500ms para warm-up inicial
 - Cache hit rate: >80% después del warm-up
 
 #### Optimizaciones Implementadas
+
 1. **Cache inteligente** con evicción LRU
-2. **Lookups O(1)** con Map() pre-computados  
+2. **Lookups O(1)** con Map() pre-computados
 3. **Filtrado eficiente** con Sets para combinaciones permitidas
 4. **Lazy loading** de datos según necesidad
 5. **Warm-up automático** de caches críticos
@@ -880,6 +925,7 @@ function App() {
 ### 🧪 **Validación Automática**
 
 #### Verificaciones Implementadas
+
 - Verbos duplicados
 - Formas verbales faltantes
 - Inconsistencias en conjugaciones
@@ -887,6 +933,7 @@ function App() {
 - Estructura de datos inválida
 
 #### Niveles de Validación
+
 1. **Validación rápida**: Errores críticos únicamente
 2. **Validación completa**: Errores + advertencias
 3. **Exit codes**: 0 = éxito, 1 = errores encontrados
@@ -896,16 +943,19 @@ function App() {
 ### 📚 **Recursos Lingüísticos**
 
 #### Referencias Gramaticales
+
 - RAE Nueva gramática de la lengua española
 - Gramática descriptiva de la lengua española (Bosque & Demonte)
 - Manual de escritura académica (Estrella Montolío)
 
 #### Corpus y Frecuencia
-- CREA (Corpus de Referencia del Español Actual)  
+
+- CREA (Corpus de Referencia del Español Actual)
 - CORPES XXI (Corpus del Español del Siglo XXI)
 - Frequency Dictionary of Spanish (Davies & Davies)
 
 #### CEFR y Niveles
+
 - Marco Común Europeo de Referencia (MCER)
 - Plan Curricular del Instituto Cervantes
 - Diccionario de aprendizaje de español (SM)

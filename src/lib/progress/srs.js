@@ -1,20 +1,28 @@
 // Sistema SRS (Spaced Repetition System) para el sistema de progreso
 // Integración híbrida SM-2 + FSRS con inteligencia emocional/temporal
 
-import { PROGRESS_CONFIG } from './config.js'
-import { ERROR_TAGS } from './dataModels.js'
-import { saveSchedule, getScheduleByCell, getDueSchedules } from './database.js'
-import { handleSRSReviewComplete } from './gamification.js'
-import { calculateNextIntervalFSRS, isFSRSEnabled } from './fsrs.js'
-import { getActiveSRSConfig, getActiveSRSIntervals } from './expertMode.js'
-import { calculateMasteryForCell, calculateMasteryForItem, calculateMasteryForTimeOrMood } from './mastery.js'
-import { createLogger } from '../utils/logger.js'
+import { PROGRESS_CONFIG } from "./config.js";
+import { ERROR_TAGS } from "./dataModels.js";
+import {
+  saveSchedule,
+  getScheduleByCell,
+  getDueSchedules,
+} from "./database.js";
+import { handleSRSReviewComplete } from "./gamification.js";
+import { calculateNextIntervalFSRS, isFSRSEnabled } from "./fsrs.js";
+import { getActiveSRSConfig, getActiveSRSIntervals } from "./expertMode.js";
+import {
+  calculateMasteryForCell,
+  calculateMasteryForItem,
+  calculateMasteryForTimeOrMood,
+} from "./mastery.js";
+import { createLogger } from "../utils/logger.js";
 
-const logger = createLogger('progress:srs')
+const logger = createLogger("progress:srs");
 
 // Helpers
-const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
-const randomInRange = (min, max) => min + Math.random() * (max - min)
+const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+const randomInRange = (min, max) => min + Math.random() * (max - min);
 
 /**
  * Calcula el próximo intervalo basado en el desempeño
@@ -28,10 +36,10 @@ const randomInRange = (min, max) => min + Math.random() * (max - min)
 export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
   // Usar FSRS si está habilitado, caso contrario SM-2 legacy
   if (isFSRSEnabled()) {
-    return calculateNextIntervalFSRS(schedule, correct, hintsUsed, meta)
+    return calculateNextIntervalFSRS(schedule, correct, hintsUsed, meta);
   }
 
-  return calculateNextIntervalSM2(schedule, correct, hintsUsed, meta)
+  return calculateNextIntervalSM2(schedule, correct, hintsUsed, meta);
 }
 
 /**
@@ -42,100 +50,129 @@ export function calculateNextInterval(schedule, correct, hintsUsed, meta = {}) {
  * @param {Object} meta - Metadatos adicionales
  * @returns {Object} Nuevo intervalo y fecha
  */
-export function calculateNextIntervalSM2(schedule, correct, hintsUsed, meta = {}) {
-  const userId = meta?.userId || null
-  const ADV = getActiveSRSConfig(userId)
-  const intervals = getActiveSRSIntervals(userId)
+export function calculateNextIntervalSM2(
+  schedule,
+  correct,
+  hintsUsed,
+  meta = {},
+) {
+  const userId = meta?.userId || null;
+  const ADV = getActiveSRSConfig(userId);
+  const intervals = getActiveSRSIntervals(userId);
 
   // Campos existentes + defaults razonables
   let {
-    interval = 0,   // días
+    interval = 0, // días
     ease = ADV?.EASE_START ?? PROGRESS_CONFIG.SRS_ADVANCED?.EASE_START ?? 2.5,
     reps = 0,
     lapses = 0,
-    leech = false
-  } = schedule || {}
+    leech = false,
+  } = schedule || {};
 
   // Derivar calificación (Q: 0-5) a partir del resultado y metadatos
   // Q=5: correcto sin pista y en tiempo normal; Q=4: correcto con pista o lento; Q=3: fallo leve (p.ej. acento)
   // Q<=2: fallo normal
-  let q
+  let q;
   if (correct) {
-    q = 5
-    if (hintsUsed > 0) q -= ADV.HINT_Q_PENALTY || 1
-    const slowMs = ADV.SPEED?.SLOW_MS ?? 6000
-    if (typeof meta.latencyMs === 'number' && meta.latencyMs > slowMs) {
-      q = Math.max(3, q - 1)
+    q = 5;
+    if (hintsUsed > 0) q -= ADV.HINT_Q_PENALTY || 1;
+    const slowMs = ADV.SPEED?.SLOW_MS ?? 6000;
+    if (typeof meta.latencyMs === "number" && meta.latencyMs > slowMs) {
+      q = Math.max(3, q - 1);
     }
   } else {
     // Detectar error leve: solo acentuación
-    const onlyAccent = Array.isArray(meta.errorTags) && meta.errorTags.length > 0 &&
-      meta.errorTags.every(t => t === ERROR_TAGS.ACCENT)
-    q = onlyAccent ? 3 : 2
+    const onlyAccent =
+      Array.isArray(meta.errorTags) &&
+      meta.errorTags.length > 0 &&
+      meta.errorTags.every((t) => t === ERROR_TAGS.ACCENT);
+    q = onlyAccent ? 3 : 2;
   }
 
   // SM-2 inspired adjustment of ease
-  const deltaE = 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)
+  const deltaE = 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02);
   ease = clamp(
     (ease ?? ADV.EASE_START ?? 2.5) + deltaE,
     ADV.EASE_MIN ?? 1.3,
-    ADV.EASE_MAX ?? 3.2
-  )
+    ADV.EASE_MAX ?? 3.2,
+  );
 
   // Calcular siguiente intervalo y reps
   if (q < 3) {
     // Lapse: reforzar pronto
-    lapses = (lapses || 0) + 1
-    reps = 0 // reiniciar aprendizaje
-    const rl = ADV.RELEARN_STEPS || [0.25, 1]
-    interval = rl[0] // 6 horas por defecto
+    lapses = (lapses || 0) + 1;
+    reps = 0; // reiniciar aprendizaje
+    const rl = ADV.RELEARN_STEPS || [0.25, 1];
+    interval = rl[0]; // 6 horas por defecto
     // Leech handling (no suspendemos, pero avisamos con intervalos cortos y ease penalizado)
     if (lapses >= (ADV.LEECH_THRESHOLD || 8)) {
-      leech = true
-      ease = Math.max(ADV.EASE_MIN ?? 1.3, ease - (ADV.LEECH_EASE_PENALTY || 0.4))
+      leech = true;
+      ease = Math.max(
+        ADV.EASE_MIN ?? 1.3,
+        ease - (ADV.LEECH_EASE_PENALTY || 0.4),
+      );
     }
   } else {
     // Correcto (Q>=3)
     if (hintsUsed > 0) {
       // Correcto con pistas: progresar sin subir reps (mid-point hacia el siguiente intervalo)
-      const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1))
-      const currentInterval = reps > 0 ? intervals[currentIdx] : (ADV.FIRST_STEPS?.[0] || 1)
-      const nextIdx = Math.min(Math.max(reps, 0), intervals.length - 1)
-      const nextInterval = intervals[nextIdx]
-      interval = Math.max(ADV.FIRST_STEPS?.[0] || 1, Math.round((currentInterval + nextInterval) / 2))
+      const currentIdx = Math.max(0, Math.min(reps - 1, intervals.length - 1));
+      const currentInterval =
+        reps > 0 ? intervals[currentIdx] : ADV.FIRST_STEPS?.[0] || 1;
+      const nextIdx = Math.min(Math.max(reps, 0), intervals.length - 1);
+      const nextInterval = intervals[nextIdx];
+      interval = Math.max(
+        ADV.FIRST_STEPS?.[0] || 1,
+        Math.round((currentInterval + nextInterval) / 2),
+      );
     } else {
       // Correcto sin pistas: subir nivel
       if (reps === 0) {
-        interval = (ADV.FIRST_STEPS?.[0] || 1)
-        reps = 1
+        interval = ADV.FIRST_STEPS?.[0] || 1;
+        reps = 1;
       } else if (reps === 1) {
-        interval = (ADV.FIRST_STEPS?.[1] || 3)
-        reps = 2
+        interval = ADV.FIRST_STEPS?.[1] || 3;
+        reps = 2;
       } else {
         // Crecimiento multiplicativo por ease (estilo SM-2)
-        interval = Math.max(1, Math.round((interval || intervals[reps - 1] || 1) * ease))
-        reps += 1
+        interval = Math.max(
+          1,
+          Math.round((interval || intervals[reps - 1] || 1) * ease),
+        );
+        reps += 1;
       }
       // Afinar por calidad
-      if (q === 3) interval = Math.max(1, Math.round(interval * 0.8))
-      if (q === 5) interval = Math.max(1, Math.round(interval * 1.1))
+      if (q === 3) interval = Math.max(1, Math.round(interval * 0.8));
+      if (q === 5) interval = Math.max(1, Math.round(interval * 1.1));
     }
   }
 
   // Añadir fuzz para evitar concentraciones
   // Para respuestas con pistas, mantener el punto medio exacto (sin fuzz) para estabilidad
-  let randomized = interval
+  let randomized = interval;
   if (!(hintsUsed > 0)) {
-    const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval
-    const randomizedRaw = randomInRange(Math.max(0, interval - fuzz), interval + fuzz)
-    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw
+    const fuzz = (ADV.FUZZ_RATIO ?? 0.1) * interval;
+    const randomizedRaw = randomInRange(
+      Math.max(0, interval - fuzz),
+      interval + fuzz,
+    );
+    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw;
   }
 
   // Calcular próxima fecha de revisión
-  const now = new Date()
-  const nextDue = new Date(now.getTime() + randomized * 24 * 60 * 60 * 1000)
+  const now = new Date();
+  const nextDue = new Date(now.getTime() + randomized * 24 * 60 * 60 * 1000);
 
-  return { interval: randomized, ease, reps, lapses, leech, nextDue, lastAnswerCorrect: !!correct, lastLatencyMs: meta.latencyMs }
+  return {
+    interval: randomized,
+    ease,
+    reps,
+    lapses,
+    leech,
+    nextDue,
+    lastAnswerCorrect: !!correct,
+    lastLatencyMs: meta.latencyMs,
+  };
 }
 
 /**
@@ -147,9 +184,20 @@ export function calculateNextIntervalSM2(schedule, correct, hintsUsed, meta = {}
  * @param {Object} meta - Metadatos (latency, errorTags, lemma, etc.)
  * @returns {Promise<void>}
  */
-export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}) {
+export async function updateSchedule(
+  userId,
+  cell,
+  correct,
+  hintsUsed,
+  meta = {},
+) {
   // Buscar schedule existente para esta celda
-  let schedule = await getScheduleByCell(userId, cell.mood, cell.tense, cell.person)
+  let schedule = await getScheduleByCell(
+    userId,
+    cell.mood,
+    cell.tense,
+    cell.person,
+  );
 
   // Si no existe, crear uno nuevo
   if (!schedule) {
@@ -166,81 +214,96 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
       leech: false,
       nextDue: new Date(),
       createdAt: new Date(),
-      syncedAt: null
-    }
+      syncedAt: 0,
+    };
   }
 
   // Calcular nuevo intervalo con algoritmo base (SM-2 o FSRS)
   const intervalResult = calculateNextInterval(schedule, correct, hintsUsed, {
     ...meta,
-    userId
-  })
+    userId,
+  });
 
   let updatedSchedule = {
     ...schedule,
     ...intervalResult,
     updatedAt: new Date(),
-    syncedAt: null
-  }
+    syncedAt: 0,
+  };
 
   // Apply family clustering boost if lemma is provided
   if (meta.lemma && PROGRESS_CONFIG.FEATURE_FLAGS?.SRS_FAMILY_CLUSTERING) {
     try {
-      const { applyFamilyClusteringBoost } = await import('./srsFamilyClustering.js')
-      updatedSchedule = await applyFamilyClusteringBoost(userId, meta.lemma, cell, updatedSchedule)
+      const { applyFamilyClusteringBoost } = await import(
+        "./srsFamilyClustering.js"
+      );
+      updatedSchedule = await applyFamilyClusteringBoost(
+        userId,
+        meta.lemma,
+        cell,
+        updatedSchedule,
+      );
     } catch (error) {
       // Non-critical feature, continue without clustering
-      logger.warn('updateSchedule', 'Family clustering boost failed', error)
+      logger.warn("updateSchedule", "Family clustering boost failed", error);
     }
   }
 
   // Guardar en la base de datos
-  await saveSchedule(updatedSchedule)
+  await saveSchedule(updatedSchedule);
 
   // Procesar gamificación para este review
   try {
     // Determinar si fue lapse basado en resultado
-    const wasLapse = !correct || (intervalResult.reps === 0)
+    const wasLapse = !correct || intervalResult.reps === 0;
 
     await handleSRSReviewComplete(cell, correct, hintsUsed, {
       ...meta,
       wasLapse,
       recoveredFromLapse: schedule?.lapses > 0 && correct,
-      consecutiveCorrect: meta.consecutiveCorrect || 0
-    })
+      consecutiveCorrect: meta.consecutiveCorrect || 0,
+    });
   } catch (error) {
-    logger.error('updateSchedule', 'Error processing gamification for SRS review', error)
+    logger.error(
+      "updateSchedule",
+      "Error processing gamification for SRS review",
+      error,
+    );
   }
 
   // A/B Testing: Track algorithm performance
   if (PROGRESS_CONFIG.FEATURE_FLAGS.A_B_TESTING) {
     // Track event asynchronously without blocking
-    import('./abTesting.js').then(({ trackABEvent }) => {
-      trackABEvent('algorithm_comparison', {
-        algorithm: isFSRSEnabled() ? 'fsrs' : 'sm2',
-        correct,
-        hintsUsed,
-        interval: updatedSchedule.interval,
-        ease: updatedSchedule.ease,
-        latencyMs: meta.latencyMs,
-        errorTags: meta.errorTags
+    import("./abTesting.js")
+      .then(({ trackABEvent }) => {
+        trackABEvent("algorithm_comparison", {
+          algorithm: isFSRSEnabled() ? "fsrs" : "sm2",
+          correct,
+          hintsUsed,
+          interval: updatedSchedule.interval,
+          ease: updatedSchedule.ease,
+          latencyMs: meta.latencyMs,
+          errorTags: meta.errorTags,
+        });
       })
-    }).catch(error => {
-      // Non-critical, continue without A/B tracking
-      logger.warn('updateSchedule', 'A/B tracking failed', error)
-    })
+      .catch((error) => {
+        // Non-critical, continue without A/B tracking
+        logger.warn("updateSchedule", "A/B tracking failed", error);
+      });
   }
 
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('progress:srs-updated', {
-      detail: {
-        userId,
-        mood: cell.mood,
-        tense: cell.tense,
-        person: cell.person,
-        schedule: updatedSchedule
-      }
-    }))
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("progress:srs-updated", {
+        detail: {
+          userId,
+          mood: cell.mood,
+          tense: cell.tense,
+          person: cell.person,
+          schedule: updatedSchedule,
+        },
+      }),
+    );
   }
 }
 
@@ -252,14 +315,19 @@ export async function updateSchedule(userId, cell, correct, hintsUsed, meta = {}
  */
 export async function getDueItems(userId, currentDate = new Date()) {
   try {
-    const schedules = await getDueSchedules(userId, currentDate)
+    const schedules = await getDueSchedules(userId, currentDate);
     // Normalizar a celdas básicas y ordenar por fecha próxima
     return schedules
       .sort((a, b) => new Date(a.nextDue) - new Date(b.nextDue))
-      .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue }))
+      .map((s) => ({
+        mood: s.mood,
+        tense: s.tense,
+        person: s.person,
+        nextDue: s.nextDue,
+      }));
   } catch (error) {
-    logger.error('getDueItems', 'Error obteniendo ítems SRS pendientes', error)
-    return []
+    logger.error("getDueItems", "Error obteniendo ítems SRS pendientes", error);
+    return [];
   }
 }
 
@@ -270,25 +338,38 @@ export async function getDueItems(userId, currentDate = new Date()) {
  * @param {number} hoursAhead - Horas hacia adelante para incluir items próximos
  * @returns {Promise<Array<string>>} Lista de lemmas únicos
  */
-export async function extractDueLemmas(userId, currentDate = new Date(), hoursAhead = 24) {
+export async function extractDueLemmas(
+  userId,
+  currentDate = new Date(),
+  hoursAhead = 24,
+) {
   try {
-    const extendedDate = new Date(currentDate.getTime() + hoursAhead * 60 * 60 * 1000)
-    const schedules = await getDueSchedules(userId, extendedDate)
+    const extendedDate = new Date(
+      currentDate.getTime() + hoursAhead * 60 * 60 * 1000,
+    );
+    const schedules = await getDueSchedules(userId, extendedDate);
 
     // Extraer lemmas únicos de los schedules
-    const lemmas = new Set()
-    schedules.forEach(schedule => {
+    const lemmas = new Set();
+    schedules.forEach((schedule) => {
       if (schedule.lemma) {
-        lemmas.add(schedule.lemma)
+        lemmas.add(schedule.lemma);
       }
-    })
+    });
 
-    const uniqueLemmas = Array.from(lemmas)
-    logger.debug('extractDueLemmas', `📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`)
-    return uniqueLemmas
+    const uniqueLemmas = Array.from(lemmas);
+    logger.debug(
+      "extractDueLemmas",
+      `📊 SRS: Found ${uniqueLemmas.length} unique due lemmas in next ${hoursAhead}h`,
+    );
+    return uniqueLemmas;
   } catch (error) {
-    logger.error('extractDueLemmas', 'Error extracting due lemmas from SRS', error)
-    return []
+    logger.error(
+      "extractDueLemmas",
+      "Error extracting due lemmas from SRS",
+      error,
+    );
+    return [];
   }
 }
 
@@ -299,8 +380,8 @@ export async function extractDueLemmas(userId, currentDate = new Date(), hoursAh
  * @returns {boolean} Si necesita revisión
  */
 export function isItemDue(schedule, currentDate = new Date()) {
-  if (!schedule || !schedule.nextDue) return true
-  return new Date(schedule.nextDue) <= currentDate
+  if (!schedule || !schedule.nextDue) return true;
+  return new Date(schedule.nextDue) <= currentDate;
 }
 
 /**
@@ -310,7 +391,7 @@ export function isItemDue(schedule, currentDate = new Date()) {
  * @returns {number} Mastery score (0-100)
  */
 export function calculateItemMastery(itemId, verb) {
-  return calculateMasteryForItem(itemId, verb)
+  return calculateMasteryForItem(itemId, verb);
 }
 
 /**
@@ -320,7 +401,7 @@ export function calculateItemMastery(itemId, verb) {
  * @returns {number} Mastery score (0-100)
  */
 export function calculateCellMastery(items, verbsMap, mood, tense, person) {
-  return calculateMasteryForCell(items, verbsMap, mood, tense, person)
+  return calculateMasteryForCell(items, verbsMap, mood, tense, person);
 }
 
 /**
@@ -330,7 +411,7 @@ export function calculateCellMastery(items, verbsMap, mood, tense, person) {
  * @returns {number} Mastery score (0-100)
  */
 export function calculateTimeOrMoodMastery(cells, weights) {
-  return calculateMasteryForTimeOrMood(cells, weights)
+  return calculateMasteryForTimeOrMood(cells, weights);
 }
 
 /**
@@ -342,11 +423,11 @@ export function calculateTimeOrMoodMastery(cells, weights) {
 export function updateScheduleWithNewItem(schedule) {
   // En una implementación completa, esto actualizaría el schedule
   // con información del nuevo ítem
-  
+
   return {
     ...schedule,
     // En una implementación completa, aquí se añadiría la nueva información
-  }
+  };
 }
 
 /**
@@ -360,8 +441,8 @@ export function resetSchedule(schedule) {
     interval: 0,
     ease: 2.5,
     reps: 0,
-    nextDue: new Date()
-  }
+    nextDue: new Date(),
+  };
 }
 
 /**
@@ -372,11 +453,11 @@ export function resetSchedule(schedule) {
 export function accelerateSchedule(schedule) {
   // En una implementación completa, esto aceleraría el schedule
   // para ítems que el usuario domina fácilmente
-  
+
   return {
     ...schedule,
     // En una implementación completa, aquí se aplicarían los cambios
-  }
+  };
 }
 
 /**
@@ -387,9 +468,9 @@ export function accelerateSchedule(schedule) {
 export function delaySchedule(schedule) {
   // En una implementación completa, esto retrasaría el schedule
   // para ítems que el usuario encuentra difíciles
-  
+
   return {
     ...schedule,
     // En una implementación completa, aquí se aplicarían los cambios
-  }
+  };
 }
