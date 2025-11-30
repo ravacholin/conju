@@ -283,7 +283,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificMood: mood,
         specificTense: tense
       })
-      onNavigateToDrill()
+      // Wait for settings to propagate before navigating
+      setTimeout(() => onNavigateToDrill(), 50)
     }
   }
 
@@ -301,7 +302,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
           urgency: 'all'
         }
       })
-      onNavigateToDrill()
+      // Wait for settings to propagate before navigating
+      setTimeout(() => onNavigateToDrill(), 50)
     }
   }
 
@@ -313,7 +315,8 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         reviewSessionType: 'due',
         reviewSessionFilter: {}
       })
-      onNavigateToDrill()
+      // Wait for settings to propagate before navigating
+      setTimeout(() => onNavigateToDrill(), 50)
     }
   }
 

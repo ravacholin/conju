@@ -133,7 +133,10 @@ export function ErrorRadar({ axes = [] }) {
         .map(([k]) => { const [mood, tense]=k.split('|'); return { mood, tense } })
       if (topCombos.length === 0) return
       settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 6 } })
-      window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 6 } } }))
+      // Wait for settings to propagate before dispatching navigation event
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 6 } } }))
+      }, 50)
     } catch (e) {
       logger.warn('No se pudo iniciar micro-práctica para', tag, e)
     }
