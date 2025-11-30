@@ -57,6 +57,28 @@ function withTimeout(promise, timeout, operation) {
 }
 
 /**
+ * Retries an operation with exponential backoff to handle transient IndexedDB failures
+ * @param {Function} operation - Async function to retry
+ * @param {number} maxRetries - Maximum number of retry attempts (default: 3)
+ * @param {number} delayMs - Initial delay in milliseconds (default: 100)
+ * @returns {Promise} Promise that resolves/rejects after retries exhausted
+ */
+async function retryOperation(operation, maxRetries = 3, delayMs = 100) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries) {
+        logger.error('retryOperation', `All ${maxRetries} attempts failed`, error);
+        throw error;
+      }
+      logger.warn('retryOperation', `Attempt ${attempt}/${maxRetries} failed, retrying in ${delayMs * attempt}ms...`, error);
+      await new Promise(resolve => setTimeout(resolve, delayMs * attempt)); // Exponential backoff
+    }
+  }
+}
+
+/**
  * Inicializa la base de datos IndexedDB
  * @returns {Promise<IDBDatabase>} La base de datos inicializada
  */
@@ -271,35 +293,37 @@ export async function initDB() {
  * @returns {Promise<void>}
  */
 export async function saveToDB(storeName, data) {
-  try {
-    const db = await initDB()
-    const tx = db.transaction(storeName, 'readwrite')
-    const store = tx.objectStore(storeName)
+  return retryOperation(async () => {
+    try {
+      const db = await initDB()
+      const tx = db.transaction(storeName, 'readwrite')
+      const store = tx.objectStore(storeName)
 
-    // Si no tiene ID, generar uno
-    if (!data.id) {
-      data.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      // Si no tiene ID, generar uno
+      if (!data.id) {
+        data.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      }
+
+      // Añadir timestamps si no existen
+      if (!data.createdAt) {
+        data.createdAt = new Date()
+      }
+      data.updatedAt = new Date()
+
+      // Initialize syncedAt if missing (0 = unsynced)
+      if (data.syncedAt === undefined) {
+        data.syncedAt = 0
+      }
+
+      await store.put(data)
+      await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `saveToDB(${storeName})`)
+
+      if (isDev) logger.debug('saveToDB', `Dato guardado en ${storeName}`, { id: data.id })
+    } catch (error) {
+      logger.error('saveToDB', `Error al guardar en ${storeName}`, error)
+      throw error
     }
-
-    // Añadir timestamps si no existen
-    if (!data.createdAt) {
-      data.createdAt = new Date()
-    }
-    data.updatedAt = new Date()
-
-    // Initialize syncedAt if missing (0 = unsynced)
-    if (data.syncedAt === undefined) {
-      data.syncedAt = 0
-    }
-
-    await store.put(data)
-    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `saveToDB(${storeName})`)
-
-    if (isDev) logger.debug('saveToDB', `Dato guardado en ${storeName}`, { id: data.id })
-  } catch (error) {
-    logger.error('saveToDB', `Error al guardar en ${storeName}`, error)
-    throw error
-  }
+  });
 }
 
 /**
@@ -472,65 +496,67 @@ export async function updateInDB(storeName, id, updates) {
  * @returns {Promise<{saved: number, errors: Array}>} Resultado de la operación
  */
 export async function batchSaveToDB(storeName, dataArray, options = {}) {
-  const { skipTimestamps = false } = options
-  const results = { saved: 0, errors: [] }
+  return retryOperation(async () => {
+    const { skipTimestamps = false } = options
+    const results = { saved: 0, errors: [] }
 
-  if (!Array.isArray(dataArray) || dataArray.length === 0) {
-    if (isDev) logger.debug('batchSaveToDB', `Array vacío para ${storeName}`)
-    return results
-  }
-
-  try {
-    const db = await initDB()
-    const tx = db.transaction(storeName, 'readwrite')
-    const store = tx.objectStore(storeName)
-
-    const persistedRecords = []
-
-    // Procesar todos los objetos en una sola transacción
-    for (const data of dataArray) {
-      try {
-        // Preparar el objeto
-        const prepared = { ...data }
-
-        // Generar ID si no existe
-        if (!prepared.id) {
-          prepared.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        }
-
-        // Agregar timestamps si no está deshabilitado
-        if (!skipTimestamps) {
-          if (!prepared.createdAt) {
-            prepared.createdAt = new Date()
-          }
-          prepared.updatedAt = new Date()
-        }
-
-        await store.put(prepared)
-        persistedRecords.push(prepared)
-        results.saved++
-      } catch (itemError) {
-        results.errors.push({
-          id: data?.id || 'unknown',
-          error: itemError.message
-        })
-        logger.error('batchSaveToDB', `Error guardando item en ${storeName}`, itemError)
-      }
+    if (!Array.isArray(dataArray) || dataArray.length === 0) {
+      if (isDev) logger.debug('batchSaveToDB', `Array vacío para ${storeName}`)
+      return results
     }
 
-    // Esperar a que la transacción complete con timeout
-    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchSaveToDB(${storeName})`)
+    try {
+      const db = await initDB()
+      const tx = db.transaction(storeName, 'readwrite')
+      const store = tx.objectStore(storeName)
 
-    if (isDev) logger.debug('batchSaveToDB', `${results.saved}/${dataArray.length} objetos guardados en ${storeName}`)
+      const persistedRecords = []
 
-    // Cache population removed
-    // if (persistedRecords.length > 0) { ... }
+      // Procesar todos los objetos en una sola transacción
+      for (const data of dataArray) {
+        try {
+          // Preparar el objeto
+          const prepared = { ...data }
 
-    return results
-  } catch (error) {
-    logger.error('batchSaveToDB', `Error en batch save para ${storeName}`, error)
-    throw error
-  }
+          // Generar ID si no existe
+          if (!prepared.id) {
+            prepared.id = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+          }
+
+          // Agregar timestamps si no está deshabilitado
+          if (!skipTimestamps) {
+            if (!prepared.createdAt) {
+              prepared.createdAt = new Date()
+            }
+            prepared.updatedAt = new Date()
+          }
+
+          await store.put(prepared)
+          persistedRecords.push(prepared)
+          results.saved++
+        } catch (itemError) {
+          results.errors.push({
+            id: data?.id || 'unknown',
+            error: itemError.message
+          })
+          logger.error('batchSaveToDB', `Error guardando item en ${storeName}`, itemError)
+        }
+      }
+
+      // Esperar a que la transacción complete con timeout
+      await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchSaveToDB(${storeName})`)
+
+      if (isDev) logger.debug('batchSaveToDB', `${results.saved}/${dataArray.length} objetos guardados en ${storeName}`)
+
+      // Cache population removed
+      // if (persistedRecords.length > 0) { ... }
+
+      return results
+    } catch (error) {
+      logger.error('batchSaveToDB', `Error en batch save para ${storeName}`, error)
+      throw error
+    }
+  });
 }
 
 /**
@@ -540,55 +566,57 @@ export async function batchSaveToDB(storeName, dataArray, options = {}) {
  * @returns {Promise<{updated: number, errors: Array}>} Resultado de la operación
  */
 export async function batchUpdateInDB(storeName, updateArray) {
-  const results = { updated: 0, errors: [] }
+  return retryOperation(async () => {
+    const results = { updated: 0, errors: [] }
 
-  if (!Array.isArray(updateArray) || updateArray.length === 0) {
-    if (isDev) logger.debug('batchUpdateInDB', `Array vacío para ${storeName}`)
-    return results
-  }
-
-  try {
-    const db = await initDB()
-    const tx = db.transaction(storeName, 'readwrite')
-    const store = tx.objectStore(storeName)
-
-    for (const { id, updates } of updateArray) {
-      try {
-        const existing = await store.get(id)
-        if (!existing) {
-          results.errors.push({
-            id,
-            error: `Objeto no encontrado: ${id}`
-          })
-          continue
-        }
-
-        const updated = {
-          ...existing,
-          ...updates,
-          updatedAt: new Date()
-        }
-
-        await store.put(updated)
-        results.updated++
-      } catch (itemError) {
-        results.errors.push({
-          id: id || 'unknown',
-          error: itemError.message
-        })
-        logger.error('batchUpdateInDB', `Error actualizando item en ${storeName}`, itemError)
-      }
+    if (!Array.isArray(updateArray) || updateArray.length === 0) {
+      if (isDev) logger.debug('batchUpdateInDB', `Array vacío para ${storeName}`)
+      return results
     }
 
-    await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchUpdateInDB(${storeName})`)
+    try {
+      const db = await initDB()
+      const tx = db.transaction(storeName, 'readwrite')
+      const store = tx.objectStore(storeName)
 
-    if (isDev) logger.debug('batchUpdateInDB', `${results.updated}/${updateArray.length} objetos actualizados en ${storeName}`)
+      for (const { id, updates } of updateArray) {
+        try {
+          const existing = await store.get(id)
+          if (!existing) {
+            results.errors.push({
+              id,
+              error: `Objeto no encontrado: ${id}`
+            })
+            continue
+          }
 
-    return results
-  } catch (error) {
-    logger.error('batchUpdateInDB', `Error en batch update para ${storeName}`, error)
-    throw error
-  }
+          const updated = {
+            ...existing,
+            ...updates,
+            updatedAt: new Date()
+          }
+
+          await store.put(updated)
+          results.updated++
+        } catch (itemError) {
+          results.errors.push({
+            id: id || 'unknown',
+            error: itemError.message
+          })
+          logger.error('batchUpdateInDB', `Error actualizando item en ${storeName}`, itemError)
+        }
+      }
+
+      await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `batchUpdateInDB(${storeName})`)
+
+      if (isDev) logger.debug('batchUpdateInDB', `${results.updated}/${updateArray.length} objetos actualizados en ${storeName}`)
+
+      return results
+    } catch (error) {
+      logger.error('batchUpdateInDB', `Error en batch update para ${storeName}`, error)
+      throw error
+    }
+  });
 }
 
 /**

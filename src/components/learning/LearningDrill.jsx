@@ -523,7 +523,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           }
         };
 
-        setDetailedErrorHistory(prev => [...prev, errorDetail]);
+        setDetailedErrorHistory(prev => [...prev, errorDetail].slice(-100)); // Limit to last 100 items to prevent memory leaks
         logger.debug('Error classified for SRS targeting:', {
           lemma: currentItem.lemma,
           errorTags: detailedErrorTags,
@@ -596,7 +596,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         sessionPhase: 'drill'
       };
 
-      setAllAttempts(prev => [...prev, detailedAttempt]);
+      setAllAttempts(prev => [...prev, detailedAttempt].slice(-200)); // Limit to last 200 items to prevent memory leaks
 
       // Use the progress tracking system with complete information
       await handleResult({
@@ -779,6 +779,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
+      // Prevent double-submission during async processing
+      if (isProcessing) return;
       if (result === 'idle') {
         handleCheckAnswer();
       } else {
@@ -790,6 +792,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   // Accent/tilde keypad support
   const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
   const insertChar = (char) => {
+    // Prevent character insertion during async processing
+    if (isProcessing || result !== 'idle') return;
     setInputValue(prev => prev + char);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
@@ -974,7 +978,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
                   placeholder="Escribe la conjugación..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  disabled={result !== 'idle'}
+                  disabled={isProcessing || result !== 'idle'}
                   autoFocus
                 />
                 {showAccentKeys && (
@@ -985,6 +989,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
                         type="button"
                         className="accent-key"
                         onClick={() => insertChar(ch)}
+                        disabled={isProcessing || result !== 'idle'}
                         tabIndex={-1}
                       >{ch}</button>
                     ))}
@@ -1017,9 +1022,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
               <div className="action-buttons">
                 {result === 'idle' ? (
-                  <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim()}>Continuar</button>
+                  <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim() || isProcessing}>Continuar</button>
                 ) : (
-                  <button className="btn" onClick={handleContinue}>Continuar</button>
+                  <button className="btn" onClick={handleContinue} disabled={isProcessing}>Continuar</button>
                 )}
               </div>
             </>
