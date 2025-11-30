@@ -1,0 +1,617 @@
+[
+  {
+    "lemma": "poder",
+    "method": "REGULAR",
+    "value": "puede"
+  },
+  {
+    "lemma": "traer",
+    "method": "REGULAR",
+    "value": "trae"
+  },
+  {
+    "lemma": "caer",
+    "method": "REGULAR",
+    "value": "cae"
+  },
+  {
+    "lemma": "leer",
+    "method": "REGULAR",
+    "value": "lee"
+  },
+  {
+    "lemma": "creer",
+    "method": "REGULAR",
+    "value": "cree"
+  },
+  {
+    "lemma": "deber",
+    "method": "REGULAR",
+    "value": "debe"
+  },
+  {
+    "lemma": "conocer",
+    "method": "REGULAR",
+    "value": "conoce"
+  },
+  {
+    "lemma": "nacer",
+    "method": "REGULAR",
+    "value": "nace"
+  },
+  {
+    "lemma": "crecer",
+    "method": "REGULAR",
+    "value": "crece"
+  },
+  {
+    "lemma": "parecer",
+    "method": "REGULAR",
+    "value": "parece"
+  },
+  {
+    "lemma": "construir",
+    "method": "REGULAR",
+    "value": "construvé"
+  },
+  {
+    "lemma": "destruir",
+    "method": "REGULAR",
+    "value": "destruvé"
+  },
+  {
+    "lemma": "incluir",
+    "method": "REGULAR",
+    "value": "incluvé"
+  },
+  {
+    "lemma": "concluir",
+    "method": "REGULAR",
+    "value": "concluvé"
+  },
+  {
+    "lemma": "excluir",
+    "method": "REGULAR",
+    "value": "excluvé"
+  },
+  {
+    "lemma": "huir",
+    "method": "REGULAR",
+    "value": "huvé"
+  },
+  {
+    "lemma": "contribuir",
+    "method": "REGULAR",
+    "value": "contribuvé"
+  },
+  {
+    "lemma": "distribuir",
+    "method": "REGULAR",
+    "value": "distribuvé"
+  },
+  {
+    "lemma": "atribuir",
+    "method": "REGULAR",
+    "value": "atribuvé"
+  },
+  {
+    "lemma": "andar",
+    "method": "REGULAR",
+    "value": "anda"
+  },
+  {
+    "lemma": "servir",
+    "method": "REGULAR",
+    "value": "servvé"
+  },
+  {
+    "lemma": "repetir",
+    "method": "REGULAR",
+    "value": "repetvé"
+  },
+  {
+    "lemma": "morir",
+    "method": "REGULAR",
+    "value": "morvé"
+  },
+  {
+    "lemma": "sacar",
+    "method": "REGULAR",
+    "value": "saca"
+  },
+  {
+    "lemma": "proteger",
+    "method": "REGULAR",
+    "value": "protege"
+  },
+  {
+    "lemma": "coger",
+    "method": "REGULAR",
+    "value": "coge"
+  },
+  {
+    "lemma": "cerrar",
+    "method": "REGULAR",
+    "value": "cierra"
+  },
+  {
+    "lemma": "contar",
+    "method": "REGULAR",
+    "value": "cuenta"
+  },
+  {
+    "lemma": "mostrar",
+    "method": "REGULAR",
+    "value": "muestra"
+  },
+  {
+    "lemma": "sentir",
+    "method": "REGULAR",
+    "value": "sentvé"
+  },
+  {
+    "lemma": "organizar",
+    "method": "REGULAR",
+    "value": "organiza"
+  },
+  {
+    "lemma": "oír",
+    "method": "REGULAR",
+    "value": "oye"
+  },
+  {
+    "lemma": "instruir",
+    "method": "REGULAR",
+    "value": "instruvé"
+  },
+  {
+    "lemma": "sustituir",
+    "method": "REGULAR",
+    "value": "sustituvé"
+  },
+  {
+    "lemma": "reñir",
+    "method": "REGULAR",
+    "value": "reñvé"
+  },
+  {
+    "lemma": "teñir",
+    "method": "REGULAR",
+    "value": "teñvé"
+  },
+  {
+    "lemma": "ceñir",
+    "method": "REGULAR",
+    "value": "ceñvé"
+  },
+  {
+    "lemma": "bullir",
+    "method": "REGULAR",
+    "value": "bullvé"
+  },
+  {
+    "lemma": "engullir",
+    "method": "REGULAR",
+    "value": "engullvé"
+  },
+  {
+    "lemma": "zambullir",
+    "method": "REGULAR",
+    "value": "zambullvé"
+  },
+  {
+    "lemma": "argüir",
+    "method": "REGULAR",
+    "value": "argüvé"
+  },
+  {
+    "lemma": "erguir",
+    "method": "REGULAR",
+    "value": "erguvé"
+  },
+  {
+    "lemma": "apagar",
+    "method": "REGULAR",
+    "value": "apaga"
+  },
+  {
+    "lemma": "cargar",
+    "method": "REGULAR",
+    "value": "carga"
+  },
+  {
+    "lemma": "navegar",
+    "method": "REGULAR",
+    "value": "navega"
+  },
+  {
+    "lemma": "obtener",
+    "method": "COMPOUND/CHECK",
+    "value": "obtén"
+  },
+  {
+    "lemma": "retener",
+    "method": "COMPOUND/CHECK",
+    "value": "retén"
+  },
+  {
+    "lemma": "detener",
+    "method": "COMPOUND/CHECK",
+    "value": "detén"
+  },
+  {
+    "lemma": "componer",
+    "method": "COMPOUND/CHECK",
+    "value": "compón"
+  },
+  {
+    "lemma": "proponer",
+    "method": "COMPOUND/CHECK",
+    "value": "propón"
+  },
+  {
+    "lemma": "usar",
+    "method": "REGULAR",
+    "value": "usa"
+  },
+  {
+    "lemma": "entender",
+    "method": "REGULAR",
+    "value": "entiende"
+  },
+  {
+    "lemma": "averiguar",
+    "method": "REGULAR",
+    "value": "averigua"
+  },
+  {
+    "lemma": "apaciguar",
+    "method": "REGULAR",
+    "value": "apacigua"
+  },
+  {
+    "lemma": "continuar",
+    "method": "REGULAR",
+    "value": "continúa"
+  },
+  {
+    "lemma": "actuar",
+    "method": "REGULAR",
+    "value": "actúa"
+  },
+  {
+    "lemma": "evaluar",
+    "method": "REGULAR",
+    "value": "evalúa"
+  },
+  {
+    "lemma": "enviar",
+    "method": "REGULAR",
+    "value": "envía"
+  },
+  {
+    "lemma": "confiar",
+    "method": "REGULAR",
+    "value": "confía"
+  },
+  {
+    "lemma": "guiar",
+    "method": "REGULAR",
+    "value": "guía"
+  },
+  {
+    "lemma": "prohibir",
+    "method": "REGULAR",
+    "value": "prohibvé"
+  },
+  {
+    "lemma": "reunir",
+    "method": "REGULAR",
+    "value": "reunvé"
+  },
+  {
+    "lemma": "aislar",
+    "method": "REGULAR",
+    "value": "aísla"
+  },
+  {
+    "lemma": "fraguar",
+    "method": "REGULAR",
+    "value": "fragua"
+  },
+  {
+    "lemma": "menguar",
+    "method": "REGULAR",
+    "value": "mengua"
+  },
+  {
+    "lemma": "podrir",
+    "method": "REGULAR",
+    "value": "podrvé"
+  },
+  {
+    "lemma": "tocar",
+    "method": "REGULAR",
+    "value": "toca"
+  },
+  {
+    "lemma": "practicar",
+    "method": "REGULAR",
+    "value": "practica"
+  },
+  {
+    "lemma": "explicar",
+    "method": "REGULAR",
+    "value": "explica"
+  },
+  {
+    "lemma": "freír",
+    "method": "REGULAR",
+    "value": "fríe"
+  },
+  {
+    "lemma": "soler",
+    "method": "REGULAR",
+    "value": "suele"
+  },
+  {
+    "lemma": "imprimir",
+    "method": "REGULAR",
+    "value": "imprimvé"
+  },
+  {
+    "lemma": "proveer",
+    "method": "REGULAR",
+    "value": "provee"
+  },
+  {
+    "lemma": "obligar",
+    "method": "REGULAR",
+    "value": "obliga"
+  },
+  {
+    "lemma": "desaguar",
+    "method": "REGULAR",
+    "value": "desagua"
+  },
+  {
+    "lemma": "atestiguar",
+    "method": "REGULAR",
+    "value": "atestigua"
+  },
+  {
+    "lemma": "aguar",
+    "method": "REGULAR",
+    "value": "agua"
+  },
+  {
+    "lemma": "santiguar",
+    "method": "REGULAR",
+    "value": "santigua"
+  },
+  {
+    "lemma": "gruñir",
+    "method": "REGULAR",
+    "value": "gruñvé"
+  },
+  {
+    "lemma": "dirigir",
+    "method": "REGULAR",
+    "value": "dirigvé"
+  },
+  {
+    "lemma": "corregir",
+    "method": "REGULAR",
+    "value": "corregvé"
+  },
+  {
+    "lemma": "recoger",
+    "method": "REGULAR",
+    "value": "recoge"
+  },
+  {
+    "lemma": "escoger",
+    "method": "REGULAR",
+    "value": "escoge"
+  },
+  {
+    "lemma": "proseguir",
+    "method": "REGULAR",
+    "value": "proseguvé"
+  },
+  {
+    "lemma": "atacar",
+    "method": "REGULAR",
+    "value": "ataca"
+  },
+  {
+    "lemma": "aplicar",
+    "method": "REGULAR",
+    "value": "aplica"
+  },
+  {
+    "lemma": "fabricar",
+    "method": "REGULAR",
+    "value": "fabrica"
+  },
+  {
+    "lemma": "mantener",
+    "method": "COMPOUND/CHECK",
+    "value": "mantén"
+  },
+  {
+    "lemma": "contener",
+    "method": "COMPOUND/CHECK",
+    "value": "contén"
+  },
+  {
+    "lemma": "almorzar",
+    "method": "REGULAR",
+    "value": "almuerza"
+  },
+  {
+    "lemma": "utilizar",
+    "method": "REGULAR",
+    "value": "utiliza"
+  },
+  {
+    "lemma": "convenir",
+    "method": "REGULAR",
+    "value": "convenvé"
+  },
+  {
+    "lemma": "prevenir",
+    "method": "REGULAR",
+    "value": "prevenvé"
+  },
+  {
+    "lemma": "agredir",
+    "method": "REGULAR",
+    "value": "agredvé"
+  },
+  {
+    "lemma": "blandir",
+    "method": "REGULAR",
+    "value": "blandvé"
+  },
+  {
+    "lemma": "prender",
+    "method": "REGULAR",
+    "value": "prende"
+  },
+  {
+    "lemma": "suspender",
+    "method": "REGULAR",
+    "value": "suspende"
+  },
+  {
+    "lemma": "enraizar",
+    "method": "REGULAR",
+    "value": "enraíza"
+  },
+  {
+    "lemma": "intervenir",
+    "method": "REGULAR",
+    "value": "intervenvé"
+  },
+  {
+    "lemma": "elegir",
+    "method": "REGULAR",
+    "value": "elegvé"
+  },
+  {
+    "lemma": "absorber",
+    "method": "REGULAR",
+    "value": "absorbe"
+  },
+  {
+    "lemma": "bendecir",
+    "method": "COMPOUND/CHECK",
+    "value": "bendice"
+  },
+  {
+    "lemma": "comunicar",
+    "method": "REGULAR",
+    "value": "comunica"
+  },
+  {
+    "lemma": "educar",
+    "method": "REGULAR",
+    "value": "educa"
+  },
+  {
+    "lemma": "publicar",
+    "method": "REGULAR",
+    "value": "publica"
+  },
+  {
+    "lemma": "provocar",
+    "method": "REGULAR",
+    "value": "provoca"
+  },
+  {
+    "lemma": "colgar",
+    "method": "REGULAR",
+    "value": "cuelga"
+  },
+  {
+    "lemma": "negar",
+    "method": "REGULAR",
+    "value": "niega"
+  },
+  {
+    "lemma": "rogar",
+    "method": "REGULAR",
+    "value": "ruega"
+  },
+  {
+    "lemma": "castigar",
+    "method": "REGULAR",
+    "value": "castiga"
+  },
+  {
+    "lemma": "disponer",
+    "method": "COMPOUND/CHECK",
+    "value": "dispón"
+  },
+  {
+    "lemma": "exponer",
+    "method": "COMPOUND/CHECK",
+    "value": "expón"
+  },
+  {
+    "lemma": "suponer",
+    "method": "COMPOUND/CHECK",
+    "value": "supón"
+  },
+  {
+    "lemma": "imponer",
+    "method": "COMPOUND/CHECK",
+    "value": "impón"
+  },
+  {
+    "lemma": "recordar",
+    "method": "REGULAR",
+    "value": "recuerda"
+  },
+  {
+    "lemma": "costar",
+    "method": "REGULAR",
+    "value": "cuesta"
+  },
+  {
+    "lemma": "preferir",
+    "method": "REGULAR",
+    "value": "prefervé"
+  },
+  {
+    "lemma": "resolver",
+    "method": "REGULAR",
+    "value": "resuelve"
+  },
+  {
+    "lemma": "sonar",
+    "method": "REGULAR",
+    "value": "suena"
+  },
+  {
+    "lemma": "volar",
+    "method": "REGULAR",
+    "value": "vuela"
+  },
+  {
+    "lemma": "despertar",
+    "method": "REGULAR",
+    "value": "despierta"
+  },
+  {
+    "lemma": "competir",
+    "method": "REGULAR",
+    "value": "competvé"
+  },
+  {
+    "lemma": "vestir",
+    "method": "REGULAR",
+    "value": "vestvé"
+  }
+]

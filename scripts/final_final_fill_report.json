@@ -1,0 +1,290 @@
+[
+  {
+    "lemma": "recordar",
+    "change": "indicative|pres|2s_vos añadido: recuerdás"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: recordra"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: recordras"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: recordras"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: recordra"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: recordrámos"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: recordrais"
+  },
+  {
+    "lemma": "recordar",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: recordran"
+  },
+  {
+    "lemma": "costar",
+    "change": "indicative|pres|2s_vos añadido: cuestás"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: costra"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: costras"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: costras"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: costra"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: costrámos"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: costrais"
+  },
+  {
+    "lemma": "costar",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: costran"
+  },
+  {
+    "lemma": "preferir",
+    "change": "indicative|pres|2s_vos añadido: prefierís"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: priferira"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: priferiras"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: priferiras"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: priferira"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: priferirámos"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: priferirais"
+  },
+  {
+    "lemma": "preferir",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: priferiran"
+  },
+  {
+    "lemma": "resolver",
+    "change": "indicative|pres|2s_vos añadido: resuelvés"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: resolvira"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: resolviras"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: resolviras"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: resolvira"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: resolvirámos"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: resolvirais"
+  },
+  {
+    "lemma": "resolver",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: resolviran"
+  },
+  {
+    "lemma": "sonar",
+    "change": "indicative|pres|2s_vos añadido: suenás"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: sonra"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: sonras"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: sonras"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: sonra"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: sonrámos"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: sonrais"
+  },
+  {
+    "lemma": "sonar",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: sonran"
+  },
+  {
+    "lemma": "volar",
+    "change": "indicative|pres|2s_vos añadido: vuelás"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: volra"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: volras"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: volras"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: volra"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: volrámos"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: volrais"
+  },
+  {
+    "lemma": "volar",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: volran"
+  },
+  {
+    "lemma": "despertar",
+    "change": "indicative|pres|2s_vos añadido: despiertás"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: despertra"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: despertras"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: despertras"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: despertra"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: despertrámos"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: despertrais"
+  },
+  {
+    "lemma": "despertar",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: despertran"
+  },
+  {
+    "lemma": "competir",
+    "change": "indicative|pres|2s_vos añadido: compitís"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: competira"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: competiras"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: competiras"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: competira"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: competirámos"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: competirais"
+  },
+  {
+    "lemma": "competir",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: competiran"
+  },
+  {
+    "lemma": "vestir",
+    "change": "indicative|pres|2s_vos añadido: vistís"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|1s (-ra) añadido: vestira"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|2s_tu (-ra) añadido: vestiras"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|2s_vos (-ra) añadido: vestiras"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|3s (-ra) añadido: vestira"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|1p (-ra) añadido: vestirámos"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|2p_vosotros (-ra) añadido: vestirais"
+  },
+  {
+    "lemma": "vestir",
+    "change": "subjunctive|subjImpf|3p (-ra) añadido: vestiran"
+  }
+]

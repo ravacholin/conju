@@ -1,0 +1,10 @@
+[
+  {
+    "lemma": "agredir",
+    "change": "ImpNeg 1p creado: no agredamos"
+  },
+  {
+    "lemma": "agredir",
+    "change": "ImpAff 1p rellenado desde Subj: agredamos"
+  }
+]

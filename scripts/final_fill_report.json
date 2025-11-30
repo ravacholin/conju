@@ -1,0 +1,1002 @@
+[
+  {
+    "lemma": "oír",
+    "change": "impAff 2s_vos añadido: oí"
+  },
+  {
+    "lemma": "freír",
+    "change": "impAff 2s_vos añadido: freí"
+  },
+  {
+    "lemma": "soler",
+    "change": "impAff 2s_vos añadido: solé"
+  },
+  {
+    "lemma": "agredir",
+    "change": "impAff 2s_vos añadido: agredí"
+  },
+  {
+    "lemma": "blandir",
+    "change": "impAff 2s_vos añadido: blandí"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 1s generado: recordaré"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 2s_tu generado: recordarás"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 2s_vos generado: recordarás"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 3s generado: recordará"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 1p generado: recordaremos"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 2p_vosotros generado: recordaréis"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Futuro 3p generado: recordarán"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 1s generado: recordaría"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 2s_tu generado: recordarías"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 2s_vos generado: recordarías"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 3s generado: recordaría"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 1p generado: recordaríamos"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 2p_vosotros generado: recordaríais"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Condicional 3p generado: recordarían"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 1s generado: recordé"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 2s_tu generado: recordaste"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 2s_vos generado: recordaste"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 3s generado: recordó"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 1p generado: recordamos"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 2p_vosotros generado: recordasteis"
+  },
+  {
+    "lemma": "recordar",
+    "change": "Pretérito Indefinido 3p generado: recordaron"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 1s generado: costaré"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 2s_tu generado: costarás"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 2s_vos generado: costarás"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 3s generado: costará"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 1p generado: costaremos"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 2p_vosotros generado: costaréis"
+  },
+  {
+    "lemma": "costar",
+    "change": "Futuro 3p generado: costarán"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 1s generado: costaría"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 2s_tu generado: costarías"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 2s_vos generado: costarías"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 3s generado: costaría"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 1p generado: costaríamos"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 2p_vosotros generado: costaríais"
+  },
+  {
+    "lemma": "costar",
+    "change": "Condicional 3p generado: costarían"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 1s generado: costba"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 2s_tu generado: costbas"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 2s_vos generado: costbas"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 3s generado: costba"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 1p generado: costbamos"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 2p_vosotros generado: costbais"
+  },
+  {
+    "lemma": "costar",
+    "change": "Imperfecto 3p generado: costban"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 1s generado: costé"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 2s_tu generado: costaste"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 2s_vos generado: costaste"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 3s generado: costó"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 1p generado: costamos"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 2p_vosotros generado: costasteis"
+  },
+  {
+    "lemma": "costar",
+    "change": "Pretérito Indefinido 3p generado: costaron"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 1s generado: preferiré"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 2s_tu generado: preferirás"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 2s_vos generado: preferirás"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 3s generado: preferirá"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 1p generado: preferiremos"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 2p_vosotros generado: preferiréis"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Futuro 3p generado: preferirán"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 1s generado: preferiría"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 2s_tu generado: preferirías"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 2s_vos generado: preferirías"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 3s generado: preferiría"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 1p generado: preferiríamos"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 2p_vosotros generado: preferiríais"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Condicional 3p generado: preferirían"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 1s generado: prefería"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 2s_tu generado: preferías"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 2s_vos generado: preferías"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 3s generado: prefería"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 1p generado: preferíamos"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 2p_vosotros generado: preferíais"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Imperfecto 3p generado: preferían"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 1s generado: preferí"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 2s_tu generado: preferiste"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 2s_vos generado: preferiste"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 3s generado: priferió"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 1p generado: preferimos"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 2p_vosotros generado: preferisteis"
+  },
+  {
+    "lemma": "preferir",
+    "change": "Pretérito Indefinido 3p generado: priferieron"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 1s generado: resolveré"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 2s_tu generado: resolverás"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 2s_vos generado: resolverás"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 3s generado: resolverá"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 1p generado: resolveremos"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 2p_vosotros generado: resolveréis"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Futuro 3p generado: resolverán"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 1s generado: resolvería"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 2s_tu generado: resolverías"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 2s_vos generado: resolverías"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 3s generado: resolvería"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 1p generado: resolveríamos"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 2p_vosotros generado: resolveríais"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Condicional 3p generado: resolverían"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 1s generado: resolvía"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 2s_tu generado: resolvías"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 2s_vos generado: resolvías"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 3s generado: resolvía"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 1p generado: resolvíamos"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 2p_vosotros generado: resolvíais"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Imperfecto 3p generado: resolvían"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 1s generado: resolví"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 2s_tu generado: resolviste"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 2s_vos generado: resolviste"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 3s generado: resolvió"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 1p generado: resolvimos"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 2p_vosotros generado: resolvisteis"
+  },
+  {
+    "lemma": "resolver",
+    "change": "Pretérito Indefinido 3p generado: resolvieron"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 1s generado: sonaré"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 2s_tu generado: sonarás"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 2s_vos generado: sonarás"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 3s generado: sonará"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 1p generado: sonaremos"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 2p_vosotros generado: sonaréis"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Futuro 3p generado: sonarán"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 1s generado: sonaría"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 2s_tu generado: sonarías"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 2s_vos generado: sonarías"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 3s generado: sonaría"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 1p generado: sonaríamos"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 2p_vosotros generado: sonaríais"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Condicional 3p generado: sonarían"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 1s generado: sonba"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 2s_tu generado: sonbas"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 2s_vos generado: sonbas"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 3s generado: sonba"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 1p generado: sonbamos"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 2p_vosotros generado: sonbais"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Imperfecto 3p generado: sonban"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 1s generado: soné"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 2s_tu generado: sonaste"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 2s_vos generado: sonaste"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 3s generado: sonó"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 1p generado: sonamos"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 2p_vosotros generado: sonasteis"
+  },
+  {
+    "lemma": "sonar",
+    "change": "Pretérito Indefinido 3p generado: sonaron"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 1s generado: volaré"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 2s_tu generado: volarás"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 2s_vos generado: volarás"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 3s generado: volará"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 1p generado: volaremos"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 2p_vosotros generado: volaréis"
+  },
+  {
+    "lemma": "volar",
+    "change": "Futuro 3p generado: volarán"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 1s generado: volaría"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 2s_tu generado: volarías"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 2s_vos generado: volarías"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 3s generado: volaría"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 1p generado: volaríamos"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 2p_vosotros generado: volaríais"
+  },
+  {
+    "lemma": "volar",
+    "change": "Condicional 3p generado: volarían"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 1s generado: volba"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 2s_tu generado: volbas"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 2s_vos generado: volbas"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 3s generado: volba"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 1p generado: volbamos"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 2p_vosotros generado: volbais"
+  },
+  {
+    "lemma": "volar",
+    "change": "Imperfecto 3p generado: volban"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 1s generado: volé"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 2s_tu generado: volaste"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 2s_vos generado: volaste"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 3s generado: voló"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 1p generado: volamos"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 2p_vosotros generado: volasteis"
+  },
+  {
+    "lemma": "volar",
+    "change": "Pretérito Indefinido 3p generado: volaron"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 1s generado: despertaré"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 2s_tu generado: despertarás"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 2s_vos generado: despertarás"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 3s generado: despertará"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 1p generado: despertaremos"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 2p_vosotros generado: despertaréis"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Futuro 3p generado: despertarán"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 1s generado: despertaría"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 2s_tu generado: despertarías"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 2s_vos generado: despertarías"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 3s generado: despertaría"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 1p generado: despertaríamos"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 2p_vosotros generado: despertaríais"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Condicional 3p generado: despertarían"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 1s generado: despertba"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 2s_tu generado: despertbas"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 2s_vos generado: despertbas"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 3s generado: despertba"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 1p generado: despertbamos"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 2p_vosotros generado: despertbais"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Imperfecto 3p generado: despertban"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 1s generado: desperté"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 2s_tu generado: despertaste"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 2s_vos generado: despertaste"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 3s generado: despertó"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 1p generado: despertamos"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 2p_vosotros generado: despertasteis"
+  },
+  {
+    "lemma": "despertar",
+    "change": "Pretérito Indefinido 3p generado: despertaron"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 1s generado: competiré"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 2s_tu generado: competirás"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 2s_vos generado: competirás"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 3s generado: competirá"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 1p generado: competiremos"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 2p_vosotros generado: competiréis"
+  },
+  {
+    "lemma": "competir",
+    "change": "Futuro 3p generado: competirán"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 1s generado: competiría"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 2s_tu generado: competirías"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 2s_vos generado: competirías"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 3s generado: competiría"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 1p generado: competiríamos"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 2p_vosotros generado: competiríais"
+  },
+  {
+    "lemma": "competir",
+    "change": "Condicional 3p generado: competirían"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 1s generado: competía"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 2s_tu generado: competías"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 2s_vos generado: competías"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 3s generado: competía"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 1p generado: competíamos"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 2p_vosotros generado: competíais"
+  },
+  {
+    "lemma": "competir",
+    "change": "Imperfecto 3p generado: competían"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 1s generado: competí"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 2s_tu generado: competiste"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 2s_vos generado: competiste"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 3s generado: competió"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 1p generado: competimos"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 2p_vosotros generado: competisteis"
+  },
+  {
+    "lemma": "competir",
+    "change": "Pretérito Indefinido 3p generado: competieron"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 1s generado: vestiré"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 2s_tu generado: vestirás"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 2s_vos generado: vestirás"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 3s generado: vestirá"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 1p generado: vestiremos"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 2p_vosotros generado: vestiréis"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Futuro 3p generado: vestirán"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 1s generado: vestiría"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 2s_tu generado: vestirías"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 2s_vos generado: vestirías"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 3s generado: vestiría"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 1p generado: vestiríamos"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 2p_vosotros generado: vestiríais"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Condicional 3p generado: vestirían"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 1s generado: vestía"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 2s_tu generado: vestías"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 2s_vos generado: vestías"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 3s generado: vestía"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 1p generado: vestíamos"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 2p_vosotros generado: vestíais"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Imperfecto 3p generado: vestían"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 1s generado: vestí"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 2s_tu generado: vestiste"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 2s_vos generado: vestiste"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 3s generado: vestió"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 1p generado: vestimos"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 2p_vosotros generado: vestisteis"
+  },
+  {
+    "lemma": "vestir",
+    "change": "Pretérito Indefinido 3p generado: vestieron"
+  }
+]
