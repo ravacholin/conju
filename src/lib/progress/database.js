@@ -11,13 +11,14 @@ const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
 const CACHE_TTL_MS = 60000 // 60 seconds
 
 // Estado de la base de datos
+// Estado de la base de datos
 let dbInstance = null
-let isInitializing = false
-let initializationPromise = null
+let initPromise = null
 
-// Simple in-memory caches to avoid hitting IndexedDB repeatedly for hot paths
-const attemptsCache = new Map()
-const masteryCache = new Map()
+// Simple in-memory caches removed to avoid memory leaks
+// IDB is fast enough for most operations
+// const attemptsCache = new Map()
+// const masteryCache = new Map()
 
 function freezeRecords(records) {
   if (!Array.isArray(records)) {
@@ -32,48 +33,12 @@ function freezeRecords(records) {
   return Object.freeze(normalized)
 }
 
-function setCacheEntry(map, key, records) {
-  if (!key) return
-  map.set(key, {
-    value: freezeRecords(records),
-    timestamp: Date.now()
-  })
-}
-
-function appendCacheEntry(map, key, records) {
-  if (!key || !Array.isArray(records) || records.length === 0) return
-  const existing = map.get(key)
-  if (!existing) {
-    setCacheEntry(map, key, records)
-    return
-  }
-  const merged = [...existing.value, ...records]
-  map.set(key, {
-    value: freezeRecords(merged),
-    timestamp: Date.now()
-  })
-}
-
-function getCacheEntry(map, key) {
-  if (!key) return null
-  const entry = map.get(key)
-  if (!entry) return null
-  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-    map.delete(key)
-    return null
-  }
-  return entry.value
-}
-
-function invalidateCacheEntry(map, key) {
-  if (typeof key === 'undefined' || key === null) return
-  map.delete(key)
-}
-
-function resetMemoryCaches() {
-  attemptsCache.clear()
-  masteryCache.clear()
-}
+// Cache functions removed as they are no longer used
+// function setCacheEntry...
+// function appendCacheEntry...
+// function getCacheEntry...
+// function invalidateCacheEntry...
+// function resetMemoryCaches...
 
 /**
  * Wraps a promise with a timeout to prevent hanging transactions
@@ -106,205 +71,197 @@ export async function initDB() {
     return dbInstance
   }
 
-  // If initialization is already in progress, wait for it
-  if (isInitializing && initializationPromise) {
-    await initializationPromise
-    return dbInstance
+  if (initPromise) {
+    return initPromise
   }
 
-  isInitializing = true
-
-  // Create a new initialization promise
-  initializationPromise = (async () => {
+  initPromise = (async () => {
     try {
-    if (isDev) logger.info('initDB', 'Inicializando base de datos de progreso')
+      if (isDev) logger.info('initDB', 'Inicializando base de datos de progreso')
 
-    // Importar openDB dinámicamente para permitir mocks por prueba
-    const { openDB } = await import('idb')
-    dbInstance = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
-      upgrade(db, oldVersion, newVersion, transaction) {
-        if (isDev) logger.info('initDB', 'Actualizando estructura de base de datos')
+      // Importar openDB dinámicamente para permitir mocks por prueba
+      const { openDB } = await import('idb')
+      const db = await openDB(STORAGE_CONFIG.DB_NAME, STORAGE_CONFIG.DB_VERSION, {
+        upgrade(db, oldVersion, newVersion, transaction) {
+          if (isDev) logger.info('initDB', 'Actualizando estructura de base de datos')
 
-        // Crear tabla de usuarios
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USERS)) {
-          const userStore = db.createObjectStore(STORAGE_CONFIG.STORES.USERS, { keyPath: 'id' })
-          userStore.createIndex('lastActive', 'lastActive', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de usuarios creada')
-        }
+          // Crear tabla de usuarios
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USERS)) {
+            const userStore = db.createObjectStore(STORAGE_CONFIG.STORES.USERS, { keyPath: 'id' })
+            userStore.createIndex('lastActive', 'lastActive', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de usuarios creada')
+          }
 
-        // Crear tabla de verbos
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.VERBS)) {
-          const verbStore = db.createObjectStore(STORAGE_CONFIG.STORES.VERBS, { keyPath: 'id' })
-          verbStore.createIndex('lemma', 'lemma', { unique: true })
-          verbStore.createIndex('type', 'type', { unique: false })
-          verbStore.createIndex('frequency', 'frequency', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de verbos creada')
-        }
+          // Crear tabla de verbos
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.VERBS)) {
+            const verbStore = db.createObjectStore(STORAGE_CONFIG.STORES.VERBS, { keyPath: 'id' })
+            verbStore.createIndex('lemma', 'lemma', { unique: true })
+            verbStore.createIndex('type', 'type', { unique: false })
+            verbStore.createIndex('frequency', 'frequency', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de verbos creada')
+          }
 
-        // Crear tabla de ítems
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ITEMS)) {
-          const itemStore = db.createObjectStore(STORAGE_CONFIG.STORES.ITEMS, { keyPath: 'id' })
-          itemStore.createIndex('verbId', 'verbId', { unique: false })
-          itemStore.createIndex('mood', 'mood', { unique: false })
-          itemStore.createIndex('tense', 'tense', { unique: false })
-          itemStore.createIndex('person', 'person', { unique: false })
-          // Índice compuesto para búsqueda rápida
-          itemStore.createIndex('verb-mood-tense-person', ['verbId', 'mood', 'tense', 'person'], { unique: true })
-          if (isDev) logger.info('initDB', 'Tabla de ítems creada')
-        }
+          // Crear tabla de ítems
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ITEMS)) {
+            const itemStore = db.createObjectStore(STORAGE_CONFIG.STORES.ITEMS, { keyPath: 'id' })
+            itemStore.createIndex('verbId', 'verbId', { unique: false })
+            itemStore.createIndex('mood', 'mood', { unique: false })
+            itemStore.createIndex('tense', 'tense', { unique: false })
+            itemStore.createIndex('person', 'person', { unique: false })
+            // Índice compuesto para búsqueda rápida
+            itemStore.createIndex('verb-mood-tense-person', ['verbId', 'mood', 'tense', 'person'], { unique: true })
+            if (isDev) logger.info('initDB', 'Tabla de ítems creada')
+          }
 
-        // Crear tabla de intentos
-        let attemptStore
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
-          attemptStore = db.createObjectStore(STORAGE_CONFIG.STORES.ATTEMPTS, { keyPath: 'id' })
-          attemptStore.createIndex('itemId', 'itemId', { unique: false })
-          attemptStore.createIndex('createdAt', 'createdAt', { unique: false })
-          attemptStore.createIndex('correct', 'correct', { unique: false })
-          attemptStore.createIndex('userId', 'userId', { unique: false })
-          attemptStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de intentos creada')
-        } else if (transaction) {
-          attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
-          if (!attemptStore.indexNames.contains('syncedAt')) {
+          // Crear tabla de intentos
+          let attemptStore
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
+            attemptStore = db.createObjectStore(STORAGE_CONFIG.STORES.ATTEMPTS, { keyPath: 'id' })
+            attemptStore.createIndex('itemId', 'itemId', { unique: false })
+            attemptStore.createIndex('createdAt', 'createdAt', { unique: false })
+            attemptStore.createIndex('correct', 'correct', { unique: false })
+            attemptStore.createIndex('userId', 'userId', { unique: false })
             attemptStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          }
-        }
-
-        // Crear tabla de mastery
-        let masteryStore
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.MASTERY)) {
-          masteryStore = db.createObjectStore(STORAGE_CONFIG.STORES.MASTERY, { keyPath: 'id' })
-          masteryStore.createIndex('userId', 'userId', { unique: false })
-          masteryStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
-          masteryStore.createIndex('updatedAt', 'updatedAt', { unique: false })
-          masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de mastery creada')
-        } else if (transaction) {
-          masteryStore = transaction.objectStore(STORAGE_CONFIG.STORES.MASTERY)
-          if (!masteryStore.indexNames.contains('syncedAt')) {
-            masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          }
-        }
-
-        // Crear tabla de schedules
-        let scheduleStore
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.SCHEDULES)) {
-          scheduleStore = db.createObjectStore(STORAGE_CONFIG.STORES.SCHEDULES, { keyPath: 'id' })
-          scheduleStore.createIndex('userId', 'userId', { unique: false })
-          scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
-          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
-          scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
-          scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de schedules creada')
-        } else if (transaction) {
-          scheduleStore = transaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
-          if (!scheduleStore.indexNames.contains('syncedAt')) {
-            scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          }
-        }
-
-        if (scheduleStore && !scheduleStore.indexNames.contains('userId-nextDue')) {
-          scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
-        }
-
-        // Crear tabla de learning sessions (analytics)
-        let sessionStore
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)) {
-          sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
-          sessionStore.createIndex('userId', 'userId', { unique: false })
-          sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
-          sessionStore.createIndex('updatedAt', 'updatedAt', { unique: false })
-          sessionStore.createIndex('mode-tense', ['mode', 'tense'], { unique: false })
-          sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de learning sessions creada')
-        } else if (transaction) {
-          sessionStore = transaction.objectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
-          if (!sessionStore.indexNames.contains('syncedAt')) {
-            sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
-          }
-        }
-
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.CHALLENGES)) {
-          const challengeStore = db.createObjectStore(STORAGE_CONFIG.STORES.CHALLENGES, { keyPath: 'id' })
-          challengeStore.createIndex('userId', 'userId', { unique: false })
-          challengeStore.createIndex('date', 'date', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de daily challenges creada')
-        }
-
-        // Crear tabla de eventos auxiliares
-        if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.EVENTS)) {
-          const eventStore = db.createObjectStore(STORAGE_CONFIG.STORES.EVENTS, { keyPath: 'id' })
-          eventStore.createIndex('userId', 'userId', { unique: false })
-          eventStore.createIndex('type', 'type', { unique: false })
-          eventStore.createIndex('createdAt', 'createdAt', { unique: false })
-          eventStore.createIndex('sessionId', 'sessionId', { unique: false })
-          if (isDev) logger.info('initDB', 'Tabla de eventos auxiliares creada')
-        }
-
-        // Add compound index for attempts if it doesn't exist
-        if (transaction && db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
-          const attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
-          if (!attemptStore.indexNames.contains('userId-createdAt')) {
-            attemptStore.createIndex('userId-createdAt', ['userId', 'createdAt'], { unique: false })
-            if (isDev) logger.info('initDB', 'Índice userId-createdAt creado en attempts')
-          }
-        }
-
-        // Migration: Ensure syncedAt exists for all records in syncable stores
-        if (oldVersion < 5) {
-          const storesToMigrate = [
-            STORAGE_CONFIG.STORES.ATTEMPTS,
-            STORAGE_CONFIG.STORES.MASTERY,
-            STORAGE_CONFIG.STORES.SCHEDULES,
-            STORAGE_CONFIG.STORES.LEARNING_SESSIONS
-          ]
-
-          for (const storeName of storesToMigrate) {
-            if (db.objectStoreNames.contains(storeName)) {
-              const store = transaction.objectStore(storeName)
-              // Iterate and update records without syncedAt
-              // Note: In a real large DB, we might want to do this more carefully,
-              // but for client-side IDB, this is usually acceptable during upgrade.
-              store.openCursor().then(async function iterate(cursor) {
-                if (!cursor) return
-                const record = cursor.value
-                let changed = false
-                if (record.syncedAt === undefined) {
-                  record.syncedAt = 0 // 0 indicates unsynced
-                  changed = true
-                }
-                // Ensure createdAt is a Date object for proper indexing
-                if (typeof record.createdAt === 'string') {
-                  record.createdAt = new Date(record.createdAt)
-                  changed = true
-                }
-                if (changed) {
-                  cursor.update(record)
-                }
-                await cursor.continue().then(iterate)
-              })
+            if (isDev) logger.info('initDB', 'Tabla de intentos creada')
+          } else if (transaction) {
+            attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+            if (!attemptStore.indexNames.contains('syncedAt')) {
+              attemptStore.createIndex('syncedAt', 'syncedAt', { unique: false })
             }
           }
-        }
 
-        if (isDev) logger.info('initDB', 'Estructura de base de datos actualizada')
-      }
-    })
+          // Crear tabla de mastery
+          let masteryStore
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.MASTERY)) {
+            masteryStore = db.createObjectStore(STORAGE_CONFIG.STORES.MASTERY, { keyPath: 'id' })
+            masteryStore.createIndex('userId', 'userId', { unique: false })
+            masteryStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+            masteryStore.createIndex('updatedAt', 'updatedAt', { unique: false })
+            masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de mastery creada')
+          } else if (transaction) {
+            masteryStore = transaction.objectStore(STORAGE_CONFIG.STORES.MASTERY)
+            if (!masteryStore.indexNames.contains('syncedAt')) {
+              masteryStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            }
+          }
+
+          // Crear tabla de schedules
+          let scheduleStore
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.SCHEDULES)) {
+            scheduleStore = db.createObjectStore(STORAGE_CONFIG.STORES.SCHEDULES, { keyPath: 'id' })
+            scheduleStore.createIndex('userId', 'userId', { unique: false })
+            scheduleStore.createIndex('nextDue', 'nextDue', { unique: false })
+            scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
+            scheduleStore.createIndex('mood-tense-person', ['mood', 'tense', 'person'], { unique: false })
+            scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de schedules creada')
+          } else if (transaction) {
+            scheduleStore = transaction.objectStore(STORAGE_CONFIG.STORES.SCHEDULES)
+            if (!scheduleStore.indexNames.contains('syncedAt')) {
+              scheduleStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            }
+          }
+
+          if (scheduleStore && !scheduleStore.indexNames.contains('userId-nextDue')) {
+            scheduleStore.createIndex('userId-nextDue', ['userId', 'nextDue'], { unique: false })
+          }
+
+          // Crear tabla de learning sessions (analytics)
+          let sessionStore
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)) {
+            sessionStore = db.createObjectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, { keyPath: 'sessionId' })
+            sessionStore.createIndex('userId', 'userId', { unique: false })
+            sessionStore.createIndex('timestamp', 'timestamp', { unique: false })
+            sessionStore.createIndex('updatedAt', 'updatedAt', { unique: false })
+            sessionStore.createIndex('mode-tense', ['mode', 'tense'], { unique: false })
+            sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de learning sessions creada')
+          } else if (transaction) {
+            sessionStore = transaction.objectStore(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
+            if (!sessionStore.indexNames.contains('syncedAt')) {
+              sessionStore.createIndex('syncedAt', 'syncedAt', { unique: false })
+            }
+          }
+
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.CHALLENGES)) {
+            const challengeStore = db.createObjectStore(STORAGE_CONFIG.STORES.CHALLENGES, { keyPath: 'id' })
+            challengeStore.createIndex('userId', 'userId', { unique: false })
+            challengeStore.createIndex('date', 'date', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de daily challenges creada')
+          }
+
+          // Crear tabla de eventos auxiliares
+          if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.EVENTS)) {
+            const eventStore = db.createObjectStore(STORAGE_CONFIG.STORES.EVENTS, { keyPath: 'id' })
+            eventStore.createIndex('userId', 'userId', { unique: false })
+            eventStore.createIndex('type', 'type', { unique: false })
+            eventStore.createIndex('createdAt', 'createdAt', { unique: false })
+            eventStore.createIndex('sessionId', 'sessionId', { unique: false })
+            if (isDev) logger.info('initDB', 'Tabla de eventos auxiliares creada')
+          }
+
+          // Add compound index for attempts if it doesn't exist
+          if (transaction && db.objectStoreNames.contains(STORAGE_CONFIG.STORES.ATTEMPTS)) {
+            const attemptStore = transaction.objectStore(STORAGE_CONFIG.STORES.ATTEMPTS)
+            if (!attemptStore.indexNames.contains('userId-createdAt')) {
+              attemptStore.createIndex('userId-createdAt', ['userId', 'createdAt'], { unique: false })
+              if (isDev) logger.info('initDB', 'Índice userId-createdAt creado en attempts')
+            }
+          }
+
+          // Migration: Ensure syncedAt exists for all records in syncable stores
+          if (oldVersion < 5) {
+            const storesToMigrate = [
+              STORAGE_CONFIG.STORES.ATTEMPTS,
+              STORAGE_CONFIG.STORES.MASTERY,
+              STORAGE_CONFIG.STORES.SCHEDULES,
+              STORAGE_CONFIG.STORES.LEARNING_SESSIONS
+            ]
+
+            for (const storeName of storesToMigrate) {
+              if (db.objectStoreNames.contains(storeName)) {
+                const store = transaction.objectStore(storeName)
+                // Iterate and update records without syncedAt
+                // Note: In a real large DB, we might want to do this more carefully,
+                // but for client-side IDB, this is usually acceptable during upgrade.
+                store.openCursor().then(async function iterate(cursor) {
+                  if (!cursor) return
+                  const record = cursor.value
+                  let changed = false
+                  if (record.syncedAt === undefined) {
+                    record.syncedAt = 0 // 0 indicates unsynced
+                    changed = true
+                  }
+                  // Ensure createdAt is a Date object for proper indexing
+                  if (typeof record.createdAt === 'string') {
+                    record.createdAt = new Date(record.createdAt)
+                    changed = true
+                  }
+                  if (changed) {
+                    cursor.update(record)
+                  }
+                  await cursor.continue().then(iterate)
+                })
+              }
+            }
+          }
+
+          if (isDev) logger.info('initDB', 'Estructura de base de datos actualizada')
+        }
+      })
 
       if (isDev) logger.info('initDB', 'Base de datos de progreso inicializada correctamente')
-      return dbInstance
+      dbInstance = db
+      return db
     } catch (error) {
       logger.error('initDB', 'Error al inicializar la base de datos de progreso', error)
+      initPromise = null // Reset promise on error so we can retry
       throw error
-    } finally {
-      isInitializing = false
-      initializationPromise = null
     }
   })()
 
-  // Wait for initialization to complete
-  await initializationPromise
-  return dbInstance
+  return initPromise
 }
 
 /**
@@ -463,11 +420,12 @@ export async function deleteFromDB(storeName, id) {
     await store.delete(id)
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, `deleteFromDB(${storeName})`)
 
-    if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS && recordForCache?.userId) {
-      invalidateCacheEntry(attemptsCache, recordForCache.userId)
-    } else if (storeName === STORAGE_CONFIG.STORES.MASTERY && recordForCache?.userId) {
-      invalidateCacheEntry(masteryCache, recordForCache.userId)
-    }
+    // Cache invalidation removed
+    // if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS && recordForCache?.userId) {
+    //   invalidateCacheEntry(attemptsCache, recordForCache.userId)
+    // } else if (storeName === STORAGE_CONFIG.STORES.MASTERY && recordForCache?.userId) {
+    //   invalidateCacheEntry(masteryCache, recordForCache.userId)
+    // }
 
     if (isDev) logger.debug('deleteFromDB', `Dato eliminado de ${storeName}`, { id })
   } catch (error) {
@@ -493,21 +451,9 @@ export async function updateInDB(storeName, id, updates) {
     const updated = { ...existing, ...updates, updatedAt: new Date() }
     await saveToDB(storeName, updated)
 
-    if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) {
-      if (existing?.userId) {
-        invalidateCacheEntry(attemptsCache, existing.userId)
-      }
-      if (updated?.userId && updated.userId !== existing?.userId) {
-        invalidateCacheEntry(attemptsCache, updated.userId)
-      }
-    } else if (storeName === STORAGE_CONFIG.STORES.MASTERY) {
-      if (existing?.userId) {
-        invalidateCacheEntry(masteryCache, existing.userId)
-      }
-      if (updated?.userId && updated.userId !== existing?.userId) {
-        invalidateCacheEntry(masteryCache, updated.userId)
-      }
-    }
+    // Cache invalidation removed
+    // if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) { ... }
+    // else if (storeName === STORAGE_CONFIG.STORES.MASTERY) { ... }
 
     if (isDev) logger.debug('updateInDB', `Dato actualizado en ${storeName}`, { id })
   } catch (error) {
@@ -577,33 +523,8 @@ export async function batchSaveToDB(storeName, dataArray, options = {}) {
 
     if (isDev) logger.debug('batchSaveToDB', `${results.saved}/${dataArray.length} objetos guardados en ${storeName}`)
 
-    if (persistedRecords.length > 0) {
-      if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) {
-        const grouped = new Map()
-        for (const record of persistedRecords) {
-          if (!record?.userId) continue
-          if (!grouped.has(record.userId)) {
-            grouped.set(record.userId, [])
-          }
-          grouped.get(record.userId).push(record)
-        }
-        grouped.forEach((records, user) => {
-          appendCacheEntry(attemptsCache, user, records)
-        })
-      } else if (storeName === STORAGE_CONFIG.STORES.MASTERY) {
-        const grouped = new Map()
-        for (const record of persistedRecords) {
-          if (!record?.userId) continue
-          if (!grouped.has(record.userId)) {
-            grouped.set(record.userId, [])
-          }
-          grouped.get(record.userId).push(record)
-        }
-        grouped.forEach((records, user) => {
-          appendCacheEntry(masteryCache, user, records)
-        })
-      }
-    }
+    // Cache population removed
+    // if (persistedRecords.length > 0) { ... }
 
     return results
   } catch (error) {
@@ -678,7 +599,7 @@ export async function clearAllCaches() {
   try {
     if (isDev) logger.info('clearAllCaches', 'Limpiando todos los caches')
 
-    resetMemoryCaches()
+    // resetMemoryCaches()
 
     if (isDev) logger.info('clearAllCaches', 'Todos los caches limpiados')
   } catch (error) {
@@ -812,9 +733,9 @@ export async function getItemByProperties(verbId, mood, tense, person) {
  */
 export async function saveAttempt(attempt) {
   await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attempt)
-  if (attempt?.userId) {
-    appendCacheEntry(attemptsCache, attempt.userId, [attempt])
-  }
+  // if (attempt?.userId) {
+  //   appendCacheEntry(attemptsCache, attempt.userId, [attempt])
+  // }
 }
 
 /**
@@ -841,13 +762,13 @@ export async function getAttemptsByItem(itemId) {
  * @returns {Promise<Object[]>}
  */
 export async function getAttemptsByUser(userId) {
-  const cached = getCacheEntry(attemptsCache, userId)
-  if (cached) {
-    return cached
-  }
+  // Cache check removed
+  // const cached = getCacheEntry(attemptsCache, userId)
+  // if (cached) return cached
+
   const attempts = await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, 'userId', userId)
-  setCacheEntry(attemptsCache, userId, attempts || [])
-  return getCacheEntry(attemptsCache, userId) || []
+  // setCacheEntry(attemptsCache, userId, attempts || [])
+  return attempts || []
 }
 
 /**
@@ -952,9 +873,9 @@ export async function getUnsyncedItems(storeName, userId, limit = 100) {
  */
 export async function saveMastery(mastery) {
   await saveToDB(STORAGE_CONFIG.STORES.MASTERY, mastery)
-  if (mastery?.userId) {
-    appendCacheEntry(masteryCache, mastery.userId, [mastery])
-  }
+  // if (mastery?.userId) {
+  //   appendCacheEntry(masteryCache, mastery.userId, [mastery])
+  // }
 }
 
 /**
@@ -1008,13 +929,13 @@ export async function getMasteryByCell(userId, mood, tense, person) {
  * @returns {Promise<Object[]>}
  */
 export async function getMasteryByUser(userId) {
-  const cached = getCacheEntry(masteryCache, userId)
-  if (cached) {
-    return cached
-  }
+  // Cache check removed
+  // const cached = getCacheEntry(masteryCache, userId)
+  // if (cached) return cached
+
   const mastery = await getByIndex(STORAGE_CONFIG.STORES.MASTERY, 'userId', userId)
-  setCacheEntry(masteryCache, userId, mastery || [])
-  return getCacheEntry(masteryCache, userId) || []
+  // setCacheEntry(masteryCache, userId, mastery || [])
+  return mastery || []
 }
 
 /**
@@ -1270,7 +1191,7 @@ export async function closeDB() {
   if (dbInstance) {
     await dbInstance.close()
     dbInstance = null
-    clearAllCaches()
+    // clearAllCaches()
     if (isDev) logger.info('closeDB', 'Base de datos cerrada')
   }
 }
@@ -1285,7 +1206,7 @@ export async function deleteDB() {
     // Importar deleteDB de idb con alias para evitar sombra
     const { deleteDB: idbDeleteDB } = await import('idb')
     await idbDeleteDB(STORAGE_CONFIG.DB_NAME)
-    clearAllCaches()
+    // clearAllCaches()
     if (isDev) logger.info('deleteDB', 'Base de datos eliminada')
   } catch (error) {
     logger.error('deleteDB', 'Error al eliminar la base de datos', error)
@@ -1400,7 +1321,7 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
 
 // Helpers for tests
 export function __clearProgressDatabaseCaches() {
-  clearAllCaches()
+  // clearAllCaches()
 }
 
 /**

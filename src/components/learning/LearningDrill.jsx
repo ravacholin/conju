@@ -129,6 +129,8 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
   const [exerciseHistory, setExerciseHistory] = useState([]);
   // Error tracking for SRS integration
   const [detailedErrorHistory, setDetailedErrorHistory] = useState([]);
+  // Flag to prevent double submissions/race conditions
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -475,138 +477,149 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
 
   const handleCheckAnswer = async () => {
-    if (!currentItem || !startTime) return;
-    const userAnswer = inputValue.trim();
-    const responseTime = Date.now() - startTime;
+    if (!currentItem || !startTime || isProcessing) return;
+    setIsProcessing(true);
 
-    // Use the sophisticated grader from the main system
-    const gradeResult = grade(userAnswer, {
-      value: currentItem.value,
-      alt: currentItem.alt || [],
-      accepts: currentItem.accepts || {}
-    });
+    try {
+      const userAnswer = inputValue.trim();
+      const responseTime = Date.now() - startTime;
 
-    const isCorrect = gradeResult.correct;
-
-    // Enhanced error classification for SRS integration
-    let detailedErrorTags = [];
-    if (!isCorrect) {
-      // Use the progress system's error classification
-      detailedErrorTags = classifyError(userAnswer, currentItem.value, {
-        lemma: currentItem.lemma,
-        mood: currentItem.mood,
-        tense: currentItem.tense,
-        person: currentItem.person
+      // Use the sophisticated grader from the main system
+      const gradeResult = grade(userAnswer, {
+        value: currentItem.value,
+        alt: currentItem.alt || [],
+        accepts: currentItem.accepts || {}
       });
 
-      // Track detailed error for future SRS targeting
-      const errorDetail = {
-        timestamp: Date.now(),
-        item: {
+      const isCorrect = gradeResult.correct;
+
+      // Enhanced error classification for SRS integration
+      let detailedErrorTags = [];
+      if (!isCorrect) {
+        // Use the progress system's error classification
+        detailedErrorTags = classifyError(userAnswer, currentItem.value, {
           lemma: currentItem.lemma,
           mood: currentItem.mood,
           tense: currentItem.tense,
-          person: currentItem.person,
-          value: currentItem.value
-        },
-        userAnswer,
-        errorTags: detailedErrorTags,
-        sessionContext: {
-          tense: tense?.tense,
-          verbType,
-          sessionPhase: 'drill'
+          person: currentItem.person
+        });
+
+        // Track detailed error for future SRS targeting
+        const errorDetail = {
+          timestamp: Date.now(),
+          item: {
+            lemma: currentItem.lemma,
+            mood: currentItem.mood,
+            tense: currentItem.tense,
+            person: currentItem.person,
+            value: currentItem.value
+          },
+          userAnswer,
+          errorTags: detailedErrorTags,
+          sessionContext: {
+            tense: tense?.tense,
+            verbType,
+            sessionPhase: 'drill'
+          }
+        };
+
+        setDetailedErrorHistory(prev => [...prev, errorDetail]);
+        logger.debug('Error classified for SRS targeting:', {
+          lemma: currentItem.lemma,
+          errorTags: detailedErrorTags,
+          userAnswer,
+          correctAnswer: currentItem.value
+        });
+      }
+
+      setTotalAttempts(prev => prev + 1);
+      setResponseTimes(prev => [...prev, responseTime]);
+
+      // Update real-time difficulty based on current performance
+      const avgResponseTime = [...responseTimes, responseTime].reduce((a, b) => a + b, 0) / (responseTimes.length + 1);
+      const currentAccuracy = (correctAnswers + (isCorrect ? 1 : 0)) / (totalAttempts + 1);
+
+      const newDifficulty = getRealTimeDifficultyConfig({
+        accuracy: currentAccuracy * 100,
+        streak: isCorrect ? correctStreak + 1 : 0,
+        avgResponseTime,
+        totalAttempts: totalAttempts + 1
+      });
+
+      setRealTimeDifficulty(newDifficulty);
+      logger.debug('Real-time difficulty adjusted', newDifficulty);
+
+      if (isCorrect) {
+        setResult('correct');
+        const newStreak = correctStreak + 1;
+        setCorrectStreak(newStreak);
+        setCorrectAnswers(prev => prev + 1);
+
+        // Handle streak animations and tracking
+        if (newStreak > 0 && newStreak % SCORING_CONFIG.STREAK_ANIMATION_INTERVAL === 0) {
+          setShowStreakAnimation(true);
+          setTimeout(() => setShowStreakAnimation(false), 2000);
+          await handleStreakIncremented();
         }
+        logger.debug('Correct answer', { lemma: currentItem.lemma, person: getPersonText(currentItem.person), value: currentItem.value });
+      } else {
+        setResult('incorrect');
+        setCorrectStreak(0);
+        // Use detailed error analysis for session stats
+        const primaryErrorType = detailedErrorTags[0] || gradeResult.errorTags?.[0] || 'complete_error';
+        setErrorPatterns(prev => ({ ...prev, [primaryErrorType]: (prev[primaryErrorType] || 0) + 1 }));
+
+        // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
+        setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
+        logger.debug('Incorrect answer - added to retry queue', { lemma: currentItem.lemma, person: getPersonText(currentItem.person) });
+      }
+
+      setTimeout(() => inputRef.current?.focus(), 0);
+
+      // Record detailed attempt for analytics
+      const detailedAttempt = {
+        timestamp: Date.now(),
+        correct: isCorrect,
+        userAnswer,
+        correctAnswer: currentItem.value,
+        hintsUsed: 0,
+        errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
+        latencyMs: responseTime,
+        isIrregular: currentItem.type === 'irregular',
+        itemId: currentItem.id,
+        verb: currentItem.lemma,
+        tense: tense?.tense,
+        person: currentItem.person,
+        adaptiveDifficulty: adaptiveSettings?.level || 'intermediate',
+        phaseType: 'mechanical_practice',
+        realTimeDifficulty,
+        sessionPhase: 'drill'
       };
 
-      setDetailedErrorHistory(prev => [...prev, errorDetail]);
-      logger.debug('Error classified for SRS targeting:', {
-        lemma: currentItem.lemma,
-        errorTags: detailedErrorTags,
+      setAllAttempts(prev => [...prev, detailedAttempt]);
+
+      // Use the progress tracking system with complete information
+      await handleResult({
+        correct: isCorrect,
         userAnswer,
-        correctAnswer: currentItem.value
+        correctAnswer: currentItem.value,
+        hintsUsed: 0,
+        errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
+        latencyMs: responseTime,
+        isIrregular: currentItem.type === 'irregular',
+        itemId: currentItem.id
       });
+    } catch (error) {
+      logger.error('Error checking answer', error);
+    } finally {
+      setIsProcessing(false);
     }
-
-    setTotalAttempts(prev => prev + 1);
-    setResponseTimes(prev => [...prev, responseTime]);
-
-    // Update real-time difficulty based on current performance
-    const avgResponseTime = [...responseTimes, responseTime].reduce((a, b) => a + b, 0) / (responseTimes.length + 1);
-    const currentAccuracy = (correctAnswers + (isCorrect ? 1 : 0)) / (totalAttempts + 1);
-
-    const newDifficulty = getRealTimeDifficultyConfig({
-      accuracy: currentAccuracy * 100,
-      streak: isCorrect ? correctStreak + 1 : 0,
-      avgResponseTime,
-      totalAttempts: totalAttempts + 1
-    });
-
-    setRealTimeDifficulty(newDifficulty);
-    logger.debug('Real-time difficulty adjusted', newDifficulty);
-
-    if (isCorrect) {
-      setResult('correct');
-      const newStreak = correctStreak + 1;
-      setCorrectStreak(newStreak);
-      setCorrectAnswers(prev => prev + 1);
-
-      // Handle streak animations and tracking
-      if (newStreak > 0 && newStreak % SCORING_CONFIG.STREAK_ANIMATION_INTERVAL === 0) {
-        setShowStreakAnimation(true);
-        setTimeout(() => setShowStreakAnimation(false), 2000);
-        await handleStreakIncremented();
-      }
-      logger.debug('Correct answer', { lemma: currentItem.lemma, person: getPersonText(currentItem.person), value: currentItem.value });
-    } else {
-      setResult('incorrect');
-      setCorrectStreak(0);
-      // Use detailed error analysis for session stats
-      const primaryErrorType = detailedErrorTags[0] || gradeResult.errorTags?.[0] || 'complete_error';
-      setErrorPatterns(prev => ({ ...prev, [primaryErrorType]: (prev[primaryErrorType] || 0) + 1 }));
-
-      // Reintegrar el ejercicio fallado al final de la cola para práctica adicional
-      setFailedItemsQueue(prev => [...prev, { ...currentItem }]);
-      logger.debug('Incorrect answer - added to retry queue', { lemma: currentItem.lemma, person: getPersonText(currentItem.person) });
-    }
-
-    setTimeout(() => inputRef.current?.focus(), 0);
-
-    // Record detailed attempt for analytics
-    const detailedAttempt = {
-      timestamp: Date.now(),
-      correct: isCorrect,
-      userAnswer,
-      correctAnswer: currentItem.value,
-      hintsUsed: 0,
-      errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
-      latencyMs: responseTime,
-      isIrregular: currentItem.type === 'irregular',
-      itemId: currentItem.id,
-      verb: currentItem.lemma,
-      tense: tense?.tense,
-      person: currentItem.person,
-      adaptiveDifficulty: adaptiveSettings?.level || 'intermediate',
-      phaseType: 'mechanical_practice',
-      realTimeDifficulty,
-      sessionPhase: 'drill'
-    };
-
-    setAllAttempts(prev => [...prev, detailedAttempt]);
-
-    // Use the progress tracking system with complete information
-    await handleResult({
-      correct: isCorrect,
-      userAnswer,
-      correctAnswer: currentItem.value,
-      hintsUsed: 0,
-      errorTags: detailedErrorTags.length > 0 ? detailedErrorTags : (gradeResult.errorTags || []),
-      latencyMs: responseTime,
-      isIrregular: currentItem.type === 'irregular',
-      itemId: currentItem.id
-    });
   };
 
   const handleContinue = () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
     console.log('🎤 HANDLE CONTINUE CALLED', {
       correctStreak,
       completionThreshold: DRILL_THRESHOLDS.STREAK_FOR_COMPLETION,
@@ -616,7 +629,11 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
 
     if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
       console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
-      setTimeout(() => onPhaseComplete(), 0);
+      console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
+      setTimeout(() => {
+        onPhaseComplete();
+        setIsProcessing(false);
+      }, 0);
     } else {
       // Verificar si hay ejercicios fallados para reintegrar
       if (failedItemsQueue.length > 0) {
@@ -634,6 +651,7 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
           setStartTime(Date.now());
           setTimeout(() => inputRef.current?.focus(), 0);
           logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
+          setIsProcessing(false);
         }, 250);
       } else {
         console.log('🎤 GENERATING NEXT ITEM');
@@ -643,7 +661,9 @@ function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLem
         setResult('idle');
         setTimeout(() => {
           setSwapAnim(false);
-          generateNextItem().catch(console.error);
+          generateNextItem().catch(console.error).finally(() => {
+            setIsProcessing(false);
+          });
         }, 250);
         // Ensure focus is set after animation with longer delay
         setTimeout(() => {
