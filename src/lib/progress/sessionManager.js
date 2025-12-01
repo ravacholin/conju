@@ -23,6 +23,7 @@ export class SessionManager {
     this.sessionStartTime = null
     this.activityStartTime = null
     this.completedActivities = []
+    this.activityItemCounts = {}
     this.sessionMetrics = {
       totalItems: 0,
       correctItems: 0,
@@ -53,6 +54,7 @@ export class SessionManager {
       this.sessionStartTime = Date.now()
       this.activityStartTime = Date.now()
       this.completedActivities = []
+      this.activityItemCounts = {}
       this.sessionMetrics = {
         totalItems: 0,
         correctItems: 0,
@@ -105,8 +107,10 @@ export class SessionManager {
     const currentActivity = this.getCurrentActivity()
     if (currentActivity) {
       const activityDuration = Date.now() - this.activityStartTime
+      const activityKey = this.getCurrentActivityKey(currentActivity)
       this.completedActivities.push({
         ...currentActivity,
+        itemsCompleted: this.activityItemCounts[activityKey] || 0,
         actualDuration: activityDuration,
         completedAt: Date.now()
       })
@@ -149,6 +153,12 @@ export class SessionManager {
       return
     }
 
+    const activityKey = this.getCurrentActivityKey(this.getCurrentActivity())
+
+    if (activityKey !== null) {
+      this.activityItemCounts[activityKey] = (this.activityItemCounts[activityKey] || 0) + 1
+    }
+
     this.sessionMetrics.totalItems++
     if (result.isCorrect) {
       this.sessionMetrics.correctItems++
@@ -189,7 +199,10 @@ export class SessionManager {
       elapsedMinutes,
       plannedDuration: this.currentSession.duration,
       completedActivities: this.completedActivities.length,
-      metrics: { ...this.sessionMetrics },
+      metrics: {
+        ...this.sessionMetrics,
+        activityItemCounts: { ...this.activityItemCounts }
+      },
       focusAreas: this.currentSession.focusAreas || [],
       isCompleted: this.currentActivityIndex >= totalActivities
     }
@@ -223,7 +236,8 @@ export class SessionManager {
     }
 
     const estimatedItems = currentActivity.estimatedItems || 3
-    const itemsInThisActivity = this.sessionMetrics.totalItems // Simplificado, en realidad necesitaríamos tracking por actividad
+    const activityKey = this.getCurrentActivityKey(currentActivity)
+    const itemsInThisActivity = this.activityItemCounts[activityKey] || 0
 
     // Considerar avance cuando se superan los ítems estimados
     return itemsInThisActivity >= estimatedItems
@@ -240,6 +254,7 @@ export class SessionManager {
 
     const finalMetrics = {
       ...this.sessionMetrics,
+      activityItemCounts: { ...this.activityItemCounts },
       totalDuration: Date.now() - this.sessionStartTime,
       plannedDuration: this.currentSession.duration * 60000, // Convert to ms
       completionRate: this.sessionMetrics.activitiesCompleted / this.currentSession.activities.length,
@@ -263,8 +278,22 @@ export class SessionManager {
     this.sessionStartTime = null
     this.activityStartTime = null
     this.completedActivities = []
+    this.activityItemCounts = {}
 
     return finalMetrics
+  }
+
+  /**
+   * Obtiene la llave de conteo para la actividad actual
+   * @param {Object} activity - Actividad a evaluar
+   * @returns {string|number|null}
+   */
+  getCurrentActivityKey(activity) {
+    if (!activity) {
+      return null
+    }
+
+    return activity.id ?? this.currentActivityIndex
   }
 
   /**
