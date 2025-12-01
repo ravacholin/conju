@@ -10,7 +10,7 @@ import ResistanceHUD from './ResistanceHUD.jsx';
 import SessionProgressHUD from './SessionProgressHUD.jsx';
 import { useSpeech } from './useSpeech';
 import { useResistanceTimer } from './useResistanceTimer';
-import AdaptiveDifficultyIndicator from './AdaptiveDifficultyIndicator.jsx';
+
 import './session-progress-hud.css';
 import { createLogger } from '../../lib/utils/logger.js'
 
@@ -45,7 +45,7 @@ export default function Drill({
 
   const getCanonicalTarget = () => {
     if (!currentItem) return null;
-    
+
     // NEW IRREGULARITY SYSTEM: Return complete verb information including irregularity data
     return {
       value: currentItem.value || currentItem.form?.value || '',
@@ -116,12 +116,12 @@ export default function Drill({
       const form1 = currentItem?.value || currentItem?.form?.value || '';
       const form2 = currentItem?.secondForm?.value || '';
       const correctAnswer = `${form1} ${form2}`;
-      
+
       const userParts = input.trim().split(/\s+/);
-      const isCorrect = userParts.length === 2 && 
-                       userParts[0].toLowerCase() === form1.toLowerCase() &&
-                       userParts[1].toLowerCase() === form2.toLowerCase();
-      
+      const isCorrect = userParts.length === 2 &&
+        userParts[0].toLowerCase() === form1.toLowerCase() &&
+        userParts[1].toLowerCase() === form2.toLowerCase();
+
       gradeResult = {
         correct: isCorrect,
         targets: [correctAnswer],
@@ -147,7 +147,7 @@ export default function Drill({
     if (gradeResult.correct && settings.resistanceActive) {
       const lvl = useSettings.getState().level || 'A1';
       // Incrementos por nivel: A1 +6s, A2 +5s, B1 +4s, B2 +3s, C1 +2.5s, C2 +2s
-      const inc = lvl==='C2'?2000: lvl==='C1'?2500: lvl==='B2'?3000: lvl==='B1'?4000: lvl==='A2'?5000:6000;
+      const inc = lvl === 'C2' ? 2000 : lvl === 'C1' ? 2500 : lvl === 'B2' ? 3000 : lvl === 'B1' ? 4000 : lvl === 'A2' ? 5000 : 6000;
       settings.set({
         resistanceMsLeft: Math.min(
           useSettings.getState().resistanceMsLeft + inc,
@@ -161,12 +161,12 @@ export default function Drill({
     }
 
     setResult(extendedResult);
-    
+
     // Fire-and-forget progress tracking to avoid blocking UI
     handleResult(extendedResult).catch(error => {
       logger.error('Error tracking progress for attempt:', error);
     });
-    
+
     setIsSubmitting(false);
   };
 
@@ -177,7 +177,7 @@ export default function Drill({
     try {
       const firstRes = grade(input.trim(), getCanonicalTarget(), currentItem.settings || {});
       // Use explicit second target from secondForm if present, otherwise fall back to same as first
-      const secondTarget = currentItem.secondForm ? { 
+      const secondTarget = currentItem.secondForm ? {
         value: currentItem.secondForm.value,
         lemma: currentItem.secondForm.lemma,
         mood: currentItem.secondForm.mood,
@@ -212,7 +212,7 @@ export default function Drill({
         errorTags: aggregatedErrorTags
       };
       setResult(resultObj);
-      
+
       // Fire-and-forget progress tracking
       handleResult(resultObj).catch(error => {
         logger.error('Error tracking progress for double mode attempt:', error);
@@ -230,7 +230,7 @@ export default function Drill({
 
   // Accent keys functionality
   const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
-  
+
   const insertChar = (char) => {
     if (isDouble) {
       // In double mode, check which input is focused or default to first
@@ -292,27 +292,27 @@ export default function Drill({
 
   const getPersonText = () => {
     if (!currentItem) return '';
-    
+
     // Import labels locally to avoid issues
     const PERSON_LABELS = {
       '1s': 'yo',
-      '2s_tu': 'tú', 
+      '2s_tu': 'tú',
       '2s_vos': 'vos',
       '3s': 'él/ella',
       '1p': 'nosotros',
-      '2p_vosotros': 'vosotros', 
+      '2p_vosotros': 'vosotros',
       '3p': 'ellos'
     };
-    
+
     return PERSON_LABELS[currentItem.person] || currentItem.person;
   };
 
   const getContextText = () => {
     if (!currentItem) return '';
-    
+
     const { moodLabel, tenseLabel } = getSafeMoodTenseLabels(currentItem.mood, currentItem.tense);
     const sample = getHablarSample(currentItem.mood, currentItem.tense, settings);
-    
+
     return sample ? `${moodLabel} - ${tenseLabel}: ${sample}` : `${moodLabel} - ${tenseLabel}`;
   };
 
@@ -320,7 +320,7 @@ export default function Drill({
   function getHablarSample(mood, tense, settings) {
     const region = settings?.region || 'la_general'
     const voseo = settings?.useVoseo && region === 'rioplatense'
-    
+
     if (mood === 'indicative') {
       switch (tense) {
         case 'pres': return 'hablo' // yo
@@ -383,7 +383,7 @@ export default function Drill({
       '2s_vos': 'vos',
       '3s': 'él/ella',
       '1p': 'nosotros',
-      '2p_vosotros': 'vosotros', 
+      '2p_vosotros': 'vosotros',
       '3p': 'ellos'
     };
     return PERSON_LABELS[person] || person;
@@ -404,7 +404,7 @@ export default function Drill({
       </div>
     )
   }
-  
+
   return (
     <div className={`drill-container ${showAnimation ? 'fade-in' : ''}`}>
       {/* Verb lemma (infinitive) - TOP */}
@@ -459,7 +459,7 @@ export default function Drill({
             readOnly={result !== null}
             autoFocus
           />
-          
+
           {/* Accent keypad for normal mode */}
           {showAccentKeys && (
             <div className="accent-keypad" style={{ marginTop: '1rem' }}>
@@ -499,44 +499,44 @@ export default function Drill({
       {/* Double mode interface */}
       {isDouble && (
         <div className="double-container">
-          <div className="conjugation-context" style={{marginBottom: '10px'}}>
+          <div className="conjugation-context" style={{ marginBottom: '10px' }}>
             <strong>Dos verbos dos: {currentItem?.lemma}</strong>
           </div>
           <div className="double-grid">
             <div className="double-field">
-              <div className="person-display" style={{marginBottom: '6px'}}>
+              <div className="person-display" style={{ marginBottom: '6px' }}>
                 {getMoodLabel(currentItem?.mood)} · {getTenseLabel(currentItem?.tense)} · {getPersonText()}
               </div>
               <input
                 ref={firstRef}
                 className="conjugation-input"
                 value={input}
-                onChange={(e)=>setInput(e.target.value)}
+                onChange={(e) => setInput(e.target.value)}
                 placeholder="Escribí la primera forma..."
                 aria-label="Ingresa la primera forma del verbo"
-                onKeyDown={(e)=>{
-                  if(e.key==='Enter'){
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
                     e.preventDefault();
                     if (result) { handleContinue(); return; }
-                    if(secondRef.current){ secondRef.current.focus(); }
+                    if (secondRef.current) { secondRef.current.focus(); }
                   }
                 }}
                 autoFocus
               />
             </div>
             <div className="double-field">
-              <div className="person-display" style={{marginBottom: '6px'}}>
+              <div className="person-display" style={{ marginBottom: '6px' }}>
                 {getMoodLabel(currentItem?.secondForm?.mood || currentItem?.mood)} · {getTenseLabel(currentItem?.secondForm?.tense || currentItem?.tense)} · {getPersonLabel(currentItem?.secondForm?.person || currentItem?.person)}
               </div>
               <input
                 ref={secondRef}
                 className="conjugation-input"
                 value={secondInput}
-                onChange={(e)=>setSecondInput(e.target.value)}
+                onChange={(e) => setSecondInput(e.target.value)}
                 placeholder="Escribí la segunda forma..."
                 aria-label="Ingresa la segunda forma del verbo"
-                onKeyDown={(e)=>{
-                  if(e.key==='Enter'){
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
                     e.preventDefault();
                     if (result) { handleContinue(); return; }
                     doubleSubmit();
@@ -545,7 +545,7 @@ export default function Drill({
               />
             </div>
           </div>
-          
+
           {/* Accent keypad for double mode */}
           {showAccentKeys && (
             <div className="accent-keypad" style={{ marginTop: '1rem' }}>
@@ -567,8 +567,8 @@ export default function Drill({
       <div className="action-buttons">
         {!isReverse && !isDouble ? (
           !result ? (
-            <button 
-              className="btn" 
+            <button
+              className="btn"
               onClick={handleSubmit}
               disabled={isSubmitting || !input.trim()}
             >
@@ -581,8 +581,8 @@ export default function Drill({
           )
         ) : isReverse ? null : (
           !result ? (
-            <button 
-              className="btn" 
+            <button
+              className="btn"
               onClick={doubleSubmit}
               disabled={!(input.trim() && secondInput.trim())}
             >
@@ -605,9 +605,9 @@ export default function Drill({
         >
           <div className="result-top">
             <p aria-atomic="true">{result.correct ? '¡Correcto!' : (result.isAccentError ? 'Error de Tilde' : 'Incorrecto')}</p>
-            <button 
-              type="button" 
-              className="tts-btn" 
+            <button
+              type="button"
+              className="tts-btn"
               onClick={handleSpeak}
               title="Pronunciar"
               aria-label="Pronunciar"
@@ -634,12 +634,7 @@ export default function Drill({
       {/* Session Progress HUD - For personalized sessions */}
       <SessionProgressHUD />
 
-      {/* Adaptive Difficulty Indicator - Positioned below drill box */}
-      {settings.enableProgressIntegration !== false && (
-        <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
-          <AdaptiveDifficultyIndicator compact={false} />
-        </div>
-      )}
+
 
       {/* Resistance HUD */}
       {(settings.resistanceActive || showExplosion) && (
