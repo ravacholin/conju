@@ -234,11 +234,16 @@ export default function SessionProgressHUD() {
     totalActivities,
     progressPercentage,
     plannedDuration,
+    plannedMinutes,
     completedActivities,
     metrics,
     focusAreas,
     isCompleted
   } = sessionProgress
+
+  const sessionPlannedMinutes = Number.isFinite(plannedMinutes)
+    ? plannedMinutes
+    : Math.floor((plannedDuration || 0) / 60000)
 
   // EARLY RETURN 3: Sesión completada
   if (isCompleted) {
@@ -319,7 +324,7 @@ export default function SessionProgressHUD() {
         <div className="stat-item">
           <span className="stat-label">Tiempo:</span>
           <span className="stat-value">
-            {formatTime(timeElapsed)} / {formatTime(plannedDuration)}
+            {formatTime(timeElapsed)} / {formatTime(sessionPlannedMinutes)}
           </span>
         </div>
         <div className="stat-item">
