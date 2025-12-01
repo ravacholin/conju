@@ -98,12 +98,22 @@ const PRONOUNS_DISPLAY = {
 
 // CEFR level mapping now handled by centralized config
 
+import DrillErrorBoundary from './DrillErrorBoundary.jsx';
+
 /**
  * Componente de práctica de conjugaciones con seguimiento de progreso
  * @param {Object} props - Propiedades del componente
  * @returns {JSX.Element} Interfaz de práctica de conjugaciones
  */
-function LearningDrill({ tense, verbType, selectedFamilies, duration, excludeLemmas = [], onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
+function LearningDrill(props) {
+  return (
+    <DrillErrorBoundary onHome={props.onHome}>
+      <LearningDrillContent {...props} />
+    </DrillErrorBoundary>
+  );
+}
+
+function LearningDrillContent({ tense, verbType, selectedFamilies, duration, excludeLemmas = [], onBack, onFinish, onPhaseComplete, onHome, onGoToProgress }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState('idle'); // idle | correct | incorrect

@@ -160,7 +160,7 @@ export async function initDB() {
   // Pre-chequeo: forzar que posibles mocks de idb se manifiesten (propaga si falla)
   const { openDB } = await import("idb");
   if (typeof openDB === "function") {
-    await openDB("progress-probe", 1, { upgrade() {} });
+    await openDB("progress-probe", 1, { upgrade() { } });
   }
 
   if (dbInstance) {
@@ -1097,12 +1097,17 @@ export async function getItemByProperties(verbId, mood, tense, person) {
   }
 }
 
+import { validateAttempt } from './runtimeValidation.js';
+
 /**
  * Guarda un intento
  * @param {Object} attempt - Datos del intento
  * @returns {Promise<void>}
  */
 export async function saveAttempt(attempt) {
+  // Validar integridad de datos antes de guardar
+  validateAttempt(attempt);
+
   await saveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attempt);
   // if (attempt?.userId) {
   //   appendCacheEntry(attemptsCache, attempt.userId, [attempt])
@@ -1128,15 +1133,101 @@ export async function getAttemptsByItem(itemId) {
 }
 
 /**
- * Obtiene intentos por usuario
- * @param {string} userId - ID del usuario
+ * Busca objetos por rango de índice
+ * @param {string} storeName - Nombre de la tabla
+ * @param {string} indexName - Nombre del índice
+ * @param {any} key - Clave principal para el rango (ej: userId)
+ * @param {Date|number} lowerBound - Límite inferior
+ * @param {Date|number} upperBound - Límite superior
  * @returns {Promise<Object[]>}
  */
-export async function getAttemptsByUser(userId) {
+export async function getByIndexRange(storeName, indexName, key, lowerBound, upperBound) {
+  try {
+    assertValidStore(storeName);
+    const db = await initDB();
+    const tx = db.transaction(storeName, "readonly");
+    const store = tx.objectStore(storeName);
+
+    // Verificar si el índice existe
+    if (!store.indexNames.contains(indexName)) {
+      logger.warn("getByIndexRange", `Índice ${indexName} no existe en ${storeName}, usando fallback`);
+      // Fallback a obtener todos y filtrar en memoria (lento pero seguro)
+      const all = await getByIndex(storeName, "userId", key); // Asumiendo que key es userId por ahora
+      const start = new Date(lowerBound).getTime();
+      const end = new Date(upperBound).getTime();
+      return all.filter(item => {
+        const time = new Date(item.createdAt || item.timestamp || 0).getTime();
+        return time >= start && time <= end;
+      });
+    }
+
+    const index = store.index(indexName);
+    const KR = getKeyRangeFactory();
+    if (!KR) throw new Error("IDBKeyRange factory not available");
+
+    // Crear rango compuesto [key, lower] a [key, upper]
+    const range = KR.bound(
+      [key, new Date(lowerBound)],
+      [key, new Date(upperBound)]
+    );
+
+    const result = await index.getAll(range);
+    await withTimeout(
+      tx.done,
+      DB_TRANSACTION_TIMEOUT,
+      `getByIndexRange(${storeName}.${indexName})`
+    );
+
+    if (isDev)
+      logger.debug(
+        "getByIndexRange",
+        `${result.length} datos encontrados en ${storeName} por rango`
+      );
+    return result;
+  } catch (error) {
+    logger.error(
+      "getByIndexRange",
+      `Error al buscar por rango en ${storeName}`,
+      error
+    );
+    return [];
+  }
+}
+
+/**
+ * Obtiene intentos por usuario con opción de filtrado por fecha
+ * @param {string} userId - ID del usuario
+ * @param {Object} options - Opciones de filtrado
+ * @param {Date|number} [options.startDate] - Fecha de inicio
+ * @param {Date|number} [options.endDate] - Fecha de fin
+ * @returns {Promise<Object[]>}
+ */
+export async function getAttemptsByUser(userId, options = {}) {
   // Cache check removed
   // const cached = getCacheEntry(attemptsCache, userId)
   // if (cached) return cached
 
+  const { startDate, endDate } = options;
+
+  // Si se especifican fechas, intentar usar búsqueda por rango optimizada
+  if (startDate) {
+    const start = startDate instanceof Date ? startDate : new Date(startDate);
+    const end = endDate ? (endDate instanceof Date ? endDate : new Date(endDate)) : new Date(); // Default to now
+
+    // Intentar usar el índice compuesto userId-createdAt si existe (v5+)
+    // Nota: getByIndexRange verificará internamente si el índice existe
+    // y hará fallback si es necesario, pero aquí podemos ser más explícitos
+    // para aprovechar la optimización.
+    return await getByIndexRange(
+      STORAGE_CONFIG.STORES.ATTEMPTS,
+      "userId-createdAt",
+      userId,
+      start,
+      end
+    );
+  }
+
+  // Comportamiento original (todos los intentos)
   const attempts = await getByIndex(
     STORAGE_CONFIG.STORES.ATTEMPTS,
     "userId",

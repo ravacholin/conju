@@ -67,14 +67,15 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
     }
 
     // Obtener mastery y distribución de intentos para ponderar promedios
+    // Optimización: Pasar cutoffDate a getAttemptsByUser para filtrar en DB
     const [masteryRecords, attempts] = await Promise.all([
       getMasterySnapshotForUser(userId),
-      getAttemptsByUser(userId)
+      getAttemptsByUser(userId, { startDate: cutoffDate > 0 ? cutoffDate : null })
     ])
 
     ensureNotCancelled(signal)
 
-    // Filtrar intentos por rango de tiempo
+    // Filtrar intentos por rango de tiempo (redundante si la DB ya filtró, pero seguro)
     const filteredAttempts = attempts.filter(a => {
       const timestamp = new Date(a?.createdAt || a?.timestamp || 0).getTime()
       return timestamp >= cutoffDate
@@ -153,18 +154,18 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
     const heatMapData = Object.values(groupedData)
       .filter(group => isAllTimeRange || group.count > 0)
       .map(group => {
-      const score = group.weight > 0
-        ? (group.weightedSum / group.weight)
-        : 0
-      return {
-        mood: group.mood,
-        tense: group.tense,
-        score,
-        count: group.count, // total attempts across persons (0 if no attempt yet)
-        colorClass: getMasteryColorClass(score),
-        lastAttempt: group.lastAttempt || null
-      }
-    })
+        const score = group.weight > 0
+          ? (group.weightedSum / group.weight)
+          : 0
+        return {
+          mood: group.mood,
+          tense: group.tense,
+          score,
+          count: group.count, // total attempts across persons (0 if no attempt yet)
+          colorClass: getMasteryColorClass(score),
+          lastAttempt: group.lastAttempt || null
+        }
+      })
 
     ensureNotCancelled(signal)
 
@@ -252,8 +253,8 @@ export async function getErrorRadarData(userId) {
 
     // Elegir top 5
     const top = Array.from(reduced.entries())
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,5)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
 
     const maxCount = top.length > 0 ? top[0][1] : 0
     const axes = top.map(([key, count]) => {
@@ -486,8 +487,8 @@ export async function getErrorIntelligence(userId, signal) {
       const map = comboCountsByTag.get(tag)
       if (!map) return []
       return Array.from(map.entries())
-        .sort((a,b)=>b[1]-a[1])
-        .slice(0,3)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
         .map(([k, n]) => { const [mood, tense] = k.split('|'); return { mood, tense, count: n } })
     }
     const tags = Array.from(tagTotals.entries())
@@ -502,14 +503,14 @@ export async function getErrorIntelligence(userId, signal) {
         trend: trendByTag.get(tag)?.trend || 'flat',
         topCombos: topCombosFor(tag)
       }))
-      .sort((a,b)=>b.impact - a.impact)
-      .slice(0,6)
-    const maxImpact = tags.length ? Math.max(...tags.map(a=>a.impact)) : 1
+      .sort((a, b) => b.impact - a.impact)
+      .slice(0, 6)
+    const maxImpact = tags.length ? Math.max(...tags.map(a => a.impact)) : 1
     tags.forEach(a => { a.value = maxImpact ? (a.impact / maxImpact) * 100 : 0 })
 
     // Heatmap error rate por Modo x Tiempo
-    const moods = ['indicative','subjunctive','imperative','conditional','nonfinite']
-    const tenses = ['pres','pretIndef','impf','fut','pretPerf','plusc','futPerf','subjPres','subjImpf','subjPerf','subjPlusc','impAff','impNeg','cond','condPerf','ger','part']
+    const moods = ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
+    const tenses = ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf', 'subjPres', 'subjImpf', 'subjPerf', 'subjPlusc', 'impAff', 'impNeg', 'cond', 'condPerf', 'ger', 'part']
     const counter = new Map()
     for (const a of attempts) {
       const key = `${a.mood}|${a.tense}`
@@ -534,8 +535,8 @@ export async function getErrorIntelligence(userId, signal) {
       const schedules = await getAllFromDB('schedules')
       leeches = (schedules || [])
         .filter(s => s.userId === userId && s.leech)
-        .sort((a,b)=> (b.lapses||0) - (a.lapses||0))
-        .slice(0,6)
+        .sort((a, b) => (b.lapses || 0) - (a.lapses || 0))
+        .slice(0, 6)
         .map(s => ({ mood: s.mood, tense: s.tense, person: s.person, nextDue: s.nextDue, lapses: s.lapses || 0, ease: s.ease, interval: s.interval }))
     } catch {
       // Silent fail for leeches calculation
@@ -583,30 +584,30 @@ export async function getProgressLineData(userId) {
   try {
     // Obtener todos los mastery records del usuario
     const masteryRecords = await getMasterySnapshotForUser(userId)
-    
+
     if (masteryRecords.length === 0) {
       return []
     }
-    
+
     // Agrupar por fecha
     const dataByDate = {}
-    
+
     masteryRecords.forEach(record => {
       // Asumir que hay un campo updatedAt o timestamp
-      const dateKey = record.updatedAt 
+      const dateKey = record.updatedAt
         ? new Date(record.updatedAt).toDateString()
         : new Date().toDateString()
-      
+
       if (!dataByDate[dateKey]) {
         dataByDate[dateKey] = {
           date: new Date(dateKey),
           scores: []
         }
       }
-      
+
       dataByDate[dateKey].scores.push(record.score)
     })
-    
+
     // Calcular promedios por día y ordenar
     const progressData = Object.values(dataByDate)
       .map(dayData => ({
@@ -614,33 +615,33 @@ export async function getProgressLineData(userId) {
         score: Math.round(dayData.scores.reduce((sum, score) => sum + score, 0) / dayData.scores.length)
       }))
       .sort((a, b) => a.date - b.date)
-    
+
     // Si hay pocos datos, llenar con datos de los últimos 30 días
     if (progressData.length < 7) {
       const today = new Date()
-      const avgScore = progressData.length > 0 
+      const avgScore = progressData.length > 0
         ? progressData.reduce((sum, item) => sum + item.score, 0) / progressData.length
         : 50
-      
+
       const filledData = []
       for (let i = 29; i >= 0; i--) {
         const date = new Date(today)
         date.setDate(date.getDate() - i)
-        
+
         // Buscar si hay dato real para esta fecha
-        const realData = progressData.find(item => 
+        const realData = progressData.find(item =>
           item.date.toDateString() === date.toDateString()
         )
-        
+
         filledData.push(realData || {
           date,
           score: Math.round(avgScore + (Math.random() - 0.5) * 10) // Ligera variación
         })
       }
-      
+
       return filledData
     }
-    
+
     return progressData
   } catch (error) {
     logger.error('getProgressLineData', 'Error al obtener datos para la línea de progreso', error)
