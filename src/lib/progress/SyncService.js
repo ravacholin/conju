@@ -44,13 +44,14 @@
  */
 
 import authService from '../auth/authService.js'
-import { STORAGE_CONFIG } from './config.js'
+import { PROGRESS_CONFIG, STORAGE_CONFIG } from './config.js'
 import { createLogger } from '../utils/logger.js'
 import { getCurrentUserId } from './userManager/index.js'
 import AuthTokenManager from './AuthTokenManager.js'
 
 const logger = createLogger('progress:SyncService')
 const isDev = import.meta?.env?.DEV
+const MAX_QUEUE_SIZE = PROGRESS_CONFIG?.SYNC?.MAX_QUEUE_SIZE ?? 500
 
 /**
  * Clave de localStorage para la cola de sincronización offline
@@ -124,6 +125,16 @@ function setQueue(q) {
   }
 }
 
+function arePayloadsEqual(a, b) {
+  if (a === b) return true
+
+  try {
+    return JSON.stringify(a) === JSON.stringify(b)
+  } catch {
+    return false
+  }
+}
+
 /**
  * Encola una operación de sincronización para procesarla cuando vuelva la conectividad
  *
@@ -161,11 +172,33 @@ function setQueue(q) {
  */
 export function enqueue(type, payload) {
   const q = getQueue()
-  q.push({ type, payload, enqueuedAt: Date.now() })
+  const newEntry = { type, payload, enqueuedAt: Date.now() }
+
+  const duplicateIndex = q.findIndex(entry => entry.type === type && arePayloadsEqual(entry.payload, payload))
+  if (duplicateIndex !== -1) {
+    q.splice(duplicateIndex, 1)
+  }
+
+  q.push(newEntry)
+
+  let discarded = 0
+  if (q.length > MAX_QUEUE_SIZE) {
+    discarded = q.length - MAX_QUEUE_SIZE
+    q.splice(0, discarded)
+    logger.warn(
+      'enqueue',
+      `Descartando ${discarded} operaciones antiguas por límite de cola (${MAX_QUEUE_SIZE})`,
+      {
+        discarded,
+        maxQueueSize: MAX_QUEUE_SIZE
+      }
+    )
+  }
+
   setQueue(q)
 
   if (isDev) {
-    logger.debug('enqueue', `Operación encolada: ${type}`, { queueSize: q.length })
+    logger.debug('enqueue', `Operación encolada: ${type}`, { queueSize: q.length, discarded })
   }
 }
 
