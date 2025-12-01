@@ -63,8 +63,10 @@ export class SessionManager {
         activitiesCompleted: 0
       }
 
+      const plannedMinutes = Number(session.duration) || 0
+
       logger.info('startSession', 'Session started', {
-        duration: session.duration,
+        duration: plannedMinutes,
         activities: session.activities.length,
         estimatedItems: session.estimatedItems,
         focusAreas: session.focusAreas
@@ -189,6 +191,8 @@ export class SessionManager {
     const totalActivities = this.currentSession.activities.length
     const elapsedTime = this.sessionStartTime ? Date.now() - this.sessionStartTime : 0
     const elapsedMinutes = Math.floor(elapsedTime / 60000)
+    const plannedMinutes = Number(this.currentSession.duration) || 0
+    const plannedDuration = plannedMinutes * 60000
 
     return {
       sessionActive: true,
@@ -197,7 +201,8 @@ export class SessionManager {
       totalActivities,
       progressPercentage: (this.currentActivityIndex / totalActivities) * 100,
       elapsedMinutes,
-      plannedDuration: this.currentSession.duration,
+      plannedMinutes,
+      plannedDuration,
       completedActivities: this.completedActivities.length,
       metrics: {
         ...this.sessionMetrics,
@@ -252,11 +257,14 @@ export class SessionManager {
       return null
     }
 
+    const plannedMinutes = Number(this.currentSession.duration) || 0
+
     const finalMetrics = {
       ...this.sessionMetrics,
       activityItemCounts: { ...this.activityItemCounts },
       totalDuration: Date.now() - this.sessionStartTime,
-      plannedDuration: this.currentSession.duration * 60000, // Convert to ms
+      plannedMinutes,
+      plannedDuration: plannedMinutes * 60000, // Convert to ms
       completionRate: this.sessionMetrics.activitiesCompleted / this.currentSession.activities.length,
       accuracyRate: this.sessionMetrics.totalItems > 0 ?
         this.sessionMetrics.correctItems / this.sessionMetrics.totalItems : 0,

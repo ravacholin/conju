@@ -50,4 +50,21 @@ describe('sessionManager activity item counts', () => {
     expect(manager.activityItemCounts).toEqual({})
     expect(manager.shouldConsiderAdvancing()).toBe(false)
   })
+
+  it('maneja sesiones sin duración sin propagar valores NaN', () => {
+    const manager = new SessionManager()
+    const sessionSinDuracion = { ...buildSession(), duration: undefined }
+
+    manager.startSession(sessionSinDuracion)
+
+    const progress = manager.getSessionProgress()
+    expect(progress.plannedMinutes).toBe(0)
+    expect(progress.plannedDuration).toBe(0)
+    expect(Number.isNaN(progress.progressPercentage)).toBe(false)
+
+    const finalMetrics = manager.endSession()
+    expect(finalMetrics.plannedMinutes).toBe(0)
+    expect(finalMetrics.plannedDuration).toBe(0)
+    expect(Number.isNaN(finalMetrics.totalDuration)).toBe(false)
+  })
 })
