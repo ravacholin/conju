@@ -11,9 +11,8 @@ import ProgressOverview from './ProgressOverview.jsx'
 import HeatMapSRS from './HeatMapSRS.jsx'
 import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
-import PracticeReminders from './PracticeReminders.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
-import AccuracyTrendCard from './AccuracyTrendCard.jsx'
+
 import ErrorIntelligence from './ErrorIntelligence.jsx'
 
 
@@ -43,7 +42,6 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     error,
     systemReady,
     refresh,
-    practiceReminders,
     pronunciationStats,
     sectionsStatus,
     initialSectionsReady
@@ -194,7 +192,6 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   }
 
   const overviewState = getSectionState(['userStats'])
-  const remindersState = getSectionState(['userStats', 'weeklyGoals', 'weeklyProgress', 'dailyChallenges'])
   const pronunciationState = getSectionState(['pronunciationStats'])
   const heatMapState = getSectionState(['heatMap'])
   const smartPracticeState = getSectionState(['heatMap', 'recommendations'])
@@ -252,25 +249,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         )}
       </SafeComponent>
 
-      <SafeComponent name="Practice Reminders">
-        {renderSection(
-          remindersState,
-          (
-            <PracticeReminders
-              reminders={practiceReminders}
-              userStats={userStats}
-              onNavigateToDrill={onNavigateToDrill}
-              onShowToast={handleShowToast}
-            />
-          ),
-          'Preparando recordatorios personalizados...',
-          'No pudimos generar tus recordatorios.'
-        )}
-      </SafeComponent>
 
-      <SafeComponent name="Accuracy Trend">
-        <AccuracyTrendCard stats={pronunciationStats} />
-      </SafeComponent>
 
       <SafeComponent name="Pronunciation Lab">
         {renderSection(
