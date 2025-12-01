@@ -14,6 +14,8 @@ function PlacementTest({ onComplete, onCancel }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [testStarted, setTestStarted] = useState(false)
   const [showExplanation, setShowExplanation] = useState(false)
+  const [testCompleted, setTestCompleted] = useState(false)
+  const [testResults, setTestResults] = useState(null)
 
   useEffect(() => {
     if (assessment.isTestActive()) {
@@ -52,19 +54,8 @@ function PlacementTest({ onComplete, onCancel }) {
         if (result.completed) {
           // Test completed - process results and establish baseline
           const enhancedResult = await processTestCompletion(result)
-
-          if (enhancedResult) {
-            settings.setUserLevel(enhancedResult.determinedLevel)
-            settings.setPlacementTestCompleted(true)
-            if (settings.setPlacementTestReport && enhancedResult.report) {
-              settings.setPlacementTestReport(enhancedResult.report)
-            }
-            onComplete && onComplete(enhancedResult)
-          } else {
-            settings.setUserLevel(result.determinedLevel)
-            settings.setPlacementTestCompleted(true)
-            onComplete && onComplete(result)
-          }
+          setTestResults(enhancedResult)
+          setTestCompleted(true)
         } else {
           // Move to next question and update test state
           setCurrentTest({
@@ -316,7 +307,7 @@ function PlacementTest({ onComplete, onCancel }) {
     }))
 
     const weaknesses = entries
-      .filter(entry => entry.total >= 2 && entry.accuracy < 0.6)
+      .filter(entry => entry.total >= 1 && entry.accuracy < 0.6)
       .sort((a, b) => a.accuracy - b.accuracy)
       .slice(0, 5)
 
@@ -404,6 +395,72 @@ function PlacementTest({ onComplete, onCancel }) {
     }
   }
 
+  const handleFinish = () => {
+    if (testResults) {
+      settings.setUserLevel(testResults.determinedLevel)
+      settings.setPlacementTestCompleted(true)
+      if (settings.setPlacementTestReport && testResults.report) {
+        settings.setPlacementTestReport(testResults.report)
+      }
+      onComplete && onComplete(testResults)
+    }
+  }
+
+  if (testCompleted && testResults) {
+    return (
+      <div className="placement-test-container">
+        <div className="placement-results page-transition page-in">
+          <div className="results-header">
+            <div className="level-result-badge">
+              <span className="result-level-text">{testResults.determinedLevel}</span>
+              <span className="result-label">NIVEL</span>
+            </div>
+            <h2 className="test-title">¡Evaluación Completada!</h2>
+            <p className="test-subtitle">Hemos determinado tu nivel inicial</p>
+          </div>
+
+          <div className="results-stats-grid">
+            <div className="stat-card">
+              <div className="stat-value">{Math.round(testResults.report.summary.accuracy * 100)}%</div>
+              <div className="stat-desc">Precisión Global</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{testResults.correctAnswers}/{testResults.totalQuestions}</div>
+              <div className="stat-desc">Aciertos</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{Math.round(testResults.report.timings.averageMs / 1000)}s</div>
+              <div className="stat-desc">Tiempo Promedio</div>
+            </div>
+          </div>
+
+          <div className="recommendation-box">
+            <div className="rec-title">
+              <img src="/icons/lightbulb.png" alt="Recomendaciones" className="inline-icon" />
+              Recomendaciones Personalizadas
+            </div>
+            <ul className="rec-list">
+              {testResults.report.recommendations.map((rec, i) => (
+                <li key={i} className="rec-item">{rec}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="test-actions">
+            <div
+              className="submit-button-modern"
+              onClick={handleFinish}
+              title="Comenzar a practicar"
+            >
+              <span className="submit-text">Comenzar a Practicar</span>
+              <img src="/next.png" alt="Continuar" className="submit-icon" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!testStarted) {
     return (
       <div className="placement-test-container">
@@ -444,7 +501,7 @@ function PlacementTest({ onComplete, onCancel }) {
               <img src="/crono.png" alt="Tiempo" className="inline-icon" />
               <div className="info-content">
                 <div className="info-label">Duración</div>
-                <div className="info-value">3-15 preguntas</div>
+                <div className="info-value">5-20 preguntas</div>
                 <div className="info-sub">~5 minutos</div>
               </div>
             </div>
@@ -529,7 +586,7 @@ function PlacementTest({ onComplete, onCancel }) {
                 <div className="progress-glow" style={{ width: `${progress}%` }} />
               </div>
               <div className="progress-text">
-                Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 15}
+                Pregunta {(currentTest?.currentIndex || 0) + 1} de máx. {currentTest?.maxQuestions || 20}
               </div>
             </div>
 
@@ -575,19 +632,18 @@ function PlacementTest({ onComplete, onCancel }) {
                   {Array.from({ length: 5 }, (_, i) => (
                     <span
                       key={i}
-                      className={`difficulty-dot ${
-                        i < (currentQuestion.difficulty || 1) ? 'active' : 'inactive'
-                      }`}
+                      className={`difficulty-dot ${i < (currentQuestion.difficulty || 1) ? 'active' : 'inactive'
+                        }`}
                     />
                   ))}
                 </div>
               </div>
             </div>
-            {currentQuestion.irregularityInfo && (
+            {currentQuestion.competencyInfo && (
               <div className="irregularity-info">
                 <div className="pattern-badge">
                   <img src="/icons/bolt.png" alt="Patrón" className="inline-icon" />
-                  <span>{currentQuestion.irregularityInfo.family}</span>
+                  <span>{currentQuestion.competencyInfo.rule || 'Regla'}</span>
                 </div>
               </div>
             )}
@@ -603,13 +659,10 @@ function PlacementTest({ onComplete, onCancel }) {
               {currentQuestion.options?.map((option, index) => (
                 <div
                   key={index}
-                  className={`option-card ${
-                    selectedOption === option ? 'selected' : ''
-                  } ${
-                    showExplanation && option === currentQuestion.expectedAnswer ? 'correct' : ''
-                  } ${
-                    showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
-                  }`}
+                  className={`option-card ${selectedOption === option ? 'selected' : ''
+                    } ${showExplanation && option === currentQuestion.expectedAnswer ? 'correct' : ''
+                    } ${showExplanation && selectedOption === option && option !== currentQuestion.expectedAnswer ? 'incorrect' : ''
+                    }`}
                   onClick={() => handleOptionSelect(option)}
                   onKeyDown={(e) => handleKeyDown(e, option)}
                   title={`Seleccionar opción: ${option}`}
@@ -663,9 +716,8 @@ function PlacementTest({ onComplete, onCancel }) {
             </div>
 
             <div
-              className={`submit-button-modern ${
-                !selectedOption || isSubmitting || showExplanation ? 'disabled' : 'enabled'
-              }`}
+              className={`submit-button-modern ${!selectedOption || isSubmitting || showExplanation ? 'disabled' : 'enabled'
+                }`}
               onClick={handleSubmitAnswer}
               title="Enviar respuesta"
             >

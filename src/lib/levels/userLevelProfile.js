@@ -87,7 +87,7 @@ export class UserLevelProfile {
   getLevelProgress() {
     // Return cached dynamic progress if available and recent
     if (this.lastProgressCalculation &&
-        (Date.now() - this.lastProgressCalculation.timestamp) < 5 * 60 * 1000) {
+      (Date.now() - this.lastProgressCalculation.timestamp) < 5 * 60 * 1000) {
       return this.lastProgressCalculation.overall
     }
 
@@ -267,13 +267,47 @@ export class UserLevelProfile {
    * Sets placement test baseline for future evaluations
    */
   setPlacementTestBaseline(testResult) {
+    // Extract competencies from test results
+    const competencies = {}
+
+    if (testResult.results) {
+      testResult.results.forEach(result => {
+        if (result.competencyInfo) {
+          const { mood, tense } = result.competencyInfo
+          const key = `${mood}_${tense}`
+
+          if (!competencies[key]) {
+            competencies[key] = { correct: 0, total: 0, level: result.level }
+          }
+
+          competencies[key].total += 1
+          if (result.isCorrect) {
+            competencies[key].correct += 1
+          }
+        }
+      })
+
+      // Calculate accuracy
+      Object.keys(competencies).forEach(key => {
+        competencies[key].accuracy = competencies[key].correct / competencies[key].total
+      })
+    }
+
     this.placementTestBaseline = {
       level: testResult.determinedLevel,
       accuracy: testResult.correctAnswers / testResult.totalQuestions,
-      competencies: testResult.competencyBaseline || {},
+      competencies: competencies,
       timestamp: Date.now(),
       testId: testResult.testId || 'placement_test'
     }
+
+    // Also update the main competency stats with this baseline data
+    Object.entries(competencies).forEach(([key, data]) => {
+      const [mood, tense] = key.split('_')
+      // We weight placement test results slightly less than drill practice
+      // by treating them as a single consolidated "practice session"
+      this.updateCompetencyStats(mood, tense, data.accuracy, 0)
+    })
 
     this.save()
   }
@@ -340,7 +374,7 @@ export class UserLevelProfile {
     try {
       // Use cached evaluation if recent
       if (this.lastDynamicEvaluation &&
-          (Date.now() - this.lastDynamicEvaluation.timestamp) < 10 * 60 * 1000) {
+        (Date.now() - this.lastDynamicEvaluation.timestamp) < 10 * 60 * 1000) {
         return this.lastDynamicEvaluation.effectiveLevel
       }
 
