@@ -470,6 +470,12 @@ Práctica sin logging si el usuario quiere solo "calentar".
 - `exportDataForBackup()` - Exporta datos para respaldo
 - `importDataFromBackup(data)` - Importa datos desde respaldo
 
+#### Cola Offline y Persistencia
+
+- Cola local persistida en `localStorage` con límite configurable (por defecto 500 operaciones) para evitar crecimientos indefinidos.
+- Se consolidan operaciones idénticas (mismo `type` + `payload`) para reducir duplicados antes de alcanzar el límite.
+- Cuando se supera el límite se descartan entradas antiguas y se registran logs de advertencia para facilitar debugging.
+
 ---
 
 ### 🔐 **Privacidad y Consentimiento**

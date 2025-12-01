@@ -152,6 +152,7 @@ export const PROGRESS_CONFIG = {
     AUTO_SYNC_INTERVAL: 5 * 60 * 1000, // 5 minutos
     MAX_SYNC_RETRIES: 3,
     BATCH_SIZE: 100, // Número de registros por lote
+    MAX_QUEUE_SIZE: 500, // Máximo de operaciones offline encoladas
   },
 
   // Configuración de diagnóstico
