@@ -114,6 +114,30 @@ export async function syncAccountData() {
     tokenLength: token ? token.length : 0
   })
 
+  // CRITICAL: Ensure userId migration completes before syncing
+  // This prevents uploading data with wrong/stale userId
+  try {
+    safeLogger.info('syncAccountData: waiting for userId migration to complete...')
+    const authModule = await import('../auth/authService.js')
+    const authService = authModule.default
+    if (authService && typeof authService.ensureAnonymousProgressMigration === 'function') {
+      const migrationResult = await authService.ensureAnonymousProgressMigration()
+      if (migrationResult) {
+        safeLogger.info('syncAccountData: userId migration completed', {
+          anonymousId: migrationResult.anonymousUserId,
+          authenticatedId: migrationResult.authenticatedUserId,
+          migrationSuccess: !!migrationResult.localMigration
+        })
+      } else {
+        safeLogger.info('syncAccountData: no migration needed (already completed or no anonymous data)')
+      }
+    }
+  } catch (migrationError) {
+    safeLogger.warn('syncAccountData: migration check failed (continuing sync)', {
+      message: migrationError?.message || String(migrationError)
+    })
+  }
+
   await wakeUpServer()
 
   try {
@@ -218,12 +242,15 @@ export async function syncAccountData() {
         const attempts = (await getAttemptsByUser(resolvedUserId)) || []
         const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
         if (unsyncedAttempts.length > 0) {
-          await postJSON('/attempts', unsyncedAttempts)
+          safeLogger.info('syncAccountData: uploading attempts', { count: unsyncedAttempts.length })
+          const res = await tryBulk('attempts', unsyncedAttempts)
+          await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsyncedAttempts.map((a) => a.id))
           uploaded.attempts = unsyncedAttempts.length
+          safeLogger.info('syncAccountData: attempts uploaded successfully', { count: unsyncedAttempts.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
-        safeLogger.warn('syncAccountData: attempts upload failed (continuing)', { message: e?.message || String(e) })
+        safeLogger.error('syncAccountData: attempts upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
 
       // Mastery
@@ -231,12 +258,15 @@ export async function syncAccountData() {
         const mastery = (await getMasteryByUser(resolvedUserId)) || []
         const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
         if (unsyncedMastery.length > 0) {
-          await postJSON('/mastery', unsyncedMastery)
+          safeLogger.info('syncAccountData: uploading mastery', { count: unsyncedMastery.length })
+          const res = await tryBulk('mastery', unsyncedMastery)
+          await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsyncedMastery.map((m) => m.id))
           uploaded.mastery = unsyncedMastery.length
+          safeLogger.info('syncAccountData: mastery uploaded successfully', { count: unsyncedMastery.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
-        safeLogger.warn('syncAccountData: mastery upload failed (continuing)', { message: e?.message || String(e) })
+        safeLogger.error('syncAccountData: mastery upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
 
       // Schedules
@@ -244,12 +274,15 @@ export async function syncAccountData() {
         const schedules = (await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)) || []
         const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
         if (unsyncedSchedules.length > 0) {
-          await postJSON('/schedules', unsyncedSchedules)
+          safeLogger.info('syncAccountData: uploading schedules', { count: unsyncedSchedules.length })
+          const res = await tryBulk('schedules', unsyncedSchedules)
+          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsyncedSchedules.map((s) => s.id))
           uploaded.schedules = unsyncedSchedules.length
+          safeLogger.info('syncAccountData: schedules uploaded successfully', { count: unsyncedSchedules.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
-        safeLogger.warn('syncAccountData: schedules upload failed (continuing)', { message: e?.message || String(e) })
+        safeLogger.error('syncAccountData: schedules upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
 
       // Sessions
@@ -257,25 +290,38 @@ export async function syncAccountData() {
         const sessions = (await getLearningSessionsByUser(resolvedUserId)) || []
         const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
         if (unsyncedSessions.length > 0) {
-          await postJSON('/sessions', unsyncedSessions)
+          safeLogger.info('syncAccountData: uploading sessions', { count: unsyncedSessions.length })
+          const res = await tryBulk('sessions', unsyncedSessions)
+          await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsyncedSessions.map((s) => s.id))
           uploaded.sessions = unsyncedSessions.length
+          safeLogger.info('syncAccountData: sessions uploaded successfully', { count: unsyncedSessions.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
-        safeLogger.warn('syncAccountData: sessions upload failed (continuing)', { message: e?.message || String(e) })
+        safeLogger.error('syncAccountData: sessions upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
     } catch (uploadErr) {
       anyUploadFailed = true
-      safeLogger.warn('syncAccountData: unexpected error during upload step', { message: uploadErr?.message || String(uploadErr) })
+      safeLogger.error('syncAccountData: unexpected error during upload step', { message: uploadErr?.message || String(uploadErr), stack: uploadErr?.stack })
     }
 
-    safeLogger.info('syncAccountData: sincronización de cuenta completada', {
-      mergedSummary,
-      uploadedAttempts: uploaded.attempts,
-      uploadedMastery: uploaded.mastery,
-      uploadedSchedules: uploaded.schedules,
-      uploadedSessions: uploaded.sessions
-    })
+    if (anyUploadFailed) {
+      safeLogger.error('syncAccountData: sync completed with upload failures', {
+        mergedSummary,
+        uploadedAttempts: uploaded.attempts,
+        uploadedMastery: uploaded.mastery,
+        uploadedSchedules: uploaded.schedules,
+        uploadedSessions: uploaded.sessions
+      })
+    } else {
+      safeLogger.info('syncAccountData: sincronización de cuenta completada exitosamente', {
+        mergedSummary,
+        uploadedAttempts: uploaded.attempts,
+        uploadedMastery: uploaded.mastery,
+        uploadedSchedules: uploaded.schedules,
+        uploadedSessions: uploaded.sessions
+      })
+    }
 
     const finalResult = {
       success: !anyUploadFailed,
@@ -286,13 +332,15 @@ export async function syncAccountData() {
         mastery: accountData.mastery?.length || 0,
         schedules: accountData.schedules?.length || 0,
         sessions: accountData.sessions?.length || 0
-      }
+      },
+      ...(anyUploadFailed && { uploadFailed: true })
     }
 
     safeLogger.debug('syncAccountData: resultado final', {
       success: finalResult.success,
       mergedSummary,
-      downloaded: finalResult.downloaded
+      downloaded: finalResult.downloaded,
+      uploadFailed: anyUploadFailed
     })
     return finalResult
   } catch (error) {

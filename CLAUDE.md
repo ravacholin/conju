@@ -292,14 +292,14 @@ In production builds, the console should be **nearly silent** except for:
 
 ## Sync Troubleshooting
 
-### Sync System Architecture (Updated 2025-09-21)
+### Sync System Architecture (Updated 2025-12-03)
 
 The sync system is **fully implemented** and uses intelligent environment detection for seamless operation across development and production.
 
 **Architecture**:
 - `src/lib/config/syncConfig.js` - Intelligent environment detection and URL configuration
 - `src/lib/progress/cloudSync.js` - Complete frontend sync client (NOT stubbed)
-- `src/lib/progress/userManager.js` - Full sync orchestration with account-based sync
+- `src/lib/progress/syncCoordinator.js` - Account-based sync orchestration
 - `server/src/auth-routes.js` - Complete auth and sync endpoints
 - `server/src/auth-service.js` - Account management and data merging
 
@@ -312,6 +312,20 @@ The sync system is **fully implemented** and uses intelligent environment detect
 - Run `window.debugSync()` in browser console for detailed sync diagnostics
 - Both `authService` and `cloudSync` are exposed globally for debugging
 - Comprehensive logging throughout sync flow
+
+**Critical Bugs Fixed (2025-12-03)**:
+
+✅ **FIXED: Data Loss on Login** - Users experiencing complete data loss after Google login
+- **Root Cause #1**: Upload endpoints used wrong paths (`/mastery` instead of `/progress/mastery/bulk`) → 404 errors
+- **Root Cause #2**: Upload requests sent wrong format (array instead of `{ records: [...] }`)
+- **Root Cause #3**: Race condition - sync happened before userId migration completed
+- **Root Cause #4**: Successfully uploaded items weren't marked as synced
+- **Fix Location**: `src/lib/progress/syncCoordinator.js` lines 216-306
+- **Fix Details**:
+  - Replaced `postJSON()` calls with `tryBulk()` (correct paths & format)
+  - Added `markSynced()` calls after successful uploads
+  - Added migration wait before sync (prevents stale userId queries)
+  - Enhanced error logging with stack traces
 
 **Common Sync Issues & Solutions**:
 
@@ -330,6 +344,18 @@ The sync system is **fully implemented** and uses intelligent environment detect
 4. **CORS Issues**:
    - Check browser network tab for CORS errors
    - Verify server CORS configuration includes frontend origin
+
+5. **404 Errors on Sync** (FIXED):
+   - **Symptom**: Console shows `Failed to load resource: 404` for `/api/mastery`, `/api/schedules`
+   - **Cause**: Incorrect API paths in sync upload logic
+   - **Status**: Fixed in 2025-12-03 release
+   - **Prevention**: Always use `tryBulk()` helper instead of direct `postJSON()` calls
+
+6. **Empty Progress After Login** (FIXED):
+   - **Symptom**: Heat maps empty, no progress data visible after successful login
+   - **Cause**: Upload failures + userId migration race condition
+   - **Status**: Fixed in 2025-12-03 release
+   - **Prevention**: Sync now waits for migration to complete before uploading data
 
 ## Architecture Guidelines
 
