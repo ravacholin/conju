@@ -123,17 +123,10 @@ export async function selectForm(eligible, settings, context = {}) {
   // Apply level-driven morphological focus weighting (duplicate entries to increase frequency)
   eligible = applyLevelFormWeighting(eligible, settings)
 
-  // SAFETY GUARD: In mixed practice by level, ensure we don't get stuck
-  // serving only nonfinite forms (gerund/participle). If there are finite
-  // options available, prefer them by excluding nonfinite from the pool.
-  if ((practiceMode === 'mixed' || !practiceMode) && eligible && eligible.length > 0) {
-    try {
-      const finiteOnly = eligible.filter(f => f && f.mood !== 'nonfinite')
-      if (finiteOnly.length > 0) {
-        eligible = finiteOnly
-      }
-    } catch { /* keep existing eligible pool on any error */ }
-  }
+  // SAFETY GUARD REMOVED: The varietyEngine now handles distribution balance.
+  // Previously, this guard prevented nonfinite forms from appearing at all in mixed practice
+  // if any finite forms were available, which contradicted the "mixed" promise.
+
 
   // ENHANCED: Strong preference for PURE regular lemmas when user selects 'regular'
   if (verbType === 'regular') {
@@ -175,17 +168,17 @@ export async function selectForm(eligible, settings, context = {}) {
     try {
       // Obtener personas permitidas por región y filtrar la secuencia
       const allowedPersons = new Set(
-        (function(region){
-          if (region === 'rioplatense') return ['1s','2s_vos','3s','1p','3p']
-          if (region === 'la_general') return ['1s','2s_tu','3s','1p','3p']
-          if (region === 'peninsular') return ['1s','2s_tu','3s','1p','2p_vosotros','3p']
-          return ['1s','2s_tu','2s_vos','3s','1p','2p_vosotros','3p']
+        (function (region) {
+          if (region === 'rioplatense') return ['1s', '2s_vos', '3s', '1p', '3p']
+          if (region === 'la_general') return ['1s', '2s_tu', '3s', '1p', '3p']
+          if (region === 'peninsular') return ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p']
+          return ['1s', '2s_tu', '2s_vos', '3s', '1p', '2p_vosotros', '3p']
         })(region)
       )
 
       const rawSeq = Array.isArray(conmutacionSeq) && conmutacionSeq.length > 0
         ? conmutacionSeq
-        : ['2s_vos','3p','3s']
+        : ['2s_vos', '3p', '3s']
       const effectiveSeq = rawSeq.filter(p => allowedPersons.has(p))
       // Fallback robusto: usar TODAS las personas permitidas por región, no solo 3s/3p
       const seq = effectiveSeq.length > 0 ? effectiveSeq : [...allowedPersons]
@@ -237,10 +230,9 @@ export async function selectForm(eligible, settings, context = {}) {
   // ENHANCED SELECTION: Use Advanced Variety Engine for sophisticated selection
 
   // CRITICAL: Reset variety engine to prevent stuck selections
-  dbg('🔄 RESETTING varietyEngine to prevent stuck selections')
-  if (typeof varietyEngine.resetSession === 'function') {
-    varietyEngine.resetSession()
-  }
+  // MOVED: resetSession should not be called here as it wipes memory between items
+  // It is now handled in the hook/component level when starting a new session
+
 
   // Fast path for specific practice: simple random selection from eligible pool
   if (practiceMode === 'specific') {
@@ -365,10 +357,10 @@ export async function selectForm(eligible, settings, context = {}) {
     }
     return w
   })
-  const totalW = weights.reduce((a,b)=>a+b,0) || 1
+  const totalW = weights.reduce((a, b) => a + b, 0) || 1
   let r = Math.random() * totalW
   let randomPerson = availablePersons[0]
-  for (let i=0;i<availablePersons.length;i++){
+  for (let i = 0; i < availablePersons.length; i++) {
     r -= weights[i]
     if (r <= 0) { randomPerson = availablePersons[i]; break }
   }
@@ -383,7 +375,7 @@ export async function selectForm(eligible, settings, context = {}) {
   }
   // Enforce clitics percentage in imperativo afirmativo at high levels
   if (fallbackSelectedForm.mood === 'imperative' && fallbackSelectedForm.tense === 'impAff' && cliticsPercent > 0) {
-    const needClitic = Math.random()*100 < cliticsPercent
+    const needClitic = Math.random() * 100 < cliticsPercent
     if (needClitic) {
       // Simple heuristic: attach 'me' to 1s/2s targets, else 'se lo'
       const part = fallbackSelectedForm.value
@@ -545,31 +537,31 @@ function sampleArray(array, count) {
  * Para 1p/3s/3p se aplica la prosodia general: si la sílaba tónica se desplaza antepenúltima por enclíticos, exigir tilde.
  */
 function adjustAccentForImperativeWithClitics(lemma, person, base, clitics) {
-  const raw = `${base}${clitics}`.replace(/\s+/g,'')
+  const raw = `${base}${clitics}`.replace(/\s+/g, '')
   if (person === '2s_vos') {
     const encliticSyllables = estimateCliticSyllables(clitics)
     // quitar tildes previas del verbo
-    const strip = (s)=> s.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    const addTildeVos = (s)=> {
+    const strip = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    const addTildeVos = (s) => {
       // Añadir tilde en la vocal final según -ar/-er/-ir
       if (/ar$/.test(lemma)) return s.replace(/a(?=[^a]*$)/, 'á')
       if (/er$/.test(lemma)) return s.replace(/e(?=[^e]*$)/, 'é')
       if (/ir$/.test(lemma)) return s.replace(/i(?=[^i]*$)/, 'í')
       return s
     }
-    const REMOVE_TILDE_FINAL = (s)=> s.replace(/[á]([^á]*)$/,'a$1').replace(/[é]([^é]*)$/,'e$1').replace(/[í]([^í]*)$/,'i$1')
+    const REMOVE_TILDE_FINAL = (s) => s.replace(/[á]([^á]*)$/, 'a$1').replace(/[é]([^é]*)$/, 'e$1').replace(/[í]([^í]*)$/, 'i$1')
     let core = raw
     // normalizar núcleo verbal (antes de clíticos)
     const verb = base
     if (encliticSyllables === 1) {
       // pierde tilde
       const strippedVerb = strip(verb)
-      core = strippedVerb + clitics.replace(/\s+/g,'')
+      core = strippedVerb + clitics.replace(/\s+/g, '')
     } else if (encliticSyllables >= 2) {
       // vuelve a llevar tilde
       const strippedVerb = strip(verb)
       const withTilde = addTildeVos(strippedVerb)
-      core = withTilde + clitics.replace(/\s+/g,'')
+      core = withTilde + clitics.replace(/\s+/g, '')
     }
     return core
   }
@@ -579,9 +571,9 @@ function adjustAccentForImperativeWithClitics(lemma, person, base, clitics) {
 
 function estimateCliticSyllables(cl) {
   // Aproximación: me/te/se/lo/la/le = 1 sílaba, nos/los/las/les = 1–2 (tomamos 1), "se lo" ~2
-  const s = cl.replace(/\s+/g,'').toLowerCase()
+  const s = cl.replace(/\s+/g, '').toLowerCase()
   let count = 0
-  const tokens = ['nos','les','las','los','me','te','se','lo','la','le']
+  const tokens = ['nos', 'les', 'las', 'los', 'me', 'te', 'se', 'lo', 'la', 'le']
   let i = 0
   while (i < s.length) {
     const tok = tokens.find(t => s.slice(i).startsWith(t))
