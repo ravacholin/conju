@@ -47,7 +47,7 @@ function SyncStatusIndicator() {
 
       if (minutesAgo < 5) {
         return {
-          code: 'RDY',
+          code: 'OK',
           label: 'SISTEMA SINCRONIZADO',
           className: 'synced'
         };
