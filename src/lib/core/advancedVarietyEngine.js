@@ -25,11 +25,14 @@ class SessionMemory {
     this.lastDifficultyLevel = 1
 
     // Sliding window sizes
-    this.verbMemorySize = 8   // Remember last 8 verbs
-    this.tenseMemorySize = 6  // Remember last 6 tenses
-    this.personMemorySize = 5 // Remember last 5 persons
-    this.categoryMemorySize = 4 // Remember last 4 categories
-    this.comboMemorySize = 10 // Remember last 10 exact combinations
+    this.verbMemorySize = 15  // Remember last 15 verbs (increased for better variety)
+    this.tenseMemorySize = 20 // Remember last 20 tenses (CRITICAL FIX: was 6, caused loops)
+    this.personMemorySize = 10 // Remember last 10 persons (increased)
+    this.categoryMemorySize = 8 // Remember last 8 categories (increased)
+    this.comboMemorySize = 15 // Remember last 15 exact combinations (increased)
+
+    // Streak detection for anti-loop protection
+    this.recentTenseStreak = [] // Track last N tenses in order for streak detection
 
     // Sliding window for irregular/regular balancing
     this.lastTypes = [] // values: 'regular' | 'irregular'
@@ -47,6 +50,12 @@ class SessionMemory {
     // Record tense with count
     const tenseKey = `${form.mood}|${form.tense}`
     this.recentTenses.set(tenseKey, (this.recentTenses.get(tenseKey) || 0) + 1)
+
+    // STREAK DETECTION: Track ordered tense history for streak breaker
+    this.recentTenseStreak.push(tenseKey)
+    if (this.recentTenseStreak.length > 20) {
+      this.recentTenseStreak.shift() // Keep only last 20
+    }
 
     // Record person with count
     this.recentPersons.set(form.person, (this.recentPersons.get(form.person) || 0) + 1)
@@ -151,11 +160,24 @@ class SessionMemory {
       })
     }
 
-    // Tense repetition penalty
+    // Tense repetition penalty - STRENGTHENED to prevent loops
     const tenseKey = `${form.mood}|${form.tense}`
     const tenseCount = this.recentTenses.get(tenseKey) || 0
     if (tenseCount > 0) {
-      penalty += Math.min(0.6, tenseCount * 0.2) // Up to 0.6 penalty
+      penalty += Math.min(0.9, tenseCount * 0.3) // INCREASED: Up to 0.9 penalty (was 0.6)
+    }
+
+    // STREAK BREAKER: Detect consecutive repetitions and apply massive penalty
+    if (this.recentTenseStreak && this.recentTenseStreak.length >= 4) {
+      const last4 = this.recentTenseStreak.slice(-4)
+      const allSame = last4.every(t => t === tenseKey)
+      if (allSame) {
+        penalty += 0.98 // MASSIVE penalty to force immediate switch
+        logger.warn('getRepetitionPenalty', `STREAK DETECTED: ${tenseKey} appeared 4+ times consecutively`, {
+          streak: last4.length,
+          forcingSwitch: true
+        })
+      }
     }
 
     // Person repetition penalty - REDUCED for specific practice to ensure variety
@@ -201,6 +223,7 @@ class SessionMemory {
     this.recentTenses.clear()
     this.recentPersons.clear()
     this.recentCategories.clear()
+    this.recentTenseStreak = [] // Reset streak tracking
     this.sessionStartTime = Date.now()
     this.selectionCount = 0
     this.lastDifficultyLevel = 1
