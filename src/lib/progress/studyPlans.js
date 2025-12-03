@@ -10,6 +10,7 @@ import { temporalIntelligence } from './temporalIntelligence.js'
 import { momentumTracker } from './momentumTracker.js'
 import confidenceEngine from './confidenceEngine.js'
 import { getAdvancedAnalytics } from './analytics.js'
+import { formatMoodTense } from '../utils/verbLabels.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:studyPlans')
@@ -57,12 +58,25 @@ function notifyPlanListeners(userId, plan) {
   })
 }
 
+function translatePersonalizationStyle(style) {
+  const styleMap = {
+    'balanced': 'Equilibrado',
+    'balanced_mixed': 'Práctica mixta equilibrada',
+    'focused': 'Enfocado',
+    'intensive': 'Intensivo',
+    'relaxed': 'Relajado',
+    'challenge_seeking': 'Orientado a desafíos',
+    'comfort_zone': 'Zona de confort'
+  }
+  return styleMap[style] || style
+}
+
 function buildPlanOverview(analysis, goalsState, analytics, profile) {
   return {
     focusArea: analysis?.primaryChallenge || null,
     strengths: analysis?.strengthsWeaknesses?.strengths?.slice?.(0, 3) || [],
     goalsSummary: goalsState?.progressSummary || null,
-    personalizationStyle: profile?.style || 'balanced',
+    personalizationStyle: translatePersonalizationStyle(profile?.style || 'balanced'),
     analyticsHighlights: analytics?.retention?.trend || null
   }
 }
@@ -172,10 +186,11 @@ function convertRecommendationsToExecutableSessions(recommendations, predictedSe
 
     predictedSequence.slice(0, remaining).forEach((combo, index) => {
       const sessionIndex = sessions.length
+      const formattedMoodTense = formatMoodTense(combo.mood, combo.tense)
       sessions.push({
         id: `session-predicted-${Date.now()}-${index}`,
-        title: `Práctica: ${combo.mood} - ${combo.tense}`,
-        description: `Sesión enfocada en ${combo.mood} ${combo.tense}`,
+        title: `Práctica: ${formattedMoodTense}`,
+        description: `Sesión enfocada en ${formattedMoodTense}`,
         drillConfig: {
           practiceMode: 'specific',
           specificMood: combo.mood,
