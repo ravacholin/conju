@@ -34,6 +34,13 @@ class SessionMemory {
     // Streak detection for anti-loop protection
     this.recentTenseStreak = [] // Track last N tenses in order for streak detection
 
+    // DEBUG: Log memory configuration
+    console.log('🎯 VARIETY ENGINE INITIALIZED:', {
+      tenseMemorySize: this.tenseMemorySize,
+      verbMemorySize: this.verbMemorySize,
+      timestamp: new Date().toISOString()
+    });
+
     // Sliding window for irregular/regular balancing
     this.lastTypes = [] // values: 'regular' | 'irregular'
     this.typeWindowSize = 40
@@ -56,6 +63,12 @@ class SessionMemory {
     if (this.recentTenseStreak.length > 20) {
       this.recentTenseStreak.shift() // Keep only last 20
     }
+
+    // DEBUG: Log every selection to track streaks
+    console.log(`📝 Selection #${this.selectionCount}: ${tenseKey}`, {
+      streak: this.recentTenseStreak.slice(-5), // Last 5
+      tenseMemorySize: this.recentTenses.size
+    });
 
     // Record person with count
     this.recentPersons.set(form.person, (this.recentPersons.get(form.person) || 0) + 1)
@@ -173,10 +186,11 @@ class SessionMemory {
       const allSame = last4.every(t => t === tenseKey)
       if (allSame) {
         penalty += 0.98 // MASSIVE penalty to force immediate switch
-        logger.warn('getRepetitionPenalty', `STREAK DETECTED: ${tenseKey} appeared 4+ times consecutively`, {
-          streak: last4.length,
+        console.warn('🚨 STREAK BREAKER ACTIVATED:', tenseKey, {
+          last4,
+          totalPenalty: penalty,
           forcingSwitch: true
-        })
+        });
       }
     }
 
