@@ -111,6 +111,10 @@ export async function mergeAccountDataLocally(accountData) {
 
   if (!currentUserId) {
     const warningMessage = 'No pudimos determinar un usuario fiable para fusionar los datos. Inicia sesión nuevamente e intenta sincronizar.'
+    console.error('🚨 SYNC BUG: No reliable userId found!', {
+      attemptedSources: resolution.attempted,
+      resolution
+    });
     safeLogger.warn('mergeAccountDataLocally: abortado por falta de userId confiable', {
       attemptedSources: resolution.attempted
     })
@@ -125,10 +129,25 @@ export async function mergeAccountDataLocally(accountData) {
     }
   }
 
+  console.log('✅ SYNC: Using userId for merge:', {
+    userId: currentUserId,
+    source: resolution.source,
+    attempted: resolution.attempted
+  });
+
   const allAttempts = await getAllFromDB(STORAGE_CONFIG.STORES.ATTEMPTS)
   const allMastery = await getAllFromDB(STORAGE_CONFIG.STORES.MASTERY)
   const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
   const allSessions = await getAllFromDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
+
+  console.log('📊 SYNC: Local IndexedDB data counts:', {
+    attempts: allAttempts.length,
+    mastery: allMastery.length,
+    schedules: allSchedules.length,
+    sessions: allSessions.length,
+    sampleAttemptUserIds: allAttempts.slice(0, 3).map(a => a.userId),
+    currentUserId
+  });
 
   const attemptMap = new Map()
   const masteryMap = new Map()

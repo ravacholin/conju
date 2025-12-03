@@ -44,7 +44,10 @@ function defaultSettings() {
 export function getCurrentUserId() {
   try {
     const id = getIdFromProgress()
-    if (id && typeof id === 'string') return id
+    if (id && typeof id === 'string') {
+      console.log('🔑 getCurrentUserId: Using userId from progress system:', id);
+      return id
+    }
   } catch {
     // Continue with fallbacks
   }
@@ -55,6 +58,9 @@ export function getCurrentUserId() {
       if (!userId || typeof userId !== 'string') {
         userId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
         window.localStorage.setItem(USER_ID_STORAGE_KEY, userId)
+        console.warn('⚠️ getCurrentUserId: Generated NEW userId (no existing ID found):', userId);
+      } else {
+        console.log('🔑 getCurrentUserId: Using userId from localStorage:', userId);
       }
       return userId
     }
@@ -62,7 +68,9 @@ export function getCurrentUserId() {
     // Continue to fallback
   }
 
-  return `user-temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+  const tempId = `user-temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+  console.warn('⚠️ getCurrentUserId: Using TEMP userId (fallback):', tempId);
+  return tempId
 }
 
 export function getUserSettings(userId) {
