@@ -13,9 +13,6 @@ import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
 
-import ErrorIntelligence from './ErrorIntelligence.jsx'
-
-
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
 
@@ -310,20 +307,6 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         )}
       </SafeComponent>
 
-      <SafeComponent name="Error Intelligence">
-        {renderSection(
-          errorIntelState,
-          (
-            <ErrorIntelligence
-              data={errorIntel}
-              compact
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          ),
-          'Buscando patrones de error...',
-          'No pudimos cargar el módulo de errores.'
-        )}
-      </SafeComponent>
     </div>
   )
 }
