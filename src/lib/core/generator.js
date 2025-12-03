@@ -80,10 +80,10 @@ const getAllowedCombosForLevel = (level) => GET_ALLOWED_COMBOS(level)
 const REGULAR_MOOD_MEMO = new Map() // key: lemma|mood|tense|person|value
 const REGULAR_NONFINITE_MEMO = new Map() // key: lemma|tense|value
 
-const VALID_LEVELS = new Set(['A1','A2','B1','B2','C1','C2','ALL'])
-const VALID_PRACTICE_MODES = new Set(['mixed','specific','theme','all'])
-const VALID_VERB_TYPES = new Set(['all','regular','irregular','mixed'])
-const VALID_REGIONS = new Set(['rioplatense','la_general','peninsular'])
+const VALID_LEVELS = new Set(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL'])
+const VALID_PRACTICE_MODES = new Set(['mixed', 'specific', 'theme', 'all'])
+const VALID_VERB_TYPES = new Set(['all', 'regular', 'irregular', 'mixed'])
+const VALID_REGIONS = new Set(['rioplatense', 'la_general', 'peninsular'])
 
 // MCER Level verb type restrictions
 const levelVerbRestrictions = {
@@ -109,19 +109,19 @@ function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
   if (!isVerbTypeAllowedForLevel(effectiveVerbType, level)) {
     return false
   }
-  
+
   // If practicing specific verb type, check tense-specific irregularity
   if (verbType === 'irregular') {
     return isIrregularInTense(verb, tense)
   } else if (verbType === 'regular') {
     return !isIrregularInTense(verb, tense)
   }
-  
+
   // For 'all' or undefined verbType, allow all
   return true
 }
 
-export async function chooseNext({forms, history: _history, currentItem, sessionSettings}){
+export async function chooseNext({ forms, history: _history, currentItem, sessionSettings }) {
   // Ensure maps are initialized before proceeding
   await ensureMapsInitialized()
 
@@ -183,12 +183,12 @@ export async function chooseNext({forms, history: _history, currentItem, session
   const effectiveLevelPracticeMode = levelPracticeMode || PRACTICE_MODES.BY_LEVEL
   const shouldApplyLevelFiltering = effectiveLevelPracticeMode === PRACTICE_MODES.BY_LEVEL
   const levelForFiltering = shouldApplyLevelFiltering ? level : 'ALL'
-  
 
 
-  
-  
-  
+
+
+
+
   // Crear cache key para este filtrado
   // Include region and allowedLemmas signature in the cache key to avoid stale pools
   const allowedSig = (() => {
@@ -253,7 +253,7 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
   // Show which persons were included
   const INCLUDED_PERSONS = [...new Set(eligible.map(f => f.person))]
-  
+
   // Check if we have any eligible forms
   if (eligible.length === 0) {
     if (practiceMode === 'specific' && specificMood && specificTense) {
@@ -281,7 +281,13 @@ export async function chooseNext({forms, history: _history, currentItem, session
 
     // ULTIMATE FALLBACK: If even this fails, use emergency fallback
     logger.error('All fallback strategies failed, using emergency fallback')
-    return await createEmergencyFallback(specificMood, specificTense, forms)
+
+    // CRITICAL FIX: Only pass specific settings if we are actually in specific practice mode
+    // This prevents "dirty state" from previous sessions locking the fallback to a specific topic
+    const fallbackMood = practiceMode === 'specific' ? specificMood : null
+    const fallbackTense = practiceMode === 'specific' ? specificTense : null
+
+    return await createEmergencyFallback(fallbackMood, fallbackTense, forms)
   }
 
   // Use FormSelectorService for all selection logic
@@ -310,11 +316,11 @@ function IS_IRREGULAR_VERB(lemma) {
 }
 
 
-function ACC(f, history){
-  const k = key(f); const h = history[k]||{seen:0, correct:0}
+function ACC(f, history) {
+  const k = key(f); const h = history[k] || { seen: 0, correct: 0 }
   return (h.correct + 1) / (h.seen + 2)
 }
-function key(f){ return `${f.mood}:${f.tense}:${f.person}:${f.value}` }
+function key(f) { return `${f.mood}:${f.tense}:${f.person}:${f.value}` }
 
 /**
  * PROGRESS SYSTEM INTEGRATION: Validates if a mood/tense combination has available forms
@@ -333,23 +339,23 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
     const useVoseo = settings.useVoseo !== false
     const useTuteo = settings.useTuteo !== false
     const useVosotros = settings.useVosotros !== false
-    
-    
+
+
     // Step 1: Check if combination is allowed for the user's level
     const allowedCombos = getAllowedCombosForLevel(level)
     const comboKey = `${mood}|${tense}`
     if (!allowedCombos.has(comboKey)) {
       return false
     }
-    
+
     // Step 2: Filter forms that match the criteria
     const matchingForms = allForms.filter(f => {
       // Must match mood and tense
       if (f.mood !== mood || f.tense !== tense) return false
-      
+
       // Must have a valid value
       if (!f.value && !f.form) return false
-      
+
       // Apply dialect filtering
       if (region === 'rioplatense') {
         if (!useVoseo && f.person === '2s_vos') return false
@@ -363,12 +369,12 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
       } else if (region === 'la_general') {
         if (f.person === '2s_vos' || f.person === '2p_vosotros') return false
       }
-      
+
       return true
     })
-    
+
     const isAvailable = matchingForms.length > 0
-    
+
     return isAvailable
   } catch (error) {
     logger.error('Error validating mood/tense availability', error)

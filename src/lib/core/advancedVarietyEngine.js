@@ -505,8 +505,10 @@ export class AdvancedVarietyEngine {
         balancedCount: balancedForms?.length || 0,
         originalCount: forms?.length || 0
       })
-      // Emergency fallback: return first form from original array
-      return forms[0] || null
+      // Emergency fallback: return RANDOM form from original array to prevent repetition
+      // returning forms[0] caused deterministic "stuck" behavior when selection failed
+      const randomIndex = Math.floor(Math.random() * forms.length)
+      return forms[randomIndex] || null
     }
 
     // Record selection and update rotation indices
