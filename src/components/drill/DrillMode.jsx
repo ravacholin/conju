@@ -64,10 +64,10 @@
 
 import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
-const QuickSwitchPanel = lazy(() => import('./QuickSwitchPanel.jsx'))
-const GamesPanel = lazy(() => import('./GamesPanel.jsx'))
 import { safeLazy } from '../../lib/utils/lazyImport.js';
 
+const QuickSwitchPanel = safeLazy(() => import('./QuickSwitchPanel.jsx'))
+const GamesPanel = safeLazy(() => import('./GamesPanel.jsx'))
 const PronunciationPanel = safeLazy(() => import('./PronunciationPanelSafe.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
