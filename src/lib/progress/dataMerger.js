@@ -439,7 +439,7 @@ export async function mergeAccountDataLocally(accountData) {
   // We need to extract the inner settings object, not use the wrapper directly
   if (accountData?.settings) {
     try {
-      const { useSettings, setSyncing } = await import('../../state/settings.js')
+      const { useSettings } = await import('../../state/settings.js')
       const { saveUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
 
@@ -468,16 +468,11 @@ export async function mergeAccountDataLocally(accountData) {
         // Merge with existing state to preserve any local-only properties
         const mergedSettings = { ...currentSettings, ...actualServerSettings, lastUpdated: serverUpdatedAt }
 
-        // PAUSE persistence subscriber to prevent overwriting synced status
-        if (setSyncing) setSyncing(true)
         useSettings.setState(mergedSettings)
 
         // Persist to IndexedDB immediately to prevent re-upload
         // CRITICAL: Mark as alreadySynced to prevent sync loop
         await saveUserSettings(currentUserId, mergedSettings, { alreadySynced: true })
-
-        // RESUME persistence
-        if (setSyncing) setSyncing(false)
 
         results.settings = 1
         safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
