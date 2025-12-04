@@ -275,8 +275,14 @@ const useSettings = create(
   )
 )
 
-// Persist settings to IndexedDB for cross-device sync
-let isHydrated = false
+// Flag to prevent persistence loops during sync
+let isSyncing = false
+export function setSyncing(value) {
+  isSyncing = value
+  if (value) {
+    clearTimeout(persistTimeout) // Cancel any pending save
+  }
+}
 
 useSettings.subscribe((state) => {
   // Skip initial hydration from localStorage
@@ -284,6 +290,9 @@ useSettings.subscribe((state) => {
     isHydrated = true
     return
   }
+
+  // Skip if we are currently applying a sync merge
+  if (isSyncing) return
 
   // Persist to IndexedDB for sync (debounced)
   persistSettingsToIndexedDB(state)
@@ -294,6 +303,8 @@ async function persistSettingsToIndexedDB(settings) {
   // Debounce: wait 1 second after last change
   clearTimeout(persistTimeout)
   persistTimeout = setTimeout(async () => {
+    if (isSyncing) return // Double check inside timeout
+
     try {
       const { saveUserSettings } = await import('../lib/progress/database.js')
       const userId = getCurrentUserId()

@@ -2119,27 +2119,42 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
  * Guarda user settings en IndexedDB
  * @param {string} userId - ID del usuario
  * @param {Object} settings - Configuración del usuario
+ * @param {Object} [options] - Opciones adicionales
+ * @param {boolean} [options.alreadySynced=false] - Si los settings ya están sincronizados (ej: vienen del servidor)
  * @returns {Promise<Object>} - Settings guardado con ID y timestamps
  */
-export async function saveUserSettings(userId, settings) {
+export async function saveUserSettings(userId, settings, options = {}) {
   try {
+    const { alreadySynced = false } = options;
+
     // Use consistent ID per user (no timestamp) to UPDATE existing record instead of creating new ones
     const settingsId = `settings-${userId}`;
 
     // Get existing record to preserve createdAt
     const existing = await getFromDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsId);
 
+    const now = new Date();
     const settingsRecord = {
       id: settingsId,
       userId,
       settings,
-      createdAt: existing?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      synced: false,
-      syncedAt: 0
+      createdAt: existing?.createdAt || now.toISOString(),
+      updatedAt: now.toISOString(),
+      // If settings come from server (alreadySynced), mark as synced to prevent re-upload loop
+      synced: alreadySynced,
+      syncedAt: alreadySynced ? now : 0
     };
 
     await saveToDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsRecord);
+
+    if (isDev) {
+      logger.debug('saveUserSettings', 'Settings guardados', {
+        userId,
+        alreadySynced,
+        syncedAt: settingsRecord.syncedAt
+      });
+    }
+
     return settingsRecord;
   } catch (error) {
     logger.error('saveUserSettings', 'Error guardando settings', error);

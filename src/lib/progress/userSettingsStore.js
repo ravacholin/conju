@@ -42,6 +42,20 @@ function defaultSettings() {
 }
 
 export function getCurrentUserId() {
+  // PRIORITY 1: Check if user is authenticated - ALWAYS prefer authenticated userId
+  try {
+    if (typeof window !== 'undefined' && window.authService?.isLoggedIn?.()) {
+      const authUserId = window.authService?.getUser?.()?.id
+      if (authUserId && typeof authUserId === 'string') {
+        console.log('🔑 getCurrentUserId: Using AUTHENTICATED userId:', authUserId);
+        return authUserId
+      }
+    }
+  } catch {
+    // Continue with fallbacks
+  }
+
+  // PRIORITY 2: Try progress system (may already have the migrated authenticated ID)
   try {
     const id = getIdFromProgress()
     if (id && typeof id === 'string') {
@@ -52,6 +66,7 @@ export function getCurrentUserId() {
     // Continue with fallbacks
   }
 
+  // PRIORITY 3: LocalStorage persistent ID (anonymous user)
   try {
     if (typeof window !== 'undefined' && window?.localStorage) {
       let userId = window.localStorage.getItem(USER_ID_STORAGE_KEY)

@@ -439,19 +439,19 @@ export async function mergeAccountDataLocally(accountData) {
   // We need to extract the inner settings object, not use the wrapper directly
   if (accountData?.settings) {
     try {
-      const { useSettings } = await import('../../state/settings.js')
+      const { useSettings, setSyncing } = await import('../../state/settings.js')
       const { saveUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
 
       // Extract actual settings - handle both wrapped {settings: {...}} and direct format
       const serverSettingsRecord = accountData.settings
       const actualServerSettings = serverSettingsRecord?.settings || serverSettingsRecord
-      
+
       // Get timestamps from the correct locations
       // Server record has updatedAt at top level, actual settings have lastUpdated inside
-      const serverUpdatedAt = serverSettingsRecord?.updatedAt || 
-                              actualServerSettings?.lastUpdated || 
-                              actualServerSettings?.updatedAt || 0
+      const serverUpdatedAt = serverSettingsRecord?.updatedAt ||
+        actualServerSettings?.lastUpdated ||
+        actualServerSettings?.updatedAt || 0
       const localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
 
       console.log('🔄 SYNC: Settings merge comparison:', {
@@ -467,10 +467,17 @@ export async function mergeAccountDataLocally(accountData) {
         // Server has newer settings, apply them
         // Merge with existing state to preserve any local-only properties
         const mergedSettings = { ...currentSettings, ...actualServerSettings, lastUpdated: serverUpdatedAt }
+
+        // PAUSE persistence subscriber to prevent overwriting synced status
+        if (setSyncing) setSyncing(true)
         useSettings.setState(mergedSettings)
 
         // Persist to IndexedDB immediately to prevent re-upload
-        await saveUserSettings(currentUserId, mergedSettings)
+        // CRITICAL: Mark as alreadySynced to prevent sync loop
+        await saveUserSettings(currentUserId, mergedSettings, { alreadySynced: true })
+
+        // RESUME persistence
+        if (setSyncing) setSyncing(false)
 
         results.settings = 1
         safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
