@@ -425,7 +425,7 @@ export const ERROR_TAGS = {
 // Configuración de almacenamiento
 export const STORAGE_CONFIG = {
   DB_NAME: "SpanishConjugatorProgress",
-  DB_VERSION: 6, // v6: normalize legacy null syncedAt to 0
+  DB_VERSION: 7, // v7: add user_settings store for cross-device sync
   STORES: {
     USERS: "users",
     VERBS: "verbs",
@@ -436,6 +436,7 @@ export const STORAGE_CONFIG = {
     LEARNING_SESSIONS: "learning_sessions",
     CHALLENGES: "daily_challenges",
     EVENTS: "events",
+    USER_SETTINGS: "user_settings",
   },
 };
 

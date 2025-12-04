@@ -254,4 +254,36 @@ const useSettings = create(
   )
 )
 
+// Persist settings to IndexedDB for cross-device sync
+let isHydrated = false
+
+useSettings.subscribe((state) => {
+  // Skip initial hydration from localStorage
+  if (!isHydrated) {
+    isHydrated = true
+    return
+  }
+
+  // Persist to IndexedDB for sync (debounced)
+  persistSettingsToIndexedDB(state)
+})
+
+let persistTimeout = null
+async function persistSettingsToIndexedDB(settings) {
+  // Debounce: wait 1 second after last change
+  clearTimeout(persistTimeout)
+  persistTimeout = setTimeout(async () => {
+    try {
+      const { saveUserSettings } = await import('../lib/progress/database.js')
+      const userId = localStorage.getItem('userId')
+
+      if (!userId) return // Not logged in yet
+
+      await saveUserSettings(userId, settings)
+    } catch (error) {
+      console.warn('Failed to persist settings to IndexedDB:', error)
+    }
+  }, 1000)
+}
+
 export { useSettings, LEVELS } 

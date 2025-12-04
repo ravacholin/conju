@@ -407,6 +407,23 @@ export async function initDB() {
                 logger.info("initDB", "Tabla de eventos auxiliares creada");
             }
 
+            // Crear tabla de user settings para cross-device sync
+            if (!db.objectStoreNames.contains(STORAGE_CONFIG.STORES.USER_SETTINGS)) {
+              const settingsStore = db.createObjectStore(
+                STORAGE_CONFIG.STORES.USER_SETTINGS,
+                { keyPath: "id" },
+              );
+              settingsStore.createIndex("userId", "userId", { unique: false });
+              settingsStore.createIndex("updatedAt", "updatedAt", {
+                unique: false,
+              });
+              settingsStore.createIndex("syncedAt", "syncedAt", {
+                unique: false,
+              });
+              if (isDev)
+                logger.info("initDB", "Tabla de user settings creada");
+            }
+
             // Add compound index for attempts if it doesn't exist
             if (
               transaction &&
@@ -2065,6 +2082,90 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
       "Error crítico revirtiendo migración",
       error,
     );
+    throw error;
+  }
+}
+
+/**
+ * Guarda user settings en IndexedDB
+ * @param {string} userId - ID del usuario
+ * @param {Object} settings - Configuración del usuario
+ * @returns {Promise<Object>} - Settings guardado con ID y timestamps
+ */
+export async function saveUserSettings(userId, settings) {
+  try {
+    const settingsRecord = {
+      id: `settings-${userId}-${Date.now()}`,
+      userId,
+      settings,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      synced: false,
+      syncedAt: 0
+    };
+
+    await saveToDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsRecord);
+    return settingsRecord;
+  } catch (error) {
+    logger.error('saveUserSettings', 'Error guardando settings', error);
+    throw error;
+  }
+}
+
+/**
+ * Obtiene los últimos settings de un usuario
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<Object|null>} - Settings más recientes o null
+ */
+export async function getUserSettings(userId) {
+  try {
+    const db = await initDB();
+    const tx = db.transaction(STORAGE_CONFIG.STORES.USER_SETTINGS, 'readonly');
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.USER_SETTINGS);
+    const index = store.index('userId');
+
+    const allSettings = await index.getAll(userId);
+
+    if (!allSettings || allSettings.length === 0) {
+      return null;
+    }
+
+    // Retornar el más reciente (por updatedAt)
+    const sorted = allSettings.sort((a, b) =>
+      new Date(b.updatedAt) - new Date(a.updatedAt)
+    );
+
+    return sorted[0];
+  } catch (error) {
+    logger.error('getUserSettings', 'Error obteniendo settings', error);
+    return null;
+  }
+}
+
+/**
+ * Marca settings como sincronizados
+ * @param {string[]} settingsIds - IDs de los settings a marcar
+ * @returns {Promise<void>}
+ */
+export async function markSettingsAsSynced(settingsIds) {
+  try {
+    const db = await initDB();
+    const tx = db.transaction(STORAGE_CONFIG.STORES.USER_SETTINGS, 'readwrite');
+    const store = tx.objectStore(STORAGE_CONFIG.STORES.USER_SETTINGS);
+
+    const now = Date.now();
+    for (const id of settingsIds) {
+      const record = await store.get(id);
+      if (record) {
+        record.synced = true;
+        record.syncedAt = now;
+        await store.put(record);
+      }
+    }
+
+    await tx.done;
+  } catch (error) {
+    logger.error('markSettingsAsSynced', 'Error marcando settings como sincronizados', error);
     throw error;
   }
 }

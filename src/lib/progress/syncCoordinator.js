@@ -234,7 +234,7 @@ export async function syncAccountData() {
     // Optional upload step: push local unsynced data to server (compatible con tests)
     const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
     let anyUploadFailed = false
-    let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0 }
+    let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0 }
 
     try {
       // Attempts
@@ -300,6 +300,51 @@ export async function syncAccountData() {
         anyUploadFailed = true
         safeLogger.error('syncAccountData: sessions upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
+
+      // Settings
+      try {
+        const unsyncedSettings = await getUnsyncedItems(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
+        if (unsyncedSettings.length > 0) {
+          safeLogger.info('syncAccountData: uploading settings', { count: unsyncedSettings.length })
+          const res = await tryBulk('settings', unsyncedSettings)
+          await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings.map((s) => s.id))
+          uploaded.settings = unsyncedSettings.length
+          safeLogger.info('syncAccountData: settings uploaded successfully', { count: unsyncedSettings.length, server: res })
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.error('syncAccountData: settings upload failed', { message: e?.message || String(e), stack: e?.stack })
+      }
+
+      // Challenges
+      try {
+        const unsyncedChallenges = await getUnsyncedItems(STORAGE_CONFIG.STORES.CHALLENGES, resolvedUserId)
+        if (unsyncedChallenges.length > 0) {
+          safeLogger.info('syncAccountData: uploading challenges', { count: unsyncedChallenges.length })
+          const res = await tryBulk('challenges', unsyncedChallenges)
+          await markSynced(STORAGE_CONFIG.STORES.CHALLENGES, unsyncedChallenges.map((c) => c.id))
+          uploaded.challenges = unsyncedChallenges.length
+          safeLogger.info('syncAccountData: challenges uploaded successfully', { count: unsyncedChallenges.length, server: res })
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.error('syncAccountData: challenges upload failed', { message: e?.message || String(e), stack: e?.stack })
+      }
+
+      // Events
+      try {
+        const unsyncedEvents = await getUnsyncedItems(STORAGE_CONFIG.STORES.EVENTS, resolvedUserId)
+        if (unsyncedEvents.length > 0) {
+          safeLogger.info('syncAccountData: uploading events', { count: unsyncedEvents.length })
+          const res = await tryBulk('events', unsyncedEvents)
+          await markSynced(STORAGE_CONFIG.STORES.EVENTS, unsyncedEvents.map((e) => e.id))
+          uploaded.events = unsyncedEvents.length
+          safeLogger.info('syncAccountData: events uploaded successfully', { count: unsyncedEvents.length, server: res })
+        }
+      } catch (e) {
+        anyUploadFailed = true
+        safeLogger.error('syncAccountData: events upload failed', { message: e?.message || String(e), stack: e?.stack })
+      }
     } catch (uploadErr) {
       anyUploadFailed = true
       safeLogger.error('syncAccountData: unexpected error during upload step', { message: uploadErr?.message || String(uploadErr), stack: uploadErr?.stack })
@@ -311,7 +356,10 @@ export async function syncAccountData() {
         uploadedAttempts: uploaded.attempts,
         uploadedMastery: uploaded.mastery,
         uploadedSchedules: uploaded.schedules,
-        uploadedSessions: uploaded.sessions
+        uploadedSessions: uploaded.sessions,
+        uploadedSettings: uploaded.settings,
+        uploadedChallenges: uploaded.challenges,
+        uploadedEvents: uploaded.events
       })
     } else {
       safeLogger.info('syncAccountData: sincronización de cuenta completada exitosamente', {
@@ -319,7 +367,10 @@ export async function syncAccountData() {
         uploadedAttempts: uploaded.attempts,
         uploadedMastery: uploaded.mastery,
         uploadedSchedules: uploaded.schedules,
-        uploadedSessions: uploaded.sessions
+        uploadedSessions: uploaded.sessions,
+        uploadedSettings: uploaded.settings,
+        uploadedChallenges: uploaded.challenges,
+        uploadedEvents: uploaded.events
       })
     }
 

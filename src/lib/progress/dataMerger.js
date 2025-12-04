@@ -105,7 +105,7 @@ function notifySyncIssue(reason, message) {
 }
 
 export async function mergeAccountDataLocally(accountData) {
-  const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, conflicts: 0 }
+  const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0, conflicts: 0 }
   const resolution = resolveMergeUserId(accountData)
   const currentUserId = resolution.userId
 
@@ -430,6 +430,133 @@ export async function mergeAccountDataLocally(accountData) {
           name: error?.name
         })
         results.conflicts += schedulesToUpdate.length
+      }
+    }
+  }
+
+  // Settings merge - use most recent settings from server
+  if (accountData?.settings) {
+    try {
+      const { useSettings } = await import('../state/settings.js')
+      const currentSettings = useSettings.getState()
+      const serverUpdatedAt = new Date(accountData.settings.updatedAt || 0).getTime()
+      const localUpdatedAt = new Date(currentSettings.lastUpdated || 0).getTime()
+
+      if (serverUpdatedAt > localUpdatedAt) {
+        // Server has newer settings, apply them
+        useSettings.setState(accountData.settings)
+        results.settings = 1
+        safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
+          serverUpdatedAt: accountData.settings.updatedAt,
+          localUpdatedAt: currentSettings.lastUpdated
+        })
+      } else {
+        safeLogger.info('mergeAccountDataLocally: kept local settings (newer or equal)', {
+          serverUpdatedAt: accountData.settings.updatedAt,
+          localUpdatedAt: currentSettings.lastUpdated
+        })
+      }
+    } catch (error) {
+      safeLogger.warn('mergeAccountDataLocally: error merging settings', {
+        message: error?.message || String(error),
+        name: error?.name
+      })
+      results.conflicts++
+    }
+  }
+
+  // Challenges merge
+  if (accountData?.challenges && Array.isArray(accountData.challenges)) {
+    const challengesToSave = []
+    const allChallenges = await getAllFromDB(STORAGE_CONFIG.STORES.CHALLENGES)
+    const challengeMap = new Map()
+
+    allChallenges.forEach(challenge => {
+      if (challenge?.id) challengeMap.set(challenge.id, challenge)
+    })
+
+    for (const remoteChallenge of accountData.challenges) {
+      try {
+        const existing = challengeMap.get(remoteChallenge.id)
+        if (!existing) {
+          const localChallenge = {
+            ...remoteChallenge,
+            userId: currentUserId,
+            syncedAt: new Date()
+          }
+          challengesToSave.push(localChallenge)
+          challengeMap.set(remoteChallenge.id, localChallenge)
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error merging challenge', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts++
+      }
+    }
+
+    if (challengesToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.CHALLENGES, challengesToSave, { skipTimestamps: true })
+        results.challenges += batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error in batch save of challenges', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += challengesToSave.length
+      }
+    }
+  }
+
+  // Events merge
+  if (accountData?.events && Array.isArray(accountData.events)) {
+    const eventsToSave = []
+    const allEvents = await getAllFromDB(STORAGE_CONFIG.STORES.EVENTS)
+    const eventMap = new Map()
+
+    allEvents.forEach(event => {
+      if (event?.id) eventMap.set(event.id, event)
+    })
+
+    for (const remoteEvent of accountData.events) {
+      try {
+        const existing = eventMap.get(remoteEvent.id)
+        if (!existing) {
+          const localEvent = {
+            ...remoteEvent,
+            userId: currentUserId,
+            syncedAt: new Date()
+          }
+          eventsToSave.push(localEvent)
+          eventMap.set(remoteEvent.id, localEvent)
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error merging event', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts++
+      }
+    }
+
+    if (eventsToSave.length > 0) {
+      try {
+        const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.EVENTS, eventsToSave, { skipTimestamps: true })
+        results.events += batchResult.saved
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error in batch save of events', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += eventsToSave.length
       }
     }
   }

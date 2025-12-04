@@ -103,6 +103,9 @@ export function createRoutes() {
   r.post('/progress/mastery/bulk', handleBulk('mastery'))
   r.post('/progress/schedules/bulk', handleBulk('schedules'))
   r.post('/progress/sessions/bulk', handleBulk('sessions'))
+  r.post('/progress/settings/bulk', handleBulk('user_settings'))
+  r.post('/progress/challenges/bulk', handleBulk('daily_challenges'))
+  r.post('/progress/events/bulk', handleBulk('events'))
 
   // Export endpoints (per user)
   r.get('/progress/export', (req, res) => {

@@ -403,10 +403,31 @@ export function mergeAccountData(accountId) {
     }
   })
 
+  // Fetch user settings - use most recent settings across all devices
+  const settings = db.prepare(`
+    SELECT settings, updated_at FROM user_settings WHERE account_id = ?
+    ORDER BY updated_at DESC LIMIT 1
+  `).get(accountId)
+
+  const latestSettings = settings ? JSON.parse(settings.settings) : null
+
+  // Fetch daily challenges
+  const challenges = db.prepare(`
+    SELECT challenge_data FROM daily_challenges WHERE account_id = ?
+  `).all(accountId).map(r => JSON.parse(r.challenge_data))
+
+  // Fetch events
+  const events = db.prepare(`
+    SELECT event_data FROM events WHERE account_id = ?
+  `).all(accountId).map(r => JSON.parse(r.event_data))
+
   return {
     attempts,
     mastery: Array.from(mergedMastery.values()),
     schedules: Array.from(mergedSchedules.values()),
-    sessions: Array.from(mergedSessions.values())
+    sessions: Array.from(mergedSessions.values()),
+    settings: latestSettings,
+    challenges,
+    events
   }
 }

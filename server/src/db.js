@@ -95,6 +95,50 @@ export function migrate() {
     );
     CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_sessions_updated ON sessions(updated_at);
+
+    -- User settings table for cross-device sync
+    CREATE TABLE IF NOT EXISTS user_settings (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      account_id TEXT NOT NULL,
+      settings TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_user_settings_user ON user_settings(user_id);
+    CREATE INDEX IF NOT EXISTS idx_user_settings_account ON user_settings(account_id);
+    CREATE INDEX IF NOT EXISTS idx_user_settings_updated ON user_settings(updated_at);
+
+    -- Daily challenges table for cross-device sync
+    CREATE TABLE IF NOT EXISTS daily_challenges (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      account_id TEXT NOT NULL,
+      challenge_data TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_daily_challenges_user ON daily_challenges(user_id);
+    CREATE INDEX IF NOT EXISTS idx_daily_challenges_account ON daily_challenges(account_id);
+    CREATE INDEX IF NOT EXISTS idx_daily_challenges_created ON daily_challenges(created_at);
+
+    -- Events table for cross-device sync
+    CREATE TABLE IF NOT EXISTS events (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      account_id TEXT NOT NULL,
+      event_data TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id);
+    CREATE INDEX IF NOT EXISTS idx_events_account ON events(account_id);
+    CREATE INDEX IF NOT EXISTS idx_events_created ON events(created_at);
   `)
 }
 
