@@ -450,7 +450,7 @@ export async function mergeAccountDataLocally(accountData) {
         useSettings.setState(accountData.settings)
 
         // Persist to IndexedDB immediately to prevent re-upload
-        await saveUserSettings(userId, accountData.settings)
+        await saveUserSettings(currentUserId, accountData.settings)
 
         results.settings = 1
         safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
