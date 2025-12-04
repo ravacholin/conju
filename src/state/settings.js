@@ -276,8 +276,6 @@ const useSettings = create(
 )
 
 // Persist settings to IndexedDB for cross-device sync
-let isHydrated = false
-
 // Flag to skip initial hydration event from Zustand persist middleware
 let isHydrated = false
 
