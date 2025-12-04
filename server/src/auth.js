@@ -9,7 +9,7 @@ export async function authMiddleware(req, res, next) {
     token = auth.slice(7).trim()
   }
 
-  // Always validate JWT when present to populate req.accountId
+  // Validate JWT when present. If invalid, fallback to header-based identity for progress endpoints.
   if (token) {
     try {
       const { verifyJWT } = await import('./auth-service.js')
@@ -29,10 +29,12 @@ export async function authMiddleware(req, res, next) {
       req.accountId = decoded.accountId
       console.log(`🔵 Extracted userId from JWT: ${userId}, accountId: ${decoded.accountId}`)
     } catch (error) {
-      console.log(`⚠️ JWT verification failed: ${error.message}`)
-      return res.status(401).json({ error: 'Invalid auth token' })
+      // Fallback: accept X-User-Id or X-API-Key for progress routes without account linkage
+      console.log(`⚠️ JWT verification failed. Falling back to header-based identity if provided: ${error.message}`)
     }
-  } else if (!userId && apiKey) {
+  }
+
+  if (!userId && apiKey) {
     userId = apiKey.trim()
   }
 

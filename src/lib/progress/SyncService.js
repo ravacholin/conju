@@ -401,6 +401,7 @@ export async function postJSON(path, body, timeoutMs = 30000) {
     }
 
     if (isJwt) {
+      // Valid JWT: use Authorization and also include X-User-Id for server-side enrichment
       headers.Authorization = `Bearer ${authToken}`
 
       if (headerName && headerName.toLowerCase() !== 'authorization') {
@@ -416,10 +417,18 @@ export async function postJSON(path, body, timeoutMs = 30000) {
       }
     } else if (token && headerName) {
       const normalizedHeader = headerName.toLowerCase()
-      headers[headerName] = normalizedHeader === 'authorization' ? `Bearer ${token}` : token
-
-      if (!headers['X-User-Id'] && normalizedHeader !== 'x-user-id' && resolvedUserId) {
-        headers['X-User-Id'] = resolvedUserId
+      if (normalizedHeader === 'authorization') {
+        // Never send a non‑JWT as Authorization; fall back to X-User-Id / X-API-Key
+        if (resolvedUserId) {
+          headers['X-User-Id'] = resolvedUserId
+        }
+        // Optionally send as API key for servers that support it
+        headers['X-API-Key'] = token
+      } else {
+        headers[headerName] = token
+        if (!headers['X-User-Id'] && normalizedHeader !== 'x-user-id' && resolvedUserId) {
+          headers['X-User-Id'] = resolvedUserId
+        }
       }
     } else if (resolvedUserId) {
       headers['X-User-Id'] = resolvedUserId
