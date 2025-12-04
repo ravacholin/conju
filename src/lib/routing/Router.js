@@ -17,10 +17,10 @@ class Router {
     this.currentRoute = null
     this.listeners = new Set()
     this.isNavigating = false
-    
+
     // Bind methods to maintain context
     this.handlePopState = this.handlePopState.bind(this)
-    
+
     // Initialize
     this.init()
   }
@@ -28,7 +28,7 @@ class Router {
   init() {
     // Listen for browser back/forward events
     window.addEventListener('popstate', this.handlePopState)
-    
+
     // Parse initial route from URL
     this.currentRoute = this.parseCurrentURL()
   }
@@ -75,10 +75,18 @@ class Router {
    */
   navigate(route, options = {}) {
     if (this.isNavigating) return Promise.resolve()
-    
+
     try {
+      // Safety timeout to prevent infinite lock
+      const safetyTimeout = setTimeout(() => {
+        if (this.isNavigating) {
+          console.warn('Router: Navigation timed out, forcing reset')
+          this.isNavigating = false
+        }
+      }, 2000)
+
       this.isNavigating = true
-      
+
       const newRoute = {
         mode: route.mode || 'onboarding',
         step: route.step || null,
@@ -93,13 +101,13 @@ class Router {
       }
 
       // Update browser history
-      const historyState = { 
-        appNav: true, 
+      const historyState = {
+        appNav: true,
         ...newRoute
       }
 
       const url = this.buildURL(newRoute)
-      
+
       if (options.replace) {
         window.history.replaceState(historyState, '', url)
       } else {
@@ -109,7 +117,7 @@ class Router {
       // Update current route and notify listeners
       this.currentRoute = newRoute
       this.notifyListeners(newRoute, 'navigate')
-      
+
       return Promise.resolve()
     } catch (error) {
       console.error('Navigation error:', error)
@@ -125,10 +133,10 @@ class Router {
   handlePopState(event) {
     debug('group', '🔙 Router PopState')
     debug('log', 'History event state:', event.state)
-    
+
     try {
       const state = event.state || window.history.state || {}
-      
+
       if (state && state.appNav) {
         // Valid app navigation state
         const route = {
@@ -136,7 +144,7 @@ class Router {
           step: state.step || null,
           timestamp: state.timestamp || Date.now()
         }
-        
+
         debug('log', '📋 Valid app navigation state found:', route)
         this.currentRoute = route
         this.notifyListeners(route, 'popstate')
@@ -178,9 +186,9 @@ class Router {
     if (typeof listener !== 'function') {
       throw new Error('Router listener must be a function')
     }
-    
+
     this.listeners.add(listener)
-    
+
     // Return unsubscribe function
     return () => {
       this.listeners.delete(listener)
@@ -211,8 +219,8 @@ class Router {
    * Check if currently on a specific route
    */
   isCurrentRoute(mode, step = null) {
-    return this.currentRoute?.mode === mode && 
-           (step === null || this.currentRoute?.step === step)
+    return this.currentRoute?.mode === mode &&
+      (step === null || this.currentRoute?.step === step)
   }
 
   /**

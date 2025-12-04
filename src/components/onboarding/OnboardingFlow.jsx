@@ -89,9 +89,9 @@ import PlacementTest from '../levels/PlacementTest.jsx'
  * @param {Object} props - Propiedades del componente según la documentación JSDoc superior
  * @returns {JSX.Element} El componente de flujo de onboarding
  */
-function OnboardingFlow({ 
-  onStartPractice, 
-  setCurrentMode, 
+function OnboardingFlow({
+  onStartPractice,
+  setCurrentMode,
   formsForRegion,
   onStartLearningNewTense,
   // Hook functions from AppRouter
@@ -123,29 +123,69 @@ function OnboardingFlow({
   const dialectLabel = (d) => ({ rioplatense: 'Rioplatense', la_general: 'Latinoamericano', peninsular: 'Peninsular', both: 'Todos' }[d] || 'Configurado')
 
   // Wrap handlers to add toasts
+  // Wrap handlers to add toasts
   const handleSelectDialect = (d) => {
-    try { selectDialect(d); showToast(`Dialecto ${dialectLabel(d)} configurado`) } catch { /* ignore errors */ }
+    try {
+      selectDialect(d)
+      showToast(`Dialecto ${dialectLabel(d)} configurado`)
+    } catch (error) {
+      console.error('Error selecting dialect:', error)
+      showToast('Error al configurar dialecto', 'error')
+    }
   }
   const handleSelectLevel = (lvl) => {
-    try { selectLevel(lvl); showToast(`Nivel ${lvl} establecido`) } catch { /* ignore errors */ }
+    try {
+      selectLevel(lvl)
+      showToast(`Nivel ${lvl} establecido`)
+    } catch (error) {
+      console.error('Error selecting level:', error)
+      showToast('Error al establecer nivel', 'error')
+    }
   }
   const handleSelectPracticeMode = (mode) => {
     try {
       selectPracticeMode(mode, onStartPractice);
       showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : mode === 'specific' ? 'Específica' : mode}`)
-    } catch { /* ignore errors */ }
+    } catch (error) {
+      console.error('Error selecting practice mode:', error)
+      showToast('Error al seleccionar modo', 'error')
+    }
   }
   const handleSelectMood = (mood) => {
-    try { selectMood(mood); showToast(`Modo seleccionado`) } catch { /* ignore errors */ }
+    try {
+      selectMood(mood)
+      showToast(`Modo seleccionado`)
+    } catch (error) {
+      console.error('Error selecting mood:', error)
+      showToast('Error al seleccionar modo', 'error')
+    }
   }
   const handleSelectTense = (tense) => {
-    try { selectTense(tense); showToast(`Tiempo seleccionado`) } catch { /* ignore errors */ }
+    try {
+      selectTense(tense)
+      showToast(`Tiempo seleccionado`)
+    } catch (error) {
+      console.error('Error selecting tense:', error)
+      showToast('Error al seleccionar tiempo', 'error')
+    }
   }
   const handleSelectVerbType = (verbType, onStart) => {
-    try { selectVerbType(verbType, onStart); showToast(`Tipo: ${verbType}`) } catch { /* ignore errors */ }
+    try {
+      selectVerbType(verbType, onStart)
+      showToast(`Tipo: ${verbType}`)
+    } catch (error) {
+      console.error('Error selecting verb type:', error)
+      showToast('Error al seleccionar tipo', 'error')
+    }
   }
   const handleSelectFamily = (familyId, onStart) => {
-    try { selectFamily(familyId, onStart); showToast(`Familia seleccionada`) } catch { /* ignore errors */ }
+    try {
+      selectFamily(familyId, onStart)
+      showToast(`Familia seleccionada`)
+    } catch (error) {
+      console.error('Error selecting family:', error)
+      showToast('Error al seleccionar familia', 'error')
+    }
   }
 
   // Level test handlers
@@ -228,112 +268,112 @@ function OnboardingFlow({
               <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
                 <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
               </ClickableCard>
-          
-          {/* Step 1: Dialect Selection */}
-          {onboardingStep === 1 && (
-            <DialectSelection onSelectDialect={handleSelectDialect} />
-          )}
 
-          {/* Step 2: Level Selection Mode */}
-          {onboardingStep === 2 && (
-            <LevelSelection
-              onSelectLevel={handleSelectLevel}
-              onSelectPracticeMode={handleSelectPracticeMode}
-              onGoToLevelDetails={goToLevelDetails}
-              onBack={handleBack}
-              showLevelDetails={false}
-              onGoToProgress={onGoToProgress}
-              onStartLearningNewTense={onStartLearningNewTense}
-              onStartLevelTest={handleStartLevelTest}
-            />
-          )}
+              {/* Step 1: Dialect Selection */}
+              {onboardingStep === 1 && (
+                <DialectSelection onSelectDialect={handleSelectDialect} />
+              )}
 
-          {/* Step 3: Specific Level Selection */}
-          {onboardingStep === 3 && (
-            <LevelSelection
-              onSelectLevel={handleSelectLevel}
-              onSelectPracticeMode={handleSelectPracticeMode}
-              onGoToLevelDetails={goToLevelDetails}
-              onBack={handleBack}
-              showLevelDetails={true}
-              onStartLevelTest={handleStartLevelTest}
-            />
-          )}
+              {/* Step 2: Level Selection Mode */}
+              {onboardingStep === 2 && (
+                <LevelSelection
+                  onSelectLevel={handleSelectLevel}
+                  onSelectPracticeMode={handleSelectPracticeMode}
+                  onGoToLevelDetails={goToLevelDetails}
+                  onBack={handleBack}
+                  showLevelDetails={false}
+                  onGoToProgress={onGoToProgress}
+                  onStartLearningNewTense={onStartLearningNewTense}
+                  onStartLevelTest={handleStartLevelTest}
+                />
+              )}
 
-          {/* Step 4: Practice Mode Selection */}
-          {onboardingStep === 4 && (
-            <PracticeModeSelection 
-              onSelectPracticeMode={handleSelectPracticeMode}
-              onBack={handleBack}
-              settings={settings}
-            />
-          )}
+              {/* Step 3: Specific Level Selection */}
+              {onboardingStep === 3 && (
+                <LevelSelection
+                  onSelectLevel={handleSelectLevel}
+                  onSelectPracticeMode={handleSelectPracticeMode}
+                  onGoToLevelDetails={goToLevelDetails}
+                  onBack={handleBack}
+                  showLevelDetails={true}
+                  onStartLevelTest={handleStartLevelTest}
+                />
+              )}
 
-          {/* Step 5: MoodTenseSelection (for theme practice) OR VerbTypeSelection (for mixed practice) */}
-          {onboardingStep === 5 && (
-            <>
-              {settings.practiceMode === 'mixed' ? (
-                <VerbTypeSelection 
+              {/* Step 4: Practice Mode Selection */}
+              {onboardingStep === 4 && (
+                <PracticeModeSelection
+                  onSelectPracticeMode={handleSelectPracticeMode}
+                  onBack={handleBack}
+                  settings={settings}
+                />
+              )}
+
+              {/* Step 5: MoodTenseSelection (for theme practice) OR VerbTypeSelection (for mixed practice) */}
+              {onboardingStep === 5 && (
+                <>
+                  {settings.practiceMode === 'mixed' ? (
+                    <VerbTypeSelection
+                      onSelectVerbType={(verbType) => handleSelectVerbType(verbType, onStartPractice)}
+                      onBack={handleBack}
+                    />
+                  ) : (
+                    <MoodTenseSelection
+                      formsForRegion={formsForRegion}
+                      settings={settings}
+                      onSelectMood={handleSelectMood}
+                      onSelectTense={handleSelectTense}
+                      onBack={handleBack}
+                      getAvailableMoodsForLevel={getAvailableMoodsForLevel}
+                      getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
+                      getModeSamples={getModeSamples}
+                      getConjugationExample={getConjugationExample}
+                    />
+                  )}
+                </>
+              )}
+
+              {/* Step 6: MoodTenseSelection for mixed practice OR Tense selection after mood in theme practice */}
+              {onboardingStep === 6 && (
+                <>
+                  {settings.practiceMode === 'mixed' && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
+                    <FamilySelection
+                      settings={settings}
+                      onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
+                      onBack={handleBack}
+                    />
+                  ) : (
+                    <MoodTenseSelection
+                      formsForRegion={formsForRegion}
+                      settings={settings}
+                      onSelectMood={handleSelectMood}
+                      onSelectTense={handleSelectTense}
+                      onBack={handleBack}
+                      getAvailableMoodsForLevel={getAvailableMoodsForLevel}
+                      getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
+                      getModeSamples={getModeSamples}
+                      getConjugationExample={getConjugationExample}
+                    />
+                  )}
+                </>
+              )}
+
+              {/* Step 7: VerbTypeSelection for any practice mode */}
+              {onboardingStep === 7 && (
+                <VerbTypeSelection
                   onSelectVerbType={(verbType) => handleSelectVerbType(verbType, onStartPractice)}
                   onBack={handleBack}
                 />
-              ) : (
-                <MoodTenseSelection 
-                  formsForRegion={formsForRegion}
-                  settings={settings}
-                  onSelectMood={handleSelectMood}
-                  onSelectTense={handleSelectTense}
-                  onBack={handleBack}
-                  getAvailableMoodsForLevel={getAvailableMoodsForLevel}
-                  getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
-                  getModeSamples={getModeSamples}
-                  getConjugationExample={getConjugationExample}
-                />
               )}
-            </>
-          )}
 
-          {/* Step 6: MoodTenseSelection for mixed practice OR Tense selection after mood in theme practice */}
-          {onboardingStep === 6 && (
-            <>
-              {settings.practiceMode === 'mixed' && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) ? (
-                <FamilySelection 
+              {/* Step 8: Family Selection for Irregular Verbs */}
+              {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
+                <FamilySelection
                   settings={settings}
                   onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
                   onBack={handleBack}
                 />
-              ) : (
-                <MoodTenseSelection 
-                  formsForRegion={formsForRegion}
-                  settings={settings}
-                  onSelectMood={handleSelectMood}
-                  onSelectTense={handleSelectTense}
-                  onBack={handleBack}
-                  getAvailableMoodsForLevel={getAvailableMoodsForLevel}
-                  getAvailableTensesForLevelAndMood={getAvailableTensesForLevelAndMood}
-                  getModeSamples={getModeSamples}
-                  getConjugationExample={getConjugationExample}
-                />
               )}
-            </>
-          )}
-
-          {/* Step 7: VerbTypeSelection for any practice mode */}
-          {onboardingStep === 7 && (
-            <VerbTypeSelection 
-              onSelectVerbType={(verbType) => handleSelectVerbType(verbType, onStartPractice)}
-              onBack={handleBack}
-            />
-          )}
-
-          {/* Step 8: Family Selection for Irregular Verbs */}
-          {onboardingStep === 8 && settings.verbType === 'irregular' && !(settings.specificMood === 'nonfinite' && (settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed')) && (
-            <FamilySelection 
-              settings={settings}
-              onSelectFamily={(familyId) => handleSelectFamily(familyId, onStartPractice)}
-              onBack={handleBack}
-            />
-          )}
             </>
           )}
         </div>
