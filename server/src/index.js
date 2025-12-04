@@ -10,7 +10,9 @@ import socialRoutes from './social-routes.js'
 
 const PORT = process.env.PORT || 8787
 const API_PREFIX = process.env.API_PREFIX || '/api'
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://verb-os.vercel.app,http://localhost:5173,http://localhost:4173'
+// Permit all origins by default to avoid CORS issues across environments.
+// Set CORS_ORIGIN env var to a comma-separated allowlist in production if needed.
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*'
 
 migrate()
 
