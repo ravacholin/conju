@@ -104,5 +104,53 @@ describe('dataMerger', () => {
       window.dispatchEvent = originalDispatch
     }
   })
-})
 
+  it('applies server settings on fresh device (no local DB record)', async () => {
+    const applied = { called: false, state: null }
+    const saved = { called: false, record: null, opts: null }
+
+    vi.doMock('./authBridge.js', () => ({
+      getAuthenticatedUser: () => ({ id: 'auth-user-xyz' })
+    }))
+    vi.doMock('./userSettingsStore.js', () => ({
+      getCurrentUserId: () => 'auth-user-xyz'
+    }))
+    // Mock DB helpers: no local settings in IndexedDB, and capture saveUserSettings
+    vi.doMock('./database.js', () => ({
+      getAllFromDB: vi.fn(async () => []),
+      batchSaveToDB: vi.fn(async () => ({ saved: 0, errors: [] })),
+      batchUpdateInDB: vi.fn(async () => ({ updated: 0, errors: [] })),
+      getUserSettings: vi.fn(async () => null),
+      saveUserSettings: vi.fn(async (_userId, settings, opts) => {
+        saved.called = true
+        saved.record = settings
+        saved.opts = opts
+        return { id: 'settings-auth-user-xyz', userId: 'auth-user-xyz', settings, updatedAt: Date.now(), synced: true, syncedAt: Date.now() }
+      })
+    }))
+    // Mock settings store: local has recent defaults, ensure setState gets called with server values
+    vi.doMock('../../state/settings.js', () => ({
+      useSettings: {
+        getState: () => ({ userLevel: 'A1', level: 'A1', lastUpdated: Date.now() }),
+        setState: (next) => { applied.called = true; applied.state = next }
+      }
+    }))
+
+    const { mergeAccountDataLocally } = await import('./dataMerger.js')
+
+    // Server returns C1 settings with older lastUpdated than the local default's timestamp
+    const serverSettings = {
+      settings: { userLevel: 'C1', level: 'C1', lastUpdated: Date.now() - 1000 }
+    }
+
+    const result = await mergeAccountDataLocally({ settings: serverSettings })
+
+    expect(result).toMatchObject({ userId: 'auth-user-xyz' })
+    // Should apply server settings despite local having a very recent lastUpdated,
+    // because there is no local IndexedDB record (fresh device)
+    expect(applied.called).toBe(true)
+    expect(applied.state.userLevel).toBe('C1')
+    expect(saved.called).toBe(true)
+    expect(saved.opts).toMatchObject({ alreadySynced: true })
+  })
+})

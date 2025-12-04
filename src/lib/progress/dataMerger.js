@@ -435,35 +435,46 @@ export async function mergeAccountDataLocally(accountData) {
   }
 
   // Settings merge - use most recent settings from server
-  // CRITICAL: Server settings come in format {id, userId, settings: {...actualSettings...}}
-  // We need to extract the inner settings object, not use the wrapper directly
+  // CRITICAL: Server settings may come as {id, userId, settings: {...}} or directly as the settings object
+  // To avoid "fresh device" overriding server settings due to recent local defaults,
+  // prefer server when there is no local IndexedDB record for this user's settings.
   if (accountData?.settings) {
     try {
       const { useSettings } = await import('../../state/settings.js')
-      const { saveUserSettings } = await import('./database.js')
+      const { saveUserSettings, getUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
 
       // Extract actual settings - handle both wrapped {settings: {...}} and direct format
       const serverSettingsRecord = accountData.settings
       const actualServerSettings = serverSettingsRecord?.settings || serverSettingsRecord
 
-      // Get timestamps from the correct locations
-      // Server record has updatedAt at top level, actual settings have lastUpdated inside
+      // Determine authoritative timestamps
       const serverUpdatedAt = serverSettingsRecord?.updatedAt ||
         actualServerSettings?.lastUpdated ||
         actualServerSettings?.updatedAt || 0
-      const localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
+
+      // Look up the last persisted settings from IndexedDB for this user
+      // If none exist, treat localUpdatedAt as 0 so server wins on fresh devices
+      let localUpdatedAt = 0
+      try {
+        const localDbSettings = await getUserSettings(currentUserId)
+        localUpdatedAt = localDbSettings?.updatedAt || currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
+      } catch {
+        localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
+      }
 
       console.log('🔄 SYNC: Settings merge comparison:', {
-        serverUpdatedAt: new Date(serverUpdatedAt).toISOString(),
-        localUpdatedAt: new Date(localUpdatedAt).toISOString(),
+        serverUpdatedAt: new Date(serverUpdatedAt || 0).toISOString(),
+        localUpdatedAt: new Date(localUpdatedAt || 0).toISOString(),
         serverIsNewer: serverUpdatedAt > localUpdatedAt,
         serverUserLevel: actualServerSettings?.userLevel,
         localUserLevel: currentSettings?.userLevel,
         hasNestedSettings: !!serverSettingsRecord?.settings
       })
 
-      if (serverUpdatedAt > localUpdatedAt) {
+      const shouldApplyServer = serverUpdatedAt > localUpdatedAt
+
+      if (shouldApplyServer) {
         // Server has newer settings, apply them
         // Merge with existing state to preserve any local-only properties
         const mergedSettings = { ...currentSettings, ...actualServerSettings, lastUpdated: serverUpdatedAt }
@@ -475,7 +486,7 @@ export async function mergeAccountDataLocally(accountData) {
         await saveUserSettings(currentUserId, mergedSettings, { alreadySynced: true })
 
         results.settings = 1
-        safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
+        safeLogger.info('mergeAccountDataLocally: applied server settings (authoritative or newer)', {
           serverUpdatedAt,
           localUpdatedAt,
           serverUserLevel: actualServerSettings?.userLevel,
@@ -649,4 +660,3 @@ export const __testing = {
   extractUserIdFromAccountData,
   notifySyncIssue
 }
-

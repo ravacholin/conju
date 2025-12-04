@@ -969,3 +969,15 @@ function App() {
 ---
 
 🎉 **¡El sistema de progreso y analíticas está completamente implementado y listo para mejorar la experiencia de aprendizaje de los usuarios!**
+
+---
+
+### ⚙️ Precedencia de Settings (Sync)
+
+Para garantizar que el nivel, región y otras preferencias del usuario se sincronicen correctamente entre dispositivos:
+
+- Dispositivo nuevo (sin registro en IndexedDB para `USER_SETTINGS` del usuario actual): los settings del servidor son autoritativos y se aplican localmente en la primera sincronización.
+- Dispositivo existente: se aplica last‑write‑wins comparando `server.updatedAt` vs `local.updatedAt`/`local.lastUpdated`.
+- Persistencia: cuando se aplican settings del servidor, se guardan en IndexedDB con `{ alreadySynced: true }` para evitar subidas redundantes.
+
+Motivación: el estado local por defecto de `useSettings` se crea con un `lastUpdated` muy reciente. Sin este criterio, un dispositivo nuevo podía sobreescribir indebidamente los valores del servidor (p. ej., el nivel CEFR), originando desincronizaciones de mapa de calor, SRS y UI.
