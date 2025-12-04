@@ -181,6 +181,20 @@ export async function syncAccountData() {
 
     const accountData = response.data || {}
 
+    // CRITICAL: Log download data for debugging sync issues
+    console.log('📥 SYNC: Downloaded data from server:', {
+      attempts: accountData.attempts?.length || 0,
+      mastery: accountData.mastery?.length || 0,
+      schedules: accountData.schedules?.length || 0,
+      sessions: accountData.sessions?.length || 0,
+      hasSettings: !!accountData.settings,
+      settingsPreview: accountData.settings ? {
+        hasNestedSettings: !!accountData.settings?.settings,
+        userLevel: accountData.settings?.settings?.userLevel || accountData.settings?.userLevel,
+        updatedAt: accountData.settings?.updatedAt
+      } : null
+    })
+
     safeLogger.debug('syncAccountData: resumen de datos descargados', {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
@@ -189,6 +203,19 @@ export async function syncAccountData() {
     })
 
     const mergeResults = await mergeAccountDataLocally(accountData)
+
+    console.log('🔀 SYNC: Merge results:', {
+      aborted: mergeResults?.aborted,
+      userId: mergeResults?.userId,
+      source: mergeResults?.source,
+      merged: {
+        attempts: mergeResults?.merged?.attempts || mergeResults?.attempts || 0,
+        mastery: mergeResults?.merged?.mastery || mergeResults?.mastery || 0,
+        schedules: mergeResults?.merged?.schedules || mergeResults?.schedules || 0,
+        sessions: mergeResults?.merged?.sessions || mergeResults?.sessions || 0,
+        settings: mergeResults?.merged?.settings || mergeResults?.settings || 0
+      }
+    })
 
     if (mergeResults?.aborted) {
       safeLogger.warn('syncAccountData: abortado por falta de userId confiable')
@@ -308,16 +335,32 @@ export async function syncAccountData() {
         await flushSettings()
 
         const unsyncedSettings = await getUnsyncedItems(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
+
+        console.log('📤 SYNC: Settings upload check:', {
+          unsyncedCount: unsyncedSettings.length,
+          userId: resolvedUserId,
+          settingsPreview: unsyncedSettings.length > 0 ? {
+            id: unsyncedSettings[0]?.id,
+            hasSettings: !!unsyncedSettings[0]?.settings,
+            userLevel: unsyncedSettings[0]?.settings?.userLevel,
+            lastUpdated: unsyncedSettings[0]?.settings?.lastUpdated
+          } : null
+        })
+
         if (unsyncedSettings.length > 0) {
           safeLogger.info('syncAccountData: uploading settings', { count: unsyncedSettings.length })
           const res = await tryBulk('settings', unsyncedSettings)
           await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings.map((s) => s.id))
           uploaded.settings = unsyncedSettings.length
           safeLogger.info('syncAccountData: settings uploaded successfully', { count: unsyncedSettings.length, server: res })
+          console.log('✅ SYNC: Settings uploaded successfully')
+        } else {
+          console.log('ℹ️ SYNC: No unsynced settings to upload')
         }
       } catch (e) {
         anyUploadFailed = true
         safeLogger.error('syncAccountData: settings upload failed', { message: e?.message || String(e), stack: e?.stack })
+        console.error('❌ SYNC: Settings upload failed:', e)
       }
 
       // Challenges
