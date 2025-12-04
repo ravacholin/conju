@@ -33,7 +33,20 @@ export const warmupCachesIfNeeded = (() => {
 
 const useSettings = create(
   persist(
-    (set, _get) => ({
+    (originalSet, _get) => {
+      // Wrap set to automatically add lastUpdated to ALL state changes
+      const set = (update) => {
+        if (typeof update === 'function') {
+          originalSet((state) => {
+            const newState = update(state)
+            return { ...newState, lastUpdated: Date.now() }
+          })
+        } else {
+          originalSet({ ...update, lastUpdated: Date.now() })
+        }
+      }
+
+      return {
       // Sync tracking
       lastUpdated: Date.now(), // Timestamp for sync conflict resolution
 
@@ -117,10 +130,10 @@ const useSettings = create(
       setLevel: (level) => set({ level, lastUpdated: Date.now() }),
 
       // User level system methods
-      setUserLevel: (userLevel) => set({ userLevel }),
-      setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)) }),
-      setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed }),
-      setPlacementTestReport: (report) => set({ placementTestReport: report }),
+      setUserLevel: (userLevel) => set({ userLevel, lastUpdated: Date.now() }),
+      setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)), lastUpdated: Date.now() }),
+      setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed, lastUpdated: Date.now() }),
+      setPlacementTestReport: (report) => set({ placementTestReport: report, lastUpdated: Date.now() }),
 
       // Practice mode methods
       setLevelPracticeMode: (mode) => set({ levelPracticeMode: mode }),
@@ -215,7 +228,8 @@ const useSettings = create(
           clearAllCaches()
         }
       }
-    }),
+    }
+    },
     {
       name: 'spanish-conjugator-settings',
       partialize: (state) => ({

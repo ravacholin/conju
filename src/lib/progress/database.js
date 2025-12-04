@@ -2123,11 +2123,17 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
  */
 export async function saveUserSettings(userId, settings) {
   try {
+    // Use consistent ID per user (no timestamp) to UPDATE existing record instead of creating new ones
+    const settingsId = `settings-${userId}`;
+
+    // Get existing record to preserve createdAt
+    const existing = await getFromDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsId);
+
     const settingsRecord = {
-      id: `settings-${userId}-${Date.now()}`,
+      id: settingsId,
       userId,
       settings,
-      createdAt: new Date().toISOString(),
+      createdAt: existing?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       synced: false,
       syncedAt: 0
