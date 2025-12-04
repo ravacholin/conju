@@ -284,6 +284,9 @@ export function setSyncing(value) {
   }
 }
 
+// Flag to skip initial hydration event from Zustand persist middleware
+let isHydrated = false
+
 useSettings.subscribe((state) => {
   // Skip initial hydration from localStorage
   if (!isHydrated) {
