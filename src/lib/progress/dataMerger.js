@@ -437,7 +437,7 @@ export async function mergeAccountDataLocally(accountData) {
   // Settings merge - use most recent settings from server
   if (accountData?.settings) {
     try {
-      const { useSettings } = await import('../state/settings.js')
+      const { useSettings } = await import('../../state/settings.js')
       const currentSettings = useSettings.getState()
       const serverUpdatedAt = new Date(accountData.settings.updatedAt || 0).getTime()
       const localUpdatedAt = new Date(currentSettings.lastUpdated || 0).getTime()
