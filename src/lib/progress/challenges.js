@@ -170,7 +170,9 @@ export async function getDailyChallengeSnapshot(userId, { signal } = {}) {
       userId,
       date,
       challenges: persisted,
-      createdAt: existing?.date === date ? existing?.createdAt : nowIso
+      createdAt: existing?.date === date ? existing?.createdAt : nowIso,
+      updatedAt: nowIso, // Track when challenges were last modified
+      syncedAt: 0 // Mark as needing sync
     }
     if (signal?.aborted) {
       throw new Error('Operation was cancelled')
@@ -211,7 +213,9 @@ export async function markChallengeCompleted(userId, challengeId) {
       userId,
       date,
       challenges: persisted,
-      createdAt: existing?.date === date ? existing?.createdAt : nowIso
+      createdAt: existing?.date === date ? existing?.createdAt : nowIso,
+      updatedAt: nowIso, // Track when challenge was completed
+      syncedAt: 0 // Mark as needing sync
     })
     const definition = CHALLENGE_DEFINITIONS.find(def => def.id === challengeId)
     emitChallengeCompleted({ userId, challengeId, reward: definition?.reward })

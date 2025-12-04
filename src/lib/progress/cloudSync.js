@@ -103,7 +103,7 @@ export async function syncWithCloud(options = {}) {
   const { include, bypassIncognito = false } = options
   const collections = Array.isArray(include) && include.length > 0
     ? include
-    : ['attempts', 'mastery', 'schedules', 'sessions']
+    : ['attempts', 'mastery', 'schedules', 'sessions', 'settings', 'challenges', 'events']
 
   if (isDev) logger.debug('syncWithCloud', 'Iniciando con opciones', { include: collections, bypassIncognito })
 

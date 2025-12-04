@@ -301,8 +301,12 @@ export async function syncAccountData() {
         safeLogger.error('syncAccountData: sessions upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
 
-      // Settings
+      // Settings - flush first to ensure all pending changes are saved
       try {
+        // Force immediate save of settings to IndexedDB, bypassing debounce
+        const { flushSettings } = await import('../../state/settings.js')
+        await flushSettings()
+
         const unsyncedSettings = await getUnsyncedItems(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
         if (unsyncedSettings.length > 0) {
           safeLogger.info('syncAccountData: uploading settings', { count: unsyncedSettings.length })

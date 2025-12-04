@@ -507,6 +507,35 @@ export async function initDB() {
               }
             }
 
+            // Migration v8: Add syncedAt and updatedAt to challenges and events
+            if (oldVersion < 8) {
+              const storesToMigrate = [
+                STORAGE_CONFIG.STORES.CHALLENGES,
+                STORAGE_CONFIG.STORES.EVENTS,
+              ];
+              for (const storeName of storesToMigrate) {
+                if (db.objectStoreNames.contains(storeName)) {
+                  const store = transaction.objectStore(storeName);
+                  store.openCursor().then(async function iterate(cursor) {
+                    if (!cursor) return;
+                    const record = cursor.value;
+                    if (record) {
+                      // Add syncedAt if missing (0 = needs sync)
+                      if (record.syncedAt === undefined || record.syncedAt === null) {
+                        record.syncedAt = 0;
+                      }
+                      // Add updatedAt if missing (use createdAt as fallback)
+                      if (!record.updatedAt) {
+                        record.updatedAt = record.createdAt || new Date().toISOString();
+                      }
+                      cursor.update(record);
+                    }
+                    await cursor.continue().then(iterate);
+                  });
+                }
+              }
+            }
+
             if (isDev)
               logger.info("initDB", "Estructura de base de datos actualizada");
           },

@@ -438,22 +438,29 @@ export async function mergeAccountDataLocally(accountData) {
   if (accountData?.settings) {
     try {
       const { useSettings } = await import('../../state/settings.js')
+      const { saveUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
-      const serverUpdatedAt = new Date(accountData.settings.updatedAt || 0).getTime()
-      const localUpdatedAt = new Date(currentSettings.lastUpdated || 0).getTime()
+
+      // Safe fallback for missing timestamps
+      const serverUpdatedAt = accountData.settings?.updatedAt || accountData.settings?.lastUpdated || 0
+      const localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
 
       if (serverUpdatedAt > localUpdatedAt) {
         // Server has newer settings, apply them
         useSettings.setState(accountData.settings)
+
+        // Persist to IndexedDB immediately to prevent re-upload
+        await saveUserSettings(userId, accountData.settings)
+
         results.settings = 1
         safeLogger.info('mergeAccountDataLocally: applied server settings (newer)', {
-          serverUpdatedAt: accountData.settings.updatedAt,
-          localUpdatedAt: currentSettings.lastUpdated
+          serverUpdatedAt,
+          localUpdatedAt
         })
       } else {
         safeLogger.info('mergeAccountDataLocally: kept local settings (newer or equal)', {
-          serverUpdatedAt: accountData.settings.updatedAt,
-          localUpdatedAt: currentSettings.lastUpdated
+          serverUpdatedAt,
+          localUpdatedAt
         })
       }
     } catch (error) {
@@ -479,13 +486,35 @@ export async function mergeAccountDataLocally(accountData) {
       try {
         const existing = challengeMap.get(remoteChallenge.id)
         if (!existing) {
+          // New challenge from server
           const localChallenge = {
             ...remoteChallenge,
             userId: currentUserId,
-            syncedAt: new Date()
+            syncedAt: Date.now()
           }
           challengesToSave.push(localChallenge)
           challengeMap.set(remoteChallenge.id, localChallenge)
+        } else {
+          // Challenge exists locally - use last-write-wins based on updatedAt
+          const localUpdated = existing.updatedAt || existing.createdAt || 0
+          const serverUpdated = remoteChallenge.updatedAt || remoteChallenge.createdAt || 0
+
+          if (serverUpdated > localUpdated) {
+            // Server version is newer, replace local
+            const updatedChallenge = {
+              ...remoteChallenge,
+              userId: currentUserId,
+              syncedAt: Date.now()
+            }
+            challengesToSave.push(updatedChallenge)
+            challengeMap.set(remoteChallenge.id, updatedChallenge)
+            safeLogger.info('mergeAccountDataLocally: replacing local challenge with server version (newer)', {
+              id: remoteChallenge.id,
+              serverUpdated,
+              localUpdated
+            })
+          }
+          // else: local version is newer or equal, keep it
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error merging challenge', {
@@ -527,13 +556,35 @@ export async function mergeAccountDataLocally(accountData) {
       try {
         const existing = eventMap.get(remoteEvent.id)
         if (!existing) {
+          // New event from server
           const localEvent = {
             ...remoteEvent,
             userId: currentUserId,
-            syncedAt: new Date()
+            syncedAt: Date.now()
           }
           eventsToSave.push(localEvent)
           eventMap.set(remoteEvent.id, localEvent)
+        } else {
+          // Event exists locally - use last-write-wins based on updatedAt
+          const localUpdated = existing.updatedAt || existing.createdAt || 0
+          const serverUpdated = remoteEvent.updatedAt || remoteEvent.createdAt || 0
+
+          if (serverUpdated > localUpdated) {
+            // Server version is newer, replace local
+            const updatedEvent = {
+              ...remoteEvent,
+              userId: currentUserId,
+              syncedAt: Date.now()
+            }
+            eventsToSave.push(updatedEvent)
+            eventMap.set(remoteEvent.id, updatedEvent)
+            safeLogger.info('mergeAccountDataLocally: replacing local event with server version (newer)', {
+              id: remoteEvent.id,
+              serverUpdated,
+              localUpdated
+            })
+          }
+          // else: local version is newer or equal, keep it
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error merging event', {

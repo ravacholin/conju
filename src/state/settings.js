@@ -34,6 +34,9 @@ export const warmupCachesIfNeeded = (() => {
 const useSettings = create(
   persist(
     (set, _get) => ({
+      // Sync tracking
+      lastUpdated: Date.now(), // Timestamp for sync conflict resolution
+
       // Configuración de usuario
       level: 'A1',
       // Variante: no se fija por defecto. Se define en Onboarding.
@@ -110,8 +113,8 @@ const useSettings = create(
       practiceReminderDays: [1, 2, 3, 4, 5],
       
       // Métodos para actualizar configuración
-      set: (newSettings) => set((state) => ({ ...state, ...newSettings })),
-      setLevel: (level) => set({ level }),
+      set: (newSettings) => set((state) => ({ ...state, ...newSettings, lastUpdated: Date.now() })),
+      setLevel: (level) => set({ level, lastUpdated: Date.now() }),
 
       // User level system methods
       setUserLevel: (userLevel) => set({ userLevel }),
@@ -216,6 +219,9 @@ const useSettings = create(
     {
       name: 'spanish-conjugator-settings',
       partialize: (state) => ({
+        // Sync tracking
+        lastUpdated: state.lastUpdated,
+
         // Solo persistir configuración de usuario, no estado temporal
         level: state.level,
         useVoseo: state.useVoseo,
@@ -284,6 +290,23 @@ async function persistSettingsToIndexedDB(settings) {
       console.warn('Failed to persist settings to IndexedDB:', error)
     }
   }, 1000)
+}
+
+// Flush function to force immediate IndexedDB save (bypasses debounce)
+// Used by sync coordinator to ensure settings are persisted before sync
+export async function flushSettings() {
+  clearTimeout(persistTimeout)
+  const state = useSettings.getState()
+  const userId = localStorage.getItem('userId')
+
+  if (!userId) return
+
+  try {
+    const { saveUserSettings } = await import('../lib/progress/database.js')
+    await saveUserSettings(userId, state)
+  } catch (error) {
+    console.warn('Failed to flush settings to IndexedDB:', error)
+  }
 }
 
 export { useSettings, LEVELS } 

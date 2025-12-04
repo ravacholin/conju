@@ -404,22 +404,49 @@ export function mergeAccountData(accountId) {
   })
 
   // Fetch user settings - use most recent settings across all devices
-  const settings = db.prepare(`
+  const settingsRows = db.prepare(`
     SELECT settings, updated_at FROM user_settings WHERE account_id = ?
-    ORDER BY updated_at DESC LIMIT 1
-  `).get(accountId)
+    ORDER BY updated_at DESC
+  `).all(accountId)
 
-  const latestSettings = settings ? JSON.parse(settings.settings) : null
+  const latestSettings = settingsRows.length > 0 ? JSON.parse(settingsRows[0].settings) : null
 
-  // Fetch daily challenges
-  const challenges = db.prepare(`
-    SELECT challenge_data FROM daily_challenges WHERE account_id = ?
-  `).all(accountId).map(r => JSON.parse(r.challenge_data))
+  // Log if multiple settings records exist (potential conflict)
+  if (settingsRows.length > 1) {
+    console.warn(`Multiple settings records for account ${accountId}, using most recent`)
+  }
 
-  // Fetch events
-  const events = db.prepare(`
-    SELECT event_data FROM events WHERE account_id = ?
-  `).all(accountId).map(r => JSON.parse(r.event_data))
+  // Fetch daily challenges - deduplicate by date, keep most recent for each day
+  const allChallenges = db.prepare(`
+    SELECT challenge_data, updated_at FROM daily_challenges WHERE account_id = ?
+    ORDER BY updated_at DESC
+  `).all(accountId)
+
+  const challengesByDate = {}
+  allChallenges.forEach(row => {
+    const data = JSON.parse(row.challenge_data)
+    const date = data.date
+    if (!challengesByDate[date] || row.updated_at > challengesByDate[date].updated_at) {
+      challengesByDate[date] = { data, updated_at: row.updated_at }
+    }
+  })
+  const challenges = Object.values(challengesByDate).map(c => c.data)
+
+  // Fetch events - deduplicate by ID, keep most recent
+  const allEvents = db.prepare(`
+    SELECT event_data, updated_at FROM events WHERE account_id = ?
+    ORDER BY updated_at DESC
+  `).all(accountId)
+
+  const eventsById = {}
+  allEvents.forEach(row => {
+    const data = JSON.parse(row.event_data)
+    const id = data.id
+    if (!eventsById[id] || row.updated_at > eventsById[id].updated_at) {
+      eventsById[id] = { data, updated_at: row.updated_at }
+    }
+  })
+  const events = Object.values(eventsById).map(e => e.data)
 
   return {
     attempts,

@@ -133,6 +133,7 @@ export function migrate() {
       account_id TEXT NOT NULL,
       event_data TEXT NOT NULL,
       created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
     );
@@ -140,6 +141,17 @@ export function migrate() {
     CREATE INDEX IF NOT EXISTS idx_events_account ON events(account_id);
     CREATE INDEX IF NOT EXISTS idx_events_created ON events(created_at);
   `)
+
+  // Migration: Add updated_at column to existing events table if it doesn't exist
+  const eventsColumns = db.pragma('table_info(events)')
+  const hasUpdatedAt = eventsColumns.some(col => col.name === 'updated_at')
+  if (!hasUpdatedAt) {
+    db.exec(`
+      ALTER TABLE events ADD COLUMN updated_at INTEGER;
+      -- Backfill updated_at with created_at for existing records
+      UPDATE events SET updated_at = created_at WHERE updated_at IS NULL;
+    `)
+  }
 }
 
 export function upsertUser(userId, accountId = null) {
