@@ -9,6 +9,22 @@ import './SyncStatusIndicator.css';
 function SyncStatusIndicator() {
   const syncStatus = useSyncStatus();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isSyncingManual, setIsSyncingManual] = useState(false);
+
+  const handleManualSync = async () => {
+    if (isSyncingManual || syncStatus.isSyncing) return;
+
+    setIsSyncingManual(true);
+    try {
+      // Import cloudSync dinamically to trigger manual sync
+      const { syncWithCloud } = await import('../../lib/progress/cloudSync.js');
+      await syncWithCloud({ bypassIncognito: false });
+    } catch (error) {
+      console.error('Error al sincronizar manualmente:', error);
+    } finally {
+      setIsSyncingManual(false);
+    }
+  };
 
   // No mostrar si está en modo incógnito o sync deshabilitado
   if (syncStatus.isIncognitoMode || !syncStatus.syncEnabled) {
@@ -87,10 +103,13 @@ function SyncStatusIndicator() {
       className={`sync-status-indicator ${statusConfig.className}`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      onClick={() => setIsExpanded(!isExpanded)}
     >
-      <div className="sync-status-badge" title={statusConfig.label}>
-        <span className="status-code">{statusConfig.code}</span>
+      <div
+        className="sync-status-badge"
+        title="Click para sincronizar ahora"
+        onClick={handleManualSync}
+      >
+        <span className="status-code">{isSyncingManual || syncStatus.isSyncing ? 'SYNC' : statusConfig.code}</span>
       </div>
 
       {isExpanded && (
