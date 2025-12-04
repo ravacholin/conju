@@ -140,38 +140,58 @@ export async function syncAccountData() {
 
   await wakeUpServer()
 
-  try {
-    safeLogger.debug('syncAccountData: llamando a /auth/sync/download')
-
-    let response = null
     try {
-      response = await postJSON('/auth/sync/download', {})
-    } catch (err) {
-      safeLogger.warn('syncAccountData: POST /auth/sync/download falló, intentando GET', {
-        message: err?.message || String(err),
-        name: err?.name
-      })
+      safeLogger.debug('syncAccountData: llamando a /auth/sync/download')
+
+      let response = null
       try {
-        const headers = { Accept: 'application/json' }
-        const authToken = getAuthToken()
-        const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
-        const headerName = getSyncAuthHeaderName() || 'Authorization'
-        if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
-        if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
-        const res = await fetch(`${getSyncEndpoint()}/auth/sync/download`, { method: 'GET', headers })
-        if (!res.ok) {
-          const text = await res.text().catch(() => '')
-          throw new Error(`HTTP ${res.status}: ${text}`)
-        }
-        response = await res.json().catch(() => ({}))
-      } catch (fallbackErr) {
-        safeLogger.error('syncAccountData: fallback GET /auth/sync/download también falló', {
-          message: fallbackErr?.message || String(fallbackErr),
-          errorName: fallbackErr?.name
+        response = await postJSON('/auth/sync/download', {})
+      } catch (err) {
+        safeLogger.warn('syncAccountData: POST /auth/sync/download falló, intentando GET', {
+          message: err?.message || String(err),
+          name: err?.name
         })
-        throw fallbackErr
+        try {
+          const headers = { Accept: 'application/json' }
+          const authToken = getAuthToken()
+          const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
+          const headerName = getSyncAuthHeaderName() || 'Authorization'
+          if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
+          if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
+          const res = await fetch(`${getSyncEndpoint()}/auth/sync/download`, { method: 'GET', headers })
+          if (!res.ok) {
+            const text = await res.text().catch(() => '')
+            throw new Error(`HTTP ${res.status}: ${text}`)
+          }
+          response = await res.json().catch(() => ({}))
+        } catch (fallbackErr) {
+          safeLogger.error('syncAccountData: fallback GET /auth/sync/download también falló', {
+            message: fallbackErr?.message || String(fallbackErr),
+            errorName: fallbackErr?.name
+          })
+          // Secondary fallback: GET /auth/me to retrieve merged data
+          try {
+            safeLogger.info('syncAccountData: intentando fallback GET /auth/me')
+            const headers = { Accept: 'application/json' }
+            const authToken = getAuthToken()
+            const headerName = getSyncAuthHeaderName() || 'Authorization'
+            if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
+            const res = await fetch(`${getSyncEndpoint()}/auth/me`, { method: 'GET', headers })
+            if (!res.ok) {
+              const text = await res.text().catch(() => '')
+              throw new Error(`HTTP ${res.status}: ${text}`)
+            }
+            const me = await res.json().catch(() => ({}))
+            response = { success: true, data: me?.data || {} }
+          } catch (meErr) {
+            safeLogger.error('syncAccountData: fallback GET /auth/me también falló', {
+              message: meErr?.message || String(meErr),
+              errorName: meErr?.name
+            })
+            throw fallbackErr
+          }
+        }
       }
-    }
 
     safeLogger.debug('syncAccountData: respuesta del servidor', {
       success: response?.success || false,
