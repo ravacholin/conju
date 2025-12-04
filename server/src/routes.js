@@ -44,6 +44,15 @@ export function createRoutes() {
           case 'sessions':
             stmt = db.prepare('INSERT INTO sessions (id, user_id, updated_at, timestamp, payload) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, updated_at=excluded.updated_at, timestamp=excluded.timestamp, payload=excluded.payload')
             break
+          case 'user_settings':
+            stmt = db.prepare('INSERT INTO user_settings (id, user_id, account_id, settings, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET settings=excluded.settings, updated_at=excluded.updated_at')
+            break
+          case 'daily_challenges':
+            stmt = db.prepare('INSERT INTO daily_challenges (id, user_id, account_id, challenge_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET challenge_data=excluded.challenge_data, updated_at=excluded.updated_at')
+            break
+          case 'events':
+            stmt = db.prepare('INSERT INTO events (id, user_id, account_id, event_data, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET event_data=excluded.event_data')
+            break
         }
 
         if (!stmt) return
@@ -82,6 +91,30 @@ export function createRoutes() {
                 ? updatedAt
                 : normalizeDate(rec.timestamp, 'timestamp', id)
               info = stmt.run(id, userId, updatedAt, timestamp, payload)
+              break
+            }
+            case 'user_settings': {
+              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+                useNowWhenMissing: true
+              })
+              const settings = JSON.stringify(rec.settings || rec)
+              info = stmt.run(id, userId, req.accountId, settings, createdAt, now)
+              break
+            }
+            case 'daily_challenges': {
+              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+                useNowWhenMissing: true
+              })
+              const challengeData = JSON.stringify(rec.challengeData || rec)
+              info = stmt.run(id, userId, req.accountId, challengeData, createdAt, now)
+              break
+            }
+            case 'events': {
+              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+                useNowWhenMissing: true
+              })
+              const eventData = JSON.stringify(rec.eventData || rec)
+              info = stmt.run(id, userId, req.accountId, eventData, createdAt)
               break
             }
           }
