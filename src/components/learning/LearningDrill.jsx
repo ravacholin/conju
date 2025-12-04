@@ -194,34 +194,46 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     };
   }, [currentItem])
 
-  const handleDrillResult = async (isCorrect, accuracy, extra = {}) => {
-    // Handle pronunciation result similar to typing result
-    if (isCorrect) {
-      setResult('correct')
+  const handleDrillResult = async (result) => {
+    // PronunciationPanel now sends complete tracking result
+    // Check if it's the new format (object with 'correct' property)
+    // or old format (boolean isCorrect, number accuracy, object extra)
+    let trackingResult;
+
+    if (typeof result === 'object' && result !== null && 'correct' in result) {
+      // New format from PronunciationPanel - use directly
+      trackingResult = result;
     } else {
-      setResult('incorrect')
+      // Old format (backward compatibility) - first arg is isCorrect
+      const isCorrect = result;
+      const accuracy = arguments[1];
+      const extra = arguments[2] || {};
+
+      trackingResult = {
+        correct: isCorrect,
+        userAnswer: extra.recognized || '',
+        correctAnswer: currentItem?.value || '',
+        hintsUsed: 0,
+        errorTags: [],
+        latencyMs: 0,
+        isIrregular: currentItem?.type === 'irregular',
+        itemId: currentItem?.id
+      };
     }
 
-    // Call the main progress tracking system
-    await handleResult({
-      correct: isCorrect,
-      userAnswer: extra.recognized || '',
-      correctAnswer: currentItem?.value || '',
-      hintsUsed: 0,
-      errorTags: [],
-      latencyMs: 0,
-      isIrregular: currentItem?.type === 'irregular',
-      itemId: currentItem?.id
-    });
-
-    // Update local session stats
-    if (isCorrect) {
+    // Update UI state
+    if (trackingResult.correct) {
+      setResult('correct')
       setCorrectStreak(prev => prev + 1);
       setCorrectAnswers(prev => prev + 1);
     } else {
+      setResult('incorrect')
       setCorrectStreak(0);
     }
     setTotalAttempts(prev => prev + 1);
+
+    // Call the main progress tracking system with complete result
+    await handleResult(trackingResult);
   }
 
   const handleContinueFromPronunciation = () => {
