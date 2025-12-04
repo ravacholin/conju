@@ -2130,19 +2130,31 @@ export async function saveUserSettings(userId, settings, options = {}) {
     // Use consistent ID per user (no timestamp) to UPDATE existing record instead of creating new ones
     const settingsId = `settings-${userId}`;
 
-    // Get existing record to preserve createdAt
+    // Get existing record to preserve createdAt and check for changes
     const existing = await getFromDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsId);
 
-    const now = new Date();
+    // Deep equality check to prevent sync loops
+    // If settings are identical to existing record, preserve the current synced status
+    // unless explicitly forced by options.alreadySynced
+    if (existing && JSON.stringify(existing.settings) === JSON.stringify(settings)) {
+      // Data hasn't changed
+      if (existing.synced && !options.alreadySynced) {
+        // If it was already synced, and we're not forcing a change, keep it synced
+        // This handles the case where dataMerger updates the store (synced: true),
+        // and then the store subscriber triggers a save (normally synced: false).
+        // Since data is identical, we keep synced: true.
+        return existing;
+      }
+    }
+
     const settingsRecord = {
       id: settingsId,
       userId,
       settings,
-      createdAt: existing?.createdAt || now.toISOString(),
-      updatedAt: now.toISOString(),
-      // If settings come from server (alreadySynced), mark as synced to prevent re-upload loop
-      synced: alreadySynced,
-      syncedAt: alreadySynced ? now : 0
+      createdAt: existing?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      synced: options.alreadySynced === true,
+      syncedAt: options.alreadySynced === true ? new Date().getTime() : 0
     };
 
     await saveToDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsRecord);
