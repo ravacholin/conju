@@ -17,6 +17,7 @@ import {
 import { createLogger } from '../../lib/utils/logger.js'
 import { incrementSessionAttempts } from '../../lib/progress/planTracking.js'
 import { useSettings } from '../../state/settings.js'
+import { initProgressSystem as initProgressSystemCore } from '../../lib/progress/index.js'
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
 
 /**
@@ -32,6 +33,7 @@ export function useProgressTracking(currentItem, onResult) {
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
   const settings = useSettings()
+  const triedAutoInitRef = useRef(false)
 
   // Verificar si el sistema de progreso está listo usando eventos
   useEffect(() => {
@@ -40,6 +42,21 @@ export function useProgressTracking(currentItem, onResult) {
     if (initialState !== progressSystemReady) {
       setProgressSystemReady(initialState)
       logger.debug(`Estado inicial del sistema de progreso: ${initialState ? 'listo' : 'no disponible'}`)
+    }
+
+    // Failsafe: si no está listo, intentar inicializar una vez de forma silenciosa
+    if (!initialState && !triedAutoInitRef.current) {
+      triedAutoInitRef.current = true
+      Promise.resolve()
+        .then(() => initProgressSystemCore())
+        .then(() => {
+          setProgressSystemReady(true)
+          logger.info('Sistema de progreso inicializado automáticamente (failsafe)')
+        })
+        .catch((e) => {
+          // No bloquear UI; registramos para diagnóstico
+          logger.warn('No se pudo inicializar el sistema de progreso en failsafe', e)
+        })
     }
 
     // Suscribirse a eventos de cambio de estado (más eficiente que sondeo)
