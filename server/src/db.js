@@ -165,6 +165,14 @@ export function migrate() {
     if (orphanCount && orphanCount.count > 0) {
       console.log(`🔄 MIGRATION: Found ${orphanCount.count} orphan attempts for ${orphanUserId}`)
 
+      // CRITICAL: First ensure the accountId exists as a user record (to satisfy FK constraint)
+      const now = Date.now()
+      db.prepare(`
+        INSERT OR IGNORE INTO users (id, account_id, created_at, last_seen_at)
+        VALUES (?, ?, ?, ?)
+      `).run(targetAccountId, targetAccountId, now, now)
+      console.log(`  ✅ Created/verified user record for ${targetAccountId}`)
+
       const tables = ['attempts', 'mastery', 'schedules', 'sessions']
       db.transaction(() => {
         for (const table of tables) {
@@ -178,7 +186,7 @@ export function migrate() {
           }
         }
 
-        // Link the user record
+        // Link the orphan user record to the account
         db.prepare(`
           UPDATE users
           SET account_id = ?
