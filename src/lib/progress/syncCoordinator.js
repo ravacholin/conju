@@ -40,22 +40,85 @@ const {
 
 async function markSynced(storeName, ids) {
   try {
+    if (!ids || ids.length === 0) return
+
+    const db = await initDB()
+    const tx = db.transaction(storeName, 'readwrite')
+    const store = tx.objectStore(storeName)
+
     for (const id of ids) {
       if (!id) continue
-      const existing = await getFromDB(storeName, id)
-      if (!existing) continue
-      const updated = { ...existing, syncedAt: new Date() }
-      const db = await initDB()
-      const tx = db.transaction(storeName, 'readwrite')
-      const store = tx.objectStore(storeName)
-      await store.put(updated)
-      await tx.done
+      try {
+        const existing = await store.get(id)
+        if (!existing) continue
+        // Update syncedAt to now
+        // Also ensure userId is correct if we just claimed it
+        const updated = { ...existing, syncedAt: new Date() }
+        await store.put(updated)
+      } catch (err) {
+        // Ignore individual errors
+      }
     }
+    await tx.done
   } catch (error) {
-    safeLogger.warn('markSynced: no se pudo marcar como sincronizado', {
-      message: error?.message || String(error),
-      name: error?.name
+    safeLogger.warn('markSynced: error marking items as synced', {
+      storeName,
+      count: ids.length,
+      error: error?.message
     })
+  }
+}
+
+/**
+ * Helper to find unsynced items and "claim" them if they belong to an old/anonymous user.
+ * This fixes the issue where migration might have failed or been skipped, leaving "orphan" data.
+ */
+async function claimAndGetUnsynced(storeName, currentUserId) {
+  if (!currentUserId) return []
+
+  try {
+    // Get all unsynced items (limit 500 to be safe and avoid 2MB server limit)
+    // Passing null as userId gets ALL unsynced items regardless of owner
+    const allUnsynced = await getUnsyncedItems(storeName, null, 500)
+    const validItems = []
+
+    for (const item of allUnsynced) {
+      if (!item) continue
+
+      // If item belongs to current user, it's valid
+      if (item.userId === currentUserId) {
+        validItems.push(item)
+      }
+      // If item has a different user ID (orphan/anonymous), claim it
+      else if (item.userId) {
+        try {
+          // Update locally to claim ownership
+          const updatedItem = { ...item, userId: currentUserId, updatedAt: new Date() }
+
+          const db = await initDB()
+          const tx = db.transaction(storeName, 'readwrite')
+          const store = tx.objectStore(storeName)
+          await store.put(updatedItem)
+          await tx.done
+
+          safeLogger.info(`Auto-claimed orphan item in ${storeName}`, {
+            itemId: item.id,
+            oldUserId: item.userId,
+            newUserId: currentUserId
+          })
+
+          validItems.push(updatedItem)
+        } catch (e) {
+          safeLogger.warn(`Failed to claim item ${item.id}`, { error: e.message })
+          // Still try to upload it with the new userId even if local save failed
+          validItems.push({ ...item, userId: currentUserId })
+        }
+      }
+    }
+    return validItems
+  } catch (error) {
+    safeLogger.error(`claimAndGetUnsynced: error processing ${storeName}`, { error: error?.message })
+    return []
   }
 }
 
@@ -140,58 +203,58 @@ export async function syncAccountData() {
 
   await wakeUpServer()
 
-    try {
-      safeLogger.debug('syncAccountData: llamando a /auth/sync/download')
+  try {
+    safeLogger.debug('syncAccountData: llamando a /auth/sync/download')
 
-      let response = null
+    let response = null
+    try {
+      response = await postJSON('/auth/sync/download', {})
+    } catch (err) {
+      safeLogger.warn('syncAccountData: POST /auth/sync/download falló, intentando GET', {
+        message: err?.message || String(err),
+        name: err?.name
+      })
       try {
-        response = await postJSON('/auth/sync/download', {})
-      } catch (err) {
-        safeLogger.warn('syncAccountData: POST /auth/sync/download falló, intentando GET', {
-          message: err?.message || String(err),
-          name: err?.name
+        const headers = { Accept: 'application/json' }
+        const authToken = getAuthToken()
+        const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
+        const headerName = getSyncAuthHeaderName() || 'Authorization'
+        if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
+        if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
+        const res = await fetch(`${getSyncEndpoint()}/auth/sync/download`, { method: 'GET', headers })
+        if (!res.ok) {
+          const text = await res.text().catch(() => '')
+          throw new Error(`HTTP ${res.status}: ${text}`)
+        }
+        response = await res.json().catch(() => ({}))
+      } catch (fallbackErr) {
+        safeLogger.error('syncAccountData: fallback GET /auth/sync/download también falló', {
+          message: fallbackErr?.message || String(fallbackErr),
+          errorName: fallbackErr?.name
         })
+        // Secondary fallback: GET /auth/me to retrieve merged data
         try {
+          safeLogger.info('syncAccountData: intentando fallback GET /auth/me')
           const headers = { Accept: 'application/json' }
           const authToken = getAuthToken()
-          const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
           const headerName = getSyncAuthHeaderName() || 'Authorization'
           if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
-          if (resolvedUserId) headers['X-User-Id'] = resolvedUserId
-          const res = await fetch(`${getSyncEndpoint()}/auth/sync/download`, { method: 'GET', headers })
+          const res = await fetch(`${getSyncEndpoint()}/auth/me`, { method: 'GET', headers })
           if (!res.ok) {
             const text = await res.text().catch(() => '')
             throw new Error(`HTTP ${res.status}: ${text}`)
           }
-          response = await res.json().catch(() => ({}))
-        } catch (fallbackErr) {
-          safeLogger.error('syncAccountData: fallback GET /auth/sync/download también falló', {
-            message: fallbackErr?.message || String(fallbackErr),
-            errorName: fallbackErr?.name
+          const me = await res.json().catch(() => ({}))
+          response = { success: true, data: me?.data || {} }
+        } catch (meErr) {
+          safeLogger.error('syncAccountData: fallback GET /auth/me también falló', {
+            message: meErr?.message || String(meErr),
+            errorName: meErr?.name
           })
-          // Secondary fallback: GET /auth/me to retrieve merged data
-          try {
-            safeLogger.info('syncAccountData: intentando fallback GET /auth/me')
-            const headers = { Accept: 'application/json' }
-            const authToken = getAuthToken()
-            const headerName = getSyncAuthHeaderName() || 'Authorization'
-            if (authToken) headers[headerName] = headerName.toLowerCase() === 'authorization' ? `Bearer ${authToken}` : authToken
-            const res = await fetch(`${getSyncEndpoint()}/auth/me`, { method: 'GET', headers })
-            if (!res.ok) {
-              const text = await res.text().catch(() => '')
-              throw new Error(`HTTP ${res.status}: ${text}`)
-            }
-            const me = await res.json().catch(() => ({}))
-            response = { success: true, data: me?.data || {} }
-          } catch (meErr) {
-            safeLogger.error('syncAccountData: fallback GET /auth/me también falló', {
-              message: meErr?.message || String(meErr),
-              errorName: meErr?.name
-            })
-            throw fallbackErr
-          }
+          throw fallbackErr
         }
       }
+    }
 
     safeLogger.debug('syncAccountData: respuesta del servidor', {
       success: response?.success || false,
@@ -286,8 +349,8 @@ export async function syncAccountData() {
     try {
       // Attempts
       try {
-        const attempts = (await getAttemptsByUser(resolvedUserId)) || []
-        const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
+        // CRITICAL FIX: Use auto-claim logic to find and migrate orphan data
+        const unsyncedAttempts = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.ATTEMPTS, resolvedUserId)
         if (unsyncedAttempts.length > 0) {
           safeLogger.info('syncAccountData: uploading attempts', { count: unsyncedAttempts.length })
           const res = await tryBulk('attempts', unsyncedAttempts)
@@ -302,8 +365,8 @@ export async function syncAccountData() {
 
       // Mastery
       try {
-        const mastery = (await getMasteryByUser(resolvedUserId)) || []
-        const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
+        // CRITICAL FIX: Use auto-claim logic
+        const unsyncedMastery = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.MASTERY, resolvedUserId)
         if (unsyncedMastery.length > 0) {
           safeLogger.info('syncAccountData: uploading mastery', { count: unsyncedMastery.length })
           const res = await tryBulk('mastery', unsyncedMastery)
@@ -318,8 +381,8 @@ export async function syncAccountData() {
 
       // Schedules
       try {
-        const schedules = (await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)) || []
-        const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
+        // CRITICAL FIX: Use auto-claim logic
+        const unsyncedSchedules = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.SCHEDULES, resolvedUserId)
         if (unsyncedSchedules.length > 0) {
           safeLogger.info('syncAccountData: uploading schedules', { count: unsyncedSchedules.length })
           const res = await tryBulk('schedules', unsyncedSchedules)
@@ -334,8 +397,8 @@ export async function syncAccountData() {
 
       // Sessions
       try {
-        const sessions = (await getLearningSessionsByUser(resolvedUserId)) || []
-        const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
+        // CRITICAL FIX: Use auto-claim logic
+        const unsyncedSessions = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, resolvedUserId)
         if (unsyncedSessions.length > 0) {
           safeLogger.info('syncAccountData: uploading sessions', { count: unsyncedSessions.length })
           const res = await tryBulk('sessions', unsyncedSessions)
@@ -354,7 +417,7 @@ export async function syncAccountData() {
         const { flushSettings } = await import('../../state/settings.js')
         await flushSettings()
 
-        const unsyncedSettings = await getUnsyncedItems(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
+        const unsyncedSettings = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
 
         console.log('📤 SYNC: Settings upload check:', {
           unsyncedCount: unsyncedSettings.length,
@@ -385,7 +448,7 @@ export async function syncAccountData() {
 
       // Challenges
       try {
-        const unsyncedChallenges = await getUnsyncedItems(STORAGE_CONFIG.STORES.CHALLENGES, resolvedUserId)
+        const unsyncedChallenges = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.CHALLENGES, resolvedUserId)
         if (unsyncedChallenges.length > 0) {
           safeLogger.info('syncAccountData: uploading challenges', { count: unsyncedChallenges.length })
           const res = await tryBulk('challenges', unsyncedChallenges)
@@ -400,7 +463,7 @@ export async function syncAccountData() {
 
       // Events
       try {
-        const unsyncedEvents = await getUnsyncedItems(STORAGE_CONFIG.STORES.EVENTS, resolvedUserId)
+        const unsyncedEvents = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.EVENTS, resolvedUserId)
         if (unsyncedEvents.length > 0) {
           safeLogger.info('syncAccountData: uploading events', { count: unsyncedEvents.length })
           const res = await tryBulk('events', unsyncedEvents)
