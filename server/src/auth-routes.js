@@ -77,7 +77,11 @@ export function createAuthRoutes() {
         message: 'Login successful',
         account,
         user: {
-          id: userDevice.userId,
+          // CRITICAL: Use accountId as primary id for cross-device sync consistency
+          // All devices on same account will have the same user.id
+          id: account.id,
+          // Keep device-specific userId for device management only
+          deviceUserId: userDevice.userId,
           deviceId: userDevice.deviceId,
           deviceName: userDevice.deviceName
         },
@@ -124,7 +128,11 @@ export function createAuthRoutes() {
         message: 'Google login successful',
         account,
         user: {
-          id: userDevice.userId,
+          // CRITICAL: Use accountId as primary id for cross-device sync consistency
+          // All devices on same account will have the same user.id
+          id: account.id,
+          // Keep device-specific userId for device management only
+          deviceUserId: userDevice.userId,
           deviceId: userDevice.deviceId,
           deviceName: userDevice.deviceName
         },

@@ -124,7 +124,13 @@ export async function createAccount(data) {
 
   return {
     account,
-    user: { id: userId, deviceId, deviceName },
+    user: {
+      // CRITICAL: Use accountId as primary id for cross-device sync consistency
+      id: accountId,
+      deviceUserId: userId,
+      deviceId,
+      deviceName
+    },
     token
   }
 }
@@ -358,6 +364,13 @@ export function revokeDevice(accountId, deviceId) {
 export function mergeAccountData(accountId) {
   const users = db.prepare('SELECT id FROM users WHERE account_id = ?').all(accountId)
   const userIds = users.map(u => u.id)
+
+  // CRITICAL: Include accountId itself as a valid user_id
+  // After the fix, all new data is stored with accountId as user_id
+  // This ensures we find both old data (device-specific userIds) and new data (accountId)
+  if (!userIds.includes(accountId)) {
+    userIds.push(accountId)
+  }
 
   if (userIds.length === 0) return { attempts: [], mastery: [], schedules: [], sessions: [] }
 
