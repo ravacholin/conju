@@ -152,6 +152,45 @@ export function migrate() {
       UPDATE events SET updated_at = created_at WHERE updated_at IS NULL;
     `)
   }
+
+  // ONE-TIME FIX: Claim orphan data for specific account
+  // The data was saved with userId 'user-1757116089225-znn62g8vx' but needs to be linked to account '8d57c9ec-957a-4ff4-bbfe-7e41bd852689'
+  try {
+    const orphanUserId = 'user-1757116089225-znn62g8vx'
+    const targetAccountId = '8d57c9ec-957a-4ff4-bbfe-7e41bd852689'
+
+    // Check if there's orphan data to claim
+    const orphanCount = db.prepare('SELECT COUNT(*) as count FROM attempts WHERE user_id = ?').get(orphanUserId)
+
+    if (orphanCount && orphanCount.count > 0) {
+      console.log(`🔄 MIGRATION: Found ${orphanCount.count} orphan attempts for ${orphanUserId}`)
+
+      const tables = ['attempts', 'mastery', 'schedules', 'sessions']
+      db.transaction(() => {
+        for (const table of tables) {
+          const result = db.prepare(`
+            UPDATE ${table}
+            SET user_id = ?
+            WHERE user_id = ?
+          `).run(targetAccountId, orphanUserId)
+          if (result.changes > 0) {
+            console.log(`  ✅ ${table}: ${result.changes} records claimed`)
+          }
+        }
+
+        // Link the user record
+        db.prepare(`
+          UPDATE users
+          SET account_id = ?
+          WHERE id = ?
+        `).run(targetAccountId, orphanUserId)
+      })()
+
+      console.log(`🎉 MIGRATION: Orphan data claimed successfully for account ${targetAccountId}`)
+    }
+  } catch (err) {
+    console.error('Migration error (non-fatal):', err)
+  }
 }
 
 export function upsertUser(userId, accountId = null) {
