@@ -662,7 +662,13 @@ class AuthService {
         }
 
         // 1. Migrar en el servidor (vincula usuario anónimo a la cuenta)
-        const migrationResult = await this.migrateAnonymousAccount(anonymousUserId)
+        // CRITICAL: Wrap in try-catch so login doesn't break if migrate fails
+        let migrationResult = null
+        try {
+          migrationResult = await this.migrateAnonymousAccount(anonymousUserId)
+        } catch (migrateError) {
+          console.warn('Server-side migration failed (non-blocking):', migrateError.message)
+        }
 
         if (migrationResult?.status === 404) {
           console.info('Anonymous progress already linked to an account or not found', {
@@ -746,10 +752,10 @@ class AuthService {
           } catch (progressError) {
             logger.warn('⚠️ Error actualizando sistema de progreso:', progressError.message)
           }
-        } else if (localMigrationResult && !localMigrationResult.error && 
-                   validationResult && 
-                   validationResult.totalRemaining === 0 && 
-                   validationResult.totalNew === 0) {
+        } else if (localMigrationResult && !localMigrationResult.error &&
+          validationResult &&
+          validationResult.totalRemaining === 0 &&
+          validationResult.totalNew === 0) {
           // Special case: no rows to migrate (fresh device)
           // Treat as success and still update the progress system
           try {
