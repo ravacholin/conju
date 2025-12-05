@@ -170,6 +170,17 @@ export class UserLevelProfile {
     }
 
     await this.save()
+
+    // Sync to global settings store if not triggered by sync itself
+    if (reason !== 'sync') {
+      try {
+        const { useSettings } = await import('../../state/settings.js')
+        useSettings.getState().setUserLevel(newLevel)
+      } catch (error) {
+        console.warn('Failed to sync level to global settings:', error)
+      }
+    }
+
     return true
   }
 

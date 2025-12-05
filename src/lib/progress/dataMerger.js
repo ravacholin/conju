@@ -7,6 +7,7 @@ import {
 import { createSafeLogger } from './safeLogger.js'
 import { getCurrentUserId } from './userSettingsStore.js'
 import { getAuthenticatedUser } from './authBridge.js'
+import { setGlobalUserLevel } from '../../lib/levels/userLevelProfile.js'
 
 const safeLogger = createSafeLogger('progress:userManager')
 
@@ -484,6 +485,15 @@ export async function mergeAccountDataLocally(accountData) {
         // Persist to IndexedDB immediately to prevent re-upload
         // CRITICAL: Mark as alreadySynced to prevent sync loop
         await saveUserSettings(currentUserId, mergedSettings, { alreadySynced: true })
+
+        // CRITICAL: Sync user level to local profile system
+        if (mergedSettings.userLevel) {
+          try {
+            await setGlobalUserLevel(mergedSettings.userLevel, 'sync')
+          } catch (e) {
+            safeLogger.warn('mergeAccountDataLocally: failed to sync user level to profile', e)
+          }
+        }
 
         results.settings = 1
         safeLogger.info('mergeAccountDataLocally: applied server settings (authoritative or newer)', {
