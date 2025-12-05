@@ -149,6 +149,21 @@ export async function syncAccountData() {
     environment: syncConfig.isDev ? 'development' : (syncConfig.isProd ? 'production' : 'unknown')
   })
 
+  // CRITICAL DEBUG: Log full auth state for debugging
+  console.log('🔑 SYNC DEBUG: Auth state check:', {
+    authenticated,
+    hasToken: !!token,
+    tokenLength: token?.length || 0,
+    hasUser: !!user,
+    userId: user?.id,
+    userIdType: typeof user?.id,
+    hasAccount: !!account,
+    accountId: account?.id,
+    isOnline: isBrowserOnline(),
+    syncEnabled: isSyncEnabled(),
+    syncEndpoint: getSyncEndpoint()
+  })
+
   if (!authenticated) {
     safeLogger.warn('syncAccountData: usuario no autenticado')
     safeLogger.debug('syncAccountData: detalles de autenticación fallida', {
@@ -156,6 +171,7 @@ export async function syncAccountData() {
       hasUser: !!user,
       hasAccount: !!account
     })
+    console.error('❌ SYNC FAILED: Not authenticated!')
     return { success: false, reason: 'not_authenticated' }
   }
 
@@ -260,6 +276,21 @@ export async function syncAccountData() {
       success: response?.success || false,
       hasData: !!response?.data,
       responseKeys: Object.keys(response || {})
+    })
+
+    // CRITICAL DEBUG: Log raw server response
+    console.log('📦 SYNC DEBUG: Raw server response:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      attemptsCount: response?.data?.attempts?.length || 0,
+      masteryCount: response?.data?.mastery?.length || 0,
+      schedulesCount: response?.data?.schedules?.length || 0,
+      sessionsCount: response?.data?.sessions?.length || 0,
+      hasSettings: !!response?.data?.settings,
+      challengesCount: response?.data?.challenges?.length || 0,
+      eventsCount: response?.data?.events?.length || 0,
+      rawResponse: response
     })
 
     const accountData = response.data || {}

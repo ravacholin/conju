@@ -372,7 +372,22 @@ export function mergeAccountData(accountId) {
     userIds.push(accountId)
   }
 
-  if (userIds.length === 0) return { attempts: [], mastery: [], schedules: [], sessions: [] }
+  // DEBUG: Log which userIds we're searching for
+  console.log('🔍 mergeAccountData DEBUG:', {
+    accountId,
+    usersFound: users.length,
+    userIds,
+    searchingWith: userIds.join(', ')
+  })
+
+  if (userIds.length === 0) {
+    console.log('⚠️ mergeAccountData: No userIds found for account!')
+    return { attempts: [], mastery: [], schedules: [], sessions: [] }
+  }
+
+  // DIAGNOSTIC: Check for orphan data that might exist with different userIds
+  const allUserIds = db.prepare('SELECT DISTINCT user_id FROM attempts LIMIT 20').all()
+  console.log('🔎 DIAGNOSTIC: Sample user_ids in attempts table:', allUserIds.map(r => r.user_id))
 
   const placeholders = userIds.map(() => '?').join(',')
 
@@ -391,6 +406,14 @@ export function mergeAccountData(accountId) {
   const sessions = db.prepare(`
     SELECT payload FROM sessions WHERE user_id IN (${placeholders})
   `).all(...userIds).map(r => JSON.parse(r.payload))
+
+  // DEBUG: Log data counts found
+  console.log('📊 mergeAccountData DATA FOUND:', {
+    attempts: attempts.length,
+    mastery: mastery.length,
+    schedules: schedules.length,
+    sessions: sessions.length
+  })
 
   const mergedMastery = new Map()
   mastery.forEach(m => {
