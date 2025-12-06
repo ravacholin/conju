@@ -52,23 +52,23 @@ export const QUESTION_POOL = {
     {
       id: 'a2_1',
       prompt: 'Ayer yo ____ al cine.',
-      options: ['fui', 'iba', 'voy', 'iré'],
+      options: ['fui', 'yendo', 'ir', 'sido'],
       correct: 'fui',
       explanation: 'Pretérito indefinido para acciones específicas del pasado.',
       competencyInfo: { mood: 'indicative', tense: 'pretIndef', rule: 'irregular_ir_ser' }
     },
     {
       id: 'a2_2',
-      prompt: 'Cuando era niño ____ mucho.',
-      options: ['jugaba', 'jugué', 'juego', 'jugaré'],
+      prompt: 'Cuando era niño, siempre ____ mucho.',
+      options: ['jugaba', 'jugado', 'jugar', 'jugando'],
       correct: 'jugaba',
-      explanation: 'Imperfecto para acciones habituales del pasado.',
+      explanation: 'Imperfecto para acciones habituales del pasado ("siempre").',
       competencyInfo: { mood: 'indicative', tense: 'imp', rule: 'habitual_past' }
     },
     {
       id: 'a2_3',
       prompt: 'Mañana nosotros ____ a la playa.',
-      options: ['iremos', 'fuimos', 'íbamos', 'vamos'],
+      options: ['iremos', 'fuimos', 'vayamos', 'ido'],
       correct: 'iremos',
       explanation: 'Futuro simple para planes futuros.',
       competencyInfo: { mood: 'indicative', tense: 'fut', rule: 'regular_future' }
@@ -83,10 +83,10 @@ export const QUESTION_POOL = {
     },
     {
       id: 'a2_5',
-      prompt: 'Mientras comía, ____ el teléfono.',
-      options: ['sonó', 'sonaba', 'suena', 'sonará'],
+      prompt: 'Mientras comía, de repente ____ el teléfono.',
+      options: ['sonó', 'sonando', 'sonar', 'sonado'],
       correct: 'sonó',
-      explanation: 'Interrupción (Indefinido) de una acción en curso (Imperfecto).',
+      explanation: 'Interrupción repentina (Indefinido) de una acción en curso.',
       competencyInfo: { mood: 'indicative', tense: 'pretIndef', rule: 'interruption' }
     }
   ],
@@ -101,7 +101,7 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b1_2',
-      prompt: 'Si tuviera dinero, ____ un viaje.',
+      prompt: 'Si tuviera dinero, ____ un viaje ahora mismo.',
       options: ['haría', 'hago', 'hice', 'haré'],
       correct: 'haría',
       explanation: 'Condicional simple en oraciones hipotéticas (Type 2 Conditional).',
@@ -109,10 +109,10 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b1_3',
-      prompt: 'No creo que ____ verdad.',
-      options: ['sea', 'es', 'era', 'fuera'],
+      prompt: 'No creo que eso ____ verdad hoy.',
+      options: ['sea', 'es', 'era', 'fuiste'],
       correct: 'sea',
-      explanation: 'Subjuntivo tras negación de creencia/pensamiento.',
+      explanation: 'Subjuntivo tras negación de creencia/pensamiento en presente.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'doubts_denial' }
     },
     {
@@ -125,36 +125,36 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b1_5',
-      prompt: 'Cuando ____ a casa, llámame.',
+      prompt: 'Te llamaré en cuanto ____ a casa.',
       options: ['llegues', 'llegas', 'llegarás', 'llegaste'],
       correct: 'llegues',
-      explanation: 'Subjuntivo en cláusulas temporales referidas al futuro.',
+      explanation: 'Subjuntivo en cláusulas temporales "En cuanto..." referidas al futuro.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'temporal_future' }
     }
   ],
   B2: [
     {
       id: 'b2_1',
-      prompt: 'Si ____ hubieras dicho antes, te habría ayudado.',
+      prompt: 'Si tú ____ hubieras dicho antes, te habría ayudado.',
       options: ['me lo', 'te lo', 'se lo', 'nos lo'],
       correct: 'me lo',
-      explanation: 'Colocación de pronombres dobles + Pluscuamperfecto Subjuntivo.',
+      explanation: 'Colocación de pronombres dobles (tú a mí -> me lo).',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPlus', rule: 'conditional_past' }
     },
     {
       id: 'b2_2',
-      prompt: 'Me extrañó que no ____ a la fiesta.',
-      options: ['vinieras', 'venías', 'vienes', 'vendrías'],
-      correct: 'vinieras',
+      prompt: 'Me extrañó mucho que Juan no ____ a la fiesta ayer.',
+      options: ['viniera', 'viene', 'vendrá', 'venga'],
+      correct: 'viniera',
       explanation: 'Imperfecto de Subjuntivo tras reacción emocional en el pasado.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjImp', rule: 'past_emotion' }
     },
     {
       id: 'b2_3',
       prompt: 'Mañana, aunque ____, iremos a la playa.',
-      options: ['llueva', 'llueve', 'llovía', 'lloverá'],
+      options: ['llueva', 'llovió', 'llovía', 'llueve'],
       correct: 'llueva',
-      explanation: '"Aunque" + Subjuntivo para hechos futuros no constatados.',
+      explanation: '"Aunque" + Subjuntivo para hechos futuros hipotéticos (Mañana).',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_hypothetical' }
     },
     {
@@ -162,57 +162,57 @@ export const QUESTION_POOL = {
       prompt: '¡Qué error cometí! Ojalá ____ aceptado la oferta.',
       options: ['hubiera', 'haya', 'habría', 'había'],
       correct: 'hubiera',
-      explanation: 'Pluscuamperfecto Subjuntivo para expresar arrepentimiento/deseos imposibles.',
+      explanation: 'Pluscuamperfecto Subjuntivo para expresar arrepentimiento pasado.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPlus', rule: 'past_regret' }
     },
     {
       id: 'b2_5',
-      prompt: 'Se busca gerente que ____ experiencia.',
-      options: ['tenga', 'tiene', 'tendrá', 'tuviera'],
+      prompt: 'Necesito un gerente que ____ experiencia en ventas.',
+      options: ['tenga', 'tenía', 'tuvo', 'tenido'],
       correct: 'tenga',
-      explanation: 'Anuncio formal (antecedente indefinido).',
+      explanation: 'Antecedente indefinido ("Necesito un...") con pre-requisito.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'formal_requirement' }
     }
   ],
   C1: [
     {
       id: 'c1_1',
-      prompt: 'De ____ sabido, no habría venido.',
-      options: ['haber', 'haberlo', 'habiendo', 'tener'],
+      prompt: 'De ____ sabido esto, no habría venido.',
+      options: ['haber', 'habiendo', 'tener', 'tenido'],
       correct: 'haber',
-      explanation: 'Infinitivo compuesto en estructuras condicionales ("De haber...").',
+      explanation: 'Infinitivo compuesto "De haber + participio" en condicionales.',
       competencyInfo: { mood: 'indicative', tense: 'infComp', rule: 'conditional_infinitive' }
     },
     {
       id: 'c1_2',
       prompt: 'No es que no ____, es que no puedo.',
-      options: ['quiera', 'quiero', 'querría', 'quisiera'],
+      options: ['quiera', 'quiero', 'querría', 'quise'],
       correct: 'quiera',
       explanation: 'Fórmula de corrección "No es que + Subjuntivo".',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'corrective_formula' }
     },
     {
       id: 'c1_3',
-      prompt: 'Como no ____ pronto, nos vamos sin ti.',
+      prompt: 'Te advierto: como no ____ pronto, nos vamos sin ti.',
       options: ['llegues', 'llegas', 'llegarás', 'llegabas'],
       correct: 'llegues',
-      explanation: 'Oración condicional de advertencia/amenaza con "Como + Subjuntivo".',
+      explanation: 'Amenaza/Advertencia con "Como + Subjuntivo".',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'conditional_threat' }
     },
     {
       id: 'c1_4',
       prompt: 'Por más que le ____, no me hizo caso.',
-      options: ['insistí', 'insista', 'insistiera', 'he insistido'],
+      options: ['insistí', 'insisto', 'insistirè', 'he insistido'],
       correct: 'insistí',
-      explanation: '"Por más que" + Indicativo cuando el hecho es real y constatado.',
+      explanation: '"Por más que" + Indicativo cuando el hecho es real y pasado.',
       competencyInfo: { mood: 'indicative', tense: 'pretIndef', rule: 'concessive_real' }
     },
     {
       id: 'c1_5',
-      prompt: 'Quienquiera que ____, dile que no estoy.',
-      options: ['sea', 'es', 'fuera', 'será'],
+      prompt: 'Quienquiera que ____ ahora, dile que no estoy.',
+      options: ['sea', 'es', 'fue', 'era'],
       correct: 'sea',
-      explanation: 'Estructuras indefinidas reduplicativas o con "quiera".',
+      explanation: 'Idenfinitud en el presente ("ahora") -> Subjuntivo Presente.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'indefinite_relative' }
     }
   ],
@@ -220,9 +220,9 @@ export const QUESTION_POOL = {
     {
       id: 'c2_1',
       prompt: 'Si ____ a ocurrir algo así, avísame de inmediato.',
-      options: ['llegare', 'llegara', 'llega', 'llegase'],
+      options: ['llegare', 'llegó', 'llega', 'llegase'],
       correct: 'llegare',
-      explanation: 'Futuro de Subjuntivo (arcaico/legal/literario) en condicionales remotas.',
+      explanation: 'Futuro de Subjuntivo (arcaico) en prótasis condicional.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjFut', rule: 'archaic_future_subj' }
     },
     {
@@ -238,15 +238,15 @@ export const QUESTION_POOL = {
       prompt: 'El criminal fue ____ por la policía.',
       options: ['aprehendido', 'aprendido', 'apreso', 'prendido'],
       correct: 'aprehendido',
-      explanation: 'Voz pasiva con participio culto/irregular (aprehender vs aprender).',
+      explanation: 'Participio culto irregular de "aprehender" (capturar).',
       competencyInfo: { mood: 'indicative', tense: 'participle', rule: 'cult_vocabulary' }
     },
     {
       id: 'c2_4',
       prompt: 'No imaginé que la situación ____ a derivar en esto.',
-      options: ['fuera', 'iba', 'iría', 'fuese'],
+      options: ['fuera', 'vaya', 'va', 'fue'],
       correct: 'fuera',
-      explanation: 'Subjuntivo Imperfecto en perífrasis "ir a + infinitivo" dependiente de pasado.',
+      explanation: 'Subjuntivo Imperfecto en subordinada sustantiva tras verbo de opinión negado en pasado.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjImp', rule: 'periphrasis_shifts' }
     },
     {
@@ -254,7 +254,7 @@ export const QUESTION_POOL = {
       prompt: 'Hágase su voluntad, así en la tierra como en el cielo.',
       options: ['Hágase', 'Hárrase', 'Hace', 'Haga'],
       correct: 'Hágase',
-      explanation: 'Imperativo de tercera persona con pronombre enclítico (Voz Media/Pasiva Refleja).',
+      explanation: 'Imperativo de tercera persona + pronombre enclítico (Voz Pasiva Refleja).',
       competencyInfo: { mood: 'imperative', tense: 'imper', rule: 'enclitic_formal' }
     }
   ]
