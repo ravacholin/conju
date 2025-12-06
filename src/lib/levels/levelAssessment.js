@@ -151,11 +151,11 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b2_3',
-      prompt: 'Mañana, aunque ____, iremos a la playa.',
-      options: ['llueva', 'llovió', 'llovía', 'ha llovido'],
-      correct: 'llueva',
-      explanation: '"Aunque" + Subjuntivo para hechos futuros hipotéticos (Mañana).',
-      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_hypothetical' }
+      prompt: 'Es imposible que ____ tan tarde.',
+      options: ['sea', 'es', 'era', 'fui'],
+      correct: 'sea',
+      explanation: 'Expresiones de imposibilidad + que exigen Subjuntivo.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'impersonal_expressions' }
     },
     {
       id: 'b2_4',
@@ -201,11 +201,11 @@ export const QUESTION_POOL = {
     },
     {
       id: 'c1_4',
-      prompt: 'Por más que le ____, no me hizo caso.',
-      options: ['insistí', 'insisto', 'insistirè', 'insistiría'],
-      correct: 'insistí',
-      explanation: '"Por más que" + Indicativo cuando el hecho es real y pasado.',
-      competencyInfo: { mood: 'indicative', tense: 'pretIndef', rule: 'concessive_real' }
+      prompt: 'No firmaré el contrato a no ser que ____ las condiciones.',
+      options: ['mejoren', 'mejoran', 'mejoraron', 'mejorarían'],
+      correct: 'mejoren',
+      explanation: '"A no ser que" es un conector condicional que siempre exige Subjuntivo.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'conditional_connector' }
     },
     {
       id: 'c1_5',
@@ -219,19 +219,19 @@ export const QUESTION_POOL = {
   C2: [
     {
       id: 'c2_1',
-      prompt: 'Por muy rápido que ____, no llegarás a tiempo.',
-      options: ['corras', 'corres', 'correrás', 'corrías'],
-      correct: 'corras',
-      explanation: '"Por muy + adjetivo + que" + subjuntivo expresa una concesión hipotética o futura.',
-      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_intensive' }
+      prompt: 'Me ignoró completamente, como si no me ____.',
+      options: ['conociera', 'conoce', 'conocía', 'ha conocido'],
+      correct: 'conociera',
+      explanation: '"Como si" introduce una comparación irreal que exige Imperfecto de Subjuntivo.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjImp', rule: 'unreal_comparison' }
     },
     {
       id: 'c2_2',
-      prompt: '____ lo que ____, siempre te apoyaré.',
-      options: ['Pase / pase', 'Pasa / pasa', 'Pasara / pasara', 'Pasó / pasó'],
-      correct: 'Pase / pase',
-      explanation: 'Estructura reduplicativa de indiferencia/concesión incondicional.',
-      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'reduplicative_concession' }
+      prompt: 'Perdió el tren, de ahí que ____ tarde a la reunión.',
+      options: ['llegara', 'llegó', 'llegaba', 'ha llegado'],
+      correct: 'llegara',
+      explanation: '"De ahí que" es un conector consecutivo que rige Subjuntivo.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjImp', rule: 'consecutive_subjunctive' }
     },
     {
       id: 'c2_3',
