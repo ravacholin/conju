@@ -1,12 +1,11 @@
 // Análisis de progreso para el sistema de progreso
 
-import { getAttemptsByUser, getAllFromDB } from './database.js'
+import { getAttemptsByUser, getAllFromDB, getMasteryByUser, batchSaveToDB } from './database.js'
 import { PROGRESS_CONFIG } from './config.js'
 // Mastery and goals utilities are imported where needed or re-exported below
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { createLogger } from '../utils/logger.js'
-import { getMasteryByUser, getAttemptsByUser, batchSaveToDB } from './database.js'
 import { getMasterySnapshotForUser } from './mastery.js'
 
 const logger = createLogger('progress:analytics')
