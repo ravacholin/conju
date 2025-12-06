@@ -72,12 +72,22 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
     // 3. Si range es 'all_time', usar la versión optimizada o el fallback.
 
     let masteryRecords = await getMasteryByUser(userId)
+
+    // Check for empty or legacy (missing 'count') records
     const isMasteryEmpty = !masteryRecords || masteryRecords.length === 0
+    let hasLegacyRecords = false
+
+    if (timeRange === 'all_time' && !isMasteryEmpty) {
+      // Si tenemos registros pero les falta 'count' (son legacy/decayed), 
+      // los tratamos como "vacíos" para forzar el recálculo real.
+      hasLegacyRecords = masteryRecords.some(r => r.count === undefined)
+    }
+
     let attempts = []
 
     if (timeRange === 'all_time') {
-      if (isMasteryEmpty) {
-        // FALLBACK: No hay mastery cacheada, debemos calcularla.
+      if (isMasteryEmpty || hasLegacyRecords) {
+        // FALLBACK: No hay mastery válida (o es legacy), debemos calcularla.
         // Usamos new Date(0) para forzar el uso del índice temporal en IDB si existe, que puede ser más rápido
         logger.info('getHeatMapData', 'Mastery empty, falling back to calculation from attempts')
         attempts = await getAttemptsByUser(userId, { startDate: new Date(0) })
