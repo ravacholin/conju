@@ -6,6 +6,7 @@ import { PROGRESS_CONFIG } from './config.js'
 import { getRealUserStats, getRealCompetencyRadarData, getIntelligentRecommendations } from './realTimeAnalytics.js'
 import { ERROR_TAGS } from './dataModels.js'
 import { createLogger } from '../utils/logger.js'
+import { getMasteryByUser, getAttemptsByUser, batchSaveToDB } from './database.js'
 import { getMasterySnapshotForUser } from './mastery.js'
 
 const logger = createLogger('progress:analytics')
@@ -66,12 +67,41 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
         break
     }
 
-    // Obtener mastery y distribución de intentos para ponderar promedios
-    // Optimización: Pasar cutoffDate a getAttemptsByUser para filtrar en DB
-    const [masteryRecords, attempts] = await Promise.all([
-      getMasterySnapshotForUser(userId),
-      getAttemptsByUser(userId, { startDate: cutoffDate > 0 ? cutoffDate : null })
-    ])
+    // Estrategia Robustez: 
+    // 1. Intentar obtener mastery de DB.
+    // 2. Si está vacío (usuario antiguo sin migración), calcular desde attempts.
+    // 3. Si range es 'all_time', usar la versión optimizada o el fallback.
+
+    let masteryRecords = await getMasteryByUser(userId)
+    const isMasteryEmpty = !masteryRecords || masteryRecords.length === 0
+    let attempts = []
+
+    if (timeRange === 'all_time') {
+      if (isMasteryEmpty) {
+        // FALLBACK: No hay mastery cacheada, debemos calcularla.
+        // Usamos new Date(0) para forzar el uso del índice temporal en IDB si existe, que puede ser más rápido
+        logger.info('getHeatMapData', 'Mastery empty, falling back to calculation from attempts')
+        attempts = await getAttemptsByUser(userId, { startDate: new Date(0) })
+
+        if (attempts.length > 0) {
+          masteryRecords = await getMasterySnapshotForUser(userId, { attempts })
+          // Backfill asíncrono para que la próxima vez sea rápido
+          batchSaveToDB('mastery', masteryRecords).catch(e =>
+            logger.warn('getHeatMapData', 'Failed to backfill mastery', e)
+          )
+        }
+      }
+      // Si mastery existe, no necesitamos fetch attempts para all_time (usamos mastery.count)
+    } else {
+      // Para otros rangos, siempre necesitamos attempts filtrados 
+      attempts = await getAttemptsByUser(userId, { startDate: cutoffDate > 0 ? cutoffDate : null })
+
+      if (isMasteryEmpty) {
+        // Intentamos recuperar mastery base con los attempts que tenemos (better than nothing)
+        const partialSnapshot = await getMasterySnapshotForUser(userId, { attempts })
+        masteryRecords = partialSnapshot
+      }
+    }
 
     ensureNotCancelled(signal)
 
@@ -131,9 +161,22 @@ export async function getHeatMapData(userId, person = null, timeRange = 'all_tim
         group.weightedSum += record.score * w
         group.weight += w
       } else if (isAllTimeRange) {
-        // For all-time range, include baseline mastery even without recent attempts
-        group.weightedSum += record.score
-        group.weight += 1
+        // For all-time range, use recorded counts from DB (count if available, else n)
+        // If count/n is missing, fallback to 1 to show presence
+        const recordCount = record.count !== undefined ? record.count : (record.n || 0)
+        const weight = recordCount > 0 ? recordCount : 1
+
+        group.weightedSum += record.score * weight
+        group.weight += weight
+
+        // Ensure accurate counts and dates for all-time view
+        group.count += recordCount
+        if (record.updatedAt || record.lastAttempt) {
+          const ts = new Date(record.lastAttempt || record.updatedAt).getTime()
+          if (Number.isFinite(ts) && ts > group.lastAttempt) {
+            group.lastAttempt = ts
+          }
+        }
       }
     }
 

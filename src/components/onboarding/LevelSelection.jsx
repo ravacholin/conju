@@ -7,64 +7,64 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
     return (
       <>
         <div className="options-grid">
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('A1')} 
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('A1')}
             title="Seleccionar nivel A1 - Principiante"
           >
-            <h3><img src="/a1.png" alt="A1" className="option-icon" /> Principiante</h3>
-            <p>Te presentás, describís personas y rutinas, pedís y das datos básicos en situaciones cotidianas.</p>
-            <p className="example">Indicativo: Presente</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>A1</div>
+            <p>PRINCIPIANTE</p>
+            <p className="example">Presente</p>
           </ClickableCard>
-          
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('A2')} 
+
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('A2')}
             title="Seleccionar nivel A2 - Elemental"
           >
-            <h3><img src="/a2.png" alt="A2" className="option-icon" /> Elemental</h3>
-            <p>Contás experiencias y planes, seguís instrucciones, resolvés gestiones simples del día a día.</p>
-            <p className="example">Indicativo: Pretéritos, Futuro | Imperativo: Afirmativo</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>A2</div>
+            <p>ELEMENTAL</p>
+            <p className="example">Pretéritos, Futuro, Imperativo</p>
           </ClickableCard>
-          
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('B1')} 
+
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('B1')}
             title="Seleccionar nivel B1 - Intermedio"
           >
-            <h3><img src="/B1.png" alt="B1" className="option-icon" /> Intermedio</h3>
-            <p>Narrás con orden, comparás pasados y situaciones, explicás causas y fundamentás opiniones con claridad.</p>
-            <p className="example">Pluscuamperfecto, Futuro compuesto, Subjuntivo presente, Condicional</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>B1</div>
+            <p>INTERMEDIO</p>
+            <p className="example">Futuro compuesto, Condicional</p>
           </ClickableCard>
-          
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('B2')} 
+
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('B2')}
             title="Seleccionar nivel B2 - Intermedio alto"
           >
-            <h3><img src="/b2.png" alt="B2" className="option-icon" /> Intermedio alto</h3>
-            <p>Argumentás con matices, manejás hipótesis y concesiones, pedís y das aclaraciones complejas con precisión.</p>
-            <p className="example">Subjuntivo imperfecto/pluscuamperfecto, Condicional compuesto</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>B2</div>
+            <p>INTERMEDIO ALTO</p>
+            <p className="example">Subjuntivo imperfecto</p>
           </ClickableCard>
-          
-          <ClickableCard 
-            className="option-card" 
-            onClick={() => onSelectLevel('C1')} 
+
+          <ClickableCard
+            className="option-card"
+            onClick={() => onSelectLevel('C1')}
             title="Seleccionar nivel C1 - Avanzado"
           >
-            <h3><img src="/c1.png" alt="C1" className="option-icon" /> Avanzado</h3>
-            <p>Producís discursos precisos y cohesionados, adaptás el registro, reformulás ideas con naturalidad y fluidez.</p>
-            <p className="example">Todas las formas verbales</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>C1</div>
+            <p>AVANZADO</p>
+            <p className="example">Discurso preciso y fluido</p>
           </ClickableCard>
-          
+
           <ClickableCard
             className="option-card"
             onClick={() => onSelectLevel('C2')}
             title="Seleccionar nivel C2 - Superior"
           >
-            <h3><img src="/c2.png" alt="C2" className="option-icon" /> Superior</h3>
-            <p>Usás recursos idiomáticos y tonos variados, dominás matices culturales y resolvés situaciones con soltura casi nativa.</p>
-            <p className="example">Todas las formas verbales</p>
+            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>C2</div>
+            <p>SUPERIOR</p>
+            <p className="example">Dominio nativo</p>
           </ClickableCard>
 
           {onStartLevelTest && (
@@ -73,13 +73,13 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
               onClick={onStartLevelTest}
               title="Test de nivel adaptativo - Determina tu nivel automáticamente"
             >
-              <h3><img src="/icons/brain.png" alt="Test" className="option-icon" /> Test de Nivel</h3>
-              <p>Determina tu nivel automáticamente con un test adaptativo profesional.</p>
-              <p className="example">8-12 preguntas • Algoritmo CAT • Resultado inmediato</p>
+              <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>TEST</div>
+              <p>DETERMINAR NIVEL</p>
+              <p className="example">Automático • Adaptativo</p>
             </ClickableCard>
           )}
         </div>
-        
+
         {/* Hint text that includes navigation keywords for test expectations */}
         <p style={{ textAlign: 'center', marginTop: '0.5rem' }}>Volver al menú: Por tema / Por nivel</p>
 
@@ -94,36 +94,34 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
   return (
     <>
       <div className="options-grid">
-        <ClickableCard 
-          className="option-card" 
-          onClick={onGoToLevelDetails} 
+        <ClickableCard
+          className="option-card"
+          onClick={onGoToLevelDetails}
           title="Practicar por nivel específico (A1-C2)"
         >
-          <h3><img src="/books.png" alt="Libros" className="option-icon" /> Por nivel</h3>
-          <p>Practicá según tu nivel de español</p>
-          <p className="example">A1, A2, B1, B2, C1, C2</p>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>NIVELES</div>
+          <p>POR DIFICULTAD (A1-C2)</p>
+          <p className="example">Camino progresivo estructurado</p>
         </ClickableCard>
-        
-        <ClickableCard 
-          className="option-card" 
-          onClick={() => onSelectPracticeMode('theme')} 
+
+        <ClickableCard
+          className="option-card"
+          onClick={() => onSelectPracticeMode('theme')}
           title="Practicar temas específicos (presente, subjuntivo, etc.)"
         >
-          <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Por tema</h3>
-          <p>Practicá un tiempo específico</p>
-          <p className="example">Presente, subjuntivo, imperativo, etc.</p>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>TEMAS</div>
+          <p>POR TIEMPO VERBAL</p>
+          <p className="example">Presente, Subjuntivo, etc.</p>
         </ClickableCard>
-        
+
         <ClickableCard
           className="option-card"
           onClick={onStartLearningNewTense}
           title="Aprender un tiempo verbal nuevo con un método guiado"
         >
-          <h3>
-            <img src="/icons/brain.png" alt="Aprender" className="option-icon" /> Aprender un tiempo
-          </h3>
-          <p>Camino guiado paso a paso</p>
-          <p className="example">Introducción, práctica y contexto</p>
+          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>APRENDER</div>
+          <p>LECCIONES GUIADAS</p>
+          <p className="example">Explicaciones y práctica paso a paso</p>
         </ClickableCard>
 
         {onGoToProgress && (
@@ -132,20 +130,13 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onGoToProgress()}
             title="Ver progreso y analíticas"
           >
-            <h3>
-              <img
-                src="/icons/chart.png"
-                alt="Progreso"
-                className="option-icon"
-              />{' '}
-              Seguir tu progreso
-            </h3>
-            <p>Métricas y análisis para mejorar</p>
-            <p className="example">Dashboard con analíticas y recomendaciones</p>
+            <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>PROGRESO</div>
+            <p>ESTADÍSTICAS</p>
+            <p className="example">Analíticas y mapa de calor</p>
           </ClickableCard>
         )}
       </div>
-      
+
       <button onClick={onBack} className="back-btn">
         <img src="/back.png" alt="Volver" className="back-icon" />
       </button>

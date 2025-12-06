@@ -425,6 +425,14 @@ export async function trackAttemptSubmitted(attemptId, result) {
       if (weightedTotal > 0) {
         score = 100 * (weightedCorrect / weightedTotal);
       }
+      // Calculate raw count
+      const rawCount = allUserAttempts.filter(
+        a => a.mood === mood &&
+          a.tense === tense &&
+          a.person === person &&
+          a.verbId
+      ).length;
+
       const masteryRecord = {
         id: `${currentSession.userId}|${mood}|${tense}|${person}`,
         userId: currentSession.userId,
@@ -433,6 +441,7 @@ export async function trackAttemptSubmitted(attemptId, result) {
         person,
         score: Math.round(score * 100) / 100,
         n: Math.round(_weightedN),
+        count: rawCount, // Raw count of attempts
         errorCounts,
         updatedAt: new Date(),
         syncedAt: 0,
@@ -764,9 +773,9 @@ export async function getUserStats() {
     const averageMastery =
       masteryData.length > 0
         ? Math.round(
-            masteryData.reduce((sum, m) => sum + m.score, 0) /
-              masteryData.length,
-          )
+          masteryData.reduce((sum, m) => sum + m.score, 0) /
+          masteryData.length,
+        )
         : 0;
 
     // Calcular días de práctica únicos

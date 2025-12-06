@@ -176,11 +176,10 @@ body {
   justify-content: center;
   align-items: center;
   padding: 1rem 1.618rem;
-  background: rgba(5, 5, 5, 0.95);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(0px);
-  /* No blur for brutalism */
-  -webkit-backdrop-filter: blur(0px);
+  background: var(--bg);
+  border-bottom: 2px solid var(--border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -272,12 +271,12 @@ body {
   background: transparent;
   color: #ffffff;
   border: 1px solid var(--border);
-  padding: 1.15rem 1.4rem;
+  padding: 1.2rem 2rem;
   border-radius: 0;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.1s ease;
   display: flex;
@@ -333,13 +332,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0.25rem 0 1.5rem;
-  color: #666;
-  font-size: 0.75rem;
+  gap: 0.8rem;
+  margin: 1rem 0 3rem;
+  color: #444;
+  font-size: 0.8rem;
   font-family: var(--font-mono);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  font-weight: 700;
 }
 
 .breadcrumb .crumb {
@@ -378,13 +378,15 @@ body {
 }
 
 .onboarding h1 {
-  font-size: 4rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  font-size: 5rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
   color: #ffffff;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
   text-transform: uppercase;
+  text-align: center;
+  border-bottom: none;
 }
 
 .onboarding h2 {
@@ -426,20 +428,23 @@ body {
 }
 
 .option-card {
-  background: var(--panel);
-  /* No transparency */
+  background: #000000;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 0;
-  padding: 2rem;
+  padding: 2.5rem;
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.2, 0, 0.4, 1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
   position: relative;
   overflow: visible;
   will-change: transform, box-shadow;
-  text-align: left;
+  text-align: center;
   box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Subtle shimmer effect (desktop hover + focus ring handle) */
@@ -450,9 +455,9 @@ body {
 
 /* Neo-Brutalist hover effect: sharp offset shadow */
 .option-card:hover {
-  background: var(--panel);
-  border-color: var(--border-active);
-  transform: translate(-4px, -4px);
+  background: #000000;
+  border-color: #ffffff;
+  transform: translate(-6px, -6px);
   box-shadow: var(--shadow-hard);
   z-index: 10;
 }
@@ -563,24 +568,24 @@ body {
 }
 
 .option-card h3 {
-  font-size: 1.414rem;
-  font-weight: 450;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
   color: var(--text);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  justify-content: flex-start;
-  padding-left: 0;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  font-optical-sizing: auto;
+  gap: 1rem;
+  justify-content: center;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
 /* Más espacio entre ícono y texto en los primeros dos boxes de dialectos - SOLO para el menú de dialectos */
 .dialect-selection .option-card:first-child h3,
 .dialect-selection .option-card:nth-child(2) h3 {
-  margin-bottom: 2.25rem;
+  margin-bottom: 2rem;
 }
 
 .option-card p {

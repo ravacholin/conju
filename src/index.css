@@ -12,15 +12,15 @@
 
 :root {
   /* Brutalist Dark Palette */
-  --bg: #050505;
-  --panel: #111111;
+  --bg: #000000;
+  --panel: #000000;
   --text: #ffffff;
   --muted: #888888;
   --muted-2: #555555;
   --border: #333333;
   --border-active: #ffffff;
 
-  /* Accents */
+  /* Accents - Minimal usage */
   --accent-primary: #ffffff;
   --accent-success: #00ff00;
   --accent-error: #ff0000;
@@ -28,8 +28,8 @@
 
   /* UI Elements */
   --focus-ring: #ffffff;
-  --shadow-hard: 4px 4px 0px 0px #ffffff;
-  --shadow-hard-sm: 2px 2px 0px 0px #ffffff;
+  --shadow-hard: 6px 6px 0px 0px #ffffff;
+  --shadow-hard-sm: 3px 3px 0px 0px #ffffff;
 
   /* Typography */
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -46,11 +46,11 @@ body {
   text-rendering: optimizeLegibility;
   background-color: var(--bg);
   color: var(--text);
-  /* Subtle technical grid background */
+  /* Brutalist grid */
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
   background-position: center top;
 }
 
@@ -67,7 +67,11 @@ select,
 textarea,
 .card,
 .panel,
-.btn {
+.btn,
+.option-card,
+.dialog,
+.modal,
+.toast {
   border-radius: 0 !important;
 }
 
@@ -79,4 +83,5 @@ h5,
 h6 {
   text-transform: uppercase;
   letter-spacing: -0.02em;
+  font-weight: 800;
 }
