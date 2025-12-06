@@ -122,6 +122,48 @@ async function claimAndGetUnsynced(storeName, currentUserId) {
   }
 }
 
+function summarizeMoodTenseCoverage(records = []) {
+  const moodMap = new Map()
+
+  for (const record of records) {
+    const mood = record?.mood
+    const tense = record?.tense
+    if (!mood || !tense) continue
+
+    if (!moodMap.has(mood)) {
+      moodMap.set(mood, new Set())
+    }
+    moodMap.get(mood).add(tense)
+  }
+
+  const byMood = {}
+  for (const [mood, tenses] of moodMap.entries()) {
+    byMood[mood] = tenses.size
+  }
+
+  const total = Object.values(byMood).reduce((sum, count) => sum + count, 0)
+  return { byMood, total }
+}
+
+function needsCoverageBackfill(localRecords = [], remoteRecords = []) {
+  const local = summarizeMoodTenseCoverage(localRecords)
+  const remote = summarizeMoodTenseCoverage(remoteRecords)
+
+  if (local.total === 0) return false
+  if (remote.total === 0) return true
+
+  const coverageRatio = remote.total / local.total
+  if (local.total >= 6 && coverageRatio < 0.6) return true
+
+  for (const mood of Object.keys(local.byMood)) {
+    const localCount = local.byMood[mood]
+    const remoteCount = remote.byMood[mood] || 0
+    if (localCount >= 3 && remoteCount <= 1) return true
+  }
+
+  return false
+}
+
 export async function syncAccountData() {
   safeLogger.debug('syncAccountData: inicio')
 
@@ -377,6 +419,23 @@ export async function syncAccountData() {
     let anyUploadFailed = false
     let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0 }
 
+    const localMasteryAll = await getMasteryByUser(resolvedUserId)
+    const localSchedulesAll = (await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)).filter((s) => s?.userId === resolvedUserId)
+    const remoteMastery = Array.isArray(accountData.mastery) ? accountData.mastery : []
+    const remoteSchedules = Array.isArray(accountData.schedules) ? accountData.schedules : []
+
+    const backfillMastery = needsCoverageBackfill(localMasteryAll, remoteMastery)
+    const backfillSchedules = needsCoverageBackfill(localSchedulesAll, remoteSchedules)
+
+    safeLogger.debug('syncAccountData: coverage check', {
+      backfillMastery,
+      backfillSchedules,
+      localMasteryCells: summarizeMoodTenseCoverage(localMasteryAll),
+      remoteMasteryCells: summarizeMoodTenseCoverage(remoteMastery),
+      localScheduleCells: summarizeMoodTenseCoverage(localSchedulesAll),
+      remoteScheduleCells: summarizeMoodTenseCoverage(remoteSchedules)
+    })
+
     try {
       // Attempts
       try {
@@ -398,12 +457,17 @@ export async function syncAccountData() {
       try {
         // CRITICAL FIX: Use auto-claim logic
         const unsyncedMastery = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.MASTERY, resolvedUserId)
-        if (unsyncedMastery.length > 0) {
-          safeLogger.info('syncAccountData: uploading mastery', { count: unsyncedMastery.length })
-          const res = await tryBulk('mastery', unsyncedMastery)
-          await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsyncedMastery.map((m) => m.id))
-          uploaded.mastery = unsyncedMastery.length
-          safeLogger.info('syncAccountData: mastery uploaded successfully', { count: unsyncedMastery.length, server: res })
+        const masteryPayload = backfillMastery ? localMasteryAll : unsyncedMastery
+
+        if (masteryPayload.length > 0) {
+          safeLogger.info('syncAccountData: uploading mastery', {
+            count: masteryPayload.length,
+            mode: backfillMastery ? 'full-backfill' : 'incremental'
+          })
+          const res = await tryBulk('mastery', masteryPayload)
+          await markSynced(STORAGE_CONFIG.STORES.MASTERY, masteryPayload.map((m) => m.id))
+          uploaded.mastery = masteryPayload.length
+          safeLogger.info('syncAccountData: mastery uploaded successfully', { count: masteryPayload.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
@@ -414,12 +478,17 @@ export async function syncAccountData() {
       try {
         // CRITICAL FIX: Use auto-claim logic
         const unsyncedSchedules = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.SCHEDULES, resolvedUserId)
-        if (unsyncedSchedules.length > 0) {
-          safeLogger.info('syncAccountData: uploading schedules', { count: unsyncedSchedules.length })
-          const res = await tryBulk('schedules', unsyncedSchedules)
-          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsyncedSchedules.map((s) => s.id))
-          uploaded.schedules = unsyncedSchedules.length
-          safeLogger.info('syncAccountData: schedules uploaded successfully', { count: unsyncedSchedules.length, server: res })
+        const schedulePayload = backfillSchedules ? localSchedulesAll : unsyncedSchedules
+
+        if (schedulePayload.length > 0) {
+          safeLogger.info('syncAccountData: uploading schedules', {
+            count: schedulePayload.length,
+            mode: backfillSchedules ? 'full-backfill' : 'incremental'
+          })
+          const res = await tryBulk('schedules', schedulePayload)
+          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, schedulePayload.map((s) => s.id))
+          uploaded.schedules = schedulePayload.length
+          safeLogger.info('syncAccountData: schedules uploaded successfully', { count: schedulePayload.length, server: res })
         }
       } catch (e) {
         anyUploadFailed = true
