@@ -117,10 +117,10 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b1_4',
-      prompt: 'Busco a alguien que ____ cocinar paella.',
+      prompt: 'No hay nadie en el grupo que ____ hablar chino.',
       options: ['sepa', 'sabe', 'sabía', 'sabrá'],
       correct: 'sepa',
-      explanation: 'Subjuntivo para dudas sobre la existencia del objeto (antecedente desconocido).',
+      explanation: 'Subjuntivo obligatorio tras antecedente negativo ("nadie").',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'unknown_antecedent' }
     },
     {
@@ -151,18 +151,18 @@ export const QUESTION_POOL = {
     },
     {
       id: 'b2_3',
-      prompt: 'Aunque ____ frío, saldré a correr.',
-      options: ['haga', 'hace', 'hacía', 'hará'],
-      correct: 'haga',
-      explanation: '"Aunque" + Subjuntivo indica una concesión hipotética o no informada.',
+      prompt: 'Mañana, aunque ____, iremos a la playa.',
+      options: ['llueva', 'llueve', 'llovía', 'lloverá'],
+      correct: 'llueva',
+      explanation: '"Aunque" + Subjuntivo para hechos futuros no constatados.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_hypothetical' }
     },
     {
       id: 'b2_4',
-      prompt: 'Ojalá ____ aceptado la oferta.',
+      prompt: '¡Qué error cometí! Ojalá ____ aceptado la oferta.',
       options: ['hubiera', 'haya', 'habría', 'había'],
       correct: 'hubiera',
-      explanation: 'Pluscuamperfecto Subjuntivo para deseos imposibles en el pasado.',
+      explanation: 'Pluscuamperfecto Subjuntivo para expresar arrepentimiento/deseos imposibles.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPlus', rule: 'past_regret' }
     },
     {
@@ -227,7 +227,7 @@ export const QUESTION_POOL = {
     },
     {
       id: 'c2_2',
-      prompt: '____ lo que ____, no cambies de opinión.',
+      prompt: '____ lo que ____, siempre te apoyaré.',
       options: ['Pase / pase', 'Pasa / pasa', 'Pasara / pasara', 'Pasó / pasó'],
       correct: 'Pase / pase',
       explanation: 'Estructura reduplicativa de indiferencia/concesión incondicional.',
