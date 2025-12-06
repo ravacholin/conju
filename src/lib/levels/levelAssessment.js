@@ -251,7 +251,7 @@ export const QUESTION_POOL = {
     },
     {
       id: 'c2_5',
-      prompt: 'Hágase su voluntad, así en la tierra como en el cielo.',
+      prompt: '____ su voluntad, así en la tierra como en el cielo.',
       options: ['Hágase', 'Hárrase', 'Hace', 'Haga'],
       correct: 'Hágase',
       explanation: 'Imperativo de tercera persona + pronombre enclítico (Voz Pasiva Refleja).',
