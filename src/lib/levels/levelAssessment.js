@@ -135,7 +135,7 @@ export const QUESTION_POOL = {
   B2: [
     {
       id: 'b2_1',
-      prompt: 'Si tú ____ hubieras dicho antes, te habría ayudado.',
+      prompt: 'Yo no sabía nada. Si tú ____ hubieras dicho antes, te habría ayudado.',
       options: ['me lo', 'te lo', 'se lo', 'nos lo'],
       correct: 'me lo',
       explanation: 'Colocación de pronombres dobles (tú a mí -> me lo).',
@@ -152,7 +152,7 @@ export const QUESTION_POOL = {
     {
       id: 'b2_3',
       prompt: 'Mañana, aunque ____, iremos a la playa.',
-      options: ['llueva', 'llovió', 'llovía', 'llueve'],
+      options: ['llueva', 'llovió', 'llovía', 'ha llovido'],
       correct: 'llueva',
       explanation: '"Aunque" + Subjuntivo para hechos futuros hipotéticos (Mañana).',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_hypothetical' }
@@ -194,7 +194,7 @@ export const QUESTION_POOL = {
     {
       id: 'c1_3',
       prompt: 'Te advierto: como no ____ pronto, nos vamos sin ti.',
-      options: ['llegues', 'llegas', 'llegarás', 'llegabas'],
+      options: ['llegues', 'llegado', 'llegarás', 'llegabas'],
       correct: 'llegues',
       explanation: 'Amenaza/Advertencia con "Como + Subjuntivo".',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'conditional_threat' }
@@ -202,7 +202,7 @@ export const QUESTION_POOL = {
     {
       id: 'c1_4',
       prompt: 'Por más que le ____, no me hizo caso.',
-      options: ['insistí', 'insisto', 'insistirè', 'he insistido'],
+      options: ['insistí', 'insisto', 'insistirè', 'insistiría'],
       correct: 'insistí',
       explanation: '"Por más que" + Indicativo cuando el hecho es real y pasado.',
       competencyInfo: { mood: 'indicative', tense: 'pretIndef', rule: 'concessive_real' }
@@ -219,11 +219,11 @@ export const QUESTION_POOL = {
   C2: [
     {
       id: 'c2_1',
-      prompt: 'Si ____ a ocurrir algo así, avísame de inmediato.',
-      options: ['llegare', 'llegó', 'llega', 'llegase'],
-      correct: 'llegare',
-      explanation: 'Futuro de Subjuntivo (arcaico) en prótasis condicional.',
-      competencyInfo: { mood: 'subjunctive', tense: 'subjFut', rule: 'archaic_future_subj' }
+      prompt: 'Por muy rápido que ____, no llegarás a tiempo.',
+      options: ['corras', 'corres', 'correrás', 'corrías'],
+      correct: 'corras',
+      explanation: '"Por muy + adjetivo + que" + subjuntivo expresa una concesión hipotética o futura.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjPres', rule: 'concessive_intensive' }
     },
     {
       id: 'c2_2',
@@ -236,7 +236,7 @@ export const QUESTION_POOL = {
     {
       id: 'c2_3',
       prompt: 'El criminal fue ____ por la policía.',
-      options: ['aprehendido', 'aprendido', 'apreso', 'prendido'],
+      options: ['aprehendido', 'aprendido', 'apreso', 'aprensivo'],
       correct: 'aprehendido',
       explanation: 'Participio culto irregular de "aprehender" (capturar).',
       competencyInfo: { mood: 'indicative', tense: 'participle', rule: 'cult_vocabulary' }
