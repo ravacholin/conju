@@ -8,5 +8,6 @@
       "command": "sequential-thinking-mcp",
       "args": []
     }
-  }
+  },
+  "$version": 2
 }
