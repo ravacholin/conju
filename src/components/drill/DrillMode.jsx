@@ -119,7 +119,8 @@ function DrillMode({
   const handleToggleQuickSwitch = useCallback((show = null) => {
     const newShow = show !== null ? show : !showQuickSwitch
     if (newShow) {
-      closeAllPanels()
+      setShowGames(false)
+      setShowPronunciation(false)
       setShowQuickSwitch(true)
     } else {
       setShowQuickSwitch(false)
@@ -129,7 +130,8 @@ function DrillMode({
   const handleToggleGames = useCallback((show = null) => {
     const newShow = show !== null ? show : !showGames
     if (newShow) {
-      closeAllPanels()
+      setShowQuickSwitch(false)
+      setShowPronunciation(false)
       setShowGames(true)
     } else {
       setShowGames(false)
@@ -142,7 +144,8 @@ function DrillMode({
       if (show === false) {
         setShowPronunciation(false)
       } else {
-        closeAllPanels()
+        setShowQuickSwitch(false)
+        setShowGames(false)
         setShowPronunciation(true)
       }
       return
@@ -151,7 +154,8 @@ function DrillMode({
     // Lógica del click en el ícono de boca
     if (!showPronunciation) {
       // Panel cerrado → Abrir panel (la grabación se inicia automáticamente en el panel)
-      closeAllPanels()
+      setShowQuickSwitch(false)
+      setShowGames(false)
       setShowPronunciation(true)
     } else {
       // Panel abierto → Toggle grabación (NO cerrar panel)

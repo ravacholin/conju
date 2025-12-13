@@ -42,20 +42,48 @@ function GamesPanel({ settings, onClose, onRegenerateItem }) {
     }
   }
 
+  const handleKeyDown = (e, callback) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      callback()
+    }
+  }
+
   return (
     <div className="games-panel quick-switch-panel" aria-label="Juegos">
       <div className="options-grid">
-        <div className="option-card compact" onClick={handleResistanceToggle} aria-label="Survivor">
+        <div 
+          className="option-card compact" 
+          onClick={handleResistanceToggle} 
+          aria-label="Survivor"
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => handleKeyDown(e, handleResistanceToggle)}
+        >
           <img src="/zombie.png" alt="Survivor" className="game-icon" />
           <p className="conjugation-example">Modo supervivencia</p>
         </div>
         
-        <div className="option-card compact" onClick={handleReverseToggle} aria-label="Reverso">
+        <div 
+          className="option-card compact" 
+          onClick={handleReverseToggle} 
+          aria-label="Reverso"
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => handleKeyDown(e, handleReverseToggle)}
+        >
           <img src="/sobrev.png" alt="Reverso" className="game-icon" />
           <p className="conjugation-example">Invertí la consigna</p>
         </div>
         
-        <div className="option-card compact" onClick={handleDoubleToggle} aria-label="Dos juntos dos">
+        <div 
+          className="option-card compact" 
+          onClick={handleDoubleToggle} 
+          aria-label="Dos juntos dos"
+          role="button"
+          tabIndex="0"
+          onKeyDown={(e) => handleKeyDown(e, handleDoubleToggle)}
+        >
           <img src="/verbosverbos.png" alt="De a dos" className="game-icon" />
           <p className="conjugation-example">Dos juntos dos</p>
         </div>

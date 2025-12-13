@@ -98,8 +98,9 @@ function QuickSwitchPanel({
   return (
     <div className="quick-switch-panel">
       <div className="setting-group">
-        <label>Variantes:</label>
+        <label htmlFor="variant-select">Variantes:</label>
         <select
+          id="variant-select"
           className="setting-select"
           value={getDialectValue()}
           onChange={(e) => handleDialectChange(e.target.value)}
@@ -112,8 +113,9 @@ function QuickSwitchPanel({
       </div>
 
       <div className="setting-group">
-        <label>Modo verbal:</label>
+        <label htmlFor="mood-select">Modo verbal:</label>
         <select
+          id="mood-select"
           className="setting-select"
           value={settings.specificMood || ''}
           onChange={(e) => handleMoodChange(e.target.value)}
@@ -127,8 +129,9 @@ function QuickSwitchPanel({
 
       {settings.specificMood && (
         <div className="setting-group">
-          <label>Tiempo verbal:</label>
+          <label htmlFor="tense-select">Tiempo verbal:</label>
           <select
+            id="tense-select"
             className="setting-select"
             value={settings.specificTense || ''}
             onChange={(e) => handleTenseChange(e.target.value)}
@@ -145,8 +148,9 @@ function QuickSwitchPanel({
       )}
 
       <div className="setting-group">
-        <label>Tipo de verbos:</label>
+        <label htmlFor="verb-type-select">Tipo de verbos:</label>
         <select
+          id="verb-type-select"
           className="setting-select"
           value={settings.verbType}
           onChange={(e) => handleVerbTypeChange(e.target.value)}

@@ -432,6 +432,8 @@ export default function Drill({
         <div className="input-container">
           <input
             ref={inputRef}
+            id="conjugation-input"
+            name="conjugation"
             type="text"
             className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
             value={input}

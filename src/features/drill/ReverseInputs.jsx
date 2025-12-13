@@ -172,8 +172,10 @@ export default function ReverseInputs({
 
       <div className={`reverse-grid ${showMoodField || showTenseField ? '' : 'reverse-grid-single'}`}>
         <div className="reverse-field">
-          <label className="reverse-label">Infinitivo</label>
+          <label htmlFor="reverse-infinitive" className="reverse-label">Infinitivo</label>
           <input
+            id="reverse-infinitive"
+            name="reverse-infinitive"
             ref={inputRef}
             className="reverse-input"
             value={infinitiveGuess}
@@ -186,8 +188,10 @@ export default function ReverseInputs({
 
         {showPersonField && (
           <div className="reverse-field">
-            <label className="reverse-label">Persona</label>
+            <label htmlFor="reverse-person" className="reverse-label">Persona</label>
             <select
+              id="reverse-person"
+              name="reverse-person"
               className="reverse-select"
               value={personGuess}
               onChange={(e) => setPersonGuess(e.target.value)}
@@ -205,8 +209,10 @@ export default function ReverseInputs({
 
         {showMoodField && (
           <div className="reverse-field">
-            <label className="reverse-label">Modo</label>
+            <label htmlFor="reverse-mood" className="reverse-label">Modo</label>
             <select
+              id="reverse-mood"
+              name="reverse-mood"
               className="reverse-select"
               value={moodGuess}
               onChange={(e) => {
@@ -227,8 +233,10 @@ export default function ReverseInputs({
 
         {showTenseField && (
           <div className="reverse-field">
-            <label className="reverse-label">Tiempo</label>
+            <label htmlFor="reverse-tense" className="reverse-label">Tiempo</label>
             <select
+              id="reverse-tense"
+              name="reverse-tense"
               className="reverse-select"
               value={tenseGuess}
               onChange={(e) => setTenseGuess(e.target.value)}
