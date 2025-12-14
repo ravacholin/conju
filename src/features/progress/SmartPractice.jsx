@@ -7,6 +7,30 @@ import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('features:SmartPractice')
 
+const LEGACY_IMPERATIVE_COMBO = 'imperative-imper'
+const IMPERATIVE_AFFIRMATIVE_COMBO = 'imperative-impAff'
+
+function normalizeLegacyHeatMapCombos(heatMap = {}) {
+  if (!heatMap || typeof heatMap !== 'object') {
+    return {}
+  }
+
+  const normalizedEntries = {}
+
+  Object.entries(heatMap).forEach(([combo, value]) => {
+    if (combo === LEGACY_IMPERATIVE_COMBO) {
+      if (!normalizedEntries[IMPERATIVE_AFFIRMATIVE_COMBO]) {
+        normalizedEntries[IMPERATIVE_AFFIRMATIVE_COMBO] = value
+      }
+      return
+    }
+
+    normalizedEntries[combo] = value
+  })
+
+  return normalizedEntries
+}
+
 /**
  * Smart Practice Panel - Intelligent, actionable practice recommendations
  * Focuses on heatmap-based recommendations when no personalized plan is active
@@ -63,7 +87,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
       }]
     }
 
-    const heatMap = heatMapData.heatMap
+    const heatMap = normalizeLegacyHeatMapCombos(heatMapData.heatMap)
 
     const supportedEntries = Object.entries(heatMap).filter(([combo]) =>
       SUPPORTED_HEATMAP_COMBO_SET.has(combo)

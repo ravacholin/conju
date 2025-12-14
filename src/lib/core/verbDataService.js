@@ -11,12 +11,17 @@ import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { getAllVerbsWithRedundancy, getRedundancyManager } from './VerbDataRedundancyManager.js'
 import { validateAndHealVerbs, getIntegrityGuard } from './DataIntegrityGuard.js'
 import { handleErrorWithRecovery } from './AutoRecoverySystem.js'
+import { getOrchestrator } from './CacheOrchestrator.js'
+import { clearAllCaches as clearOptimizedCache } from './optimizedCache.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataService')
 
 let directDatasetCache = null
 let directDatasetPromise = null
+
+const formsCacheByRegion = new Map()
+const formsPromiseByRegion = new Map()
 
 async function loadDirectDataset() {
   if (directDatasetCache) {
@@ -76,8 +81,13 @@ export async function getAllVerbs() {
     try {
       const redundantVerbs = getAllVerbsWithRedundancy()
       if (redundantVerbs && Array.isArray(redundantVerbs) && redundantVerbs.length > 0) {
-        logger.debug('getAllVerbs', `Retrieved ${redundantVerbs.length} verbs from redundancy manager`)
-        return redundantVerbs
+        // If the redundancy manager is still on the emergency layer (tiny dataset),
+        // prefer awaiting the lazy dataset in async contexts.
+        if (areVerbsLoaded() || redundantVerbs.length > 10) {
+          logger.debug('getAllVerbs', `Retrieved ${redundantVerbs.length} verbs from redundancy manager`)
+          return redundantVerbs
+        }
+        logger.debug('getAllVerbs', `Redundancy manager returned ${redundantVerbs.length} verbs; awaiting lazy load`)
       }
     } catch (redundancyError) {
       logger.warn('getAllVerbs', 'Redundancy manager failed, trying lazy loading', redundancyError)
@@ -395,7 +405,16 @@ export async function getFormsForRegion(region, settings = {}) {
     return []
   }
 
-  try {
+  if (formsCacheByRegion.has(region)) {
+    return formsCacheByRegion.get(region)
+  }
+
+  if (formsPromiseByRegion.has(region)) {
+    return await formsPromiseByRegion.get(region)
+  }
+
+  const promise = (async () => {
+    try {
     const forms = []
     let processedVerbs = 0
     let formsGenerated = 0
@@ -529,9 +548,10 @@ export async function getFormsForRegion(region, settings = {}) {
       logger.warn('getFormsForRegion', 'Form validation failed', validationError)
     }
 
+    formsCacheByRegion.set(region, forms)
     return forms
 
-  } catch (error) {
+    } catch (error) {
     logger.error('getFormsForRegion', `Critical error generating forms for region: ${region}`, error)
 
     // Trigger recovery system
@@ -544,6 +564,14 @@ export async function getFormsForRegion(region, settings = {}) {
 
     // Return empty array to prevent crashes
     return []
+    }
+  })()
+
+  formsPromiseByRegion.set(region, promise)
+  try {
+    return await promise
+  } finally {
+    formsPromiseByRegion.delete(region)
   }
 }
 
@@ -1221,7 +1249,7 @@ export async function getVerbDataCacheStats() {
 
     // Try to get additional stats from redundancy manager
     try {
-      const redundancyManager = getVerbDataRedundancyManager()
+      const redundancyManager = getRedundancyManager()
       if (redundancyManager) {
         const redundancyStats = redundancyManager.getSystemStats()
         Object.assign(baseStats, {
@@ -1237,7 +1265,7 @@ export async function getVerbDataCacheStats() {
 
     // Try to get cache orchestrator stats
     try {
-      const cacheOrchestrator = getCacheOrchestrator()
+      const cacheOrchestrator = getOrchestrator()
       if (cacheOrchestrator) {
         const cacheStats = cacheOrchestrator.getGlobalStats()
         Object.assign(baseStats, {
@@ -1275,7 +1303,7 @@ export function clearVerbDataCaches() {
 
     // Clear cache orchestrator if available
     try {
-      const cacheOrchestrator = getCacheOrchestrator()
+      const cacheOrchestrator = getOrchestrator()
       if (cacheOrchestrator) {
         cacheOrchestrator.clearAllCaches()
         clearedCount++
@@ -1288,7 +1316,7 @@ export function clearVerbDataCaches() {
 
     // Clear redundancy manager caches if available
     try {
-      const redundancyManager = getVerbDataRedundancyManager()
+      const redundancyManager = getRedundancyManager()
       if (redundancyManager) {
         redundancyManager.clearAllCaches()
         clearedCount++

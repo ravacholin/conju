@@ -124,6 +124,7 @@ export default function useProgressDashboardData() {
   const [weeklyGoals, setWeeklyGoals] = useState({})
   const [weeklyProgress, setWeeklyProgress] = useState({})
   const [recommendations, setRecommendations] = useState([])
+  const [practiceReminders, setPracticeReminders] = useState([])
   const [dailyChallenges, setDailyChallenges] = useState({ date: null, metrics: {}, challenges: [] })
   const [pronunciationStats, setPronunciationStats] = useState({ totalAttempts: 0, recentAttempts: [] })
   const [studyPlan, setStudyPlan] = useState(null)
@@ -149,6 +150,22 @@ export default function useProgressDashboardData() {
   const lastPersonFilterRef = useRef(personFilter)
   const sectionStatusRef = useRef({})
   const firstCoreLoadedRef = useRef(false)
+
+  const buildPracticeReminders = useCallback((stats) => {
+    const reminders = []
+    const totalAttempts = Number(stats?.totalAttempts ?? stats?.attemptsTotal ?? stats?.total ?? 0)
+    const lastAttemptAt = stats?.lastAttemptAt ?? stats?.lastAttempt ?? null
+
+    if (!totalAttempts && !lastAttemptAt) {
+      reminders.push({
+        id: 'no-practice-yet',
+        priority: 'high',
+        message: 'Todavía no registraste práctica reciente. Hacé una sesión corta para empezar a medir tu progreso.'
+      })
+    }
+
+    return reminders
+  }, [])
 
   const updateSectionStatus = useCallback((key, status) => {
     if (!key) {
@@ -247,7 +264,9 @@ export default function useProgressDashboardData() {
         }
       },
       apply: (value) => {
-        setUserStats(value || {})
+        const nextStats = value || {}
+        setUserStats(nextStats)
+        setPracticeReminders(buildPracticeReminders(nextStats))
       }
     },
     weeklyGoals: {
@@ -958,6 +977,7 @@ export default function useProgressDashboardData() {
     communitySnapshot,
     offlineStatus,
     expertModeSettings,
+    practiceReminders,
     // Dynamic level system data
     dynamicLevelEvaluation,
     dynamicLevelProgress,
@@ -968,7 +988,6 @@ export default function useProgressDashboardData() {
     refreshing,
     systemReady,
     sectionsStatus: sectionStatus,
-    initialSectionsReady,
     initialSectionsReady,
     // actions
     loadData,

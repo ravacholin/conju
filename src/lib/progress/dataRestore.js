@@ -303,8 +303,8 @@ async function readFileAsText(file) {
   const implSymbol = Object.getOwnPropertySymbols(file || {}).find(sym => sym.toString() === 'Symbol(impl)')
   if (implSymbol) {
     const impl = file[implSymbol]
-    if (impl?._buffer && typeof Buffer !== 'undefined') {
-      addCandidate(Buffer.from(impl._buffer).toString('utf-8'))
+    if (impl?._buffer && typeof globalThis.Buffer !== 'undefined') {
+      addCandidate(globalThis.Buffer.from(impl._buffer).toString('utf-8'))
     }
   }
 
@@ -316,8 +316,8 @@ async function readFileAsText(file) {
   const placeholder = candidates.find(candidate => candidate && /^\[object\s.+\]$/.test(candidate.trim()))
   if (placeholder && implSymbol) {
     const impl = file[implSymbol]
-    if (impl?._buffer && typeof Buffer !== 'undefined') {
-      return Buffer.from(impl._buffer).toString('utf-8')
+    if (impl?._buffer && typeof globalThis.Buffer !== 'undefined') {
+      return globalThis.Buffer.from(impl._buffer).toString('utf-8')
     }
   }
 

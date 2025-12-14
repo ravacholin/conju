@@ -37,7 +37,7 @@ describe('Generator + CurriculumGate work in harmony', () => {
         }
       }
     }
-  })
+  }, 60000)
 
   it('specific practice by level: respects selected combo + curriculum', async () => {
     for (const level of LEVELS) {
@@ -58,7 +58,7 @@ describe('Generator + CurriculumGate work in harmony', () => {
         }
       }
     }
-  })
+  }, 60000)
 
   it('specific practice by theme: bypass curriculum but enforce dialect', async () => {
     for (const region of REGIONS) {

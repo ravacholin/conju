@@ -8,10 +8,13 @@ import { useSettings } from '../../state/settings.js'
 
 // New streamlined components
 import ProgressOverview from './ProgressOverview.jsx'
+import PracticeReminders from './PracticeReminders.jsx'
 import HeatMapSRS from './HeatMapSRS.jsx'
 import SmartPractice from './SmartPractice.jsx'
 import StudyInsights from './StudyInsights.jsx'
 import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
+import AccuracyTrendCard from './AccuracyTrendCard.jsx'
+import ErrorIntelligence from './ErrorIntelligence.jsx'
 
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -35,6 +38,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
     errorIntel,
     userStats,
     studyPlan,
+    practiceReminders,
     loading,
     error,
     systemReady,
@@ -225,6 +229,15 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         </div>
       )}
 
+      <SafeComponent name="Practice Reminders">
+        <PracticeReminders
+          reminders={practiceReminders}
+          userStats={userStats}
+          onNavigateToDrill={onNavigateToDrill}
+          onShowToast={handleShowToast}
+        />
+      </SafeComponent>
+
 
 
       <SafeComponent name="Progress Overview">
@@ -244,6 +257,10 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           'Cargando resumen de progreso...',
           'No pudimos obtener tus estadísticas.'
         )}
+      </SafeComponent>
+
+      <SafeComponent name="Accuracy Trend">
+        <AccuracyTrendCard stats={pronunciationStats} />
       </SafeComponent>
 
 
@@ -288,6 +305,17 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           ),
           'Generando práctica inteligente...',
           'No pudimos preparar la práctica inteligente.'
+        )}
+      </SafeComponent>
+
+      <SafeComponent name="Error Intelligence">
+        {renderSection(
+          errorIntelState,
+          (
+            <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
+          ),
+          'Cargando errores comunes...',
+          'No pudimos cargar el análisis de errores.'
         )}
       </SafeComponent>
 

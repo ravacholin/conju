@@ -181,12 +181,10 @@ describe('AdaptiveDifficultyEngine', () => {
   })
 
   describe('Session Management', () => {
-    it('should track session duration', (done) => {
-      setTimeout(() => {
-        const stats = engine.getSessionStats()
-        expect(stats.sessionDuration).toBeGreaterThan(0)
-        done()
-      }, 50)
+    it('should track session duration', async () => {
+      await new Promise(resolve => setTimeout(resolve, 50))
+      const stats = engine.getSessionStats()
+      expect(stats.sessionDuration).toBeGreaterThan(0)
     })
 
     it('should reset session state', () => {

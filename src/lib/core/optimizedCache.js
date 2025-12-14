@@ -717,18 +717,18 @@ if (typeof window !== 'undefined') {
           clearAllCaches,
           initializeMaps,
           warmupCaches,
-          getRedundancyStats: () => {
+          getRedundancyStats: async () => {
             try {
-              const { getRedundancyStats } = require('./VerbDataRedundancyManager.js')
-              return getRedundancyStats()
+              const { getRedundancyStats } = await import('./VerbDataRedundancyManager.js')
+              return typeof getRedundancyStats === 'function' ? getRedundancyStats() : { error: 'RedundancyManager not available' }
             } catch (error) {
               return { error: 'RedundancyManager not available' }
             }
           },
-          getIntegrityStats: () => {
+          getIntegrityStats: async () => {
             try {
-              const { getIntegrityStats } = require('./DataIntegrityGuard.js')
-              return getIntegrityStats()
+              const { getIntegrityStats } = await import('./DataIntegrityGuard.js')
+              return typeof getIntegrityStats === 'function' ? getIntegrityStats() : { error: 'IntegrityGuard not available' }
             } catch (error) {
               return { error: 'IntegrityGuard not available' }
             }

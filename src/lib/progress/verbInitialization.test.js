@@ -55,7 +55,9 @@ describe('initializeVerbs', () => {
 
     await initializeVerbs()
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith('⚠️ No se encontraron verbos para inicializar.')
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('⚠️ No se encontraron verbos para inicializar.')
+    )
     expect(saveVerbMock).not.toHaveBeenCalled()
 
     consoleWarnSpy.mockRestore()

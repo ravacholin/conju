@@ -25,6 +25,18 @@ export class CurriculumProcessor {
     this.curriculumData = this.processCurriculumData()
   }
 
+  normalizeMood(mood) {
+    if (!mood) return mood
+    const normalized = String(mood).toLowerCase()
+    const mapping = {
+      indicativo: 'indicative',
+      subjuntivo: 'subjunctive',
+      imperativo: 'imperative',
+      condicional: 'conditional'
+    }
+    return mapping[normalized] || normalized
+  }
+
   /**
    * Process curriculum.json into a comprehensive pedagogical structure
    * @returns {Object} Processed curriculum data with multiple indexes
@@ -39,41 +51,65 @@ export class CurriculumProcessor {
       prerequisiteChains: {}
     }
 
-    // Group curriculum by level with enhanced analysis
+    const curriculumArray = Array.isArray(curriculum) ? curriculum : []
+
+    // Build a canonical key map (align curriculum.json mood names with the rest of the system)
+    const itemByKey = new Map()
+    for (const item of curriculumArray) {
+      if (!item) continue
+      const mood = this.normalizeMood(item.mood)
+      const tense = item.tense
+      const key = `${mood}|${tense}`
+      if (!itemByKey.has(key)) {
+        itemByKey.set(key, { ...item, mood, tense, key })
+      }
+    }
+
+    // Ensure we include everything referenced by the analysis, even if curriculum.json is inconsistent
+    const allKeys = new Set([
+      ...Object.keys(CURRICULUM_ANALYSIS.introduction_levels),
+      ...itemByKey.keys()
+    ])
+
+    // Group by *introducedAt* (canonical), not by raw curriculum.json "level" (which can contain review duplicates)
     this.levelHierarchy.forEach((level) => {
-      processed.byLevel[level] = curriculum
-        .filter(item => item.level === level)
-        .map(item => {
-          const key = `${item.mood}|${item.tense}`
-          return {
-            mood: item.mood,
-            tense: item.tense,
-            target: item.target,
-            key,
-            // Enhanced metadata from curriculum analysis
-            complexity: CURRICULUM_ANALYSIS.complexity_scores[key] || 5,
-            introducedAt: CURRICULUM_ANALYSIS.introduction_levels[key] || level,
-            isCore: CURRICULUM_ANALYSIS.introduction_levels[key] === level,
-            isMixed: item.tense.includes('Mixed'),
-            family: this.getTenseFamily(key)
-          }
-        })
+      processed.byLevel[level] = []
     })
+
+    for (const key of allKeys) {
+      const [mood, tense] = key.split('|')
+      const sourceItem = itemByKey.get(key)
+      const introducedAt = CURRICULUM_ANALYSIS.introduction_levels[key] || sourceItem?.level || 'A1'
+
+      const entry = {
+        mood,
+        tense,
+        target: sourceItem?.target || 'produce',
+        key,
+        complexity: CURRICULUM_ANALYSIS.complexity_scores[key] || 5,
+        introducedAt,
+        isCore: CURRICULUM_ANALYSIS.introduction_levels[key] === introducedAt,
+        isMixed: String(tense).includes('Mixed'),
+        family: this.getTenseFamily(key)
+      }
+
+      if (!processed.byLevel[introducedAt]) {
+        processed.byLevel[introducedAt] = []
+      }
+      processed.byLevel[introducedAt].push(entry)
+    }
 
     // Create detailed level introduction mapping
-    curriculum.forEach((item, index) => {
-      const key = `${item.mood}|${item.tense}`
-
-      if (!processed.levelIntroductions[key]) {
-        processed.levelIntroductions[key] = {
-          level: item.level,
-          order: index,
-          complexity: CURRICULUM_ANALYSIS.complexity_scores[key] || 5,
-          family: this.getTenseFamily(key),
-          prerequisites: CURRICULUM_ANALYSIS.prerequisites[key] || []
-        }
+    for (const key of allKeys) {
+      if (processed.levelIntroductions[key]) continue
+      processed.levelIntroductions[key] = {
+        level: CURRICULUM_ANALYSIS.introduction_levels[key] || itemByKey.get(key)?.level || 'A1',
+        order: 0,
+        complexity: CURRICULUM_ANALYSIS.complexity_scores[key] || 5,
+        family: this.getTenseFamily(key),
+        prerequisites: CURRICULUM_ANALYSIS.prerequisites[key] || []
       }
-    })
+    }
 
     // Build learning progression order within each level
     this.levelHierarchy.forEach(level => {
@@ -131,8 +167,9 @@ export class CurriculumProcessor {
    * @returns {Array} Sorted array of tenses in optimal learning order
    */
   buildLevelProgression(level, levelTenses) {
+    const filtered = (levelTenses || []).filter(tense => !tense?.isMixed)
     // Sort tenses within level by pedagogical order
-    return levelTenses.sort((a, b) => {
+    return filtered.sort((a, b) => {
       // 1. Prerequisites first
       const aHasPrereqs = a.key && CURRICULUM_ANALYSIS.prerequisites[a.key]
       const bHasPrereqs = b.key && CURRICULUM_ANALYSIS.prerequisites[b.key]

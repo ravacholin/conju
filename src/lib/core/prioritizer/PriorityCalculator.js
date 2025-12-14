@@ -60,6 +60,13 @@ export class PriorityCalculator {
       'conditional_system': 15
     }
     const familyBonus = familyBonuses[tense.family] || 0
+    const effectiveFamilyBonus = (
+      tenseLevelIndex !== -1 &&
+      userLevelIndex !== -1 &&
+      tenseLevelIndex > userLevelIndex
+    )
+      ? 0
+      : familyBonus
 
     // 4. Prerequisite chain length (more dependencies = higher priority)
     const prereqChain = this.curriculum.getPrerequisiteChain(tense.key) || []
@@ -69,7 +76,7 @@ export class PriorityCalculator {
     const currentMastery = masteryMap.get(tense.key) || 0
     const masteryAdjustment = Math.max(0, 100 - currentMastery) * 0.2
 
-    priority = complexityBonus + levelAppropriateBonus + familyBonus + prereqBonus + masteryAdjustment
+    priority = complexityBonus + levelAppropriateBonus + effectiveFamilyBonus + prereqBonus + masteryAdjustment
 
     return Math.round(priority)
   }
@@ -239,7 +246,9 @@ export class PriorityCalculator {
   calculateDynamicWeights(userLevel, userProgress = null) {
     const masteryMap = this.assessor.createMasteryMap(userProgress)
     const levelTenses = this.curriculum.getLevelProgression(userLevel)
-    const masteries = levelTenses.map(t => masteryMap.get(t.key) || 0)
+    const masteries = levelTenses
+      .map(t => (masteryMap.has(t.key) ? masteryMap.get(t.key) : null))
+      .filter(mastery => mastery !== null)
 
     const avgMastery = masteries.length > 0 ?
       masteries.reduce((sum, m) => sum + m, 0) / masteries.length : 0

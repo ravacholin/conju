@@ -7,6 +7,10 @@ import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:flowStateDetection')
 
+function logFlow(event, message) {
+  logger.debug('flow', { event, message })
+}
+
 /**
  * Estados posibles de flow del usuario
  */

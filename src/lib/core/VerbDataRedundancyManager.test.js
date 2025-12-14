@@ -37,16 +37,23 @@ describe('VerbDataRedundancyManager immediate availability', () => {
   afterEach(() => {
     vi.clearAllMocks()
     vi.unmock('../../data/verbs.js')
+    vi.unmock('../../data/verbsLazy.js')
   })
 
-  it('exposes primary verbs synchronously even before async initialization completes', async () => {
-    vi.mock('../../data/verbs.js', () => ({ verbs: SAMPLE_VERBS }))
+  it('exposes emergency verbs synchronously and upgrades after initialization', async () => {
+    vi.mock('../../data/verbsLazy.js', () => ({
+      getVerbs: vi.fn(async () => SAMPLE_VERBS)
+    }))
 
-    const { getAllVerbsWithRedundancy, getRedundancyManager } = await import('./VerbDataRedundancyManager.js')
+    const { getAllVerbsWithRedundancy, getRedundancyManager, initializeRedundancyManager } = await import('./VerbDataRedundancyManager.js')
 
-    const verbs = getAllVerbsWithRedundancy()
-    expect(verbs).toEqual(SAMPLE_VERBS)
-    expect(verbs.length).toBe(2)
+    const immediateVerbs = getAllVerbsWithRedundancy()
+    expect(Array.isArray(immediateVerbs)).toBe(true)
+    expect(immediateVerbs.length).toBeGreaterThan(0)
+
+    await initializeRedundancyManager()
+    const upgradedVerbs = getAllVerbsWithRedundancy()
+    expect(upgradedVerbs).toEqual(SAMPLE_VERBS)
 
     // Clean up to avoid leaking intervals in subsequent tests
     getRedundancyManager().destroy()

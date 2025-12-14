@@ -213,22 +213,32 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
   // Intentar obtener del cache
   let eligible = formFilterCache.get(filterKey)
 
-  if (!eligible) {
-    // Use FormFilterService for all filtering logic
-    const filterContext = {
-      verbLookupMap: VERB_LOOKUP_MAP,
-      categorizeVerb,
-      expandSimplifiedGroup,
-      shouldFilterVerbByLevel,
-      getAllowedCombosForLevel
-    }
+	  if (!eligible) {
+	    // Use FormFilterService for all filtering logic
+	    const filterContext = {
+	      verbLookupMap: VERB_LOOKUP_MAP,
+	      categorizeVerb,
+	      expandSimplifiedGroup,
+	      shouldFilterVerbByLevel,
+	      getAllowedCombosForLevel
+	    }
 
-    eligible = filterEligibleForms(forms, allSettings, filterContext)
+	    const filterSettings = {
+	      ...allSettings,
+	      level,
+	      region,
+	      practiceMode,
+	      verbType,
+	      shouldApplyLevelFiltering,
+	      levelForFiltering
+	    }
 
-    // Guardar en cache para futuros usos - ensure we only cache arrays
-    if (Array.isArray(eligible)) {
-      formFilterCache.set(filterKey, eligible)
-    } else {
+	    eligible = filterEligibleForms(forms, filterSettings, filterContext)
+
+	    // Guardar en cache para futuros usos - ensure we only cache arrays
+	    if (Array.isArray(eligible)) {
+	      formFilterCache.set(filterKey, eligible)
+	    } else {
       logger.warn('Not caching non-array eligible value')
       eligible = []
       formFilterCache.set(filterKey, eligible)
@@ -251,8 +261,7 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
     eligible = []
   }
 
-  // Show which persons were included
-  const INCLUDED_PERSONS = [...new Set(eligible.map(f => f.person))]
+  // Avoid expensive debug-only work in hot path
 
   // Check if we have any eligible forms
   if (eligible.length === 0) {

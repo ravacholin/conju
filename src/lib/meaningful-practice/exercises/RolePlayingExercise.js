@@ -582,7 +582,7 @@ export class RolePlayingExercise extends ExerciseBase {
   }
 
   validateResponse(response) {
-    const ERRORS = [];
+    const errors = [];
 
     if (!response || typeof response !== 'string') {
       errors.push('La respuesta debe ser un texto válido');

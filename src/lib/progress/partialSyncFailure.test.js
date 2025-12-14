@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { createCompleteConfigMock } from './test-helpers.js'
+import { createCompleteConfigMock, createCompleteAuthBridgeMock, createCompleteUserSettingsStoreMock } from './test-helpers.js'
 
 /**
  * Tests de partial sync failure
@@ -35,7 +35,7 @@ describe('Partial Sync Failure Scenarios', () => {
 
   describe('Collection-Level Failures', () => {
     it('should continue sync when attempts collection fails but mastery succeeds', async () => {
-      vi.doMock('./authBridge.js', () => ({
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
         isAuthenticated: () => true,
         getAuthToken: () => 'valid-token',
         getAuthenticatedUser: () => ({ id: 'user-123' }),
@@ -44,59 +44,61 @@ describe('Partial Sync Failure Scenarios', () => {
         isSyncEnabled: () => true,
         isLocalSyncMode: () => false,
         getSyncAuthHeaderName: () => 'Authorization',
-        setSyncEndpoint: vi.fn(),
-        setSyncAuthToken: vi.fn(),
-        setSyncAuthHeaderName: vi.fn(),
         getSyncAuthToken: () => 'valid-token',
-        clearSyncAuthToken: vi.fn(),
         clearAuthState: vi.fn()
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
-      let attemptsSaved = false
-      let masterySaved = false
+	      let attemptsSaved = false
+	      let masterySaved = false
 
-      vi.doMock('./database.js', () => ({
-        getAttemptsByUser: vi.fn(async () => {
-          throw new Error('IndexedDB quota exceeded')
-        }),
-        getMasteryByUser: vi.fn(async () => [
-          { id: 'm1', verbId: 'ser', mastery: 0.9 }
-        ]),
-        getAllFromDB: vi.fn(async (store) => {
-          if (store === 'schedules') return []
-          return []
-        }),
-        getLearningSessionsByUser: vi.fn(async () => []),
-        getFromDB: vi.fn(async () => null),
-        initDB: vi.fn(async () => ({
-          transaction: () => ({
-            objectStore: () => ({ put: vi.fn() }),
-            done: Promise.resolve()
-          })
-        }))
-      }))
+	      vi.doMock('./database.js', () => ({
+	        getAttemptsByUser: vi.fn(async () => []),
+	        getMasteryByUser: vi.fn(async () => [{ id: 'm1', userId: 'user-123', verbId: 'ser', mastery: 0.9 }]),
+	        getAllFromDB: vi.fn(async (store) => {
+	          if (store === 'schedules') return []
+	          return []
+	        }),
+	        getLearningSessionsByUser: vi.fn(async () => []),
+	        getFromDB: vi.fn(async () => null),
+	        getUnsyncedItems: vi.fn(async (storeName) => {
+	          if (storeName === 'attempts') return [{ id: 'a1', userId: 'user-123' }]
+	          if (storeName === 'mastery') return [{ id: 'm1', userId: 'user-123', verbId: 'ser', mastery: 0.9 }]
+	          return []
+	        }),
+	        saveUserSettings: vi.fn(async () => {}),
+	        initDB: vi.fn(async () => ({
+	          transaction: () => ({
+	            objectStore: () => ({
+	              get: vi.fn(async (id) => ({ id, userId: 'user-123' })),
+	              put: vi.fn(async () => {})
+	            }),
+	            done: Promise.resolve()
+	          })
+	        }))
+	      }))
 
-      vi.doMock('./SyncService.js', () => ({
-        default: {
-          postJSON: vi.fn(async (url) => {
-            if (url.includes('/attempts')) {
-              attemptsSaved = true
-              throw new Error('Network error')
-            }
-            if (url.includes('/mastery')) {
-              masterySaved = true
-              return { data: { success: true } }
-            }
-            return { data: {} }
-          }),
-          wakeUpServer: vi.fn(async () => {}),
-          isBrowserOnline: () => true
-        }
-      }))
+	      vi.doMock('./SyncService.js', () => ({
+	        default: {
+	          postJSON: vi.fn(async () => ({ data: {} })),
+	          tryBulk: vi.fn(async (collection) => {
+	            if (collection === 'attempts') {
+	              attemptsSaved = true
+	              throw new Error('Network error')
+	            }
+	            if (collection === 'mastery') {
+	              masterySaved = true
+	              return { success: true }
+	            }
+	            return { success: true }
+	          }),
+	          wakeUpServer: vi.fn(async () => {}),
+	          isBrowserOnline: () => true
+	        }
+	      }))
 
       const { syncAccountData } = await import('./syncCoordinator.js')
 
@@ -112,7 +114,7 @@ describe('Partial Sync Failure Scenarios', () => {
     it('should rollback cleanly when network fails mid-sync', async () => {
       let syncAttempts = 0
 
-      vi.doMock('./authBridge.js', () => ({
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
         isAuthenticated: () => true,
         getAuthToken: () => 'valid-token',
         getAuthenticatedUser: () => ({ id: 'user-123' }),
@@ -121,50 +123,54 @@ describe('Partial Sync Failure Scenarios', () => {
         isSyncEnabled: () => true,
         isLocalSyncMode: () => false,
         getSyncAuthHeaderName: () => 'Authorization',
-        setSyncEndpoint: vi.fn(),
-        setSyncAuthToken: vi.fn(),
-        setSyncAuthHeaderName: vi.fn(),
         getSyncAuthToken: () => 'valid-token',
-        clearSyncAuthToken: vi.fn(),
         clearAuthState: vi.fn()
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
-      vi.doMock('./database.js', () => ({
-        getAttemptsByUser: vi.fn(async () => [
-          { id: 'a1', verbId: 'hablar', correct: true }
-        ]),
-        getMasteryByUser: vi.fn(async () => [
-          { id: 'm1', verbId: 'ser', mastery: 0.8 }
-        ]),
-        getAllFromDB: vi.fn(async () => []),
-        getLearningSessionsByUser: vi.fn(async () => []),
-        getFromDB: vi.fn(async () => null),
-        initDB: vi.fn(async () => ({
-          transaction: () => ({
-            objectStore: () => ({ put: vi.fn() }),
-            done: Promise.resolve()
-          })
-        }))
-      }))
+	      vi.doMock('./database.js', () => ({
+	        getAttemptsByUser: vi.fn(async () => [
+	          { id: 'a1', verbId: 'hablar', correct: true }
+	        ]),
+	        getMasteryByUser: vi.fn(async () => [
+	          { id: 'm1', verbId: 'ser', mastery: 0.8 }
+	        ]),
+	        getAllFromDB: vi.fn(async () => []),
+	        getLearningSessionsByUser: vi.fn(async () => []),
+	        getFromDB: vi.fn(async () => null),
+	        getUnsyncedItems: vi.fn(async (storeName) => {
+	          if (storeName === 'attempts') return [{ id: 'a1', userId: 'user-123' }]
+	          if (storeName === 'mastery') return [{ id: 'm1', userId: 'user-123', verbId: 'ser', mastery: 0.8 }]
+	          return []
+	        }),
+	        saveUserSettings: vi.fn(async () => {}),
+	        initDB: vi.fn(async () => ({
+	          transaction: () => ({
+	            objectStore: () => ({
+	              get: vi.fn(async (id) => ({ id, userId: 'user-123' })),
+	              put: vi.fn(async () => {})
+	            }),
+	            done: Promise.resolve()
+	          })
+	        }))
+	      }))
 
-      vi.doMock('./SyncService.js', () => ({
-        default: {
-          postJSON: vi.fn(async () => {
-            syncAttempts++
-            // Fail on second attempt (mastery sync)
-            if (syncAttempts >= 2) {
-              throw new Error('Network timeout')
-            }
-            return { data: { success: true } }
-          }),
-          wakeUpServer: vi.fn(async () => {}),
-          isBrowserOnline: () => true
-        }
-      }))
+	      vi.doMock('./SyncService.js', () => ({
+	        default: {
+	          postJSON: vi.fn(async () => ({ data: {} })),
+	          tryBulk: vi.fn(async () => {
+	            syncAttempts++
+	            // Fail on second upload (mastery)
+	            if (syncAttempts >= 2) throw new Error('Network timeout')
+	            return { success: true }
+	          }),
+	          wakeUpServer: vi.fn(async () => {}),
+	          isBrowserOnline: () => true
+	        }
+	      }))
 
       const { syncAccountData } = await import('./syncCoordinator.js')
 
@@ -178,11 +184,13 @@ describe('Partial Sync Failure Scenarios', () => {
 
   describe('Database Constraint Violations', () => {
     it('should handle unique constraint violation during merge', async () => {
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -212,11 +220,13 @@ describe('Partial Sync Failure Scenarios', () => {
     })
 
     it('should recover from IndexedDB quota exceeded error', async () => {
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -249,7 +259,7 @@ describe('Partial Sync Failure Scenarios', () => {
 
   describe('Network Failure Scenarios', () => {
     it('should handle 401 Unauthorized mid-sync', async () => {
-      vi.doMock('./authBridge.js', () => ({
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
         isAuthenticated: () => true,
         getAuthToken: () => 'expired-token',
         getAuthenticatedUser: () => ({ id: 'user-123' }),
@@ -260,7 +270,7 @@ describe('Partial Sync Failure Scenarios', () => {
         getSyncAuthHeaderName: () => 'Authorization'
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -300,7 +310,7 @@ describe('Partial Sync Failure Scenarios', () => {
     })
 
     it('should handle 500 Internal Server Error gracefully', async () => {
-      vi.doMock('./authBridge.js', () => ({
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
         isAuthenticated: () => true,
         getAuthToken: () => 'valid-token',
         getAuthenticatedUser: () => ({ id: 'user-123' }),
@@ -309,15 +319,11 @@ describe('Partial Sync Failure Scenarios', () => {
         isSyncEnabled: () => true,
         isLocalSyncMode: () => false,
         getSyncAuthHeaderName: () => 'Authorization',
-        setSyncEndpoint: vi.fn(),
-        setSyncAuthToken: vi.fn(),
-        setSyncAuthHeaderName: vi.fn(),
         getSyncAuthToken: () => 'valid-token',
-        clearSyncAuthToken: vi.fn(),
         clearAuthState: vi.fn()
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -365,7 +371,7 @@ describe('Partial Sync Failure Scenarios', () => {
         schedules: null
       }
 
-      vi.doMock('./authBridge.js', () => ({
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
         isAuthenticated: () => true,
         getAuthToken: () => 'valid-token',
         getAuthenticatedUser: () => ({ id: 'user-123' }),
@@ -374,53 +380,60 @@ describe('Partial Sync Failure Scenarios', () => {
         isSyncEnabled: () => true,
         isLocalSyncMode: () => false,
         getSyncAuthHeaderName: () => 'Authorization',
-        setSyncEndpoint: vi.fn(),
-        setSyncAuthToken: vi.fn(),
-        setSyncAuthHeaderName: vi.fn(),
         getSyncAuthToken: () => 'valid-token',
-        clearSyncAuthToken: vi.fn(),
         clearAuthState: vi.fn()
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
-      vi.doMock('./database.js', () => ({
-        getAttemptsByUser: vi.fn(async () => [{ id: 'a1' }]),
-        getMasteryByUser: vi.fn(async () => [{ id: 'm1' }]),
-        getAllFromDB: vi.fn(async () => [{ id: 's1' }]),
-        getLearningSessionsByUser: vi.fn(async () => []),
-        getFromDB: vi.fn(async () => null),
-        initDB: vi.fn(async () => ({
-          transaction: () => ({
-            objectStore: () => ({ put: vi.fn() }),
-            done: Promise.resolve()
-          })
-        }))
-      }))
+	      vi.doMock('./database.js', () => ({
+	        getAttemptsByUser: vi.fn(async () => [{ id: 'a1' }]),
+	        getMasteryByUser: vi.fn(async () => [{ id: 'm1' }]),
+	        getAllFromDB: vi.fn(async () => [{ id: 's1' }]),
+	        getLearningSessionsByUser: vi.fn(async () => []),
+	        getFromDB: vi.fn(async () => null),
+	        getUnsyncedItems: vi.fn(async (storeName) => {
+	          if (storeName === 'attempts') return [{ id: 'a1', userId: 'user-123' }]
+	          if (storeName === 'mastery') return [{ id: 'm1', userId: 'user-123', verbId: 'ser', mastery: 0.5 }]
+	          if (storeName === 'schedules') return [{ id: 's1', userId: 'user-123', mood: 'indicative', tense: 'present' }]
+	          return []
+	        }),
+	        saveUserSettings: vi.fn(async () => {}),
+	        initDB: vi.fn(async () => ({
+	          transaction: () => ({
+	            objectStore: () => ({
+	              get: vi.fn(async (id) => ({ id, userId: 'user-123' })),
+	              put: vi.fn(async () => {})
+	            }),
+	            done: Promise.resolve()
+	          })
+	        }))
+	      }))
 
-      vi.doMock('./SyncService.js', () => ({
-        default: {
-          postJSON: vi.fn(async (url) => {
-            if (url.includes('/attempts')) {
-              syncResults.attempts = 'success'
-              return { data: { success: true } }
-            }
-            if (url.includes('/mastery')) {
-              syncResults.mastery = 'failed'
-              throw new Error('Mastery sync failed')
-            }
-            if (url.includes('/schedules')) {
-              syncResults.schedules = 'success'
-              return { data: { success: true } }
-            }
-            return { data: {} }
-          }),
-          wakeUpServer: vi.fn(async () => {}),
-          isBrowserOnline: () => true
-        }
-      }))
+	      vi.doMock('./SyncService.js', () => ({
+	        default: {
+	          postJSON: vi.fn(async () => ({ data: {} })),
+	          tryBulk: vi.fn(async (collection) => {
+	            if (collection === 'attempts') {
+	              syncResults.attempts = 'success'
+	              return { success: true }
+	            }
+	            if (collection === 'mastery') {
+	              syncResults.mastery = 'failed'
+	              throw new Error('Mastery sync failed')
+	            }
+	            if (collection === 'schedules') {
+	              syncResults.schedules = 'success'
+	              return { success: true }
+	            }
+	            return { success: true }
+	          }),
+	          wakeUpServer: vi.fn(async () => {}),
+	          isBrowserOnline: () => true
+	        }
+	      }))
 
       const { syncAccountData } = await import('./syncCoordinator.js')
 

@@ -28,7 +28,13 @@ describe('Generator Progress Integration', () => {
     })
 
     expect(result).toBeDefined()
-    expect(mockForms).toContain(result)
+    expect(mockForms).toContainEqual(expect.objectContaining({
+      lemma: result.lemma,
+      mood: result.mood,
+      tense: result.tense,
+      person: result.person,
+      value: result.value
+    }))
   })
 
   it('should work with progress integration disabled', async () => {
@@ -40,7 +46,13 @@ describe('Generator Progress Integration', () => {
     })
 
     expect(result).toBeDefined()
-    expect(mockForms).toContain(result)
+    expect(mockForms).toContainEqual(expect.objectContaining({
+      lemma: result.lemma,
+      mood: result.mood,
+      tense: result.tense,
+      person: result.person,
+      value: result.value
+    }))
   })
 
   it('should work with mock progress data', async () => {
@@ -61,7 +73,13 @@ describe('Generator Progress Integration', () => {
     })
 
     expect(result).toBeDefined()
-    expect(mockForms).toContain(result)
+    expect(mockForms).toContainEqual(expect.objectContaining({
+      lemma: result.lemma,
+      mood: result.mood,
+      tense: result.tense,
+      person: result.person,
+      value: result.value
+    }))
   })
 
   it('should handle no current user gracefully', async () => {
@@ -79,6 +97,12 @@ describe('Generator Progress Integration', () => {
     })
 
     expect(result).toBeDefined()
-    expect(mockForms).toContain(result)
+    expect(mockForms).toContainEqual(expect.objectContaining({
+      lemma: result.lemma,
+      mood: result.mood,
+      tense: result.tense,
+      person: result.person,
+      value: result.value
+    }))
   })
 })

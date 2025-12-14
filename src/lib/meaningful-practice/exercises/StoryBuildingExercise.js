@@ -247,7 +247,7 @@ export class StoryBuildingExercise extends ExerciseBase {
     const normalizedVerb = this.normalizeText(verb);
     const patterns = [];
 
-    const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\$&');
+    const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const addPatternForEndings = (stem, endings) => {
       const normalizedEndings = endings
         .filter(Boolean)

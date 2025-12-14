@@ -273,8 +273,6 @@ export function invalidateActivePlan() {
  */
 async function persistSessionCompletionToDb(planId, sessionId, stats) {
   try {
-    if (!db) return
-
     const userId = getCurrentUserId()
     if (!userId) return
 
@@ -288,7 +286,7 @@ async function persistSessionCompletionToDb(planId, sessionId, stats) {
       timestamp: new Date().toISOString()
     }
 
-    await db.put('events', event)
+    await saveToDB(STORAGE_CONFIG.STORES.EVENTS, event)
   } catch (error) {
     logger.warn('Could not persist session completion to DB:', error)
   }

@@ -489,6 +489,118 @@ class AdaptiveLevelTest {
   }
 }
 
+// Legacy/simple placement test used by unit tests and lightweight flows.
+// Starts at A1 and advances a level after 3 consecutive correct answers.
+class SimpleLevelTest {
+  constructor() {
+    this.isActive = false
+    this.currentLevel = 'A1'
+    this.currentQuestion = null
+    this.results = []
+    this.questionsAnsweredTotal = 0
+    this.maxQuestions = 15
+    this._questionIndexByLevel = new Map()
+    this._consecutiveCorrect = 0
+    this._consecutiveWrong = 0
+    this.trackingEnabled = true
+  }
+
+  startTest() {
+    this.isActive = true
+    this.currentLevel = 'A1'
+    this.currentQuestion = null
+    this.results = []
+    this.questionsAnsweredTotal = 0
+    this._questionIndexByLevel = new Map()
+    this._consecutiveCorrect = 0
+    this._consecutiveWrong = 0
+    return this._nextQuestion()
+  }
+
+  _nextQuestion() {
+    const pool = QUESTION_POOL[this.currentLevel] || []
+    const index = this._questionIndexByLevel.get(this.currentLevel) || 0
+    const question = pool[index % Math.max(pool.length, 1)]
+
+    if (!question) {
+      return this.completeTest()
+    }
+
+    this._questionIndexByLevel.set(this.currentLevel, index + 1)
+    this.currentQuestion = {
+      ...question,
+      targetLevel: this.currentLevel,
+      expectedAnswer: question.correct
+    }
+
+    return {
+      active: true,
+      currentQuestion: this.currentQuestion
+    }
+  }
+
+  submitAnswer(questionId, userAnswer) {
+    if (!this.isActive) return { error: 'Test not active' }
+    if (!this.currentQuestion || this.currentQuestion.id !== questionId) return { error: 'Invalid question' }
+
+    const isCorrect = userAnswer === this.currentQuestion.correct
+    this.results.push({ level: this.currentLevel, isCorrect })
+    this.questionsAnsweredTotal += 1
+
+    if (isCorrect) {
+      this._consecutiveCorrect += 1
+      this._consecutiveWrong = 0
+    } else {
+      this._consecutiveWrong += 1
+      this._consecutiveCorrect = 0
+    }
+
+    if (this._consecutiveWrong >= 3) {
+      return this.completeTest()
+    }
+
+    if (this._consecutiveCorrect >= 3) {
+      const currentIndex = LEVEL_ORDER.indexOf(this.currentLevel)
+      const nextIndex = Math.min(LEVEL_ORDER.length - 1, currentIndex + 1)
+      this.currentLevel = LEVEL_ORDER[nextIndex]
+      this._consecutiveCorrect = 0
+    }
+
+    const nextStep = this._nextQuestion()
+    if (nextStep.completed) {
+      return nextStep
+    }
+
+    return {
+      completed: false,
+      nextQuestion: nextStep.currentQuestion,
+      feedback: { isCorrect }
+    }
+  }
+
+  calculateFinalLevel() {
+    let highestPassedIndex = 0
+    for (const level of LEVEL_ORDER) {
+      const levelResults = this.results.filter(r => r.level === level)
+      const correctCount = levelResults.filter(r => r.isCorrect).length
+      if (correctCount >= 3) {
+        highestPassedIndex = Math.max(highestPassedIndex, LEVEL_ORDER.indexOf(level))
+      } else {
+        break
+      }
+    }
+    return LEVEL_ORDER[highestPassedIndex] || 'A1'
+  }
+
+  completeTest() {
+    this.isActive = false
+    const determinedLevel = this.calculateFinalLevel()
+    return { completed: true, determinedLevel }
+  }
+}
+
+export default SimpleLevelTest
+
 // Singleton for global use
 let globalAssessment = null
 

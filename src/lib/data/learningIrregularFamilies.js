@@ -383,11 +383,6 @@ export const LEARNING_VERB_TO_FAMILIES = {
 
   // Verbos de pretérito fuerte adicionales
   'andar': ['LEARNING_PRET_MUY_IRREGULARES'],
-  'conducir': ['LEARNING_PRET_MUY_IRREGULARES'],
-  'producir': ['LEARNING_PRET_MUY_IRREGULARES'],
-  'traducir': ['LEARNING_PRET_MUY_IRREGULARES'],
-  'reducir': ['LEARNING_PRET_MUY_IRREGULARES'],
-  'introducir': ['LEARNING_PRET_MUY_IRREGULARES'],
 
   // Verbos con hiatos y otros cambios en 3ª persona
   'construir': ['LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],

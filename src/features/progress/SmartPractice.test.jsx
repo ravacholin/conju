@@ -60,7 +60,7 @@ describe('SmartPractice recommendations', () => {
       />
     )
 
-    expect(screen.getByText(/Mejorar dominio en imperative-imper/)).toBeInTheDocument()
+    expect(screen.getByText(/Mejorar dominio en imperative-impAff/)).toBeInTheDocument()
     expect(screen.getByText(/Repasar indicative-pres/)).toBeInTheDocument()
     expect(screen.getByText(/Aprender indicative-pretIndef/)).toBeInTheDocument()
     expect(screen.queryByText(/nonfinite-ger/)).not.toBeInTheDocument()

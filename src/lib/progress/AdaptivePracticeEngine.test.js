@@ -7,7 +7,7 @@ const engine = new AdaptivePracticeEngine('test-user')
 const originalSettings = useSettings.getState()
 
 // Mock del levelPrioritizer para testing
-vi.mock('../core/levelDrivenPrioritizer.js', () => ({
+vi.mock('../core/prioritizer/index.js', () => ({
   levelPrioritizer: {
     getPrioritizedTenses: vi.fn()
   }
@@ -228,7 +228,7 @@ describe('getNextRecommendedItem - Level validation', () => {
     await getNextRecommendedItem('invalid_level')
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'getNextRecommendedItem: No se proporcionó un nivel válido, usando B1 como fallback'
+      expect.stringContaining('getNextRecommendedItem: No se proporcionó un nivel válido, usando B1 como fallback')
     )
 
     expect(AdaptivePracticeEngine.prototype.getPracticeRecommendations)

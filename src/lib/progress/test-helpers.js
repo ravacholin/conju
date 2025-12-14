@@ -1,6 +1,8 @@
 // Helper para mocks completos en tests
 // Este archivo proporciona mocks completos para evitar errores de dependencias faltantes
 
+import { vi } from 'vitest'
+
 /**
  * Mock completo para config.js
  * Incluye todas las exportaciones esperadas por otros módulos

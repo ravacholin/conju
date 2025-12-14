@@ -68,14 +68,16 @@ export async function selectForm(eligible, settings, context = {}) {
 
   // A1 PEDAGOGICAL PRIORITIZATION: Heavily favor presente de indicativo
   if (level === 'A1') {
-    const presenteIndicativo = eligible.filter(f => f.mood === 'indicativo' && f.tense === 'pres')
+    const presenteIndicativo = eligible.filter(f =>
+      (f.mood === 'indicative' || f.mood === 'indicativo') && f.tense === 'pres'
+    )
     const participios = eligible.filter(f => f.mood === 'nonfinite' && f.tense === 'part')
 
     if (presenteIndicativo.length > 0 && participios.length > 0) {
-      // 85% presente indicativo, 15% participios for A1
+      // A1: nearly all finite forms; participle only as rare exposure.
       const weighted = []
-      for (let i = 0; i < 85; i++) weighted.push(...presenteIndicativo)
-      for (let i = 0; i < 15; i++) weighted.push(...participios)
+      for (let i = 0; i < 99; i++) weighted.push(...presenteIndicativo)
+      for (let i = 0; i < 1; i++) weighted.push(...participios)
       eligible = weighted
     } else if (presenteIndicativo.length > 0) {
       // If only presente available, heavily favor it

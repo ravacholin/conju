@@ -2,11 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('./database.js', () => ({
   getAttemptsByUser: vi.fn(),
-  getMasteryByUser: vi.fn(),
   getAllFromDB: vi.fn()
 }))
 
-import { getAttemptsByUser, getMasteryByUser } from './database.js'
+vi.mock('./mastery.js', () => ({
+  getMasterySnapshotForUser: vi.fn()
+}))
+
+import { getAttemptsByUser } from './database.js'
+import { getMasterySnapshotForUser } from './mastery.js'
 import { getAdvancedAnalytics } from './analytics.js'
 
 const USER_ID = 'analytics-test-user'
@@ -14,12 +18,12 @@ const USER_ID = 'analytics-test-user'
 describe('getAdvancedAnalytics', () => {
   beforeEach(() => {
     getAttemptsByUser.mockReset()
-    getMasteryByUser.mockReset()
+    getMasterySnapshotForUser.mockReset()
   })
 
   it('handles empty datasets gracefully', async () => {
     getAttemptsByUser.mockResolvedValueOnce([])
-    getMasteryByUser.mockResolvedValueOnce([])
+    getMasterySnapshotForUser.mockResolvedValueOnce([])
 
     const analytics = await getAdvancedAnalytics(USER_ID)
     expect(analytics.retention.dailyAccuracy).toHaveLength(30)
@@ -34,7 +38,7 @@ describe('getAdvancedAnalytics', () => {
       { createdAt: new Date(now - 2000).toISOString(), correct: false, sessionId: 's1', latencyMs: 5000 },
       { createdAt: new Date(now - 3600 * 1000 * 10).toISOString(), correct: true, sessionId: 's2', latencyMs: 4500 }
     ])
-    getMasteryByUser.mockResolvedValueOnce([
+    getMasterySnapshotForUser.mockResolvedValueOnce([
       { mood: 'indicativo', tense: 'presente', score: 85 },
       { mood: 'indicativo', tense: 'pretérito', score: 55 }
     ])

@@ -274,23 +274,25 @@ function generateActivities(mode, duration, masteryData, dueItems) {
       break
 
     case 'weak_areas':
-      // Find weakest areas from mastery data
-      const weakAreas = masteryData
-        .filter(m => m.score < 70)
-        .sort((a, b) => a.score - b.score)
-        .slice(0, 3)
+      {
+        // Find weakest areas from mastery data
+        const weakAreas = masteryData
+          .filter(m => m.score < 70)
+          .sort((a, b) => a.score - b.score)
+          .slice(0, 3)
 
-      weakAreas.forEach((area, index) => {
-        activities.push({
-          type: 'focused_practice',
-          title: `Refuerza ${area.tense}`,
-          estimatedMinutes: duration / Math.max(weakAreas.length, 1),
-          description: `Dominio actual: ${Math.round(area.score)}%`,
-          mood: area.mood,
-          tense: area.tense
+        weakAreas.forEach((area, index) => {
+          activities.push({
+            type: 'focused_practice',
+            title: `Refuerza ${area.tense}`,
+            estimatedMinutes: duration / Math.max(weakAreas.length, 1),
+            description: `Dominio actual: ${Math.round(area.score)}%`,
+            mood: area.mood,
+            tense: area.tense
+          })
         })
-      })
-      break
+        break
+      }
 
     case 'exploration':
       activities.push({

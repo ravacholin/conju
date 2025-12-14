@@ -321,8 +321,9 @@ function applyVerbTypeFilter(form, verb, {verbType, verbLookupMap}) {
       return isRegularFormForMood(form.lemma, form.mood, form.tense, form.person, form.value)
     }
   } else if (verbType === 'irregular') {
-    // Include all forms of irregular lemmas
-    return (verb?.type || 'regular') === 'irregular'
+    // Include all forms of irregular lemmas.
+    // Use `form.type` as a fallback when `verbLookupMap` is incomplete/uninitialized.
+    return form.type === 'irregular' || (verb?.type || 'regular') === 'irregular'
   }
 
   return true
