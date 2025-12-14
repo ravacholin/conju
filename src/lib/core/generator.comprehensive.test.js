@@ -313,27 +313,35 @@ describe('Generator - Comprehensive Tests', () => {
     })
 
     it('should generate different forms on successive calls', async () => {
-      useSettings.setState(mockSettings({
-        level: 'B1',
-        verbType: 'all',
-        practiceMode: 'mixed'
-      }))
-      const mockForms = createMockForms()
+	      useSettings.setState(mockSettings({
+	        level: 'B1',
+	        verbType: 'all',
+	        practiceMode: 'mixed',
+	        region: 'la_general',
+	        useTuteo: true,
+	        useVoseo: false,
+	        useVosotros: false
+	      }))
+	      const mockForms = createMockForms()
 
-      const results = []
-      for (let i = 0; i < 10; i++) {
-        try {
-          const result = await chooseNext({
-            forms: mockForms,
-            history: {},
-            currentItem: null
-          })
-          if (result) results.push(result)
-        } catch {
-          // Expected for some iterations
-          break
-        }
-      }
+	      const results = []
+	      let currentItem = null
+	      for (let i = 0; i < 10; i++) {
+	        try {
+	          const result = await chooseNext({
+	            forms: mockForms,
+	            history: {},
+	            currentItem
+	          })
+	          if (result) {
+	            results.push(result)
+	            currentItem = result
+	          }
+	        } catch {
+	          // Expected for some iterations
+	          break
+	        }
+	      }
 
       expect(results.length).toBeGreaterThan(0)
 
