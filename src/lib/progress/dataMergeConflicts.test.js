@@ -107,11 +107,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -143,11 +145,13 @@ describe('Data Merge Conflict Resolution', () => {
 
   describe('Partial Merge Scenarios', () => {
     it('should handle scenario where mastery succeeds but schedules fail', async () => {
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -210,11 +214,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -265,11 +271,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -299,11 +307,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
@@ -348,11 +358,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 
