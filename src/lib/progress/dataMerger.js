@@ -110,6 +110,31 @@ export async function mergeAccountDataLocally(accountData) {
   const resolution = resolveMergeUserId(accountData)
   const currentUserId = resolution.userId
 
+  function toComparableTime(value) {
+    if (!value) return 0
+    const date = value instanceof Date ? value : new Date(value)
+    const time = date.getTime()
+    return Number.isFinite(time) ? time : 0
+  }
+
+  function getAttemptCompositeKey(attempt) {
+    const createdAtTime = toComparableTime(attempt?.createdAt)
+    const createdTimeBucket = Math.floor(createdAtTime / 5000) * 5000
+    const verbId = attempt?.verbId || ''
+    const mood = attempt?.mood || ''
+    const tense = attempt?.tense || ''
+    const person = attempt?.person || ''
+    return `${verbId}|${mood}|${tense}|${person}|${createdTimeBucket}`
+  }
+
+  function getAttemptMergeTimestamp(attempt) {
+    return Math.max(
+      toComparableTime(attempt?.syncedAt),
+      toComparableTime(attempt?.updatedAt),
+      toComparableTime(attempt?.createdAt)
+    )
+  }
+
   if (!currentUserId) {
     const warningMessage = 'No pudimos determinar un usuario fiable para fusionar los datos. Inicia sesión nuevamente e intenta sincronizar.'
     console.error('🚨 SYNC BUG: No reliable userId found!', {
@@ -156,9 +181,11 @@ export async function mergeAccountDataLocally(accountData) {
   const sessionMap = new Map()
 
   allAttempts.forEach((attempt) => {
-    const createdTime = Math.floor(new Date(attempt.createdAt).getTime() / 5000) * 5000
-    const key = `${attempt.verbId}|${attempt.mood}|${attempt.tense}|${attempt.person}|${createdTime}`
-    attemptMap.set(key, attempt)
+    const compositeKey = getAttemptCompositeKey(attempt)
+    attemptMap.set(compositeKey, attempt)
+    if (attempt?.id) {
+      attemptMap.set(`id:${attempt.id}`, attempt)
+    }
   })
 
   allMastery.forEach((mastery) => {
@@ -179,12 +206,13 @@ export async function mergeAccountDataLocally(accountData) {
 
   if (accountData?.attempts) {
     const attemptsToSave = []
+    const attemptsToUpdate = []
 
     for (const remoteAttempt of accountData.attempts) {
       try {
-        const createdTime = Math.floor(new Date(remoteAttempt.createdAt).getTime() / 5000) * 5000
-        const key = `${remoteAttempt.verbId}|${remoteAttempt.mood}|${remoteAttempt.tense}|${remoteAttempt.person}|${createdTime}`
-        const existing = attemptMap.get(key)
+        const idKey = remoteAttempt?.id ? `id:${remoteAttempt.id}` : null
+        const compositeKey = getAttemptCompositeKey(remoteAttempt)
+        const existing = (idKey && attemptMap.get(idKey)) || attemptMap.get(compositeKey)
 
         if (!existing) {
           const localAttempt = {
@@ -194,7 +222,25 @@ export async function mergeAccountDataLocally(accountData) {
             syncedAt: new Date()
           }
           attemptsToSave.push(localAttempt)
-          attemptMap.set(key, localAttempt)
+          attemptMap.set(getAttemptCompositeKey(localAttempt), localAttempt)
+          if (localAttempt?.id) attemptMap.set(`id:${localAttempt.id}`, localAttempt)
+        } else {
+          const remoteTime = getAttemptMergeTimestamp(remoteAttempt)
+          const localTime = getAttemptMergeTimestamp(existing)
+
+          if (remoteTime > localTime) {
+            const updatedAttempt = {
+              ...existing,
+              ...remoteAttempt,
+              userId: currentUserId,
+              createdAt: existing.createdAt || remoteAttempt.createdAt,
+              syncedAt: new Date()
+            }
+
+            attemptsToUpdate.push({ id: existing.id, updates: updatedAttempt })
+            attemptMap.set(getAttemptCompositeKey(updatedAttempt), updatedAttempt)
+            if (existing?.id) attemptMap.set(`id:${existing.id}`, updatedAttempt)
+          }
         }
       } catch (error) {
         safeLogger.warn('mergeAccountDataLocally: error al fusionar attempt', {
@@ -208,7 +254,7 @@ export async function mergeAccountDataLocally(accountData) {
     if (attemptsToSave.length > 0) {
       try {
         const batchResult = await batchSaveToDB(STORAGE_CONFIG.STORES.ATTEMPTS, attemptsToSave, { skipTimestamps: true })
-        results.attempts = batchResult.saved
+        results.attempts += batchResult.saved
         if (batchResult.errors.length > 0) {
           results.conflicts += batchResult.errors.length
         }
@@ -218,6 +264,22 @@ export async function mergeAccountDataLocally(accountData) {
           name: error?.name
         })
         results.conflicts += attemptsToSave.length
+      }
+    }
+
+    if (attemptsToUpdate.length > 0) {
+      try {
+        const batchResult = await batchUpdateInDB(STORAGE_CONFIG.STORES.ATTEMPTS, attemptsToUpdate)
+        results.attempts += batchResult.updated
+        if (batchResult.errors.length > 0) {
+          results.conflicts += batchResult.errors.length
+        }
+      } catch (error) {
+        safeLogger.warn('mergeAccountDataLocally: error en batch update de attempts', {
+          message: error?.message || String(error),
+          name: error?.name
+        })
+        results.conflicts += attemptsToUpdate.length
       }
     }
   }

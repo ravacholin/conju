@@ -22,7 +22,7 @@ let initPromise = null;
 // const attemptsCache = new Map()
 // const masteryCache = new Map()
 
-function freezeRecords(records) {
+function _freezeRecords(records) {
   if (!Array.isArray(records)) {
     return records;
   }
@@ -762,11 +762,11 @@ export async function getOneByIndex(storeName, indexName, value) {
  */
 export async function deleteFromDB(storeName, id) {
   try {
-    let recordForCache = null;
+    let _recordForCache = null;
     try {
-      recordForCache = await getFromDB(storeName, id);
+      _recordForCache = await getFromDB(storeName, id);
     } catch {
-      recordForCache = null;
+      _recordForCache = null;
     }
 
     assertValidStore(storeName);
@@ -1805,6 +1805,7 @@ export async function closeDB() {
   if (dbInstance) {
     await dbInstance.close();
     dbInstance = null;
+    initPromise = null;
     // clearAllCaches()
     if (isDev) logger.info("closeDB", "Base de datos cerrada");
   }
@@ -1817,6 +1818,7 @@ export async function closeDB() {
 export async function deleteDB() {
   try {
     await closeDB();
+    initPromise = null;
     // Importar deleteDB de idb con alias para evitar sombra
     const { deleteDB: idbDeleteDB } = await import("idb");
     await idbDeleteDB(STORAGE_CONFIG.DB_NAME);

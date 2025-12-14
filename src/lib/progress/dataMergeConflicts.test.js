@@ -40,7 +40,7 @@ describe('Data Merge Conflict Resolution', () => {
           id: 'attempt-1',
           verbId: 'hablar',
           correct: false, // Different value
-          createdAt: newerDate.toISOString(),
+          createdAt: olderDate.toISOString(),
           syncedAt: newerDate.toISOString()
         }
       ]
@@ -63,7 +63,7 @@ describe('Data Merge Conflict Resolution', () => {
           return []
         }),
         batchSaveToDB: vi.fn(async () => ({ saved: 0, errors: [] })),
-        batchUpdateInDB: vi.fn(async (store, items) => {
+        batchUpdateInDB: vi.fn(async (_store, items) => {
           updatedItems.push(...items)
           return { updated: items.length, errors: [] }
         })
@@ -78,7 +78,7 @@ describe('Data Merge Conflict Resolution', () => {
       // Should update with newer remote data
       expect(result.attempts).toBe(1)
       expect(updatedItems.length).toBeGreaterThan(0)
-      expect(updatedItems[0].correct).toBe(false) // Remote value wins
+      expect(updatedItems[0].updates.correct).toBe(false) // Remote value wins
     })
 
     it('should keep local data when local is newer than remote', async () => {
@@ -156,7 +156,7 @@ describe('Data Merge Conflict Resolution', () => {
       }))
 
       vi.doMock('./database.js', () => ({
-        getAllFromDB: vi.fn(async (store) => {
+        getAllFromDB: vi.fn(async (_store) => {
           return [] // No local data
         }),
         batchSaveToDB: vi.fn(async (store, items) => {
