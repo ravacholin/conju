@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test'
-import { getMasterySnapshotForUser } from '../../src/lib/progress/mastery.js'
+import { describe, expect, it } from 'vitest'
+import { getMasterySnapshotForUser } from './mastery.js'
 
 const baseAttempt = {
   mood: 'indicative',
@@ -9,8 +9,8 @@ const baseAttempt = {
   lemma: 'hablar'
 }
 
-test.describe('Mastery engine integration', () => {
-  test('aggregates mastery snapshots via mastery module', async () => {
+describe('mastery', () => {
+  it('aggregates mastery snapshots from attempts', async () => {
     const now = new Date().toISOString()
     const attempts = [
       { ...baseAttempt, userId: 'user-master', itemId: 'item-1', correct: true, hintsUsed: 0, createdAt: now },
@@ -30,3 +30,4 @@ test.describe('Mastery engine integration', () => {
     expect(record.id).toContain('indicative')
   })
 })
+

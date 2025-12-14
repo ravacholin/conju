@@ -20,19 +20,33 @@ import React, { useState, useRef, useEffect } from 'react'
 function ClickableCard({ className = '', onClick, children, title, role = "button", ...props }) {
   const [anim, setAnim] = useState(false)
   const timerRef = useRef(null)
+  const rafRef = useRef(null)
+  const mountedRef = useRef(false)
 
-  useEffect(() => () => clearTimeout(timerRef.current), [])
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+      clearTimeout(timerRef.current)
+    }
+  }, [])
 
   const triggerClickAnim = () => {
     // Disable animations during tests to avoid timers after teardown
-    if (import.meta && import.meta.vitest) return
+    if (import.meta?.env?.MODE === 'test' || import.meta?.env?.VITEST) return
+    if (!mountedRef.current) return
     // restart animation if already active
     setAnim(false)
     // next tick to reapply class
-    requestAnimationFrame(() => {
+    rafRef.current = requestAnimationFrame(() => {
+      if (!mountedRef.current) return
       setAnim(true)
       clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(() => setAnim(false), 500)
+      timerRef.current = setTimeout(() => {
+        if (!mountedRef.current) return
+        setAnim(false)
+      }, 500)
     })
   }
 

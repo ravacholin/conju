@@ -1,5 +1,5 @@
 import { LEVELS } from '../data/levels.js';
-import gates from '../../data/curriculum.json';
+import gates from '../../data/curriculum.json'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('core:curriculumGate')

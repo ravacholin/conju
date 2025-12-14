@@ -31,3 +31,8 @@ dist-ssr
 *_temp_backup.*
 *.backup-*
 coverage/
+
+# Playwright
+playwright-report/
+test-results/
+tests/e2e/.auth/

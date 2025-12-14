@@ -14,9 +14,12 @@ const LOG_LEVELS = {
 
 // Default log level based on environment
 const getDefaultLogLevel = () => {
-  if (import.meta.env.DEV) {
+  const isDev = Boolean(import.meta?.env?.DEV) || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development')
+  const isProd = Boolean(import.meta?.env?.PROD) || (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production')
+
+  if (isDev) {
     return LOG_LEVELS.DEBUG // Show all logs in development
-  } else if (import.meta.env.PROD) {
+  } else if (isProd) {
     return LOG_LEVELS.ERROR // Only errors in production
   }
   return LOG_LEVELS.WARN // Default to warnings

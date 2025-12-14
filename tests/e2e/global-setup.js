@@ -14,16 +14,9 @@ async function globalSetup() {
 
   try {
     // Navigate to app and wait for it to be ready
-    await page.goto(process.env.BASE_URL || 'http://localhost:4173')
+    await page.goto(process.env.BASE_URL || 'http://localhost:4173', { waitUntil: 'domcontentloaded' })
 
-    // Wait for app to be fully loaded
-    await page.waitForSelector('[data-testid="app-ready"]', { timeout: 30000 })
-      .catch(() => {
-        // Fallback: wait for main content
-        return page.waitForSelector('main', { timeout: 10000 })
-      })
-
-    // Clear any existing data
+    // Clear any existing data (requires an origin)
     await page.evaluate(() => {
       localStorage.clear()
       sessionStorage.clear()
@@ -31,6 +24,31 @@ async function globalSetup() {
         indexedDB.deleteDatabase('spanish-conjugator')
       }
     })
+
+    // Seed minimal settings so routes like /drill work without first-run onboarding clicks.
+    await page.evaluate(() => {
+      const key = 'spanish-conjugator-settings'
+      const next = {
+        state: {
+          region: 'la_general',
+          useTuteo: true,
+          useVoseo: false,
+          useVosotros: false,
+          strict: true,
+          practicePronoun: 'mixed',
+          level: 'A1',
+          practiceMode: 'mixed'
+        },
+        version: 0
+      }
+      localStorage.setItem(key, JSON.stringify(next))
+    })
+
+    // Reload to ensure the app starts from a clean state
+    await page.reload({ waitUntil: 'domcontentloaded' })
+
+    // Wait for React to mount something into #root
+    await page.waitForSelector('#root > *', { timeout: 30000 })
 
     console.log('✅ App is ready for testing')
 
