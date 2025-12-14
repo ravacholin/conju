@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { createCompleteConfigMock } from './test-helpers.js'
 
 /**
  * Tests de partial sync failure
@@ -16,16 +17,7 @@ describe('Partial Sync Failure Scenarios', () => {
       createSafeLogger: () => loggerStub
     }))
 
-    vi.doMock('./config.js', () => ({
-      STORAGE_CONFIG: {
-        STORES: {
-          ATTEMPTS: 'attempts',
-          MASTERY: 'mastery',
-          SCHEDULES: 'schedules',
-          LEARNING_SESSIONS: 'sessions'
-        }
-      }
-    }))
+    vi.doMock('./config.js', () => createCompleteConfigMock())
 
     vi.doMock('../config/syncConfig.js', () => ({
       getSyncConfigDebug: () => ({

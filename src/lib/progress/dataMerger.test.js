@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { createCompleteConfigMock, createCompleteAuthBridgeMock, createCompleteUserSettingsStoreMock } from './test-helpers.js'
 
 const loggerStub = { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }
 
@@ -11,23 +12,16 @@ describe('dataMerger', () => {
       createSafeLogger: () => loggerStub
     }))
 
-    vi.doMock('./config.js', () => ({
-      STORAGE_CONFIG: {
-        STORES: {
-          ATTEMPTS: 'attempts',
-          MASTERY: 'mastery',
-          SCHEDULES: 'schedules',
-          LEARNING_SESSIONS: 'sessions'
-        }
-      }
-    }))
+    vi.doMock('./config.js', () => createCompleteConfigMock())
   })
 
   it('prefers authenticated user id when resolving merge user', async () => {
-    vi.doMock('./authBridge.js', () => ({
-      getAuthenticatedUser: () => ({ id: 'auth-user' })
+    vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+      getAuthenticatedUser: () => ({ id: 'auth-user' }),
+      isLocalSyncMode: () => false,
+      isAuthenticated: () => true
     }))
-    vi.doMock('./userSettingsStore.js', () => ({
+    vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
       getCurrentUserId: () => 'local-user'
     }))
 
@@ -39,10 +33,12 @@ describe('dataMerger', () => {
   it('merges remote attempts into local storage when missing', async () => {
     const savedAttempts = []
 
-    vi.doMock('./authBridge.js', () => ({
-      getAuthenticatedUser: () => null
+    vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+      getAuthenticatedUser: () => null,
+      isLocalSyncMode: () => false,
+      isAuthenticated: () => false
     }))
-    vi.doMock('./userSettingsStore.js', () => ({
+    vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
       getCurrentUserId: () => 'local-user-123'
     }))
     vi.doMock('./database.js', () => ({
@@ -81,10 +77,12 @@ describe('dataMerger', () => {
     const originalDispatch = window.dispatchEvent
     window.dispatchEvent = dispatched
 
-    vi.doMock('./authBridge.js', () => ({
-      getAuthenticatedUser: () => null
+    vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+      getAuthenticatedUser: () => null,
+      isLocalSyncMode: () => false,
+      isAuthenticated: () => false
     }))
-    vi.doMock('./userSettingsStore.js', () => ({
+    vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
       getCurrentUserId: () => 'user-temp-123'
     }))
     vi.doMock('./database.js', () => ({
@@ -109,10 +107,12 @@ describe('dataMerger', () => {
     const applied = { called: false, state: null }
     const saved = { called: false, record: null, opts: null }
 
-    vi.doMock('./authBridge.js', () => ({
-      getAuthenticatedUser: () => ({ id: 'auth-user-xyz' })
+    vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+      getAuthenticatedUser: () => ({ id: 'auth-user-xyz' }),
+      isLocalSyncMode: () => false,
+      isAuthenticated: () => true
     }))
-    vi.doMock('./userSettingsStore.js', () => ({
+    vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
       getCurrentUserId: () => 'auth-user-xyz'
     }))
     // Mock DB helpers: no local settings in IndexedDB, and capture saveUserSettings
@@ -128,17 +128,17 @@ describe('dataMerger', () => {
         return { id: 'settings-auth-user-xyz', userId: 'auth-user-xyz', settings, updatedAt: Date.now(), synced: true, syncedAt: Date.now() }
       })
     }))
-    // Mock settings store: local has recent defaults, ensure setState gets called with server values
+    // Mock settings store: local has recent defaults, but server has newer settings
     vi.doMock('../../state/settings.js', () => ({
       useSettings: {
-        getState: () => ({ userLevel: 'A1', level: 'A1', lastUpdated: Date.now() }),
+        getState: () => ({ userLevel: 'A1', level: 'A1', lastUpdated: Date.now() - 2000 }),
         setState: (next) => { applied.called = true; applied.state = next }
       }
     }))
 
     const { mergeAccountDataLocally } = await import('./dataMerger.js')
 
-    // Server returns C1 settings with older lastUpdated than the local default's timestamp
+    // Server returns C1 settings with newer lastUpdated than the local default's timestamp
     const serverSettings = {
       settings: { userLevel: 'C1', level: 'C1', lastUpdated: Date.now() - 1000 }
     }
@@ -146,8 +146,7 @@ describe('dataMerger', () => {
     const result = await mergeAccountDataLocally({ settings: serverSettings })
 
     expect(result).toMatchObject({ userId: 'auth-user-xyz' })
-    // Should apply server settings despite local having a very recent lastUpdated,
-    // because there is no local IndexedDB record (fresh device)
+    // Should apply server settings because they are newer than local settings
     expect(applied.called).toBe(true)
     expect(applied.state.userLevel).toBe('C1')
     expect(saved.called).toBe(true)

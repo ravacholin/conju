@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { createCompleteConfigMock, createCompleteAuthBridgeMock, createCompleteUserSettingsStoreMock } from './test-helpers.js'
 
 /**
  * Tests de conflictos en data merge
@@ -16,16 +17,7 @@ describe('Data Merge Conflict Resolution', () => {
       createSafeLogger: () => loggerStub
     }))
 
-    vi.doMock('./config.js', () => ({
-      STORAGE_CONFIG: {
-        STORES: {
-          ATTEMPTS: 'attempts',
-          MASTERY: 'mastery',
-          SCHEDULES: 'schedules',
-          LEARNING_SESSIONS: 'sessions'
-        }
-      }
-    }))
+    vi.doMock('./config.js', () => createCompleteConfigMock())
   })
 
   describe('Timestamp-Based Conflict Resolution', () => {
@@ -53,11 +45,13 @@ describe('Data Merge Conflict Resolution', () => {
         }
       ]
 
-      vi.doMock('./authBridge.js', () => ({
-        getAuthenticatedUser: () => ({ id: 'user-123' })
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
       }))
 
-      vi.doMock('./userSettingsStore.js', () => ({
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
         getCurrentUserId: () => 'user-123'
       }))
 

@@ -59,6 +59,8 @@ describe('TypeSelectionStep', () => {
     fireEvent.click(screen.getByRole('button', { name: /practicar irregulares en yo/i }))
 
     expect(handleSelect).toHaveBeenCalledTimes(1)
-    expect(handleSelect).toHaveBeenCalledWith('irregular', ['LEARNING_YO_G_PRESENT'])
+    // The component correctly includes LEARNING_VERY_IRREGULAR in YO irregular category
+    // because very irregular verbs like "ser", "estar", "ir" also have special YO forms
+    expect(handleSelect).toHaveBeenCalledWith('irregular', ['LEARNING_YO_G_PRESENT', 'LEARNING_VERY_IRREGULAR'])
   })
 })
