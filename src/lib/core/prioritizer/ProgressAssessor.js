@@ -102,6 +102,19 @@ export class ProgressAssessor {
    */
   determineLearningStage(userLevel, masteryMap) {
     const levelTenses = this.curriculum.getLevelProgression(userLevel)
+
+    // Handle case where there are no tenses for this level
+    if (!levelTenses || levelTenses.length === 0) {
+      return {
+        stage: 'beginner',
+        avgMastery: 0,
+        masteredCount: 0,
+        totalCount: 0,
+        completionPercent: 0,
+        recommendation: this.getStageRecommendation('beginner', userLevel)
+      }
+    }
+
     const masteries = levelTenses.map(t => masteryMap.get(t.key) || 0)
 
     const avgMastery = masteries.length > 0 ?
@@ -191,9 +204,15 @@ export class ProgressAssessor {
     const levelTenses = this.curriculum.getLevelProgression(userLevel)
     const groups = {}
 
+    if (!levelTenses || levelTenses.length === 0) {
+      return groups // Return empty object if no tenses
+    }
+
     // Group tenses by family for current level
     levelTenses.forEach(tense => {
       const family = tense.family
+      if (!family) return // Skip if no family property
+
       if (!groups[family]) {
         groups[family] = {
           name: family,
@@ -219,10 +238,14 @@ export class ProgressAssessor {
       const mastered = masteries.filter(m => m >= 75).length
       const total = masteries.length
 
-      if (mastered === total) group.completionStatus = 'completed'
-      else if (mastered > 0) group.completionStatus = 'in_progress'
-      else if (group.avgMastery > 30) group.completionStatus = 'started'
-      else group.completionStatus = 'not_started'
+      if (total > 0) { // Only calculate completion status if there are tenses
+        if (mastered === total) group.completionStatus = 'completed'
+        else if (mastered > 0) group.completionStatus = 'in_progress'
+        else if (group.avgMastery > 30) group.completionStatus = 'started'
+        else group.completionStatus = 'not_started'
+      } else {
+        group.completionStatus = 'not_started' // Default if no tenses
+      }
 
       // Priority based on partial completion (prioritize completing started families)
       if (group.completionStatus === 'in_progress') {
@@ -235,7 +258,8 @@ export class ProgressAssessor {
 
       // Readiness based on prerequisites of family tenses
       const readinesses = group.tenses.map(t => this.assessReadiness(t, masteryMap))
-      group.readiness = readinesses.reduce((sum, r) => sum + r, 0) / readinesses.length
+      group.readiness = readinesses.length > 0 ?
+        readinesses.reduce((sum, r) => sum + r, 0) / readinesses.length : 0
     })
 
     return groups

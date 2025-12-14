@@ -44,7 +44,7 @@ const chooseDialectVos = async (user) => {
 }
 
 const goToPorTema = async (user) => {
-  const porTema = await screen.findByText(/Por tema/i)
+  const porTema = await screen.findByText(/TEMAS/i)
   await act(async () => {
     await user.click(porTema)
   })
@@ -127,7 +127,7 @@ describe('Navegación y Back (flujo actual)', () => {
     })
 
     // Paso 7: opciones de tipo de verbo
-    await screen.findByText(/Verbos Irregulares/i)
+    await screen.findByRole('button', { name: /Seleccionar solo verbos irregulares/i })
 
     // Back → vuelve a tiempos (debe volver a ver "Presente")
     await clickBack(user)
@@ -139,7 +139,7 @@ describe('Navegación y Back (flujo actual)', () => {
     await chooseDialectVos(user)
 
     // Paso 2: menú principal (Por nivel / Por tema)
-    const porNivel = await screen.findByText(/Por nivel/i)
+    const porNivel = await screen.findByText(/NIVELES/i)
     await act(async () => {
       await user.click(porNivel)
     })
@@ -147,15 +147,15 @@ describe('Navegación y Back (flujo actual)', () => {
     // Paso 3: niveles (A1..C2)
     await screen.findByRole('button', { name: /Seleccionar nivel A1/i })
 
-    // Back → paso 2
+    // Back → paso 2 (main menu with level selector still active)
     await clickBack(user)
-    await screen.findByText(/Por tema/i)
+    await screen.findByText(/Volver al menú: Por tema \/ Por nivel/i)
   })
 
   it('Por nivel: Back desde paso 4 (modo práctica) vuelve a paso 2', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
-    const porNivel = await screen.findByText(/Por nivel/i)
+    const porNivel = await screen.findByText(/NIVELES/i)
     await act(async () => {
       await user.click(porNivel)
     })
@@ -165,23 +165,23 @@ describe('Navegación y Back (flujo actual)', () => {
     })
 
     // Paso 4: práctica mixta/específica
-    await screen.findByText(/Práctica Mixta/i)
+    await screen.findByText(/MIXTA/i)
 
-    // Back → paso 2
+    // Back → paso 2 (level selection)
     await clickBack(user)
-    await screen.findByText(/Por tema/i)
+    await screen.findByText(/A1/i)
   })
 
   it('Por nivel (specific): Back desde paso 5 (mood sin elegir) vuelve a paso 4', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
-    const porNivel = await screen.findByText(/Por nivel/i)
+    const porNivel = await screen.findByText(/NIVELES/i)
     await user.click(porNivel)
     const nivelB1 = await screen.findByRole('button', { name: /Seleccionar nivel B1/i })
     await user.click(nivelB1)
 
     // Paso 4: elegir "Formas Específicas"
-    const especificas = await screen.findByText(/Formas Específicas/i)
+    const especificas = await screen.findByText(/ESPECÍFICA/i)
     await user.click(especificas)
 
     // Paso 5: selección de modo (Indicativo/Subjuntivo...)
@@ -189,7 +189,7 @@ describe('Navegación y Back (flujo actual)', () => {
 
     // Back → paso 4
     await clickBack(user)
-    await screen.findByText(/Práctica Mixta/i)
+    await screen.findByText(/MIXTA/i)
   })
 
   it('Por tema (no finitas): Back desde paso 6 (Gerundio sin tiempo elegido) vuelve a paso 5 (moods)', async () => {

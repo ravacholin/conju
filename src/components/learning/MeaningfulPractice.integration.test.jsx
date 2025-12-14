@@ -192,7 +192,7 @@ describe('MeaningfulPractice SRS Integration', () => {
 
     // Verify that the error was logged
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to update SRS schedule:',
+      expect.stringContaining('ERROR[learning:MeaningfulPractice] Failed to update SRS schedule'),
       expect.any(Error)
     );
 

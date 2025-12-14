@@ -30,9 +30,18 @@ const mockGenerateDrillItem = vi.fn()
 const mockGenerateDoubleModeItem = vi.fn()
 const mockIsDoubleModeViable = vi.fn()
 
-vi.mock('../../../state/settings.js', () => ({
-  useSettings: () => settingsState
-}))
+// Create a mock store that behaves like a Zustand store (callable function with methods)
+const mockUseSettings = vi.fn(() => settingsState)
+mockUseSettings.getState = vi.fn(() => settingsState)
+mockUseSettings.setState = vi.fn()
+mockUseSettings.subscribe = vi.fn()
+
+vi.mock('../../../state/settings.js', () => {
+  return {
+    useSettings: mockUseSettings,
+    __esModule: true
+  }
+})
 
 vi.mock('../../../lib/progress/srs.js', () => ({
   getDueItems: mockGetDueItems

@@ -31,8 +31,25 @@ export class PriorityCalculator {
     const complexityBonus = tense.complexity * 5
 
     // 2. Introduction level appropriateness
-    const isNewAtLevel = tense.introducedAt === userLevel
-    const levelAppropriateBonus = isNewAtLevel ? 30 : 10
+    let levelAppropriateBonus = 0
+    const userLevelIndex = this.levelHierarchy.indexOf(userLevel)
+    const tenseLevelIndex = this.levelHierarchy.indexOf(tense.introducedAt)
+
+    if (tenseLevelIndex !== -1 && userLevelIndex !== -1) {
+      if (tenseLevelIndex === userLevelIndex) {
+        // Current level tense gets high priority
+        levelAppropriateBonus = 30
+      } else if (tenseLevelIndex < userLevelIndex) {
+        // Previous level tense (for review) gets moderate priority
+        levelAppropriateBonus = 15
+      } else {
+        // Future level tense gets low priority
+        levelAppropriateBonus = 5
+      }
+    } else {
+      // If level is not defined, use default
+      levelAppropriateBonus = tense.introducedAt === userLevel ? 30 : 10
+    }
 
     // 3. Pedagogical family importance
     const familyBonuses = {
@@ -45,7 +62,7 @@ export class PriorityCalculator {
     const familyBonus = familyBonuses[tense.family] || 0
 
     // 4. Prerequisite chain length (more dependencies = higher priority)
-    const prereqChain = this.curriculum.getPrerequisiteChain(tense.key)
+    const prereqChain = this.curriculum.getPrerequisiteChain(tense.key) || []
     const prereqBonus = prereqChain.length * 3
 
     // 5. Current mastery adjustment
@@ -228,30 +245,35 @@ export class PriorityCalculator {
       masteries.reduce((sum, m) => sum + m, 0) / masteries.length : 0
 
     // Adjust weights based on overall level mastery
-    const weights = {
-      core: 0.60,
-      review: 0.25,
-      exploration: 0.15
-    }
-
     if (avgMastery < 30) {
       // Beginner: focus heavily on core
-      weights.core = 0.80
-      weights.review = 0.15
-      weights.exploration = 0.05
+      return {
+        core: 0.80,
+        review: 0.15,
+        exploration: 0.05
+      }
     } else if (avgMastery < 60) {
       // Learning: balanced approach
-      weights.core = 0.60
-      weights.review = 0.30
-      weights.exploration = 0.10
+      return {
+        core: 0.60,
+        review: 0.30,
+        exploration: 0.10
+      }
     } else if (avgMastery >= 75) {
       // Mastered: focus on variety and exploration
-      weights.core = 0.30
-      weights.review = 0.40
-      weights.exploration = 0.30
+      return {
+        core: 0.30,
+        review: 0.40,
+        exploration: 0.30
+      }
+    } else {
+      // Between 60-75: slight exploration focus
+      return {
+        core: 0.50,
+        review: 0.35,
+        exploration: 0.15
+      }
     }
-
-    return weights
   }
 
   /**
@@ -301,12 +323,19 @@ export class PriorityCalculator {
    * @returns {boolean} True if tense is a prerequisite
    */
   isPrerequisiteForLevel(tenseKey, userLevel) {
+    // Get tenses that are introduced at the current level
     const levelTenses = this.curriculum.getLevelProgression(userLevel)
 
-    return levelTenses.some(levelTense => {
+    // Check if the requested tense is a prerequisite for any tense at this level
+    for (const levelTense of levelTenses) {
+      // Check the full prerequisite chain
       const prereqChain = this.curriculum.getPrerequisiteChain(levelTense.key)
-      return prereqChain.includes(tenseKey)
-    })
+      if (prereqChain && prereqChain.includes(tenseKey)) {
+        return true
+      }
+    }
+
+    return false
   }
 
   /**
