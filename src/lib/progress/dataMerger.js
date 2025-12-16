@@ -237,9 +237,18 @@ export async function mergeAccountDataLocally(accountData) {
               syncedAt: new Date()
             }
 
-            attemptsToUpdate.push({ id: existing.id, updates: updatedAttempt })
+            const updateId = existing?.id || remoteAttempt?.id
+
+            if (updateId) {
+              attemptsToUpdate.push({ id: updateId, updates: updatedAttempt })
+            } else {
+              // Fallback: if no id is available, treat as new to avoid losing data
+              updatedAttempt.id = `attempt-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+              attemptsToSave.push(updatedAttempt)
+            }
+
             attemptMap.set(getAttemptCompositeKey(updatedAttempt), updatedAttempt)
-            if (existing?.id) attemptMap.set(`id:${existing.id}`, updatedAttempt)
+            if (updateId) attemptMap.set(`id:${updateId}`, updatedAttempt)
           }
         }
       } catch (error) {

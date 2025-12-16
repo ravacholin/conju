@@ -81,6 +81,63 @@ describe('Data Merge Conflict Resolution', () => {
       expect(updatedItems[0].updates.correct).toBe(false) // Remote value wins
     })
 
+    it('should queue attempt updates using the latest updatedAt timestamp', async () => {
+      const localAttempts = [
+        {
+          id: 'attempt-2',
+          verbId: 'leer',
+          correct: true,
+          createdAt: '2025-01-01T00:00:00Z',
+          syncedAt: '2025-01-20T00:00:00Z',
+          updatedAt: '2025-01-20T00:00:00Z'
+        }
+      ]
+
+      const remoteAttempts = [
+        {
+          id: 'attempt-2',
+          verbId: 'leer',
+          correct: false,
+          createdAt: '2025-01-01T00:00:00Z',
+          syncedAt: '2025-01-10T00:00:00Z',
+          updatedAt: '2025-02-01T00:00:00Z'
+        }
+      ]
+
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
+      }))
+
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
+        getCurrentUserId: () => 'user-123'
+      }))
+
+      const updatedItems = []
+
+      vi.doMock('./database.js', () => ({
+        getAllFromDB: vi.fn(async (store) => {
+          if (store === 'attempts') return localAttempts
+          return []
+        }),
+        batchSaveToDB: vi.fn(async () => ({ saved: 0, errors: [] })),
+        batchUpdateInDB: vi.fn(async (_store, items) => {
+          updatedItems.push(...items)
+          return { updated: items.length, errors: [] }
+        })
+      }))
+
+      const { mergeAccountDataLocally } = await import('./dataMerger.js')
+
+      const result = await mergeAccountDataLocally({ attempts: remoteAttempts })
+
+      expect(result.attempts).toBe(1)
+      expect(updatedItems).toHaveLength(1)
+      expect(updatedItems[0].id).toBe('attempt-2')
+      expect(updatedItems[0].updates.correct).toBe(false)
+    })
+
     it('should keep local data when local is newer than remote', async () => {
       const newerDate = new Date('2025-01-15T00:00:00Z')
       const olderDate = new Date('2025-01-01T00:00:00Z')
