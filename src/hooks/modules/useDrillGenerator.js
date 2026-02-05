@@ -65,12 +65,26 @@ export const useDrillGenerator = () => {
   const [lastGeneratedItem, setLastGeneratedItem] = useState(null)
   const formsPoolRef = useRef({ signature: null, forms: null })
 
-  const getNow = () => {
+  const getNow = useCallback(() => {
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
       return performance.now()
     }
     return Date.now()
-  }
+  }, [])
+
+  const resolveFormsForStats = useCallback(async (targetSettings) => {
+    const poolResult = await resolveFormsPool({
+      settings: targetSettings,
+      region: targetSettings.region || 'la_general',
+      cache: formsPoolRef.current,
+      generateAllFormsForRegion,
+      getFormsCacheKey,
+      now: getNow
+    })
+
+    formsPoolRef.current = poolResult.cache
+    return poolResult.forms || []
+  }, [getNow])
 
   /**
    * Generate next drill item using comprehensive selection algorithms
@@ -358,7 +372,7 @@ export const useDrillGenerator = () => {
    */
   const isGenerationViable = useCallback(async () => {
     try {
-      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      const allFormsForRegion = await resolveFormsForStats(settings)
 
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         return false
@@ -377,7 +391,7 @@ export const useDrillGenerator = () => {
       logger.warn('isGenerationViable', 'Error checking generation viability', error)
       return false
     }
-  }, [settings])
+  }, [resolveFormsForStats, settings])
 
   /**
    * Get generation statistics for debugging
@@ -385,7 +399,7 @@ export const useDrillGenerator = () => {
    */
   const getGenerationStats = useCallback(async () => {
     try {
-      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      const allFormsForRegion = await resolveFormsForStats(settings)
 
       const specificConstraints = {
         isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
@@ -431,7 +445,7 @@ export const useDrillGenerator = () => {
         error: error.message
       }
     }
-  }, [settings, lastGeneratedItem])
+  }, [resolveFormsForStats, settings, lastGeneratedItem])
 
   return {
     generateNextItem,

@@ -6,31 +6,35 @@ import { useSettings } from '../../state/settings.js'
 import router from '../../lib/routing/Router.js'
 
 // Helpers
-const resetSettings = () => {
+const resetSettings = async () => {
   try {
     window.localStorage.clear()
   } catch {
     /* ignore */
   }
-  const s = useSettings.getState()
-  useSettings.setState({
-    ...s,
-    level: 'A1',
-    useVoseo: false,
-    useTuteo: false,
-    useVosotros: false,
-    region: null,
-    practiceMode: 'mixed',
-    specificMood: null,
-    specificTense: null,
-    practicePronoun: null,
-    verbType: 'all',
-    selectedFamily: null,
-    cameFromTema: false
+  await act(async () => {
+    const s = useSettings.getState()
+    useSettings.setState({
+      ...s,
+      level: 'A1',
+      useVoseo: false,
+      useTuteo: false,
+      useVosotros: false,
+      region: null,
+      practiceMode: 'mixed',
+      specificMood: null,
+      specificTense: null,
+      practicePronoun: null,
+      verbType: 'all',
+      selectedFamily: null,
+      cameFromTema: false
+    })
   })
 
   try {
-    router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
+    await act(async () => {
+      router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
+    })
   } catch {
     /* ignore */
   }
@@ -74,12 +78,12 @@ describe('Navegación y Back (flujo actual)', () => {
     }
   }
 
-  beforeEach(() => {
-    resetSettings()
+  beforeEach(async () => {
+    await resetSettings()
   })
 
-  afterEach(() => {
-    resetSettings()
+  afterEach(async () => {
+    await resetSettings()
   })
 
   it('UI Back desde tiempos (paso 6) vuelve a modos (paso 5) en Por tema', async () => {

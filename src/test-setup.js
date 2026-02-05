@@ -1,6 +1,7 @@
 // Test setup for Spanish Conjugator
 import '@testing-library/jest-dom'
 import { vi, beforeEach, afterEach } from 'vitest'
+import { setLogLevel } from './lib/utils/logger.js'
 import { createIndexedDBMock } from './test-utils/index.js'
 
 vi.mock('@testing-library/react', async () => {
@@ -214,15 +215,46 @@ if (typeof globalThis.SpeechSynthesisUtterance === 'undefined') {
 // ERROR HANDLING
 // =============================================================================
 
+// Reduce logger noise in tests unless explicitly enabled
+if (process.env.VITEST_VERBOSE_LOGS) {
+  setLogLevel('DEBUG')
+} else {
+  setLogLevel('WARN')
+}
+
 // Suppress console warnings in tests unless explicitly needed
 const originalConsoleError = console.error
 const originalConsoleWarn = console.warn
+const originalConsoleLog = console.log
+const originalConsoleInfo = console.info
+const originalConsoleDebug = console.debug
+const originalConsoleTrace = console.trace
+
+const isVerbose = Boolean(process.env.VITEST_VERBOSE_LOGS)
+const suppressedErrorPatterns = [
+  /ERROR\[progress:database\].*getByIndex Error al buscar por índice/i,
+  /ERROR\[progress:database\].*getDueSchedules Error al obtener schedules pendientes/i,
+  /ERROR\[progress:AdaptivePracticeEngine\].*Error getting curriculum-driven combinations/i
+]
 
 console.error = (...args) => {
   if (
     args[0]?.includes?.('Warning: ReactDOM.render is deprecated') ||
     args[0]?.includes?.('Warning: componentWillMount has been renamed')
   ) {
+    return
+  }
+  const combined = args
+    .map((arg) => {
+      if (typeof arg === 'string') return arg
+      try {
+        return JSON.stringify(arg)
+      } catch {
+        return String(arg)
+      }
+    })
+    .join(' ')
+  if (!isVerbose && suppressedErrorPatterns.some((pattern) => pattern.test(combined))) {
     return
   }
   originalConsoleError.call(console, ...args)
@@ -232,7 +264,33 @@ console.warn = (...args) => {
   if (args[0]?.includes?.('deprecated')) {
     return
   }
-  originalConsoleWarn.call(console, ...args)
+  if (isVerbose) {
+    originalConsoleWarn.call(console, ...args)
+  }
+}
+
+console.log = (...args) => {
+  if (isVerbose) {
+    originalConsoleLog.call(console, ...args)
+  }
+}
+
+console.info = (...args) => {
+  if (isVerbose) {
+    originalConsoleInfo.call(console, ...args)
+  }
+}
+
+console.debug = (...args) => {
+  if (isVerbose) {
+    originalConsoleDebug.call(console, ...args)
+  }
+}
+
+console.trace = (...args) => {
+  if (isVerbose) {
+    originalConsoleTrace.call(console, ...args)
+  }
 }
 
 // =============================================================================

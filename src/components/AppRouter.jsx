@@ -31,13 +31,9 @@
  * @requires router - Sistema de enrutamiento interno
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
-import DrillMode from './drill/DrillMode.jsx'
-import LearnTenseFlowContainer from './learning/LearnTenseFlow.jsx';
-import StoryMode from '../features/story/StoryMode.jsx'
-import TimelineMode from '../features/timeline/TimelineMode.jsx'
 import SyncStatusIndicator from './sync/SyncStatusIndicator.jsx'
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
@@ -46,11 +42,21 @@ import { useShallow } from 'zustand/react/shallow'
 const ProgressDashboard = lazy(lazyWithRetry(
   () => import('../features/progress/ProgressDashboard.jsx')
 ))
+const DrillMode = lazy(lazyWithRetry(
+  () => import('./drill/DrillMode.jsx')
+))
+const LearnTenseFlowContainer = lazy(lazyWithRetry(
+  () => import('./learning/LearnTenseFlow.jsx')
+))
+const StoryMode = lazy(lazyWithRetry(
+  () => import('../features/story/StoryMode.jsx')
+))
+const TimelineMode = lazy(lazyWithRetry(
+  () => import('../features/timeline/TimelineMode.jsx')
+))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
-import { buildFormsForRegion } from '../lib/core/eligibility.js'
 import router from '../lib/routing/Router.js'
-import { createBoundedCache } from '../lib/utils/boundedCache.js'
 
 // Centralized logger for development-only debug output
 const logger = {
@@ -99,80 +105,6 @@ function AppRouter() {
     selectedFamily: settings.selectedFamily
   })
 
-
-  const [formsForRegion, setFormsForRegion] = useState([])
-  const formsCacheRef = useRef(
-    createBoundedCache({
-      maxSize: 20,
-      maxAgeMinutes: 30
-    })
-  )
-
-  const formsSettings = useMemo(
-    () => ({
-      region: settings.region,
-      useVoseo: settings.useVoseo,
-      useTuteo: settings.useTuteo,
-      useVosotros: settings.useVosotros,
-      strict:
-        settings.strict ??
-        !(settings.useTuteo && settings.useVoseo && settings.useVosotros),
-      practiceMode: settings.practiceMode,
-      specificMood: settings.specificMood,
-      specificTense: settings.specificTense,
-      verbType: settings.verbType,
-      selectedFamily: settings.selectedFamily
-    }),
-    [
-      settings.region,
-      settings.useVoseo,
-      settings.useTuteo,
-      settings.useVosotros,
-      settings.strict,
-      settings.practiceMode,
-      settings.specificMood,
-      settings.specificTense,
-      settings.verbType,
-      settings.selectedFamily
-    ]
-  )
-
-  const formsSettingsKey = useMemo(() => JSON.stringify(formsSettings), [formsSettings])
-
-  useEffect(() => {
-    if (!formsSettings.region) {
-      setFormsForRegion([])
-      return
-    }
-
-    const cachedForms = formsCacheRef.current.get(formsSettingsKey)
-    if (cachedForms) {
-      setFormsForRegion(cachedForms)
-      return
-    }
-
-    let cancelled = false
-    async function loadForms() {
-      setFormsForRegion([])
-      try {
-        const forms = await buildFormsForRegion(formsSettings.region, formsSettings)
-        if (!cancelled) {
-          setFormsForRegion(forms)
-          formsCacheRef.current.set(formsSettingsKey, forms)
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.error('AppRouter: failed to load forms for region', error)
-          setFormsForRegion([])
-        }
-      }
-    }
-
-    loadForms()
-    return () => {
-      cancelled = true
-    }
-  }, [formsSettings.region, formsSettingsKey, formsSettings])
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
 
@@ -289,7 +221,15 @@ function AppRouter() {
       if (!drillMode.currentItem && !drillMode.isGenerating) {
         // Add a delay to ensure settings have fully propagated through all stores
         setTimeout(() => {
-          drillMode.generateNextItem(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)
+          const helpers = onboardingFlowRef.current
+          if (!helpers) {
+            return
+          }
+          drillMode.generateNextItem(
+            null,
+            helpers.getAvailableMoodsForLevel,
+            helpers.getAvailableTensesForLevelAndMood
+          )
         }, 100);
       }
 
@@ -302,7 +242,16 @@ function AppRouter() {
         selectedFamily: LATEST_SETTINGS.selectedFamily
       };
     }
-  }, [currentMode, drillMode.currentItem, drillMode.isGenerating, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood])
+  }, [
+    currentMode,
+    drillMode.currentItem,
+    drillMode.isGenerating,
+    settings.practiceMode,
+    settings.specificMood,
+    settings.specificTense,
+    settings.verbType,
+    settings.selectedFamily
+  ])
 
   // The router now handles all popstate events
 
@@ -523,7 +472,6 @@ function AppRouter() {
         <OnboardingFlow
           onStartPractice={handleStartPractice}
           setCurrentMode={setCurrentMode}
-          formsForRegion={formsForRegion}
           // Pass all hook functions as props
           onboardingStep={onboardingFlow.onboardingStep}
           selectDialect={onboardingFlow.selectDialect}
@@ -552,11 +500,12 @@ function AppRouter() {
     return (
       <>
         <SyncStatusIndicator />
-        <DrillMode
+        <React.Suspense fallback={<div className="loading">Cargando práctica...</div>}>
+          <DrillMode
           currentItem={drillMode.currentItem}
           settings={settings}
           onDrillResult={drillMode.handleDrillResult}
-          onContinue={() => drillMode.handleContinue(formsForRegion, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
+          onContinue={() => drillMode.handleContinue(null, onboardingFlow.getAvailableMoodsForLevel, onboardingFlow.getAvailableTensesForLevelAndMood)}
           onHome={handleHome}
           onRegenerateItem={handleRegenerateItem}
           onDialectChange={handleDialectChange}
@@ -570,7 +519,8 @@ function AppRouter() {
           onNavigateToProgress={handleGoToProgress}
           onNavigateToStory={handleStartStoryMode}
           onNavigateToTimeline={handleStartTimelineMode}
-        />
+          />
+        </React.Suspense>
       </>
     )
   }
@@ -579,10 +529,12 @@ function AppRouter() {
     return (
       <>
         <SyncStatusIndicator />
-        <StoryMode
-          onBack={handleStartPractice}
-          onHome={handleHome}
-        />
+        <React.Suspense fallback={<div className="loading">Cargando historias...</div>}>
+          <StoryMode
+            onBack={handleStartPractice}
+            onHome={handleHome}
+          />
+        </React.Suspense>
       </>
     )
   }
@@ -591,10 +543,12 @@ function AppRouter() {
     return (
       <>
         <SyncStatusIndicator />
-        <TimelineMode
-          onBack={handleStartPractice}
-          onHome={handleHome}
-        />
+        <React.Suspense fallback={<div className="loading">Cargando línea de tiempo...</div>}>
+          <TimelineMode
+            onBack={handleStartPractice}
+            onHome={handleHome}
+          />
+        </React.Suspense>
       </>
     )
   }
@@ -603,10 +557,12 @@ function AppRouter() {
     return (
       <>
         <SyncStatusIndicator />
-        <LearnTenseFlowContainer
-          onHome={handleHome}
-          onGoToProgress={handleGoToProgress}
-        />
+        <React.Suspense fallback={<div className="loading">Cargando aprendizaje...</div>}>
+          <LearnTenseFlowContainer
+            onHome={handleHome}
+            onGoToProgress={handleGoToProgress}
+          />
+        </React.Suspense>
       </>
     )
   }
