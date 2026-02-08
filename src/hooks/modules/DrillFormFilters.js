@@ -28,6 +28,8 @@ const lemmaFamiliesCache = new Map()
 let irregularFormCache = new WeakMap()
 
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
+const PEDAGOGICAL_THIRD_PERSON_FAMILIES = new Set(['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y'])
+const STRONG_PRETERITE_IRREGULARITIES = new Set(['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'])
 
 export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   // Only include fields that can actually change the generated forms.
@@ -530,8 +532,7 @@ const applyPedagogicalFiltering = (forms, settings) => {
       // Find the verb in the dataset to get its complete definition
       const verbFamilies = getVerbFamilies(f.lemma)
       if (!verbFamilies || verbFamilies === FAMILY_ERROR) return true // If verb not found or error, allow it through (defensive)
-      const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
-      const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
+      const isPedagogicallyRelevant = verbFamilies.some(family => PEDAGOGICAL_THIRD_PERSON_FAMILIES.has(family))
 
       if (!isPedagogicallyRelevant) {
         return false
@@ -539,8 +540,7 @@ const applyPedagogicalFiltering = (forms, settings) => {
 
       // Additional filter: exclude verbs with strong pretérito irregularities
       // These are verbs that are irregular throughout, not just in 3rd person
-      const strongPreteriteIrregularities = ['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL']
-      const hasStrongPreteriteIrregularities = verbFamilies.some(family => strongPreteriteIrregularities.includes(family))
+      const hasStrongPreteriteIrregularities = verbFamilies.some(family => STRONG_PRETERITE_IRREGULARITIES.has(family))
       if (hasStrongPreteriteIrregularities) {
         return false // Exclude verbs like saber, querer, haber, etc.
       }
@@ -564,6 +564,7 @@ const applyFamilyFiltering = (forms, settings) => {
 
   const expandedFamilies = expandSimplifiedGroup(settings.selectedFamily)
   const hasExpandedFamilies = expandedFamilies.length > 0
+  const expandedFamilySet = hasExpandedFamilies ? new Set(expandedFamilies) : null
 
   return forms.filter(form => {
     const verbFamilies = getVerbFamilies(form.lemma)
@@ -573,7 +574,7 @@ const applyFamilyFiltering = (forms, settings) => {
     // Check if it's a simplified group that needs expansion
     if (hasExpandedFamilies) {
       // It's a simplified group - check if the verb belongs to ANY of the included families
-      return verbFamilies.some(vf => expandedFamilies.includes(vf))
+      return verbFamilies.some(vf => expandedFamilySet.has(vf))
     }
     // It's a regular family - check direct match
     return verbFamilies.includes(settings.selectedFamily)
