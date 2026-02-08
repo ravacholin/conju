@@ -64,13 +64,53 @@ export const useDrillGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [lastGeneratedItem, setLastGeneratedItem] = useState(null)
   const formsPoolRef = useRef({ signature: null, forms: null })
+  const eligibleFormsCacheRef = useRef({ key: null, forms: null })
 
-  const getNow = () => {
+  const getNow = useCallback(() => {
     if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
       return performance.now()
     }
     return Date.now()
-  }
+  }, [])
+
+  const resolveFormsForStats = useCallback(async (targetSettings) => {
+    const poolResult = await resolveFormsPool({
+      settings: targetSettings,
+      region: targetSettings.region || 'la_general',
+      cache: formsPoolRef.current,
+      generateAllFormsForRegion,
+      getFormsCacheKey,
+      now: getNow
+    })
+
+    formsPoolRef.current = poolResult.cache
+    return poolResult.forms || []
+  }, [getNow])
+
+  const buildEligibleFormsKey = useCallback((signature, targetSettings, specificConstraints) => {
+    return [
+      signature,
+      targetSettings.practiceMode || 'mixed',
+      targetSettings.level || 'A1',
+      targetSettings.verbType || 'all',
+      targetSettings.selectedFamily || 'none',
+      targetSettings.practicePronoun || 'mixed',
+      targetSettings.useVoseo ? 'voseo' : 'no_voseo',
+      targetSettings.useVosotros ? 'vosotros' : 'no_vosotros',
+      targetSettings.useTuteo ? 'tuteo' : 'no_tuteo',
+      targetSettings.strict ? 'strict' : 'flex',
+      targetSettings.irregularityFilterMode || 'tense',
+      specificConstraints?.isSpecific ? 'specific' : 'not_specific',
+      specificConstraints?.specificMood || '',
+      specificConstraints?.specificTense || ''
+    ].join('|')
+  }, [])
+
+  const shouldCacheEligibleForms = useCallback((targetSettings) => {
+    // Avoid caching when verbType === 'regular' because the filter intentionally samples
+    // a random spillover of regular-by-morphology forms from irregular lemmas.
+    return targetSettings?.verbType !== 'regular'
+  }, [])
 
   /**
    * Generate next drill item using comprehensive selection algorithms
@@ -180,7 +220,17 @@ export const useDrillGenerator = () => {
 
       const specificConstraints = buildSpecificConstraints(FRESH_SETTINGS, reviewSessionType, reviewSessionFilter)
 
-      let eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints)
+      let eligibleForms
+      const canCacheEligible = shouldCacheEligibleForms(FRESH_SETTINGS)
+      const eligibleKey = buildEligibleFormsKey(poolResult.signature, FRESH_SETTINGS, specificConstraints)
+      if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
+        eligibleForms = eligibleFormsCacheRef.current.forms
+      } else {
+        eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints)
+        if (canCacheEligible) {
+          eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
+        }
+      }
 
       try {
         validateEligibleForms(eligibleForms, specificConstraints)
@@ -350,7 +400,7 @@ export const useDrillGenerator = () => {
     } finally {
       setIsGenerating(false)
     }
-  }, [isGenerating])
+  }, [buildEligibleFormsKey, isGenerating, shouldCacheEligibleForms])
 
   /**
    * Check if generation is currently possible
@@ -358,7 +408,7 @@ export const useDrillGenerator = () => {
    */
   const isGenerationViable = useCallback(async () => {
     try {
-      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      const allFormsForRegion = await resolveFormsForStats(settings)
 
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         return false
@@ -371,13 +421,24 @@ export const useDrillGenerator = () => {
         specificTense: settings.specificTense
       }
 
-      const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+      let eligibleForms
+      const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
+      const canCacheEligible = shouldCacheEligibleForms(settings)
+      const eligibleKey = buildEligibleFormsKey(poolSignature, settings, specificConstraints)
+      if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
+        eligibleForms = eligibleFormsCacheRef.current.forms
+      } else {
+        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+        if (canCacheEligible) {
+          eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
+        }
+      }
       return eligibleForms.length > 0
     } catch (error) {
       logger.warn('isGenerationViable', 'Error checking generation viability', error)
       return false
     }
-  }, [settings])
+  }, [buildEligibleFormsKey, resolveFormsForStats, settings, shouldCacheEligibleForms])
 
   /**
    * Get generation statistics for debugging
@@ -385,7 +446,7 @@ export const useDrillGenerator = () => {
    */
   const getGenerationStats = useCallback(async () => {
     try {
-      const allFormsForRegion = await generateAllFormsForRegion(settings.region || 'la_general', settings)
+      const allFormsForRegion = await resolveFormsForStats(settings)
 
       const specificConstraints = {
         isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
@@ -394,7 +455,18 @@ export const useDrillGenerator = () => {
         specificTense: settings.specificTense
       }
 
-      const eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+      let eligibleForms
+      const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
+      const canCacheEligible = shouldCacheEligibleForms(settings)
+      const eligibleKey = buildEligibleFormsKey(poolSignature, settings, specificConstraints)
+      if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
+        eligibleForms = eligibleFormsCacheRef.current.forms
+      } else {
+        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+        if (canCacheEligible) {
+          eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
+        }
+      }
 
       return {
         totalForms: allFormsForRegion.length,
@@ -431,7 +503,7 @@ export const useDrillGenerator = () => {
         error: error.message
       }
     }
-  }, [settings, lastGeneratedItem])
+  }, [buildEligibleFormsKey, resolveFormsForStats, settings, shouldCacheEligibleForms, lastGeneratedItem])
 
   return {
     generateNextItem,

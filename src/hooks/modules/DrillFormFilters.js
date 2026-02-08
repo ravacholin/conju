@@ -16,13 +16,18 @@ import {
   isRegularNonfiniteForm,
   hasIrregularParticiple
 } from '../../lib/core/conjugationRules.js'
-import { LEVELS } from '../../lib/data/levels.js'
 import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
 import { categorizeVerb } from '../../lib/data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../../lib/data/simplifiedFamilyGroups.js'
 
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
+const allowedCombosCache = new Map()
+const lemmaTypeCache = new Map()
+const lemmaFamiliesCache = new Map()
+let irregularFormCache = new WeakMap()
+
+const FAMILY_ERROR = Symbol('FAMILY_ERROR')
 
 export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}:${settings.verbType || 'all'}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
@@ -87,6 +92,69 @@ function deduplicateForms(forms = []) {
 
 const lookupVerb = (lemma) => VERB_LOOKUP_MAP.get(lemma)
 
+const getAllowedCombosForLevelCached = (level) => {
+  if (!level) return new Set()
+  if (allowedCombosCache.has(level)) {
+    return allowedCombosCache.get(level)
+  }
+  const combos = gateCombos(level)
+  allowedCombosCache.set(level, combos)
+  return combos
+}
+
+const getLemmaType = (lemma, fallback) => {
+  if (!lemma) return fallback || 'regular'
+  if (lemmaTypeCache.has(lemma)) return lemmaTypeCache.get(lemma)
+  const verb = lookupVerb(lemma)
+  const t = verb?.type || fallback || 'regular'
+  lemmaTypeCache.set(lemma, t)
+  return t
+}
+
+const getVerbFamilies = (lemma) => {
+  if (!lemma) return null
+  if (lemmaFamiliesCache.has(lemma)) return lemmaFamiliesCache.get(lemma)
+  const verb = lookupVerb(lemma)
+  if (!verb) {
+    lemmaFamiliesCache.set(lemma, null)
+    return null
+  }
+  try {
+    const families = categorizeVerb(lemma, verb)
+    lemmaFamiliesCache.set(lemma, families)
+    return families
+  } catch (error) {
+    lemmaFamiliesCache.set(lemma, FAMILY_ERROR)
+    return FAMILY_ERROR
+  }
+}
+
+const isIrregularFormCached = (form) => {
+  if (!form || !form.value) return false
+  if (irregularFormCache.has(form)) {
+    return irregularFormCache.get(form)
+  }
+  let result = false
+  if (form.mood === 'nonfinite') {
+    result = !isRegularNonfiniteForm(form.lemma, form.tense, form.value)
+  } else if (
+    form.tense === 'pretPerf' ||
+    form.tense === 'plusc' ||
+    form.tense === 'futPerf' ||
+    form.tense === 'condPerf' ||
+    form.tense === 'subjPerf' ||
+    form.tense === 'subjPlusc'
+  ) {
+    result =
+      !isRegularNonfiniteForm(form.lemma, 'part', (form.value || '').split(/\s+/).pop()) &&
+      hasIrregularParticiple(form.lemma)
+  } else {
+    result = !isRegularFormForMood(form.lemma, form.mood, form.tense, form.person, form.value)
+  }
+  irregularFormCache.set(form, result)
+  return result
+}
+
 /**
  * Genera dinámicamente todas las formas de verbos para una región específica
  * Optimizado para el sistema de chunks - carga solo los verbos necesarios
@@ -141,6 +209,10 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
  */
 export function clearFormsCache() {
   formsCache.clear()
+  allowedCombosCache.clear()
+  lemmaTypeCache.clear()
+  lemmaFamiliesCache.clear()
+  irregularFormCache = new WeakMap()
 }
 
 /**
@@ -235,7 +307,7 @@ export const allowsLevel = (form, settings) => {
   if (settings.practiceMode === 'specific') return true
 
   const userLevel = settings.level || 'A1'
-  const allowed = getAllowedCombosForLevel(userLevel)
+  const allowed = getAllowedCombosForLevelCached(userLevel)
   return allowed.has(`${form.mood}|${form.tense}`)
 }
 
@@ -287,49 +359,16 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
     mode = 'lemma'
   }
 
-  const isIrregularForm = (f) => {
-    if (!f || !f.value) return false
-    if (f.mood === 'nonfinite') {
-      // Gerund/Participle irregularity by morphology
-      return !isRegularNonfiniteForm(f.lemma, f.tense, f.value)
-    }
-    // Simple/compound tenses: detect irregular surface form
-    if (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc') {
-      // Compound: participle must be irregular to count as irregular form
-      // If the participle is regular, consider the whole periphrasis regular
-      // Detect regularity from surface string
-      return !isRegularNonfiniteForm(f.lemma, 'part', (f.value || '').split(/\s+/).pop()) && hasIrregularParticiple(f.lemma)
-    }
-    return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
-  }
   if (mode === 'lemma') {
-    // Build quick lookup maps once
-    const lemmaTypeCache = new Map()
-    const getLemmaType = (lemma, fallback) => {
-      if (!lemma) return fallback || 'regular'
-      if (lemmaTypeCache.has(lemma)) return lemmaTypeCache.get(lemma)
-      const verb = lookupVerb(lemma)
-      const t = verb?.type || fallback || 'regular'
-      lemmaTypeCache.set(lemma, t)
-      return t
-    }
     if (verbType === 'irregular') return forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular')
     // verbType === 'regular'
     // Primary set: forms whose LEMMA is regular (pure regular verbs)
     const pureRegularForms = forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'regular')
 
     // Secondary set: forms that are morphologically regular even if the lemma is irregular
-    const isIrregularForm = (f) => {
-      if (!f || !f.value) return false
-      if (f.mood === 'nonfinite') {
-        return !isRegularNonfiniteForm(f.lemma, f.tense, f.value)
-      }
-      if (f.tense === 'pretPerf' || f.tense === 'plusc' || f.tense === 'futPerf' || f.tense === 'condPerf' || f.tense === 'subjPerf' || f.tense === 'subjPlusc') {
-        return !isRegularNonfiniteForm(f.lemma, 'part', (f.value || '').split(/\s+/).pop()) && hasIrregularParticiple(f.lemma)
-      }
-      return !isRegularFormForMood(f.lemma, f.mood, f.tense, f.person, f.value)
-    }
-    const regularFormsOfIrregularLemmas = forms.filter(f => (f.verbType || getLemmaType(f.lemma)) === 'irregular' && !isIrregularForm(f))
+    const regularFormsOfIrregularLemmas = forms.filter(
+      f => (f.verbType || getLemmaType(f.lemma)) === 'irregular' && !isIrregularFormCached(f)
+    )
 
     // Bias: keep majority pure regulars; allow up to 25% spill-in from irregular lemmas
     const spillRatio = 0.25
@@ -351,11 +390,11 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
   }
   // mode === 'tense' (default): decide per-form by morphology/tense
   if (verbType === 'irregular') {
-    return forms.filter(isIrregularForm)
+    return forms.filter(isIrregularFormCached)
   }
   // verbType === 'regular'
   const regularForms = forms.filter(f => {
-    return !isIrregularForm(f)
+    return !isIrregularFormCached(f)
   })
   return regularForms
 }
@@ -377,10 +416,14 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
   filtered = filterByVerbType(filtered, settings.verbType, settings)
 
   // 3. Apply pedagogical filtering for third-person irregular pretérito
-  filtered = applyPedagogicalFiltering(filtered, settings)
+  if (settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
+    filtered = applyPedagogicalFiltering(filtered, settings)
+  }
 
   // 4. Filter by irregular family if specified (for theme practice)
-  filtered = applyFamilyFiltering(filtered, settings)
+  if (settings.selectedFamily && settings.practiceMode === 'theme') {
+    filtered = applyFamilyFiltering(filtered, settings)
+  }
 
   // 5. Filter by person/pronoun constraints
   filtered = filtered.filter(form => allowsPerson(form.person, settings))
@@ -466,14 +509,15 @@ export const getFilteringStats = (originalForms, filteredForms, settings) => {
  * @returns {Array} - Filtered forms
  */
 const applyPedagogicalFiltering = (forms, settings) => {
+  if (!(settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON')) {
+    return forms
+  }
   return forms.filter(f => {
     // Only apply pedagogical filtering for "Irregulares en 3ª persona" drill (all persons)
     if (f.tense === 'pretIndef' && settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
       // Find the verb in the dataset to get its complete definition
-      const verb = lookupVerb(f.lemma)
-      if (!verb) return true // If verb not found, allow it through (defensive)
-
-      const verbFamilies = categorizeVerb(f.lemma, verb)
+      const verbFamilies = getVerbFamilies(f.lemma)
+      if (!verbFamilies || verbFamilies === FAMILY_ERROR) return true // If verb not found or error, allow it through (defensive)
       const pedagogicalThirdPersonFamilies = ['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y']
       const isPedagogicallyRelevant = verbFamilies.some(family => pedagogicalThirdPersonFamilies.includes(family))
 
@@ -506,27 +550,21 @@ const applyFamilyFiltering = (forms, settings) => {
     return forms // No family filtering needed
   }
 
+  const expandedFamilies = expandSimplifiedGroup(settings.selectedFamily)
+  const hasExpandedFamilies = expandedFamilies.length > 0
+
   return forms.filter(form => {
-    try {
-      // Find the verb in the dataset to get its complete definition
-      const verb = lookupVerb(form.lemma)
-      if (!verb) return true // If verb not found, allow it through (defensive)
+    const verbFamilies = getVerbFamilies(form.lemma)
+    if (!verbFamilies) return true // If verb not found, allow it through (defensive)
+    if (verbFamilies === FAMILY_ERROR) return false // Exclude verbs that can't be categorized
 
-      const verbFamilies = categorizeVerb(form.lemma, verb)
-
-      // Check if it's a simplified group that needs expansion
-      const expandedFamilies = expandSimplifiedGroup(settings.selectedFamily)
-      if (expandedFamilies.length > 0) {
-        // It's a simplified group - check if the verb belongs to ANY of the included families
-        return verbFamilies.some(vf => expandedFamilies.includes(vf))
-      } else {
-        // It's a regular family - check direct match
-        return verbFamilies.includes(settings.selectedFamily)
-      }
-    } catch (error) {
-      console.warn(`Failed to categorize verb ${form.lemma} for family filtering:`, error)
-      return false // Exclude verbs that can't be categorized
+    // Check if it's a simplified group that needs expansion
+    if (hasExpandedFamilies) {
+      // It's a simplified group - check if the verb belongs to ANY of the included families
+      return verbFamilies.some(vf => expandedFamilies.includes(vf))
     }
+    // It's a regular family - check direct match
+    return verbFamilies.includes(settings.selectedFamily)
   })
 }
 

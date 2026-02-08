@@ -28,7 +28,6 @@
  * <OnboardingFlow 
  *   onStartPractice={handleStartPractice}
  *   setCurrentMode={setCurrentMode}
- *   formsForRegion={allFormsForRegion}
  *   onboardingStep={onboardingFlow.onboardingStep}
  *   selectDialect={onboardingFlow.selectDialect}
  *   selectLevel={onboardingFlow.selectLevel}
@@ -39,7 +38,6 @@
  * @param {Object} props - Propiedades del componente
  * @param {Function} props.onStartPractice - Callback para iniciar práctica configurada
  * @param {Function} props.setCurrentMode - Setter para cambiar modo de aplicación
- * @param {Array} props.formsForRegion - Forms elegibles para la región seleccionada
  * @param {Function} props.onStartLearningNewTense - Iniciar flujo de aprendizaje estructurado
  * @param {number} props.onboardingStep - Paso actual del onboarding (1-7)
  * @param {Function} props.selectDialect - Seleccionar dialecto y avanzar
@@ -92,7 +90,6 @@ import PlacementTest from '../levels/PlacementTest.jsx'
 function OnboardingFlow({
   onStartPractice,
   setCurrentMode,
-  formsForRegion,
   onStartLearningNewTense,
   // Hook functions from AppRouter
   onboardingStep,
@@ -319,7 +316,6 @@ function OnboardingFlow({
                     />
                   ) : (
                     <MoodTenseSelection
-                      formsForRegion={formsForRegion}
                       settings={settings}
                       onSelectMood={handleSelectMood}
                       onSelectTense={handleSelectTense}
@@ -344,7 +340,6 @@ function OnboardingFlow({
                     />
                   ) : (
                     <MoodTenseSelection
-                      formsForRegion={formsForRegion}
                       settings={settings}
                       onSelectMood={handleSelectMood}
                       onSelectTense={handleSelectTense}

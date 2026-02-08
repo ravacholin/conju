@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, it, beforeEach, afterEach } from 'vitest'
 
 vi.mock('../../state/settings.js', () => ({
@@ -16,20 +16,24 @@ vi.mock('../../lib/utils/verbLabels.js', async () => {
   }
 })
 
+vi.mock('../../lib/progress/mlRecommendations.js', () => ({
+  mlRecommendationEngine: {
+    generateSessionRecommendations: vi.fn().mockResolvedValue({ recommendations: [] })
+  }
+}))
+
 import SmartPractice from './SmartPractice.jsx'
 
 describe('SmartPractice recommendations', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2024-01-15T00:00:00Z'))
-    // Ensure deterministic Date.now()
+    vi.spyOn(Date, 'now').mockReturnValue(new Date('2024-01-15T00:00:00Z').getTime())
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
-  it('only references supported heatmap combinations', () => {
+  it('only references supported heatmap combinations', async () => {
     const eightDays = 8 * 24 * 60 * 60 * 1000
 
     const heatMapData = {
@@ -60,7 +64,9 @@ describe('SmartPractice recommendations', () => {
       />
     )
 
-    expect(screen.getByText(/Mejorar dominio en imperative-impAff/)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(/Mejorar dominio en imperative-impAff/)).toBeInTheDocument()
+    })
     expect(screen.getByText(/Repasar indicative-pres/)).toBeInTheDocument()
     expect(screen.getByText(/Aprender indicative-pretIndef/)).toBeInTheDocument()
     expect(screen.queryByText(/nonfinite-ger/)).not.toBeInTheDocument()

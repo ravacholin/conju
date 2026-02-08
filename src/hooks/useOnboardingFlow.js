@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from 'react'
+import { useReducer, useEffect, useCallback, useRef } from 'react'
 import { useSettings } from '../state/settings.js'
 import { getTensesForMood /* getTenseLabel, getMoodLabel */ } from '../lib/utils/verbLabels.js'
 import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
@@ -104,8 +104,13 @@ export function useOnboardingFlow() {
   const [state, dispatch] = useReducer(onboardingReducer, initialOnboardingState)
   const onboardingStep = state.step
   const settings = useSettings()
+  const onboardingStepRef = useRef(onboardingStep)
 
-  const navigateToStep = (step, options = {}) => {
+  useEffect(() => {
+    onboardingStepRef.current = onboardingStep
+  }, [onboardingStep])
+
+  const navigateToStep = useCallback((step, options = {}) => {
     const safeStep = typeof step === 'number' && step >= 1 ? step : 1
     try {
       router.navigate({ mode: 'onboarding', step: safeStep }, options)
@@ -114,14 +119,14 @@ export function useOnboardingFlow() {
         console.warn('Router navigation failed, ignoring.', error)
       }
     }
-  }
+  }, [])
 
   // Interceptor para debuggear quién está cambiando el step
-  const setOnboardingStep = (newStep, options = {}) => {
+  const setOnboardingStep = useCallback((newStep, options = {}) => {
     const { syncRouter = true, replace = false } = options
     const safeStep = typeof newStep === 'number' && newStep >= 1 ? newStep : 1
     if (import.meta.env.DEV) {
-      console.log(`🚨 setOnboardingStep called: ${onboardingStep} → ${safeStep}`, { syncRouter, replace });
+      console.log(`🚨 setOnboardingStep called: ${onboardingStepRef.current} → ${safeStep}`, { syncRouter, replace });
       console.trace('Stack trace for setOnboardingStep:');
     }
 
@@ -134,7 +139,7 @@ export function useOnboardingFlow() {
     if (syncRouter) {
       navigateToStep(safeStep, { replace })
     }
-  }
+  }, [navigateToStep])
   
   if (import.meta.env.DEV) {
     console.log('--- HOOK useOnboardingFlow ---', {
@@ -168,31 +173,34 @@ export function useOnboardingFlow() {
   }
 
   // Function to get available moods for a specific level
-  const getAvailableMoodsForLevel = (level) => {
+  const getAvailableMoodsForLevel = useCallback((level) => {
     try {
-      return gateAllowedMoods({ ...settings, level })
+      const currentSettings = useSettings.getState()
+      return gateAllowedMoods({ ...currentSettings, level })
     } catch {
       // Fallback to showing all
       return ['indicative', 'subjunctive', 'imperative', 'conditional', 'nonfinite']
     }
-  }
+  }, [])
 
   // Function to get available tenses for a specific level and mood
-  const getAvailableTensesForLevelAndMood = (level, mood) => {
+  const getAvailableTensesForLevelAndMood = useCallback((level, mood) => {
     try {
-      return gateAllowedTensesForMood({ ...settings, level }, mood)
+      const currentSettings = useSettings.getState()
+      return gateAllowedTensesForMood({ ...currentSettings, level }, mood)
     } catch {
       return getTensesForMood(mood)
     }
-  }
+  }, [])
 
   // Function to get conjugation examples
   // Solo mostrar tiempos simples, no compuestos
-  const getConjugationExample = (mood, tense) => {
+  const getConjugationExample = useCallback((mood, tense) => {
+    const currentSettings = useSettings.getState()
     // Get the appropriate imperative examples based on dialect
     const getImperativeExamples = () => {
       // For rioplatense (useVoseo), show vos forms
-      if (settings.useVoseo && !settings.useTuteo) {
+      if (currentSettings.useVoseo && !currentSettings.useTuteo) {
         return {
           'imperative_impAff': 'hablá, hablá',
           'imperative_impNeg': 'no hables, no habléis'
@@ -243,33 +251,10 @@ export function useOnboardingFlow() {
     
     const key = `${mood}_${tense}`
     return examples[key] || ''
-  }
+  }, [])
 
   // Compact samples per mood using hablar - now dynamic based on level
-  const getModeSamples = (mood) => {
-    // Get available tenses for the current level and mood
-    const availableTenses = getAvailableTensesForLevelAndMood(settings.level, mood)
-    
-    // If no specific level, show all tenses for the mood
-    if (!settings.level) {
-      const allTenses = {
-        'indicative': ['pres','pretIndef','impf','fut'],
-        'subjunctive': ['subjPres','subjImpf'],
-        'imperative': ['impAff','impNeg'],
-        'conditional': ['cond'],
-        'nonfinite': ['ger','part']
-      }
-      const tenses = allTenses[mood] || []
-      return getSamplesFromTenses(mood, tenses)
-    }
-    
-    // If we have a level, always show only the tenses available for that level
-    // This applies whether it's 'mixed' or 'specific' practice mode
-    return getSamplesFromTenses(mood, availableTenses)
-  }
-  
-  // Helper function to get samples from a list of tenses
-  const getSamplesFromTenses = (mood, tenses) => {
+  const getSamplesFromTenses = useCallback((mood, tenses) => {
     // Define the order of learning for each mood (simple tenses first, then compound tenses)
     const learningOrder = {
       'indicative': ['pres', 'pretIndef', 'impf', 'fut', 'pretPerf', 'plusc', 'futPerf'],
@@ -316,9 +301,32 @@ export function useOnboardingFlow() {
     // Add " · etc." if there are additional tenses available (but we're only showing simple ones)
     const hasAdditionalTenses = filtered.some(t => !order.includes(t))
     return hasAdditionalTenses && result ? `${result} · etc.` : result
-  }
+  }, [getConjugationExample])
 
-  const selectDialect = (dialect) => {
+  const getModeSamples = useCallback((mood) => {
+    const currentSettings = useSettings.getState()
+    // Get available tenses for the current level and mood
+    const availableTenses = getAvailableTensesForLevelAndMood(currentSettings.level, mood)
+    
+    // If no specific level, show all tenses for the mood
+    if (!currentSettings.level) {
+      const allTenses = {
+        'indicative': ['pres','pretIndef','impf','fut'],
+        'subjunctive': ['subjPres','subjImpf'],
+        'imperative': ['impAff','impNeg'],
+        'conditional': ['cond'],
+        'nonfinite': ['ger','part']
+      }
+      const tenses = allTenses[mood] || []
+      return getSamplesFromTenses(mood, tenses)
+    }
+    
+    // If we have a level, always show only the tenses available for that level
+    // This applies whether it's 'mixed' or 'specific' practice mode
+    return getSamplesFromTenses(mood, availableTenses)
+  }, [getAvailableTensesForLevelAndMood, getSamplesFromTenses])
+
+  const selectDialect = useCallback((dialect) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectDialect', dialect);
     }
@@ -382,9 +390,9 @@ export function useOnboardingFlow() {
         break
     }
     setOnboardingStep(2)
-  }
+  }, [setOnboardingStep])
 
-  const selectLevel = (level) => {
+  const selectLevel = useCallback((level) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectLevel', level);
     }
@@ -499,9 +507,9 @@ export function useOnboardingFlow() {
     }
     settings.set(updates)
     setOnboardingStep(4) // Go to practice mode selection (mixed vs specific)
-  }
+  }, [setOnboardingStep, settings])
 
-  const selectPracticeMode = (mode, onStartPractice) => {
+  const selectPracticeMode = useCallback((mode, onStartPractice) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectPracticeMode', mode);
     }
@@ -532,6 +540,7 @@ export function useOnboardingFlow() {
       })
       setOnboardingStep(5) // Go to mood selection
     } else if (mode === 'mixed') {
+      const currentSettings = useSettings.getState()
       // Mixed practice - if we already have a level, start practice directly
       settings.set({
         practiceMode: 'mixed',
@@ -542,7 +551,7 @@ export function useOnboardingFlow() {
         selectedFamily: null
       })
 
-      if (settings.level) {
+      if (currentSettings.level) {
         // Level already selected - start practice immediately
         if (onStartPractice) {
           onStartPractice()
@@ -561,14 +570,15 @@ export function useOnboardingFlow() {
       })
 
       // For specific practice without level, set to C2 to show all forms
-      if (!settings.level) {
+      const currentSettings = useSettings.getState()
+      if (!currentSettings.level) {
         settings.set({ level: 'C2' })
       }
       setOnboardingStep(5) // Go to mood selection for specific practice
     }
-  }
+  }, [setOnboardingStep, settings])
 
-  const selectMood = (mood) => {
+  const selectMood = useCallback((mood) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectMood', mood);
     }
@@ -576,18 +586,19 @@ export function useOnboardingFlow() {
     // For theme-based practice (cameFromTema=true), keep the flag set
     settings.set({ specificMood: mood })
     
-    if (settings.practiceMode === 'theme') {
+    const currentSettings = useSettings.getState()
+    if (currentSettings.practiceMode === 'theme') {
       // For theme-based practice, go to step 6 for tense selection
       setOnboardingStep(6)
-    } else if (settings.level) {
+    } else if (currentSettings.level) {
       setOnboardingStep(6) // Go to tense selection for level-specific practice
     } else {
       // For other specific practice, stay in step 5 but with specific mood set
       setOnboardingStep(5)
     }
-  }
+  }, [setOnboardingStep, settings])
 
-  const selectTense = (tense) => {
+  const selectTense = useCallback((tense) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectTense', tense);
     }
@@ -614,27 +625,29 @@ export function useOnboardingFlow() {
 
     settings.set({ specificTense: mappedTense })
     
-    if (settings.practiceMode === 'theme') {
+    const currentSettings = useSettings.getState()
+    if (currentSettings.practiceMode === 'theme') {
       // For theme-based practice, go to step 7 (VerbTypeSelection)
       setOnboardingStep(7)
-    } else if (settings.level) {
+    } else if (currentSettings.level) {
       setOnboardingStep(7) // Go to verb type selection for level-specific practice
     } else {
       // For other specific practice, go to step 6
       setOnboardingStep(6) // Go to verb type selection for general practice
     }
-  }
+  }, [setOnboardingStep, settings])
 
-  const selectVerbType = (verbType, onStartPractice) => {
+  const selectVerbType = useCallback((verbType, onStartPractice) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectVerbType', verbType);
     }
     closeTopPanelsAndFeatures()
     
+    const currentSettings = useSettings.getState()
     if (verbType === 'irregular') {
       // Do NOT branch into family selection for gerunds: mix all irregular patterns
-      const isGerundFlow = settings.specificMood === 'nonfinite' && (
-        settings.specificTense === 'ger' || settings.specificTense === 'nonfiniteMixed' || !settings.specificTense
+      const isGerundFlow = currentSettings.specificMood === 'nonfinite' && (
+        currentSettings.specificTense === 'ger' || currentSettings.specificTense === 'nonfiniteMixed' || !currentSettings.specificTense
       )
       if (isGerundFlow) {
         const updates = { verbType, selectedFamily: null }
@@ -644,7 +657,7 @@ export function useOnboardingFlow() {
       }
 
       // Check if only one family is available for the current tense
-      const tense = settings.specificTense
+      const tense = currentSettings.specificTense
       const availableFamilies = tense ? getFamiliesForTense(tense) : []
       
       if (availableFamilies.length === 1) {
@@ -663,9 +676,9 @@ export function useOnboardingFlow() {
       settings.set(updates)
       onStartPractice && onStartPractice()
     }
-  }
+  }, [setOnboardingStep, settings])
   
-  const selectFamily = (familyId, onStartPractice) => {
+  const selectFamily = useCallback((familyId, onStartPractice) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectFamily', familyId);
     }
@@ -673,9 +686,9 @@ export function useOnboardingFlow() {
     const updates = { selectedFamily: familyId }
     settings.set(updates)
     onStartPractice && onStartPractice()
-  }
+  }, [settings])
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     if (import.meta.env.DEV) {
       console.log('ACTION: goBack');
     }
@@ -694,16 +707,16 @@ export function useOnboardingFlow() {
 
     dispatch(action)
     navigateToStep(nextState.step)
-  }
+  }, [navigateToStep, onboardingStep, settings, state])
 
-  const goToLevelDetails = () => {
+  const goToLevelDetails = useCallback(() => {
     if (import.meta.env.DEV) {
       console.log('ACTION: goToLevelDetails');
     }
     setOnboardingStep(3)
-  }
+  }, [setOnboardingStep])
 
-  const handleHome = (setCurrentMode) => {
+  const handleHome = useCallback((setCurrentMode) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: handleHome');
     }
@@ -720,7 +733,7 @@ export function useOnboardingFlow() {
     })
     
     setOnboardingStep(1, { replace: true }) // Go to step 1: Dialect selection for clean start
-  }
+  }, [setOnboardingStep, settings])
 
   return {
     onboardingStep,

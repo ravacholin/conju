@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import PronunciationPractice from '../PronunciationPractice.jsx'
 
 const {
@@ -442,7 +442,7 @@ describe('PronunciationPractice', () => {
       setDefaultSpeechCompatibility()
     })
 
-    it('should handle next/previous navigation', () => {
+    it('should handle next/previous navigation', async () => {
       const multipleFormsProps = {
         ...mockProps,
         eligibleForms: [
@@ -454,14 +454,20 @@ describe('PronunciationPractice', () => {
       render(<PronunciationPractice {...multipleFormsProps} />)
 
       // Should start with first verb
-      expect(screen.getByText(/hablo/i)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/hablo/i)).toBeInTheDocument()
+      })
 
       // Click next
       const nextButton = screen.getByText(/Siguiente/i)
-      fireEvent.click(nextButton)
+      await act(async () => {
+        fireEvent.click(nextButton)
+      })
 
       // Should show second verb
-      expect(screen.getByText(/como/i)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/como/i)).toBeInTheDocument()
+      })
     })
 
     it('should call onContinue when reaching end', async () => {
@@ -478,11 +484,13 @@ describe('PronunciationPractice', () => {
       expect(mockProps.onContinue).toHaveBeenCalled()
     })
 
-    it('should handle back navigation', () => {
+    it('should handle back navigation', async () => {
       render(<PronunciationPractice {...mockProps} />)
 
       const backButton = screen.getByText(/Volver/i)
-      fireEvent.click(backButton)
+      await act(async () => {
+        fireEvent.click(backButton)
+      })
 
       expect(mockProps.onBack).toHaveBeenCalled()
     })
@@ -513,7 +521,7 @@ describe('PronunciationPractice', () => {
       })
     })
 
-    it('should handle audio errors gracefully', () => {
+    it('should handle audio errors gracefully', async () => {
       global.window.speechSynthesis.speak.mockImplementation(() => {
         throw new Error('Audio error')
       })
@@ -522,9 +530,11 @@ describe('PronunciationPractice', () => {
 
       const playButton = screen.getByText(/Escuchar pronunciación/i)
 
-      expect(() => {
-        fireEvent.click(playButton)
-      }).not.toThrow()
+      await act(async () => {
+        expect(() => {
+          fireEvent.click(playButton)
+        }).not.toThrow()
+      })
     })
   })
 
@@ -569,9 +579,11 @@ describe('PronunciationPractice', () => {
 
       render(<PronunciationPractice {...mockProps} />)
 
-      await waitFor(() => {
+      await waitFor(async () => {
         const recordButton = screen.getByText(/Grabar mi pronunciación/i)
-        fireEvent.click(recordButton)
+        await act(async () => {
+          fireEvent.click(recordButton)
+        })
       })
 
       // Should handle failure gracefully without crashing

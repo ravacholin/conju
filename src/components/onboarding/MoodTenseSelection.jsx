@@ -50,7 +50,7 @@
  * @see {@link ../../hooks/useOnboardingFlow.js} - Hook con lógica de filtrado
  */
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 
@@ -62,7 +62,6 @@ import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/v
  */
 function MoodTenseSelection({
   settings,
-  // formsForRegion, // Commented out - currently unused
   onSelectMood,
   onSelectTense,
   onBack,
@@ -71,16 +70,6 @@ function MoodTenseSelection({
   // getModeSamples,
   getConjugationExample
 }) {
-
-  // Log state changes for debugging
-  useEffect(() => {
-    console.log('MoodTenseSelection: settings changed', {
-      level: settings.level,
-      practiceMode: settings.practiceMode,
-      specificMood: settings.specificMood,
-      specificTense: settings.specificTense
-    });
-  }, [settings.level, settings.practiceMode, settings.specificMood, settings.specificTense]);
 
   if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
     // Level-specific practice with mood already selected - show tense selection
