@@ -15,6 +15,7 @@ import { createLogger } from '../../lib/utils/logger.js'
 const logger = createLogger('DrillItemGenerator')
 
 let drillItemIdCounter = 0
+const formIndexCache = new WeakMap()
 
 const createDrillItemId = () => {
   if (typeof globalThis !== 'undefined') {
@@ -37,14 +38,33 @@ const createDrillItemId = () => {
  * @param {Array} formsPool - Available forms to search in
  * @returns {Object|null} - Canonical form or null if not found
  */
+const getFormIndex = (formsPool) => {
+  if (!Array.isArray(formsPool) || formsPool.length === 0) {
+    return null
+  }
+  if (formIndexCache.has(formsPool)) {
+    return formIndexCache.get(formsPool)
+  }
+  const index = new Map()
+  for (const form of formsPool) {
+    if (!form) continue
+    const key = `${form.lemma}|${form.mood}|${form.tense}|${form.person || ''}`
+    if (!index.has(key)) {
+      index.set(key, form)
+    }
+  }
+  formIndexCache.set(formsPool, index)
+  return index
+}
+
 const findCanonicalForm = (lemma, mood, tense, person, formsPool) => {
   try {
-    return formsPool.find(f => 
-      f.lemma === lemma && 
-      f.mood === mood && 
-      f.tense === tense && 
-      f.person === person
-    ) || null
+    const index = getFormIndex(formsPool)
+    if (!index) {
+      return null
+    }
+    const key = `${lemma}|${mood}|${tense}|${person || ''}`
+    return index.get(key) || null
   } catch (error) {
     logger.warn('findCanonicalForm', 'Error finding canonical form', { lemma, mood, tense, person, error })
     return null
