@@ -347,7 +347,7 @@ export const useDrillGenerator = () => {
       }
 
       if (nextForm) {
-        const drillItem = generateDrillItem(nextForm, FRESH_SETTINGS, eligibleForms)
+        const drillItem = generateDrillItem(nextForm, FRESH_SETTINGS, formsPool)
 
         if (drillItem) {
           drillItem.selectionMethod = selectionMethod
