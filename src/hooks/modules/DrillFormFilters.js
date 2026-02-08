@@ -432,11 +432,15 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
   }
 
   // 5. Filter by person/pronoun constraints
-  filtered = filtered.filter(form => allowsPerson(form.person, settings))
-  if (filtered.length === 0) return filtered
+  if (settings.practicePronoun !== 'all') {
+    filtered = filtered.filter(form => allowsPerson(form.person, settings))
+    if (filtered.length === 0) return filtered
+  }
 
   // 6. Filter by level constraints
-  filtered = filtered.filter(form => allowsLevel(form, settings))
+  if (settings.practiceMode !== 'specific' && settings.practiceMode !== 'theme') {
+    filtered = filtered.filter(form => allowsLevel(form, settings))
+  }
 
   return filtered
 }
