@@ -97,8 +97,6 @@ export const useDrillGenerator = () => {
       targetSettings.practicePronoun || 'mixed',
       targetSettings.useVoseo ? 'voseo' : 'no_voseo',
       targetSettings.useVosotros ? 'vosotros' : 'no_vosotros',
-      targetSettings.useTuteo ? 'tuteo' : 'no_tuteo',
-      targetSettings.strict ? 'strict' : 'flex',
       targetSettings.irregularityFilterMode || 'tense',
       specificConstraints?.isSpecific ? 'specific' : 'not_specific',
       specificConstraints?.specificMood || '',

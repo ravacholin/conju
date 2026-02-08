@@ -309,6 +309,7 @@ export const allowsLevel = (form, settings) => {
   if (settings.practiceMode === 'specific') return true
 
   const userLevel = settings.level || 'A1'
+  if (userLevel === 'ALL') return true
   const allowed = getAllowedCombosForLevelCached(userLevel)
   return allowed.has(`${form.mood}|${form.tense}`)
 }
