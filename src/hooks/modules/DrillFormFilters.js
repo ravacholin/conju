@@ -30,7 +30,9 @@ let irregularFormCache = new WeakMap()
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
 
 export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
-  `forms:${region}:${settings.level || 'ALL'}:${settings.practiceMode || 'mixed'}:${settings.selectedFamily || 'none'}:${settings.verbType || 'all'}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
+  // Only include fields that can actually change the generated forms.
+  // Filtering is handled later, so avoid exploding cache keys by user settings.
+  `forms:${region}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
 
 async function buildFormsPool(region = 'la_general', settings = {}) {
   const normalizeForms = (forms = []) => forms.map(form => ({ ...form }))
@@ -411,22 +413,27 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
 
   // 1. Filter for specific practice if applicable
   filtered = filterForSpecificPractice(filtered, specificConstraints)
+  if (filtered.length === 0) return filtered
 
   // 2. Filter by verb type
   filtered = filterByVerbType(filtered, settings.verbType, settings)
+  if (filtered.length === 0) return filtered
 
   // 3. Apply pedagogical filtering for third-person irregular pretérito
   if (settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
     filtered = applyPedagogicalFiltering(filtered, settings)
+    if (filtered.length === 0) return filtered
   }
 
   // 4. Filter by irregular family if specified (for theme practice)
   if (settings.selectedFamily && settings.practiceMode === 'theme') {
     filtered = applyFamilyFiltering(filtered, settings)
+    if (filtered.length === 0) return filtered
   }
 
   // 5. Filter by person/pronoun constraints
   filtered = filtered.filter(form => allowsPerson(form.person, settings))
+  if (filtered.length === 0) return filtered
 
   // 6. Filter by level constraints
   filtered = filtered.filter(form => allowsLevel(form, settings))
