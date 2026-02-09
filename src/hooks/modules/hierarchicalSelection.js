@@ -64,7 +64,7 @@ export const selectNextForm = async ({
         (!specificConstraints?.isSpecific ? f.person === pickFromDue.person : true)
       )
 
-      if (typeof filterByVerbType === 'function') {
+      if (typeof filterByVerbType === 'function' && settings?.verbType && settings.verbType !== 'all') {
         candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
       }
 
@@ -90,7 +90,7 @@ export const selectNextForm = async ({
           }
         }
 
-        if (typeof filterByVerbType === 'function') {
+        if (typeof filterByVerbType === 'function' && settings?.verbType && settings.verbType !== 'all') {
           candidateForms = filterByVerbType(candidateForms, settings.verbType, settings)
         }
 
@@ -121,4 +121,3 @@ export const selectNextForm = async ({
     errors
   }
 }
-
