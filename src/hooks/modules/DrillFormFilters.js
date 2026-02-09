@@ -26,6 +26,7 @@ const allowedCombosCache = new Map()
 const lemmaTypeCache = new Map()
 const lemmaFamiliesCache = new Map()
 let irregularFormCache = new WeakMap()
+const allowedPersonPredicateCache = new Map()
 
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
 const PEDAGOGICAL_THIRD_PERSON_FAMILIES = new Set(['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y'])
@@ -216,6 +217,7 @@ export function clearFormsCache() {
   allowedCombosCache.clear()
   lemmaTypeCache.clear()
   lemmaFamiliesCache.clear()
+  allowedPersonPredicateCache.clear()
   irregularFormCache = new WeakMap()
 }
 
@@ -272,6 +274,41 @@ export const allowsPerson = (person, settings) => {
   if (practicePronoun === 'vos_only') return person === '2s_vos'
 
   return true
+}
+
+const getAllowsPersonPredicate = (settings) => {
+  const { region, practicePronoun, useVoseo, useVosotros } = settings
+  const key = `${region || 'none'}|${practicePronoun || 'mixed'}|${useVoseo ? 'voseo' : 'no_voseo'}|${useVosotros ? 'vosotros' : 'no_vosotros'}`
+  if (allowedPersonPredicateCache.has(key)) {
+    return allowedPersonPredicateCache.get(key)
+  }
+
+  let predicate
+  if (practicePronoun === 'all') {
+    predicate = () => true
+  } else if (practicePronoun === 'tu_only') {
+    predicate = (person) => person === '2s_tu'
+  } else if (practicePronoun === 'vos_only') {
+    predicate = (person) => person === '2s_vos'
+  } else {
+    predicate = (person) => {
+      if (person === '2s_vos') return !!useVoseo
+      if (person === '2p_vosotros') return !!useVosotros
+      if (!practicePronoun || practicePronoun === 'mixed') {
+        if (region === 'rioplatense') {
+          if (person === '2s_tu' || person === '2p_vosotros') return false
+        } else if (region === 'la_general') {
+          if (person === '2s_vos' || person === '2p_vosotros') return false
+        } else if (region === 'peninsular') {
+          if (person === '2s_vos') return false
+        }
+      }
+      return true
+    }
+  }
+
+  allowedPersonPredicateCache.set(key, predicate)
+  return predicate
 }
 
 /**
@@ -436,7 +473,8 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
 
   // 5. Filter by person/pronoun constraints
   if (settings.practicePronoun !== 'all') {
-    filtered = filtered.filter(form => allowsPerson(form.person, settings))
+    const allowsPersonPredicate = getAllowsPersonPredicate(settings)
+    filtered = filtered.filter(form => allowsPersonPredicate(form.person))
     if (filtered.length === 0) return filtered
   }
 
