@@ -24,18 +24,21 @@ export function useTouchGestures(options = {}) {
   const touchStart = useRef({ x: 0, y: 0, time: 0 })
   const touchEnd = useRef({ x: 0, y: 0, time: 0 })
   const [isPressed, setIsPressed] = useState(false)
-  const [tapCount, setTapCount] = useState(0)
+  const tapCountRef = useRef(0)
   const longPressTimer = useRef(null)
   const doubleTapTimer = useRef(null)
 
-  const clearTimers = useCallback(() => {
+  const clearTimers = useCallback(({ clearDoubleTap = true } = {}) => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current)
       longPressTimer.current = null
     }
-    if (doubleTapTimer.current) {
+    if (clearDoubleTap && doubleTapTimer.current) {
       clearTimeout(doubleTapTimer.current)
       doubleTapTimer.current = null
+    }
+    if (clearDoubleTap) {
+      tapCountRef.current = 0
     }
   }, [])
 
@@ -71,7 +74,7 @@ export function useTouchGestures(options = {}) {
     }
 
     setIsPressed(false)
-    clearTimers()
+    clearTimers({ clearDoubleTap: false })
 
     const deltaX = touchEnd.current.x - touchStart.current.x
     const deltaY = touchEnd.current.y - touchStart.current.y
@@ -81,13 +84,13 @@ export function useTouchGestures(options = {}) {
     // Determinar tipo de gesto
     if (distance < 10 && deltaTime < 300) {
       // Es un tap
-      setTapCount(prev => prev + 1)
+      tapCountRef.current += 1
 
       if (doubleTapTimer.current) {
         // Es el segundo tap de un double tap
         clearTimeout(doubleTapTimer.current)
         doubleTapTimer.current = null
-        setTapCount(0)
+        tapCountRef.current = 0
         if (onDoubleTap) {
           onDoubleTap(e)
           return
@@ -96,10 +99,10 @@ export function useTouchGestures(options = {}) {
 
       // Configurar timer para determinar si es single o double tap
       doubleTapTimer.current = setTimeout(() => {
-        if (tapCount === 1 && onTap) {
+        if (tapCountRef.current === 1 && onTap) {
           onTap(e)
         }
-        setTapCount(0)
+        tapCountRef.current = 0
         doubleTapTimer.current = null
       }, doubleTapDelay)
 
@@ -121,7 +124,7 @@ export function useTouchGestures(options = {}) {
         }
       }
     }
-  }, [enabled, onTap, onDoubleTap, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, swipeThreshold, doubleTapDelay, tapCount, clearTimers])
+  }, [enabled, onTap, onDoubleTap, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, swipeThreshold, doubleTapDelay, clearTimers])
 
   const handleTouchCancel = useCallback(() => {
     setIsPressed(false)
@@ -150,12 +153,20 @@ export function useTouchGestures(options = {}) {
     return () => clearTimers()
   }, [clearTimers])
 
+  const isTouchDevice =
+    typeof window !== 'undefined' &&
+    (('ontouchstart' in window) || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0))
+  const supportsHover =
+    typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(hover: hover)').matches
+      : false
+
   return {
     ref,
     isPressed,
     // Utilidades para detección de dispositivo
-    isTouchDevice: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-    supportsHover: window.matchMedia('(hover: hover)').matches
+    isTouchDevice,
+    supportsHover
   }
 }
 

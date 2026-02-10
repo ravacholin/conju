@@ -65,11 +65,14 @@ const NOTIFICATION_CONFIG = {
  */
 export class SmartNotificationManager {
   constructor() {
-    this.isSupported = 'Notification' in window && 'serviceWorker' in navigator
+    const hasWindow = typeof window !== 'undefined' && typeof navigator !== 'undefined'
+    this.isSupported = hasWindow && 'Notification' in window && 'serviceWorker' in navigator
     this.permission = null
     this.scheduledNotifications = new Map()
     this.userPatterns = null
     this.registrationPromise = null
+    this.listenersInitialized = false
+    this.dailyTimerId = null
     this.init()
   }
 
@@ -445,6 +448,9 @@ export class SmartNotificationManager {
    * Configurar listeners de eventos
    */
   setupEventListeners() {
+    if (this.listenersInitialized) return
+    this.listenersInitialized = true
+
     // Listener para cuando el usuario practica (actualizar patrones)
     window.addEventListener('progress:srs-updated', () => {
       // Reanalizar patrones después de nueva actividad
@@ -464,7 +470,7 @@ export class SmartNotificationManager {
       tomorrow.setHours(0, 30, 0, 0) // 12:30 AM
 
       const timeUntilMidnight = tomorrow - now
-      setTimeout(() => {
+      this.dailyTimerId = setTimeout(() => {
         this.analyzeUserPatterns()
         this.scheduleSmartNotifications()
         scheduleDaily() // Reprogramar para el siguiente día
