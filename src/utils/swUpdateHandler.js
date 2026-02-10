@@ -5,22 +5,28 @@
 
 let updateAvailable = false
 let registration = null
+let initialized = false
+let updateIntervalId = null
 
 /**
  * Initialize service worker update detection
  */
 export function initSWUpdateHandler() {
+  if (initialized) return
+  initialized = true
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
         registration = await navigator.serviceWorker.ready
 
         // Check for updates every 30 seconds when app is active
-        setInterval(() => {
-          if (!document.hidden) {
-            registration.update()
-          }
-        }, 30000)
+        if (!updateIntervalId) {
+          updateIntervalId = setInterval(() => {
+            if (!document.hidden) {
+              registration.update()
+            }
+          }, 30000)
+        }
 
         // Listen for new service worker installation
         registration.addEventListener('updatefound', () => {

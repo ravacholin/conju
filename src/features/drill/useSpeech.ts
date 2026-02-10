@@ -73,7 +73,12 @@ export function useSpeech() {
 
       if (synth.getVoices && synth.getVoices().length === 0) {
         let hasSpoken = false
+        let fallbackId = null
         const onVoices = () => {
+          if (fallbackId) {
+            clearTimeout(fallbackId)
+            fallbackId = null
+          }
           if (!hasSpoken) {
             hasSpoken = true
             pickAndSpeak()
@@ -82,11 +87,12 @@ export function useSpeech() {
         }
         synth.addEventListener('voiceschanged', onVoices)
         // Fallback if event doesn't fire
-        setTimeout(() => {
+        fallbackId = setTimeout(() => {
           if (!hasSpoken) {
             hasSpoken = true
             pickAndSpeak()
           }
+          synth.removeEventListener('voiceschanged', onVoices)
         }, 250)
       } else {
         pickAndSpeak()

@@ -508,9 +508,11 @@ export class SmartNotificationManager {
    * Obtiene estadísticas del sistema de notificaciones
    */
   getStats() {
+    const enabled = this.isSupported && this.permission === 'granted'
     return {
       supported: this.isSupported,
       permission: this.permission,
+      enabled,
       scheduledCount: this.scheduledNotifications.size,
       hasPatterns: !!this.userPatterns,
       patterns: this.userPatterns

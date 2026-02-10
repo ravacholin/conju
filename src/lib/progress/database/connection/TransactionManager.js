@@ -19,10 +19,17 @@ export const DB_TRANSACTION_TIMEOUT = 10000 // 10 seconds
  * @returns {Promise} Promise that rejects if timeout is reached
  */
 export function withTimeout(promise, timeout, operation) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error(`${operation} timed out after ${timeout}ms`)), timeout)
+  let timeoutId = null
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error(`${operation} timed out after ${timeout}ms`)),
+      timeout
     )
-  ])
+  })
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+  })
 }

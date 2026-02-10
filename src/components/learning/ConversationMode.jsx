@@ -112,6 +112,8 @@ function ConversationMode({ scenario, onBack, onComplete }) {
     speechManager.stop()
   }, [speechManager])
 
+  const responseDelayRef = useRef(null)
+
   // Submit response (text or voice)
   const handleSubmit = useCallback(() => {
     if (!session || !currentExchange || !userInput.trim()) return
@@ -136,7 +138,10 @@ function ConversationMode({ scenario, onBack, onComplete }) {
 
     if (result.valid) {
       // Move to next exchange
-      setTimeout(() => {
+      if (responseDelayRef.current) {
+        clearTimeout(responseDelayRef.current)
+      }
+      responseDelayRef.current = setTimeout(() => {
         if (result.complete) {
           // Conversation completed
           logger.debug('Conversation completed', { score: session.score })
@@ -161,9 +166,18 @@ function ConversationMode({ scenario, onBack, onComplete }) {
           setFeedback(null)
           setShowHints(false)
         }
+        responseDelayRef.current = null
       }, 2000) // Delay for user to read feedback
     }
   }, [session, currentExchange, userInput, onComplete])
+
+  useEffect(() => {
+    return () => {
+      if (responseDelayRef.current) {
+        clearTimeout(responseDelayRef.current)
+      }
+    }
+  }, [])
 
   // Keyboard shortcuts
   useEffect(() => {
