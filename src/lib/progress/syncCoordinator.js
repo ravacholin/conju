@@ -13,6 +13,11 @@ import { progressDataCache } from '../cache/ProgressDataCache.js'
 import { createSafeLogger } from './safeLogger.js'
 import { mergeAccountDataLocally } from './dataMerger.js'
 import {
+  buildGamificationPayload,
+  getMeaningfulPracticeStats,
+  toTimestamp
+} from './gamificationSync.js'
+import {
   getSyncEndpoint,
   isSyncEnabled,
   isLocalSyncMode,
@@ -191,8 +196,8 @@ export async function syncAccountData() {
     environment: syncConfig.isDev ? 'development' : (syncConfig.isProd ? 'production' : 'unknown')
   })
 
-  // CRITICAL DEBUG: Log full auth state for debugging
-  console.log('🔑 SYNC DEBUG: Auth state check:', {
+  // CRITICAL DEBUG: Log auth state for debugging (sanitized)
+  safeLogger.debug('syncAccountData: auth state check', {
     authenticated,
     hasToken: !!token,
     tokenLength: token?.length || 0,
@@ -213,7 +218,6 @@ export async function syncAccountData() {
       hasUser: !!user,
       hasAccount: !!account
     })
-    console.error('❌ SYNC FAILED: Not authenticated!')
     return { success: false, reason: 'not_authenticated' }
   }
 
@@ -320,8 +324,8 @@ export async function syncAccountData() {
       responseKeys: Object.keys(response || {})
     })
 
-    // CRITICAL DEBUG: Log raw server response
-    console.log('📦 SYNC DEBUG: Raw server response:', {
+    // CRITICAL DEBUG: Log raw server response (sanitized)
+    safeLogger.debug('syncAccountData: raw server response', {
       success: response?.success,
       hasData: !!response?.data,
       dataKeys: response?.data ? Object.keys(response.data) : [],
@@ -330,6 +334,7 @@ export async function syncAccountData() {
       schedulesCount: response?.data?.schedules?.length || 0,
       sessionsCount: response?.data?.sessions?.length || 0,
       hasSettings: !!response?.data?.settings,
+      hasGamification: !!response?.data?.gamification,
       challengesCount: response?.data?.challenges?.length || 0,
       eventsCount: response?.data?.events?.length || 0,
       rawResponse: response
@@ -337,12 +342,13 @@ export async function syncAccountData() {
 
     const accountData = response.data || {}
 
-    // CRITICAL: Log download data for debugging sync issues
-    console.log('📥 SYNC: Downloaded data from server:', {
+    // CRITICAL: Log download data for debugging sync issues (sanitized)
+    safeLogger.debug('syncAccountData: downloaded data from server', {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
       schedules: accountData.schedules?.length || 0,
       sessions: accountData.sessions?.length || 0,
+      hasGamification: !!accountData.gamification,
       hasSettings: !!accountData.settings,
       settingsPreview: accountData.settings ? {
         hasNestedSettings: !!accountData.settings?.settings,
@@ -355,12 +361,13 @@ export async function syncAccountData() {
       attempts: accountData.attempts?.length || 0,
       mastery: accountData.mastery?.length || 0,
       schedules: accountData.schedules?.length || 0,
-      sessions: accountData.sessions?.length || 0
+      sessions: accountData.sessions?.length || 0,
+      gamification: accountData.gamification ? 1 : 0
     })
 
     const mergeResults = await mergeAccountDataLocally(accountData)
 
-    console.log('🔀 SYNC: Merge results:', {
+    safeLogger.debug('syncAccountData: merge results', {
       aborted: mergeResults?.aborted,
       userId: mergeResults?.userId,
       source: mergeResults?.source,
@@ -369,7 +376,8 @@ export async function syncAccountData() {
         mastery: mergeResults?.merged?.mastery || mergeResults?.mastery || 0,
         schedules: mergeResults?.merged?.schedules || mergeResults?.schedules || 0,
         sessions: mergeResults?.merged?.sessions || mergeResults?.sessions || 0,
-        settings: mergeResults?.merged?.settings || mergeResults?.settings || 0
+        settings: mergeResults?.merged?.settings || mergeResults?.settings || 0,
+        gamification: mergeResults?.merged?.gamification || mergeResults?.gamification || 0
       }
     })
 
@@ -411,13 +419,14 @@ export async function syncAccountData() {
       attempts: mergeResults?.merged?.attempts || 0,
       mastery: mergeResults?.merged?.mastery || 0,
       schedules: mergeResults?.merged?.schedules || 0,
-      sessions: mergeResults?.merged?.sessions || 0
+      sessions: mergeResults?.merged?.sessions || 0,
+      gamification: mergeResults?.merged?.gamification || 0
     }
 
     // Optional upload step: push local unsynced data to server (compatible con tests)
     const resolvedUserId = getAuthenticatedUser()?.id || getCurrentUserId()
     let anyUploadFailed = false
-    let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0 }
+    let uploaded = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0, gamification: 0 }
 
     const localMasteryAll = await getMasteryByUser(resolvedUserId)
     const localSchedulesAll = (await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)).filter((s) => s?.userId === resolvedUserId)
@@ -502,7 +511,10 @@ export async function syncAccountData() {
         if (unsyncedSessions.length > 0) {
           safeLogger.info('syncAccountData: uploading sessions', { count: unsyncedSessions.length })
           const res = await tryBulk('sessions', unsyncedSessions)
-          await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsyncedSessions.map((s) => s.id))
+          await markSynced(
+            STORAGE_CONFIG.STORES.LEARNING_SESSIONS,
+            unsyncedSessions.map((s) => s.sessionId || s.id)
+          )
           uploaded.sessions = unsyncedSessions.length
           safeLogger.info('syncAccountData: sessions uploaded successfully', { count: unsyncedSessions.length, server: res })
         }
@@ -519,7 +531,7 @@ export async function syncAccountData() {
 
         const unsyncedSettings = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.USER_SETTINGS, resolvedUserId)
 
-        console.log('📤 SYNC: Settings upload check:', {
+        safeLogger.debug('syncAccountData: settings upload check', {
           unsyncedCount: unsyncedSettings.length,
           userId: resolvedUserId,
           settingsPreview: unsyncedSettings.length > 0 ? {
@@ -536,14 +548,12 @@ export async function syncAccountData() {
           await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings.map((s) => s.id))
           uploaded.settings = unsyncedSettings.length
           safeLogger.info('syncAccountData: settings uploaded successfully', { count: unsyncedSettings.length, server: res })
-          console.log('✅ SYNC: Settings uploaded successfully')
         } else {
-          console.log('ℹ️ SYNC: No unsynced settings to upload')
+          safeLogger.info('syncAccountData: no unsynced settings to upload')
         }
       } catch (e) {
         anyUploadFailed = true
         safeLogger.error('syncAccountData: settings upload failed', { message: e?.message || String(e), stack: e?.stack })
-        console.error('❌ SYNC: Settings upload failed:', e)
       }
 
       // Challenges
@@ -575,6 +585,58 @@ export async function syncAccountData() {
         anyUploadFailed = true
         safeLogger.error('syncAccountData: events upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
+
+      // Gamification (user stats + meaningful practice stats)
+      try {
+        const { getUserById, batchSaveToDB } = await import('./database.js')
+        if (typeof getUserById !== 'function' || typeof batchSaveToDB !== 'function') {
+          safeLogger.warn('syncAccountData: gamification upload skipped (database helpers unavailable)')
+          throw new Error('gamification_helpers_missing')
+        }
+        const localUser = await getUserById(resolvedUserId)
+        const localMp = getMeaningfulPracticeStats(resolvedUserId)
+        const localMpUpdatedAt = Math.max(
+          localMp.updatedAt || 0,
+          toTimestamp(localUser?.meaningfulPracticeUpdatedAt)
+        )
+        const localUserUpdatedAt = toTimestamp(localUser?.progressUpdatedAt || localUser?.updatedAt || localUser?.createdAt)
+        const localUserSyncedAt = toTimestamp(localUser?.syncedAt)
+        const latestLocalUpdate = Math.max(localUserUpdatedAt, localMpUpdatedAt)
+
+        let userRecord = localUser
+
+        if (!userRecord && localMp.stats) {
+          const minimalRecord = {
+            id: resolvedUserId,
+            userId: resolvedUserId,
+            meaningfulPractice: localMp.stats,
+            meaningfulPracticeUpdatedAt: localMpUpdatedAt || new Date().toISOString(),
+            progressUpdatedAt: 0,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date(localMpUpdatedAt || Date.now()).toISOString(),
+            syncedAt: 0
+          }
+          await batchSaveToDB(STORAGE_CONFIG.STORES.USERS, [minimalRecord], { skipTimestamps: true })
+          userRecord = minimalRecord
+        }
+
+        if (userRecord && (localUserSyncedAt === 0 || localUserSyncedAt < latestLocalUpdate || latestLocalUpdate === 0)) {
+          const payload = buildGamificationPayload(userRecord, resolvedUserId)
+          safeLogger.info('syncAccountData: uploading gamification stats', { userId: resolvedUserId })
+          const res = await tryBulk('gamification', [payload])
+          await markSynced(STORAGE_CONFIG.STORES.USERS, [payload.id || resolvedUserId])
+          uploaded.gamification = 1
+          safeLogger.info('syncAccountData: gamification stats uploaded successfully', { server: res })
+        }
+      } catch (e) {
+        // If helpers are missing (tests/mocks), don't fail the whole sync
+        if (e?.message === 'gamification_helpers_missing') {
+          safeLogger.warn('syncAccountData: gamification upload skipped (helpers missing)')
+        } else {
+          anyUploadFailed = true
+          safeLogger.error('syncAccountData: gamification upload failed', { message: e?.message || String(e), stack: e?.stack })
+        }
+      }
     } catch (uploadErr) {
       anyUploadFailed = true
       safeLogger.error('syncAccountData: unexpected error during upload step', { message: uploadErr?.message || String(uploadErr), stack: uploadErr?.stack })
@@ -589,7 +651,8 @@ export async function syncAccountData() {
         uploadedSessions: uploaded.sessions,
         uploadedSettings: uploaded.settings,
         uploadedChallenges: uploaded.challenges,
-        uploadedEvents: uploaded.events
+        uploadedEvents: uploaded.events,
+        uploadedGamification: uploaded.gamification
       })
     } else {
       safeLogger.info('syncAccountData: sincronización de cuenta completada exitosamente', {
@@ -600,7 +663,8 @@ export async function syncAccountData() {
         uploadedSessions: uploaded.sessions,
         uploadedSettings: uploaded.settings,
         uploadedChallenges: uploaded.challenges,
-        uploadedEvents: uploaded.events
+        uploadedEvents: uploaded.events,
+        uploadedGamification: uploaded.gamification
       })
     }
 
@@ -612,7 +676,8 @@ export async function syncAccountData() {
         attempts: accountData.attempts?.length || 0,
         mastery: accountData.mastery?.length || 0,
         schedules: accountData.schedules?.length || 0,
-        sessions: accountData.sessions?.length || 0
+        sessions: accountData.sessions?.length || 0,
+        gamification: accountData.gamification ? 1 : 0
       },
       ...(anyUploadFailed && { uploadFailed: true })
     }

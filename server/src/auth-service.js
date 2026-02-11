@@ -484,6 +484,71 @@ export function mergeAccountData(accountId) {
   })
   const events = Object.values(eventsById).map(e => e.data)
 
+  // Fetch gamification/user stats - keep most recent record
+  const userStatsRows = db.prepare(`
+    SELECT payload, updated_at FROM user_stats WHERE account_id = ?
+    ORDER BY updated_at DESC
+  `).all(accountId)
+
+  let latestProgress = null
+  let latestProgressAt = 0
+  let latestMeaningful = null
+  let latestMeaningfulAt = 0
+
+  for (const row of userStatsRows) {
+    try {
+      const payload = JSON.parse(row.payload)
+      const hasProgress = payload && (
+        payload.totalXP !== undefined ||
+        payload.streaks ||
+        payload.badges ||
+        payload.stats
+      )
+      const progressAt = Number(payload?.progressUpdatedAt) ||
+        (hasProgress
+          ? (new Date(payload?.updatedAt || payload?.createdAt || row.updated_at || 0).getTime() || 0)
+          : 0)
+
+      if (progressAt > latestProgressAt) {
+        latestProgressAt = progressAt
+        latestProgress = payload
+      }
+
+      const meaningfulAt = Number(payload?.meaningfulPracticeUpdatedAt) ||
+        new Date(payload?.meaningfulPractice?.lastActivityDate || payload?.meaningfulPractice?.updatedAt || 0).getTime() || 0
+
+      if (meaningfulAt > latestMeaningfulAt) {
+        latestMeaningfulAt = meaningfulAt
+        latestMeaningful = payload
+      }
+    } catch (err) {
+      console.warn('Failed to parse gamification payload', err)
+    }
+  }
+
+  let latestGamification = latestProgress
+    ? { ...latestProgress }
+    : (latestMeaningful ? { ...latestMeaningful } : null)
+  if (latestGamification) {
+    if (latestMeaningful?.meaningfulPractice) {
+      latestGamification.meaningfulPractice = latestMeaningful.meaningfulPractice
+      latestGamification.meaningfulPracticeUpdatedAt = latestMeaningful.meaningfulPracticeUpdatedAt || latestMeaningfulAt
+    }
+
+    const overallUpdatedAt = Math.max(latestProgressAt, latestMeaningfulAt, 0)
+    if (overallUpdatedAt) {
+      latestGamification.progressUpdatedAt = latestProgressAt || latestGamification.progressUpdatedAt || null
+      latestGamification.updatedAt = new Date(overallUpdatedAt).toISOString()
+    }
+
+    latestGamification.id = accountId
+    latestGamification.userId = accountId
+  }
+
+  if (userStatsRows.length > 1) {
+    console.warn(`Multiple gamification records for account ${accountId}, merged by timestamps`)
+  }
+
   return {
     attempts,
     mastery: Array.from(mergedMastery.values()),
@@ -491,6 +556,7 @@ export function mergeAccountData(accountId) {
     sessions: Array.from(mergedSessions.values()),
     settings: latestSettings,
     challenges,
-    events
+    events,
+    gamification: latestGamification
   }
 }

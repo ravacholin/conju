@@ -122,7 +122,9 @@ export async function awardXP(userId, xpAmount, reason = 'general', metadata = {
     const updatedUser = {
       ...user,
       totalXP: newTotalXP,
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      progressUpdatedAt: new Date(),
+      syncedAt: 0
     }
 
     await saveUser(updatedUser)
@@ -189,7 +191,9 @@ export async function updateStreak(userId, streakType, successful = true) {
     const updatedUser = {
       ...user,
       streaks,
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      progressUpdatedAt: new Date(),
+      syncedAt: 0
     }
 
     await saveUser(updatedUser)
@@ -258,7 +262,9 @@ export async function checkAndAwardBadges(userId) {
         ...user,
         badges: updatedBadges,
         totalXP: (user.totalXP || 0) + totalXP,
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        progressUpdatedAt: new Date(),
+        syncedAt: 0
       }
 
       await saveUser(updatedUser)

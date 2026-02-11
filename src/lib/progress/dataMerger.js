@@ -2,12 +2,19 @@ import { STORAGE_CONFIG } from './config.js'
 import {
   getAllFromDB,
   batchSaveToDB,
-  batchUpdateInDB
+  batchUpdateInDB,
+  getUserById
 } from './database.js'
 import { createSafeLogger } from './safeLogger.js'
 import { getCurrentUserId } from './userSettingsStore.js'
 import { getAuthenticatedUser } from './authBridge.js'
 import { setGlobalUserLevel } from '../../lib/levels/userLevelProfile.js'
+import {
+  toTimestamp,
+  getMeaningfulPracticeUpdatedAt,
+  getMeaningfulPracticeStats,
+  writeMeaningfulPracticeStats
+} from './gamificationSync.js'
 
 const safeLogger = createSafeLogger('progress:userManager')
 
@@ -106,7 +113,7 @@ function notifySyncIssue(reason, message) {
 }
 
 export async function mergeAccountDataLocally(accountData) {
-  const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0, conflicts: 0 }
+  const results = { attempts: 0, mastery: 0, schedules: 0, sessions: 0, settings: 0, challenges: 0, events: 0, gamification: 0, conflicts: 0 }
   const resolution = resolveMergeUserId(accountData)
   const currentUserId = resolution.userId
 
@@ -137,10 +144,6 @@ export async function mergeAccountDataLocally(accountData) {
 
   if (!currentUserId) {
     const warningMessage = 'No pudimos determinar un usuario fiable para fusionar los datos. Inicia sesión nuevamente e intenta sincronizar.'
-    console.error('🚨 SYNC BUG: No reliable userId found!', {
-      attemptedSources: resolution.attempted,
-      resolution
-    });
     safeLogger.warn('mergeAccountDataLocally: abortado por falta de userId confiable', {
       attemptedSources: resolution.attempted
     })
@@ -155,25 +158,25 @@ export async function mergeAccountDataLocally(accountData) {
     }
   }
 
-  console.log('✅ SYNC: Using userId for merge:', {
+  safeLogger.debug('mergeAccountDataLocally: using userId for merge', {
     userId: currentUserId,
     source: resolution.source,
     attempted: resolution.attempted
-  });
+  })
 
   const allAttempts = await getAllFromDB(STORAGE_CONFIG.STORES.ATTEMPTS)
   const allMastery = await getAllFromDB(STORAGE_CONFIG.STORES.MASTERY)
   const allSchedules = await getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES)
   const allSessions = await getAllFromDB(STORAGE_CONFIG.STORES.LEARNING_SESSIONS)
 
-  console.log('📊 SYNC: Local IndexedDB data counts:', {
+  safeLogger.debug('mergeAccountDataLocally: local IndexedDB data counts', {
     attempts: allAttempts.length,
     mastery: allMastery.length,
     schedules: allSchedules.length,
     sessions: allSessions.length,
     sampleAttemptUserIds: allAttempts.slice(0, 3).map(a => a.userId),
     currentUserId
-  });
+  })
 
   const attemptMap = new Map()
   const masteryMap = new Map()
@@ -535,7 +538,7 @@ export async function mergeAccountDataLocally(accountData) {
         localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
       }
 
-      console.log('🔄 SYNC: Settings merge comparison:', {
+      safeLogger.debug('mergeAccountDataLocally: settings merge comparison', {
         serverUpdatedAt: new Date(serverUpdatedAt || 0).toISOString(),
         localUpdatedAt: new Date(localUpdatedAt || 0).toISOString(),
         serverIsNewer: serverUpdatedAt > localUpdatedAt,
@@ -573,23 +576,113 @@ export async function mergeAccountDataLocally(accountData) {
           serverUserLevel: actualServerSettings?.userLevel,
           appliedUserLevel: mergedSettings?.userLevel
         })
-        console.log('✅ SYNC: Applied server settings:', {
-          userLevel: mergedSettings?.userLevel,
-          level: mergedSettings?.level
-        })
       } else {
         safeLogger.info('mergeAccountDataLocally: kept local settings (newer or equal)', {
           serverUpdatedAt,
           localUpdatedAt
         })
-        console.log('ℹ️ SYNC: Kept local settings (newer or equal)')
       }
     } catch (error) {
       safeLogger.warn('mergeAccountDataLocally: error merging settings', {
         message: error?.message || String(error),
         name: error?.name
       })
-      console.error('❌ SYNC: Settings merge error:', error)
+      results.conflicts++
+    }
+  }
+
+  // Gamification merge (progress user stats + meaningful practice stats)
+  if (accountData?.gamification) {
+    try {
+      const remoteStats = accountData.gamification
+      const localUser = await getUserById(currentUserId)
+
+      const localHasProgress = !!(localUser && (
+        localUser.totalXP !== undefined ||
+        localUser.streaks ||
+        localUser.badges ||
+        localUser.stats
+      ))
+      const localProgressUpdatedAt = localHasProgress
+        ? toTimestamp(localUser?.progressUpdatedAt || localUser?.updatedAt || localUser?.createdAt)
+        : 0
+      const localMeaningfulUpdatedAt = Math.max(
+        toTimestamp(localUser?.meaningfulPracticeUpdatedAt),
+        getMeaningfulPracticeUpdatedAt(localUser?.meaningfulPractice || {})
+      )
+
+      const remoteHasProgress = !!(remoteStats && (
+        remoteStats.totalXP !== undefined ||
+        remoteStats.streaks ||
+        remoteStats.badges ||
+        remoteStats.stats
+      ))
+      const remoteProgressUpdatedAt = remoteHasProgress
+        ? toTimestamp(remoteStats?.progressUpdatedAt || remoteStats?.updatedAt || remoteStats?.createdAt)
+        : 0
+      const remoteMeaningfulUpdatedAt = Math.max(
+        toTimestamp(remoteStats?.meaningfulPracticeUpdatedAt),
+        getMeaningfulPracticeUpdatedAt(remoteStats?.meaningfulPractice || {})
+      )
+
+      let mergedUser = localUser ? { ...localUser } : null
+
+      if (remoteProgressUpdatedAt > localProgressUpdatedAt) {
+        mergedUser = {
+          ...(mergedUser || {}),
+          ...remoteStats,
+          id: currentUserId,
+          userId: currentUserId
+        }
+      }
+
+      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt) {
+        mergedUser = {
+          ...(mergedUser || {}),
+          meaningfulPractice: remoteStats.meaningfulPractice,
+          meaningfulPracticeUpdatedAt: remoteStats.meaningfulPracticeUpdatedAt || remoteMeaningfulUpdatedAt,
+          id: currentUserId,
+          userId: currentUserId
+        }
+      }
+
+      if (mergedUser && (remoteProgressUpdatedAt > localProgressUpdatedAt || remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt)) {
+        const finalProgressUpdatedAt = Math.max(localProgressUpdatedAt, remoteProgressUpdatedAt)
+        const finalMeaningfulUpdatedAt = Math.max(localMeaningfulUpdatedAt, remoteMeaningfulUpdatedAt)
+        const finalUpdatedAt = Math.max(finalProgressUpdatedAt, finalMeaningfulUpdatedAt, toTimestamp(mergedUser.updatedAt))
+
+        mergedUser.progressUpdatedAt = finalProgressUpdatedAt || mergedUser.progressUpdatedAt || null
+        mergedUser.updatedAt = finalUpdatedAt ? new Date(finalUpdatedAt).toISOString() : mergedUser.updatedAt
+        mergedUser.createdAt = mergedUser.createdAt || new Date(finalUpdatedAt || Date.now()).toISOString()
+        mergedUser.syncedAt = Date.now()
+
+        await batchSaveToDB(STORAGE_CONFIG.STORES.USERS, [mergedUser], { skipTimestamps: true })
+        results.gamification = 1
+        safeLogger.info('mergeAccountDataLocally: applied gamification stats from server', {
+          remoteProgressUpdatedAt,
+          localProgressUpdatedAt,
+          remoteMeaningfulUpdatedAt,
+          localMeaningfulUpdatedAt
+        })
+      } else {
+        safeLogger.info('mergeAccountDataLocally: kept local gamification stats (newer or equal)', {
+          remoteProgressUpdatedAt,
+          localProgressUpdatedAt,
+          remoteMeaningfulUpdatedAt,
+          localMeaningfulUpdatedAt
+        })
+      }
+
+      // Sync meaningful-practice stats into localStorage if server is newer
+      const localMp = getMeaningfulPracticeStats(currentUserId)
+      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMp.updatedAt) {
+        writeMeaningfulPracticeStats(currentUserId, remoteStats.meaningfulPractice)
+      }
+    } catch (error) {
+      safeLogger.warn('mergeAccountDataLocally: error merging gamification stats', {
+        message: error?.message || String(error),
+        name: error?.name
+      })
       results.conflicts++
     }
   }

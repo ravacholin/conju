@@ -1863,6 +1863,10 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     attempts: 0,
     mastery: 0,
     schedules: 0,
+    sessions: 0,
+    events: 0,
+    challenges: 0,
+    settings: 0,
     users: 0,
     errors: [],
   };
@@ -1871,9 +1875,14 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     await initDB();
 
     // Helper function to update a record
-    const updateUser = async (storeName, record, statName) => {
+    const updateUser = async (storeName, record, statName, keyOverride = null) => {
       try {
-        await updateInDB(storeName, record.id, {
+        const recordId = keyOverride || record?.id;
+        if (!recordId) {
+          stats.errors.push(`${statName}: missing id`);
+          return;
+        }
+        await updateInDB(storeName, recordId, {
           userId: newUserId,
           syncedAt: 0, // Force sync (indexable)
           migratedAt: new Date(),
@@ -1927,6 +1936,98 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
       await updateUser(STORAGE_CONFIG.STORES.SCHEDULES, schedule, "schedules");
     }
 
+    // 3.5 Migrar tabla LEARNING_SESSIONS (analytics)
+    const oldSessions = await getLearningSessionsByUser(oldUserId);
+    if (isDev)
+      logger.info(
+        "migrateUserIdInLocalDB",
+        `Migrando ${oldSessions.length} sesiones de aprendizaje`,
+      );
+    for (const session of oldSessions) {
+      const sessionKey = session?.sessionId || session?.id;
+      await updateUser(
+        STORAGE_CONFIG.STORES.LEARNING_SESSIONS,
+        session,
+        "sessions",
+        sessionKey,
+      );
+    }
+
+    // 3.6 Migrar tabla EVENTS
+    const oldEvents = await getByIndex(
+      STORAGE_CONFIG.STORES.EVENTS,
+      "userId",
+      oldUserId,
+    );
+    if (isDev)
+      logger.info(
+        "migrateUserIdInLocalDB",
+        `Migrando ${oldEvents.length} eventos`,
+      );
+    for (const event of oldEvents) {
+      await updateUser(STORAGE_CONFIG.STORES.EVENTS, event, "events");
+    }
+
+    // 3.7 Migrar tabla CHALLENGES
+    const oldChallenges = await getByIndex(
+      STORAGE_CONFIG.STORES.CHALLENGES,
+      "userId",
+      oldUserId,
+    );
+    if (isDev)
+      logger.info(
+        "migrateUserIdInLocalDB",
+        `Migrando ${oldChallenges.length} desafíos diarios`,
+      );
+    for (const challenge of oldChallenges) {
+      await updateUser(STORAGE_CONFIG.STORES.CHALLENGES, challenge, "challenges");
+    }
+
+    // 3.8 Migrar tabla USER_SETTINGS (mantener el settings más reciente)
+    try {
+      const oldSettingsRecords = await getByIndex(
+        STORAGE_CONFIG.STORES.USER_SETTINGS,
+        "userId",
+        oldUserId,
+      );
+
+      if (oldSettingsRecords.length > 0) {
+        const sorted = [...oldSettingsRecords].sort(
+          (a, b) => new Date(b?.updatedAt || b?.createdAt || 0) - new Date(a?.updatedAt || a?.createdAt || 0),
+        );
+        const latest = sorted[0];
+
+        const existingNewSettings = await getUserSettings(newUserId);
+        const oldUpdatedAt = new Date(
+          latest?.updatedAt ||
+          latest?.settings?.lastUpdated ||
+          latest?.settings?.updatedAt ||
+          latest?.createdAt ||
+          0,
+        ).getTime();
+        const newUpdatedAt = new Date(
+          existingNewSettings?.updatedAt ||
+          existingNewSettings?.settings?.lastUpdated ||
+          existingNewSettings?.settings?.updatedAt ||
+          existingNewSettings?.createdAt ||
+          0,
+        ).getTime();
+
+        if (!existingNewSettings || oldUpdatedAt > newUpdatedAt) {
+          const settingsPayload = latest.settings || latest;
+          await saveUserSettings(newUserId, settingsPayload, { alreadySynced: false });
+          stats.settings++;
+        }
+
+        for (const rec of oldSettingsRecords) {
+          await deleteFromDB(STORAGE_CONFIG.STORES.USER_SETTINGS, rec.id);
+        }
+      }
+    } catch (error) {
+      logger.error("migrateUserIdInLocalDB", "Error migrando user settings", error);
+      stats.errors.push(`settings: ${error.message}`);
+    }
+
     // 4. Migrar tabla USERS (si existe usuario anónimo)
     try {
       const oldUser = await getUser(oldUserId);
@@ -1941,6 +2042,8 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
           ...oldUser,
           id: newUserId,
           updatedAt: new Date(),
+          syncedAt: 0,
+          syncPriority: true,
         };
         await saveUser(migratedUser);
         await deleteFromDB(STORAGE_CONFIG.STORES.USERS, oldUserId);
@@ -1952,7 +2055,14 @@ export async function migrateUserIdInLocalDB(oldUserId, newUserId) {
     }
 
     const totalMigrated =
-      stats.attempts + stats.mastery + stats.schedules + stats.users;
+      stats.attempts +
+      stats.mastery +
+      stats.schedules +
+      stats.sessions +
+      stats.events +
+      stats.challenges +
+      stats.settings +
+      stats.users;
 
     if (isDev)
       logger.info(
@@ -2017,6 +2127,22 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
       "userId",
       oldUserId,
     );
+    const remainingSessions = await getLearningSessionsByUser(oldUserId);
+    const remainingEvents = await getByIndex(
+      STORAGE_CONFIG.STORES.EVENTS,
+      "userId",
+      oldUserId,
+    );
+    const remainingChallenges = await getByIndex(
+      STORAGE_CONFIG.STORES.CHALLENGES,
+      "userId",
+      oldUserId,
+    );
+    const remainingSettings = await getByIndex(
+      STORAGE_CONFIG.STORES.USER_SETTINGS,
+      "userId",
+      oldUserId,
+    );
     const remainingUser = await getUser(oldUserId);
 
     // Verificar que existan datos bajo el nuevo userId
@@ -2027,12 +2153,32 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
       "userId",
       newUserId,
     );
+    const newSessions = await getLearningSessionsByUser(newUserId);
+    const newEvents = await getByIndex(
+      STORAGE_CONFIG.STORES.EVENTS,
+      "userId",
+      newUserId,
+    );
+    const newChallenges = await getByIndex(
+      STORAGE_CONFIG.STORES.CHALLENGES,
+      "userId",
+      newUserId,
+    );
+    const newSettings = await getByIndex(
+      STORAGE_CONFIG.STORES.USER_SETTINGS,
+      "userId",
+      newUserId,
+    );
     const newUser = await getUser(newUserId);
 
     const remainingData = {
       attempts: remainingAttempts.length,
       mastery: remainingMastery.length,
       schedules: remainingSchedules.length,
+      sessions: remainingSessions.length,
+      events: remainingEvents.length,
+      challenges: remainingChallenges.length,
+      settings: remainingSettings.length,
       user: remainingUser ? 1 : 0,
     };
 
@@ -2040,6 +2186,10 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
       attempts: newAttempts.length,
       mastery: newMastery.length,
       schedules: newSchedules.length,
+      sessions: newSessions.length,
+      events: newEvents.length,
+      challenges: newChallenges.length,
+      settings: newSettings.length,
       user: newUser ? 1 : 0,
     };
 
@@ -2047,9 +2197,20 @@ export async function validateUserIdMigration(oldUserId, newUserId) {
       remainingData.attempts +
       remainingData.mastery +
       remainingData.schedules +
+      remainingData.sessions +
+      remainingData.events +
+      remainingData.challenges +
+      remainingData.settings +
       remainingData.user;
     const totalNew =
-      newData.attempts + newData.mastery + newData.schedules + newData.user;
+      newData.attempts +
+      newData.mastery +
+      newData.schedules +
+      newData.sessions +
+      newData.events +
+      newData.challenges +
+      newData.settings +
+      newData.user;
 
     // Fix: Migrations with zero records (both totalRemaining and totalNew equal 0) are considered valid
     // This handles the case where a new device has no local data to migrate

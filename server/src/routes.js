@@ -51,7 +51,10 @@ export function createRoutes() {
             stmt = db.prepare('INSERT INTO daily_challenges (id, user_id, account_id, challenge_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET challenge_data=excluded.challenge_data, updated_at=excluded.updated_at')
             break
           case 'events':
-            stmt = db.prepare('INSERT INTO events (id, user_id, account_id, event_data, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET event_data=excluded.event_data')
+            stmt = db.prepare('INSERT INTO events (id, user_id, account_id, event_data, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET event_data=excluded.event_data, updated_at=excluded.updated_at')
+            break
+          case 'gamification':
+            stmt = db.prepare('INSERT INTO user_stats (id, user_id, account_id, payload, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET user_id=excluded.user_id, account_id=excluded.account_id, payload=excluded.payload, updated_at=excluded.updated_at')
             break
         }
 
@@ -93,31 +96,63 @@ export function createRoutes() {
               info = stmt.run(id, userId, updatedAt, timestamp, payload)
               break
             }
-            case 'user_settings': {
-              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
-                useNowWhenMissing: true
-              })
-              const settings = JSON.stringify(rec.settings || rec)
-              info = stmt.run(id, userId, req.accountId, settings, createdAt, now)
-              break
-            }
-            case 'daily_challenges': {
-              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
-                useNowWhenMissing: true
-              })
-              const challengeData = JSON.stringify(rec.challengeData || rec)
-              info = stmt.run(id, userId, req.accountId, challengeData, createdAt, now)
-              break
-            }
-            case 'events': {
-              const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
-                useNowWhenMissing: true
-              })
-              const eventData = JSON.stringify(rec.eventData || rec)
-              info = stmt.run(id, userId, req.accountId, eventData, createdAt)
-              break
-            }
+          case 'user_settings': {
+            const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+              useNowWhenMissing: true
+            })
+            const updatedAt = normalizeDate(
+              rec.updatedAt ?? rec.lastUpdated ?? rec.settings?.lastUpdated ?? rec.settings?.updatedAt,
+              'updatedAt',
+              id,
+              { useNowWhenMissing: true }
+            )
+            const settings = JSON.stringify(rec.settings || rec)
+            info = stmt.run(id, userId, req.accountId, settings, createdAt, updatedAt)
+            break
           }
+          case 'daily_challenges': {
+            const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+              useNowWhenMissing: true
+            })
+            const updatedAt = normalizeDate(
+              rec.updatedAt ?? rec.challengeData?.updatedAt ?? rec.challengeData?.lastUpdated,
+              'updatedAt',
+              id,
+              { useNowWhenMissing: true }
+            )
+            const challengeData = JSON.stringify(rec.challengeData || rec)
+            info = stmt.run(id, userId, req.accountId, challengeData, createdAt, updatedAt)
+            break
+          }
+          case 'events': {
+            const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+              useNowWhenMissing: true
+            })
+            const updatedAt = normalizeDate(
+              rec.updatedAt ?? rec.eventData?.updatedAt ?? rec.eventData?.lastUpdated ?? rec.lastUpdated,
+              'updatedAt',
+              id
+            ) ?? createdAt ?? now
+            const eventData = JSON.stringify(rec.eventData || rec)
+            info = stmt.run(id, userId, req.accountId, eventData, createdAt, updatedAt)
+            break
+          }
+          case 'gamification': {
+            const createdAt = normalizeDate(rec.createdAt, 'createdAt', id, {
+              useNowWhenMissing: true
+            })
+            const updatedAt = normalizeDate(
+              rec.updatedAt ?? rec.lastUpdated ?? rec.meaningfulPracticeUpdatedAt,
+              'updatedAt',
+              id,
+              { useNowWhenMissing: true }
+            )
+            const payload = JSON.stringify(rec)
+            const accountId = req.accountId || userId
+            info = stmt.run(id, userId, accountId, payload, createdAt, updatedAt)
+            break
+          }
+        }
 
           if (info && info.changes === 1) uploaded++
           else updated++
@@ -139,6 +174,7 @@ export function createRoutes() {
   r.post('/progress/settings/bulk', handleBulk('user_settings'))
   r.post('/progress/challenges/bulk', handleBulk('daily_challenges'))
   r.post('/progress/events/bulk', handleBulk('events'))
+  r.post('/progress/gamification/bulk', handleBulk('gamification'))
 
   // Export endpoints (per user)
   r.get('/progress/export', (req, res) => {

@@ -4,7 +4,8 @@ import {
   getAttemptsByUser,
   getMasteryByUser,
   getAllFromDB,
-  getLearningSessionsByUser
+  getLearningSessionsByUser,
+  getUserById
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
 import {
@@ -16,6 +17,7 @@ import {
 } from './userManager/index.js'
 import { createLogger } from '../utils/logger.js'
 import { withMutex, globalMutex } from './SyncMutex.js'
+import { toTimestamp } from './gamificationSync.js'
 
 const logger = createLogger('progress:cloudSync')
 const isDev = import.meta?.env?.DEV
@@ -201,11 +203,12 @@ export async function hasPendingSyncData() {
   if (isDev) logger.debug('hasPendingSyncData', `Verificando datos pendientes para userId: ${userId}`)
 
   try {
-    const [attempts, mastery, schedulesStore, sessions] = await Promise.all([
+    const [attempts, mastery, schedulesStore, sessions, userRecord] = await Promise.all([
       getAttemptsByUser(userId),
       getMasteryByUser(userId),
       getAllFromDB(STORAGE_CONFIG.STORES.SCHEDULES),
-      getLearningSessionsByUser(userId)
+      getLearningSessionsByUser(userId),
+      getUserById(userId)
     ])
 
     const schedules = schedulesStore.filter((item) => item.userId === userId)
@@ -214,22 +217,27 @@ export async function hasPendingSyncData() {
       attempts: attempts.length,
       mastery: mastery.length,
       schedules: schedules.length,
-      sessions: sessions.length
+      sessions: sessions.length,
+      hasUserStats: !!userRecord
     })
 
     const unsyncedAttempts = attempts.filter((a) => !a.syncedAt)
     const unsyncedMastery = mastery.filter((m) => !m.syncedAt)
     const unsyncedSchedules = schedules.filter((s) => !s.syncedAt)
     const unsyncedSessions = sessions.filter((s) => !s.syncedAt)
+    const unsyncedUser = userRecord
+      ? (toTimestamp(userRecord.syncedAt) === 0 || toTimestamp(userRecord.syncedAt) < toTimestamp(userRecord.updatedAt || userRecord.createdAt))
+      : false
 
     if (isDev) logger.debug('hasPendingSyncData', 'Sin sincronizar', {
       attempts: unsyncedAttempts.length,
       mastery: unsyncedMastery.length,
       schedules: unsyncedSchedules.length,
-      sessions: unsyncedSessions.length
+      sessions: unsyncedSessions.length,
+      userStats: unsyncedUser ? 1 : 0
     })
 
-    const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0 || unsyncedSessions.length > 0
+    const pending = unsyncedAttempts.length > 0 || unsyncedMastery.length > 0 || unsyncedSchedules.length > 0 || unsyncedSessions.length > 0 || unsyncedUser
 
     if (pending) {
       if (isDev) logger.debug('hasPendingSyncData', 'HAY datos pendientes de sincronización')

@@ -140,6 +140,21 @@ export function migrate() {
     CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id);
     CREATE INDEX IF NOT EXISTS idx_events_account ON events(account_id);
     CREATE INDEX IF NOT EXISTS idx_events_created ON events(created_at);
+
+    -- Gamification/user stats table for cross-device sync
+    CREATE TABLE IF NOT EXISTS user_stats (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      account_id TEXT NOT NULL,
+      payload TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(account_id) REFERENCES accounts(id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_user_stats_user ON user_stats(user_id);
+    CREATE INDEX IF NOT EXISTS idx_user_stats_account ON user_stats(account_id);
+    CREATE INDEX IF NOT EXISTS idx_user_stats_updated ON user_stats(updated_at);
   `)
 
   // Migration: Add updated_at column to existing events table if it doesn't exist

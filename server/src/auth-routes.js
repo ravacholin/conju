@@ -388,7 +388,8 @@ export function createAuthRoutes() {
         attempts: accountData.attempts?.length || 0,
         mastery: accountData.mastery?.length || 0,
         schedules: accountData.schedules?.length || 0,
-        sessions: accountData.sessions?.length || 0
+        sessions: accountData.sessions?.length || 0,
+        gamification: accountData.gamification ? 1 : 0
       })}`)
 
       res.json({

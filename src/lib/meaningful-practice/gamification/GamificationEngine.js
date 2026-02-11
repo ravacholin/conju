@@ -465,6 +465,29 @@ export class GamificationEngine {
     } catch (error) {
       logger.error('Failed to save user stats:', error);
     }
+
+    // Also persist meaningful-practice stats into progress DB for cross-device sync
+    try {
+      const userId = this.userId || getCurrentUserId();
+      if (!userId) return;
+
+      const { saveUser, getUserById } = await import('../../progress/database.js');
+      const existing = await getUserById(userId);
+      const meaningfulPracticeUpdatedAt = this.userStats?.lastActivityDate || new Date().toISOString();
+
+      const merged = {
+        ...(existing || {}),
+        id: userId,
+        userId,
+        meaningfulPractice: this.userStats,
+        meaningfulPracticeUpdatedAt,
+        syncedAt: 0
+      };
+
+      await saveUser(merged);
+    } catch (error) {
+      logger.warn('Failed to persist meaningful-practice stats into progress DB:', error);
+    }
   }
 
   /**
