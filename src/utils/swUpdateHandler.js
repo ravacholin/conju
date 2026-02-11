@@ -13,6 +13,13 @@ let updateIntervalId = null
  */
 export function initSWUpdateHandler() {
   if (initialized) return
+  if (typeof window !== 'undefined') {
+    if (window.__CONJU_SW_UPDATE_HANDLER__) {
+      initialized = true
+      return
+    }
+    window.__CONJU_SW_UPDATE_HANDLER__ = true
+  }
   initialized = true
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
@@ -21,11 +28,17 @@ export function initSWUpdateHandler() {
 
         // Check for updates every 30 seconds when app is active
         if (!updateIntervalId) {
+          if (typeof window !== 'undefined' && window.__CONJU_SW_UPDATE_INTERVAL__) {
+            clearInterval(window.__CONJU_SW_UPDATE_INTERVAL__)
+          }
           updateIntervalId = setInterval(() => {
             if (!document.hidden) {
               registration.update()
             }
           }, 30000)
+          if (typeof window !== 'undefined') {
+            window.__CONJU_SW_UPDATE_INTERVAL__ = updateIntervalId
+          }
         }
 
         // Listen for new service worker installation
