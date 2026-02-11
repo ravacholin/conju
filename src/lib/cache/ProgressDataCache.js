@@ -142,7 +142,12 @@ class ProgressDataCache {
    * @param {string} userId - ID del usuario
    */
   invalidateUser(userId) {
-    const userPattern = new RegExp(`^${userId}:`)
+    if (typeof userId !== 'string' || userId.trim().length === 0) {
+      return
+    }
+
+    const escapedUserId = userId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const userPattern = new RegExp(`^${escapedUserId}:`)
     this.invalidate(userPattern)
   }
   
@@ -221,13 +226,21 @@ class ProgressDataCache {
 // Singleton instance
 const progressDataCache = new ProgressDataCache()
 
-// Limpieza automática cada 2 minutos
-setInterval(() => {
-  progressDataCache.cleanup()
-}, 2 * 60 * 1000)
+// Limpieza automática cada 2 minutos (solo en browser)
+if (typeof window !== 'undefined') {
+  if (window.__CONJU_PROGRESS_CACHE_CLEANUP__) {
+    clearInterval(window.__CONJU_PROGRESS_CACHE_CLEANUP__)
+  }
+
+  window.__CONJU_PROGRESS_CACHE_CLEANUP__ = setInterval(() => {
+    progressDataCache.cleanup()
+  }, 2 * 60 * 1000)
+}
 
 // Invalidar caché cuando se actualiza el progreso
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
+  window.__CONJU_PROGRESS_CACHE_EVENTS__ = true
+
   window.addEventListener('progress:dataUpdated', (event) => {
     const userId = event.detail?.userId
     const updateType = event.detail?.type || 'general'

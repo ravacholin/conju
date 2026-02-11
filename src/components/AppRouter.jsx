@@ -112,6 +112,7 @@ function AppRouter() {
   const onboardingFlowRef = useRef(onboardingFlow)
   const drillModeRef = useRef(drillMode)
   const forceFullResetRef = useRef(false)
+  const drillGenTimeoutRef = useRef(null)
 
   // Update refs when hooks change
   useEffect(() => {
@@ -121,6 +122,21 @@ function AppRouter() {
   useEffect(() => {
     drillModeRef.current = drillMode
   }, [drillMode])
+
+  const clearDrillGenerationTimeout = useCallback(() => {
+    if (drillGenTimeoutRef.current) {
+      clearTimeout(drillGenTimeoutRef.current)
+      drillGenTimeoutRef.current = null
+    }
+  }, [])
+
+  const scheduleDrillGeneration = useCallback((callback, delay = 100) => {
+    clearDrillGenerationTimeout()
+    drillGenTimeoutRef.current = setTimeout(() => {
+      drillGenTimeoutRef.current = null
+      callback()
+    }, delay)
+  }, [clearDrillGenerationTimeout])
 
   // Stable route handler function
   // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
@@ -134,7 +150,7 @@ function AppRouter() {
 
     // Regenerate drill item if navigating to drill without current item
     if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
-      setTimeout(() => {
+      scheduleDrillGeneration(() => {
         // Use the new dynamic forms generation - no need to pass cached region forms
         drillModeRef.current.generateNextItem(
           null,
@@ -143,7 +159,7 @@ function AppRouter() {
         )
       }, 100)
     }
-  }, []) // No dependencies - prevents router re-subscriptions
+  }, [clearDrillGenerationTimeout, scheduleDrillGeneration]) // Stable dependencies to prevent router re-subscriptions
 
   // Initialize router and subscribe to route changes
   useEffect(() => {
@@ -220,7 +236,7 @@ function AppRouter() {
       // Generate new item if we don't have one (either new entry or after clearing)
       if (!drillMode.currentItem && !drillMode.isGenerating) {
         // Add a delay to ensure settings have fully propagated through all stores
-        setTimeout(() => {
+        scheduleDrillGeneration(() => {
           const helpers = onboardingFlowRef.current
           if (!helpers) {
             return
@@ -250,8 +266,15 @@ function AppRouter() {
     settings.specificMood,
     settings.specificTense,
     settings.verbType,
-    settings.selectedFamily
+    settings.selectedFamily,
+    scheduleDrillGeneration
   ])
+
+  useEffect(() => {
+    return () => {
+      clearDrillGenerationTimeout()
+    }
+  }, [clearDrillGenerationTimeout])
 
   // The router now handles all popstate events
 

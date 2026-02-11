@@ -3,6 +3,10 @@
  * Solves the issue of hanging requests and memory leaks in React components
  */
 
+import { createLogger } from './logger.js'
+
+const logger = createLogger('utils:AsyncController')
+
 export class AsyncController {
   constructor() {
     this.activeOperations = new Map()
@@ -94,7 +98,7 @@ export class AsyncController {
 
     // Log any errors but don't throw (fail gracefully)
     if (Object.keys(errors).length > 0) {
-      console.warn('Some async operations failed:', errors)
+      logger.warn('executeAll', 'Some async operations failed', errors)
     }
 
     return resultObject
@@ -109,7 +113,7 @@ export class AsyncController {
     if (operation) {
       operation.controller.abort()
       this.activeOperations.delete(key)
-      console.log(`🚫 Cancelled operation: ${key}`)
+      logger.debug('cancel', `Cancelled operation: ${key}`)
     }
   }
 
@@ -117,7 +121,7 @@ export class AsyncController {
    * Cancel all active operations
    */
   cancelAll() {
-    console.log(`🚫 Cancelling ${this.activeOperations.size} active operations`)
+    logger.debug('cancelAll', `Cancelling ${this.activeOperations.size} active operations`)
     
     this.activeOperations.forEach((operation) => {
       operation.controller.abort()

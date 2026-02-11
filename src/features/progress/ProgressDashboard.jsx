@@ -30,7 +30,7 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
   const syncAvailable = isSyncEnabled()
-  const settings = useSettings()
+  const setSettings = useSettings(state => state.set)
   const { stats: srsStats } = useSRSQueue()
 
   const {
@@ -99,13 +99,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
   const handleSRSReviewNow = React.useCallback(() => {
     if (!onNavigateToDrill) return
 
-    settings.set({
+    setSettings({
       practiceMode: 'review',
       reviewSessionType: 'due',
       reviewSessionFilter: {}
     })
     onNavigateToDrill()
-  }, [onNavigateToDrill, settings])
+  }, [onNavigateToDrill, setSettings])
 
   // Listen for progress navigation events (from heat map clicks, etc.)
   React.useEffect(() => {
