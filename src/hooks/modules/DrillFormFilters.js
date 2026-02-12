@@ -26,6 +26,7 @@ const allowedCombosCache = new Map()
 const lemmaTypeCache = new Map()
 const lemmaFamiliesCache = new Map()
 let irregularFormCache = new WeakMap()
+let specificPracticeIndexCache = new WeakMap()
 const allowedPersonPredicateCache = new Map()
 
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
@@ -219,6 +220,7 @@ export function clearFormsCache() {
   lemmaFamiliesCache.clear()
   allowedPersonPredicateCache.clear()
   irregularFormCache = new WeakMap()
+  specificPracticeIndexCache = new WeakMap()
 }
 
 /**
@@ -360,26 +362,54 @@ export const allowsLevel = (form, settings) => {
  * @returns {Array} - Filtered forms matching specific practice
  */
 export const filterForSpecificPractice = (allForms, specificConstraints) => {
+  const { isSpecific } = specificConstraints
+  if (!isSpecific) {
+    return allForms
+  }
+  return getSpecificPracticeCandidates(allForms, specificConstraints)
+}
+
+const getSpecificPracticeCandidates = (allForms, specificConstraints) => {
   const { isSpecific, specificMood, specificTense } = specificConstraints
 
   if (!isSpecific) {
     return allForms
   }
 
-  const filtered = allForms.filter(form => {
-    // Handle mixed tenses
-    if (specificTense === 'impMixed') {
-      return form.mood === specificMood && (form.tense === 'impAff' || form.tense === 'impNeg')
-    }
-    if (specificTense === 'nonfiniteMixed') {
-      return form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
-    }
+  if (!Array.isArray(allForms) || allForms.length === 0) {
+    return []
+  }
 
-    // Standard specific filtering
-    return form.mood === specificMood && form.tense === specificTense
-  })
+  let index = specificPracticeIndexCache.get(allForms)
+  if (!index) {
+    index = new Map()
+    for (const form of allForms) {
+      if (!form) continue
+      const key = `${form.mood}|${form.tense}`
+      const current = index.get(key)
+      if (current) {
+        current.push(form)
+      } else {
+        index.set(key, [form])
+      }
+    }
+    specificPracticeIndexCache.set(allForms, index)
+  }
 
-  return filtered
+  if (specificTense === 'impMixed') {
+    return [
+      ...(index.get(`${specificMood}|impAff`) || []),
+      ...(index.get(`${specificMood}|impNeg`) || [])
+    ]
+  }
+  if (specificTense === 'nonfiniteMixed') {
+    return [
+      ...(index.get(`${specificMood}|ger`) || []),
+      ...(index.get(`${specificMood}|part`) || [])
+    ]
+  }
+
+  return index.get(`${specificMood}|${specificTense}`) || []
 }
 
 /**
@@ -621,3 +651,4 @@ const applyFamilyFiltering = (forms, settings) => {
 
 // Export the helper function for use by other modules
 export { getAllowedCombosForLevel }
+export { getSpecificPracticeCandidates }

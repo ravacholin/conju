@@ -25,6 +25,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Fix de regresion en hooks de drill: selectores de `useSessionStore` estabilizados con `useShallow` para evitar loops de render en React 19.
 - Validacion global posterior: suite completa `npm test -- --run` en verde (`130` archivos, `996` tests pass).
 
+## Cambios realizados (P1 - slice 1: filtro especifico)
+- Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
+- `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.
+- Se mantiene soporte para tensiones mixtas (`impMixed`, `nonfiniteMixed`) sobre el nuevo indice.
+- Tests agregados y verdes:
+- `src/hooks/modules/DrillFormFilters.test.js`
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
