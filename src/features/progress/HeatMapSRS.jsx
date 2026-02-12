@@ -105,6 +105,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   })
   const [loading, setLoading] = useState(false)
   const [manualRefreshRange, setManualRefreshRange] = useState(null)
+  const navigateTimeoutRef = useRef(null)
   const { queue, stats } = useSRSQueue()
   const rangeCacheRef = useRef(initialPayloadRef.current ? { [initialPayloadRef.current.range]: initialPayloadRef.current } : {})
 
@@ -276,6 +277,29 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   }
 
   // Handle cell click
+  const scheduleNavigateToDrill = () => {
+    if (!onNavigateToDrill) {
+      return
+    }
+
+    if (navigateTimeoutRef.current) {
+      clearTimeout(navigateTimeoutRef.current)
+    }
+
+    // Wait for settings propagation before navigation.
+    navigateTimeoutRef.current = setTimeout(() => {
+      navigateTimeoutRef.current = null
+      onNavigateToDrill()
+    }, 150)
+  }
+
+  useEffect(() => () => {
+    if (navigateTimeoutRef.current) {
+      clearTimeout(navigateTimeoutRef.current)
+      navigateTimeoutRef.current = null
+    }
+  }, [])
+
   const handleCellClick = (mood, tense) => {
     if (onNavigateToDrill) {
       // Set specific practice mode
@@ -284,8 +308,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificMood: mood,
         specificTense: tense
       }))
-      // Wait for settings to propagate before navigating (increased delay for reliability)
-      setTimeout(() => onNavigateToDrill(), 150)
+      scheduleNavigateToDrill()
     }
   }
 
@@ -309,8 +332,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificTense: tense,
         level: 'ALL' // Allow practicing regardless of user's level
       }))
-      // Wait for settings to propagate before navigating (increased delay for reliability)
-      setTimeout(() => onNavigateToDrill(), 150)
+      scheduleNavigateToDrill()
     }
   }
 
@@ -330,8 +352,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         reviewSessionType: 'due',
         reviewSessionFilter: {}
       }))
-      // Wait for settings to propagate before navigating (increased delay for reliability)
-      setTimeout(() => onNavigateToDrill(), 150)
+      scheduleNavigateToDrill()
     }
   }
 

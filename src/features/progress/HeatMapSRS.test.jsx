@@ -52,6 +52,10 @@ describe('HeatMapSRS', () => {
     setSettingsMock.mockClear()
   })
 
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('no realiza un fetch adicional cuando recibe datos iniciales válidos', async () => {
     const sampleData = {
       range: 'all',
@@ -91,6 +95,7 @@ describe('HeatMapSRS', () => {
     render(<HeatMapSRS data={sampleData} onNavigateToDrill={onNavigateToDrill} />)
 
     const targetCell = await screen.findByRole('button', { name: /Practicar Indicativo Presente/i })
+    vi.useFakeTimers()
     fireEvent.keyDown(targetCell, { key: 'Enter' })
 
     expect(setSettingsMock).toHaveBeenCalledWith(
@@ -103,8 +108,33 @@ describe('HeatMapSRS', () => {
       })
     )
 
-    await waitFor(() => {
-      expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
-    })
+    vi.advanceTimersByTime(160)
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+  })
+
+  it('colapsa navegaciones rápidas repetidas en una sola', async () => {
+    const sampleData = {
+      range: 'all',
+      heatMap: {
+        'indicativo-presente': {
+          mastery: 0.72,
+          attempts: 5,
+          lastAttempt: 1700000000000
+        }
+      },
+      updatedAt: 1700000000000
+    }
+    const onNavigateToDrill = vi.fn()
+
+    render(<HeatMapSRS data={sampleData} onNavigateToDrill={onNavigateToDrill} />)
+    const targetCell = await screen.findByRole('button', { name: /Practicar Indicativo Presente/i })
+    vi.useFakeTimers()
+
+    fireEvent.click(targetCell)
+    fireEvent.click(targetCell)
+    fireEvent.click(targetCell)
+
+    vi.advanceTimersByTime(160)
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
   })
 })

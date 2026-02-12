@@ -380,6 +380,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/ProgressDashboard.navigation.test.jsx` (caso de doble trigger + reintento post-cooldown)
 
+## Cambios realizados (P6 - slice 3: deduplicacion de timers de navegacion en heatmap)
+- `HeatMapSRS` ahora centraliza la navegacion diferida a Drill en `scheduleNavigateToDrill`.
+- Si llegan multiples triggers rapidos (click/teclado), se colapsan en una unica navegacion efectiva.
+- Se agrega cleanup de timeout en unmount para evitar timers colgando.
+- Tests agregados/actualizados:
+- `src/features/progress/HeatMapSRS.test.jsx` (nuevo caso de deduplicacion de navegacion rapida)
+
+## Estado P6
+- P6 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
