@@ -85,6 +85,7 @@ function AppRouter() {
       practiceMode: state.practiceMode,
       specificMood: state.specificMood,
       specificTense: state.specificTense,
+      practicePronoun: state.practicePronoun,
       verbType: state.verbType,
       selectedFamily: state.selectedFamily,
       level: state.level,
@@ -542,6 +543,8 @@ function AppRouter() {
           onNavigateToProgress={handleGoToProgress}
           onNavigateToStory={handleStartStoryMode}
           onNavigateToTimeline={handleStartTimelineMode}
+          getGenerationStats={drillMode.getGenerationStats}
+          isGenerationViable={drillMode.isGenerationViable}
           />
         </React.Suspense>
       </>

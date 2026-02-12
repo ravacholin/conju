@@ -10,6 +10,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - El progreso y la sincronizacion son poderosos, pero la UX no siempre traduce esa inteligencia en acciones claras.
 - El mayor salto a "siguiente nivel" vendra de: arquitectura de navegacion limpia, modelo de datos auditable, y un sistema de aprendizaje guiado con objetivos y feedback claros.
 
+## Cambios realizados (P0 - slice 1)
+- Router inicializa `history.state` al arrancar para evitar estados huérfanos en Back.
+- Se elimino la navegacion inicial duplicada en onboarding (menos loops y popstate inconsistentes).
+- Se creo un store de sesion dedicado (`src/state/session.js`) para sacar estado efimero de `useSettings`.
+- Flujos de sesiones personalizadas y de plan migrados a `useSessionStore`.
+- `useSettings` ahora valida y migra con Zod; defaults completos para claves usadas por onboarding.
+- Se agrego diagnostico de generacion en Drill cuando el pool queda vacio o tarda demasiado.
+- Tests de onboarding y drill ejecutados y ajustados donde correspondia.
+
+Tests ejecutados:
+- `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
+- `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
+
 ## Mapa actual end to end
 - UI: React + componentes locales y features (drill, learning, progress, story, timeline).
 - Routing: router propio con History API + estados internos en hooks.
@@ -188,4 +201,3 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Indices de datos por combinacion y worker para generacion.
 - Pipeline de validacion linguistica automatizado.
 - Experiencia guiada de aprendizaje end to end.
-

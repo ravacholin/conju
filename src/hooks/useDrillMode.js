@@ -11,6 +11,7 @@
 import { useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useSettings } from '../state/settings.js'
+import { useSessionStore } from '../state/session.js'
 
 // Import the new specialized hooks
 import { useDrillGenerator } from './modules/useDrillGenerator.js'
@@ -36,7 +37,6 @@ export function useDrillMode() {
   const settings = useSettings(
     useShallow((state) => ({
       set: state.set,
-      currentSession: state.currentSession,
       verbType: state.verbType,
       selectedFamily: state.selectedFamily,
       level: state.level,
@@ -46,6 +46,12 @@ export function useDrillMode() {
       specificMood: state.specificMood,
       specificTense: state.specificTense,
       region: state.region
+    }))
+  )
+  const sessionState = useSessionStore(
+    useShallow((state) => ({
+      currentSession: state.currentSession,
+      clearPersonalizedSession: state.clearPersonalizedSession
     }))
   )
 
@@ -85,8 +91,8 @@ export function useDrillMode() {
     getAvailableTensesForLevelAndMood
   ) => {
     // Initialize session if needed
-    if (!sessionManager.hasActiveSession() && settings.currentSession) {
-      sessionManager.startSession(settings.currentSession)
+    if (!sessionManager.hasActiveSession() && sessionState.currentSession) {
+      sessionManager.startSession(sessionState.currentSession)
     }
 
     const currentActivity = sessionManager.getCurrentActivity()
@@ -335,11 +341,9 @@ export function useDrillMode() {
 
           // Reset to normal mode
           settings.set({
-            practiceMode: 'mixed',
-            currentSession: null,
-            currentActivityIndex: 0,
-            sessionStartTime: null
+            practiceMode: 'mixed'
           })
+          sessionState.clearPersonalizedSession()
         }
       }
     }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import SessionCard from './SessionCard.jsx'
 import {
   getActivePlan,
@@ -57,6 +58,7 @@ function renderMicroGoal(goal) {
 
 export default function PersonalizedPlanPanel({ plan, onRefresh, onNavigateToDrill }) {
   const settings = useSettings()
+  const setPlanSession = useSessionStore((state) => state.setPlanSession)
   const [activePlan, setActivePlan] = useState(null)
   const [planProgress, setPlanProgress] = useState({ completed: 0, total: 0, percentage: 0 })
 
@@ -107,14 +109,10 @@ export default function PersonalizedPlanPanel({ plan, onRefresh, onNavigateToDri
     markSessionAsStarted(session.id)
 
     // Configurar settings para el drill
-    const drillConfig = {
-      ...session.drillConfig,
-      // Guardar referencia a la sesión activa para tracking
-      activeSessionId: session.id,
-      activePlanId: activePlan?.planId
-    }
-
-    settings.set(drillConfig)
+    settings.set({
+      ...session.drillConfig
+    })
+    setPlanSession(session.id, activePlan?.planId)
 
     // Navegar al drill
     if (onNavigateToDrill) {

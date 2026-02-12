@@ -31,6 +31,9 @@ class Router {
 
     // Parse initial route from URL
     this.currentRoute = this.parseCurrentURL()
+
+    // Ensure history state is initialized for the current route
+    this.ensureHistoryState()
   }
 
   /**
@@ -177,6 +180,28 @@ class Router {
       path += `/${route.step}`
     }
     return path
+  }
+
+  /**
+   * Ensure history state is initialized for the current route
+   */
+  ensureHistoryState() {
+    try {
+      const state = window.history.state || {}
+      if (state && state.appNav) {
+        return
+      }
+
+      const historyState = {
+        appNav: true,
+        ...this.currentRoute
+      }
+
+      const url = this.buildURL(this.currentRoute)
+      window.history.replaceState(historyState, '', url)
+    } catch (error) {
+      debug('warn', 'Error ensuring history state:', error)
+    }
   }
 
   /**

@@ -147,26 +147,6 @@ export function useOnboardingFlow() {
     });
   }
 
-  // Initialize browser history state for step 1 on first load
-  useEffect(() => {
-    try {
-      const currentRoute = router.getCurrentRoute?.() ?? null
-      const hasNonOnboardingMode = Boolean(currentRoute?.mode && currentRoute.mode !== 'onboarding')
-      const hasValidStep = typeof currentRoute?.step === 'number' && currentRoute.step >= 1 && currentRoute.step <= 8
-
-      if (!hasNonOnboardingMode && !hasValidStep) {
-        if (import.meta.env.DEV) {
-          console.log('🌟 Setting initial history state for step 1 via router.navigate (replace)')
-        }
-        router.navigate({ mode: 'onboarding', step: 1 }, { replace: true })
-      } else if (import.meta.env.DEV) {
-        console.log('✅ Skipping initial onboarding navigation because route is already valid', currentRoute)
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);  // Run only once on mount - removed onboardingStep dependency
-
   const closeTopPanelsAndFeatures = () => {
     // Function to close all top panels and features - will be defined in parent
     // This is a placeholder for now

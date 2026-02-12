@@ -51,6 +51,8 @@
  * @param {Function} props.onNavigateToProgress - Navegar al dashboard de progreso
  * @param {Function} props.onNavigateToStory - Lanzar el modo historias
  * @param {Function} props.onNavigateToTimeline - Lanzar el modo línea de tiempo
+ * @param {Function} props.getGenerationStats - Obtener estadísticas de generación (diagnóstico)
+ * @param {Function} props.isGenerationViable - Verificar si la generación es viable
  * 
  * @requires Drill - Componente core de práctica de conjugaciones
  * @requires DrillHeader - Header con botones de navegación y paneles
@@ -65,6 +67,7 @@
 import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 import { safeLazy } from '../../lib/utils/lazyImport.js';
+import { useSessionStore } from '../../state/session.js'
 
 const QuickSwitchPanel = safeLazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = safeLazy(() => import('./GamesPanel.jsx'))
@@ -99,7 +102,9 @@ function DrillMode({
   getAvailableTensesForLevelAndMood,
   onNavigateToProgress,
   onNavigateToStory,
-  onNavigateToTimeline
+  onNavigateToTimeline,
+  getGenerationStats,
+  isGenerationViable
 }) {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
@@ -107,8 +112,10 @@ function DrillMode({
   const [showPronunciation, setShowPronunciation] = useState(false)
   const [loadingError, setLoadingError] = useState(null)
   const [loadingTimeout, setLoadingTimeout] = useState(false)
+  const [generationIssue, setGenerationIssue] = useState(null)
   const pronunciationPanelRef = React.useRef(null)
   const LOADING_TIMEOUT_REF = React.useRef(null)
+  const startPersonalizedSession = useSessionStore((state) => state.startPersonalizedSession)
 
   const closeAllPanels = () => {
     setShowQuickSwitch(false)
@@ -175,12 +182,71 @@ function DrillMode({
     setShowQuickSwitch(false)
   }
 
+  const buildGenerationDiagnostics = useCallback(async () => {
+    if (typeof getGenerationStats !== 'function' || typeof isGenerationViable !== 'function') {
+      return null
+    }
+
+    try {
+      const [stats, viable] = await Promise.all([
+        getGenerationStats(),
+        isGenerationViable()
+      ])
+
+      if (viable) {
+        return null
+      }
+
+      const totalForms = Number(stats?.totalForms || 0)
+      const eligibleForms = Number(stats?.eligibleForms || 0)
+      const suggestions = []
+
+      if (settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense) {
+        suggestions.push('Cambia a modo mixto o elegí otro tiempo.')
+      }
+
+      if (settings.practiceMode === 'theme') {
+        suggestions.push('Probá cambiar de tema o volver a modo mixto.')
+      }
+
+      if (settings.verbType && settings.verbType !== 'all') {
+        suggestions.push('Usá "Todos" en tipo de verbo para ampliar el pool.')
+      }
+
+      if (settings.selectedFamily) {
+        suggestions.push('Quitá la familia irregular para ampliar el pool.')
+      }
+
+      if (settings.practicePronoun && settings.practicePronoun !== 'all') {
+        suggestions.push('Ampliá el pronombre o el dialecto.')
+      }
+
+      const detail = totalForms === 0
+        ? 'No se pudieron cargar formas para tu región.'
+        : 'No hay formas que cumplan la configuración actual.'
+
+      return {
+        detail,
+        totalForms,
+        eligibleForms,
+        suggestions,
+        error: stats?.error || null
+      }
+    } catch (error) {
+      return {
+        detail: 'No pudimos diagnosticar la generación en este momento.',
+        error: error?.message || String(error)
+      }
+    }
+  }, [getGenerationStats, isGenerationViable, settings.practiceMode, settings.practicePronoun, settings.selectedFamily, settings.specificMood, settings.specificTense, settings.verbType])
+
   // Enhanced safety net: if no item is present, trigger regeneration with escalating timeouts
   useEffect(() => {
     if (!currentItem && typeof onRegenerateItem === 'function') {
       // Clear any previous error states
       setLoadingError(null)
       setLoadingTimeout(false)
+      setGenerationIssue(null)
 
       // First attempt after 300ms (quick retry)
       const quickRetryId = setTimeout(() => {
@@ -197,6 +263,7 @@ function DrillMode({
         if (!currentItem) {
           console.warn('⏰ DrillMode: Item generation taking longer than expected')
           setLoadingTimeout(true)
+          buildGenerationDiagnostics().then(setGenerationIssue)
         }
       }, 8000)
 
@@ -205,6 +272,7 @@ function DrillMode({
         if (!currentItem) {
           console.error('💥 DrillMode: Item generation failed - timeout after 15 seconds')
           setLoadingError('La generación de ejercicios está tardando más de lo esperado. Esto puede deberse a una configuración muy restrictiva.')
+          buildGenerationDiagnostics().then(setGenerationIssue)
         }
       }, 15000)
 
@@ -217,8 +285,9 @@ function DrillMode({
       // Clear error states when we have an item
       setLoadingError(null)
       setLoadingTimeout(false)
+      setGenerationIssue(null)
     }
-  }, [currentItem, onRegenerateItem])
+  }, [buildGenerationDiagnostics, currentItem, onRegenerateItem])
 
   // Listen for navigation requests from ProgressDashboard
   useEffect(() => {
@@ -233,11 +302,9 @@ function DrillMode({
 
           // Initialize session in settings
           settings.set({
-            practiceMode: 'personalized_session',
-            currentSession: detail.session,
-            currentActivityIndex: 0,
-            sessionStartTime: Date.now()
+            practiceMode: 'personalized_session'
           })
+          startPersonalizedSession(detail.session)
 
           // Start with first activity
           onRegenerateItem()
@@ -391,11 +458,30 @@ function DrillMode({
             <div className="error-message">
               <h3>⚠️ Error de generación</h3>
               <p>{loadingError}</p>
+              {generationIssue && (
+                <div className="generation-diagnostics">
+                  <p><strong>Diagnóstico:</strong> {generationIssue.detail}</p>
+                  {typeof generationIssue.totalForms === 'number' && typeof generationIssue.eligibleForms === 'number' && (
+                    <p>Formas totales: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</p>
+                  )}
+                  {generationIssue.error && (
+                    <p>Detalle técnico: {generationIssue.error}</p>
+                  )}
+                  {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
+                    <ul>
+                      {generationIssue.suggestions.map((suggestion, index) => (
+                        <li key={index}>{suggestion}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
               <div className="error-actions">
                 <button
                   onClick={() => {
                     setLoadingError(null)
                     setLoadingTimeout(false)
+                    setGenerationIssue(null)
                     onRegenerateItem()
                   }}
                   className="retry-button"
@@ -419,6 +505,21 @@ function DrillMode({
                 <div style={{ fontSize: '0.9em', marginTop: '10px', opacity: 0.7 }}>
                   Esto está tardando más de lo esperado. Si el problema persiste, intenta cambiar la configuración.
                 </div>
+                {generationIssue && (
+                  <div style={{ marginTop: '12px', fontSize: '0.9em', opacity: 0.85 }}>
+                    <div><strong>Diagnóstico:</strong> {generationIssue.detail}</div>
+                    {typeof generationIssue.totalForms === 'number' && typeof generationIssue.eligibleForms === 'number' && (
+                      <div>Formas totales: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</div>
+                    )}
+                    {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
+                      <ul style={{ marginTop: '8px' }}>
+                        {generationIssue.suggestions.map((suggestion, index) => (
+                          <li key={index}>{suggestion}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
                 <button
                   onClick={() => {
                     logger.debug('🔄 DrillMode: Manual retry triggered by user')

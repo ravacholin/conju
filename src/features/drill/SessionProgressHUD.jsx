@@ -11,6 +11,7 @@
 import React, { useEffect, useState } from 'react'
 import sessionManager, { getCurrentSessionProgress, hasActiveSession } from '../../lib/progress/sessionManager.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { getActivePlan, markSessionAsCompleted, getSessionAttemptProgress } from '../../lib/progress/planTracking.js'
 
 export default function SessionProgressHUD() {
@@ -18,15 +19,21 @@ export default function SessionProgressHUD() {
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [planSession, setPlanSession] = useState(null)
   const settings = useSettings()
+  const sessionState = useSessionStore((state) => ({
+    activeSessionId: state.activeSessionId,
+    activePlanId: state.activePlanId,
+    clearPlanSession: state.clearPlanSession,
+    clearPersonalizedSession: state.clearPersonalizedSession
+  }))
 
   // Actualizar progreso de sesión
   useEffect(() => {
     const updateProgress = () => {
       // Verificar si hay sesión de plan activa
-      if (settings.activeSessionId && settings.activePlanId) {
+      if (sessionState.activeSessionId && sessionState.activePlanId) {
         const activePlan = getActivePlan()
         if (activePlan) {
-          const session = activePlan.sessions.find(s => s.sessionId === settings.activeSessionId)
+          const session = activePlan.sessions.find(s => s.sessionId === sessionState.activeSessionId)
           if (session) {
             setPlanSession(session)
             setSessionProgress(null) // Limpiar progreso de sesión normal
@@ -36,7 +43,7 @@ export default function SessionProgressHUD() {
       }
 
       // Si no hay plan session, limpiar
-      if (!settings.activeSessionId || !settings.activePlanId) {
+      if (!sessionState.activeSessionId || !sessionState.activePlanId) {
         setPlanSession(null)
       }
 
@@ -48,7 +55,7 @@ export default function SessionProgressHUD() {
         if (progress && progress.sessionActive) {
           setTimeElapsed(progress.elapsedMinutes)
         }
-      } else if (!settings.activeSessionId && !settings.activePlanId) {
+      } else if (!sessionState.activeSessionId && !sessionState.activePlanId) {
         // Solo limpiar sessionProgress si NO hay plan session
         setSessionProgress(null)
         setTimeElapsed(0)
@@ -83,7 +90,7 @@ export default function SessionProgressHUD() {
       window.removeEventListener('progress:plan-updated', handlePlanUpdate)
       clearInterval(timer)
     }
-  }, [settings.practiceMode, settings.activeSessionId, settings.activePlanId, sessionProgress?.sessionActive])
+  }, [settings.practiceMode, sessionState.activeSessionId, sessionState.activePlanId, sessionProgress?.sessionActive])
 
   const formatTime = (minutes) => {
     if (minutes < 60) {
@@ -113,8 +120,8 @@ export default function SessionProgressHUD() {
     if (window.confirm(confirmMessage)) {
       const finalMetrics = sessionManager.endSession({ manualEnd: true })
 
-      if (planSession && settings.activeSessionId) {
-        const attemptProgress = getSessionAttemptProgress(settings.activeSessionId)
+      if (planSession && sessionState.activeSessionId) {
+        const attemptProgress = getSessionAttemptProgress(sessionState.activeSessionId)
         const stats = {
           attempts: attemptProgress.attempts,
           accuracy: attemptProgress.accuracy,
@@ -122,18 +129,15 @@ export default function SessionProgressHUD() {
           manualEnd: true
         }
 
-        await markSessionAsCompleted(settings.activeSessionId, stats, { manualEnd: true })
+        await markSessionAsCompleted(sessionState.activeSessionId, stats, { manualEnd: true })
       }
 
       // Finalizar sesión y volver a modo normal
       settings.set({
-        practiceMode: 'mixed',
-        currentSession: null,
-        currentActivityIndex: 0,
-        sessionStartTime: null,
-        activeSessionId: null,
-        activePlanId: null
+        practiceMode: 'mixed'
       })
+      sessionState.clearPersonalizedSession()
+      sessionState.clearPlanSession()
 
       // Dispatch event para notificar finalización
       window.dispatchEvent(new CustomEvent('session-progress-update', {
@@ -157,7 +161,7 @@ export default function SessionProgressHUD() {
         }
       : { completed: 0, total: 0 }
 
-    const attemptProgress = getSessionAttemptProgress(settings.activeSessionId)
+    const attemptProgress = getSessionAttemptProgress(sessionState.activeSessionId)
 
     return (
       <div className="session-progress-hud active plan-session">

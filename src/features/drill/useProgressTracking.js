@@ -17,6 +17,7 @@ import {
 import { createLogger } from '../../lib/utils/logger.js'
 import { incrementSessionAttempts } from '../../lib/progress/planTracking.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { initProgressSystem as initProgressSystemCore } from '../../lib/progress/index.js'
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
 
@@ -33,6 +34,10 @@ export function useProgressTracking(currentItem, onResult) {
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
   const settings = useSettings()
+  const sessionState = useSessionStore((state) => ({
+    activeSessionId: state.activeSessionId,
+    activePlanId: state.activePlanId
+  }))
   const triedAutoInitRef = useRef(false)
 
   // Verificar si el sistema de progreso está listo usando eventos
@@ -123,9 +128,9 @@ export function useProgressTracking(currentItem, onResult) {
     }
 
     // Si hay una sesión de plan activa, incrementar el contador
-    if (settings.activeSessionId && settings.activePlanId) {
+    if (sessionState.activeSessionId && sessionState.activePlanId) {
       try {
-        incrementSessionAttempts(settings.activeSessionId, result.correct)
+        incrementSessionAttempts(sessionState.activeSessionId, result.correct)
         logger.debug(`Plan session attempt tracked: ${result.correct ? 'correct' : 'incorrect'}`)
       } catch (error) {
         logger.warn('Error al rastrear intento de sesión de plan:', error)

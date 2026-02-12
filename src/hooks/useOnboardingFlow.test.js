@@ -49,13 +49,13 @@ describe('useOnboardingFlow', () => {
     })
   })
 
-  it('keeps initializing onboarding when no valid route information exists', async () => {
+  it('does not auto-navigate on mount even when the route is onboarding', async () => {
     getCurrentRouteMock.mockReturnValue({ mode: 'onboarding', step: null })
 
     renderHook(() => useOnboardingFlow())
 
     await waitFor(() => {
-      expect(navigateMock).toHaveBeenCalledWith({ mode: 'onboarding', step: 1 }, { replace: true })
+      expect(navigateMock).not.toHaveBeenCalled()
     })
   })
 })

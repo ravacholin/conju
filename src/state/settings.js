@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { z } from 'zod'
 import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
 import { getCurrentUserId } from '../lib/progress/userSettingsStore.js'
 
@@ -12,6 +13,229 @@ export const RESISTANCE_MAX_MS = 120000
 export const PRACTICE_MODES = {
   BY_LEVEL: 'by_level',
   BY_TOPIC: 'by_topic'
+}
+
+const SETTINGS_VERSION = 2
+
+const createDefaultSettings = () => ({
+  // Sync tracking
+  lastUpdated: Date.now(),
+
+  // Configuración de usuario
+  level: 'A1',
+  useVoseo: false,
+  useTuteo: false,
+  useVosotros: false,
+  region: null,
+  strict: null,
+  accentTolerance: null,
+  requireDieresis: false,
+  blockNonNormativeSpelling: false,
+  cliticStrictness: 'off',
+  impSubjVariantMode: 'accept_both',
+  neutralizePronoun: false,
+  timeMode: null,
+  perItemMs: null,
+  medianTargetMs: null,
+  showPronouns: null,
+  burstSize: null,
+  cameFromTema: false,
+
+  // User level system
+  userLevel: 'A2',
+  userLevelProgress: 0,
+  hasCompletedPlacementTest: false,
+  placementTestReport: null,
+
+  // Practice mode system
+  practiceMode: 'mixed',
+  levelPracticeMode: PRACTICE_MODES.BY_LEVEL,
+  specificMood: null,
+  specificTense: null,
+  practicePronoun: null,
+  irregularityFilterMode: 'tense',
+  verbType: 'all',
+  selectedFamily: null,
+
+  // Verbos permitidos (por nivel/packs)
+  allowedLemmas: null,
+
+  // Features
+  resistanceActive: false,
+  resistanceMsLeft: 0,
+  resistanceStartTs: null,
+  resistanceBestMsByLevel: {},
+  reverseActive: false,
+  doubleActive: false,
+
+  // Configuración de futuro subjuntivo
+  enableFuturoSubjProd: false,
+  enableFuturoSubjRead: false,
+
+  // C2 conmutación
+  enableC2Conmutacion: false,
+  conmutacionSeq: ['2s_vos', '3p', '3s'],
+  conmutacionIdx: 0,
+
+  // Rotación de segunda persona
+  rotateSecondPerson: false,
+  nextSecondPerson: '2s_vos',
+
+  // Porcentaje de clíticos en imperativo afirmativo
+  cliticsPercent: 0,
+
+  // Verbos raros para C2
+  c2RareBoostLemmas: [],
+
+  // Sistema de chunks - toggle para fallback de emergencia
+  enableChunks: true,
+  chunksFailsafeActivated: false,
+  chunksFailsafeCount: 0,
+  chunksRecoveryScheduledAt: null,
+  lastChunkFailureReason: null,
+
+  // Sistema de progreso - toggle para la integración con mastery data
+  enableProgressIntegration: true,
+
+  // Metas diarias
+  dailyGoalType: 'attempts',
+  dailyGoalValue: 20,
+
+  // Recordatorios de práctica
+  practiceReminderEnabled: false,
+  practiceReminderTime: '19:00',
+  practiceReminderDays: [1, 2, 3, 4, 5],
+
+  // Revisión SRS
+  reviewSessionType: 'due',
+  reviewSessionFilter: {},
+
+  // Bloques de práctica
+  currentBlock: null
+})
+
+const PERSISTED_SETTINGS_KEYS = [
+  'lastUpdated',
+  'level',
+  'useVoseo',
+  'useTuteo',
+  'useVosotros',
+  'region',
+  'strict',
+  'accentTolerance',
+  'requireDieresis',
+  'blockNonNormativeSpelling',
+  'cliticStrictness',
+  'impSubjVariantMode',
+  'neutralizePronoun',
+  'timeMode',
+  'perItemMs',
+  'medianTargetMs',
+  'showPronouns',
+  'burstSize',
+  'cameFromTema',
+  'practiceMode',
+  'levelPracticeMode',
+  'specificMood',
+  'specificTense',
+  'practicePronoun',
+  'irregularityFilterMode',
+  'verbType',
+  'selectedFamily',
+  'userLevel',
+  'userLevelProgress',
+  'hasCompletedPlacementTest',
+  'placementTestReport',
+  'enableFuturoSubjProd',
+  'enableFuturoSubjRead',
+  'enableC2Conmutacion',
+  'conmutacionSeq',
+  'conmutacionIdx',
+  'rotateSecondPerson',
+  'nextSecondPerson',
+  'cliticsPercent',
+  'c2RareBoostLemmas',
+  'resistanceBestMsByLevel',
+  'dailyGoalType',
+  'dailyGoalValue',
+  'practiceReminderEnabled',
+  'practiceReminderTime',
+  'practiceReminderDays'
+]
+
+const pickPersistedSettings = (state) => {
+  const persisted = {}
+  PERSISTED_SETTINGS_KEYS.forEach((key) => {
+    if (key in state) {
+      persisted[key] = state[key]
+    }
+  })
+  return persisted
+}
+
+const persistedSettingsSchema = z.object({
+  lastUpdated: z.number().optional(),
+  level: z.enum(LEVELS).nullable().optional(),
+  useVoseo: z.boolean().optional(),
+  useTuteo: z.boolean().optional(),
+  useVosotros: z.boolean().optional(),
+  region: z.string().nullable().optional(),
+  strict: z.boolean().nullable().optional(),
+  accentTolerance: z.string().nullable().optional(),
+  requireDieresis: z.boolean().optional(),
+  blockNonNormativeSpelling: z.boolean().optional(),
+  cliticStrictness: z.string().nullable().optional(),
+  impSubjVariantMode: z.string().nullable().optional(),
+  neutralizePronoun: z.boolean().optional(),
+  timeMode: z.string().nullable().optional(),
+  perItemMs: z.number().nullable().optional(),
+  medianTargetMs: z.number().nullable().optional(),
+  showPronouns: z.boolean().nullable().optional(),
+  burstSize: z.number().nullable().optional(),
+  cameFromTema: z.boolean().optional(),
+  practiceMode: z.string().nullable().optional(),
+  levelPracticeMode: z.string().nullable().optional(),
+  specificMood: z.string().nullable().optional(),
+  specificTense: z.string().nullable().optional(),
+  practicePronoun: z.string().nullable().optional(),
+  irregularityFilterMode: z.string().nullable().optional(),
+  verbType: z.string().nullable().optional(),
+  selectedFamily: z.string().nullable().optional(),
+  userLevel: z.string().nullable().optional(),
+  userLevelProgress: z.number().optional(),
+  hasCompletedPlacementTest: z.boolean().optional(),
+  placementTestReport: z.any().optional(),
+  enableFuturoSubjProd: z.boolean().optional(),
+  enableFuturoSubjRead: z.boolean().optional(),
+  enableC2Conmutacion: z.boolean().optional(),
+  conmutacionSeq: z.array(z.string()).optional(),
+  conmutacionIdx: z.number().optional(),
+  rotateSecondPerson: z.boolean().optional(),
+  nextSecondPerson: z.string().optional(),
+  cliticsPercent: z.number().optional(),
+  c2RareBoostLemmas: z.array(z.string()).optional(),
+  resistanceBestMsByLevel: z.record(z.number()).optional(),
+  dailyGoalType: z.string().optional(),
+  dailyGoalValue: z.number().optional(),
+  practiceReminderEnabled: z.boolean().optional(),
+  practiceReminderTime: z.string().optional(),
+  practiceReminderDays: z.array(z.number()).optional()
+})
+
+const sanitizePersistedSettings = (persistedState) => {
+  const defaults = pickPersistedSettings(createDefaultSettings())
+  const parsed = persistedSettingsSchema.safeParse(persistedState || {})
+
+  if (!parsed.success) {
+    console.warn('Settings hydration failed, using defaults', parsed.error)
+    return defaults
+  }
+
+  return {
+    ...defaults,
+    ...parsed.data,
+    lastUpdated: parsed.data.lastUpdated ?? defaults.lastUpdated
+  }
 }
 
 // Lazy cache warmup - only warm up when actually needed
@@ -35,6 +259,7 @@ export const warmupCachesIfNeeded = (() => {
 const useSettings = create(
   persist(
     (originalSet, _get) => {
+      const defaultSettings = createDefaultSettings()
       // Wrap set to automatically add lastUpdated to ALL state changes
       const set = (update) => {
         if (typeof update === 'function') {
@@ -48,83 +273,7 @@ const useSettings = create(
       }
 
       return {
-        // Sync tracking
-        lastUpdated: Date.now(), // Timestamp for sync conflict resolution
-
-        // Configuración de usuario
-        level: 'A1',
-        // Variante: no se fija por defecto. Se define en Onboarding.
-        useVoseo: false,
-        useTuteo: false,
-        useVosotros: false,
-        region: null,
-
-        // User level system
-        userLevel: 'A2', // Personal CEFR level (separate from practice level)
-        userLevelProgress: 0, // Progress within current level (0-100%)
-        hasCompletedPlacementTest: false,
-        placementTestReport: null,
-
-        // Practice mode system
-        practiceMode: 'mixed', // Legacy mode
-        levelPracticeMode: PRACTICE_MODES.BY_LEVEL, // New dual mode system
-        specificMood: null,
-        specificTense: null,
-        // Se definirá al elegir variante; sin valor inicial
-        practicePronoun: null,
-        // Filtro de irregularidad: 'tense' (por forma) | 'lemma' (por verbo)
-        irregularityFilterMode: 'tense',
-        verbType: 'all', // 'all', 'regular', 'irregular'
-        selectedFamily: null,
-
-        // Verbos permitidos (por nivel/packs)
-        allowedLemmas: null,
-
-        // Features
-        resistanceActive: false,
-        resistanceMsLeft: 0,
-        resistanceStartTs: null,
-        resistanceBestMsByLevel: {},
-        reverseActive: false,
-        doubleActive: false,
-
-        // Configuración de futuro subjuntivo
-        enableFuturoSubjProd: false,
-        enableFuturoSubjRead: false,
-
-        // C2 conmutación
-        enableC2Conmutacion: false,
-        conmutacionSeq: ['2s_vos', '3p', '3s'],
-        conmutacionIdx: 0,
-
-        // Rotación de segunda persona
-        rotateSecondPerson: false,
-        nextSecondPerson: '2s_vos',
-
-        // Porcentaje de clíticos en imperativo afirmativo
-        cliticsPercent: 0,
-
-        // Verbos raros para C2
-        c2RareBoostLemmas: [],
-
-        // Sistema de chunks - toggle para fallback de emergencia
-        enableChunks: true, // Puede deshabilitarse si hay problemas
-        chunksFailsafeActivated: false, // Track if failsafe was activated
-        chunksFailsafeCount: 0, // Count of failsafe activations
-        chunksRecoveryScheduledAt: null,
-        lastChunkFailureReason: null,
-
-        // Sistema de progreso - toggle para la integración con mastery data
-        enableProgressIntegration: true, // Puede deshabilitarse si hay problemas
-
-        // Metas diarias
-        dailyGoalType: 'attempts',
-        dailyGoalValue: 20,
-
-        // Recordatorios de práctica
-        practiceReminderEnabled: false,
-        practiceReminderTime: '19:00',
-        practiceReminderDays: [1, 2, 3, 4, 5],
+        ...defaultSettings,
 
         // Métodos para actualizar configuración
         set: (newSettings) => set((state) => ({ ...state, ...newSettings, lastUpdated: Date.now() })),
@@ -233,44 +382,9 @@ const useSettings = create(
     },
     {
       name: 'spanish-conjugator-settings',
-      partialize: (state) => ({
-        // Sync tracking
-        lastUpdated: state.lastUpdated,
-
-        // Solo persistir configuración de usuario, no estado temporal
-        level: state.level,
-        useVoseo: state.useVoseo,
-        useTuteo: state.useTuteo,
-        useVosotros: state.useVosotros,
-        region: state.region,
-        practiceMode: state.practiceMode,
-        userLevel: state.userLevel,
-        userLevelProgress: state.userLevelProgress,
-        hasCompletedPlacementTest: state.hasCompletedPlacementTest,
-        placementTestReport: state.placementTestReport,
-        levelPracticeMode: state.levelPracticeMode,
-        specificMood: state.specificMood,
-        specificTense: state.specificTense,
-        practicePronoun: state.practicePronoun,
-        irregularityFilterMode: state.irregularityFilterMode,
-        verbType: state.verbType,
-        selectedFamily: state.selectedFamily,
-        // Persistir conmutación C2 para asegurar continuidad y variedad
-        enableC2Conmutacion: state.enableC2Conmutacion,
-        conmutacionSeq: state.conmutacionSeq,
-        conmutacionIdx: state.conmutacionIdx,
-        rotateSecondPerson: state.rotateSecondPerson,
-        nextSecondPerson: state.nextSecondPerson,
-        enableFuturoSubjProd: state.enableFuturoSubjProd,
-        enableFuturoSubjRead: state.enableFuturoSubjRead,
-        cliticsPercent: state.cliticsPercent,
-        resistanceBestMsByLevel: state.resistanceBestMsByLevel,
-        dailyGoalType: state.dailyGoalType,
-        dailyGoalValue: state.dailyGoalValue,
-        practiceReminderEnabled: state.practiceReminderEnabled,
-        practiceReminderTime: state.practiceReminderTime,
-        practiceReminderDays: state.practiceReminderDays
-      })
+      version: SETTINGS_VERSION,
+      migrate: (persistedState) => sanitizePersistedSettings(persistedState),
+      partialize: (state) => pickPersistedSettings(state)
     }
   )
 )
