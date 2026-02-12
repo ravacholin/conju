@@ -189,6 +189,20 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - remoción de claves legacy efímeras de drill en migración.
 - Con esto, la apertura de snapshots viejos ahora mantiene configuración válida en lugar de resetear a defaults por un único campo inválido.
 
+## Cambios realizados (P0 - slice 12: cola serializada para persistencia de settings)
+- Se reemplazo debounce ad-hoc de persistencia por una cola serializada reutilizable:
+- `src/state/settingsPersistence.js`
+- Integracion en `useSettings`:
+- `src/state/settings.js`
+- Mejoras aplicadas:
+- coalescing de cambios rapidos (persiste solo el snapshot mas reciente tras debounce).
+- `flushSettings()` ahora reutiliza la misma cola y respeta orden de escritura.
+- serializacion de guardados en vuelo para evitar escrituras fuera de orden.
+- skip de escrituras obsoletas por `lastUpdated` ya persistido.
+- Test nuevo:
+- `src/state/settingsPersistence.test.js`
+- cubre debounce, flush inmediato y serializacion con request en vuelo.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

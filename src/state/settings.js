@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { z } from 'zod'
 import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
 import { getCurrentUserId } from '../lib/progress/userSettingsStore.js'
+import { createSettingsPersistenceQueue } from './settingsPersistence.js'
 
 // Niveles disponibles
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
@@ -464,6 +465,18 @@ const useSettings = create(
 // Flag to skip initial hydration event from Zustand persist middleware
 let isHydrated = false
 
+const settingsPersistenceQueue = createSettingsPersistenceQueue({
+  debounceMs: 1000,
+  getUserId: () => getCurrentUserId(),
+  saveFn: async (userId, settings) => {
+    const { saveUserSettings } = await import('../lib/progress/database.js')
+    await saveUserSettings(userId, settings)
+  },
+  onError: (error) => {
+    console.warn('Failed to persist settings to IndexedDB:', error)
+  }
+})
+
 useSettings.subscribe((state) => {
   // Skip initial hydration from localStorage
   if (!isHydrated) {
@@ -472,46 +485,17 @@ useSettings.subscribe((state) => {
   }
 
   // Persist to IndexedDB for sync (debounced)
-  persistSettingsToIndexedDB(state)
+  settingsPersistenceQueue.schedule(state)
 })
-
-let persistTimeout = null
-async function persistSettingsToIndexedDB(settings) {
-  // Debounce: wait 1 second after last change
-  clearTimeout(persistTimeout)
-  persistTimeout = setTimeout(async () => {
-    try {
-      const { saveUserSettings } = await import('../lib/progress/database.js')
-      const userId = getCurrentUserId()
-
-      if (!userId) return // Not logged in yet
-
-      await saveUserSettings(userId, settings)
-    } catch (error) {
-      console.warn('Failed to persist settings to IndexedDB:', error)
-    }
-  }, 1000)
-}
 
 // Flush function to force immediate IndexedDB save (bypasses debounce)
 // Used by sync coordinator to ensure settings are persisted before sync
 export async function flushSettings() {
-  clearTimeout(persistTimeout)
-  const state = useSettings.getState()
-  const userId = getCurrentUserId()
-
-  if (!userId) return
-
-  try {
-    const { saveUserSettings } = await import('../lib/progress/database.js')
-    await saveUserSettings(userId, state)
-  } catch (error) {
-    console.warn('Failed to flush settings to IndexedDB:', error)
-  }
+  await settingsPersistenceQueue.flush(useSettings.getState())
 }
 
 export function resetSettingsForTests() {
-  clearTimeout(persistTimeout)
+  settingsPersistenceQueue.resetForTests()
   useSettings.setState(createDefaultSettings())
 }
 

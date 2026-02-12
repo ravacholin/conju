@@ -210,3 +210,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [x] Formalizar pipeline de migraciones por version en `useSettings`.
 2. [x] Agregar casos de migracion para snapshots historicos reales.
 3. [x] Verificar apertura de snapshots viejos sin perdida de config valida.
+
+## Siguiente backlog activo (Fase 2.3)
+1. [x] Unificar debounce/flush de persistencia de settings con cola serializada.
+2. [ ] Auditar y reducir posibles write races remanentes entre stores.
+3. [ ] Documentar invariantes de orden de escritura para sync.
