@@ -390,6 +390,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P6
 - P6 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P7 - slice 1: refresh ML de SmartPractice con debounce)
+- Se optimizo la reaccion de `SmartPractice` ante `progress:dataUpdated`:
+- ahora invalida cache y reagenda recarga con debounce de 250ms.
+- multiples eventos rapidos se consolidan en una sola regeneracion ML.
+- Se agrego cleanup explicito del timer de debounce en unmount.
+- Tambien se memoizo `getMoodTenseLabel` para evitar recomputos evitables en `useMemo`.
+- Tests agregados/actualizados:
+- `src/features/progress/SmartPractice.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

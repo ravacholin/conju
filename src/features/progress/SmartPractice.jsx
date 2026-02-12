@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react'
+import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
@@ -48,15 +48,16 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const [mlRecommendations, setMLRecommendations] = useState(null)
   const [loadingML, setLoadingML] = useState(false)
   const [refreshSeed, setRefreshSeed] = useState(0)
+  const refreshDebounceRef = useRef(null)
   const recommendationKey = useMemo(
     () => buildSmartPracticeRecommendationKey(userStats || {}),
     [userStats]
   )
 
   // Get user-friendly labels for mood/tense combinations
-  const getMoodTenseLabel = (mood, tense) => {
+  const getMoodTenseLabel = useCallback((mood, tense) => {
     return formatMoodTense(mood, tense)
-  }
+  }, [])
 
   // Fetch ML recommendations when component mounts or userStats changes
   useEffect(() => {
@@ -128,11 +129,24 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
       }
 
       invalidateCachedSmartPracticeRecommendation(recommendationKey)
-      setRefreshSeed((value) => value + 1)
+      if (refreshDebounceRef.current) {
+        clearTimeout(refreshDebounceRef.current)
+      }
+
+      refreshDebounceRef.current = setTimeout(() => {
+        refreshDebounceRef.current = null
+        setRefreshSeed((value) => value + 1)
+      }, 250)
     }
 
     window.addEventListener('progress:dataUpdated', handleProgressUpdate)
-    return () => window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+    return () => {
+      if (refreshDebounceRef.current) {
+        clearTimeout(refreshDebounceRef.current)
+        refreshDebounceRef.current = null
+      }
+      window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+    }
   }, [recommendationKey])
 
   // Analyze user data to generate smart recommendations (fallback heuristics)

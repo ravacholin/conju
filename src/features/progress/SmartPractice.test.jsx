@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, it, beforeEach, afterEach } from 'vitest'
 import { __resetSmartPracticeRecommendationCache } from './smartPracticeMlCache.js'
 
@@ -37,6 +37,7 @@ describe('SmartPractice recommendations', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
@@ -143,6 +144,7 @@ describe('SmartPractice recommendations', () => {
     await waitFor(() => {
       expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
     })
+    vi.useFakeTimers()
 
     fireEvent(
       window,
@@ -151,8 +153,35 @@ describe('SmartPractice recommendations', () => {
       })
     )
 
-    await waitFor(() => {
-      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(2)
+    await act(async () => {
+      vi.advanceTimersByTime(260)
+      await Promise.resolve()
     })
+    expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(2)
+  })
+
+  it('coalesces rapid progress updates into a single refresh', async () => {
+    render(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 10, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
+    })
+    vi.useFakeTimers()
+
+    fireEvent(window, new CustomEvent('progress:dataUpdated', { detail: { attemptId: 'a-1' } }))
+    fireEvent(window, new CustomEvent('progress:dataUpdated', { detail: { attemptId: 'a-2' } }))
+    fireEvent(window, new CustomEvent('progress:dataUpdated', { detail: { attemptId: 'a-3' } }))
+
+    await act(async () => {
+      vi.advanceTimersByTime(260)
+      await Promise.resolve()
+    })
+    expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(2)
   })
 })
