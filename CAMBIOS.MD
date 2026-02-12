@@ -22,6 +22,8 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `local newer` no debe sobreescribirse con remoto viejo.
 - fallback por clave compuesta cuando remoto no trae `id`.
 - Tests de onboarding y drill ejecutados y ajustados donde correspondia.
+- Fix de regresion en hooks de drill: selectores de `useSessionStore` estabilizados con `useShallow` para evitar loops de render en React 19.
+- Validacion global posterior: suite completa `npm test -- --run` en verde (`130` archivos, `996` tests pass).
 
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
