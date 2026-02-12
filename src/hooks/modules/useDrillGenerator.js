@@ -51,6 +51,7 @@ import {
   selectDueCandidate
 } from './specificConstraints.js'
 import { selectNextForm } from './hierarchicalSelection.js'
+import { buildEligibleFormsKey, shouldCacheEligibleForms } from './drillCacheKey.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('useDrillGenerator')
@@ -86,30 +87,6 @@ export const useDrillGenerator = () => {
     formsPoolRef.current = poolResult.cache
     return poolResult.forms || []
   }, [getNow])
-
-  const buildEligibleFormsKey = useCallback((signature, targetSettings, specificConstraints) => {
-    return [
-      signature,
-      targetSettings.practiceMode || 'mixed',
-      targetSettings.level || 'A1',
-      targetSettings.verbType || 'all',
-      targetSettings.selectedFamily || 'none',
-      targetSettings.practicePronoun || 'mixed',
-      targetSettings.useVoseo ? 'voseo' : 'no_voseo',
-      targetSettings.useVosotros ? 'vosotros' : 'no_vosotros',
-      targetSettings.irregularityFilterMode || 'tense',
-      specificConstraints?.isSpecific ? 'specific' : 'not_specific',
-      specificConstraints?.specificMood || '',
-      specificConstraints?.specificTense || '',
-      specificConstraints?.specificPerson || ''
-    ].join('|')
-  }, [])
-
-  const shouldCacheEligibleForms = useCallback((targetSettings) => {
-    // Avoid caching when verbType === 'regular' because the filter intentionally samples
-    // a random spillover of regular-by-morphology forms from irregular lemmas.
-    return targetSettings?.verbType !== 'regular'
-  }, [])
 
   /**
    * Generate next drill item using comprehensive selection algorithms
@@ -221,7 +198,13 @@ export const useDrillGenerator = () => {
 
       let eligibleForms
       const canCacheEligible = shouldCacheEligibleForms(FRESH_SETTINGS)
-      const eligibleKey = buildEligibleFormsKey(poolResult.signature, FRESH_SETTINGS, specificConstraints)
+      const eligibleKey = buildEligibleFormsKey(
+        poolResult.signature,
+        FRESH_SETTINGS,
+        specificConstraints,
+        reviewSessionType,
+        reviewSessionFilter
+      )
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
@@ -399,7 +382,7 @@ export const useDrillGenerator = () => {
     } finally {
       setIsGenerating(false)
     }
-  }, [buildEligibleFormsKey, isGenerating, shouldCacheEligibleForms])
+  }, [isGenerating])
 
   /**
    * Check if generation is currently possible
@@ -423,7 +406,13 @@ export const useDrillGenerator = () => {
       let eligibleForms
       const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
       const canCacheEligible = shouldCacheEligibleForms(settings)
-      const eligibleKey = buildEligibleFormsKey(poolSignature, settings, specificConstraints)
+      const eligibleKey = buildEligibleFormsKey(
+        poolSignature,
+        settings,
+        specificConstraints,
+        settings.reviewSessionType,
+        settings.reviewSessionFilter
+      )
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
@@ -437,7 +426,7 @@ export const useDrillGenerator = () => {
       logger.warn('isGenerationViable', 'Error checking generation viability', error)
       return false
     }
-  }, [buildEligibleFormsKey, resolveFormsForStats, settings, shouldCacheEligibleForms])
+  }, [resolveFormsForStats, settings])
 
   /**
    * Get generation statistics for debugging
@@ -457,7 +446,13 @@ export const useDrillGenerator = () => {
       let eligibleForms
       const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
       const canCacheEligible = shouldCacheEligibleForms(settings)
-      const eligibleKey = buildEligibleFormsKey(poolSignature, settings, specificConstraints)
+      const eligibleKey = buildEligibleFormsKey(
+        poolSignature,
+        settings,
+        specificConstraints,
+        settings.reviewSessionType,
+        settings.reviewSessionFilter
+      )
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
@@ -502,7 +497,7 @@ export const useDrillGenerator = () => {
         error: error.message
       }
     }
-  }, [buildEligibleFormsKey, resolveFormsForStats, settings, shouldCacheEligibleForms, lastGeneratedItem])
+  }, [resolveFormsForStats, settings, lastGeneratedItem])
 
   return {
     generateNextItem,

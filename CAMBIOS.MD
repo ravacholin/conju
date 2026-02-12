@@ -143,6 +143,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test actualizado:
 - `src/lib/progress/cloudSync.memoryLeak.test.js` ahora cubre que `handleConnectivityChange` refleja correctamente estado online/offline en `getSyncStatus()`.
 
+## Cambios realizados (P1 - slice 13: cache key de generacion con contexto de review)
+- Se extrajo y endurecio la construccion de keys de cache de elegibles en `src/hooks/modules/drillCacheKey.js`.
+- `buildEligibleFormsKey(...)` ahora incorpora fingerprint estable de `reviewSessionType + reviewSessionFilter`.
+- Esto evita reutilizar cache de elegibles entre filtros de review semanticamente distintos.
+- Se centralizo tambien `shouldCacheEligibleForms(...)` para que la politica de cache quede explicita y testeable.
+- `useDrillGenerator` ahora consume esta capa para todas las rutas de cache (generacion, viabilidad, stats).
+- Tests nuevos:
+- `src/hooks/modules/drillCacheKey.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
