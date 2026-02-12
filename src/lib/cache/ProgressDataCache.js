@@ -32,7 +32,7 @@ class ProgressDataCache {
    * @returns {Promise} - Los datos solicitados
    */
   async get(key, loadFn, dataType = 'default', options = {}) {
-    const { signal } = options || {}
+    const { signal, ttl, forceRefresh = false } = options || {}
 
     if (signal?.aborted) {
       throw new Error('Operation was cancelled')
@@ -40,7 +40,7 @@ class ProgressDataCache {
 
     // Verificar caché
     const cached = this.cache.get(key)
-    if (cached && !this.isExpired(cached, dataType)) {
+    if (!forceRefresh && cached && !this.isExpired(cached, dataType, ttl)) {
       if (signal?.aborted) {
         throw new Error('Operation was cancelled')
       }
@@ -56,7 +56,7 @@ class ProgressDataCache {
     
     // Crear nueva request
     this.stats.misses++
-    const requestPromise = this.executeLoadFunction(key, loadFn, dataType, signal)
+    const requestPromise = this.executeLoadFunction(key, loadFn, dataType, signal, ttl)
     this.pendingRequests.set(key, requestPromise)
 
     try {
@@ -67,7 +67,7 @@ class ProgressDataCache {
     }
   }
   
-  async executeLoadFunction(key, loadFn, dataType, signal) {
+  async executeLoadFunction(key, loadFn, dataType, signal, ttlOverride) {
     const abortError = new Error('Operation was cancelled')
 
     if (signal?.aborted) {
@@ -109,15 +109,28 @@ class ProgressDataCache {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      dataType
+      dataType,
+      ttl: Number.isFinite(ttlOverride) ? ttlOverride : null
     })
     
     return data
   }
   
-  isExpired(cached, dataType) {
-    const ttl = this.ttlConfig[dataType] || this.defaultTTL
+  isExpired(cached, dataType, ttlOverride) {
+    const ttl = this.resolveTTL(cached, dataType, ttlOverride)
     return Date.now() - cached.timestamp > ttl
+  }
+
+  resolveTTL(cached, dataType, ttlOverride) {
+    if (Number.isFinite(ttlOverride) && ttlOverride >= 0) {
+      return ttlOverride
+    }
+
+    if (cached && Number.isFinite(cached.ttl) && cached.ttl >= 0) {
+      return cached.ttl
+    }
+
+    return this.ttlConfig[dataType] || this.defaultTTL
   }
   
   /**
@@ -149,6 +162,38 @@ class ProgressDataCache {
     const escapedUserId = userId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const userPattern = new RegExp(`^${escapedUserId}:`)
     this.invalidate(userPattern)
+  }
+
+  /**
+   * Invalidar entradas por tipo de dato, opcionalmente limitadas a un usuario.
+   * @param {string|string[]} dataTypes - Tipo(s) de datos a invalidar
+   * @param {string} [userId] - Usuario opcional
+   */
+  invalidateByDataType(dataTypes, userId) {
+    const normalizedTypes = Array.isArray(dataTypes) ? dataTypes : [dataTypes]
+    const validTypes = normalizedTypes
+      .filter((type) => typeof type === 'string' && type.trim().length > 0)
+      .map((type) => type.trim())
+
+    if (validTypes.length === 0) {
+      return
+    }
+
+    const typeSet = new Set(validTypes)
+    const hasUserFilter = typeof userId === 'string' && userId.trim().length > 0
+    const normalizedUserId = hasUserFilter ? userId.trim() : null
+
+    for (const [key, cached] of this.cache.entries()) {
+      if (!typeSet.has(cached?.dataType)) {
+        continue
+      }
+
+      if (hasUserFilter && !key.startsWith(`${normalizedUserId}:`)) {
+        continue
+      }
+
+      this.cache.delete(key)
+    }
   }
   
   /**
@@ -223,6 +268,43 @@ class ProgressDataCache {
   }
 }
 
+const CORE_CACHE_TYPES = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
+
+const EVENT_TYPE_TO_CACHE_TYPES = {
+  challenge_completed: ['dailyChallenges', 'weeklyGoals', 'weeklyProgress', 'userStats'],
+  drill_result: CORE_CACHE_TYPES,
+  practice_session: CORE_CACHE_TYPES,
+  mastery_update: ['heatMap', 'userStats', 'recommendations'],
+  error_logged: ['errorIntel', 'recommendations'],
+  settings_change: ['recommendations', 'heatMap']
+}
+
+const resolveProgressUpdateKeys = (detail = {}) => {
+  if (!detail || detail.forceFullRefresh || detail.fullRefresh) {
+    return null
+  }
+
+  const { type, attemptId, challengeId, mood, tense, person } = detail
+
+  if (type === 'sync') {
+    return null
+  }
+
+  if (type && EVENT_TYPE_TO_CACHE_TYPES[type]) {
+    return EVENT_TYPE_TO_CACHE_TYPES[type]
+  }
+
+  if (attemptId || mood || tense || person) {
+    return CORE_CACHE_TYPES
+  }
+
+  if (challengeId) {
+    return ['dailyChallenges']
+  }
+
+  return null
+}
+
 // Singleton instance
 const progressDataCache = new ProgressDataCache()
 
@@ -244,38 +326,26 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
   window.addEventListener('progress:dataUpdated', (event) => {
     const userId = event.detail?.userId
     const updateType = event.detail?.type || 'general'
+    const cacheKeys = resolveProgressUpdateKeys(event.detail || {})
     
     if (import.meta.env?.DEV) {
       console.log('🗑️ Cache invalidation triggered:', { userId, updateType })
     }
     
     if (userId) {
-      // Invalidación específica basada en tipo de actualización
-      switch (updateType) {
-        case 'drill_result':
-        case 'practice_session':
-          // Invalidar solo datos que cambian con práctica
-          progressDataCache.invalidate(new RegExp(`^${userId}:(userStats|weeklyProgress|heatMap|recommendations)`))
-          break
-        case 'mastery_update':
-          // Invalidar datos de dominio
-          progressDataCache.invalidate(new RegExp(`^${userId}:(heatMap|userStats|errorIntel)`))
-          break
-        case 'error_logged':
-          // Invalidar solo análisis de errores
-          progressDataCache.invalidate(new RegExp(`^${userId}:(errorIntel|recommendations)`))
-          break
-        case 'settings_change':
-          // Invalidar recomendaciones que dependen de configuración
-          progressDataCache.invalidate(new RegExp(`^${userId}:(recommendations|heatMap)`))
-          break
-        default:
-          // Invalidación completa para cambios generales
-          progressDataCache.invalidateUser(userId)
+      if (Array.isArray(cacheKeys) && cacheKeys.length > 0) {
+        progressDataCache.invalidateByDataType(cacheKeys, userId)
+      } else {
+        // Invalidación completa para cambios generales
+        progressDataCache.invalidateUser(userId)
       }
     } else {
-      // Si no hay userId específico, invalidar datos frecuentemente actualizados
-      progressDataCache.invalidate(/:(weeklyProgress|recommendations)$/)
+      if (Array.isArray(cacheKeys) && cacheKeys.length > 0) {
+        progressDataCache.invalidateByDataType(cacheKeys)
+      } else {
+        // Si no hay userId específico, invalidar datos frecuentemente actualizados
+        progressDataCache.invalidate(/:(weeklyProgress|recommendations)$/)
+      }
     }
   })
   
@@ -286,7 +356,7 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
       if (import.meta.env?.DEV) {
         console.log('⚙️ Settings changed, invalidating recommendations cache')
       }
-      progressDataCache.invalidate(/:recommendations$/)
+      progressDataCache.invalidateByDataType(['recommendations', 'heatMap'])
     }
   })
 
@@ -296,11 +366,11 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
       console.log('🏅 Desafío diario completado, invalidando caché correspondiente', event.detail)
     }
     if (userId) {
-      progressDataCache.invalidate(`${userId}:dailyChallenges`)
+      progressDataCache.invalidateByDataType('dailyChallenges', userId)
     } else {
-      progressDataCache.invalidate(/:dailyChallenges$/)
+      progressDataCache.invalidateByDataType('dailyChallenges')
     }
   })
 }
 
-export { progressDataCache, ProgressDataCache }
+export { progressDataCache, ProgressDataCache, resolveProgressUpdateKeys, CORE_CACHE_TYPES }

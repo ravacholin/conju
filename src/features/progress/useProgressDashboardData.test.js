@@ -39,9 +39,29 @@ vi.mock('../../lib/cache/ProgressDataCache.js', () => ({
       return loader(invocationArg)
     }),
     invalidate: vi.fn(),
+    invalidateByDataType: vi.fn(),
     invalidateUser: vi.fn(),
     getStats: vi.fn(() => ({}))
-  }
+  },
+  resolveProgressUpdateKeys: vi.fn((detail = {}) => {
+    if (!detail || detail.forceFullRefresh || detail.fullRefresh || detail.type === 'sync') {
+      return null
+    }
+
+    if (detail.type === 'drill_result' || detail.type === 'practice_session') {
+      return ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
+    }
+
+    if (detail.attemptId || detail.mood || detail.tense || detail.person) {
+      return ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
+    }
+
+    if (detail.challengeId) {
+      return ['dailyChallenges']
+    }
+
+    return null
+  })
 }))
 
 vi.mock('../../lib/utils/AsyncController.js', () => ({

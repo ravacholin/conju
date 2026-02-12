@@ -12,7 +12,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('progress:dashboard')
-import { progressDataCache } from '../../lib/cache/ProgressDataCache.js'
+import { progressDataCache, resolveProgressUpdateKeys } from '../../lib/cache/ProgressDataCache.js'
 import { AsyncController } from '../../lib/utils/AsyncController.js'
 import { getDailyChallengeSnapshot, markChallengeCompleted } from '../../lib/progress/challenges.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
@@ -41,41 +41,6 @@ const HEAVY_ANALYTICS_KEYS = [
   'dynamicLevelInfo',
   'levelRecommendation'
 ]
-
-const EVENT_TYPE_TO_KEYS = {
-  challenge_completed: ['dailyChallenges', 'weeklyGoals', 'weeklyProgress', 'userStats'],
-  drill_result: CORE_DATA_KEYS,
-  practice_session: CORE_DATA_KEYS,
-  mastery_update: ['heatMap', 'userStats', 'recommendations'],
-  error_logged: ['errorIntel', 'recommendations'],
-  settings_change: ['recommendations', 'heatMap']
-}
-
-const resolveKeysFromDetail = (detail = {}) => {
-  if (!detail || detail.forceFullRefresh || detail.fullRefresh) {
-    return null
-  }
-
-  const { type, attemptId, challengeId, mood, tense, person } = detail
-
-  if (type === 'sync') {
-    return null
-  }
-
-  if (type && EVENT_TYPE_TO_KEYS[type]) {
-    return EVENT_TYPE_TO_KEYS[type]
-  }
-
-  if (attemptId || mood || tense || person) {
-    return CORE_DATA_KEYS
-  }
-
-  if (challengeId) {
-    return ['dailyChallenges']
-  }
-
-  return null
-}
 
 const normalizeHeatMapResult = (rawData, rangeKey = 'all') => {
   const timestamp = Date.now()
@@ -749,7 +714,7 @@ export default function useProgressDashboardData() {
 
       const operationKeys = Array.isArray(operationKeysOverride)
         ? operationKeysOverride
-        : resolveKeysFromDetail(detail)
+        : resolveProgressUpdateKeys(detail)
 
       if (!operationKeys || operationKeys.length === 0) {
         return loadData(true)
@@ -758,6 +723,8 @@ export default function useProgressDashboardData() {
       setRefreshing(true)
 
       try {
+        progressDataCache.invalidateByDataType(operationKeys, userId)
+
         operationKeys.forEach((key) => {
           if (sectionStatusRef.current[key] !== 'loading') {
             updateSectionStatus(key, 'loading')
@@ -915,7 +882,7 @@ export default function useProgressDashboardData() {
 
     const handleProgressUpdate = (event) => {
       const detail = event?.detail || {}
-      const operationKeys = resolveKeysFromDetail(detail)
+      const operationKeys = resolveProgressUpdateKeys(detail)
 
       if (import.meta.env?.DEV) {
         logger.debug('handleProgressUpdate', '🔄 Datos de progreso actualizados', { detail, operationKeys })

@@ -43,6 +43,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/hooks/modules/DrillFormFilters.test.js`
 - `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
 
+## Cambios realizados (P1 - slice 3: politica de cache e invalidacion por eventos)
+- `ProgressDataCache.get` ahora soporta politica por request:
+- `ttl` override por entrada (persistido en la entrada cacheada).
+- `forceRefresh` para bypass explicito del cache en refresh selectivos.
+- Se agrego `invalidateByDataType(dataTypes, userId?)` para invalidar por tipo de dato con alcance opcional por usuario.
+- Se extrajo y reutilizo una sola funcion `resolveProgressUpdateKeys(detail)` para mapear eventos de progreso a claves de datos.
+- El listener global de `progress:dataUpdated` ahora invalida por tipo con granularidad y evita invalidaciones completas innecesarias.
+- `useProgressDashboardData` usa el mismo resolvedor y fuerza invalidacion selectiva previa a `refreshFromEvent`, reduciendo riesgo de datos stale por TTL.
+- `settings:changed` y `progress:challengeCompleted` migrados a invalidacion por tipo (`recommendations`, `heatMap`, `dailyChallenges`).
+- Tests agregados/actualizados:
+- `src/lib/cache/ProgressDataCache.test.js` (TTL override, force refresh, invalidacion por tipo/usuario y mapeo de eventos).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
