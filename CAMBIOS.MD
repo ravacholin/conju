@@ -136,6 +136,13 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test agregado/actualizado:
 - `src/lib/progress/cloudSync.memoryLeak.test.js` valida la politica de `shouldRunAutoSyncTick`.
 
+## Cambios realizados (P1 - slice 12: deduplicacion de listeners globales de cloud sync)
+- Se reforzo bootstrap de `cloudSync` para evitar listeners globales duplicados en recargas/HMR:
+- guardia global `__CONJU_CLOUDSYNC_EVENTS__` para registrar `online/offline` una sola vez.
+- Se deduplico el initial sync diferido con `__CONJU_CLOUDSYNC_INITIAL_TIMEOUT__` para no acumular timeouts.
+- Test actualizado:
+- `src/lib/progress/cloudSync.memoryLeak.test.js` ahora cubre que `handleConnectivityChange` refleja correctamente estado online/offline en `getSyncStatus()`.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

@@ -24,6 +24,8 @@ const isDev = import.meta?.env?.DEV
 
 const SYNC_QUEUE_KEY = 'progress-sync-queue-v1'
 const LAST_SYNC_TIME_KEY = 'progress-last-sync-time'
+const CLOUD_SYNC_EVENTS_KEY = '__CONJU_CLOUDSYNC_EVENTS__'
+const CLOUD_SYNC_INITIAL_TIMEOUT_KEY = '__CONJU_CLOUDSYNC_INITIAL_TIMEOUT__'
 
 let lastSyncTime = null
 try {
@@ -51,17 +53,21 @@ export function shouldRunAutoSyncTick({
 }
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('online', () => {
-    handleConnectivityChange(true)
-  })
-  window.addEventListener('offline', () => {
-    handleConnectivityChange(false)
-  })
+  if (!window[CLOUD_SYNC_EVENTS_KEY]) {
+    window.addEventListener('online', () => {
+      handleConnectivityChange(true)
+    })
+    window.addEventListener('offline', () => {
+      handleConnectivityChange(false)
+    })
+    window[CLOUD_SYNC_EVENTS_KEY] = true
+  }
 
-  // Trigger initial sync if online
-  if (isOnline) {
+  // Trigger initial sync if online (only once globally)
+  if (isOnline && !window[CLOUD_SYNC_INITIAL_TIMEOUT_KEY]) {
     // Small delay to allow auth to initialize
-    setTimeout(() => {
+    window[CLOUD_SYNC_INITIAL_TIMEOUT_KEY] = setTimeout(() => {
+      window[CLOUD_SYNC_INITIAL_TIMEOUT_KEY] = null
       syncWithCloud({ bypassIncognito: false }).catch((error) => {
         // Log initial sync failures for debugging
         logger.warn('initial-sync', 'Initial sync failed (non-critical)', error)
