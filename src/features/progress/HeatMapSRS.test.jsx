@@ -93,11 +93,15 @@ describe('HeatMapSRS', () => {
     const targetCell = await screen.findByRole('button', { name: /Practicar Indicativo Presente/i })
     fireEvent.keyDown(targetCell, { key: 'Enter' })
 
-    expect(setSettingsMock).toHaveBeenCalledWith({
-      practiceMode: 'specific',
-      specificMood: 'indicativo',
-      specificTense: 'presente'
-    })
+    expect(setSettingsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        practiceMode: 'specific',
+        specificMood: 'indicativo',
+        specificTense: 'presente',
+        reviewSessionType: 'due',
+        reviewSessionFilter: {}
+      })
+    )
 
     await waitFor(() => {
       expect(onNavigateToDrill).toHaveBeenCalledTimes(1)

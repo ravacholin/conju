@@ -340,6 +340,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/SmartPractice.test.jsx`
 - `src/features/progress/drillNavigationConfig.test.js`
 
+## Cambios realizados (P5 - slice 2: normalizacion drill extendida a heatmap y micro-drills)
+- Se aplico la misma capa de normalizacion (`buildDrillSettingsUpdate`) en:
+- `HeatMapSRS` (click celda, click SRS puntual y review SRS general).
+- `ErrorIntelligence` (micro-drills por tags/combos).
+- Esto evita arrastrar configuraciones stale entre `specific`, `review` y `mixed`.
+- Se cubrio regresion para `currentBlock` en mixed mode en tests de config.
+- Tests agregados/actualizados:
+- `src/features/progress/HeatMapSRS.test.jsx`
+- `src/features/progress/drillNavigationConfig.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

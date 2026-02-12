@@ -6,6 +6,7 @@ import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { HEATMAP_MOOD_CONFIG } from './heatMapConfig.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 
 const logger = createLogger('features:HeatMapSRS')
 
@@ -278,11 +279,11 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   const handleCellClick = (mood, tense) => {
     if (onNavigateToDrill) {
       // Set specific practice mode
-      settings.set({
+      settings.set(buildDrillSettingsUpdate({}, {
         practiceMode: 'specific',
         specificMood: mood,
         specificTense: tense
-      })
+      }))
       // Wait for settings to propagate before navigating (increased delay for reliability)
       setTimeout(() => onNavigateToDrill(), 150)
     }
@@ -302,12 +303,12 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     if (onNavigateToDrill) {
       // Practice this specific mood/tense (not generic review)
       // This ensures clicking SRS badge practices that exact tense
-      settings.set({
+      settings.set(buildDrillSettingsUpdate({}, {
         practiceMode: 'specific',
         specificMood: mood,
         specificTense: tense,
         level: 'ALL' // Allow practicing regardless of user's level
-      })
+      }))
       // Wait for settings to propagate before navigating (increased delay for reliability)
       setTimeout(() => onNavigateToDrill(), 150)
     }
@@ -324,11 +325,11 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
   // Handle SRS practice
   const handleSRSPractice = () => {
     if (onNavigateToDrill) {
-      settings.set({
+      settings.set(buildDrillSettingsUpdate({}, {
         practiceMode: 'review',
         reviewSessionType: 'due',
         reviewSessionFilter: {}
-      })
+      }))
       // Wait for settings to propagate before navigating (increased delay for reliability)
       setTimeout(() => onNavigateToDrill(), 150)
     }

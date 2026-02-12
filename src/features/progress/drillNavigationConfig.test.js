@@ -41,4 +41,17 @@ describe('drillNavigationConfig', () => {
     expect(result.reviewSessionType).toBe('due')
     expect(result.reviewSessionFilter).toEqual({})
   })
+
+  it('allows mixed mode to carry currentBlock for corrective micro-drills', () => {
+    const currentBlock = { combos: [{ mood: 'indicative', tense: 'pres' }], itemsRemaining: 8 }
+    const result = buildDrillSettingsUpdate({
+      practiceMode: 'mixed',
+      currentBlock
+    })
+
+    expect(result.practiceMode).toBe('mixed')
+    expect(result.currentBlock).toEqual(currentBlock)
+    expect(result.specificMood).toBeNull()
+    expect(result.specificTense).toBeNull()
+  })
 })
