@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   getHeatMapData,
   getUserStats,
@@ -26,6 +26,7 @@ import {
   getGlobalDynamicLevelInfo,
   checkGlobalLevelRecommendation
 } from '../../lib/levels/userLevelProfile.js'
+import { createProgressUpdateBatcher } from './progressUpdateBatcher.js'
 
 const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
 
@@ -857,28 +858,21 @@ export default function useProgressDashboardData() {
 
   // Escuchar eventos de actualización de progreso para refrescar automáticamente
   useEffect(() => {
-    let refreshTimeoutId = null
-    let pendingAction = null
     let mounted = true
-
-    const scheduleRefresh = (action) => {
-      if (!mounted) return
-      if (refreshTimeoutId) {
-        clearTimeout(refreshTimeoutId)
-      }
-      pendingAction = action
-      refreshTimeoutId = setTimeout(() => {
+    const updateBatcher = createProgressUpdateBatcher({
+      delay: 400,
+      onFlush: ({ fullRefresh, keys }) => {
         if (!mounted) return
-        const task = pendingAction
-        pendingAction = null
-        refreshTimeoutId = null
-        if (typeof task === 'function') {
-          Promise.resolve(task()).catch(error => {
-            logger.warn('scheduleRefresh', 'Dashboard refresh task failed', error)
-          })
-        }
-      }, 400)
-    }
+
+        const task = fullRefresh || !keys || keys.length === 0
+          ? () => loadData(true)
+          : () => refreshFromEvent({}, keys)
+
+        Promise.resolve(task()).catch(error => {
+          logger.warn('scheduleRefresh', 'Dashboard refresh task failed', error)
+        })
+      }
+    })
 
     const handleProgressUpdate = (event) => {
       const detail = event?.detail || {}
@@ -888,20 +882,14 @@ export default function useProgressDashboardData() {
         logger.debug('handleProgressUpdate', '🔄 Datos de progreso actualizados', { detail, operationKeys })
       }
 
-      if (!operationKeys || operationKeys.length === 0) {
-        scheduleRefresh(() => loadData(true))
-      } else {
-        scheduleRefresh(() => refreshFromEvent(detail, operationKeys))
-      }
+      updateBatcher.addUpdate(operationKeys)
     }
 
     window.addEventListener('progress:dataUpdated', handleProgressUpdate)
 
     return () => {
       mounted = false
-      if (refreshTimeoutId) {
-        clearTimeout(refreshTimeoutId)
-      }
+      updateBatcher.dispose()
       window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
   }, [loadData, refreshFromEvent])

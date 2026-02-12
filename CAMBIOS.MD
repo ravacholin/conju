@@ -310,6 +310,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/HeatMapSRS.test.jsx`
 
+## Cambios realizados (P4 - slice 2: batching de eventos de progreso sin perdida de keys)
+- Se reemplazo el debounce ad-hoc de `progress:dataUpdated` por un batcher dedicado:
+- nueva capa: `src/features/progress/progressUpdateBatcher.js`.
+- Ahora los eventos cercanos se consolidan en una sola ejecucion sin perder claves intermedias.
+- Si llega un evento sin keys, se eleva correctamente a `full refresh`.
+- Integrado en `useProgressDashboardData` para reducir trabajo redundante y evitar refrescos parciales incompletos.
+- Tests agregados/actualizados:
+- `src/features/progress/progressUpdateBatcher.test.js`
+- `src/features/progress/useProgressDashboardData.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
