@@ -13,18 +13,21 @@ import sessionManager, { getCurrentSessionProgress, hasActiveSession } from '../
 import { useSettings } from '../../state/settings.js'
 import { useSessionStore } from '../../state/session.js'
 import { getActivePlan, markSessionAsCompleted, getSessionAttemptProgress } from '../../lib/progress/planTracking.js'
+import { useShallow } from 'zustand/react/shallow'
 
 export default function SessionProgressHUD() {
   const [sessionProgress, setSessionProgress] = useState(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [planSession, setPlanSession] = useState(null)
   const settings = useSettings()
-  const sessionState = useSessionStore((state) => ({
-    activeSessionId: state.activeSessionId,
-    activePlanId: state.activePlanId,
-    clearPlanSession: state.clearPlanSession,
-    clearPersonalizedSession: state.clearPersonalizedSession
-  }))
+  const sessionState = useSessionStore(
+    useShallow((state) => ({
+      activeSessionId: state.activeSessionId,
+      activePlanId: state.activePlanId,
+      clearPlanSession: state.clearPlanSession,
+      clearPersonalizedSession: state.clearPersonalizedSession
+    }))
+  )
 
   // Actualizar progreso de sesión
   useEffect(() => {

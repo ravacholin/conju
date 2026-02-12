@@ -20,6 +20,7 @@ import { useSettings } from '../../state/settings.js'
 import { useSessionStore } from '../../state/session.js'
 import { initProgressSystem as initProgressSystemCore } from '../../lib/progress/index.js'
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
+import { useShallow } from 'zustand/react/shallow'
 
 /**
  * Hook personalizado para tracking de progreso en Drill
@@ -34,10 +35,12 @@ export function useProgressTracking(currentItem, onResult) {
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
   const settings = useSettings()
-  const sessionState = useSessionStore((state) => ({
-    activeSessionId: state.activeSessionId,
-    activePlanId: state.activePlanId
-  }))
+  const sessionState = useSessionStore(
+    useShallow((state) => ({
+      activeSessionId: state.activeSessionId,
+      activePlanId: state.activePlanId
+    }))
+  )
   const triedAutoInitRef = useRef(false)
 
   // Verificar si el sistema de progreso está listo usando eventos
