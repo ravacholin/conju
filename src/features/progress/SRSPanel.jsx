@@ -35,6 +35,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
   })
   const startReviewLockRef = useRef(false)
   const startReviewReleaseRef = useRef(null)
+  const srsUpdateDebounceRef = useRef(null)
 
   const loadSRSData = useCallback(async () => {
     try {
@@ -62,17 +63,28 @@ export default function SRSPanel({ onNavigateToDrill }) {
 
   useEffect(() => {
     const handleSRSUpdated = () => {
-      refreshStateRef.current = {
-        ...refreshStateRef.current,
-        skipNext: true
+      if (srsUpdateDebounceRef.current) {
+        clearTimeout(srsUpdateDebounceRef.current)
       }
-      loadSRSData()
-      reload()
+
+      srsUpdateDebounceRef.current = setTimeout(() => {
+        srsUpdateDebounceRef.current = null
+        refreshStateRef.current = {
+          ...refreshStateRef.current,
+          skipNext: true
+        }
+        loadSRSData()
+        reload()
+      }, 250)
     }
 
     window.addEventListener('progress:srs-updated', handleSRSUpdated)
 
     return () => {
+      if (srsUpdateDebounceRef.current) {
+        clearTimeout(srsUpdateDebounceRef.current)
+        srsUpdateDebounceRef.current = null
+      }
       window.removeEventListener('progress:srs-updated', handleSRSUpdated)
     }
   }, [loadSRSData, reload])

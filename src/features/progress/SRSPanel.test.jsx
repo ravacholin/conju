@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 
 const { reloadMock, getSRSStatsMock, getCurrentUserIdMock, useSRSQueueMock, setSettingsMock } = vi.hoisted(() => ({
@@ -88,6 +88,27 @@ describe('SRSPanel', () => {
       expect(reloadMock).toHaveBeenCalledTimes(1)
       expect(getSRSStatsMock).toHaveBeenCalledTimes(2)
     })
+  })
+
+  it('coalescea eventos rapidos de progress:srs-updated en una sola recarga', async () => {
+    render(<SRSPanel />)
+
+    await waitFor(() => {
+      expect(getSRSStatsMock).toHaveBeenCalledTimes(1)
+    })
+    vi.useFakeTimers()
+
+    window.dispatchEvent(new CustomEvent('progress:srs-updated'))
+    window.dispatchEvent(new CustomEvent('progress:srs-updated'))
+    window.dispatchEvent(new CustomEvent('progress:srs-updated'))
+
+    await act(async () => {
+      vi.advanceTimersByTime(300)
+      await Promise.resolve()
+    })
+
+    expect(reloadMock).toHaveBeenCalledTimes(1)
+    expect(getSRSStatsMock).toHaveBeenCalledTimes(2)
   })
 
   it('renderiza personLabel provisto por la cola cuando se expanden detalles', async () => {

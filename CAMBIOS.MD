@@ -446,6 +446,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/srsReviewSessionConfig.test.js`
 - `src/features/progress/SRSPanel.test.jsx`
 
+## Cambios realizados (P8 - slice 3: debounce de eventos SRS para evitar recargas redundantes)
+- `SRSPanel` ahora coalescea eventos `progress:srs-updated` en una sola recarga efectiva con debounce corto.
+- Esto evita rafagas de `loadSRSData + reload` cuando se disparan multiples updates seguidos.
+- Se agrego cleanup del timer de debounce al desmontar.
+- Tests agregados/actualizados:
+- `src/features/progress/SRSPanel.test.jsx` (caso de eventos rapidos coalescidos)
+
+## Estado P8
+- P8 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
