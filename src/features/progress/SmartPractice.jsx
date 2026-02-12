@@ -5,6 +5,7 @@ import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMap
 import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
+import { buildSmartPracticeRecommendationKeyItem } from './smartPracticeRecommendationKey.js'
 import {
   buildSmartPracticeRecommendationKey,
   getCachedSmartPracticeRecommendation,
@@ -439,7 +440,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
       <div className="recommendations-grid">
         {recommendations.map((rec, index) => (
           <div
-            key={index}
+            key={buildSmartPracticeRecommendationKeyItem(rec, index)}
             className={`recommendation-card priority-${rec.priority} ${rec.mlPowered ? 'ml-powered' : ''}`}
             onClick={() => handleRecommendationClick(rec)}
             onKeyDown={(event) => handleRecommendationKeyDown(event, rec)}

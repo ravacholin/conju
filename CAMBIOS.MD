@@ -399,6 +399,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/SmartPractice.test.jsx`
 
+## Cambios realizados (P7 - slice 2: keys estables para tarjetas de recomendaciones)
+- Se reemplazo el `key={index}` en tarjetas de `SmartPractice` por una key estable de identidad.
+- Nueva utilidad:
+- `src/features/progress/smartPracticeRecommendationKey.js`
+- Esto reduce riesgo de re-mount innecesario de tarjetas cuando cambia el orden/fuente de recomendaciones.
+- Tests agregados/actualizados:
+- `src/features/progress/smartPracticeRecommendationKey.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
