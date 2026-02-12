@@ -262,6 +262,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Medir mejora de refresco incremental vs refresh completo (tiempo y costo de operaciones).
 
 ## Siguiente backlog activo (Fase 6.1)
-1. [ ] Definir suite mínima de chequeos a11y automáticos para dashboard y drill.
-2. [ ] Integrar ejecución de axe en tests de componentes críticos.
-3. [ ] Documentar backlog de issues a11y encontrados y su severidad.
+1. [x] Definir suite mínima de chequeos a11y automáticos para dashboard y drill.
+2. [x] Integrar ejecución de axe en tests de componentes críticos.
+3. [x] Documentar backlog de issues a11y encontrados y su severidad.
+
+## Siguiente backlog activo (Fase 6.2)
+1. [ ] Auditar manejo de foco en overlays/paneles de Drill (quick switch, games, pronunciation).
+2. [ ] Corregir orden de tab y escape behavior en paneles críticos.
+3. [ ] Agregar tests de teclado para flujo básico de Drill (abrir/cerrar paneles y continuar sesión).

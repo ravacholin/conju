@@ -1042,6 +1042,29 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P20
 - P20 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P21 - slice 1: suite mínima de chequeos a11y para dashboard y drill)
+- Se incorporó suite automática mínima de accesibilidad con `axe-core`:
+- `src/features/progress/ProgressDashboard.a11y.test.jsx`
+- `src/components/drill/DrillMode.a11y.test.jsx`
+- Nuevo comando:
+- `npm run test:a11y`
+
+## Cambios realizados (P21 - slice 2: ejecución de axe en componentes críticos)
+- Se integró ejecución de `axe.run` sobre render real de componentes críticos.
+- Regla `color-contrast` queda desactivada en jsdom (limitación técnica conocida), manteniendo el resto de chequeos semánticos y de landmarks.
+- Dependencia agregada:
+- `axe-core` (devDependency).
+
+## Cambios realizados (P21 - slice 3: backlog a11y documentado con severidad)
+- Se documentó estado de hallazgos y riesgos residuales en:
+- `docs/accessibility/a11y-backlog.md`
+- Estado actual registrado:
+- sin hallazgos `critical/high/medium` en primera pasada automática.
+- riesgos residuales explicitados para contraste real y navegación de teclado end-to-end.
+
+## Estado P21
+- P21 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
