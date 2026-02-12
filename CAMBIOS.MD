@@ -99,6 +99,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test agregado:
 - `src/components/drill/generationDiagnostics.test.js` para validar sugerencias y detalle de diagnostico.
 
+## Cambios realizados (P1 - slice 8: lifecycle de intervalos en progress system)
+- Se encapsulo el scheduler de limpieza de mastery en helpers dedicados dentro de `src/lib/progress/index.js`:
+- `ensureMasteryCleanupScheduler()`: crea un unico intervalo global.
+- `clearMasteryCleanupScheduler()`: limpia intervalo y referencia global.
+- Se evita acumulacion de `setInterval` entre reinicializaciones del sistema (`initProgressSystem` -> `resetProgressSystem` -> `initProgressSystem`).
+- Se agrego cleanup explicito del scheduler al ejecutar `resetProgressSystem`.
+- Test agregado:
+- `src/lib/progress/index.test.js` verifica deduplicacion del scheduler y limpieza correcta en reset.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

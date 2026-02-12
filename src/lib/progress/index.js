@@ -13,6 +13,8 @@ import { cleanupMasteryCache } from './incrementalMastery.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:system')
+const MASTERY_CACHE_CLEANUP_INTERVAL_KEY = '__CONJU_MASTERY_CACHE_CLEANUP__'
+const MASTERY_CACHE_CLEANUP_INTERVAL_MS = 30 * 60 * 1000
 
 const MINIMAL_EMERGENCY_VERBS = [
   {
@@ -95,6 +97,38 @@ async function scheduleItemsInitializationBatched() {
       }
     })
   })
+}
+
+function ensureMasteryCleanupScheduler() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if (window[MASTERY_CACHE_CLEANUP_INTERVAL_KEY]) {
+    return
+  }
+
+  window[MASTERY_CACHE_CLEANUP_INTERVAL_KEY] = setInterval(() => {
+    const cleaned = cleanupMasteryCache()
+    if (cleaned.cleanedItems > 0 || cleaned.cleanedCells > 0) {
+      logger.debug('initProgressSystem', 'Cache de mastery limpiado', {
+        items: cleaned.cleanedItems,
+        cells: cleaned.cleanedCells
+      })
+    }
+  }, MASTERY_CACHE_CLEANUP_INTERVAL_MS)
+}
+
+function clearMasteryCleanupScheduler() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const intervalId = window[MASTERY_CACHE_CLEANUP_INTERVAL_KEY]
+  if (intervalId !== undefined && intervalId !== null) {
+    clearInterval(intervalId)
+    delete window[MASTERY_CACHE_CLEANUP_INTERVAL_KEY]
+  }
 }
 
 /**
@@ -215,17 +249,7 @@ export async function initProgressSystem(userId = null) {
         currentUserId = userId
 
         // Programar limpieza periódica del cache de mastery (cada 30 minutos)
-        if (typeof window !== 'undefined') {
-          setInterval(() => {
-            const cleaned = cleanupMasteryCache()
-            if (cleaned.cleanedItems > 0 || cleaned.cleanedCells > 0) {
-              logger.debug('initProgressSystem', 'Cache de mastery limpiado', {
-                items: cleaned.cleanedItems,
-                cells: cleaned.cleanedCells
-              })
-            }
-          }, 30 * 60 * 1000) // 30 minutos
-        }
+        ensureMasteryCleanupScheduler()
 
         // Notificar a través del sistema de eventos que el sistema está listo
         markProgressSystemReady()
@@ -366,6 +390,7 @@ export async function resetProgressSystem() {
       window.localStorage.removeItem(USER_ID_STORAGE_KEY)
     }
     currentUserId = null
+    clearMasteryCleanupScheduler()
 
     logger.info('resetProgressSystem', 'Sistema de progreso reiniciado')
   } catch (error) {

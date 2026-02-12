@@ -29,8 +29,10 @@ vi.mock('./database.js', () => ({
 }))
 
 describe('progress/index verb injection', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    const { resetProgressSystem } = await import('./index.js')
+    await resetProgressSystem()
   })
 
   it('inyecta los verbos del servicio cuando están disponibles', async () => {
@@ -44,5 +46,29 @@ describe('progress/index verb injection', () => {
     await initProgressSystem('test-user-service-verbs')
 
     expect(injectVerbsIntoProvider).toHaveBeenCalledWith(mockVerbs)
+  })
+
+  it('deduplica el scheduler de limpieza de mastery y lo limpia en reset', async () => {
+    const mockVerbs = [{ lemma: 'probar', paradigms: [] }]
+    const { getAllVerbs } = await import('../core/verbDataService.js')
+    getAllVerbs.mockResolvedValue(mockVerbs)
+
+    const setIntervalSpy = vi.spyOn(window, 'setInterval')
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval')
+
+    const { initProgressSystem, resetProgressSystem } = await import('./index.js')
+
+    await initProgressSystem('test-user-cleanup-1')
+    await resetProgressSystem()
+    await initProgressSystem('test-user-cleanup-2')
+
+    expect(setIntervalSpy).toHaveBeenCalledTimes(2)
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(1)
+
+    await resetProgressSystem()
+    expect(clearIntervalSpy).toHaveBeenCalledTimes(2)
+
+    setIntervalSpy.mockRestore()
+    clearIntervalSpy.mockRestore()
   })
 })
