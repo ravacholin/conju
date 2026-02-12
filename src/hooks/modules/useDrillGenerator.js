@@ -100,7 +100,8 @@ export const useDrillGenerator = () => {
       targetSettings.irregularityFilterMode || 'tense',
       specificConstraints?.isSpecific ? 'specific' : 'not_specific',
       specificConstraints?.specificMood || '',
-      specificConstraints?.specificTense || ''
+      specificConstraints?.specificTense || '',
+      specificConstraints?.specificPerson || ''
     ].join('|')
   }, [])
 

@@ -28,11 +28,15 @@ export const buildSpecificConstraints = (settings = {}, reviewSessionType, revie
   const resolvedTense = reviewSpecificActive
     ? reviewSessionFilter.tense
     : (practiceSpecificActive ? settings.specificTense : null)
+  const resolvedPerson = reviewSpecificActive
+    ? (reviewSessionFilter.person || null)
+    : (practiceSpecificActive ? (settings.specificPerson || null) : null)
 
   return {
     isSpecific,
     specificMood: isSpecific ? resolvedMood : null,
-    specificTense: isSpecific ? resolvedTense : null
+    specificTense: isSpecific ? resolvedTense : null,
+    specificPerson: isSpecific ? resolvedPerson : null
   }
 }
 
@@ -127,4 +131,3 @@ export const selectDueCandidate = (dueCells, reviewSessionType) => {
       return dueCells.find(Boolean) || null
   }
 }
-

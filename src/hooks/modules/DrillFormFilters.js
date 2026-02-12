@@ -320,20 +320,24 @@ const getAllowsPersonPredicate = (settings) => {
  * @returns {boolean} - Whether the form matches the constraints
  */
 export const matchesSpecific = (form, specificConstraints) => {
-  const { isSpecific, specificMood, specificTense } = specificConstraints
+  const { isSpecific, specificMood, specificTense, specificPerson } = specificConstraints
   
   if (!isSpecific) return true
   
   // Handle mixed tenses
   if (specificTense === 'impMixed') {
-    return form.mood === specificMood && (form.tense === 'impAff' || form.tense === 'impNeg')
+    const tenseMatch = form.mood === specificMood && (form.tense === 'impAff' || form.tense === 'impNeg')
+    return tenseMatch && (!specificPerson || form.person === specificPerson)
   }
   if (specificTense === 'nonfiniteMixed') {
-    return form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
+    const tenseMatch = form.mood === specificMood && (form.tense === 'ger' || form.tense === 'part')
+    return tenseMatch && (!specificPerson || form.person === specificPerson)
   }
   
   // Standard specific filtering
-  return form.mood === specificMood && form.tense === specificTense
+  return form.mood === specificMood &&
+    form.tense === specificTense &&
+    (!specificPerson || form.person === specificPerson)
 }
 
 /**
@@ -370,7 +374,7 @@ export const filterForSpecificPractice = (allForms, specificConstraints) => {
 }
 
 const getSpecificPracticeCandidates = (allForms, specificConstraints) => {
-  const { isSpecific, specificMood, specificTense } = specificConstraints
+  const { isSpecific, specificMood, specificTense, specificPerson } = specificConstraints
 
   if (!isSpecific) {
     return allForms
@@ -382,34 +386,51 @@ const getSpecificPracticeCandidates = (allForms, specificConstraints) => {
 
   let index = specificPracticeIndexCache.get(allForms)
   if (!index) {
-    index = new Map()
+    index = {
+      byMoodTense: new Map(),
+      byMoodTensePerson: new Map()
+    }
     for (const form of allForms) {
       if (!form) continue
       const key = `${form.mood}|${form.tense}`
-      const current = index.get(key)
-      if (current) {
-        current.push(form)
+      const personKey = `${form.mood}|${form.tense}|${form.person || ''}`
+      const byMoodTenseCurrent = index.byMoodTense.get(key)
+      if (byMoodTenseCurrent) {
+        byMoodTenseCurrent.push(form)
       } else {
-        index.set(key, [form])
+        index.byMoodTense.set(key, [form])
+      }
+      const byMoodTensePersonCurrent = index.byMoodTensePerson.get(personKey)
+      if (byMoodTensePersonCurrent) {
+        byMoodTensePersonCurrent.push(form)
+      } else {
+        index.byMoodTensePerson.set(personKey, [form])
       }
     }
     specificPracticeIndexCache.set(allForms, index)
   }
 
+  const getCandidates = (mood, tense) => {
+    if (specificPerson) {
+      return index.byMoodTensePerson.get(`${mood}|${tense}|${specificPerson}`) || []
+    }
+    return index.byMoodTense.get(`${mood}|${tense}`) || []
+  }
+
   if (specificTense === 'impMixed') {
     return [
-      ...(index.get(`${specificMood}|impAff`) || []),
-      ...(index.get(`${specificMood}|impNeg`) || [])
+      ...getCandidates(specificMood, 'impAff'),
+      ...getCandidates(specificMood, 'impNeg')
     ]
   }
   if (specificTense === 'nonfiniteMixed') {
     return [
-      ...(index.get(`${specificMood}|ger`) || []),
-      ...(index.get(`${specificMood}|part`) || [])
+      ...getCandidates(specificMood, 'ger'),
+      ...getCandidates(specificMood, 'part')
     ]
   }
 
-  return index.get(`${specificMood}|${specificTense}`) || []
+  return getCandidates(specificMood, specificTense)
 }
 
 /**
@@ -523,7 +544,7 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
  * @returns {Array} - Filtered due items
  */
 export const filterDueForSpecific = (dueCells, specificConstraints) => {
-  const { isSpecific, specificMood, specificTense } = specificConstraints
+  const { isSpecific, specificMood, specificTense, specificPerson } = specificConstraints
   
   if (!isSpecific) return dueCells
   
@@ -532,13 +553,19 @@ export const filterDueForSpecific = (dueCells, specificConstraints) => {
     
     // Handle mixed tenses
     if (specificTense === 'impMixed') {
-      return dc.mood === specificMood && (dc.tense === 'impAff' || dc.tense === 'impNeg')
+      return dc.mood === specificMood &&
+        (dc.tense === 'impAff' || dc.tense === 'impNeg') &&
+        (!specificPerson || dc.person === specificPerson)
     }
     if (specificTense === 'nonfiniteMixed') {
-      return dc.mood === specificMood && (dc.tense === 'ger' || dc.tense === 'part')
+      return dc.mood === specificMood &&
+        (dc.tense === 'ger' || dc.tense === 'part') &&
+        (!specificPerson || dc.person === specificPerson)
     }
     
-    return dc.mood === specificMood && dc.tense === specificTense
+    return dc.mood === specificMood &&
+      dc.tense === specificTense &&
+      (!specificPerson || dc.person === specificPerson)
   })
 }
 

@@ -115,4 +115,23 @@ describe('DrillFormFilters - specific practice indexing', () => {
     expect(tenses.has('impAff')).toBe(true)
     expect(tenses.has('impNeg')).toBe(true)
   })
+
+  it('filters by specific person when provided', () => {
+    const forms = [
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas' }
+    ]
+
+    const specificConstraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pres',
+      specificPerson: '2s_tu'
+    }
+
+    const result = filterForSpecificPractice(forms, specificConstraints)
+
+    expect(result).toHaveLength(1)
+    expect(result[0].person).toBe('2s_tu')
+  })
 })

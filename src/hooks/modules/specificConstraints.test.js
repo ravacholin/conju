@@ -35,7 +35,8 @@ describe('specificConstraints', () => {
     expect(buildSpecificConstraints(practiceSettings, 'due', {})).toEqual({
       isSpecific: true,
       specificMood: 'indicative',
-      specificTense: 'pres'
+      specificTense: 'pres',
+      specificPerson: null
     })
 
     const reviewSettings = { practiceMode: 'review' }
@@ -44,13 +45,15 @@ describe('specificConstraints', () => {
     expect(buildSpecificConstraints(reviewSettings, 'specific', reviewFilter)).toEqual({
       isSpecific: true,
       specificMood: 'subjunctive',
-      specificTense: 'imp'
+      specificTense: 'imp',
+      specificPerson: '1s'
     })
 
     expect(buildSpecificConstraints({}, 'due', {})).toEqual({
       isSpecific: false,
       specificMood: null,
-      specificTense: null
+      specificTense: null,
+      specificPerson: null
     })
   })
 
@@ -102,4 +105,3 @@ describe('specificConstraints', () => {
     expect(computeUrgencyLevel(new Date('2024-01-03T00:00:00Z'), now)).toBe(1)
   })
 })
-

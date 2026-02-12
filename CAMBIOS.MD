@@ -33,6 +33,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/hooks/modules/DrillFormFilters.test.js`
 - `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
 
+## Cambios realizados (P1 - slice 2: fast-path por persona)
+- Se extendio `buildSpecificConstraints` para transportar `specificPerson` en `review specific` y casos especificos.
+- Se amplió el indice de filtrado especifico a `mood|tense|person` para fast-path mas fino.
+- `filterForSpecificPractice`, `matchesSpecific` y `filterDueForSpecific` ahora respetan `specificPerson` cuando existe.
+- Se incluyo `specificPerson` en la key de cache de elegibles en `useDrillGenerator` para evitar colisiones de cache.
+- Tests verdes:
+- `src/hooks/modules/specificConstraints.test.js`
+- `src/hooks/modules/DrillFormFilters.test.js`
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
