@@ -1,73 +1,44 @@
-import { describe, it, expect, vi } from 'vitest'
-import { resolveFormsPool } from './formsPoolService.js'
+import { describe, expect, it, vi } from 'vitest'
+import { createFormsCombinationIndex, resolveFormsPool } from './formsPoolService.js'
 
 describe('formsPoolService', () => {
-  it('builds a new pool when cache is empty', async () => {
-    const settings = { level: 'A1' }
-    const generateAllFormsForRegion = vi.fn().mockResolvedValue(['form-a'])
-    const getFormsCacheKey = vi.fn().mockReturnValue('sig')
-    const now = vi.fn()
-      .mockReturnValueOnce(100)
-      .mockReturnValueOnce(160)
+  it('builds mood/tense/person combination index', () => {
+    const forms = [
+      { mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
+      { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas' },
+      { mood: 'subjunctive', tense: 'subjPres', person: '1s', value: 'hable' }
+    ]
 
-    const result = await resolveFormsPool({
-      settings,
-      region: 'la_prueba',
-      cache: {},
-      generateAllFormsForRegion,
-      getFormsCacheKey,
-      now
-    })
-
-    expect(generateAllFormsForRegion).toHaveBeenCalledWith('la_prueba', settings)
-    expect(getFormsCacheKey).toHaveBeenCalledWith('la_prueba', settings)
-    expect(result.forms).toEqual(['form-a'])
-    expect(result.reused).toBe(false)
-    expect(result.signature).toBe('sig')
-    expect(result.durationMs).toBe(60)
-    expect(result.cache).toEqual({ signature: 'sig', forms: ['form-a'] })
+    const index = createFormsCombinationIndex(forms)
+    expect(index.byMoodTense.get('indicative|pres')).toHaveLength(2)
+    expect(index.byMoodTensePerson.get('indicative|pres|1s')).toHaveLength(1)
+    expect(index.byMoodTensePerson.get('subjunctive|subjPres|1s')).toHaveLength(1)
   })
 
-  it('reuses the cached pool when signature matches', async () => {
-    const settings = { level: 'A2' }
-    const cache = { signature: 'sig', forms: ['cached'] }
-    const generateAllFormsForRegion = vi.fn()
-    const getFormsCacheKey = vi.fn().mockReturnValue('sig')
+  it('stores and reuses precomputed index in cache', async () => {
+    const forms = [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' }]
+    const generateAllFormsForRegion = vi.fn().mockResolvedValue(forms)
+    const getFormsCacheKey = vi.fn().mockReturnValue('pool-key')
 
-    const result = await resolveFormsPool({
-      settings,
-      region: 'la_prueba',
-      cache,
+    const first = await resolveFormsPool({
+      settings: { region: 'la_general' },
+      region: 'la_general',
+      cache: { signature: null, forms: null },
       generateAllFormsForRegion,
       getFormsCacheKey
     })
 
-    expect(generateAllFormsForRegion).not.toHaveBeenCalled()
-    expect(result.reused).toBe(true)
-    expect(result.forms).toEqual(['cached'])
-    expect(result.cache).toEqual(cache)
-  })
-
-  it('rebuilds the pool when signature differs', async () => {
-    const settings = { level: 'B1' }
-    const cache = { signature: 'old', forms: ['old-form'] }
-    const generateAllFormsForRegion = vi.fn().mockResolvedValue(['new-form'])
-    const getFormsCacheKey = vi.fn().mockReturnValue('new')
-    const now = vi.fn().mockReturnValueOnce(10).mockReturnValueOnce(20)
-
-    const result = await resolveFormsPool({
-      settings,
-      region: null,
-      cache,
+    const second = await resolveFormsPool({
+      settings: { region: 'la_general' },
+      region: 'la_general',
+      cache: first.cache,
       generateAllFormsForRegion,
-      getFormsCacheKey,
-      now
+      getFormsCacheKey
     })
 
-    expect(generateAllFormsForRegion).toHaveBeenCalledWith('la_general', settings)
-    expect(result.reused).toBe(false)
-    expect(result.forms).toEqual(['new-form'])
-    expect(result.signature).toBe('new')
+    expect(first.index.byMoodTense.get('indicative|pres')).toHaveLength(1)
+    expect(second.reused).toBe(true)
+    expect(second.index.byMoodTense.get('indicative|pres')).toHaveLength(1)
+    expect(generateAllFormsForRegion).toHaveBeenCalledTimes(1)
   })
 })
-

@@ -129,7 +129,7 @@ const getVerbFamilies = (lemma) => {
     const families = categorizeVerb(lemma, verb)
     lemmaFamiliesCache.set(lemma, families)
     return families
-  } catch (error) {
+  } catch {
     lemmaFamiliesCache.set(lemma, FAMILY_ERROR)
     return FAMILY_ERROR
   }
@@ -365,15 +365,15 @@ export const allowsLevel = (form, settings) => {
  * @param {Object} specificConstraints - Specific practice constraints
  * @returns {Array} - Filtered forms matching specific practice
  */
-export const filterForSpecificPractice = (allForms, specificConstraints) => {
+export const filterForSpecificPractice = (allForms, specificConstraints, formsIndex = null) => {
   const { isSpecific } = specificConstraints
   if (!isSpecific) {
     return allForms
   }
-  return getSpecificPracticeCandidates(allForms, specificConstraints)
+  return getSpecificPracticeCandidates(allForms, specificConstraints, formsIndex)
 }
 
-const getSpecificPracticeCandidates = (allForms, specificConstraints) => {
+const getSpecificPracticeCandidates = (allForms, specificConstraints, formsIndex = null) => {
   const { isSpecific, specificMood, specificTense, specificPerson } = specificConstraints
 
   if (!isSpecific) {
@@ -384,7 +384,10 @@ const getSpecificPracticeCandidates = (allForms, specificConstraints) => {
     return []
   }
 
-  let index = specificPracticeIndexCache.get(allForms)
+  let index = formsIndex
+  if (!index) {
+    index = specificPracticeIndexCache.get(allForms)
+  }
   if (!index) {
     index = {
       byMoodTense: new Map(),
@@ -499,11 +502,11 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
  * @param {Object} specificConstraints - Specific practice constraints
  * @returns {Array} - Comprehensively filtered forms
  */
-export const applyComprehensiveFiltering = (forms, settings, specificConstraints = {}) => {
+export const applyComprehensiveFiltering = (forms, settings, specificConstraints = {}, formsIndex = null) => {
   let filtered = forms
 
   // 1. Filter for specific practice if applicable
-  filtered = filterForSpecificPractice(filtered, specificConstraints)
+  filtered = filterForSpecificPractice(filtered, specificConstraints, formsIndex)
   if (filtered.length === 0) return filtered
 
   // 2. Filter by verb type

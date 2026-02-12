@@ -2,6 +2,36 @@ const DEFAULT_REGION = 'la_general'
 
 const defaultNow = () => Date.now()
 
+export const createFormsCombinationIndex = (forms = []) => {
+  const byMoodTense = new Map()
+  const byMoodTensePerson = new Map()
+
+  for (const form of forms) {
+    if (!form) continue
+    const moodTenseKey = `${form.mood}|${form.tense}`
+    const moodTensePersonKey = `${form.mood}|${form.tense}|${form.person || ''}`
+
+    const moodTenseBucket = byMoodTense.get(moodTenseKey)
+    if (moodTenseBucket) {
+      moodTenseBucket.push(form)
+    } else {
+      byMoodTense.set(moodTenseKey, [form])
+    }
+
+    const moodTensePersonBucket = byMoodTensePerson.get(moodTensePersonKey)
+    if (moodTensePersonBucket) {
+      moodTensePersonBucket.push(form)
+    } else {
+      byMoodTensePerson.set(moodTensePersonKey, [form])
+    }
+  }
+
+  return {
+    byMoodTense,
+    byMoodTensePerson
+  }
+}
+
 /**
  * Builds or reuses the cached forms pool for the provided settings.
  * @param {Object} params - Configuration for building the pool
@@ -28,6 +58,7 @@ export const resolveFormsPool = async ({
   if (hasCachedForms && cache.signature === signature) {
     return {
       forms: cache.forms,
+      index: cache.index || createFormsCombinationIndex(cache.forms),
       signature,
       reused: true,
       durationMs: 0,
@@ -38,16 +69,18 @@ export const resolveFormsPool = async ({
   const start = now()
   const forms = await generateAllFormsForRegion(effectiveRegion, settings)
   const end = now()
+  const index = createFormsCombinationIndex(forms)
 
   return {
     forms,
+    index,
     signature,
     reused: false,
     durationMs: Number((end - start).toFixed(2)),
     cache: {
       signature,
-      forms
+      forms,
+      index
     }
   }
 }
-

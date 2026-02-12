@@ -209,7 +209,7 @@ export const useDrillGenerator = () => {
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints)
+        eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints, poolResult.index)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }

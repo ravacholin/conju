@@ -735,9 +735,26 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P11
 - P11 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P12 - slice 1: indice precomputado por combinacion en generador)
+- Se agrego un indice precomputado de formas por combinacion en `src/hooks/modules/formsPoolService.js`:
+- `byMoodTense` para consultas por `mood|tense`.
+- `byMoodTensePerson` para consultas por `mood|tense|person`.
+- `resolveFormsPool` ahora construye y cachea ese indice junto al pool resuelto, evitando recomputar indexaciones en llamadas sucesivas con la misma firma.
+- Se integro el indice como dependencia opcional del pipeline de filtros:
+- `applyComprehensiveFiltering(forms, settings, specificConstraints, formsIndex)`
+- `filterForSpecificPractice(allForms, specificConstraints, formsIndex)`
+- `useDrillGenerator` pasa `poolResult.index` al filtro especifico para usar fast-path sin reescanear todo el arreglo en cada intento.
+- Beneficio: menor costo CPU en escenarios con filtros especificos y generacion repetida sobre el mismo pool.
+- Tests agregados/actualizados:
+- `src/hooks/modules/formsPoolService.test.js`
+- `src/hooks/modules/DrillFormFilters.test.js`
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
+- `npx vitest run src/hooks/modules/formsPoolService.test.js src/hooks/modules/DrillFormFilters.test.js src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+- `npx eslint src/hooks/modules/formsPoolService.js src/hooks/modules/formsPoolService.test.js src/hooks/modules/DrillFormFilters.js src/hooks/modules/useDrillGenerator.js`
 
 ## Mapa actual end to end
 - UI: React + componentes locales y features (drill, learning, progress, story, timeline).

@@ -215,3 +215,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [x] Unificar debounce/flush de persistencia de settings con cola serializada.
 2. [x] Auditar y reducir posibles write races remanentes entre stores.
 3. [x] Documentar invariantes de orden de escritura para sync.
+
+## Siguiente backlog activo (Fase 3.1)
+1. [x] Precomputar indice por combinacion (`mood|tense` y `mood|tense|person`) en `formsPoolService`.
+2. [ ] Integrar la capa de index para contemplar contexto adicional (`region`) sin romper contratos actuales.
+3. [ ] Validar impacto con benchmark reproducible del generador (before/after, p50/p95).
