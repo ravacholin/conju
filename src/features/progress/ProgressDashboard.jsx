@@ -13,6 +13,7 @@ import PracticeReminders from './PracticeReminders.jsx'
 import DailyPlanPanel from './DailyPlanPanel.jsx'
 import ProgressUnlocksPanel from './ProgressUnlocksPanel.jsx'
 import LearningJourneyPanel from './LearningJourneyPanel.jsx'
+import CoachModePanel from './CoachModePanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
 const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
@@ -128,6 +129,22 @@ export default function ProgressDashboard({
       practiceMode: 'review',
       reviewSessionType: 'due',
       reviewSessionFilter: {}
+    })
+    onNavigateToDrill()
+  }, [onNavigateToDrill, setSettings])
+
+  const handleStartCoachSession = React.useCallback((sessionPlan) => {
+    if (!sessionPlan?.drillConfig || typeof onNavigateToDrill !== 'function') {
+      return
+    }
+
+    const drillConfig = sessionPlan.drillConfig
+    setSettings({
+      practiceMode: drillConfig.practiceMode || 'mixed',
+      specificMood: drillConfig.specificMood || null,
+      specificTense: drillConfig.specificTense || null,
+      reviewSessionType: drillConfig.reviewSessionType || 'due',
+      reviewSessionFilter: drillConfig.reviewSessionFilter || {}
     })
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
@@ -275,6 +292,14 @@ export default function ProgressDashboard({
           userStats={userStats}
           studyPlan={studyPlan}
           onNavigateToDrill={onNavigateToDrill}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Coach Mode">
+        <CoachModePanel
+          userStats={userStats}
+          heatMapData={heatMapData}
+          onStartCoach={handleStartCoachSession}
         />
       </SafeComponent>
 

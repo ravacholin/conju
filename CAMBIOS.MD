@@ -220,6 +220,20 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/LearningJourneyPanel.test.jsx`
 - `src/features/progress/ProgressDashboard.smoke.test.jsx`
 
+## Cambios realizados (P2 - slice 6: modo coach de 5 minutos)
+- Se agrego `CoachModePanel` para ejecutar micro-sesiones con objetivo claro y duracion fija.
+- El panel genera un plan automatico segun datos reales:
+- foco especifico en la combinacion mas debil cuando existe evidencia.
+- fallback de recuperacion de confianza o practica mixta cuando no hay señal suficiente.
+- Se extrajo la estrategia a una capa pura testeable:
+- `src/features/progress/coachSessionPlan.js`
+- Integracion en `ProgressDashboard`:
+- al iniciar coach aplica `drillConfig` (specific/review/mixed) y navega directo a Drill.
+- Tests agregados/actualizados:
+- `src/features/progress/coachSessionPlan.test.js`
+- `src/features/progress/CoachModePanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
