@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 import './SRSReviewQueueModal.css'
 
@@ -16,6 +17,7 @@ const urgencyOrder = [4, 3, 2, 1]
 export default function SRSReviewQueueModal({ isOpen, onClose, onStartSession }) {
   const { queue, loading, error, stats, reload } = useSRSQueue()
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   const [selectedUrgency, setSelectedUrgency] = useState('all')
   const [selectedPerson, setSelectedPerson] = useState('all')
@@ -34,7 +36,11 @@ export default function SRSReviewQueueModal({ isOpen, onClose, onStartSession })
       filter
     }
 
-    settings.set({ practiceMode: 'review', reviewSessionFilter: filter })
+    settings.set({ practiceMode: 'review' })
+    setDrillRuntimeContext({
+      reviewSessionType: 'due',
+      reviewSessionFilter: filter
+    })
 
     if (typeof onStartSession === 'function') {
       onStartSession(filter)

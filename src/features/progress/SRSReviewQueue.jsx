@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 import './srs-review-queue.css'
 
@@ -30,6 +31,7 @@ function formatDueDate(dateString) {
 export default function SRSReviewQueue({ onNavigateToDrill }) {
   const { queue, loading, error, stats, reload } = useSRSQueue()
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   const handleStartSession = (filterOverrides = {}) => {
     const reviewSessionFilter = {
@@ -37,8 +39,8 @@ export default function SRSReviewQueue({ onNavigateToDrill }) {
       ...filterOverrides
     }
 
-    settings.set({
-      practiceMode: 'review',
+    settings.set({ practiceMode: 'review' })
+    setDrillRuntimeContext({
       reviewSessionType: 'due',
       reviewSessionFilter
     })

@@ -4,6 +4,7 @@ import { getRecentAttempts } from '../../lib/progress/database.js'
 import { getDueItems } from '../../lib/progress/srs.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
@@ -24,6 +25,7 @@ export default function SessionHUD() {
     cells: []
   })
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const requestSeq = useRef(0)
   const analyticsController = useRef(null)
 
@@ -140,8 +142,8 @@ export default function SessionHUD() {
       return
     }
     const sessionSize = Math.min(12, Math.max(6, dueSummary.total))
-    settings.set({
-      practiceMode: 'mixed',
+    settings.set({ practiceMode: 'mixed' })
+    setDrillRuntimeContext({
       currentBlock: {
         id: 'srs-due-review',
         label: 'Revisión SRS',
@@ -231,10 +233,8 @@ export default function SessionHUD() {
                         return { mood, tense }
                       })
                     if (topCombos.length === 0) return
-                    settings.set({
-                      practiceMode: 'mixed',
-                      currentBlock: { combos: topCombos, itemsRemaining: 5 }
-                    })
+                    settings.set({ practiceMode: 'mixed' })
+                    setDrillRuntimeContext({ currentBlock: { combos: topCombos, itemsRemaining: 5 } })
                     emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag: tag, size: 5 } })
                   } catch (error) {
                     if (import.meta.env?.DEV) {

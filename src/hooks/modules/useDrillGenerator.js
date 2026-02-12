@@ -12,6 +12,7 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { getRuntimeDrillSettings } from '../../state/session.js'
 import { getDueItems } from '../../lib/progress/srs.js'
 import { gateDueItemsByCurriculum } from '../../lib/core/curriculumGate.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
@@ -108,7 +109,7 @@ export const useDrillGenerator = () => {
     }
 
     // CRITICAL FIX: Read fresh settings directly from store to avoid stale closures
-    const FRESH_SETTINGS = useSettings.getState()
+    const FRESH_SETTINGS = getRuntimeDrillSettings(useSettings.getState())
 
     const { reviewSessionType, reviewSessionFilter } = getReviewSessionContext(FRESH_SETTINGS)
 
@@ -390,33 +391,34 @@ export const useDrillGenerator = () => {
    */
   const isGenerationViable = useCallback(async () => {
     try {
-      const allFormsForRegion = await resolveFormsForStats(settings)
+      const runtimeSettings = getRuntimeDrillSettings(useSettings.getState())
+      const allFormsForRegion = await resolveFormsForStats(runtimeSettings)
 
       if (!allFormsForRegion || allFormsForRegion.length === 0) {
         return false
       }
 
       const specificConstraints = {
-        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
-          settings.specificMood && settings.specificTense,
-        specificMood: settings.specificMood,
-        specificTense: settings.specificTense
+        isSpecific: (runtimeSettings.practiceMode === 'specific' || runtimeSettings.practiceMode === 'theme') &&
+          runtimeSettings.specificMood && runtimeSettings.specificTense,
+        specificMood: runtimeSettings.specificMood,
+        specificTense: runtimeSettings.specificTense
       }
 
       let eligibleForms
-      const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
-      const canCacheEligible = shouldCacheEligibleForms(settings)
+      const poolSignature = getFormsCacheKey(runtimeSettings.region || 'la_general', runtimeSettings)
+      const canCacheEligible = shouldCacheEligibleForms(runtimeSettings)
       const eligibleKey = buildEligibleFormsKey(
         poolSignature,
-        settings,
+        runtimeSettings,
         specificConstraints,
-        settings.reviewSessionType,
-        settings.reviewSessionFilter
+        runtimeSettings.reviewSessionType,
+        runtimeSettings.reviewSessionFilter
       )
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, runtimeSettings, specificConstraints)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }
@@ -433,30 +435,31 @@ export const useDrillGenerator = () => {
    * @returns {Object} - Generation statistics
    */
   const getGenerationStats = useCallback(async () => {
+    const runtimeSettings = getRuntimeDrillSettings(useSettings.getState())
     try {
-      const allFormsForRegion = await resolveFormsForStats(settings)
+      const allFormsForRegion = await resolveFormsForStats(runtimeSettings)
 
       const specificConstraints = {
-        isSpecific: (settings.practiceMode === 'specific' || settings.practiceMode === 'theme') &&
-          settings.specificMood && settings.specificTense,
-        specificMood: settings.specificMood,
-        specificTense: settings.specificTense
+        isSpecific: (runtimeSettings.practiceMode === 'specific' || runtimeSettings.practiceMode === 'theme') &&
+          runtimeSettings.specificMood && runtimeSettings.specificTense,
+        specificMood: runtimeSettings.specificMood,
+        specificTense: runtimeSettings.specificTense
       }
 
       let eligibleForms
-      const poolSignature = getFormsCacheKey(settings.region || 'la_general', settings)
-      const canCacheEligible = shouldCacheEligibleForms(settings)
+      const poolSignature = getFormsCacheKey(runtimeSettings.region || 'la_general', runtimeSettings)
+      const canCacheEligible = shouldCacheEligibleForms(runtimeSettings)
       const eligibleKey = buildEligibleFormsKey(
         poolSignature,
-        settings,
+        runtimeSettings,
         specificConstraints,
-        settings.reviewSessionType,
-        settings.reviewSessionFilter
+        runtimeSettings.reviewSessionType,
+        runtimeSettings.reviewSessionFilter
       )
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, settings, specificConstraints)
+        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, runtimeSettings, specificConstraints)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }
@@ -469,10 +472,10 @@ export const useDrillGenerator = () => {
           ? Math.round((eligibleForms.length / allFormsForRegion.length) * 100)
           : 0,
         settings: {
-          practiceMode: settings.practiceMode,
-          verbType: settings.verbType,
-          level: settings.level,
-          region: settings.region
+          practiceMode: runtimeSettings.practiceMode,
+          verbType: runtimeSettings.verbType,
+          level: runtimeSettings.level,
+          region: runtimeSettings.region
         },
         isSpecific: specificConstraints.isSpecific,
         lastGenerated: lastGeneratedItem ? {
@@ -489,10 +492,10 @@ export const useDrillGenerator = () => {
         eligibleForms: 0,
         filteringEfficiency: 0,
         settings: {
-          practiceMode: settings.practiceMode,
-          verbType: settings.verbType,
-          level: settings.level,
-          region: settings.region
+          practiceMode: runtimeSettings.practiceMode,
+          verbType: runtimeSettings.verbType,
+          level: runtimeSettings.level,
+          region: runtimeSettings.region
         },
         error: error.message
       }

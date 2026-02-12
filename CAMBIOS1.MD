@@ -203,5 +203,5 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 
 ## Siguiente backlog activo (Fase 2.1)
 1. [x] Bloquear `set` de keys desconocidas en `useSettings` en runtime.
-2. [ ] Auditar escrituras restantes a `useSettings` y mover estado efimero pendiente a store de sesion.
-3. [ ] Agregar checklist de claves de estado persistente vs efimero.
+2. [x] Auditar escrituras restantes a `useSettings` y mover estado efimero pendiente a store de sesion.
+3. [x] Agregar checklist de claves de estado persistente vs efimero.

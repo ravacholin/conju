@@ -112,6 +112,7 @@ function DrillMode({
   const pronunciationPanelRef = React.useRef(null)
   const LOADING_TIMEOUT_REF = React.useRef(null)
   const startPersonalizedSession = useSessionStore((state) => state.startPersonalizedSession)
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   const handleToggleQuickSwitch = useCallback((show = null) => {
     const newShow = show !== null ? show : !showQuickSwitch
@@ -380,8 +381,9 @@ function DrillMode({
           logger.debug('SRS review navigation', detail.filter)
           // Don't pass filter object to onPracticeModeChange - it expects strings
           // Instead, handle review mode setup directly
-          settings.set({
-            practiceMode: 'review',
+          settings.set({ practiceMode: 'review' })
+          setDrillRuntimeContext({
+            reviewSessionType: detail.sessionType || 'due',
             reviewSessionFilter: detail.filter || { urgency: 'all' }
           })
           onRegenerateItem()
@@ -396,7 +398,7 @@ function DrillMode({
 
     window.addEventListener('progress:navigate', handler)
     return () => window.removeEventListener('progress:navigate', handler)
-  }, [onStartSpecificPractice, onRegenerateItem, onPracticeModeChange])
+  }, [setDrillRuntimeContext, onStartSpecificPractice, onRegenerateItem, onPracticeModeChange, settings])
 
   return (
     <div className="App">

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import { getHeatMapData } from '../../lib/progress/analytics.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
@@ -92,6 +93,7 @@ function buildHeatMapPayload(rawData, rangeKey = DEFAULT_TIME_RANGE) {
 
 export default function HeatMapSRS({ data, onNavigateToDrill }) {
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const initialRange = data?.range || DEFAULT_TIME_RANGE
   const initialPayloadRef = useRef(null)
   const [selectedTimeRange, setSelectedTimeRange] = useState(initialRange)
@@ -308,6 +310,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificMood: mood,
         specificTense: tense
       }))
+      setDrillRuntimeContext({ currentBlock: null, reviewSessionType: 'due', reviewSessionFilter: {} })
       scheduleNavigateToDrill()
     }
   }
@@ -332,6 +335,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         specificTense: tense,
         level: 'ALL' // Allow practicing regardless of user's level
       }))
+      setDrillRuntimeContext({ currentBlock: null, reviewSessionType: 'due', reviewSessionFilter: {} })
       scheduleNavigateToDrill()
     }
   }
@@ -352,6 +356,7 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
         reviewSessionType: 'due',
         reviewSessionFilter: {}
       }))
+      setDrillRuntimeContext({ currentBlock: null, reviewSessionType: 'due', reviewSessionFilter: {} })
       scheduleNavigateToDrill()
     }
   }

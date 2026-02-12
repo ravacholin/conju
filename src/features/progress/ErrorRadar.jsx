@@ -5,6 +5,7 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
@@ -17,6 +18,7 @@ const logger = createLogger('features:ErrorRadar')
 export function ErrorRadar({ axes = [] }) {
   const canvasRef = useRef(null)
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const [openTag, setOpenTag] = useState(null)
   const [examplesByTag, setExamplesByTag] = useState({})
 
@@ -133,7 +135,8 @@ export function ErrorRadar({ axes = [] }) {
         .slice(0,3)
         .map(([k]) => { const [mood, tense]=k.split('|'); return { mood, tense } })
       if (topCombos.length === 0) return
-      settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 6 } })
+      settings.set({ practiceMode: 'mixed' })
+      setDrillRuntimeContext({ currentBlock: { combos: topCombos, itemsRemaining: 6 } })
       // Wait for settings to propagate before dispatching navigation event (increased delay)
       setTimeout(() => {
         emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag: tag, size: 6 } })

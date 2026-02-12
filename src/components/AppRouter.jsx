@@ -58,6 +58,7 @@ import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import router from '../lib/routing/Router.js'
 import { ROUTES } from '../lib/routing/routeContract.js'
+import { useSessionStore } from '../state/session.js'
 
 // Centralized logger for development-only debug output
 const logger = {
@@ -93,6 +94,7 @@ function AppRouter() {
       set: state.set
     }))
   )
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   // Import hooks
   const drillMode = useDrillMode()
@@ -463,14 +465,14 @@ function AppRouter() {
     // Initialize block for A1/A2: one tense per tanda
     const lvl = settings.level
     if (lvl === 'A1' || lvl === 'A2') {
-      settings.set({
+      setDrillRuntimeContext({
         currentBlock: {
           combos: [{ mood: settings.specificMood, tense: settings.specificTense }],
           itemsRemaining: 8
         }
       })
     } else {
-      settings.set({ currentBlock: null })
+      setDrillRuntimeContext({ currentBlock: null })
     }
     // Correct argument order: (itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
     drillMode.generateNextItem(

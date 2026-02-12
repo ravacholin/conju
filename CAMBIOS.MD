@@ -132,6 +132,37 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/state/settings.test.js`
 - cubren bloqueo de claves desconocidas y preservación de métodos del store.
 
+## Cambios realizados (P0 - slice 9: migracion de estado efimero drill a session store)
+- Se extendio `useSessionStore` como fuente runtime para contexto efimero de Drill:
+- `runtimeCurrentBlock`
+- `runtimeReviewSessionType`
+- `runtimeReviewSessionFilter`
+- API agregada:
+- `setDrillRuntimeContext(...)`
+- `clearDrillRuntimeContext()`
+- `getRuntimeDrillSettings(baseSettings)`
+- Archivo:
+- `src/state/session.js`
+- El generador ahora compone settings persistidos + contexto efimero de sesion:
+- `src/hooks/modules/useDrillGenerator.js`
+- Se migraron writers de contexto efimero en UI para evitar depender de `useSettings` en `currentBlock`/`reviewSessionFilter`:
+- `src/components/AppRouter.jsx`
+- `src/components/drill/DrillMode.jsx`
+- `src/features/drill/SessionHUD.jsx`
+- `src/features/progress/ProgressDashboard.jsx`
+- `src/features/progress/SRSPanel.jsx`
+- `src/features/progress/SRSReviewQueue.jsx`
+- `src/features/progress/SRSReviewQueueModal.jsx`
+- `src/features/progress/HeatMapSRS.jsx`
+- `src/features/progress/ErrorRadar.jsx`
+- `src/features/progress/ErrorInsights.jsx`
+- `src/features/progress/ErrorIntelligence.jsx`
+- `src/features/progress/EnhancedErrorAnalysis.jsx`
+- Se documento checklist/auditoria de claves persistentes vs efimeras:
+- `docs/state/settings-ephemeral-audit.md`
+- Test nuevo:
+- `src/state/session.test.js`
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

@@ -5,6 +5,7 @@ import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import { createActionCooldown } from './actionCooldown.js'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
@@ -47,6 +48,7 @@ export default function ProgressDashboard({
   const drillNavigationCooldownRef = React.useRef(createActionCooldown({ delayMs: 250 }))
   const syncAvailable = isSyncEnabled()
   const setSettings = useSettings(state => state.set)
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const { stats: srsStats } = useSRSQueue()
 
   const {
@@ -118,9 +120,14 @@ export default function ProgressDashboard({
 
     drillNavigationCooldownRef.current.run(() => {
       setSettings(buildDrillSettingsUpdate(drillConfig))
+      setDrillRuntimeContext({
+        currentBlock: drillConfig?.currentBlock ?? null,
+        reviewSessionType: drillConfig?.reviewSessionType || 'due',
+        reviewSessionFilter: drillConfig?.reviewSessionFilter || {}
+      })
       onNavigateToDrill()
     })
-  }, [onNavigateToDrill, setSettings])
+  }, [onNavigateToDrill, setSettings, setDrillRuntimeContext])
 
   React.useEffect(() => () => {
     drillNavigationCooldownRef.current.cancel()

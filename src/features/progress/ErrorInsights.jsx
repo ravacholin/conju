@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 export default function ErrorInsights({ onNavigateToDrill }) {
   const [topErrors, setTopErrors] = useState([])
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   // Mapeo de tipos de error a iconos y descripciones
   // Usando las etiquetas del clasificador (ERROR_TAGS)
@@ -104,7 +106,8 @@ export default function ErrorInsights({ onNavigateToDrill }) {
         .slice(0,3)
         .map(([k]) => { const [mood,tense]=k.split('|'); return { mood, tense } })
       if (topCombos.length === 0) return
-      settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 5 } })
+      settings.set({ practiceMode: 'mixed' })
+      setDrillRuntimeContext({ currentBlock: { combos: topCombos, itemsRemaining: 5 } })
       // If we're in the Progress page, explicitly navigate to Drill
       if (typeof onNavigateToDrill === 'function') {
         onNavigateToDrill()

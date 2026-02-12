@@ -3,6 +3,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getErrorIntelligence } from '../../lib/progress/analytics.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { buildErrorFeedbackCards } from './errorFeedbackCoach.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
@@ -16,6 +17,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   const [loading, setLoading] = useState(!externalData)
   const [isCompact, setIsCompact] = useState(!!compact)
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   // If external data arrives, use it; otherwise fetch
   useEffect(() => {
@@ -78,10 +80,8 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
         combos = Array.from(freq.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => { const [mood, tense] = k.split('|'); return { mood, tense } })
       }
       if (combos.length === 0) return
-      settings.set(buildDrillSettingsUpdate({}, {
-        practiceMode: 'mixed',
-        currentBlock: { combos, itemsRemaining: 8 }
-      }))
+      settings.set(buildDrillSettingsUpdate({}, { practiceMode: 'mixed' }))
+      setDrillRuntimeContext({ currentBlock: { combos, itemsRemaining: 8 } })
       if (typeof onNavigateToDrill === 'function') onNavigateToDrill()
       else emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { size: 8 } })
     } catch { /* Practice configuration error ignored */ }

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { buildSrsReviewDrillConfig, buildSrsReviewFilter } from './srsReviewSessionConfig.js'
@@ -28,6 +29,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
   const [showDetails, setShowDetails] = useState(false)
   const [showQueueModal, setShowQueueModal] = useState(false)
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const { queue, loading, stats: queueStats, reload, lastUpdated } = useSRSQueue()
 
   const refreshStateRef = useRef({
@@ -163,6 +165,10 @@ export default function SRSPanel({ onNavigateToDrill }) {
       startReviewCooldownRef.current.run(() => {
         const filter = buildSrsReviewFilter(sessionType)
         settings.set(buildSrsReviewDrillConfig(sessionType))
+        setDrillRuntimeContext({
+          reviewSessionType: sessionType,
+          reviewSessionFilter: filter
+        })
 
         if (onNavigateToDrill) {
           onNavigateToDrill()
@@ -475,7 +481,11 @@ export default function SRSPanel({ onNavigateToDrill }) {
         isOpen={showQueueModal}
         onClose={() => setShowQueueModal(false)}
         onStartSession={(filter) => {
-          settings.set({ practiceMode: 'review', reviewSessionFilter: filter })
+          settings.set({ practiceMode: 'review' })
+          setDrillRuntimeContext({
+            reviewSessionType: 'due',
+            reviewSessionFilter: filter
+          })
         }}
       />
       </div>

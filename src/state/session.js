@@ -5,7 +5,10 @@ const initialSessionState = {
   currentActivityIndex: 0,
   sessionStartTime: null,
   activeSessionId: null,
-  activePlanId: null
+  activePlanId: null,
+  runtimeCurrentBlock: null,
+  runtimeReviewSessionType: null,
+  runtimeReviewSessionFilter: null
 }
 
 export const useSessionStore = create((set) => ({
@@ -34,7 +37,30 @@ export const useSessionStore = create((set) => ({
     activeSessionId: null,
     activePlanId: null
   }),
+  setDrillRuntimeContext: ({ currentBlock, reviewSessionType, reviewSessionFilter } = {}) => set((state) => ({
+    runtimeCurrentBlock: currentBlock !== undefined ? (currentBlock || null) : state.runtimeCurrentBlock,
+    runtimeReviewSessionType: reviewSessionType || state.runtimeReviewSessionType,
+    runtimeReviewSessionFilter:
+      reviewSessionFilter !== undefined
+        ? (reviewSessionFilter && typeof reviewSessionFilter === 'object' ? reviewSessionFilter : {})
+        : state.runtimeReviewSessionFilter
+  })),
+  clearDrillRuntimeContext: () => set({
+    runtimeCurrentBlock: null,
+    runtimeReviewSessionType: null,
+    runtimeReviewSessionFilter: null
+  }),
   resetSessionState: () => set({ ...initialSessionState })
 }))
 
 export const getSessionState = () => useSessionStore.getState()
+
+export const getRuntimeDrillSettings = (baseSettings = {}) => {
+  const runtime = useSessionStore.getState()
+  return {
+    ...baseSettings,
+    currentBlock: runtime.runtimeCurrentBlock ?? baseSettings.currentBlock ?? null,
+    reviewSessionType: runtime.runtimeReviewSessionType ?? baseSettings.reviewSessionType ?? 'due',
+    reviewSessionFilter: runtime.runtimeReviewSessionFilter ?? baseSettings.reviewSessionFilter ?? {}
+  }
+}

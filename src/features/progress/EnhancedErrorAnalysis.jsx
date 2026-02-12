@@ -3,6 +3,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getErrorIntelligence, getErrorRadarData } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './EnhancedErrorAnalysis.css'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -53,6 +54,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
   })
   const [selectedView, setSelectedView] = useState('dashboard') // dashboard, patterns, challenges, forensics
   const settings = useSettings()
+  const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
   useEffect(() => {
     loadErrorAnalysisData()
@@ -362,10 +364,8 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
 
       if (topCombos.length === 0) return
 
-      settings.set({
-        practiceMode: 'mixed',
-        currentBlock: { combos: topCombos, itemsRemaining: size }
-      })
+      settings.set({ practiceMode: 'mixed' })
+      setDrillRuntimeContext({ currentBlock: { combos: topCombos, itemsRemaining: size } })
 
       if (typeof onNavigateToDrill === 'function') {
         onNavigateToDrill()
