@@ -5,6 +5,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { buildSrsReviewDrillConfig, buildSrsReviewFilter } from './srsReviewSessionConfig.js'
 import { createActionCooldown } from './actionCooldown.js'
+import { createEventDebouncer } from './eventDebouncer.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'
 import SRSAnalytics from '../../components/srs/SRSAnalytics.jsx'
@@ -35,7 +36,6 @@ export default function SRSPanel({ onNavigateToDrill }) {
     skipNext: false
   })
   const startReviewCooldownRef = useRef(createActionCooldown({ delayMs: 250 }))
-  const srsUpdateDebounceRef = useRef(null)
 
   const loadSRSData = useCallback(async () => {
     try {
@@ -52,6 +52,18 @@ export default function SRSPanel({ onNavigateToDrill }) {
     }
   }, [])
 
+  const srsUpdateDebouncerRef = useRef(createEventDebouncer({
+    delayMs: 250,
+    onDebounced: () => {
+      refreshStateRef.current = {
+        ...refreshStateRef.current,
+        skipNext: true
+      }
+      loadSRSData()
+      reload()
+    }
+  }))
+
   useEffect(() => {
     const openHandler = () => setShowQueueModal(true)
     loadSRSData()
@@ -63,28 +75,13 @@ export default function SRSPanel({ onNavigateToDrill }) {
 
   useEffect(() => {
     const handleSRSUpdated = () => {
-      if (srsUpdateDebounceRef.current) {
-        clearTimeout(srsUpdateDebounceRef.current)
-      }
-
-      srsUpdateDebounceRef.current = setTimeout(() => {
-        srsUpdateDebounceRef.current = null
-        refreshStateRef.current = {
-          ...refreshStateRef.current,
-          skipNext: true
-        }
-        loadSRSData()
-        reload()
-      }, 250)
+      srsUpdateDebouncerRef.current.trigger()
     }
 
     window.addEventListener('progress:srs-updated', handleSRSUpdated)
 
     return () => {
-      if (srsUpdateDebounceRef.current) {
-        clearTimeout(srsUpdateDebounceRef.current)
-        srsUpdateDebounceRef.current = null
-      }
+      srsUpdateDebouncerRef.current.cancel()
       window.removeEventListener('progress:srs-updated', handleSRSUpdated)
     }
   }, [loadSRSData, reload])

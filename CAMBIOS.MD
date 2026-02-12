@@ -493,6 +493,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/eventDebouncer.test.js`
 - `src/features/progress/SmartPractice.test.jsx`
 
+## Cambios realizados (P10 - slice 2: SRSPanel migrado a debouncer compartido)
+- `SRSPanel` ahora reutiliza `createEventDebouncer` para `progress:srs-updated`.
+- Se elimina debounce manual por timeout local, manteniendo el mismo comportamiento de coalescing.
+- Beneficio: menor duplicacion de logica de timers y cleanup consistente.
+- Tests agregados/actualizados:
+- `src/features/progress/SRSPanel.test.jsx`
+- `src/features/progress/eventDebouncer.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
