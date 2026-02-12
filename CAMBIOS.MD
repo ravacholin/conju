@@ -234,6 +234,21 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/CoachModePanel.test.jsx`
 - `src/features/progress/ProgressDashboard.smoke.test.jsx`
 
+## Cambios realizados (P2 - slice 7: focus mode por objetivo unico)
+- Se agrego `FocusModePanel` para ejecutar sesiones con un unico frente activo y evitar dispersion.
+- Se incorporaron 3 tracks maximos con prioridad adaptativa:
+- reparar punto debil (combo con menor mastery y evidencia).
+- reactivar dominio (combos buenos pero estancados).
+- bloque base/mixto segun mastery global.
+- Se extrajo la logica de construccion a capa pura:
+- `src/features/progress/focusTracks.js`
+- Integracion en `ProgressDashboard`:
+- cada track aplica su `drillConfig` y navega directamente a Drill.
+- Tests agregados/actualizados:
+- `src/features/progress/focusTracks.test.js`
+- `src/features/progress/FocusModePanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
