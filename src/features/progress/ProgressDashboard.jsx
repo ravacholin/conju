@@ -6,6 +6,7 @@ import SafeComponent from '../../components/SafeComponent.jsx'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
+import { createActionCooldown } from './actionCooldown.js'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
 
 // New streamlined components
@@ -42,8 +43,7 @@ export default function ProgressDashboard({
 }) {
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
-  const drillNavigationLockRef = React.useRef(false)
-  const drillNavigationReleaseRef = React.useRef(null)
+  const drillNavigationCooldownRef = React.useRef(createActionCooldown({ delayMs: 250 }))
   const syncAvailable = isSyncEnabled()
   const setSettings = useSettings(state => state.set)
   const { stats: srsStats } = useSRSQueue()
@@ -115,28 +115,14 @@ export default function ProgressDashboard({
       return
     }
 
-    if (drillNavigationLockRef.current) {
-      return
-    }
-
-    drillNavigationLockRef.current = true
-    if (drillNavigationReleaseRef.current) {
-      clearTimeout(drillNavigationReleaseRef.current)
-    }
-
-    setSettings(buildDrillSettingsUpdate(drillConfig))
-    onNavigateToDrill()
-    drillNavigationReleaseRef.current = setTimeout(() => {
-      drillNavigationLockRef.current = false
-      drillNavigationReleaseRef.current = null
-    }, 250)
+    drillNavigationCooldownRef.current.run(() => {
+      setSettings(buildDrillSettingsUpdate(drillConfig))
+      onNavigateToDrill()
+    })
   }, [onNavigateToDrill, setSettings])
 
   React.useEffect(() => () => {
-    if (drillNavigationReleaseRef.current) {
-      clearTimeout(drillNavigationReleaseRef.current)
-      drillNavigationReleaseRef.current = null
-    }
+    drillNavigationCooldownRef.current.cancel()
   }, [])
 
   const handleStartPlannedSession = React.useCallback((session) => {

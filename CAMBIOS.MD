@@ -464,6 +464,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/hooks/useSRSQueue.test.js` (nuevo caso de race entre reloads)
 
+## Cambios realizados (P9 - slice 2: cooldown reutilizable para acciones criticas)
+- Se agrego helper reutilizable `createActionCooldown`:
+- `src/features/progress/actionCooldown.js`
+- Se aplico en `ProgressDashboard` para unificar el guard anti doble-navegacion a Drill y eliminar manejo manual de timers/locks.
+- Se mantiene el mismo comportamiento funcional con una implementacion mas simple y testeable.
+- Tests agregados/actualizados:
+- `src/features/progress/actionCooldown.test.js`
+- `src/features/progress/ProgressDashboard.navigation.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
