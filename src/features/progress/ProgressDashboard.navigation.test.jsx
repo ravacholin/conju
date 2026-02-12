@@ -1,6 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, beforeEach, vi } from 'vitest'
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 
 const useProgressDashboardDataMock = vi.fn()
 const setSettingsMock = vi.fn()
@@ -46,6 +46,8 @@ vi.mock('./useProgressDashboardData.js', () => ({
 
 import ProgressDashboard from './ProgressDashboard.jsx'
 
+let usingFakeTimers = false
+
 const createHookState = (overrides = {}) => ({
   heatMapData: { heatMap: {}, range: 'all', updatedAt: Date.now() },
   errorIntel: null,
@@ -79,6 +81,14 @@ describe('ProgressDashboard navigation wiring', () => {
     useProgressDashboardDataMock.mockReturnValue(createHookState())
   })
 
+  afterEach(() => {
+    if (usingFakeTimers) {
+      vi.runOnlyPendingTimers()
+      vi.useRealTimers()
+      usingFakeTimers = false
+    }
+  })
+
   it('normalizes drill config before navigating from daily plan', async () => {
     const onNavigateToDrill = vi.fn()
     render(<ProgressDashboard onNavigateToDrill={onNavigateToDrill} />)
@@ -94,5 +104,23 @@ describe('ProgressDashboard navigation wiring', () => {
       reviewSessionFilter: {}
     }))
     expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+  })
+
+  it('ignores duplicate rapid triggers and allows the next one after cooldown', async () => {
+    vi.useFakeTimers()
+    usingFakeTimers = true
+    const onNavigateToDrill = vi.fn()
+    render(<ProgressDashboard onNavigateToDrill={onNavigateToDrill} />)
+
+    const trigger = screen.getByRole('button', { name: /Start Daily Plan Session/i })
+    fireEvent.click(trigger)
+    fireEvent.click(trigger)
+
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+
+    vi.advanceTimersByTime(300)
+    fireEvent.click(trigger)
+
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(2)
   })
 })

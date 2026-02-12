@@ -373,6 +373,13 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/ProgressDashboard.navigation.test.jsx`
 
+## Cambios realizados (P6 - slice 2: guard anti doble-disparo de navegacion a Drill)
+- Se agrego un lock temporal en `ProgressDashboard` para evitar navegaciones duplicadas por clicks rapidos repetidos.
+- El guard se libera automaticamente luego de una ventana corta de cooldown y se limpia en unmount.
+- Impacto: menos riesgo de doble push de estado y transiciones redundantes en Drill.
+- Tests agregados/actualizados:
+- `src/features/progress/ProgressDashboard.navigation.test.jsx` (caso de doble trigger + reintento post-cooldown)
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

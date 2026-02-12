@@ -42,6 +42,8 @@ export default function ProgressDashboard({
 }) {
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
+  const drillNavigationLockRef = React.useRef(false)
+  const drillNavigationReleaseRef = React.useRef(null)
   const syncAvailable = isSyncEnabled()
   const setSettings = useSettings(state => state.set)
   const { stats: srsStats } = useSRSQueue()
@@ -113,9 +115,29 @@ export default function ProgressDashboard({
       return
     }
 
+    if (drillNavigationLockRef.current) {
+      return
+    }
+
+    drillNavigationLockRef.current = true
+    if (drillNavigationReleaseRef.current) {
+      clearTimeout(drillNavigationReleaseRef.current)
+    }
+
     setSettings(buildDrillSettingsUpdate(drillConfig))
     onNavigateToDrill()
+    drillNavigationReleaseRef.current = setTimeout(() => {
+      drillNavigationLockRef.current = false
+      drillNavigationReleaseRef.current = null
+    }, 250)
   }, [onNavigateToDrill, setSettings])
+
+  React.useEffect(() => () => {
+    if (drillNavigationReleaseRef.current) {
+      clearTimeout(drillNavigationReleaseRef.current)
+      drillNavigationReleaseRef.current = null
+    }
+  }, [])
 
   const handleStartPlannedSession = React.useCallback((session) => {
     if (!session || typeof onNavigateToDrill !== 'function') {
