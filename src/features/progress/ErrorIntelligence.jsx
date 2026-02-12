@@ -4,6 +4,7 @@ import { getErrorIntelligence } from '../../lib/progress/analytics.js'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { buildErrorFeedbackCards } from './errorFeedbackCoach.js'
 
 const logger = createLogger('features:ErrorIntelligence')
 
@@ -55,6 +56,8 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
     // In compact, also trim tags to top 3 (already sorted by impact at source)
     return { moods, tenses: tensesToShow, map }
   }, [data.heatmap, isCompact])
+
+  const feedbackCards = useMemo(() => buildErrorFeedbackCards(data), [data])
 
   const startMicroDrill = async (tagOrCombo) => {
     try {
@@ -158,6 +161,35 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
                 <div style={{ fontSize: 12, opacity: 0.8 }}>Próx.: {formatDue(l.nextDue)}</div>
                 <div style={{ marginTop: 8 }}>
                   <button className="btn btn-compact" onClick={() => startMicroDrill({ mood: l.mood, tense: l.tense })}>Practicar</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {feedbackCards.length > 0 && (
+        <section>
+          <h4 style={{ margin: '0 0 0.5rem 0' }}>Feedback guiado (regla + ejemplo)</h4>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {feedbackCards.map((card) => (
+              <div
+                key={card.id}
+                style={{
+                  background: 'rgba(17,17,17,0.72)',
+                  border: '1px solid rgba(245,245,245,0.08)',
+                  borderRadius: 12,
+                  padding: isCompact ? '8px 10px' : '10px 12px'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                  <strong>{card.title}</strong>
+                  <span style={{ opacity: 0.8 }}>{card.errorRate}% error</span>
+                </div>
+                <div style={{ marginTop: 6, fontSize: 13 }}>
+                  <div><strong>Regla:</strong> {card.rule}</div>
+                  <div><strong>Ejemplo:</strong> {card.example}</div>
+                  <div><strong>Contraejemplo:</strong> {card.counterExample}</div>
                 </div>
               </div>
             ))}

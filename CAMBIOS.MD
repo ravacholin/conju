@@ -186,6 +186,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/ProgressUnlocksPanel.test.jsx`
 - `src/features/progress/ProgressDashboard.smoke.test.jsx`
 
+## Cambios realizados (P2 - slice 3: feedback explicativo de errores)
+- Se incorporo capa de feedback pedagógico en `ErrorIntelligence` con formato:
+- Regla
+- Ejemplo correcto
+- Contraejemplo
+- La selección se basa en las combinaciones con mayor tasa de error del heatmap reciente.
+- Se extrajo la lógica a `src/features/progress/errorFeedbackCoach.js` para mantenerla pura y testeable.
+- Tests agregados:
+- `src/features/progress/errorFeedbackCoach.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
