@@ -114,6 +114,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test agregado en `src/lib/progress/cloudSync.memoryLeak.test.js`:
 - valida que `cancelScheduledSync()` invoque `clearInterval(0)` cuando `setInterval` devuelve `0`.
 
+## Cambios realizados (P1 - slice 10: recordatorios con scheduling eficiente)
+- Se optimizo `PracticeReminders` para evitar polling fijo por `setInterval(60s)`:
+- ahora usa `setTimeout` alineado al siguiente minuto (`getMsUntilNextMinute`) y solo evalua recordatorios cuando la pestaña esta visible.
+- Se agregaron triggers reactivos en `focus` y `visibilitychange` para refrescar al volver a la app.
+- `practiceReminderDays` ahora se memoiza y normaliza para evitar re-suscripciones innecesarias del efecto.
+- Se extrajeron utilidades a `src/features/progress/practiceReminderScheduler.js`:
+- `normalizeReminderDays(days)`
+- `getMsUntilNextMinute(nowMs)`
+- Tests agregados:
+- `src/features/progress/practiceReminderScheduler.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

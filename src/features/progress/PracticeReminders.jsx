@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
+import { getMsUntilNextMinute, normalizeReminderDays } from './practiceReminderScheduler.js'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
 const WEEKDAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -32,9 +33,10 @@ export default function PracticeReminders({
   } = useSettings()
 
   const normalizedTime = normalizeTime(practiceReminderTime)
-  const reminderDays = Array.isArray(practiceReminderDays) && practiceReminderDays.length > 0
-    ? practiceReminderDays
-    : [0, 1, 2, 3, 4, 5, 6]
+  const reminderDays = useMemo(
+    () => normalizeReminderDays(practiceReminderDays),
+    [practiceReminderDays]
+  )
 
   const sortedReminders = useMemo(() => {
     if (!Array.isArray(reminders)) return []
@@ -109,12 +111,40 @@ export default function PracticeReminders({
       })
     }
 
-    const interval = window.setInterval(checkReminder, 60000)
+    let timeoutId = null
+    const scheduleNextCheck = () => {
+      const delay = getMsUntilNextMinute()
+      timeoutId = window.setTimeout(() => {
+        if (!document.hidden) {
+          checkReminder()
+        }
+        scheduleNextCheck()
+      }, delay)
+    }
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkReminder()
+      }
+    }
+
+    const handleFocus = () => {
+      checkReminder()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     // Ejecutar una comprobación inmediata para usuarios atrasados
     checkReminder()
+    scheduleNextCheck()
 
     return () => {
-      window.clearInterval(interval)
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
+      }
+      window.removeEventListener('focus', handleFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [
     practiceReminderEnabled,
