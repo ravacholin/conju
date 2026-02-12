@@ -525,7 +525,7 @@ export default function useProgressDashboardData() {
   })
 
   const runOperations = useCallback(
-    async (keys, { userId, timeout = 10000 } = {}) => {
+    async (keys, { userId, timeout = 10000, throwOnFailure = false } = {}) => {
       if (!Array.isArray(keys) || keys.length === 0) {
         return {}
       }
@@ -538,7 +538,10 @@ export default function useProgressDashboardData() {
       uniqueKeys.forEach((key) => {
         const definition = definitions[key]
         if (definition?.loader) {
-          operations[key] = definition.loader
+          operations[key] = async (signal) => ({
+            ok: true,
+            value: await definition.loader(signal)
+          })
           applicable.push([key, definition])
         }
       })
@@ -548,16 +551,32 @@ export default function useProgressDashboardData() {
       }
 
       const results = await asyncController.current.executeAll(operations, timeout)
+      const normalizedResults = {}
+      const failedKeys = []
 
       applicable.forEach(([key, definition]) => {
+        const payload = results[key]
+        if (!payload || payload.ok !== true) {
+          failedKeys.push(key)
+          return
+        }
+
         try {
-          definition.apply?.(results[key])
+          definition.apply?.(payload.value)
+          normalizedResults[key] = payload.value
         } catch (applyError) {
           logger.warn('runOperations', `Failed to apply result for ${key}`, applyError)
+          failedKeys.push(key)
         }
       })
 
-      return results
+      if (throwOnFailure && failedKeys.length > 0) {
+        const error = new Error(`Failed operations: ${failedKeys.join(', ')}`)
+        error.failedKeys = failedKeys
+        throw error
+      }
+
+      return normalizedResults
     },
     [personFilter]
   )
@@ -602,7 +621,7 @@ export default function useProgressDashboardData() {
         }
 
         try {
-          await runOperations([key], { userId })
+          await runOperations([key], { userId, throwOnFailure: true })
           updateSectionStatus(key, 'success')
           return { key, success: true }
         } catch (error) {
@@ -732,7 +751,7 @@ export default function useProgressDashboardData() {
           }
         })
 
-        const result = await runOperations(operationKeys, { userId })
+        const result = await runOperations(operationKeys, { userId, throwOnFailure: true })
 
         operationKeys.forEach((key) => updateSectionStatus(key, 'success'))
 

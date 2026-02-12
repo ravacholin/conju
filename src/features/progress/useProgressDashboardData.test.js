@@ -5,6 +5,20 @@ import { getHeatMapData, getAdvancedAnalytics, getPronunciationStats } from '../
 import { generatePersonalizedStudyPlan } from '../../lib/progress/studyPlans.js'
 import { __triggerReady, onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
 
+const { executeAllMock } = vi.hoisted(() => ({
+  executeAllMock: vi.fn()
+}))
+
+const defaultExecuteAllImpl = async (operations) => {
+  const entries = await Promise.all(
+    Object.entries(operations).map(async ([key, operation]) => [
+      key,
+      await operation({ aborted: false })
+    ])
+  )
+  return Object.fromEntries(entries)
+}
+
 vi.mock('../../lib/progress/analytics.js', () => ({
   getHeatMapData: vi.fn().mockResolvedValue([
     { mood: 'indicative', tense: 'present', score: 100, count: 1 }
@@ -68,13 +82,7 @@ vi.mock('../../lib/utils/AsyncController.js', () => ({
   AsyncController: class {
     cancelAll() {}
     async executeAll(operations) {
-      const entries = await Promise.all(
-        Object.entries(operations).map(async ([key, operation]) => [
-          key,
-          await operation({ aborted: false })
-        ])
-      )
-      return Object.fromEntries(entries)
+      return executeAllMock(operations)
     }
     destroy() {}
   }
@@ -156,6 +164,7 @@ vi.mock('../../lib/progress/index.js', () => {
 describe('useProgressDashboardData', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    executeAllMock.mockImplementation(defaultExecuteAllImpl)
     isProgressSystemReady.mockReturnValue(false)
   })
 
@@ -276,6 +285,45 @@ describe('useProgressDashboardData', () => {
 
     expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
     expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
+  })
+
+  it('hace fallback a recarga total si falla un refresh parcial', async () => {
+    renderHook(() => useProgressDashboardData())
+
+    await waitFor(() => {
+      expect(onProgressSystemReady).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      __triggerReady(true)
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalled()
+      expect(getAdvancedAnalytics).toHaveBeenCalled()
+    })
+
+    getAdvancedAnalytics.mockClear()
+    generatePersonalizedStudyPlan.mockClear()
+
+    executeAllMock.mockImplementationOnce(async (operations) =>
+      Object.fromEntries(Object.keys(operations).map((key) => [key, null]))
+    )
+
+    await act(async () => {
+      window.dispatchEvent(
+        new CustomEvent('progress:dataUpdated', {
+          detail: { attemptId: 'attempt-2', userId: 'user-123' }
+        })
+      )
+      await new Promise(resolve => setTimeout(resolve, 700))
+    })
+
+    await waitFor(() => {
+      expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
+      expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('genera recordatorios cuando no hay práctica reciente', async () => {

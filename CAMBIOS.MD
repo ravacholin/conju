@@ -320,6 +320,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/progressUpdateBatcher.test.js`
 - `src/features/progress/useProgressDashboardData.test.js`
 
+## Cambios realizados (P4 - slice 3: deteccion explicita de fallos en operaciones async)
+- Se reforzo `runOperations` en `useProgressDashboardData`:
+- cada loader ahora se envuelve con payload `{ ok, value }` para distinguir fallo real vs `null` valido.
+- Se agrego opcion `throwOnFailure` para que las rutas sensibles marquen error cuando una seccion falla.
+- `loadTrackedKey` y `refreshFromEvent` usan esta señal para no etiquetar como `success` operaciones que realmente fallaron.
+- Se agrego test de regresion para verificar fallback a recarga total cuando falla un refresh parcial.
+- Tests agregados/actualizados:
+- `src/features/progress/useProgressDashboardData.test.js`
+
+## Estado P4
+- P4 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
