@@ -24,8 +24,15 @@ Archivos generados:
 - `docs/performance/baseline.md`
 
 ## Estado de metricas runtime
-Aun pendiente de instrumentacion automatizada en CI para:
-- Drill generation p50/p95 en entorno browser real.
+Parcialmente instrumentado:
+- Drill generation (specific filtering) con benchmark reproducible:
+- comando: `npm run perf:generator`
+- salidas: `docs/performance/generator-benchmark.json` y `docs/performance/generator-benchmark.md`
+- baseline 2026-02-12 (`la_general`, 22412 forms):
+- sin indice p95 `0.392ms`
+- con indice p95 `0ms` (redondeado)
+
+Pendiente:
 - Dashboard cold/warm p50/p95 con perfil mobile.
 
 ## Protocolo de medicion
@@ -34,12 +41,14 @@ Aun pendiente de instrumentacion automatizada en CI para:
 2. Recolectar baseline de assets:
 - `npm run perf:baseline`
 3. Guardar snapshot de resultados por release en `docs/performance/`.
+4. Medir impacto del filtro especifico con:
+- `npm run perf:generator`
 
 ## Criterio de gate (pre-CI budget)
 - Si `total JS+CSS` sube mas de `10%` respecto al baseline vigente, bloquear merge hasta justificar en ADR.
 - Si un chunk individual supera `+15%` respecto a la referencia, abrir ticket de optimizacion.
 
 ## Proximos pasos
-1. Agregar script de medicion runtime para p95 de Drill generation.
-2. Agregar escenario de medicion de dashboard cold/warm con Playwright.
+1. Agregar escenario de medicion de dashboard cold/warm con Playwright.
+2. Convertir baseline de `perf:generator` en check automatizado de CI.
 3. Convertir estos thresholds en check automatizado de CI.

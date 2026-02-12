@@ -4,15 +4,17 @@ import { createFormsCombinationIndex, resolveFormsPool } from './formsPoolServic
 describe('formsPoolService', () => {
   it('builds mood/tense/person combination index', () => {
     const forms = [
-      { mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
-      { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas' },
-      { mood: 'subjunctive', tense: 'subjPres', person: '1s', value: 'hable' }
+      { mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo', region: 'la_general' },
+      { mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas', region: 'la_general' },
+      { mood: 'subjunctive', tense: 'subjPres', person: '1s', value: 'hable', region: 'peninsular' }
     ]
 
     const index = createFormsCombinationIndex(forms)
     expect(index.byMoodTense.get('indicative|pres')).toHaveLength(2)
     expect(index.byMoodTensePerson.get('indicative|pres|1s')).toHaveLength(1)
     expect(index.byMoodTensePerson.get('subjunctive|subjPres|1s')).toHaveLength(1)
+    expect(index.byRegionMoodTense.get('la_general|indicative|pres')).toHaveLength(2)
+    expect(index.byRegionMoodTensePerson.get('peninsular|subjunctive|subjPres|1s')).toHaveLength(1)
   })
 
   it('stores and reuses precomputed index in cache', async () => {

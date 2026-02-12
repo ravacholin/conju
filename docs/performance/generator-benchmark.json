@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-02-12T20:49:10.408Z",
+  "benchmark": {
+    "runs": 200,
+    "warmupRuns": 20,
+    "batchSize": 50,
+    "region": "la_general",
+    "formsCount": 22412,
+    "constraints": {
+      "isSpecific": true,
+      "specificMood": "indicative",
+      "specificTense": "pres",
+      "specificPerson": "1s"
+    }
+  },
+  "noIndex": {
+    "runs": 200,
+    "minMs": 0.332,
+    "p50Ms": 0.363,
+    "p95Ms": 0.392,
+    "maxMs": 0.537,
+    "avgMs": 0.367
+  },
+  "indexed": {
+    "runs": 200,
+    "minMs": 0,
+    "p50Ms": 0,
+    "p95Ms": 0,
+    "maxMs": 0.001,
+    "avgMs": 0
+  },
+  "delta": {
+    "p95GainMs": 0.392,
+    "p95GainPct": 100
+  }
+}

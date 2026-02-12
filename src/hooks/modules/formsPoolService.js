@@ -2,33 +2,41 @@ const DEFAULT_REGION = 'la_general'
 
 const defaultNow = () => Date.now()
 
-export const createFormsCombinationIndex = (forms = []) => {
+const pushToMapBucket = (map, key, form) => {
+  const bucket = map.get(key)
+  if (bucket) {
+    bucket.push(form)
+    return
+  }
+  map.set(key, [form])
+}
+
+export const createFormsCombinationIndex = (forms = [], options = {}) => {
+  const defaultRegion = options.defaultRegion || DEFAULT_REGION
   const byMoodTense = new Map()
   const byMoodTensePerson = new Map()
+  const byRegionMoodTense = new Map()
+  const byRegionMoodTensePerson = new Map()
 
   for (const form of forms) {
     if (!form) continue
     const moodTenseKey = `${form.mood}|${form.tense}`
     const moodTensePersonKey = `${form.mood}|${form.tense}|${form.person || ''}`
+    const region = form.region || defaultRegion
+    const byRegionMoodTenseKey = `${region}|${moodTenseKey}`
+    const byRegionMoodTensePersonKey = `${region}|${moodTensePersonKey}`
 
-    const moodTenseBucket = byMoodTense.get(moodTenseKey)
-    if (moodTenseBucket) {
-      moodTenseBucket.push(form)
-    } else {
-      byMoodTense.set(moodTenseKey, [form])
-    }
-
-    const moodTensePersonBucket = byMoodTensePerson.get(moodTensePersonKey)
-    if (moodTensePersonBucket) {
-      moodTensePersonBucket.push(form)
-    } else {
-      byMoodTensePerson.set(moodTensePersonKey, [form])
-    }
+    pushToMapBucket(byMoodTense, moodTenseKey, form)
+    pushToMapBucket(byMoodTensePerson, moodTensePersonKey, form)
+    pushToMapBucket(byRegionMoodTense, byRegionMoodTenseKey, form)
+    pushToMapBucket(byRegionMoodTensePerson, byRegionMoodTensePersonKey, form)
   }
 
   return {
     byMoodTense,
-    byMoodTensePerson
+    byMoodTensePerson,
+    byRegionMoodTense,
+    byRegionMoodTensePerson
   }
 }
 
@@ -56,20 +64,21 @@ export const resolveFormsPool = async ({
   const hasCachedForms = Array.isArray(cache.forms) && cache.forms.length > 0
 
   if (hasCachedForms && cache.signature === signature) {
+    const index = cache.index || createFormsCombinationIndex(cache.forms, { defaultRegion: effectiveRegion })
     return {
       forms: cache.forms,
-      index: cache.index || createFormsCombinationIndex(cache.forms),
+      index,
       signature,
       reused: true,
       durationMs: 0,
-      cache: { ...cache }
+      cache: { ...cache, index }
     }
   }
 
   const start = now()
   const forms = await generateAllFormsForRegion(effectiveRegion, settings)
   const end = now()
-  const index = createFormsCombinationIndex(forms)
+  const index = createFormsCombinationIndex(forms, { defaultRegion: effectiveRegion })
 
   return {
     forms,

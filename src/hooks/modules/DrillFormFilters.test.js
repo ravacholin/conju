@@ -10,6 +10,7 @@ import {
   filterForSpecificPractice
 } from './DrillFormFilters.js'
 import { getFormsForRegion } from '../../lib/core/verbDataService.js'
+import { createFormsCombinationIndex } from './formsPoolService.js'
 
 describe('DrillFormFilters - global pool', () => {
   const sharedForm = {
@@ -133,5 +134,25 @@ describe('DrillFormFilters - specific practice indexing', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0].person).toBe('2s_tu')
+  })
+
+  it('prioritizes region-aware buckets when index contains multiple regions', () => {
+    const forms = [
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas', region: 'la_general' },
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_tu', value: 'hablas', region: 'peninsular' },
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '2s_vos', value: 'hablás', region: 'rioplatense' }
+    ]
+    const index = createFormsCombinationIndex(forms)
+    const specificConstraints = {
+      isSpecific: true,
+      specificMood: 'indicative',
+      specificTense: 'pres',
+      specificPerson: '2s_tu'
+    }
+
+    const result = filterForSpecificPractice(forms, specificConstraints, index, 'la_general')
+
+    expect(result).toHaveLength(1)
+    expect(result[0].region).toBe('la_general')
   })
 })

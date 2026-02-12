@@ -39,7 +39,8 @@ export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   `forms:${region}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
 
 async function buildFormsPool(region = 'la_general', settings = {}) {
-  const normalizeForms = (forms = []) => forms.map(form => ({ ...form }))
+  const normalizeForms = (forms = [], sourceRegion = region) =>
+    forms.map(form => ({ ...form, region: form.region || sourceRegion }))
 
   let forms
 
@@ -50,14 +51,14 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
       getFormsForRegion('la_general', settings)
     ])
     const combined = [
-      ...normalizeForms(rioplatense),
-      ...normalizeForms(peninsular),
-      ...normalizeForms(laGeneral)
+      ...normalizeForms(rioplatense, 'rioplatense'),
+      ...normalizeForms(peninsular, 'peninsular'),
+      ...normalizeForms(laGeneral, 'la_general')
     ]
     const dedup = deduplicateForms(combined)
     forms = dedup
   } else {
-    forms = normalizeForms(await getFormsForRegion(region, settings))
+    forms = normalizeForms(await getFormsForRegion(region, settings), region)
   }
 
   if ((!forms || forms.length === 0) && settings.enableChunks !== false) {
@@ -65,11 +66,11 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
     const fallbackSettings = { ...settings, enableChunks: false }
     const fallbackForms = region === 'global'
       ? deduplicateForms([
-          ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings)),
-          ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings)),
-          ...normalizeForms(await getFormsForRegion('la_general', fallbackSettings))
+          ...normalizeForms(await getFormsForRegion('rioplatense', fallbackSettings), 'rioplatense'),
+          ...normalizeForms(await getFormsForRegion('peninsular', fallbackSettings), 'peninsular'),
+          ...normalizeForms(await getFormsForRegion('la_general', fallbackSettings), 'la_general')
         ])
-      : normalizeForms(await getFormsForRegion(region, fallbackSettings))
+      : normalizeForms(await getFormsForRegion(region, fallbackSettings), region)
     if (fallbackForms?.length) {
       forms = fallbackForms
     }
@@ -365,15 +366,15 @@ export const allowsLevel = (form, settings) => {
  * @param {Object} specificConstraints - Specific practice constraints
  * @returns {Array} - Filtered forms matching specific practice
  */
-export const filterForSpecificPractice = (allForms, specificConstraints, formsIndex = null) => {
+export const filterForSpecificPractice = (allForms, specificConstraints, formsIndex = null, region = null) => {
   const { isSpecific } = specificConstraints
   if (!isSpecific) {
     return allForms
   }
-  return getSpecificPracticeCandidates(allForms, specificConstraints, formsIndex)
+  return getSpecificPracticeCandidates(allForms, specificConstraints, formsIndex, region)
 }
 
-const getSpecificPracticeCandidates = (allForms, specificConstraints, formsIndex = null) => {
+const getSpecificPracticeCandidates = (allForms, specificConstraints, formsIndex = null, region = null) => {
   const { isSpecific, specificMood, specificTense, specificPerson } = specificConstraints
 
   if (!isSpecific) {
@@ -391,12 +392,17 @@ const getSpecificPracticeCandidates = (allForms, specificConstraints, formsIndex
   if (!index) {
     index = {
       byMoodTense: new Map(),
-      byMoodTensePerson: new Map()
+      byMoodTensePerson: new Map(),
+      byRegionMoodTense: new Map(),
+      byRegionMoodTensePerson: new Map()
     }
     for (const form of allForms) {
       if (!form) continue
       const key = `${form.mood}|${form.tense}`
       const personKey = `${form.mood}|${form.tense}|${form.person || ''}`
+      const formRegion = form.region || region || 'la_general'
+      const regionKey = `${formRegion}|${key}`
+      const regionPersonKey = `${formRegion}|${personKey}`
       const byMoodTenseCurrent = index.byMoodTense.get(key)
       if (byMoodTenseCurrent) {
         byMoodTenseCurrent.push(form)
@@ -409,13 +415,34 @@ const getSpecificPracticeCandidates = (allForms, specificConstraints, formsIndex
       } else {
         index.byMoodTensePerson.set(personKey, [form])
       }
+      const byRegionMoodTenseCurrent = index.byRegionMoodTense.get(regionKey)
+      if (byRegionMoodTenseCurrent) {
+        byRegionMoodTenseCurrent.push(form)
+      } else {
+        index.byRegionMoodTense.set(regionKey, [form])
+      }
+      const byRegionMoodTensePersonCurrent = index.byRegionMoodTensePerson.get(regionPersonKey)
+      if (byRegionMoodTensePersonCurrent) {
+        byRegionMoodTensePersonCurrent.push(form)
+      } else {
+        index.byRegionMoodTensePerson.set(regionPersonKey, [form])
+      }
     }
     specificPracticeIndexCache.set(allForms, index)
   }
 
   const getCandidates = (mood, tense) => {
+    const regionalPrefix = region ? `${region}|` : null
     if (specificPerson) {
+      if (regionalPrefix && index.byRegionMoodTensePerson instanceof Map) {
+        const regional = index.byRegionMoodTensePerson.get(`${regionalPrefix}${mood}|${tense}|${specificPerson}`)
+        if (regional) return regional
+      }
       return index.byMoodTensePerson.get(`${mood}|${tense}|${specificPerson}`) || []
+    }
+    if (regionalPrefix && index.byRegionMoodTense instanceof Map) {
+      const regional = index.byRegionMoodTense.get(`${regionalPrefix}${mood}|${tense}`)
+      if (regional) return regional
     }
     return index.byMoodTense.get(`${mood}|${tense}`) || []
   }
@@ -506,7 +533,7 @@ export const applyComprehensiveFiltering = (forms, settings, specificConstraints
   let filtered = forms
 
   // 1. Filter for specific practice if applicable
-  filtered = filterForSpecificPractice(filtered, specificConstraints, formsIndex)
+  filtered = filterForSpecificPractice(filtered, specificConstraints, formsIndex, settings?.region || null)
   if (filtered.length === 0) return filtered
 
   // 2. Filter by verb type

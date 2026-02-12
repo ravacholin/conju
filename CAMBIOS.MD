@@ -750,11 +750,44 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/hooks/modules/DrillFormFilters.test.js`
 - `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
 
+## Cambios realizados (P12 - slice 2: indice consciente de region sin romper contratos)
+- Se extendio `createFormsCombinationIndex` para mantener buckets regionales adicionales:
+- `byRegionMoodTense`
+- `byRegionMoodTensePerson`
+- `resolveFormsPool` ahora inyecta `defaultRegion` al construir/reconstruir el index, de modo compatible con caches previas.
+- `buildFormsPool` normaliza las formas con `region` de origen para que el index pueda discriminar por dialecto.
+- `filterForSpecificPractice` y `getSpecificPracticeCandidates` aceptan region opcional y priorizan buckets regionales cuando existen.
+- `applyComprehensiveFiltering` pasa `settings.region` a la etapa de filtro especifico para habilitar fast-path regional sin cambiar el contrato externo.
+- Beneficio: el filtro especifico evita escaneos innecesarios y queda listo para escenarios multi-region sin afectar llamadas actuales.
+- Tests agregados/actualizados:
+- `src/hooks/modules/formsPoolService.test.js`
+- `src/hooks/modules/DrillFormFilters.test.js`
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+
+## Cambios realizados (P12 - slice 3: benchmark reproducible de impacto del index en generador)
+- Se agrego script reproducible de benchmark para el filtro especifico del generador:
+- `scripts/perfGeneratorBenchmark.mjs`
+- Se agrego comando npm para correrlo de forma estandar:
+- `npm run perf:generator`
+- El benchmark persiste resultados versionables en:
+- `docs/performance/generator-benchmark.json`
+- `docs/performance/generator-benchmark.md`
+- El benchmark compara escenario sin index vs con index precomputado (misma configuracion, mismas formas, p50/p95).
+- Baseline actual registrado (2026-02-12):
+- `formsCount: 22412`
+- `p95 sin indice: 0.392ms`
+- `p95 con indice: 0ms` (redondeado a 3 decimales)
+- `delta p95: 0.392ms (100%)`
+
+## Estado P12
+- P12 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
 - `npx vitest run src/hooks/modules/formsPoolService.test.js src/hooks/modules/DrillFormFilters.test.js src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
-- `npx eslint src/hooks/modules/formsPoolService.js src/hooks/modules/formsPoolService.test.js src/hooks/modules/DrillFormFilters.js src/hooks/modules/useDrillGenerator.js`
+- `npx eslint src/hooks/modules/formsPoolService.js src/hooks/modules/formsPoolService.test.js src/hooks/modules/DrillFormFilters.js src/hooks/modules/DrillFormFilters.test.js src/hooks/modules/useDrillGenerator.js`
+- `npm run perf:generator`
 
 ## Mapa actual end to end
 - UI: React + componentes locales y features (drill, learning, progress, story, timeline).

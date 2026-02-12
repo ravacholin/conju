@@ -218,5 +218,10 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 
 ## Siguiente backlog activo (Fase 3.1)
 1. [x] Precomputar indice por combinacion (`mood|tense` y `mood|tense|person`) en `formsPoolService`.
-2. [ ] Integrar la capa de index para contemplar contexto adicional (`region`) sin romper contratos actuales.
-3. [ ] Validar impacto con benchmark reproducible del generador (before/after, p50/p95).
+2. [x] Integrar la capa de index para contemplar contexto adicional (`region`) sin romper contratos actuales.
+3. [x] Validar impacto con benchmark reproducible del generador (before/after, p50/p95).
+
+## Siguiente backlog activo (Fase 3.2)
+1. [ ] Estandarizar motivos de descarte por filtro en el pipeline de generacion.
+2. [ ] Exponer reporte causal de pool vacio para UI con acciones recomendadas.
+3. [ ] Cubrir el flujo causal con tests unitarios e integracion del generador.
