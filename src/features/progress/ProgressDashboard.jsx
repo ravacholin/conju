@@ -45,7 +45,14 @@ export default function ProgressDashboard({
 }) {
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
+  const [showAdvancedSections, setShowAdvancedSections] = React.useState(false)
   const drillNavigationCooldownRef = React.useRef(createActionCooldown({ delayMs: 250 }))
+  const dashboardMountStartedAtRef = React.useRef(
+    typeof performance !== 'undefined' && typeof performance.now === 'function'
+      ? performance.now()
+      : Date.now()
+  )
+  const firstViewLoggedRef = React.useRef(false)
   const syncAvailable = isSyncEnabled()
   const setSettings = useSettings(state => state.set)
   const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
@@ -177,6 +184,12 @@ export default function ProgressDashboard({
     })
   }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
+  const handleQuickPractice = React.useCallback(() => {
+    if (typeof onNavigateToDrill === 'function') {
+      onNavigateToDrill()
+    }
+  }, [onNavigateToDrill])
+
   // Listen for progress navigation events (from heat map clicks, etc.)
   React.useEffect(() => {
     const handleProgressNavigate = (detail) => {
@@ -194,6 +207,19 @@ export default function ProgressDashboard({
 
     return onProgressEvent(PROGRESS_EVENTS.NAVIGATE, handleProgressNavigate, { validate: true })
   }, [onNavigateToDrill])
+
+  React.useEffect(() => {
+    if (!initialSectionsReady || firstViewLoggedRef.current) {
+      return
+    }
+
+    const now = typeof performance !== 'undefined' && typeof performance.now === 'function'
+      ? performance.now()
+      : Date.now()
+    const elapsed = Number((now - dashboardMountStartedAtRef.current).toFixed(2))
+    firstViewLoggedRef.current = true
+    logger.debug('Progress first view ready', { elapsedMs: elapsed })
+  }, [initialSectionsReady])
 
   // Manual sync only - removed auto-sync to prevent double load on mount
   // Users can manually sync via the sync button if needed
@@ -313,13 +339,17 @@ export default function ProgressDashboard({
         />
       </SafeComponent>
 
-      <SafeComponent name="Learning Journey">
-        <LearningJourneyPanel
-          userStats={userStats}
-          studyPlan={studyPlan}
-          onNavigateToDrill={onNavigateToDrill}
-        />
-      </SafeComponent>
+      <div className="progress-primary-actions" data-testid="progress-primary-actions">
+        <button type="button" onClick={handleQuickPractice} className="primary-action-btn">
+          Practicar ahora
+        </button>
+        <button type="button" onClick={handleSRSReviewNow} className="primary-action-btn">
+          Repasar SRS
+        </button>
+        <button type="button" onClick={refresh} className="primary-action-btn">
+          Actualizar progreso
+        </button>
+      </div>
 
       <SafeComponent name="Coach Mode">
         <CoachModePanel
@@ -344,16 +374,6 @@ export default function ProgressDashboard({
         />
       </SafeComponent>
 
-      <SafeComponent name="Progress Unlocks">
-        <ProgressUnlocksPanel
-          userStats={userStats}
-          onNavigateToStory={onNavigateToStory}
-          onNavigateToTimeline={onNavigateToTimeline}
-        />
-      </SafeComponent>
-
-
-
       <SafeComponent name="Progress Overview">
         {renderSection(
           overviewState,
@@ -374,27 +394,15 @@ export default function ProgressDashboard({
       </SafeComponent>
 
       <SafeComponent name="Accuracy Trend">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando tendencia...</span></div>}>
-          <AccuracyTrendCard stats={pronunciationStats} />
-        </React.Suspense>
-      </SafeComponent>
-
-
-
-      <SafeComponent name="Pronunciation Lab">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Analizando estadísticas de pronunciación...</span></div>}>
-          {renderSection(
-            pronunciationState,
-            (
-              <PronunciationStatsWidget
-                stats={pronunciationStats}
-                onNavigateToDrill={onNavigateToDrill}
-              />
-            ),
-            'Analizando estadísticas de pronunciación...',
-            'No pudimos cargar las estadísticas de pronunciación.'
-          )}
-        </React.Suspense>
+        <div className="progress-advanced-toggle">
+          <button
+            type="button"
+            onClick={() => setShowAdvancedSections((prev) => !prev)}
+            className="advanced-toggle-btn"
+          >
+            {showAdvancedSections ? 'Ocultar análisis avanzados' : 'Ver análisis avanzados'}
+          </button>
+        </div>
       </SafeComponent>
 
       <SafeComponent name="Heat Map & SRS">
@@ -430,36 +438,78 @@ export default function ProgressDashboard({
         </React.Suspense>
       </SafeComponent>
 
-      <SafeComponent name="Error Intelligence">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando errores comunes...</span></div>}>
-          {renderSection(
-            errorIntelState,
-            (
-              <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
-            ),
-            'Cargando errores comunes...',
-            'No pudimos cargar el análisis de errores.'
-          )}
-        </React.Suspense>
-      </SafeComponent>
+      {showAdvancedSections && (
+        <>
+          <SafeComponent name="Learning Journey">
+            <LearningJourneyPanel
+              userStats={userStats}
+              studyPlan={studyPlan}
+              onNavigateToDrill={onNavigateToDrill}
+            />
+          </SafeComponent>
 
-      <SafeComponent name="Study Insights">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Calculando recomendaciones avanzadas...</span></div>}>
-          {renderSection(
-            insightsState,
-            (
-              <StudyInsights
-                userStats={userStats}
-                heatMapData={heatMapData}
-                studyPlan={studyPlan}
-                onNavigateToDrill={onNavigateToDrill}
-              />
-            ),
-            'Calculando recomendaciones avanzadas...',
-            'No pudimos calcular las analíticas de estudio.'
-          )}
-        </React.Suspense>
-      </SafeComponent>
+          <SafeComponent name="Progress Unlocks">
+            <ProgressUnlocksPanel
+              userStats={userStats}
+              onNavigateToStory={onNavigateToStory}
+              onNavigateToTimeline={onNavigateToTimeline}
+            />
+          </SafeComponent>
+
+          <SafeComponent name="Accuracy Trend">
+            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando tendencia...</span></div>}>
+              <AccuracyTrendCard stats={pronunciationStats} />
+            </React.Suspense>
+          </SafeComponent>
+
+          <SafeComponent name="Pronunciation Lab">
+            <React.Suspense fallback={<div className="section-placeholder"><span>Analizando estadísticas de pronunciación...</span></div>}>
+              {renderSection(
+                pronunciationState,
+                (
+                  <PronunciationStatsWidget
+                    stats={pronunciationStats}
+                    onNavigateToDrill={onNavigateToDrill}
+                  />
+                ),
+                'Analizando estadísticas de pronunciación...',
+                'No pudimos cargar las estadísticas de pronunciación.'
+              )}
+            </React.Suspense>
+          </SafeComponent>
+
+          <SafeComponent name="Error Intelligence">
+            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando errores comunes...</span></div>}>
+              {renderSection(
+                errorIntelState,
+                (
+                  <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
+                ),
+                'Cargando errores comunes...',
+                'No pudimos cargar el análisis de errores.'
+              )}
+            </React.Suspense>
+          </SafeComponent>
+
+          <SafeComponent name="Study Insights">
+            <React.Suspense fallback={<div className="section-placeholder"><span>Calculando recomendaciones avanzadas...</span></div>}>
+              {renderSection(
+                insightsState,
+                (
+                  <StudyInsights
+                    userStats={userStats}
+                    heatMapData={heatMapData}
+                    studyPlan={studyPlan}
+                    onNavigateToDrill={onNavigateToDrill}
+                  />
+                ),
+                'Calculando recomendaciones avanzadas...',
+                'No pudimos calcular las analíticas de estudio.'
+              )}
+            </React.Suspense>
+          </SafeComponent>
+        </>
+      )}
 
     </div>
   )

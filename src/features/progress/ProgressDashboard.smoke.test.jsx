@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
 const useProgressDashboardDataMock = vi.fn()
@@ -91,15 +91,24 @@ describe('ProgressDashboard (smoke)', () => {
     expect(screen.getByTestId('progress-overview')).toBeInTheDocument()
     expect(screen.getByTestId('practice-reminders')).toBeInTheDocument()
     expect(screen.getByTestId('daily-plan-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('progress-unlocks-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('learning-journey-panel')).toBeInTheDocument()
     expect(screen.getByTestId('coach-mode-panel')).toBeInTheDocument()
     expect(screen.getByTestId('focus-mode-panel')).toBeInTheDocument()
     expect(screen.getByTestId('frequent-errors-panel')).toBeInTheDocument()
-    expect(await screen.findByTestId('accuracy-trend-card')).toBeInTheDocument()
-    expect(await screen.findByTestId('pronunciation-widget')).toBeInTheDocument()
+    expect(screen.getByTestId('progress-primary-actions')).toBeInTheDocument()
     expect(await screen.findByTestId('heat-map')).toBeInTheDocument()
     expect(await screen.findByTestId('smart-practice')).toBeInTheDocument()
+    expect(screen.queryByTestId('accuracy-trend-card')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('pronunciation-widget')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('study-insights')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('error-intelligence')).not.toBeInTheDocument()
+
+    const toggle = screen.getByRole('button', { name: /Ver análisis avanzados/i })
+    fireEvent.click(toggle)
+
+    expect(await screen.findByTestId('progress-unlocks-panel')).toBeInTheDocument()
+    expect(await screen.findByTestId('learning-journey-panel')).toBeInTheDocument()
+    expect(await screen.findByTestId('accuracy-trend-card')).toBeInTheDocument()
+    expect(await screen.findByTestId('pronunciation-widget')).toBeInTheDocument()
     expect(await screen.findByTestId('study-insights')).toBeInTheDocument()
     expect(await screen.findByTestId('error-intelligence')).toBeInTheDocument()
   })
@@ -129,9 +138,11 @@ describe('ProgressDashboard (smoke)', () => {
 
     render(<ProgressDashboard />)
 
-    expect(useProgressDashboardDataMock).toHaveBeenCalledTimes(1)
+    expect(useProgressDashboardDataMock).toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: /Ver análisis avanzados/i }))
     await screen.findByTestId('error-intelligence')
-    expect(errorIntelligenceSpy).toHaveBeenCalledTimes(1)
-    expect(errorIntelligenceSpy.mock.calls[0][0].data).toBe(errorIntelData)
+    expect(errorIntelligenceSpy).toHaveBeenCalled()
+    const lastCall = errorIntelligenceSpy.mock.calls.at(-1)
+    expect(lastCall[0].data).toBe(errorIntelData)
   })
 })

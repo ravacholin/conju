@@ -952,6 +952,35 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P17
 - P17 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P18 - slice 1: dashboard con primera vista de alto impacto)
+- Se redujo la primera vista del dashboard para priorizar bloques accionables:
+- secciones avanzadas pasan a carga bajo demanda detrás de toggle.
+- `ProgressOverview`, plan diario, modos de práctica, mapa de calor y smart practice quedan en primera vista.
+- Secciones de menor impacto inmediato (`LearningJourney`, `ProgressUnlocks`, `AccuracyTrend`, `PronunciationStats`, `ErrorIntelligence`, `StudyInsights`) quedan agrupadas en modo avanzado.
+- Archivo principal:
+- `src/features/progress/ProgressDashboard.jsx`
+
+## Cambios realizados (P18 - slice 2: CTA accionable persistente en vista principal)
+- Se agrego barra de acciones rápidas en primera vista:
+- `Practicar ahora`
+- `Repasar SRS`
+- `Actualizar progreso`
+- Esto asegura salida accionable inmediata sin depender de secciones secundarias.
+- Estilos:
+- `src/features/progress/progress-streamlined.css`
+
+## Cambios realizados (P18 - slice 3: medicion e instrumentacion de primera vista)
+- Se agrego instrumentacion runtime en `ProgressDashboard`:
+- log `Progress first view ready` con `elapsedMs` cuando la primera vista queda lista.
+- Se documento protocolo de validacion e impacto esperado en:
+- `docs/performance/progress-dashboard-first-view.md`
+- Tests actualizados:
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+- `src/features/progress/ProgressDashboard.navigation.test.jsx`
+
+## Estado P18
+- P18 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

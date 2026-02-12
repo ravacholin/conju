@@ -92,7 +92,7 @@ describe('ProgressDashboard navigation wiring', () => {
   it('normalizes drill config before navigating from daily plan', async () => {
     const onNavigateToDrill = vi.fn()
     render(<ProgressDashboard onNavigateToDrill={onNavigateToDrill} />)
-    await screen.findByTestId('accuracy-trend-card')
+    await screen.findByRole('button', { name: /Start Daily Plan Session/i })
 
     fireEvent.click(screen.getByRole('button', { name: /Start Daily Plan Session/i }))
 
@@ -106,7 +106,7 @@ describe('ProgressDashboard navigation wiring', () => {
     expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
   })
 
-  it('ignores duplicate rapid triggers and allows the next one after cooldown', async () => {
+  it('ignores duplicate rapid triggers and allows the next one after cooldown', () => {
     vi.useFakeTimers()
     usingFakeTimers = true
     const onNavigateToDrill = vi.fn()

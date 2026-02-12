@@ -247,6 +247,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Activar modo estricto opcional (`IRREGULAR_GOLDEN_STRICT=1`) en pipeline para gate gradual.
 
 ## Siguiente backlog activo (Fase 5.1)
-1. [ ] Reducir bloques de bajo impacto en primera vista del dashboard.
-2. [ ] Mantener CTA accionable por bloque principal visible.
-3. [ ] Medir impacto en tiempo de render inicial del dashboard.
+1. [x] Reducir bloques de bajo impacto en primera vista del dashboard.
+2. [x] Mantener CTA accionable por bloque principal visible.
+3. [x] Medir impacto en tiempo de render inicial del dashboard.
+
+## Siguiente backlog activo (Fase 5.2)
+1. [ ] Documentar dependencias de cache e invalidacion por tipo de dato en progreso.
+2. [ ] Definir TTL explicito para bloques del dashboard (heatmap, errores, recomendaciones, plan).
+3. [ ] Cubrir con tests de invalidez por evento (`progress:*`, sync, cambios de settings).
