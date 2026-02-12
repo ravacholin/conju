@@ -1304,3 +1304,16 @@ Tests ejecutados:
 - Indices de datos por combinacion y worker para generacion.
 - Pipeline de validacion linguistica automatizado.
 - Experiencia guiada de aprendizaje end to end.
+
+## Hotfix crítico - Subjuntivo imperfecto (2026-02-12)
+
+### Problema reportado
+- En `subjImpf` para ciertos verbos `-ar` con diptongación (`recordar`, `costar`, `sonar`, `volar`, `despertar`) se estaban sirviendo formas truncadas (`costra`, `volras`, `despertra`, etc.).
+- Impacto: corrección de respuestas rota en ejercicios de subjuntivo imperfecto.
+
+### Cambios hechos
+- Corregidas las 35 formas afectadas en `src/data/verbs.js` (7 personas x 5 verbos).
+- Agregado test de regresión específico en `src/data/verbs.subjImpf-regression.test.js` para bloquear reintroducción del bug.
+
+### Verificación
+- `npx vitest run src/data/verbs.subjImpf-regression.test.js` ✅

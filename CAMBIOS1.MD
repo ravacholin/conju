@@ -280,3 +280,15 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [ ] Revisar debounce/refresh de recomendaciones en SmartPractice con foco en estabilidad al cambiar filtros rápido.
 2. [ ] Auditar keys de listas dinámicas restantes para evitar remounts evitables.
 3. [ ] Medir impacto en re-render de dashboard tras cambios rápidos de configuración.
+
+## Interrupción crítica resuelta - Integridad lingüística (`subjImpf`) (2026-02-12)
+
+### Slice ejecutado (hotfix fuera de roadmap)
+1. [x] Reproducir bug con verbos reportados (`despertar`, `costar`, `volar`) y validar alcance real.
+2. [x] Corregir dataset base de conjugaciones para `subjImpf` en verbos afectados (`recordar`, `costar`, `sonar`, `volar`, `despertar`).
+3. [x] Agregar test de regresión específico sobre esos 5 verbos y 7 personas.
+4. [x] Ejecutar prueba focalizada de validación (`vitest`).
+
+### Estado
+- Hotfix aplicado y documentado.
+- Roadmap principal retoma desde **Fase 7.1**.
