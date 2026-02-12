@@ -1,5 +1,6 @@
 {
-  "generatedAt": "2026-02-12T21:06:29.875Z",
+  "generatedAt": "2026-02-12T21:06:34.091Z",
+  "sourceBenchmarkGeneratedAt": "2026-02-12T21:06:29.875Z",
   "benchmark": {
     "runs": 200,
     "warmupRuns": 20,
@@ -13,14 +14,6 @@
       "specificPerson": "1s"
     }
   },
-  "noIndex": {
-    "runs": 200,
-    "minMs": 0.270293,
-    "p50Ms": 0.28344,
-    "p95Ms": 0.304753,
-    "maxMs": 0.391866,
-    "avgMs": 0.285948
-  },
   "indexed": {
     "runs": 200,
     "minMs": 0.000319,
@@ -29,8 +22,16 @@
     "maxMs": 0.000705,
     "avgMs": 0.00036
   },
-  "delta": {
-    "p95GainMs": 0.304225,
-    "p95GainPct": 99.826745
+  "noIndex": {
+    "runs": 200,
+    "minMs": 0.270293,
+    "p50Ms": 0.28344,
+    "p95Ms": 0.304753,
+    "maxMs": 0.391866,
+    "avgMs": 0.285948
+  },
+  "policy": {
+    "maxP95RegressionPct": 25,
+    "maxP50RegressionPct": 25
   }
 }

@@ -32,6 +32,14 @@ const allowedPersonPredicateCache = new Map()
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
 const PEDAGOGICAL_THIRD_PERSON_FAMILIES = new Set(['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y'])
 const STRONG_PRETERITE_IRREGULARITIES = new Set(['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'])
+export const FILTER_DISCARD_REASONS = Object.freeze({
+  SPECIFIC_PRACTICE: 'specific_practice_constraints',
+  VERB_TYPE: 'verb_type_filter',
+  PEDAGOGICAL_PRETERITE: 'pedagogical_preterite_filter',
+  FAMILY_THEME: 'family_theme_filter',
+  PRONOUN_REGION: 'pronoun_region_filter',
+  LEVEL_GATE: 'level_gate_filter'
+})
 
 export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   // Only include fields that can actually change the generated forms.
@@ -530,41 +538,81 @@ export const filterByVerbType = (forms, verbType, settings = null) => {
  * @returns {Array} - Comprehensively filtered forms
  */
 export const applyComprehensiveFiltering = (forms, settings, specificConstraints = {}, formsIndex = null) => {
-  let filtered = forms
+  return runFilteringPipeline(forms, settings, specificConstraints, formsIndex).filtered
+}
 
-  // 1. Filter for specific practice if applicable
-  filtered = filterForSpecificPractice(filtered, specificConstraints, formsIndex, settings?.region || null)
-  if (filtered.length === 0) return filtered
+export const getFilteringDiagnostics = (forms, settings, specificConstraints = {}, formsIndex = null) =>
+  runFilteringPipeline(forms, settings, specificConstraints, formsIndex)
 
-  // 2. Filter by verb type
-  filtered = filterByVerbType(filtered, settings.verbType, settings)
-  if (filtered.length === 0) return filtered
+const runFilteringPipeline = (forms, settings, specificConstraints = {}, formsIndex = null) => {
+  let filtered = Array.isArray(forms) ? forms : []
+  const stages = []
 
-  // 3. Apply pedagogical filtering for third-person irregular pretérito
-  if (settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON') {
-    filtered = applyPedagogicalFiltering(filtered, settings)
-    if (filtered.length === 0) return filtered
+  const applyStage = (stage, shouldRun, executor) => {
+    const before = filtered.length
+    if (!shouldRun || before === 0) {
+      stages.push({ ...stage, before, after: before, dropped: 0, skipped: true })
+      return false
+    }
+
+    filtered = executor(filtered)
+    const after = filtered.length
+    stages.push({ ...stage, before, after, dropped: before - after, skipped: false })
+    return after === 0
   }
 
-  // 4. Filter by irregular family if specified (for theme practice)
-  if (settings.selectedFamily && settings.practiceMode === 'theme') {
-    filtered = applyFamilyFiltering(filtered, settings)
-    if (filtered.length === 0) return filtered
+  if (applyStage(
+    { id: 'specific_practice', reason: FILTER_DISCARD_REASONS.SPECIFIC_PRACTICE },
+    true,
+    (current) => filterForSpecificPractice(current, specificConstraints, formsIndex, settings?.region || null)
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.SPECIFIC_PRACTICE }
   }
 
-  // 5. Filter by person/pronoun constraints
-  if (settings.practicePronoun !== 'all') {
-    const allowsPersonPredicate = getAllowsPersonPredicate(settings)
-    filtered = filtered.filter(form => allowsPersonPredicate(form.person))
-    if (filtered.length === 0) return filtered
+  if (applyStage(
+    { id: 'verb_type', reason: FILTER_DISCARD_REASONS.VERB_TYPE },
+    true,
+    (current) => filterByVerbType(current, settings.verbType, settings)
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.VERB_TYPE }
   }
 
-  // 6. Filter by level constraints
-  if (settings.practiceMode !== 'specific' && settings.practiceMode !== 'theme') {
-    filtered = filtered.filter(form => allowsLevel(form, settings))
+  if (applyStage(
+    { id: 'pedagogical_preterite', reason: FILTER_DISCARD_REASONS.PEDAGOGICAL_PRETERITE },
+    settings.verbType === 'irregular' && settings.selectedFamily === 'PRETERITE_THIRD_PERSON',
+    (current) => applyPedagogicalFiltering(current, settings)
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.PEDAGOGICAL_PRETERITE }
   }
 
-  return filtered
+  if (applyStage(
+    { id: 'family_theme', reason: FILTER_DISCARD_REASONS.FAMILY_THEME },
+    !!settings.selectedFamily && settings.practiceMode === 'theme',
+    (current) => applyFamilyFiltering(current, settings)
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.FAMILY_THEME }
+  }
+
+  if (applyStage(
+    { id: 'pronoun_region', reason: FILTER_DISCARD_REASONS.PRONOUN_REGION },
+    settings.practicePronoun !== 'all',
+    (current) => {
+      const allowsPersonPredicate = getAllowsPersonPredicate(settings)
+      return current.filter(form => allowsPersonPredicate(form.person))
+    }
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.PRONOUN_REGION }
+  }
+
+  if (applyStage(
+    { id: 'level_gate', reason: FILTER_DISCARD_REASONS.LEVEL_GATE },
+    settings.practiceMode !== 'specific' && settings.practiceMode !== 'theme',
+    (current) => current.filter(form => allowsLevel(form, settings))
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.LEVEL_GATE }
+  }
+
+  return { filtered, stages, emptyReason: null }
 }
 
 /**

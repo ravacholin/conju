@@ -24,4 +24,24 @@ describe('generationDiagnostics', () => {
   it('returns filtering detail when pool exists but no eligible forms', () => {
     expect(buildGenerationDetail(10)).toBe('No hay formas que cumplan la configuración actual.')
   })
+
+  it('prioritizes causal suggestions when filtering report includes empty reason', () => {
+    const suggestions = buildGenerationSuggestions(
+      {
+        practiceMode: 'specific',
+        specificMood: 'indicative',
+        specificTense: 'pret',
+        verbType: 'all'
+      },
+      { emptyReason: 'verb_type_filter' }
+    )
+
+    expect(suggestions[0].id).toBe('verb-type-all')
+    expect(suggestions[0].recommended).toBe(true)
+  })
+
+  it('returns reason-based detail when filtering report is present', () => {
+    expect(buildGenerationDetail(100, { emptyReason: 'pronoun_region_filter' }))
+      .toBe('Los pronombres/dialecto activos no tienen formas elegibles.')
+  })
 })

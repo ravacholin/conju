@@ -7,7 +7,9 @@ vi.mock('../../lib/core/verbDataService.js', () => ({
 import {
   generateAllFormsForRegion,
   clearFormsCache,
-  filterForSpecificPractice
+  filterForSpecificPractice,
+  getFilteringDiagnostics,
+  FILTER_DISCARD_REASONS
 } from './DrillFormFilters.js'
 import { getFormsForRegion } from '../../lib/core/verbDataService.js'
 import { createFormsCombinationIndex } from './formsPoolService.js'
@@ -154,5 +156,39 @@ describe('DrillFormFilters - specific practice indexing', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0].region).toBe('la_general')
+  })
+})
+
+describe('DrillFormFilters - filtering diagnostics', () => {
+  it('reports standardized empty reason when specific practice removes all forms', () => {
+    const forms = [
+      { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' }
+    ]
+    const settings = {
+      region: 'la_general',
+      verbType: 'all',
+      selectedFamily: null,
+      practiceMode: 'specific',
+      practicePronoun: 'all',
+      level: 'ALL'
+    }
+    const specificConstraints = {
+      isSpecific: true,
+      specificMood: 'subjunctive',
+      specificTense: 'subjPres'
+    }
+
+    const result = getFilteringDiagnostics(forms, settings, specificConstraints)
+
+    expect(result.filtered).toHaveLength(0)
+    expect(result.emptyReason).toBe(FILTER_DISCARD_REASONS.SPECIFIC_PRACTICE)
+    expect(result.stages[0]).toMatchObject({
+      id: 'specific_practice',
+      reason: FILTER_DISCARD_REASONS.SPECIFIC_PRACTICE,
+      before: 1,
+      after: 0,
+      dropped: 1,
+      skipped: false
+    })
   })
 })

@@ -170,6 +170,12 @@ jobs:
       - name: Performance tests
         run: npm run test:performance || echo "Performance tests completed with warnings"
 
+      - name: Generator benchmark (non-blocking)
+        run: |
+          npm run perf:generator
+          npm run perf:generator:check || echo "Generator benchmark regression detected (non-blocking)"
+        continue-on-error: true
+
       - name: Bundle analysis
         run: |
           # Generate bundle analysis using built-in Vite tools
@@ -186,6 +192,9 @@ jobs:
           path: |
             bundle-stats.txt
             performance-*.json
+            docs/performance/generator-benchmark.json
+            docs/performance/generator-benchmark.md
+            docs/performance/generator-benchmark-check.md
 
 # Status Check Summary
   status-check:

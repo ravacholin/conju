@@ -27,10 +27,16 @@ Archivos generados:
 Parcialmente instrumentado:
 - Drill generation (specific filtering) con benchmark reproducible:
 - comando: `npm run perf:generator`
-- salidas: `docs/performance/generator-benchmark.json` y `docs/performance/generator-benchmark.md`
+- baseline: `npm run perf:generator:baseline`
+- chequeo vs baseline: `npm run perf:generator:check` (`PERF_GENERATOR_STRICT=1` para modo bloqueante)
+- salidas:
+- `docs/performance/generator-benchmark.json`
+- `docs/performance/generator-benchmark.md`
+- `docs/performance/generator-baseline.json`
+- `docs/performance/generator-benchmark-check.md`
 - baseline 2026-02-12 (`la_general`, 22412 forms):
-- sin indice p95 `0.392ms`
-- con indice p95 `0ms` (redondeado)
+- sin indice p95 `0.304753ms`
+- con indice p95 `0.000528ms`
 
 Pendiente:
 - Dashboard cold/warm p50/p95 con perfil mobile.
@@ -43,6 +49,10 @@ Pendiente:
 3. Guardar snapshot de resultados por release en `docs/performance/`.
 4. Medir impacto del filtro especifico con:
 - `npm run perf:generator`
+5. Actualizar baseline cuando se apruebe una mejora intencional:
+- `npm run perf:generator:baseline`
+6. Validar regresion contra baseline:
+- `npm run perf:generator:check`
 
 ## Criterio de gate (pre-CI budget)
 - Si `total JS+CSS` sube mas de `10%` respecto al baseline vigente, bloquear merge hasta justificar en ADR.
@@ -50,5 +60,5 @@ Pendiente:
 
 ## Proximos pasos
 1. Agregar escenario de medicion de dashboard cold/warm con Playwright.
-2. Convertir baseline de `perf:generator` en check automatizado de CI.
-3. Convertir estos thresholds en check automatizado de CI.
+2. Endurecer gate de benchmark de generador en CI (`PERF_GENERATOR_STRICT=1`) cuando estabilice variabilidad.
+3. Convertir thresholds restantes de dashboard/bundle en check automatizado de CI.

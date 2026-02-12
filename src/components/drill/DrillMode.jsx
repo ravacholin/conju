@@ -190,13 +190,15 @@ function DrillMode({
 
       const totalForms = Number(stats?.totalForms || 0)
       const eligibleForms = Number(stats?.eligibleForms || 0)
-      const suggestions = buildGenerationSuggestions(settings)
-      const detail = buildGenerationDetail(totalForms)
+      const filteringReport = stats?.lastFilteringReport || null
+      const suggestions = buildGenerationSuggestions(settings, filteringReport)
+      const detail = buildGenerationDetail(totalForms, filteringReport)
 
       return {
         detail,
         totalForms,
         eligibleForms,
+        filteringReport,
         suggestions,
         error: stats?.error || null
       }
@@ -470,6 +472,9 @@ function DrillMode({
                   {typeof generationIssue.totalForms === 'number' && typeof generationIssue.eligibleForms === 'number' && (
                     <p>Formas totales: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</p>
                   )}
+                  {generationIssue.filteringReport?.emptyReason && (
+                    <p>Causa detectada: {generationIssue.filteringReport.emptyReason}</p>
+                  )}
                   {generationIssue.error && (
                     <p>Detalle técnico: {generationIssue.error}</p>
                   )}
@@ -525,6 +530,9 @@ function DrillMode({
                     <div><strong>Diagnóstico:</strong> {generationIssue.detail}</div>
                     {typeof generationIssue.totalForms === 'number' && typeof generationIssue.eligibleForms === 'number' && (
                       <div>Formas totales: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</div>
+                    )}
+                    {generationIssue.filteringReport?.emptyReason && (
+                      <div>Causa detectada: {generationIssue.filteringReport.emptyReason}</div>
                     )}
                     {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
                       <ul style={{ marginTop: '8px' }}>

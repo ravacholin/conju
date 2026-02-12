@@ -222,6 +222,16 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Validar impacto con benchmark reproducible del generador (before/after, p50/p95).
 
 ## Siguiente backlog activo (Fase 3.2)
-1. [ ] Estandarizar motivos de descarte por filtro en el pipeline de generacion.
-2. [ ] Exponer reporte causal de pool vacio para UI con acciones recomendadas.
-3. [ ] Cubrir el flujo causal con tests unitarios e integracion del generador.
+1. [x] Estandarizar motivos de descarte por filtro en el pipeline de generacion.
+2. [x] Exponer reporte causal de pool vacio para UI con acciones recomendadas.
+3. [x] Cubrir el flujo causal con tests unitarios e integracion del generador.
+
+## Siguiente backlog activo (Fase 3.3)
+1. [x] Definir baseline de benchmark del generador para regression tracking (p50/p95).
+2. [x] Automatizar ejecucion de benchmark en pipeline de CI (check no bloqueante inicial).
+3. [x] Documentar umbrales y criterio de fallo para endurecer gate de performance.
+
+## Siguiente backlog activo (Fase 4.1)
+1. [ ] Inventariar reglas/fuentes de irregularidades hoy activas y detectar duplicados.
+2. [ ] Definir estructura canonical unica para irregularidades/reglas.
+3. [ ] Migrar un primer subconjunto (top verbos/familias) a la fuente canonical con tests de no regresion.

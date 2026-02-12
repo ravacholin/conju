@@ -32,6 +32,8 @@
     "test:performance": "vitest run src/**/*.performance.{test,spec}.{js,jsx}",
     "perf:baseline": "node scripts/perfBaseline.mjs",
     "perf:generator": "vite-node scripts/perfGeneratorBenchmark.mjs",
+    "perf:generator:baseline": "node scripts/perfGeneratorSetBaseline.mjs",
+    "perf:generator:check": "node scripts/perfGeneratorCheck.mjs",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "quality:check": "npm run lint && npm run test:run",
     "quality:fix": "npm run lint -- --fix",

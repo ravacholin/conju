@@ -32,7 +32,7 @@ const specificConstraints = {
   specificPerson: '1s'
 }
 
-const round = (value) => Number(value.toFixed(3))
+const round = (value) => Number(value.toFixed(6))
 
 const percentile = (samples, p) => {
   if (!samples.length) return 0

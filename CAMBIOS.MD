@@ -782,6 +782,73 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P12
 - P12 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P13 - slice 1: motivos estandar de descarte en pipeline de filtros)
+- Se estandarizaron motivos de descarte en `src/hooks/modules/DrillFormFilters.js` mediante `FILTER_DISCARD_REASONS`.
+- Se agrego `getFilteringDiagnostics(forms, settings, specificConstraints, formsIndex)` para obtener:
+- `filtered`
+- `stages` con `before`, `after`, `dropped`, `skipped`, `reason`
+- `emptyReason` canonico cuando el pool queda vacio.
+- `applyComprehensiveFiltering` ahora delega en un pipeline unico interno para evitar divergencias entre filtrado y diagnostico.
+- `useDrillGenerator` guarda y expone `lastFilteringReport` con el ultimo reporte causal del filtrado.
+- En `generateNextItem`, cuando no hay elegibles, el warning de fallback incluye el reporte causal (si existe) para depuracion.
+- Tests agregados/actualizados:
+- `src/hooks/modules/DrillFormFilters.test.js`
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js`
+
+## Cambios realizados (P13 - slice 2: diagnostico causal visible en Drill con acciones guiadas)
+- Se conecto el diagnostico causal del generador con la UI de Drill:
+- `src/components/drill/DrillMode.jsx` ahora consume `stats.lastFilteringReport`.
+- `buildGenerationDetail` y `buildGenerationSuggestions` pasan a ser reason-aware cuando existe `emptyReason`.
+- Se agrego mapeo de causas canonicas a mensajes y acciones recomendadas en:
+- `src/components/drill/generationDiagnostics.js`
+- Cuando el pool queda vacio, Drill muestra `Causa detectada` y prioriza sugerencias relevantes para desbloquear la sesion.
+- Tests agregados/actualizados:
+- `src/components/drill/generationDiagnostics.test.js`
+
+## Cambios realizados (P13 - slice 3: cobertura del flujo causal en unit + integracion de generador)
+- Se amplio cobertura para validar el flujo causal end-to-end del pipeline de filtrado:
+- `src/hooks/modules/DrillFormFilters.test.js` valida `emptyReason` estandar y detalle de stage.
+- `src/hooks/modules/useDrillGenerator.generateNextItem.test.js` valida exposicion de `lastFilteringReport` desde `getGenerationStats`.
+- Se ajusto `useDrillGenerator` para retornar en stats el reporte causal mas reciente del ciclo actual sin depender del timing async de React state.
+
+## Estado P13
+- P13 finalizado (slices 1 a 3 completos y documentados).
+
+## Cambios realizados (P14 - slice 1: baseline formal para benchmark de generador)
+- Se agregaron utilidades para formalizar baseline de performance del generador:
+- `scripts/perfGeneratorSetBaseline.mjs`
+- `scripts/perfGeneratorCheck.mjs`
+- Nuevos comandos npm:
+- `npm run perf:generator:baseline`
+- `npm run perf:generator:check`
+- Se versiono baseline actual en:
+- `docs/performance/generator-baseline.json`
+- Se actualizaron reportes de benchmark:
+- `docs/performance/generator-benchmark.json`
+- `docs/performance/generator-benchmark.md`
+- `docs/performance/generator-benchmark-check.md`
+
+## Cambios realizados (P14 - slice 2: benchmark del generador integrado en CI no bloqueante)
+- Se integro ejecucion del benchmark del generador en workflow CI:
+- `/.github/workflows/ci.yml` ahora corre:
+- `npm run perf:generator`
+- `npm run perf:generator:check` (modo no bloqueante)
+- Se publican artefactos de benchmark para inspeccion post-run:
+- `docs/performance/generator-benchmark.json`
+- `docs/performance/generator-benchmark.md`
+- `docs/performance/generator-benchmark-check.md`
+
+## Cambios realizados (P14 - slice 3: umbrales y politica documentados para endurecer gate)
+- Se actualizaron criterios y protocolo en:
+- `docs/performance-sla.md`
+- Politica actual definida en baseline (`generator-baseline.json`):
+- `maxP95RegressionPct: 25`
+- `maxP50RegressionPct: 25`
+- Se documento modo estricto opcional (`PERF_GENERATOR_STRICT=1`) para transicionar a gate bloqueante cuando se estabilice variabilidad.
+
+## Estado P14
+- P14 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

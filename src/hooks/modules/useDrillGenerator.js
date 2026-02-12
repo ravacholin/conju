@@ -22,7 +22,7 @@ import { getNextRecommendedItem } from '../../lib/progress/AdaptivePracticeEngin
 import {
   filterForSpecificPractice as FILTER_FOR_SPECIFIC_PRACTICE,
   filterByVerbType,
-  applyComprehensiveFiltering,
+  getFilteringDiagnostics,
   filterDueForSpecific,
   matchesSpecific as MATCHES_SPECIFIC,
   allowsPerson as ALLOWS_PERSON,
@@ -65,6 +65,8 @@ export const useDrillGenerator = () => {
   const settings = useSettings()
   const [isGenerating, setIsGenerating] = useState(false)
   const [lastGeneratedItem, setLastGeneratedItem] = useState(null)
+  const [lastFilteringReport, setLastFilteringReport] = useState(null)
+  const lastFilteringReportRef = useRef(null)
   const formsPoolRef = useRef({ signature: null, forms: null })
   const eligibleFormsCacheRef = useRef({ key: null, forms: null })
 
@@ -198,6 +200,7 @@ export const useDrillGenerator = () => {
       const specificConstraints = buildSpecificConstraints(FRESH_SETTINGS, reviewSessionType, reviewSessionFilter)
 
       let eligibleForms
+      let currentFilteringReport = null
       const canCacheEligible = shouldCacheEligibleForms(FRESH_SETTINGS)
       const eligibleKey = buildEligibleFormsKey(
         poolResult.signature,
@@ -209,7 +212,17 @@ export const useDrillGenerator = () => {
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(formsPool, FRESH_SETTINGS, specificConstraints, poolResult.index)
+        const filteringReport = getFilteringDiagnostics(formsPool, FRESH_SETTINGS, specificConstraints, poolResult.index)
+        eligibleForms = filteringReport.filtered
+        currentFilteringReport = {
+          generatedAt: new Date().toISOString(),
+          totalForms: formsPool.length,
+          eligibleForms: eligibleForms.length,
+          emptyReason: filteringReport.emptyReason,
+          stages: filteringReport.stages
+        }
+        lastFilteringReportRef.current = currentFilteringReport
+        setLastFilteringReport(currentFilteringReport)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }
@@ -220,6 +233,7 @@ export const useDrillGenerator = () => {
       } catch (e) {
         logger.warn('generateNextItem', 'No eligible forms after filtering; attempting graceful fallback', {
           reason: e?.message,
+          filteringReport: currentFilteringReport || lastFilteringReportRef.current,
           settings: {
             level: FRESH_SETTINGS.level,
             region: FRESH_SETTINGS.region,
@@ -418,7 +432,17 @@ export const useDrillGenerator = () => {
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, runtimeSettings, specificConstraints)
+        const filteringReport = getFilteringDiagnostics(allFormsForRegion, runtimeSettings, specificConstraints)
+        eligibleForms = filteringReport.filtered
+        const nextFilteringReport = {
+          generatedAt: new Date().toISOString(),
+          totalForms: allFormsForRegion.length,
+          eligibleForms: eligibleForms.length,
+          emptyReason: filteringReport.emptyReason,
+          stages: filteringReport.stages
+        }
+        lastFilteringReportRef.current = nextFilteringReport
+        setLastFilteringReport(nextFilteringReport)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }
@@ -438,6 +462,7 @@ export const useDrillGenerator = () => {
     const runtimeSettings = getRuntimeDrillSettings(useSettings.getState())
     try {
       const allFormsForRegion = await resolveFormsForStats(runtimeSettings)
+      let currentFilteringReport = lastFilteringReportRef.current
 
       const specificConstraints = {
         isSpecific: (runtimeSettings.practiceMode === 'specific' || runtimeSettings.practiceMode === 'theme') &&
@@ -459,7 +484,18 @@ export const useDrillGenerator = () => {
       if (canCacheEligible && eligibleFormsCacheRef.current.key === eligibleKey) {
         eligibleForms = eligibleFormsCacheRef.current.forms
       } else {
-        eligibleForms = applyComprehensiveFiltering(allFormsForRegion, runtimeSettings, specificConstraints)
+        const filteringReport = getFilteringDiagnostics(allFormsForRegion, runtimeSettings, specificConstraints)
+        eligibleForms = filteringReport.filtered
+        const nextFilteringReport = {
+          generatedAt: new Date().toISOString(),
+          totalForms: allFormsForRegion.length,
+          eligibleForms: eligibleForms.length,
+          emptyReason: filteringReport.emptyReason,
+          stages: filteringReport.stages
+        }
+        currentFilteringReport = nextFilteringReport
+        lastFilteringReportRef.current = nextFilteringReport
+        setLastFilteringReport(nextFilteringReport)
         if (canCacheEligible) {
           eligibleFormsCacheRef.current = { key: eligibleKey, forms: eligibleForms }
         }
@@ -478,6 +514,7 @@ export const useDrillGenerator = () => {
           region: runtimeSettings.region
         },
         isSpecific: specificConstraints.isSpecific,
+        lastFilteringReport: currentFilteringReport,
         lastGenerated: lastGeneratedItem ? {
           lemma: lastGeneratedItem.lemma,
           mood: lastGeneratedItem.mood,
@@ -507,7 +544,8 @@ export const useDrillGenerator = () => {
     isGenerationViable,
     getGenerationStats,
     isGenerating,
-    lastGeneratedItem
+    lastGeneratedItem,
+    lastFilteringReport
   }
 }
 

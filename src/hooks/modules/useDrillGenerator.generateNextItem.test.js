@@ -11,6 +11,7 @@ const performIntegrityGuardMock = vi.fn()
 const fallbackToMixedPracticeMock = vi.fn()
 const tryIntelligentFallbackMock = vi.fn()
 const generateDrillItemMock = vi.fn()
+const getFilteringDiagnosticsMock = vi.fn((forms) => ({ filtered: forms, stages: [], emptyReason: null }))
 
 vi.mock('./formsPoolService.js', () => ({
   resolveFormsPool: resolveFormsPoolMock
@@ -31,6 +32,7 @@ vi.mock('./DrillFormFilters.js', () => ({
   filterForSpecificPractice: vi.fn(),
   filterByVerbType: vi.fn((forms) => forms),
   applyComprehensiveFiltering: vi.fn((forms) => forms),
+  getFilteringDiagnostics: getFilteringDiagnosticsMock,
   filterDueForSpecific: vi.fn((items) => items),
   matchesSpecific: vi.fn(),
   allowsPerson: vi.fn(),
@@ -156,5 +158,37 @@ describe('useDrillGenerator.generateNextItem integration', () => {
       selectionMethod: 'hierarchy'
     })
   })
-})
 
+  it('exposes last filtering report through getGenerationStats', async () => {
+    getFilteringDiagnosticsMock.mockReturnValueOnce({
+      filtered: [],
+      emptyReason: 'pronoun_region_filter',
+      stages: [
+        {
+          id: 'pronoun_region',
+          reason: 'pronoun_region_filter',
+          before: 20,
+          after: 0,
+          dropped: 20,
+          skipped: false
+        }
+      ]
+    })
+
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+    const { result } = renderHook(() => useDrillGenerator())
+
+    let stats
+    await act(async () => {
+      stats = await result.current.getGenerationStats()
+    })
+
+    expect(stats.eligibleForms).toBe(0)
+    expect(stats.lastFilteringReport).toMatchObject({
+      totalForms: 1,
+      eligibleForms: 0,
+      emptyReason: 'pronoun_region_filter'
+    })
+    expect(stats.lastFilteringReport.stages).toHaveLength(1)
+  })
+})
