@@ -1,5 +1,6 @@
 import React from 'react'
 import { render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import axe from 'axe-core'
 
@@ -67,6 +68,22 @@ describe('ProgressDashboard a11y', () => {
     useProgressDashboardDataMock.mockReturnValue(createHookState())
 
     const { container } = render(<ProgressDashboard />)
+
+    const result = await axe.run(container, {
+      rules: {
+        'color-contrast': { enabled: false }
+      }
+    })
+
+    expect(result.violations).toEqual([])
+  })
+
+  it('has no critical accessibility violations with advanced sections enabled', async () => {
+    useProgressDashboardDataMock.mockReturnValue(createHookState())
+    const user = userEvent.setup()
+
+    const { container, getByRole } = render(<ProgressDashboard />)
+    await user.click(getByRole('button', { name: /Ver análisis avanzados/i }))
 
     const result = await axe.run(container, {
       rules: {

@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-02-12T21:43:21.736Z",
+  "suites": [
+    "src/features/progress/ProgressDashboard.a11y.test.jsx",
+    "src/components/drill/DrillMode.a11y.test.jsx",
+    "src/components/drill/DrillMode.keyboard.test.jsx"
+  ],
+  "status": "generated-after-test:a11y",
+  "notes": [
+    "Reporte base para artefactos CI.",
+    "Las violaciones detalladas se obtienen desde salida de test y backlog a11y."
+  ]
+}

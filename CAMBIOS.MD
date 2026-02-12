@@ -1094,6 +1094,31 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P22
 - P22 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P23 - slice 1: barrido a11y en ProgressDashboard con modo avanzado)
+- Se amplió suite a11y de dashboard con escenario de secciones avanzadas activadas:
+- `src/features/progress/ProgressDashboard.a11y.test.jsx`
+- Cobertura:
+- primera vista,
+- modo avanzado tras toggle (`Ver análisis avanzados`).
+
+## Cambios realizados (P23 - slice 2: plan de contraste en browser real)
+- Se definió plan operativo para cubrir contraste y navegación real fuera de jsdom:
+- `docs/accessibility/a11y-browser-plan.md`
+- Incluye estrategia Playwright + axe y gate gradual (`critical` -> `critical+high`).
+
+## Cambios realizados (P23 - slice 3: reporte a11y como artefacto en CI)
+- Se agregó generación de reporte a11y:
+- `scripts/generateA11yReport.mjs`
+- nuevo comando: `npm run report:a11y`
+- CI actualizado para ejecutar y publicar artefactos a11y:
+- `/.github/workflows/ci.yml`
+- artefactos:
+- `docs/accessibility/a11y-report.json`
+- `docs/accessibility/a11y-report.md`
+
+## Estado P23
+- P23 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

@@ -272,6 +272,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Agregar tests de teclado para flujo básico de Drill (abrir/cerrar paneles y continuar sesión).
 
 ## Siguiente backlog activo (Fase 6.3)
-1. [ ] Ejecutar barrido a11y en ProgressDashboard con modo avanzado activo (incluyendo secciones lazy).
-2. [ ] Definir plan de chequeo de contraste en browser real (Playwright + axe) para reemplazar exclusión de jsdom.
-3. [ ] Integrar reporte a11y como artefacto en CI.
+1. [x] Ejecutar barrido a11y en ProgressDashboard con modo avanzado activo (incluyendo secciones lazy).
+2. [x] Definir plan de chequeo de contraste en browser real (Playwright + axe) para reemplazar exclusión de jsdom.
+3. [x] Integrar reporte a11y como artefacto en CI.
+
+## Siguiente backlog activo (Fase 7.1)
+1. [ ] Revisar debounce/refresh de recomendaciones en SmartPractice con foco en estabilidad al cambiar filtros rápido.
+2. [ ] Auditar keys de listas dinámicas restantes para evitar remounts evitables.
+3. [ ] Medir impacto en re-render de dashboard tras cambios rápidos de configuración.
