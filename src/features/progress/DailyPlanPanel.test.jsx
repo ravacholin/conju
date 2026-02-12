@@ -34,4 +34,24 @@ describe('DailyPlanPanel', () => {
     expect(onStartSession).toHaveBeenCalledTimes(1)
     expect(onStartSession.mock.calls[0][0].id).toBe('s1')
   })
+
+  it('tracks session checklist state with checkbox', () => {
+    const studyPlan = {
+      sessionBlueprints: {
+        sessions: [
+          {
+            id: 's1',
+            title: 'Sesión 1',
+            description: 'Desc'
+          }
+        ]
+      }
+    }
+
+    render(<DailyPlanPanel studyPlan={studyPlan} onStartSession={vi.fn()} />)
+
+    expect(screen.getByText(/Checklist: 0\/1/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('checkbox'))
+    expect(screen.getByText(/Checklist: 1\/1/)).toBeInTheDocument()
+  })
 })

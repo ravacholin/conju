@@ -196,6 +196,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados:
 - `src/features/progress/errorFeedbackCoach.test.js`
 
+## Cambios realizados (P2 - slice 4: plan del dia con checklist real)
+- Se extendio `DailyPlanPanel` con checklist diario por sesion:
+- marca de tarea hecha por item (`Hecha`).
+- contador visible `Checklist: X/Y`.
+- persistencia local por dia para no perder estado al recargar.
+- Nueva capa de almacenamiento simple:
+- `src/features/progress/dailyPlanChecklist.js`
+- Tests agregados/actualizados:
+- `src/features/progress/DailyPlanPanel.test.jsx`
+- `src/features/progress/dailyPlanChecklist.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

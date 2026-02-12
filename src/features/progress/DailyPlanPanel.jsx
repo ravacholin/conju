@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { readChecklistState, writeChecklistState } from './dailyPlanChecklist.js'
 
 const TYPE_REASON = {
   focus_weakness: 'Porque ataca tu punto más débil actual.',
@@ -15,6 +16,8 @@ function resolveReason(session) {
 }
 
 export default function DailyPlanPanel({ studyPlan, onStartSession }) {
+  const [checklist, setChecklist] = useState({})
+
   const sessions = useMemo(() => {
     const raw = studyPlan?.sessionBlueprints?.sessions
     if (!Array.isArray(raw)) return []
@@ -25,6 +28,23 @@ export default function DailyPlanPanel({ studyPlan, onStartSession }) {
   const nextOptimal = scheduling?.nextOptimalTime
     ? new Date(scheduling.nextOptimalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : null
+  const completedCount = sessions.filter((session) => checklist[session.id]).length
+
+  useEffect(() => {
+    setChecklist(readChecklistState())
+  }, [studyPlan])
+
+  useEffect(() => {
+    writeChecklistState(checklist)
+  }, [checklist])
+
+  const toggleSessionDone = (sessionId) => {
+    if (!sessionId) return
+    setChecklist((prev) => ({
+      ...prev,
+      [sessionId]: !prev[sessionId]
+    }))
+  }
 
   return (
     <section className="daily-plan-panel" data-testid="daily-plan-panel">
@@ -35,7 +55,8 @@ export default function DailyPlanPanel({ studyPlan, onStartSession }) {
         </h2>
         <p>
           Sesiones accionables para hoy, con el porqué de cada una.
-          {nextOptimal ? ` Próxima franja óptima: ${nextOptimal}.` : ''}
+          {nextOptimal ? ` Próxima franja óptima: ${nextOptimal}.` : ''}{' '}
+          {sessions.length > 0 ? `Checklist: ${completedCount}/${sessions.length}.` : ''}
         </p>
       </div>
 
@@ -55,6 +76,14 @@ export default function DailyPlanPanel({ studyPlan, onStartSession }) {
                 </small>
               </div>
               <div className="reminder-actions">
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <input
+                    type="checkbox"
+                    checked={!!checklist[session.id]}
+                    onChange={() => toggleSessionDone(session.id)}
+                  />
+                  Hecha
+                </label>
                 <button
                   type="button"
                   className="reminder-button"
