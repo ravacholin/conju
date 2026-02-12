@@ -152,6 +152,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests nuevos:
 - `src/hooks/modules/drillCacheKey.test.js`
 
+## Cambios realizados (P1 - slice 14: lazy load real en dashboard de progreso)
+- Se movio carga de secciones pesadas del dashboard a lazy imports con `safeLazy`:
+- `HeatMapSRS`, `SmartPractice`, `StudyInsights`, `PronunciationStatsWidget`, `AccuracyTrendCard`, `ErrorIntelligence`.
+- Cada seccion lazy ahora tiene `Suspense` con fallback inmediato para mantener percepcion de carga rapida.
+- Esto reduce trabajo y peso de render inicial del dashboard mientras se muestran placeholders claros.
+- Tests smoke ajustados a render asincrono de componentes lazy:
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
+## Estado P1
+- P1 finalizado (slices 1 a 14 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

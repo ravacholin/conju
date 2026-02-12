@@ -52,7 +52,7 @@ export function shouldRunAutoSyncTick({
   return !incognito && !!online && !hidden
 }
 
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && !(import.meta && import.meta.vitest)) {
   if (!window[CLOUD_SYNC_EVENTS_KEY]) {
     window.addEventListener('online', () => {
       handleConnectivityChange(true)

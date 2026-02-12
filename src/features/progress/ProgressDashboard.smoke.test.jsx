@@ -79,17 +79,17 @@ beforeEach(() => {
 })
 
 describe('ProgressDashboard (smoke)', () => {
-  it('renders core sections when data is ready', () => {
+  it('renders core sections when data is ready', async () => {
     render(<ProgressDashboard />)
 
     expect(screen.getByTestId('progress-overview')).toBeInTheDocument()
     expect(screen.getByTestId('practice-reminders')).toBeInTheDocument()
-    expect(screen.getByTestId('accuracy-trend-card')).toBeInTheDocument()
-    expect(screen.getByTestId('pronunciation-widget')).toBeInTheDocument()
-    expect(screen.getByTestId('heat-map')).toBeInTheDocument()
-    expect(screen.getByTestId('smart-practice')).toBeInTheDocument()
-    expect(screen.getByTestId('study-insights')).toBeInTheDocument()
-    expect(screen.getByTestId('error-intelligence')).toBeInTheDocument()
+    expect(await screen.findByTestId('accuracy-trend-card')).toBeInTheDocument()
+    expect(await screen.findByTestId('pronunciation-widget')).toBeInTheDocument()
+    expect(await screen.findByTestId('heat-map')).toBeInTheDocument()
+    expect(await screen.findByTestId('smart-practice')).toBeInTheDocument()
+    expect(await screen.findByTestId('study-insights')).toBeInTheDocument()
+    expect(await screen.findByTestId('error-intelligence')).toBeInTheDocument()
   })
 
   it('defers rendering when data has not been loaded yet', () => {
@@ -107,7 +107,7 @@ describe('ProgressDashboard (smoke)', () => {
     expect(screen.getByText('Cargando progreso...')).toBeInTheDocument()
   })
 
-  it('passes error intelligence data from the hook without extra fetches', () => {
+  it('passes error intelligence data from the hook without extra fetches', async () => {
     const errorIntelData = { summary: 'top mistakes' }
     useProgressDashboardDataMock.mockReturnValue(
       createHookState({
@@ -118,6 +118,7 @@ describe('ProgressDashboard (smoke)', () => {
     render(<ProgressDashboard />)
 
     expect(useProgressDashboardDataMock).toHaveBeenCalledTimes(1)
+    await screen.findByTestId('error-intelligence')
     expect(errorIntelligenceSpy).toHaveBeenCalledTimes(1)
     expect(errorIntelligenceSpy.mock.calls[0][0].data).toBe(errorIntelData)
   })

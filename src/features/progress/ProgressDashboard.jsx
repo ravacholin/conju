@@ -5,16 +5,17 @@ import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { safeLazy } from '../../lib/utils/lazyImport.js'
 
 // New streamlined components
 import ProgressOverview from './ProgressOverview.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
-import HeatMapSRS from './HeatMapSRS.jsx'
-import SmartPractice from './SmartPractice.jsx'
-import StudyInsights from './StudyInsights.jsx'
-import PronunciationStatsWidget from './PronunciationStatsWidget.jsx'
-import AccuracyTrendCard from './AccuracyTrendCard.jsx'
-import ErrorIntelligence from './ErrorIntelligence.jsx'
+const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
+const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
+const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
+const PronunciationStatsWidget = safeLazy(() => import('./PronunciationStatsWidget.jsx'))
+const AccuracyTrendCard = safeLazy(() => import('./AccuracyTrendCard.jsx'))
+const ErrorIntelligence = safeLazy(() => import('./ErrorIntelligence.jsx'))
 
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
@@ -260,79 +261,91 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       </SafeComponent>
 
       <SafeComponent name="Accuracy Trend">
-        <AccuracyTrendCard stats={pronunciationStats} />
+        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando tendencia...</span></div>}>
+          <AccuracyTrendCard stats={pronunciationStats} />
+        </React.Suspense>
       </SafeComponent>
 
 
 
       <SafeComponent name="Pronunciation Lab">
-        {renderSection(
-          pronunciationState,
-          (
-            <PronunciationStatsWidget
-              stats={pronunciationStats}
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          ),
-          'Analizando estadísticas de pronunciación...',
-          'No pudimos cargar las estadísticas de pronunciación.'
-        )}
+        <React.Suspense fallback={<div className="section-placeholder"><span>Analizando estadísticas de pronunciación...</span></div>}>
+          {renderSection(
+            pronunciationState,
+            (
+              <PronunciationStatsWidget
+                stats={pronunciationStats}
+                onNavigateToDrill={onNavigateToDrill}
+              />
+            ),
+            'Analizando estadísticas de pronunciación...',
+            'No pudimos cargar las estadísticas de pronunciación.'
+          )}
+        </React.Suspense>
       </SafeComponent>
 
       <SafeComponent name="Heat Map & SRS">
-        {renderSection(
-          heatMapState,
-          (
-            <HeatMapSRS
-              data={heatMapData}
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          ),
-          'Cargando mapa de calor...',
-          'No pudimos cargar el mapa de calor.'
-        )}
+        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando mapa de calor...</span></div>}>
+          {renderSection(
+            heatMapState,
+            (
+              <HeatMapSRS
+                data={heatMapData}
+                onNavigateToDrill={onNavigateToDrill}
+              />
+            ),
+            'Cargando mapa de calor...',
+            'No pudimos cargar el mapa de calor.'
+          )}
+        </React.Suspense>
       </SafeComponent>
 
       <SafeComponent name="Smart Practice">
-        {renderSection(
-          smartPracticeState,
-          (
-            <SmartPractice
-              heatMapData={heatMapData}
-              userStats={userStats}
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          ),
-          'Generando práctica inteligente...',
-          'No pudimos preparar la práctica inteligente.'
-        )}
+        <React.Suspense fallback={<div className="section-placeholder"><span>Generando práctica inteligente...</span></div>}>
+          {renderSection(
+            smartPracticeState,
+            (
+              <SmartPractice
+                heatMapData={heatMapData}
+                userStats={userStats}
+                onNavigateToDrill={onNavigateToDrill}
+              />
+            ),
+            'Generando práctica inteligente...',
+            'No pudimos preparar la práctica inteligente.'
+          )}
+        </React.Suspense>
       </SafeComponent>
 
       <SafeComponent name="Error Intelligence">
-        {renderSection(
-          errorIntelState,
-          (
-            <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
-          ),
-          'Cargando errores comunes...',
-          'No pudimos cargar el análisis de errores.'
-        )}
+        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando errores comunes...</span></div>}>
+          {renderSection(
+            errorIntelState,
+            (
+              <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
+            ),
+            'Cargando errores comunes...',
+            'No pudimos cargar el análisis de errores.'
+          )}
+        </React.Suspense>
       </SafeComponent>
 
       <SafeComponent name="Study Insights">
-        {renderSection(
-          insightsState,
-          (
-            <StudyInsights
-              userStats={userStats}
-              heatMapData={heatMapData}
-              studyPlan={studyPlan}
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          ),
-          'Calculando recomendaciones avanzadas...',
-          'No pudimos calcular las analíticas de estudio.'
-        )}
+        <React.Suspense fallback={<div className="section-placeholder"><span>Calculando recomendaciones avanzadas...</span></div>}>
+          {renderSection(
+            insightsState,
+            (
+              <StudyInsights
+                userStats={userStats}
+                heatMapData={heatMapData}
+                studyPlan={studyPlan}
+                onNavigateToDrill={onNavigateToDrill}
+              />
+            ),
+            'Calculando recomendaciones avanzadas...',
+            'No pudimos calcular las analíticas de estudio.'
+          )}
+        </React.Suspense>
       </SafeComponent>
 
     </div>
