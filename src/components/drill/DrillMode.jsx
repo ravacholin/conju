@@ -111,6 +111,8 @@ function DrillMode({
   const [generationIssue, setGenerationIssue] = useState(null)
   const pronunciationPanelRef = React.useRef(null)
   const LOADING_TIMEOUT_REF = React.useRef(null)
+  const lastFocusedElementRef = React.useRef(null)
+  const hadOverlayOpenRef = React.useRef(false)
   const startPersonalizedSession = useSessionStore((state) => state.startPersonalizedSession)
   const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
@@ -172,6 +174,51 @@ function DrillMode({
     onRegenerateItem()
     setShowQuickSwitch(false)
   }
+
+  useEffect(() => {
+    const anyOverlayOpen = showQuickSwitch || showGames || showPronunciation
+
+    if (anyOverlayOpen && !hadOverlayOpenRef.current) {
+      if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+        lastFocusedElementRef.current = document.activeElement
+      }
+    }
+
+    if (!anyOverlayOpen && hadOverlayOpenRef.current && lastFocusedElementRef.current?.focus) {
+      lastFocusedElementRef.current.focus()
+      lastFocusedElementRef.current = null
+    }
+
+    hadOverlayOpenRef.current = anyOverlayOpen
+  }, [showGames, showPronunciation, showQuickSwitch])
+
+  useEffect(() => {
+    if (!showQuickSwitch && !showGames && !showPronunciation) {
+      return
+    }
+
+    const handleEscape = (event) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+
+      if (showPronunciation) {
+        handleTogglePronunciation(false)
+        return
+      }
+
+      if (showGames) {
+        handleToggleGames(false)
+        return
+      }
+
+      if (showQuickSwitch) {
+        handleToggleQuickSwitch(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [handleToggleGames, handleTogglePronunciation, handleToggleQuickSwitch, showGames, showPronunciation, showQuickSwitch])
 
   const buildGenerationDiagnostics = useCallback(async () => {
     if (typeof getGenerationStats !== 'function' || typeof isGenerationViable !== 'function') {

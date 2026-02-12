@@ -1065,6 +1065,35 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P21
 - P21 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P22 - slice 1: auditoria de foco en overlays de Drill)
+- Se auditó y ajustó manejo de foco en `DrillMode` para overlays:
+- captura de foco al abrir paneles,
+- restauración de foco al trigger al cerrar paneles.
+- Archivo:
+- `src/components/drill/DrillMode.jsx`
+
+## Cambios realizados (P22 - slice 2: comportamiento Escape/tab en paneles críticos)
+- Se agregó cierre por `Escape` para overlays activos de Drill (`quick switch`, `games`, `pronunciation`).
+- Se mejoró semántica/teclado en `DrillHeader`:
+- `type=\"button\"` explícito,
+- `aria-label` consistente en icon buttons.
+- Archivos:
+- `src/components/drill/DrillMode.jsx`
+- `src/components/drill/DrillHeader.jsx`
+
+## Cambios realizados (P22 - slice 3: tests de teclado en flujo básico Drill)
+- Se agregaron tests de teclado:
+- `src/components/drill/DrillMode.keyboard.test.jsx`
+- Cobertura:
+- cerrar quick switch con `Escape`,
+- restaurar foco al botón disparador,
+- orden base de tab en header de Drill.
+- Se actualizó backlog a11y:
+- `docs/accessibility/a11y-backlog.md`
+
+## Estado P22
+- P22 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

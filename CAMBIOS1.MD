@@ -267,6 +267,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Documentar backlog de issues a11y encontrados y su severidad.
 
 ## Siguiente backlog activo (Fase 6.2)
-1. [ ] Auditar manejo de foco en overlays/paneles de Drill (quick switch, games, pronunciation).
-2. [ ] Corregir orden de tab y escape behavior en paneles críticos.
-3. [ ] Agregar tests de teclado para flujo básico de Drill (abrir/cerrar paneles y continuar sesión).
+1. [x] Auditar manejo de foco en overlays/paneles de Drill (quick switch, games, pronunciation).
+2. [x] Corregir orden de tab y escape behavior en paneles críticos.
+3. [x] Agregar tests de teclado para flujo básico de Drill (abrir/cerrar paneles y continuar sesión).
+
+## Siguiente backlog activo (Fase 6.3)
+1. [ ] Ejecutar barrido a11y en ProgressDashboard con modo avanzado activo (incluyendo secciones lazy).
+2. [ ] Definir plan de chequeo de contraste en browser real (Playwright + axe) para reemplazar exclusión de jsdom.
+3. [ ] Integrar reporte a11y como artefacto en CI.
