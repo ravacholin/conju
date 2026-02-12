@@ -287,6 +287,20 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/smartPracticeMlCache.test.js`
 - `src/features/progress/SmartPractice.test.jsx`
 
+## Cambios realizados (P3 - slice 3: normalizacion unica de configuracion drill)
+- Se extrajo la construccion de settings de navegacion a Drill a una sola capa:
+- `src/features/progress/drillNavigationConfig.js`
+- Se unifico su uso en `ProgressDashboard` para todos los disparadores:
+- plan del dia, SRS review, coach mode, focus mode y correccion de errores.
+- La normalizacion evita arrastrar estado stale entre modos (por ejemplo `specificMood/specificTense` fuera de `specific`).
+- Se fijaron defaults seguros para `reviewSessionType` y `reviewSessionFilter`.
+- Tests agregados/actualizados:
+- `src/features/progress/drillNavigationConfig.test.js`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
+## Estado P3
+- P3 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

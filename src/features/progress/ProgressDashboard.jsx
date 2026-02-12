@@ -5,6 +5,7 @@ import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
 
 // New streamlined components
@@ -113,13 +114,7 @@ export default function ProgressDashboard({
     }
 
     const drillConfig = session.drillConfig || {}
-    setSettings({
-      practiceMode: drillConfig.practiceMode || 'mixed',
-      specificMood: drillConfig.specificMood || null,
-      specificTense: drillConfig.specificTense || null,
-      reviewSessionType: drillConfig.reviewSessionType || 'due',
-      reviewSessionFilter: drillConfig.reviewSessionFilter || {}
-    })
+    setSettings(buildDrillSettingsUpdate(drillConfig))
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
 
@@ -127,11 +122,7 @@ export default function ProgressDashboard({
   const handleSRSReviewNow = React.useCallback(() => {
     if (!onNavigateToDrill) return
 
-    setSettings({
-      practiceMode: 'review',
-      reviewSessionType: 'due',
-      reviewSessionFilter: {}
-    })
+    setSettings(buildDrillSettingsUpdate({}, { practiceMode: 'review' }))
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
 
@@ -141,13 +132,7 @@ export default function ProgressDashboard({
     }
 
     const drillConfig = sessionPlan.drillConfig
-    setSettings({
-      practiceMode: drillConfig.practiceMode || 'mixed',
-      specificMood: drillConfig.specificMood || null,
-      specificTense: drillConfig.specificTense || null,
-      reviewSessionType: drillConfig.reviewSessionType || 'due',
-      reviewSessionFilter: drillConfig.reviewSessionFilter || {}
-    })
+    setSettings(buildDrillSettingsUpdate(drillConfig))
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
 
@@ -157,13 +142,7 @@ export default function ProgressDashboard({
     }
 
     const drillConfig = track.drillConfig
-    setSettings({
-      practiceMode: drillConfig.practiceMode || 'mixed',
-      specificMood: drillConfig.specificMood || null,
-      specificTense: drillConfig.specificTense || null,
-      reviewSessionType: drillConfig.reviewSessionType || 'due',
-      reviewSessionFilter: drillConfig.reviewSessionFilter || {}
-    })
+    setSettings(buildDrillSettingsUpdate(drillConfig))
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
 
@@ -172,13 +151,11 @@ export default function ProgressDashboard({
       return
     }
 
-    setSettings({
+    setSettings(buildDrillSettingsUpdate({}, {
       practiceMode: 'specific',
       specificMood: item.mood,
-      specificTense: item.tense,
-      reviewSessionType: 'due',
-      reviewSessionFilter: {}
-    })
+      specificTense: item.tense
+    }))
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
 
