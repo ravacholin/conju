@@ -25,6 +25,7 @@ import {
 import { checkUserProgression } from "../levels/levelProgression.js";
 import { createLogger } from "../utils/logger.js";
 import { generateId } from "../utils/id.js";
+import { emitProgressEvent, PROGRESS_EVENTS } from "../events/progressEventBus.js";
 
 const logger = createLogger("progress:tracking");
 
@@ -276,20 +277,14 @@ export async function trackAttemptSubmitted(attemptId, result) {
     );
 
     // Notificar que se actualizaron los datos de progreso
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("progress:dataUpdated", {
-          detail: {
-            attemptId,
-            mood,
-            tense,
-            person,
-            correct: attempt.correct,
-            userId: currentSession.userId,
-          },
-        }),
-      );
-    }
+    emitProgressEvent(PROGRESS_EVENTS.DATA_UPDATED, {
+      attemptId,
+      mood,
+      tense,
+      person,
+      correct: attempt.correct,
+      userId: currentSession.userId,
+    });
 
     // Actualizar SRS para la celda practicada (pasar metadatos para adaptación)
     try {

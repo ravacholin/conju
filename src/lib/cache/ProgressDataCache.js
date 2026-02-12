@@ -1,5 +1,6 @@
 // Sistema de caché inteligente para datos de progreso
 // Reduce solicitudes duplicadas y mejora el rendimiento del dashboard
+import { onProgressEvent, PROGRESS_EVENTS } from '../events/progressEventBus.js'
 
 class ProgressDataCache {
   constructor() {
@@ -323,10 +324,10 @@ if (typeof window !== 'undefined') {
 if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
   window.__CONJU_PROGRESS_CACHE_EVENTS__ = true
 
-  window.addEventListener('progress:dataUpdated', (event) => {
-    const userId = event.detail?.userId
-    const updateType = event.detail?.type || 'general'
-    const cacheKeys = resolveProgressUpdateKeys(event.detail || {})
+  onProgressEvent(PROGRESS_EVENTS.DATA_UPDATED, (detail = {}) => {
+    const userId = detail.userId
+    const updateType = detail.type || 'general'
+    const cacheKeys = resolveProgressUpdateKeys(detail)
     
     if (import.meta.env?.DEV) {
       console.log('🗑️ Cache invalidation triggered:', { userId, updateType })
@@ -347,7 +348,7 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
         progressDataCache.invalidate(/:(weeklyProgress|recommendations)$/)
       }
     }
-  })
+  }, { validate: true })
   
   // Invalidar recomendaciones cuando cambian las configuraciones del usuario
   window.addEventListener('settings:changed', (event) => {
@@ -360,17 +361,17 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
     }
   })
 
-  window.addEventListener('progress:challengeCompleted', (event) => {
-    const userId = event.detail?.userId
+  onProgressEvent(PROGRESS_EVENTS.CHALLENGE_COMPLETED, (detail = {}) => {
+    const userId = detail.userId
     if (import.meta.env?.DEV) {
-      console.log('🏅 Desafío diario completado, invalidando caché correspondiente', event.detail)
+      console.log('🏅 Desafío diario completado, invalidando caché correspondiente', detail)
     }
     if (userId) {
       progressDataCache.invalidateByDataType('dailyChallenges', userId)
     } else {
       progressDataCache.invalidateByDataType('dailyChallenges')
     }
-  })
+  }, { validate: true })
 }
 
 export { progressDataCache, ProgressDataCache, resolveProgressUpdateKeys, CORE_CACHE_TYPES }

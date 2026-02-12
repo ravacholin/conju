@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-02-12T18:46:02.302Z",
+  "totals": {
+    "files": 37,
+    "jsFiles": 31,
+    "cssFiles": 6,
+    "totalJsBytes": 3560943,
+    "totalCssBytes": 181020,
+    "totalBytes": 3741963
+  },
+  "topChunks": [
+    {
+      "fileName": "verbs.js-CtkZnfoZ.js",
+      "bytes": 2010003,
+      "extension": "js"
+    },
+    {
+      "fileName": "progress-system-DtI1TAgy.js",
+      "bytes": 365048,
+      "extension": "js"
+    },
+    {
+      "fileName": "LearnTenseFlow-bWAiBN5l.js",
+      "bytes": 266713,
+      "extension": "js"
+    },
+    {
+      "fileName": "core-engine-_6xDoaYG.js",
+      "bytes": 233780,
+      "extension": "js"
+    },
+    {
+      "fileName": "vendor-react-KLRbPotO.js",
+      "bytes": 186837,
+      "extension": "js"
+    },
+    {
+      "fileName": "index-CvGpXwUv.js",
+      "bytes": 138857,
+      "extension": "js"
+    },
+    {
+      "fileName": "ProgressDashboard-BTXUmE0z.js",
+      "bytes": 66368,
+      "extension": "js"
+    },
+    {
+      "fileName": "index-d5qv9qqo.css",
+      "bytes": 65396,
+      "extension": "css"
+    },
+    {
+      "fileName": "vendor-libs-Bc4UhaXQ.js",
+      "bytes": 64950,
+      "extension": "js"
+    },
+    {
+      "fileName": "LearnTenseFlow-Bmslc7UR.css",
+      "bytes": 64620,
+      "extension": "css"
+    },
+    {
+      "fileName": "TimelineExercise-iCLL0XBl.js",
+      "bytes": 55282,
+      "extension": "js"
+    },
+    {
+      "fileName": "ProgressDashboard-D9D0yjZ9.css",
+      "bytes": 37597,
+      "extension": "css"
+    }
+  ]
+}

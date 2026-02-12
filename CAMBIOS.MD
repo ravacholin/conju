@@ -25,6 +25,48 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Fix de regresion en hooks de drill: selectores de `useSessionStore` estabilizados con `useShallow` para evitar loops de render en React 19.
 - Validacion global posterior: suite completa `npm test -- --run` en verde (`130` archivos, `996` tests pass).
 
+## Cambios realizados (P0 - slice 2: baseline + SLA de performance)
+- Se agrego script reproducible de baseline:
+- `scripts/perfBaseline.mjs`
+- Se agrego comando:
+- `npm run perf:baseline`
+- Se generan artefactos versionados por build:
+- `docs/performance/baseline.json`
+- `docs/performance/baseline.md`
+- Se documento SLA tecnico inicial y protocolo de medicion en:
+- `docs/performance-sla.md`
+
+## Cambios realizados (P0 - slice 3: contrato de eventos progress:*)
+- Se creo bus central de eventos con schema validation (Zod):
+- `src/lib/events/progressEventBus.js`
+- Se definio catalogo unico para eventos principales:
+- `progress:dataUpdated`
+- `progress:challengeCompleted`
+- `progress:navigate`
+- `progress:srs-updated`
+- Se migro emision de eventos criticos a helper central:
+- `src/lib/progress/tracking.js`
+- `src/lib/progress/challenges.js`
+- Se migro consumo de eventos criticos a helper central:
+- `src/features/progress/useProgressDashboardData.js`
+- `src/features/progress/ProgressDashboard.jsx`
+- `src/lib/cache/ProgressDataCache.js`
+- Se documento contrato y regla de uso:
+- `docs/events/progress-events.md`
+- Test agregado:
+- `src/lib/events/progressEventBus.test.js`
+
+## Cambios realizados (P0 - slice 4: E2E de navegacion critica)
+- Se agrego suite Playwright dedicada para flujos criticos de navegacion:
+- `tests/e2e/navigation-critical.e2e.js`
+- Escenarios cubiertos:
+- onboarding end-to-end (ruta de ingreso hasta Drill).
+- back/forward del navegador durante onboarding.
+- entrada a Drill, navegacion a Progress y retorno con historial.
+- Se agrego helper de reset de estado local (localStorage/sessionStorage/IndexedDB) para reducir flakes por estado residual entre corridas.
+- Validacion ejecutada:
+- `npx playwright test tests/e2e/navigation-critical.e2e.js --project=chromium` en verde.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

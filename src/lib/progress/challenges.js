@@ -2,6 +2,7 @@ import { STORAGE_CONFIG } from './config.js'
 import { getFromDB, saveToDB } from './database.js'
 import { getDailyChallengeMetrics } from './analytics.js'
 import { createLogger } from '../utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../events/progressEventBus.js'
 
 const logger = createLogger('progress:challenges')
 
@@ -87,20 +88,17 @@ function isRequirementMet(definition, metrics) {
 }
 
 function emitChallengeCompleted(detail) {
-  if (typeof window === 'undefined') return
   try {
     const eventDetail = {
       ...detail,
       emittedAt: new Date().toISOString()
     }
-    window.dispatchEvent(new CustomEvent('progress:challengeCompleted', { detail: eventDetail }))
-    window.dispatchEvent(new CustomEvent('progress:dataUpdated', {
-      detail: {
-        type: 'challenge_completed',
-        userId: detail.userId,
-        challengeId: detail.challengeId
-      }
-    }))
+    emitProgressEvent(PROGRESS_EVENTS.CHALLENGE_COMPLETED, eventDetail)
+    emitProgressEvent(PROGRESS_EVENTS.DATA_UPDATED, {
+      type: 'challenge_completed',
+      userId: detail.userId,
+      challengeId: detail.challengeId
+    })
   } catch (error) {
     logger.warn('No se pudo emitir evento de desafío completado:', error)
   }

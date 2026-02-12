@@ -28,6 +28,7 @@ import {
 } from '../../lib/levels/userLevelProfile.js'
 import { createProgressUpdateBatcher } from './progressUpdateBatcher.js'
 import { createLazyTaskScheduler } from './lazyTaskScheduler.js'
+import { onProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
 
@@ -865,8 +866,7 @@ export default function useProgressDashboardData() {
       }
     })
 
-    const handleProgressUpdate = (event) => {
-      const detail = event?.detail || {}
+    const handleProgressUpdate = (detail = {}) => {
       const operationKeys = resolveProgressUpdateKeys(detail)
 
       if (import.meta.env?.DEV) {
@@ -876,12 +876,12 @@ export default function useProgressDashboardData() {
       updateBatcher.addUpdate(operationKeys)
     }
 
-    window.addEventListener('progress:dataUpdated', handleProgressUpdate)
+    const unsubscribe = onProgressEvent(PROGRESS_EVENTS.DATA_UPDATED, handleProgressUpdate, { validate: true })
 
     return () => {
       mounted = false
       updateBatcher.dispose()
-      window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+      unsubscribe()
     }
   }, [loadData, refreshFromEvent])
 

@@ -30,6 +30,7 @@
     "test:visual": "playwright test --grep=\"@visual\"",
     "test:smoke": "vitest run src/**/*.smoke.{test,spec}.{js,jsx}",
     "test:performance": "vitest run src/**/*.performance.{test,spec}.{js,jsx}",
+    "perf:baseline": "node scripts/perfBaseline.mjs",
     "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "quality:check": "npm run lint && npm run test:run",
     "quality:fix": "npm run lint -- --fix",

@@ -8,6 +8,7 @@ import { useSettings } from '../../state/settings.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import { createActionCooldown } from './actionCooldown.js'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
+import { onProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 // New streamlined components
 import ProgressOverview from './ProgressOverview.jsx'
@@ -171,8 +172,7 @@ export default function ProgressDashboard({
 
   // Listen for progress navigation events (from heat map clicks, etc.)
   React.useEffect(() => {
-    const handleProgressNavigate = (event) => {
-      const { detail } = event
+    const handleProgressNavigate = (detail) => {
       if (!detail || !onNavigateToDrill) return
 
       try {
@@ -185,8 +185,7 @@ export default function ProgressDashboard({
       }
     }
 
-    window.addEventListener('progress:navigate', handleProgressNavigate)
-    return () => window.removeEventListener('progress:navigate', handleProgressNavigate)
+    return onProgressEvent(PROGRESS_EVENTS.NAVIGATE, handleProgressNavigate, { validate: true })
   }, [onNavigateToDrill])
 
   // Manual sync only - removed auto-sync to prevent double load on mount
