@@ -456,6 +456,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P8
 - P8 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P9 - slice 1: proteccion anti respuestas stale en cola SRS)
+- Se reforzo `useSRSQueue` para ignorar respuestas viejas cuando hay recargas superpuestas:
+- se agrega `requestId` incremental y aplicacion de estado solo para la request mas reciente.
+- se evita actualizar estado luego de un unmount.
+- Beneficio: menos riesgo de que una respuesta lenta pise una cola mas nueva.
+- Tests agregados/actualizados:
+- `src/hooks/useSRSQueue.test.js` (nuevo caso de race entre reloads)
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getDueSchedules } from '../lib/progress/database.js'
 import { getCurrentUserId } from '../lib/progress/userManager/index.js'
 import { formatMoodTense } from '../lib/utils/verbLabels.js'
@@ -33,14 +33,25 @@ export function useSRSQueue() {
   const [queue, setQueue] = useState([])
   const [error, setError] = useState('')
   const [lastUpdated, setLastUpdated] = useState(null)
+  const requestIdRef = useRef(0)
+  const mountedRef = useRef(true)
+
+  useEffect(() => () => {
+    mountedRef.current = false
+  }, [])
 
   const loadQueue = useCallback(async () => {
+    const requestId = requestIdRef.current + 1
+    requestIdRef.current = requestId
+
     try {
       setLoading(true)
       setError('')
       const userId = getCurrentUserId()
       if (!userId) {
-        setQueue([])
+        if (mountedRef.current && requestId === requestIdRef.current) {
+          setQueue([])
+        }
         return
       }
 
@@ -75,13 +86,19 @@ export function useSRSQueue() {
         return a.itemKey.localeCompare(b.itemKey)
       })
 
-      setQueue(enriched)
-      setLastUpdated(now)
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        setQueue(enriched)
+        setLastUpdated(now)
+      }
     } catch (err) {
-      logger.error('Failed to load SRS queue:', err)
-      setError(err.message || 'No se pudo cargar la cola de repaso')
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        logger.error('Failed to load SRS queue:', err)
+        setError(err.message || 'No se pudo cargar la cola de repaso')
+      }
     } finally {
-      setLoading(false)
+      if (mountedRef.current && requestId === requestIdRef.current) {
+        setLoading(false)
+      }
     }
   }, [])
 
