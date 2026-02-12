@@ -232,15 +232,15 @@ export async function mergeAccountDataLocally(accountData) {
           const localTime = getAttemptMergeTimestamp(existing)
 
           if (remoteTime > localTime) {
+            const updateId = existing?.id || remoteAttempt?.id
             const updatedAttempt = {
               ...existing,
               ...remoteAttempt,
+              id: updateId || remoteAttempt?.id || existing?.id,
               userId: currentUserId,
               createdAt: existing.createdAt || remoteAttempt.createdAt,
               syncedAt: new Date()
             }
-
-            const updateId = existing?.id || remoteAttempt?.id
 
             if (updateId) {
               attemptsToUpdate.push({ id: updateId, updates: updatedAttempt })

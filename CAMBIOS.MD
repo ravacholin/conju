@@ -17,6 +17,10 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Flujos de sesiones personalizadas y de plan migrados a `useSessionStore`.
 - `useSettings` ahora valida y migra con Zod; defaults completos para claves usadas por onboarding.
 - Se agrego diagnostico de generacion en Drill cuando el pool queda vacio o tarda demasiado.
+- Se reforzo `mergeAccountDataLocally` para `attempts`: updates con `id` consistente al resolver conflictos por timestamp.
+- Se agregaron tests de regresion de merge para `attempts`:
+- `local newer` no debe sobreescribirse con remoto viejo.
+- fallback por clave compuesta cuando remoto no trae `id`.
 - Tests de onboarding y drill ejecutados y ajustados donde correspondia.
 
 Tests ejecutados:

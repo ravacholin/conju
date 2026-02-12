@@ -138,6 +138,125 @@ describe('Data Merge Conflict Resolution', () => {
       expect(updatedItems[0].updates.correct).toBe(false)
     })
 
+    it('should keep local attempt data when local attempt is newer than remote', async () => {
+      const localAttempts = [
+        {
+          id: 'attempt-3',
+          verbId: 'escribir',
+          correct: true,
+          createdAt: '2025-01-01T00:00:00Z',
+          syncedAt: '2025-02-10T00:00:00Z',
+          updatedAt: '2025-02-10T00:00:00Z'
+        }
+      ]
+
+      const remoteAttempts = [
+        {
+          id: 'attempt-3',
+          verbId: 'escribir',
+          correct: false,
+          createdAt: '2025-01-01T00:00:00Z',
+          syncedAt: '2025-01-10T00:00:00Z',
+          updatedAt: '2025-01-10T00:00:00Z'
+        }
+      ]
+
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
+      }))
+
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
+        getCurrentUserId: () => 'user-123'
+      }))
+
+      const updatedItems = []
+      const savedItems = []
+
+      vi.doMock('./database.js', () => ({
+        getAllFromDB: vi.fn(async (store) => {
+          if (store === 'attempts') return localAttempts
+          return []
+        }),
+        batchSaveToDB: vi.fn(async (_store, items) => {
+          savedItems.push(...items)
+          return { saved: items.length, errors: [] }
+        }),
+        batchUpdateInDB: vi.fn(async (_store, items) => {
+          updatedItems.push(...items)
+          return { updated: items.length, errors: [] }
+        })
+      }))
+
+      const { mergeAccountDataLocally } = await import('./dataMerger.js')
+      const result = await mergeAccountDataLocally({ attempts: remoteAttempts })
+
+      expect(result.attempts).toBe(0)
+      expect(updatedItems).toHaveLength(0)
+      expect(savedItems).toHaveLength(0)
+    })
+
+    it('should update matching attempt by composite key when remote attempt has no id', async () => {
+      const localAttempts = [
+        {
+          id: 'attempt-composite-1',
+          verbId: 'tener',
+          mood: 'indicative',
+          tense: 'pres',
+          person: '1s',
+          correct: true,
+          createdAt: '2025-01-01T00:00:01.000Z',
+          syncedAt: '2025-01-01T00:00:02.000Z'
+        }
+      ]
+
+      const remoteAttempts = [
+        {
+          verbId: 'tener',
+          mood: 'indicative',
+          tense: 'pres',
+          person: '1s',
+          correct: false,
+          createdAt: '2025-01-01T00:00:03.000Z',
+          syncedAt: '2025-01-20T00:00:00.000Z'
+        }
+      ]
+
+      vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+        getAuthenticatedUser: () => ({ id: 'user-123' }),
+        isLocalSyncMode: () => false,
+        isAuthenticated: () => true
+      }))
+
+      vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
+        getCurrentUserId: () => 'user-123'
+      }))
+
+      const updatedItems = []
+
+      vi.doMock('./database.js', () => ({
+        getAllFromDB: vi.fn(async (store) => {
+          if (store === 'attempts') return localAttempts
+          return []
+        }),
+        batchSaveToDB: vi.fn(async () => ({ saved: 0, errors: [] })),
+        batchUpdateInDB: vi.fn(async (_store, items) => {
+          updatedItems.push(...items)
+          return { updated: items.length, errors: [] }
+        })
+      }))
+
+      const { mergeAccountDataLocally } = await import('./dataMerger.js')
+      const result = await mergeAccountDataLocally({ attempts: remoteAttempts })
+
+      expect(result.attempts).toBe(1)
+      expect(updatedItems).toHaveLength(1)
+      expect(updatedItems[0].id).toBe('attempt-composite-1')
+      expect(updatedItems[0].updates.correct).toBe(false)
+      expect(updatedItems[0].updates.id).toBe('attempt-composite-1')
+    })
+
     it('should keep local data when local is newer than remote', async () => {
       const newerDate = new Date('2025-01-15T00:00:00Z')
       const olderDate = new Date('2025-01-01T00:00:00Z')
