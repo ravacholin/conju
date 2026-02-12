@@ -4,6 +4,8 @@ import {
   getCachedSmartPracticeRecommendation,
   cacheSmartPracticeRecommendation,
   getOrCreateRecommendationRequest,
+  invalidateCachedSmartPracticeRecommendation,
+  invalidateAllSmartPracticeRecommendations,
   __resetSmartPracticeRecommendationCache
 } from './smartPracticeMlCache.js'
 
@@ -39,5 +41,27 @@ describe('smartPracticeMlCache', () => {
     expect(a).toEqual({ ok: true })
     expect(b).toEqual({ ok: true })
     expect(calls).toBe(1)
+  })
+
+  it('invalidates a single key without clearing others', () => {
+    __resetSmartPracticeRecommendationCache()
+    cacheSmartPracticeRecommendation('k1', { value: 1 }, 1000)
+    cacheSmartPracticeRecommendation('k2', { value: 2 }, 1000)
+
+    invalidateCachedSmartPracticeRecommendation('k1')
+
+    expect(getCachedSmartPracticeRecommendation('k1', 1100)).toBeNull()
+    expect(getCachedSmartPracticeRecommendation('k2', 1100)).toEqual({ value: 2 })
+  })
+
+  it('invalidates all cached entries', () => {
+    __resetSmartPracticeRecommendationCache()
+    cacheSmartPracticeRecommendation('k1', { value: 1 }, 1000)
+    cacheSmartPracticeRecommendation('k2', { value: 2 }, 1000)
+
+    invalidateAllSmartPracticeRecommendations()
+
+    expect(getCachedSmartPracticeRecommendation('k1', 1100)).toBeNull()
+    expect(getCachedSmartPracticeRecommendation('k2', 1100)).toBeNull()
   })
 })

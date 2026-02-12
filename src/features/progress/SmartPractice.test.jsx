@@ -130,4 +130,29 @@ describe('SmartPractice recommendations', () => {
       expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
     })
   })
+
+  it('invalidates cached recommendation when progress updates', async () => {
+    render(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 10, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
+    })
+
+    fireEvent(
+      window,
+      new CustomEvent('progress:dataUpdated', {
+        detail: { attemptId: 'attempt-1', mood: 'indicative', tense: 'pres' }
+      })
+    )
+
+    await waitFor(() => {
+      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(2)
+    })
+  })
 })

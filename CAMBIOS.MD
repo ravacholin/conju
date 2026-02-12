@@ -350,6 +350,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/HeatMapSRS.test.jsx`
 - `src/features/progress/drillNavigationConfig.test.js`
 
+## Cambios realizados (P5 - slice 3: invalidacion reactiva de cache ML en SmartPractice)
+- Se agrego invalidacion explicita de cache ML por clave y global:
+- `invalidateCachedSmartPracticeRecommendation(key)`
+- `invalidateAllSmartPracticeRecommendations()`
+- `SmartPractice` ahora escucha `progress:dataUpdated` y, cuando detecta cambios de practica/sync, invalida su cache y regenera recomendaciones.
+- Resultado: menor riesgo de recomendaciones stale luego de nuevas respuestas del usuario.
+- Tests agregados/actualizados:
+- `src/features/progress/smartPracticeMlCache.test.js`
+- `src/features/progress/SmartPractice.test.jsx`
+
+## Estado P5
+- P5 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

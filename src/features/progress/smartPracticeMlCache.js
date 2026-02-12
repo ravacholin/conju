@@ -52,7 +52,18 @@ export function getOrCreateRecommendationRequest(key, factory) {
   return request
 }
 
-export function __resetSmartPracticeRecommendationCache() {
+export function invalidateCachedSmartPracticeRecommendation(key) {
+  if (!key) {
+    return
+  }
+  recommendationCache.delete(key)
+}
+
+export function invalidateAllSmartPracticeRecommendations() {
   recommendationCache.clear()
+}
+
+export function __resetSmartPracticeRecommendationCache() {
+  invalidateAllSmartPracticeRecommendations()
   inFlightRequests.clear()
 }

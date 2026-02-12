@@ -9,7 +9,8 @@ import {
   buildSmartPracticeRecommendationKey,
   getCachedSmartPracticeRecommendation,
   cacheSmartPracticeRecommendation,
-  getOrCreateRecommendationRequest
+  getOrCreateRecommendationRequest,
+  invalidateCachedSmartPracticeRecommendation
 } from './smartPracticeMlCache.js'
 
 const logger = createLogger('features:SmartPractice')
@@ -46,6 +47,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const settings = useSettings()
   const [mlRecommendations, setMLRecommendations] = useState(null)
   const [loadingML, setLoadingML] = useState(false)
+  const [refreshSeed, setRefreshSeed] = useState(0)
   const recommendationKey = useMemo(
     () => buildSmartPracticeRecommendationKey(userStats || {}),
     [userStats]
@@ -106,7 +108,32 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     return () => {
       cancelled = true
     }
-  }, [userStats, recommendationKey])
+  }, [userStats, recommendationKey, refreshSeed])
+
+  useEffect(() => {
+    const handleProgressUpdate = (event) => {
+      const detail = event?.detail || {}
+      const shouldRefreshRecommendations = Boolean(
+        detail.attemptId
+        || detail.mood
+        || detail.tense
+        || detail.person
+        || detail.type === 'practice_session'
+        || detail.type === 'drill_result'
+        || detail.type === 'sync'
+      )
+
+      if (!shouldRefreshRecommendations) {
+        return
+      }
+
+      invalidateCachedSmartPracticeRecommendation(recommendationKey)
+      setRefreshSeed((value) => value + 1)
+    }
+
+    window.addEventListener('progress:dataUpdated', handleProgressUpdate)
+    return () => window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
+  }, [recommendationKey])
 
   // Analyze user data to generate smart recommendations (fallback heuristics)
   const heuristicRecommendations = useMemo(() => {
