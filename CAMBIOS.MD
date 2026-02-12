@@ -67,6 +67,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `checkForUpdate()` ahora usa el mismo pipeline seguro (`safeCheckForUpdate`) en modo forzado.
 - Se mantiene deduplicacion global de intervalos via `window.__CONJU_SW_UPDATE_INTERVAL__`.
 
+## Cambios realizados (P1 - slice 5: sync status sin listeners duplicados)
+- `useSyncStatus` fue refactorizado a una suscripcion global compartida para evitar duplicar listeners/intervals cuando hay multiples consumidores.
+- Se centralizaron handlers y lifecycle con attach/detach global:
+- eventos `progress:cloud-sync`, `online`, `offline`, `focus`, `visibilitychange`.
+- El fallback polling se redujo y endurecio:
+- intervalo paso a `2 min`.
+- polling ignora tabs ocultas (`document.hidden`) y refresca al volver visible.
+- Se mantiene actualizacion inmediata al montar cada consumidor, sin re-renders innecesarios (comparador de estado).
+- Tests nuevos:
+- `src/hooks/useSyncStatus.test.js` cubriendo deduplicacion de listeners, teardown del ultimo consumidor y politica de polling en hidden/visible.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
