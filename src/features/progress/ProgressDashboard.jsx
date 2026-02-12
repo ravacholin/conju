@@ -10,6 +10,7 @@ import { safeLazy } from '../../lib/utils/lazyImport.js'
 // New streamlined components
 import ProgressOverview from './ProgressOverview.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
+import DailyPlanPanel from './DailyPlanPanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
 const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
@@ -95,6 +96,22 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
       setSyncing(false)
     }
   }
+
+  const handleStartPlannedSession = React.useCallback((session) => {
+    if (!session || typeof onNavigateToDrill !== 'function') {
+      return
+    }
+
+    const drillConfig = session.drillConfig || {}
+    setSettings({
+      practiceMode: drillConfig.practiceMode || 'mixed',
+      specificMood: drillConfig.specificMood || null,
+      specificTense: drillConfig.specificTense || null,
+      reviewSessionType: drillConfig.reviewSessionType || 'due',
+      reviewSessionFilter: drillConfig.reviewSessionFilter || {}
+    })
+    onNavigateToDrill()
+  }, [onNavigateToDrill, setSettings])
 
   // Handle SRS Review Now action
   const handleSRSReviewNow = React.useCallback(() => {
@@ -236,6 +253,13 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
           userStats={userStats}
           onNavigateToDrill={onNavigateToDrill}
           onShowToast={handleShowToast}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Daily Plan">
+        <DailyPlanPanel
+          studyPlan={studyPlan}
+          onStartSession={handleStartPlannedSession}
         />
       </SafeComponent>
 

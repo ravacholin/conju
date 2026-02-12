@@ -163,6 +163,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P1
 - P1 finalizado (slices 1 a 14 completos y documentados).
 
+## Cambios realizados (P2 - slice 1: plan del dia accionable)
+- Se agrego `DailyPlanPanel` en progreso para mostrar sesiones concretas del plan personalizado con:
+- titulo, motivo, dificultad y duracion estimada.
+- CTA directa `Empezar sesión` por recomendacion.
+- Integracion en `ProgressDashboard`:
+- al iniciar una sesion sugerida, aplica `drillConfig` al store (`practiceMode`, specific/review settings) y navega a Drill.
+- Esto conecta analitica -> accion inmediata y reduce friccion de “que hago ahora”.
+- Tests agregados/actualizados:
+- `src/features/progress/DailyPlanPanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx` (incluye panel en smoke).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

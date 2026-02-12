@@ -24,6 +24,7 @@ vi.mock('../../hooks/useSRSQueue.js', () => ({
 
 vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div data-testid="progress-overview" /> }))
 vi.mock('./PracticeReminders.jsx', () => ({ default: () => <div data-testid="practice-reminders" /> }))
+vi.mock('./DailyPlanPanel.jsx', () => ({ default: () => <div data-testid="daily-plan-panel" /> }))
 vi.mock('./PronunciationStatsWidget.jsx', () => ({ default: () => <div data-testid="pronunciation-widget" /> }))
 vi.mock('./AccuracyTrendCard.jsx', () => ({ default: () => <div data-testid="accuracy-trend-card" /> }))
 vi.mock('./HeatMapSRS.jsx', () => ({ default: () => <div data-testid="heat-map" /> }))
@@ -84,6 +85,7 @@ describe('ProgressDashboard (smoke)', () => {
 
     expect(screen.getByTestId('progress-overview')).toBeInTheDocument()
     expect(screen.getByTestId('practice-reminders')).toBeInTheDocument()
+    expect(screen.getByTestId('daily-plan-panel')).toBeInTheDocument()
     expect(await screen.findByTestId('accuracy-trend-card')).toBeInTheDocument()
     expect(await screen.findByTestId('pronunciation-widget')).toBeInTheDocument()
     expect(await screen.findByTestId('heat-map')).toBeInTheDocument()
