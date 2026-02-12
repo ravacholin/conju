@@ -3,7 +3,7 @@ import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
-import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
+import { buildSrsReviewDrillConfig, buildSrsReviewFilter } from './srsReviewSessionConfig.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'
 import SRSAnalytics from '../../components/srs/SRSAnalytics.jsx'
@@ -146,31 +146,14 @@ export default function SRSPanel({ onNavigateToDrill }) {
         return
       }
 
-      let filter
-      switch (sessionType) {
-        case 'urgent':
-          filter = { urgency: 'urgent' }
-          break
-        case 'light':
-          filter = { limit: 'light', urgency: 'urgent' }
-          break
-        case 'today':
-          filter = { urgency: 'all' }
-          break
-        default:
-          filter = { urgency: 'all' }
-      }
+      const filter = buildSrsReviewFilter(sessionType)
 
       startReviewLockRef.current = true
       if (startReviewReleaseRef.current) {
         clearTimeout(startReviewReleaseRef.current)
       }
 
-      settings.set(buildDrillSettingsUpdate({}, {
-        practiceMode: 'review',
-        reviewSessionType: sessionType,
-        reviewSessionFilter: filter
-      }))
+      settings.set(buildSrsReviewDrillConfig(sessionType))
       
       if (onNavigateToDrill) {
         onNavigateToDrill()

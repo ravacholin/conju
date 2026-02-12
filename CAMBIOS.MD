@@ -435,6 +435,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/SRSPanel.test.jsx`
 - `src/features/progress/drillNavigationConfig.test.js`
 
+## Cambios realizados (P8 - slice 2: configuracion SRS review extraida y testeable)
+- Se extrajo la construccion de filtros/config de sesiones SRS review a una capa pura:
+- `src/features/progress/srsReviewSessionConfig.js`
+- API introducida:
+- `buildSrsReviewFilter(sessionType)`
+- `buildSrsReviewDrillConfig(sessionType)`
+- `SRSPanel` ahora consume esta capa en `startReviewSession`, reduciendo logica inline y facilitando validacion de reglas por tipo de sesion.
+- Tests agregados/actualizados:
+- `src/features/progress/srsReviewSessionConfig.test.js`
+- `src/features/progress/SRSPanel.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
