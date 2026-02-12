@@ -407,6 +407,21 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/smartPracticeRecommendationKey.test.js`
 
+## Cambios realizados (P7 - slice 3: scheduler cancelable para carga lazy pesada del dashboard)
+- Se agrego un scheduler reutilizable para tareas lazy con idle + fallback y cancelacion segura:
+- `src/features/progress/lazyTaskScheduler.js`
+- `useProgressDashboardData` ahora usa este scheduler para la carga de analiticas pesadas:
+- cancela tareas pendientes cuando arranca un nuevo `loadData`.
+- evita ejecutar multiples corridas lazy superpuestas.
+- mantiene fallback controlado si no hay idle a tiempo.
+- Se agrego cleanup explicito del scheduler en unmount.
+- Tests agregados/actualizados:
+- `src/features/progress/lazyTaskScheduler.test.js`
+- `src/features/progress/useProgressDashboardData.test.js`
+
+## Estado P7
+- P7 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

@@ -27,6 +27,7 @@ import {
   checkGlobalLevelRecommendation
 } from '../../lib/levels/userLevelProfile.js'
 import { createProgressUpdateBatcher } from './progressUpdateBatcher.js'
+import { createLazyTaskScheduler } from './lazyTaskScheduler.js'
 
 const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
 
@@ -116,6 +117,7 @@ export default function useProgressDashboardData() {
   const lastPersonFilterRef = useRef(personFilter)
   const sectionStatusRef = useRef({})
   const firstCoreLoadedRef = useRef(false)
+  const heavyLoadSchedulerRef = useRef(createLazyTaskScheduler())
 
   const buildPracticeReminders = useCallback((stats) => {
     const reminders = []
@@ -599,6 +601,7 @@ export default function useProgressDashboardData() {
     }
 
     try {
+      heavyLoadSchedulerRef.current.cancel()
       asyncController.current.cancelAll()
 
       const userId = getCurrentUserId()
@@ -646,32 +649,17 @@ export default function useProgressDashboardData() {
       }
 
       if (!isRefresh) {
-        let lazyLoadCompleted = false
-        let lazyLoadTimeoutId = null
-        let fallbackTriggered = false
-
-        const finalizeLazyLoad = () => {
-          if (lazyLoadCompleted) {
-            return
-          }
-          lazyLoadCompleted = true
-          if (lazyLoadTimeoutId) {
-            clearTimeout(lazyLoadTimeoutId)
-            lazyLoadTimeoutId = null
-          }
-        }
-
         const startHeavyLoad = () => {
-          if (lazyLoadCompleted) {
+          const pendingKeys = HEAVY_ANALYTICS_KEYS.filter(
+            key => sectionStatusRef.current[key] !== 'success'
+          )
+
+          if (pendingKeys.length === 0) {
             return
           }
 
-          Promise.all(HEAVY_ANALYTICS_KEYS.map(key => loadTrackedKey(key, { errorLog: 'error' })))
+          Promise.all(pendingKeys.map(key => loadTrackedKey(key, { errorLog: 'error' })))
             .then(results => {
-              if (fallbackTriggered) {
-                return null
-              }
-
               const failedKeys = results.filter(result => !result.success).map(result => result.key)
               if (failedKeys.length > 0) {
                 logger.error('loadData', 'Lazy heavy analytics failed, triggering failsafe', { failedKeys })
@@ -681,34 +669,18 @@ export default function useProgressDashboardData() {
               }
               return null
             })
-            .finally(finalizeLazyLoad)
+            .catch((error) => {
+              logger.error('loadData', 'Unexpected lazy heavy analytics error', error)
+            })
         }
 
-        lazyLoadTimeoutId = setTimeout(() => {
-          if (lazyLoadCompleted) {
-            return
+        heavyLoadSchedulerRef.current.schedule(startHeavyLoad, {
+          idleTimeout: 3000,
+          fallbackTimeout: 5000,
+          onFallback: () => {
+            logger.warn('loadData', 'Lazy loading taking too long, falling back to scheduled run')
           }
-
-          const pendingKeys = HEAVY_ANALYTICS_KEYS.filter(
-            key => sectionStatusRef.current[key] !== 'success'
-          )
-
-          if (pendingKeys.length === 0) {
-            finalizeLazyLoad()
-            return
-          }
-
-          fallbackTriggered = true
-          logger.warn('loadData', 'Lazy loading taking too long, falling back to synchronous load')
-          Promise.all(pendingKeys.map(key => loadTrackedKey(key, { errorLog: 'error' })))
-            .finally(finalizeLazyLoad)
-        }, 5000)
-
-        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-          window.requestIdleCallback(startHeavyLoad, { timeout: 3000 })
-        } else {
-          setTimeout(startHeavyLoad, 100)
-        }
+        })
       } else {
         await runOperations(HEAVY_ANALYTICS_KEYS, { userId })
         HEAVY_ANALYTICS_KEYS.forEach(key => updateSectionStatus(key, 'success'))
@@ -916,6 +888,7 @@ export default function useProgressDashboardData() {
   // Cleanup async operations on component unmount
   useEffect(() => {
     return () => {
+      heavyLoadSchedulerRef.current.cancel()
       asyncController.current.destroy()
     }
   }, [])
