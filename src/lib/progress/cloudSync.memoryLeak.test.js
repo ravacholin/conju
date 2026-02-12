@@ -3,7 +3,8 @@ import {
   scheduleAutoSync,
   cancelScheduledSync,
   setIncognitoMode,
-  getSyncStatus
+  getSyncStatus,
+  shouldRunAutoSyncTick
 } from './cloudSync.js'
 import { clearAuthState } from './authBridge.js'
 
@@ -160,6 +161,13 @@ describe('CloudSync Memory Leak Prevention', () => {
         globalThis.setInterval = originalSetInterval
         globalThis.clearInterval = originalClearInterval
       }
+    })
+
+    it('should skip auto-sync tick when hidden or offline', () => {
+      expect(shouldRunAutoSyncTick({ online: true, incognito: false, hidden: false })).toBe(true)
+      expect(shouldRunAutoSyncTick({ online: true, incognito: false, hidden: true })).toBe(false)
+      expect(shouldRunAutoSyncTick({ online: false, incognito: false, hidden: false })).toBe(false)
+      expect(shouldRunAutoSyncTick({ online: true, incognito: true, hidden: false })).toBe(false)
     })
   })
 

@@ -125,6 +125,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados:
 - `src/features/progress/practiceReminderScheduler.test.js`
 
+## Cambios realizados (P1 - slice 11: auto-sync consciente de visibilidad/conectividad)
+- Se agrego `shouldRunAutoSyncTick` en `src/lib/progress/cloudSync.js` para centralizar politica de ejecucion de ticks de auto-sync.
+- `scheduleAutoSync` ahora omite sincronizacion cuando:
+- la app esta en incognito,
+- el cliente esta offline,
+- la pestaña esta oculta (`document.hidden`).
+- Listeners globales `online/offline` de `cloudSync` ahora enrutan por `handleConnectivityChange(...)` para mantener una sola logica de conectividad.
+- Limpieza menor: se eliminaron variables de `catch` no usadas en persistencia de `lastSyncTime`.
+- Test agregado/actualizado:
+- `src/lib/progress/cloudSync.memoryLeak.test.js` valida la politica de `shouldRunAutoSyncTick`.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

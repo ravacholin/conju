@@ -33,7 +33,7 @@ try {
       lastSyncTime = new Date(stored)
     }
   }
-} catch (e) {
+} catch {
   // Ignore storage errors
 }
 let syncError = null
@@ -42,12 +42,20 @@ let isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true
 let isIncognitoMode = false
 let autoSyncTimerId = null
 
+export function shouldRunAutoSyncTick({
+  online = isOnline,
+  incognito = isIncognitoMode,
+  hidden = typeof document !== 'undefined' ? document.hidden : false
+} = {}) {
+  return !incognito && !!online && !hidden
+}
+
 if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
-    isOnline = true
+    handleConnectivityChange(true)
   })
   window.addEventListener('offline', () => {
-    isOnline = false
+    handleConnectivityChange(false)
   })
 
   // Trigger initial sync if online
@@ -82,7 +90,7 @@ function recordSyncOutcome(result) {
     if (typeof window !== 'undefined') {
       try {
         window.localStorage.setItem(LAST_SYNC_TIME_KEY, lastSyncTime.toISOString())
-      } catch (e) {
+      } catch {
         // Ignore storage errors
       }
       window.dispatchEvent(new CustomEvent('progress:cloud-sync', {
@@ -356,7 +364,7 @@ export function scheduleAutoSync(intervalMs = 300000) {
   }
 
   autoSyncTimerId = timerApi.setInterval(() => {
-    if (isIncognitoMode) return
+    if (!shouldRunAutoSyncTick()) return
     syncWithCloud().catch((error) => {
       // Log auto-sync failures (non-critical, will retry on next interval)
       logger.warn('auto-sync', 'Scheduled auto-sync failed (will retry)', error)
