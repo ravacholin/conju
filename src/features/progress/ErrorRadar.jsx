@@ -6,6 +6,7 @@ import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:ErrorRadar')
 
@@ -135,7 +136,7 @@ export function ErrorRadar({ axes = [] }) {
       settings.set({ practiceMode: 'mixed', currentBlock: { combos: topCombos, itemsRemaining: 6 } })
       // Wait for settings to propagate before dispatching navigation event (increased delay)
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 6 } } }))
+        emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag: tag, size: 6 } })
       }, 150)
     } catch (e) {
       logger.warn('No se pudo iniciar micro-práctica para', tag, e)

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getAttemptsByUser } from '../../lib/progress/database.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 export default function ErrorInsights({ onNavigateToDrill }) {
   const [topErrors, setTopErrors] = useState([])
@@ -109,7 +110,7 @@ export default function ErrorInsights({ onNavigateToDrill }) {
         onNavigateToDrill()
       } else {
         // Backward-compat: dispatch for when handled from DrillMode overlay
-        window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } }))
+        emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag: tag, size: 5 } })
       }
     } catch { /* Navigation error ignored */ }
   }

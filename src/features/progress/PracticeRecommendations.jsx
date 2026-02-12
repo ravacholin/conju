@@ -6,6 +6,7 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import './practice-recommendations.css'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:PracticeRecommendations')
 
@@ -111,9 +112,7 @@ export default function PracticeRecommendations({
     }
 
     // Dispatch navigation event to start practice
-    window.dispatchEvent(new CustomEvent('progress:navigate', {
-      detail: practiceEvent
-    }))
+    emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, practiceEvent)
 
     // Also call the original handler if provided
     if (onSelectRecommendation) {

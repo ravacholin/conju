@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 import './SRSReviewQueueModal.css'
 
 const urgencyLabels = {
@@ -39,7 +40,7 @@ export default function SRSReviewQueueModal({ isOpen, onClose, onStartSession })
       onStartSession(filter)
     }
 
-    window.dispatchEvent(new CustomEvent('progress:navigate', { detail }))
+    emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, detail)
     onClose?.()
   }
 

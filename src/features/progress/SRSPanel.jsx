@@ -14,6 +14,7 @@ import { SRSHints, GamificationHints, JourneyHints } from '../../components/mobi
 import NotificationSettings from '../../components/notifications/NotificationSettings.jsx'
 import './srs-panel.css'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:SRSPanel')
 
@@ -166,9 +167,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
         if (onNavigateToDrill) {
           onNavigateToDrill()
         } else {
-          window.dispatchEvent(new CustomEvent('progress:navigate', {
-            detail: { focus: 'review', sessionType, filter }
-          }))
+          emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { focus: 'review', sessionType, filter })
         }
       })
     } catch (error) {

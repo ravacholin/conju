@@ -4,6 +4,7 @@ import { useMemo, useState, memo, Fragment } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:HeatMap')
 
@@ -185,9 +186,7 @@ export function HeatMap({ data }) {
                       })
                       // Wait for settings to propagate before dispatching navigation event (increased delay)
                       setTimeout(() => {
-                        window.dispatchEvent(new CustomEvent('progress:navigate', {
-                          detail: { mood, tense }
-                        }))
+                        emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { mood, tense })
                       }, 150)
                     } catch (error) {
                       logger.error('Error clicking heat map cell:', error)

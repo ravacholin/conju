@@ -67,6 +67,26 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Validacion ejecutada:
 - `npx playwright test tests/e2e/navigation-critical.e2e.js --project=chromium` en verde.
 
+## Cambios realizados (P0 - slice 5: migracion de progress:navigate al event bus)
+- Se reemplazo emision ad-hoc de `progress:navigate` por helper central `emitProgressEvent(...)` en componentes clave.
+- Archivos migrados:
+- `src/features/progress/SRSPanel.jsx`
+- `src/features/progress/ErrorRadar.jsx`
+- `src/features/progress/VerbMasteryMap.jsx`
+- `src/features/progress/EnhancedErrorAnalysis.jsx`
+- `src/features/progress/ErrorInsights.jsx`
+- `src/features/progress/ErrorIntelligence.jsx`
+- `src/features/progress/SRSReviewQueue.jsx`
+- `src/features/progress/SRSReviewQueueModal.jsx`
+- `src/features/progress/CompetencyRadar.jsx`
+- `src/features/progress/HeatMap.jsx`
+- `src/features/progress/PracticeRecommendations.jsx`
+- `src/features/drill/SessionHUD.jsx`
+- Resultado:
+- menor dispersión de contratos de evento,
+- validacion de payload consistente,
+- migracion alineada con catalogo `docs/events/progress-events.md`.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

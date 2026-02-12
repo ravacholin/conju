@@ -6,6 +6,7 @@ import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { buildErrorFeedbackCards } from './errorFeedbackCoach.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:ErrorIntelligence')
 
@@ -82,7 +83,7 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
         currentBlock: { combos, itemsRemaining: 8 }
       }))
       if (typeof onNavigateToDrill === 'function') onNavigateToDrill()
-      else window.dispatchEvent(new CustomEvent('progress:navigate', { detail: { micro: { size: 8 } } }))
+      else emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { size: 8 } })
     } catch { /* Practice configuration error ignored */ }
   }
 

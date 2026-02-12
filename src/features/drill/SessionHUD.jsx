@@ -5,6 +5,7 @@ import { getDueItems } from '../../lib/progress/srs.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSettings } from '../../state/settings.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:SessionHUD')
 
@@ -150,16 +151,12 @@ export default function SessionHUD() {
         focus: 'srs'
       }
     })
-    window.dispatchEvent(
-      new CustomEvent('progress:navigate', {
-        detail: {
-          micro: {
-            dueReview: true,
-            size: sessionSize
-          }
-        }
-      })
-    )
+    emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, {
+      micro: {
+        dueReview: true,
+        size: sessionSize
+      }
+    })
   }, [dueSummary, settings])
 
   return (
@@ -238,9 +235,7 @@ export default function SessionHUD() {
                       practiceMode: 'mixed',
                       currentBlock: { combos: topCombos, itemsRemaining: 5 }
                     })
-                    window.dispatchEvent(
-                      new CustomEvent('progress:navigate', { detail: { micro: { errorTag: tag, size: 5 } } })
-                    )
+                    emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag: tag, size: 5 } })
                   } catch (error) {
                     if (import.meta.env?.DEV) {
                       logger.warn('Error launching micro drill from SessionHUD', error)

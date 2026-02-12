@@ -3,6 +3,7 @@ import { useSettings } from '../../state/settings.js'
 import { formatPercentage } from '../../lib/progress/utils.js'
 import './verb-mastery-map.css'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:VerbMasteryMap')
 
@@ -240,9 +241,7 @@ export function VerbMasteryMap({ data, onNavigateToDrill }) {
           onNavigateToDrill()
         } else {
           // Fallback: dispatch event for when accessed from drill
-          window.dispatchEvent(new CustomEvent('progress:navigate', {
-            detail: { mood, tense }
-          }))
+          emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { mood, tense })
         }
       }, 50) // Small delay to ensure settings persistence
     } catch (error) {

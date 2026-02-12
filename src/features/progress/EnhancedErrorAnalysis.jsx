@@ -6,6 +6,7 @@ import { useSettings } from '../../state/settings.js'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
 import './EnhancedErrorAnalysis.css'
 import { createLogger } from '../../lib/utils/logger.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
 const logger = createLogger('features:EnhancedErrorAnalysis')
 
@@ -369,9 +370,7 @@ export default function EnhancedErrorAnalysis({ onNavigateToDrill }) {
       if (typeof onNavigateToDrill === 'function') {
         onNavigateToDrill()
       } else {
-        window.dispatchEvent(new CustomEvent('progress:navigate', {
-          detail: { micro: { errorTag, size } }
-        }))
+        emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, { micro: { errorTag, size } })
       }
     } catch (error) {
       logger.error('Error starting targeted practice:', error)

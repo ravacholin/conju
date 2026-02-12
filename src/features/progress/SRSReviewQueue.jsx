@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { useSettings } from '../../state/settings.js'
+import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 import './srs-review-queue.css'
 
 const urgencyLabels = {
@@ -21,7 +22,7 @@ function formatDueDate(dateString) {
   try {
     const date = new Date(dateString)
     return date.toLocaleString()
-  } catch (error) {
+  } catch {
     return dateString
   }
 }
@@ -45,13 +46,11 @@ export default function SRSReviewQueue({ onNavigateToDrill }) {
     if (typeof onNavigateToDrill === 'function') {
       onNavigateToDrill()
     } else {
-      window.dispatchEvent(new CustomEvent('progress:navigate', {
-        detail: {
-          focus: 'review',
-          sessionType: 'due',
-          filter: reviewSessionFilter
-        }
-      }))
+      emitProgressEvent(PROGRESS_EVENTS.NAVIGATE, {
+        focus: 'review',
+        sessionType: 'due',
+        filter: reviewSessionFilter
+      })
     }
   }
 
