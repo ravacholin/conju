@@ -344,4 +344,37 @@ describe('useProgressDashboardData', () => {
 
     expect(result.current.practiceReminders.some(reminder => reminder.id === 'no-practice-yet')).toBe(true)
   })
+
+  it('difiere analíticas secundarias hasta habilitar modo avanzado', async () => {
+    const { rerender } = renderHook(
+      ({ enableSecondaryData }) => useProgressDashboardData({ enableSecondaryData }),
+      { initialProps: { enableSecondaryData: false } }
+    )
+
+    await waitFor(() => {
+      expect(onProgressSystemReady).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      __triggerReady(true)
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(getHeatMapData).toHaveBeenCalledTimes(1)
+    })
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 200))
+    })
+
+    expect(getAdvancedAnalytics).toHaveBeenCalledTimes(0)
+    expect(generatePersonalizedStudyPlan).toHaveBeenCalledTimes(1)
+
+    rerender({ enableSecondaryData: true })
+
+    await waitFor(() => {
+      expect(getAdvancedAnalytics).toHaveBeenCalledTimes(1)
+    })
+  })
 })

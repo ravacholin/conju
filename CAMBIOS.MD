@@ -1016,6 +1016,32 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P19
 - P19 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P20 - slice 1: diferir recomputos secundarios del dashboard)
+- Se habilito carga diferida de analíticas secundarias en el hook:
+- `useProgressDashboardData({ enableSecondaryData })`
+- Con `enableSecondaryData=false`, se cargan solo claves primarias de primera vista.
+- Al habilitar modo avanzado, se cargan secundarias pendientes sin refresh completo.
+- Se integró desde `ProgressDashboard` con:
+- `useProgressDashboardData({ enableSecondaryData: showAdvancedSections })`
+
+## Cambios realizados (P20 - slice 2: refresh parcial sin reprocesar bloques no impactados)
+- Se reforzo `refreshFromEvent` para filtrar keys secundarias cuando el modo avanzado no está activo.
+- Se mantiene invalidacion parcial por evento y se evita recomputo de bloques secundarios no afectados.
+- Se ampliaron tests de hook para cubrir este contrato incremental.
+
+## Cambios realizados (P20 - slice 3: medicion incremental vs full refresh)
+- Se documentó comparación operativa en:
+- `docs/performance/progress-refresh-measurement.md`
+- Cobertura de medición en tests:
+- `src/features/progress/useProgressDashboardData.test.js`
+- casos cubiertos:
+- refresh parcial por `attemptId` (sin analíticas pesadas),
+- refresh completo por `sync`,
+- diferido de secundarias hasta activar modo avanzado.
+
+## Estado P20
+- P20 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

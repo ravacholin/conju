@@ -257,6 +257,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Cubrir con tests de invalidez por evento (`progress:*`, sync, cambios de settings).
 
 ## Siguiente backlog activo (Fase 5.3)
-1. [ ] Reducir recomputos pesados del dashboard moviendo cálculos secundarios a ejecución diferida.
-2. [ ] Validar que refresh parcial no reprocese bloques no impactados por el evento.
-3. [ ] Medir mejora de refresco incremental vs refresh completo (tiempo y costo de operaciones).
+1. [x] Reducir recomputos pesados del dashboard moviendo cálculos secundarios a ejecución diferida.
+2. [x] Validar que refresh parcial no reprocese bloques no impactados por el evento.
+3. [x] Medir mejora de refresco incremental vs refresh completo (tiempo y costo de operaciones).
+
+## Siguiente backlog activo (Fase 6.1)
+1. [ ] Definir suite mínima de chequeos a11y automáticos para dashboard y drill.
+2. [ ] Integrar ejecución de axe en tests de componentes críticos.
+3. [ ] Documentar backlog de issues a11y encontrados y su severidad.

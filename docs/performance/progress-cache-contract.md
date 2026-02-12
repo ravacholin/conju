@@ -42,6 +42,11 @@ Fuente: `EVENT_TYPE_TO_CACHE_TYPES` en `src/lib/cache/ProgressDataCache.js`.
 - `DailyPlanPanel`: `studyPlan`
 - `PronunciationStatsWidget` + `AccuracyTrend`: `pronunciationStats`
 
+## Estrategia de carga diferida
+- `useProgressDashboardData({ enableSecondaryData })` permite diferir secciones secundarias.
+- Con `enableSecondaryData=false`, se cargan solo claves primarias de primera vista.
+- Al habilitar modo avanzado, se disparan cargas secundarias pendientes sin forzar refresh completo.
+
 ## Cobertura de tests
 - `src/lib/cache/ProgressDataCache.test.js` valida:
   - política de TTL explícita,

@@ -30,11 +30,10 @@ import { createProgressUpdateBatcher } from './progressUpdateBatcher.js'
 import { createLazyTaskScheduler } from './lazyTaskScheduler.js'
 import { onProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
 
-const CORE_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'pronunciationStats']
+const PRIMARY_DATA_KEYS = ['heatMap', 'userStats', 'weeklyGoals', 'weeklyProgress', 'recommendations', 'dailyChallenges', 'errorIntel', 'studyPlan']
 
-const HEAVY_ANALYTICS_KEYS = [
-  'errorIntel',
-  'studyPlan',
+const SECONDARY_DATA_KEYS = [
+  'pronunciationStats',
   'advancedAnalytics',
   'community',
   'offlineStatus',
@@ -43,6 +42,11 @@ const HEAVY_ANALYTICS_KEYS = [
   'dynamicLevelProgress',
   'dynamicLevelInfo',
   'levelRecommendation'
+]
+
+const HEAVY_ANALYTICS_KEYS = [
+  'errorIntel',
+  ...SECONDARY_DATA_KEYS
 ]
 
 const normalizeHeatMapResult = (rawData, rangeKey = 'all') => {
@@ -85,7 +89,8 @@ const normalizeHeatMapResult = (rawData, rangeKey = 'all') => {
   return { heatMap: heatMapObject, range: rangeKey, updatedAt: timestamp }
 }
 
-export default function useProgressDashboardData() {
+export default function useProgressDashboardData(options = {}) {
+  const { enableSecondaryData = true } = options
   const [heatMapData, setHeatMapData] = useState(null)
   const [errorIntel, setErrorIntel] = useState(null)
   const [userStats, setUserStats] = useState({})
@@ -156,7 +161,7 @@ export default function useProgressDashboardData() {
       }
     })
 
-    if (status === 'success' && CORE_DATA_KEYS.includes(key)) {
+    if (status === 'success' && PRIMARY_DATA_KEYS.includes(key)) {
       if (!firstCoreLoadedRef.current) {
         firstCoreLoadedRef.current = true
         setInitialSectionsReady(true)
@@ -648,9 +653,10 @@ export default function useProgressDashboardData() {
       setError(null)
       setInitialSectionsReady(false)
       firstCoreLoadedRef.current = false
-      const trackedKeys = [...CORE_DATA_KEYS, ...HEAVY_ANALYTICS_KEYS]
+      const trackedKeys = [...PRIMARY_DATA_KEYS, ...SECONDARY_DATA_KEYS]
       const initialStatus = trackedKeys.reduce((acc, key) => {
-        acc[key] = 'loading'
+        const isSecondary = SECONDARY_DATA_KEYS.includes(key)
+        acc[key] = !enableSecondaryData && isSecondary ? 'idle' : 'loading'
         return acc
       }, {})
       sectionStatusRef.current = initialStatus
@@ -696,7 +702,7 @@ export default function useProgressDashboardData() {
       }
 
       const coreResults = await Promise.all(
-        CORE_DATA_KEYS.map(key => loadTrackedKey(key, { updateLoading: !isRefresh }))
+        PRIMARY_DATA_KEYS.map(key => loadTrackedKey(key, { updateLoading: !isRefresh }))
       )
       const hasCoreSuccess = coreResults.some(result => result.success)
 
@@ -706,9 +712,13 @@ export default function useProgressDashboardData() {
       }
 
       if (!isRefresh) {
+        if (!enableSecondaryData) {
+          return
+        }
+
         const startHeavyLoad = () => {
           const pendingKeys = HEAVY_ANALYTICS_KEYS.filter(
-            key => sectionStatusRef.current[key] !== 'success'
+            key => sectionStatusRef.current[key] !== 'success' && sectionStatusRef.current[key] !== 'idle'
           )
 
           if (pendingKeys.length === 0) {
@@ -738,7 +748,7 @@ export default function useProgressDashboardData() {
             logger.warn('loadData', 'Lazy loading taking too long, falling back to scheduled run')
           }
         })
-      } else {
+      } else if (enableSecondaryData) {
         await runOperations(HEAVY_ANALYTICS_KEYS, { userId })
         HEAVY_ANALYTICS_KEYS.forEach(key => updateSectionStatus(key, 'success'))
       }
@@ -751,7 +761,7 @@ export default function useProgressDashboardData() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [runOperations, updateSectionStatus])
+  }, [enableSecondaryData, runOperations, updateSectionStatus])
 
   const refreshFromEvent = useCallback(
     async (detail = {}, operationKeysOverride) => {
@@ -761,9 +771,12 @@ export default function useProgressDashboardData() {
         return loadData(true)
       }
 
-      const operationKeys = Array.isArray(operationKeysOverride)
+      const operationKeysRaw = Array.isArray(operationKeysOverride)
         ? operationKeysOverride
         : resolveProgressUpdateKeys(detail)
+      const operationKeys = enableSecondaryData
+        ? operationKeysRaw
+        : operationKeysRaw?.filter((key) => !SECONDARY_DATA_KEYS.includes(key))
 
       if (!operationKeys || operationKeys.length === 0) {
         return loadData(true)
@@ -795,7 +808,7 @@ export default function useProgressDashboardData() {
 
       return undefined
     },
-    [loadData, runOperations, updateSectionStatus]
+    [enableSecondaryData, loadData, runOperations, updateSectionStatus]
   )
 
   const completeChallenge = async (challengeId) => {
@@ -887,6 +900,54 @@ export default function useProgressDashboardData() {
     hasInitialLoad.current = true
     loadData()
   }, [personFilter, systemReady, loadData])
+
+  useEffect(() => {
+    if (!systemReady || !enableSecondaryData) {
+      return
+    }
+
+    const userId = getCurrentUserId()
+    if (!userId) {
+      return
+    }
+
+    const pendingSecondary = SECONDARY_DATA_KEYS.filter(
+      (key) => sectionStatusRef.current[key] !== 'success'
+    )
+
+    if (pendingSecondary.length === 0) {
+      return
+    }
+
+    let cancelled = false
+    Promise.all(
+      pendingSecondary.map((key) => {
+        if (sectionStatusRef.current[key] !== 'loading') {
+          updateSectionStatus(key, 'loading')
+        }
+        return runOperations([key], { userId, throwOnFailure: true })
+          .then(() => {
+            if (!cancelled) {
+              updateSectionStatus(key, 'success')
+            }
+          })
+          .catch((error) => {
+            if (!cancelled) {
+              updateSectionStatus(key, 'error')
+              logger.warn('loadSecondaryData', `Failed to load deferred section ${key}`, error)
+            }
+          })
+      })
+    ).catch((error) => {
+      if (!cancelled) {
+        logger.warn('loadSecondaryData', 'Unexpected deferred load error', error)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [enableSecondaryData, runOperations, systemReady, updateSectionStatus])
 
   useEffect(() => {
     const unsubscribePlan = onStudyPlanUpdated(

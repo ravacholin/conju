@@ -71,7 +71,7 @@ export default function ProgressDashboard({
     pronunciationStats,
     sectionsStatus,
     initialSectionsReady
-  } = useProgressDashboardData()
+  } = useProgressDashboardData({ enableSecondaryData: showAdvancedSections })
 
   const handleShowToast = React.useCallback((toastConfig) => {
     if (!toastConfig || !toastConfig.message) {
