@@ -15,6 +15,7 @@ import ProgressUnlocksPanel from './ProgressUnlocksPanel.jsx'
 import LearningJourneyPanel from './LearningJourneyPanel.jsx'
 import CoachModePanel from './CoachModePanel.jsx'
 import FocusModePanel from './FocusModePanel.jsx'
+import FrequentErrorsPanel from './FrequentErrorsPanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
 const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
@@ -162,6 +163,21 @@ export default function ProgressDashboard({
       specificTense: drillConfig.specificTense || null,
       reviewSessionType: drillConfig.reviewSessionType || 'due',
       reviewSessionFilter: drillConfig.reviewSessionFilter || {}
+    })
+    onNavigateToDrill()
+  }, [onNavigateToDrill, setSettings])
+
+  const handleStartCorrectiveDrill = React.useCallback((item) => {
+    if (!item?.mood || !item?.tense || typeof onNavigateToDrill !== 'function') {
+      return
+    }
+
+    setSettings({
+      practiceMode: 'specific',
+      specificMood: item.mood,
+      specificTense: item.tense,
+      reviewSessionType: 'due',
+      reviewSessionFilter: {}
     })
     onNavigateToDrill()
   }, [onNavigateToDrill, setSettings])
@@ -325,6 +341,13 @@ export default function ProgressDashboard({
           userStats={userStats}
           heatMapData={heatMapData}
           onStartFocusTrack={handleStartFocusTrack}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Frequent Errors">
+        <FrequentErrorsPanel
+          errorIntel={errorIntel}
+          onStartCorrectiveDrill={handleStartCorrectiveDrill}
         />
       </SafeComponent>
 

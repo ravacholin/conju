@@ -249,6 +249,24 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/FocusModePanel.test.jsx`
 - `src/features/progress/ProgressDashboard.smoke.test.jsx`
 
+## Cambios realizados (P2 - slice 8: panel de errores frecuentes accionable)
+- Se agrego `FrequentErrorsPanel` para convertir inteligencia de errores en acciones de correccion inmediatas.
+- El panel selecciona hasta 3 combinaciones prioritarias (mayor tasa de error con evidencia) y muestra:
+- combo mood/tense.
+- tasa de error en porcentaje.
+- volumen de intentos recientes.
+- CTA `Corregir ahora` para abrir Drill en modo especifico directo al problema.
+- Se extrajo la priorizacion a una capa pura testeable:
+- `src/features/progress/frequentErrorsPlan.js`
+- Integracion en `ProgressDashboard` con handler dedicado de sesion correctiva.
+- Tests agregados/actualizados:
+- `src/features/progress/frequentErrorsPlan.test.js`
+- `src/features/progress/FrequentErrorsPanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
+## Estado P2
+- P2 finalizado (slices 1 a 8 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
