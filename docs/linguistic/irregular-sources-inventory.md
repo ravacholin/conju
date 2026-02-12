@@ -1,6 +1,6 @@
 # Inventario De Fuentes De Irregularidades
 
-Generado: 2026-02-12T21:10:36.634Z
+Generado: 2026-02-12T21:54:38.597Z
 
 ## Fuentes auditadas
 - `src/lib/data/irregularFamilies.js`
@@ -15,58 +15,40 @@ Generado: 2026-02-12T21:10:36.634Z
 - Clusters técnicos: 8
 - Grupos simplificados: 4
 - Overlap ejemplos técnico vs learning: 94
-- Overlap gerundios (patterns vs builder): 13
-- Overlap participios (patterns vs builder): 11
-- Overlap participios (patterns vs rules): 11
+- Overlap gerundios (patterns vs builder): 0
+- Overlap participios (patterns vs builder): 0
+- Overlap participios (patterns vs rules): 0
 
 ## Divergencias detectadas
-- Gerundios solo en patterns: ninguno
-- Gerundios solo en builder: advertir, atraer, caer, competir, concluir, conseguir, consentir, contribuir, convertir, creer, despedir, destruir, digerir, distraer, divertir, elegir, herir, hervir, huir, impedir, incluir, inferir, medir, mentir, perseguir, poseer, preferir, proveer, raer, referir, repetir, retraer, reír, seguir, sugerir, sustraer, vestir
-- Participios solo en patterns: freír
-- Participios solo en builder: componer, descubrir, desenvolver, devolver, disponer, envolver, exponer, imponer, oponer, prever, proponer, revolver, suponer
-- Participios solo en rules: anteponer, antever, bendecir, componer, contradecir, contrahacer, deponer, describir, descubrir, desenvolver, deshacer, deshacerse, devolver, disponer, encubrir, entrever, envolver, exponer, imponer, inscribir, interponer, maldecir, oponer, posponer, predecir, predisponer, prescribir, presuponer, prever, proponer, recubrir, reescribir, rehacer, reponer, rever, revolver, satisfacer, sobreponer, suponer, suscribir, transcribir, yuxtaponer
+- Gerundios solo en patterns: construir, decir, dormir, ir, leer, morir, oír, pedir, poder, sentir, servir, traer, venir
+- Gerundios solo en builder: ninguno
+- Participios solo en patterns: abrir, cubrir, decir, escribir, freír, hacer, morir, poner, resolver, romper, ver, volver
+- Participios solo en builder: ninguno
+- Participios solo en rules: ninguno
 
 ## Lemmas con mayor duplicación entre fuentes
-- decir: 7 apariciones
-- morir: 7 apariciones
-- abrir: 5 apariciones
-- cubrir: 5 apariciones
-- escribir: 5 apariciones
-- hacer: 5 apariciones
-- poner: 5 apariciones
-- romper: 5 apariciones
-- ver: 5 apariciones
-- volver: 5 apariciones
-- construir: 4 apariciones
-- dormir: 4 apariciones
-- ir: 4 apariciones
-- leer: 4 apariciones
-- oír: 4 apariciones
-- pedir: 4 apariciones
-- poder: 4 apariciones
-- resolver: 4 apariciones
-- sentir: 4 apariciones
-- servir: 4 apariciones
-- traer: 4 apariciones
-- venir: 4 apariciones
-- caer: 3 apariciones
-- competir: 3 apariciones
-- componer: 3 apariciones
-- concluir: 3 apariciones
-- conseguir: 3 apariciones
-- contribuir: 3 apariciones
-- creer: 3 apariciones
-- descubrir: 3 apariciones
-- destruir: 3 apariciones
-- disponer: 3 apariciones
-- elegir: 3 apariciones
-- exponer: 3 apariciones
+- decir: 4 apariciones
+- morir: 4 apariciones
+- abrir: 3 apariciones
+- construir: 3 apariciones
+- cubrir: 3 apariciones
+- dormir: 3 apariciones
+- escribir: 3 apariciones
 - freír: 3 apariciones
-- huir: 3 apariciones
-- incluir: 3 apariciones
-- medir: 3 apariciones
-- mentir: 3 apariciones
-- perseguir: 3 apariciones
+- hacer: 3 apariciones
+- ir: 3 apariciones
+- leer: 3 apariciones
+- oír: 3 apariciones
+- pedir: 3 apariciones
+- poder: 3 apariciones
+- poner: 3 apariciones
+- romper: 3 apariciones
+- sentir: 3 apariciones
+- servir: 3 apariciones
+- traer: 3 apariciones
+- venir: 3 apariciones
+- ver: 3 apariciones
+- volver: 3 apariciones
 
 ## Recomendación inmediata
 - Definir una sola fuente canónica para no finitos irregulares y derivar el resto por import para eliminar drift.

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-12T21:10:36.634Z",
+  "generatedAt": "2026-02-12T21:54:38.597Z",
   "sources": {
     "technicalFamiliesFile": "src/lib/data/irregularFamilies.js",
     "learningFamiliesFile": "src/lib/data/learningIrregularFamilies.js",
@@ -18,249 +18,71 @@
     },
     "overlap": {
       "technicalVsLearningExamples": 94,
-      "gerundsPatternsVsBuilder": 13,
-      "participlesPatternsVsBuilder": 11,
-      "participlesPatternsVsRules": 11
+      "gerundsPatternsVsBuilder": 0,
+      "participlesPatternsVsBuilder": 0,
+      "participlesPatternsVsRules": 0
     },
     "divergences": {
-      "gerundsOnlyInPatterns": [],
-      "gerundsOnlyInBuilder": [
-        "advertir",
-        "atraer",
-        "caer",
-        "competir",
-        "concluir",
-        "conseguir",
-        "consentir",
-        "contribuir",
-        "convertir",
-        "creer",
-        "despedir",
-        "destruir",
-        "digerir",
-        "distraer",
-        "divertir",
-        "elegir",
-        "herir",
-        "hervir",
-        "huir",
-        "impedir",
-        "incluir",
-        "inferir",
-        "medir",
-        "mentir",
-        "perseguir",
-        "poseer",
-        "preferir",
-        "proveer",
-        "raer",
-        "referir",
-        "repetir",
-        "retraer",
-        "reír",
-        "seguir",
-        "sugerir",
-        "sustraer",
-        "vestir"
+      "gerundsOnlyInPatterns": [
+        "construir",
+        "decir",
+        "dormir",
+        "ir",
+        "leer",
+        "morir",
+        "oír",
+        "pedir",
+        "poder",
+        "sentir",
+        "servir",
+        "traer",
+        "venir"
       ],
+      "gerundsOnlyInBuilder": [],
       "participlesOnlyInPatterns": [
-        "freír"
+        "abrir",
+        "cubrir",
+        "decir",
+        "escribir",
+        "freír",
+        "hacer",
+        "morir",
+        "poner",
+        "resolver",
+        "romper",
+        "ver",
+        "volver"
       ],
-      "participlesOnlyInBuilder": [
-        "componer",
-        "descubrir",
-        "desenvolver",
-        "devolver",
-        "disponer",
-        "envolver",
-        "exponer",
-        "imponer",
-        "oponer",
-        "prever",
-        "proponer",
-        "revolver",
-        "suponer"
-      ],
-      "participlesOnlyInRules": [
-        "anteponer",
-        "antever",
-        "bendecir",
-        "componer",
-        "contradecir",
-        "contrahacer",
-        "deponer",
-        "describir",
-        "descubrir",
-        "desenvolver",
-        "deshacer",
-        "deshacerse",
-        "devolver",
-        "disponer",
-        "encubrir",
-        "entrever",
-        "envolver",
-        "exponer",
-        "imponer",
-        "inscribir",
-        "interponer",
-        "maldecir",
-        "oponer",
-        "posponer",
-        "predecir",
-        "predisponer",
-        "prescribir",
-        "presuponer",
-        "prever",
-        "proponer",
-        "recubrir",
-        "reescribir",
-        "rehacer",
-        "reponer",
-        "rever",
-        "revolver",
-        "satisfacer",
-        "sobreponer",
-        "suponer",
-        "suscribir",
-        "transcribir",
-        "yuxtaponer"
-      ]
+      "participlesOnlyInBuilder": [],
+      "participlesOnlyInRules": []
     },
     "duplicatedLemmasTop": [
       {
         "lemma": "decir",
-        "count": 7
+        "count": 4
       },
       {
         "lemma": "morir",
-        "count": 7
+        "count": 4
       },
       {
         "lemma": "abrir",
-        "count": 5
-      },
-      {
-        "lemma": "cubrir",
-        "count": 5
-      },
-      {
-        "lemma": "escribir",
-        "count": 5
-      },
-      {
-        "lemma": "hacer",
-        "count": 5
-      },
-      {
-        "lemma": "poner",
-        "count": 5
-      },
-      {
-        "lemma": "romper",
-        "count": 5
-      },
-      {
-        "lemma": "ver",
-        "count": 5
-      },
-      {
-        "lemma": "volver",
-        "count": 5
+        "count": 3
       },
       {
         "lemma": "construir",
-        "count": 4
+        "count": 3
+      },
+      {
+        "lemma": "cubrir",
+        "count": 3
       },
       {
         "lemma": "dormir",
-        "count": 4
-      },
-      {
-        "lemma": "ir",
-        "count": 4
-      },
-      {
-        "lemma": "leer",
-        "count": 4
-      },
-      {
-        "lemma": "oír",
-        "count": 4
-      },
-      {
-        "lemma": "pedir",
-        "count": 4
-      },
-      {
-        "lemma": "poder",
-        "count": 4
-      },
-      {
-        "lemma": "resolver",
-        "count": 4
-      },
-      {
-        "lemma": "sentir",
-        "count": 4
-      },
-      {
-        "lemma": "servir",
-        "count": 4
-      },
-      {
-        "lemma": "traer",
-        "count": 4
-      },
-      {
-        "lemma": "venir",
-        "count": 4
-      },
-      {
-        "lemma": "caer",
         "count": 3
       },
       {
-        "lemma": "competir",
-        "count": 3
-      },
-      {
-        "lemma": "componer",
-        "count": 3
-      },
-      {
-        "lemma": "concluir",
-        "count": 3
-      },
-      {
-        "lemma": "conseguir",
-        "count": 3
-      },
-      {
-        "lemma": "contribuir",
-        "count": 3
-      },
-      {
-        "lemma": "creer",
-        "count": 3
-      },
-      {
-        "lemma": "descubrir",
-        "count": 3
-      },
-      {
-        "lemma": "destruir",
-        "count": 3
-      },
-      {
-        "lemma": "disponer",
-        "count": 3
-      },
-      {
-        "lemma": "elegir",
-        "count": 3
-      },
-      {
-        "lemma": "exponer",
+        "lemma": "escribir",
         "count": 3
       },
       {
@@ -268,23 +90,59 @@
         "count": 3
       },
       {
-        "lemma": "huir",
+        "lemma": "hacer",
         "count": 3
       },
       {
-        "lemma": "incluir",
+        "lemma": "ir",
         "count": 3
       },
       {
-        "lemma": "medir",
+        "lemma": "leer",
         "count": 3
       },
       {
-        "lemma": "mentir",
+        "lemma": "oír",
         "count": 3
       },
       {
-        "lemma": "perseguir",
+        "lemma": "pedir",
+        "count": 3
+      },
+      {
+        "lemma": "poder",
+        "count": 3
+      },
+      {
+        "lemma": "poner",
+        "count": 3
+      },
+      {
+        "lemma": "romper",
+        "count": 3
+      },
+      {
+        "lemma": "sentir",
+        "count": 3
+      },
+      {
+        "lemma": "servir",
+        "count": 3
+      },
+      {
+        "lemma": "traer",
+        "count": 3
+      },
+      {
+        "lemma": "venir",
+        "count": 3
+      },
+      {
+        "lemma": "ver",
+        "count": 3
+      },
+      {
+        "lemma": "volver",
         "count": 3
       }
     ]

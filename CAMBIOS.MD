@@ -1317,3 +1317,22 @@ Tests ejecutados:
 
 ### Verificación
 - `npx vitest run src/data/verbs.subjImpf-regression.test.js` ✅
+
+## Hotfix crítico - Auditoría DB + reglas (2026-02-12)
+
+### Auditoría ejecutada
+- Se corrieron auditorías existentes (`validate-integrity`, `audit:all`, `audit:irregular-sources`, `audit:irregular-golden`) y tests core del generador/reglas.
+- Se agregó chequeo derivacional específico de `subjImpf` (desde `pretIndef` 3p) para detectar corrupción de formas.
+- Reporte: `docs/linguistic/db-rules-audit-2026-02-12.md`.
+
+### Problemas críticos encontrados y corregidos
+- `src/data/verbs.js` tenía corrupción en `subjImpf` (28 formas) para:
+- `preferir`, `resolver`, `competir`, `vestir`.
+- Además se corrigieron typos de base en pretérito de `preferir` (`prefirió/prefirieron`) y en 3ª persona de `competir` (`compitió/compitieron`) y `vestir` (`vistió/vistieron`).
+
+### Guardrails nuevos
+- Nuevo test global de integridad: `src/data/verbs.subjImpf-integrity.test.js`.
+- Este test valida para todo el dataset que `subjImpf` sea coherente con la raíz de `pretIndef` 3p (aceptando variantes `-ra`/`-se`, acento-insensitive).
+
+### Verificación
+- `npx vitest run src/data/verbs.subjImpf-regression.test.js src/data/verbs.subjImpf-integrity.test.js` ✅

@@ -292,3 +292,19 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 ### Estado
 - Hotfix aplicado y documentado.
 - Roadmap principal retoma desde **Fase 7.1**.
+
+## Slice extra - Integridad lingüística crítica (2026-02-12)
+
+### Objetivo
+- Blindar base de conjugaciones y reglas contra corrupción en `subjImpf`.
+
+### Ejecutado
+1. [x] Auditoría full de DB/reglas y reporte técnico (`docs/linguistic/db-rules-audit-2026-02-12.md`).
+2. [x] Corrección de formas corruptas en `src/data/verbs.js` para `preferir`, `resolver`, `competir`, `vestir`.
+3. [x] Corrección de typos críticos en pretérito base (`prefirió/prefirieron`, `compitió/compitieron`, `vistió/vistieron`).
+4. [x] Test de integridad global para `subjImpf` derivado de `pretIndef` 3p (`src/data/verbs.subjImpf-integrity.test.js`).
+5. [x] Verificación de regresión focalizada (tests verdes).
+
+### Estado
+- Integridad de `subjImpf` protegida con test automático en dataset actual.
+- Se puede retomar roadmap principal (Fase 7.1) con menor riesgo de regresión lingüística silenciosa.
