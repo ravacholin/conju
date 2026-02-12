@@ -3,6 +3,7 @@ import { getSRSStats } from '../../lib/progress/analytics.js'
 import { useSettings } from '../../state/settings.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
+import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'
 import SRSAnalytics from '../../components/srs/SRSAnalytics.jsx'
@@ -32,6 +33,8 @@ export default function SRSPanel({ onNavigateToDrill }) {
     statsSignature: '',
     skipNext: false
   })
+  const startReviewLockRef = useRef(false)
+  const startReviewReleaseRef = useRef(null)
 
   const loadSRSData = useCallback(async () => {
     try {
@@ -139,6 +142,10 @@ export default function SRSPanel({ onNavigateToDrill }) {
 
   const startReviewSession = (sessionType = 'all') => {
     try {
+      if (startReviewLockRef.current) {
+        return
+      }
+
       let filter
       switch (sessionType) {
         case 'urgent':
@@ -154,11 +161,16 @@ export default function SRSPanel({ onNavigateToDrill }) {
           filter = { urgency: 'all' }
       }
 
-      settings.set({ 
+      startReviewLockRef.current = true
+      if (startReviewReleaseRef.current) {
+        clearTimeout(startReviewReleaseRef.current)
+      }
+
+      settings.set(buildDrillSettingsUpdate({}, {
         practiceMode: 'review',
         reviewSessionType: sessionType,
         reviewSessionFilter: filter
-      })
+      }))
       
       if (onNavigateToDrill) {
         onNavigateToDrill()
@@ -167,10 +179,22 @@ export default function SRSPanel({ onNavigateToDrill }) {
           detail: { focus: 'review', sessionType, filter } 
         }))
       }
+
+      startReviewReleaseRef.current = setTimeout(() => {
+        startReviewLockRef.current = false
+        startReviewReleaseRef.current = null
+      }, 250)
     } catch (error) {
       logger.error('Error starting review session:', error)
     }
   }
+
+  useEffect(() => () => {
+    if (startReviewReleaseRef.current) {
+      clearTimeout(startReviewReleaseRef.current)
+      startReviewReleaseRef.current = null
+    }
+  }, [])
 
   const getMasteryColor = (score) => {
     if (score >= 80) return 'mastery-high'
@@ -414,13 +438,11 @@ export default function SRSPanel({ onNavigateToDrill }) {
                   }
 
                   return (
-                    <div key={index} className={`srs-item ${getUrgencyColor(item.urgency)}`}>
+                    <div key={item.itemKey || `${item.mood}|${item.tense}|${item.person}|${index}`} className={`srs-item ${getUrgencyColor(item.urgency)}`}>
                       <div className="srs-item-main">
                         <div className="srs-item-name">{item.formattedName}</div>
                         <div className="srs-item-person">
-                          {item.person === '1s' ? 'Primera persona singular' :
-                           item.person === '2s_tu' ? 'Segunda persona singular (tú)' :
-                           item.person === '3s' ? 'Tercera persona singular' : item.person}
+                          {item.personLabel || item.person}
                         </div>
                       </div>
                       <div className="srs-item-stats">

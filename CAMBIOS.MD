@@ -422,6 +422,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P7
 - P7 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P8 - slice 1: robustez operativa en flujo SRS)
+- `useSRSQueue` ahora enriquece cada item con `itemKey` estable y ordena de forma determinista:
+- urgencia desc, mastery asc, nextDue asc, `itemKey` asc.
+- Se migro el manejo de errores de `console.error` a logger estructurado del proyecto.
+- `SRSPanel` usa `itemKey` estable (con fallback) para evitar keys por indice.
+- `SRSPanel` reutiliza `personLabel` proveniente del hook para evitar duplicacion de mapeo de persona en UI.
+- `SRSPanel` incorpora guard anti doble-disparo al iniciar repaso (cooldown corto + cleanup en unmount).
+- `SRSPanel` ahora normaliza configuracion de review con `buildDrillSettingsUpdate`.
+- Tests agregados/actualizados:
+- `src/hooks/useSRSQueue.test.js`
+- `src/features/progress/SRSPanel.test.jsx`
+- `src/features/progress/drillNavigationConfig.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

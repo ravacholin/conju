@@ -1,16 +1,18 @@
 import React from 'react'
-import { render, waitFor } from '@testing-library/react'
-import { vi } from 'vitest'
+import { fireEvent, render, waitFor } from '@testing-library/react'
+import { afterEach, vi } from 'vitest'
 
-const { reloadMock, getSRSStatsMock, getCurrentUserIdMock } = vi.hoisted(() => ({
+const { reloadMock, getSRSStatsMock, getCurrentUserIdMock, useSRSQueueMock, setSettingsMock } = vi.hoisted(() => ({
   reloadMock: vi.fn(),
   getSRSStatsMock: vi.fn(),
-  getCurrentUserIdMock: vi.fn()
+  getCurrentUserIdMock: vi.fn(),
+  useSRSQueueMock: vi.fn(),
+  setSettingsMock: vi.fn()
 }))
 
 vi.mock('../../state/settings.js', () => ({
   useSettings: () => ({
-    set: vi.fn()
+    set: setSettingsMock
   })
 }))
 
@@ -37,14 +39,7 @@ vi.mock('../../components/notifications/NotificationSettings.jsx', () => ({
 }))
 
 vi.mock('../../hooks/useSRSQueue.js', () => ({
-  useSRSQueue: () => ({
-    queue: [],
-    loading: false,
-    error: '',
-    stats: { total: 0, urgent: 0, overdue: 0, scheduled: 0 },
-    lastUpdated: null,
-    reload: reloadMock
-  })
+  useSRSQueue: (...args) => useSRSQueueMock(...args)
 }))
 
 vi.mock('../../lib/progress/analytics.js', () => ({
@@ -62,8 +57,22 @@ describe('SRSPanel', () => {
     reloadMock.mockClear()
     getSRSStatsMock.mockReset()
     getCurrentUserIdMock.mockReset()
+    useSRSQueueMock.mockReset()
+    setSettingsMock.mockReset()
     getCurrentUserIdMock.mockReturnValue('user-123')
     getSRSStatsMock.mockResolvedValue({ dueNow: 3, dueToday: 7 })
+    useSRSQueueMock.mockReturnValue({
+      queue: [],
+      loading: false,
+      error: '',
+      stats: { total: 0, urgent: 0, overdue: 0, scheduled: 0 },
+      lastUpdated: null,
+      reload: reloadMock
+    })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('recarga la cola y las estadísticas cuando se emite progress:srs-updated', async () => {
@@ -80,5 +89,57 @@ describe('SRSPanel', () => {
       expect(getSRSStatsMock).toHaveBeenCalledTimes(2)
     })
   })
-})
 
+  it('renderiza personLabel provisto por la cola cuando se expanden detalles', async () => {
+    useSRSQueueMock.mockReturnValue({
+      queue: [{
+        mood: 'indicative',
+        tense: 'pres',
+        person: '1s',
+        personLabel: '1ª persona singular',
+        formattedName: 'indicative-pres',
+        urgency: 2,
+        masteryScore: 55,
+        nextDue: new Date(Date.now() + 3600000).toISOString(),
+        itemKey: 'indicative|pres|1s|x'
+      }],
+      loading: false,
+      error: '',
+      stats: { total: 1, urgent: 1, overdue: 0, scheduled: 1 },
+      lastUpdated: new Date().toISOString(),
+      reload: reloadMock
+    })
+
+    const { getByText } = render(<SRSPanel />)
+    await waitFor(() => {
+      expect(getSRSStatsMock).toHaveBeenCalledTimes(1)
+    })
+    fireEvent.click(getByText('Detalles'))
+    await waitFor(() => {
+      expect(getByText('1ª persona singular')).toBeInTheDocument()
+    })
+  })
+
+  it('evita doble disparo rapido al iniciar repaso', async () => {
+    const onNavigateToDrill = vi.fn()
+    const { getByText } = render(<SRSPanel onNavigateToDrill={onNavigateToDrill} />)
+
+    await waitFor(() => {
+      expect(getSRSStatsMock).toHaveBeenCalledTimes(1)
+    })
+
+    const action = getByText('Repaso rápido (5 min)')
+    vi.useFakeTimers()
+    fireEvent.click(action)
+    fireEvent.click(action)
+
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+    expect(setSettingsMock).toHaveBeenCalledTimes(1)
+
+    vi.advanceTimersByTime(300)
+    fireEvent.click(action)
+
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(2)
+    expect(setSettingsMock).toHaveBeenCalledTimes(2)
+  })
+})

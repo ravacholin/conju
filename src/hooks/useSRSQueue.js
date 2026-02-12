@@ -3,6 +3,9 @@ import { getDueSchedules } from '../lib/progress/database.js'
 import { getCurrentUserId } from '../lib/progress/userManager/index.js'
 import { formatMoodTense } from '../lib/utils/verbLabels.js'
 import { getMasterySnapshotForUser } from '../lib/progress/mastery.js'
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('hooks:useSRSQueue')
 
 function computeUrgency(nextDue, now) {
   const diffHours = (new Date(nextDue) - now) / (1000 * 60 * 60)
@@ -55,8 +58,10 @@ export function useSRSQueue() {
       const enriched = (dueSchedules || []).map((schedule) => {
         const key = `${schedule.mood}|${schedule.tense}|${schedule.person}`
         const mastery = masteryMap.get(key) || { score: 0 }
+        const itemKey = `${schedule.mood}|${schedule.tense}|${schedule.person}|${schedule.nextDue}`
         return {
           ...schedule,
+          itemKey,
           masteryScore: mastery.score,
           formattedName: formatMoodTense(schedule.mood, schedule.tense),
           personLabel: getPersonLabel(schedule.person),
@@ -64,13 +69,16 @@ export function useSRSQueue() {
         }
       }).sort((a, b) => {
         if (a.urgency !== b.urgency) return b.urgency - a.urgency
-        return a.masteryScore - b.masteryScore
+        if (a.masteryScore !== b.masteryScore) return a.masteryScore - b.masteryScore
+        const dueDiff = new Date(a.nextDue).getTime() - new Date(b.nextDue).getTime()
+        if (dueDiff !== 0) return dueDiff
+        return a.itemKey.localeCompare(b.itemKey)
       })
 
       setQueue(enriched)
       setLastUpdated(now)
     } catch (err) {
-      console.error('Failed to load SRS queue:', err)
+      logger.error('Failed to load SRS queue:', err)
       setError(err.message || 'No se pudo cargar la cola de repaso')
     } finally {
       setLoading(false)
