@@ -102,6 +102,23 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test agregado:
 - `src/lib/routing/routeContract.test.js`
 
+## Cambios realizados (P0 - slice 7: migracion de rutas criticas + regresion URL)
+- Se migraron puntos criticos de navegacion a factories del contrato (`ROUTES`):
+- `src/components/AppRouter.jsx`
+- `src/hooks/useOnboardingFlow.js`
+- `src/lib/routing/Router.js`
+- Rutas críticas cubiertas explícitamente con contrato único:
+- `home` (`onboarding/2`)
+- `onboarding` (pasos)
+- `drill`
+- `progress`
+- Se reforzo `ensureHistoryState` para canonizar URL cuando hay path o query legado (ej: `?mode=progress`).
+- Se amplio E2E en navegacion critica:
+- `tests/e2e/navigation-critical.e2e.js`
+- escenario nuevo de normalizacion de URLs legacy/no canonicas y validacion de estado de ruta.
+- Resultado validado:
+- `npx playwright test tests/e2e/navigation-critical.e2e.js --project=chromium` en verde con 4 escenarios.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

@@ -57,6 +57,7 @@ const TimelineMode = lazy(lazyWithRetry(
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import router from '../lib/routing/Router.js'
+import { ROUTES } from '../lib/routing/routeContract.js'
 
 // Centralized logger for development-only debug output
 const logger = {
@@ -186,32 +187,32 @@ function AppRouter() {
   }, [handleRouteChange])
 
   const handleStartPractice = () => {
-    router.navigate({ mode: 'drill' })
+    router.navigate(ROUTES.drill())
   }
 
   const handleStartStoryMode = () => {
-    router.navigate({ mode: 'story' })
+    router.navigate(ROUTES.story())
   }
 
   const handleStartTimelineMode = () => {
-    router.navigate({ mode: 'timeline' })
+    router.navigate(ROUTES.timeline())
   }
 
   const handleHome = () => {
-    router.navigate({ mode: 'onboarding', step: 2 })
+    router.navigate(ROUTES.homeMenu())
   }
 
   const handleGoToProgress = () => {
-    router.navigate({ mode: 'progress' })
+    router.navigate(ROUTES.progress())
   }
 
   const handleStartLearningNewTense = () => {
-    router.navigate({ mode: 'learning' })
+    router.navigate(ROUTES.learning())
   };
 
   // From Progress page: go to onboarding menu step 2 (no dialects)
   const handleProgressMenu = () => {
-    router.navigate({ mode: 'onboarding', step: 2 })
+    router.navigate(ROUTES.homeMenu())
   }
 
   // Generate next item when entering drill mode OR when settings change while in drill mode
@@ -603,7 +604,7 @@ function AppRouter() {
             onNavigateToDrill={() => {
               // Navigate first, let the AppRouter's useEffect handle drill regeneration
               // This ensures settings are fully applied before regeneration
-              router.navigate({ mode: 'drill' })
+              router.navigate(ROUTES.drill())
             }}
             onNavigateToStory={handleStartStoryMode}
             onNavigateToTimeline={handleStartTimelineMode}

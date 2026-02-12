@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   buildRouteURL,
   normalizeRoute,
-  parseRouteFromURL
+  parseRouteFromURL,
+  ROUTES
 } from './routeContract.js'
 
 describe('routeContract', () => {
@@ -33,5 +34,11 @@ describe('routeContract', () => {
   it('builds clean url with step only for onboarding', () => {
     expect(buildRouteURL({ mode: 'onboarding', step: 2 })).toBe('/onboarding/2')
     expect(buildRouteURL({ mode: 'progress', step: 7 })).toBe('/progress')
+  })
+
+  it('provides canonical route factories for critical routes', () => {
+    expect(ROUTES.homeMenu()).toMatchObject({ mode: 'onboarding', step: 2 })
+    expect(ROUTES.drill()).toMatchObject({ mode: 'drill', step: null })
+    expect(ROUTES.progress()).toMatchObject({ mode: 'progress', step: null })
   })
 })

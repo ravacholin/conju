@@ -4,6 +4,7 @@
  */
 import {
   DEFAULT_ROUTE,
+  ROUTES,
   buildRouteURL,
   normalizeRoute,
   parseRouteFromURL
@@ -153,7 +154,12 @@ class Router {
   ensureHistoryState() {
     try {
       const state = window.history.state || {}
-      if (state && state.appNav) {
+      const expectedUrl = this.buildURL(this.currentRoute)
+      const currentPath = window.location.pathname || '/'
+      const hasLegacySearch = Boolean(window.location.search)
+      const needsCanonicalUrl = currentPath !== expectedUrl || hasLegacySearch
+
+      if (state && state.appNav && !needsCanonicalUrl) {
         return
       }
 
@@ -162,8 +168,7 @@ class Router {
         ...this.currentRoute
       }
 
-      const url = this.buildURL(this.currentRoute)
-      window.history.replaceState(historyState, '', url)
+      window.history.replaceState(historyState, '', expectedUrl)
     } catch (error) {
       debug('warn', 'Error ensuring history state:', error)
     }
@@ -222,12 +227,12 @@ class Router {
         window.history.back()
       } else {
         // Fallback to home
-        this.navigate({ mode: 'onboarding', step: 2 })
+        this.navigate(ROUTES.homeMenu())
       }
     } catch (error) {
       console.error('Error navigating back:', error)
       // Fallback navigation
-      this.navigate({ mode: 'onboarding', step: 2 })
+      this.navigate(ROUTES.homeMenu())
     }
   }
 

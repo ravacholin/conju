@@ -5,6 +5,7 @@ import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAll
 import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
 import { LEVELS } from '../lib/data/levels.js'
 import router from '../lib/routing/Router.js'
+import { ROUTES } from '../lib/routing/routeContract.js'
 // import gates from '../data/curriculum.json'
 
 // Helper function to get allowed lemmas from level configuration
@@ -113,7 +114,7 @@ export function useOnboardingFlow() {
   const navigateToStep = useCallback((step, options = {}) => {
     const safeStep = typeof step === 'number' && step >= 1 ? step : 1
     try {
-      router.navigate({ mode: 'onboarding', step: safeStep }, options)
+      router.navigate(ROUTES.onboarding(safeStep), options)
     } catch (error) {
       if (import.meta.env.DEV) {
         console.warn('Router navigation failed, ignoring.', error)

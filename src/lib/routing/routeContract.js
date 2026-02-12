@@ -16,6 +16,16 @@ export const DEFAULT_ROUTE = Object.freeze({
   step: null
 })
 
+export const ROUTES = Object.freeze({
+  onboarding: (step = null) => normalizeRoute({ mode: 'onboarding', step }),
+  homeMenu: () => normalizeRoute({ mode: 'onboarding', step: 2 }),
+  drill: () => normalizeRoute({ mode: 'drill' }),
+  learning: () => normalizeRoute({ mode: 'learning' }),
+  progress: () => normalizeRoute({ mode: 'progress' }),
+  story: () => normalizeRoute({ mode: 'story' }),
+  timeline: () => normalizeRoute({ mode: 'timeline' })
+})
+
 const routeSchema = z.object({
   mode: z.enum(ROUTE_MODES),
   step: z.number().int().min(ONBOARDING_STEP_MIN).max(ONBOARDING_STEP_MAX).nullable().optional(),

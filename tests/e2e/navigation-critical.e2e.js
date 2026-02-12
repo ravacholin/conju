@@ -95,4 +95,16 @@ test.describe('Critical navigation flows', () => {
     await expect(page).toHaveURL(/\/progress(?:$|\?)/)
     await expect(page.getByText(/Progreso y Analíticas/i)).toBeVisible()
   })
+
+  test('normalizes legacy and non-canonical urls', async ({ page }) => {
+    await page.goto('/?mode=progress')
+    await expect(page).toHaveURL(/\/progress$/)
+
+    await page.goto('/drill/3')
+    await expect(page.locator('input#conjugation-input')).toBeVisible()
+    const state = await page.evaluate(() => window.history.state)
+    expect(state?.appNav).toBe(true)
+    expect(state?.mode).toBe('drill')
+    expect(state?.step).toBeNull()
+  })
 })

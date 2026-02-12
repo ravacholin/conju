@@ -198,5 +198,5 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 
 ## Siguiente backlog activo (Fase 1.2)
 1. [x] Definir ADR de navegacion y contrato canonico de ruta.
-2. [ ] Migrar rutas criticas para usar exclusivamente el contrato (`home`, `onboarding`, `drill`, `progress`).
-3. [ ] Agregar cobertura E2E extra para regresiones de URL canónica.
+2. [x] Migrar rutas criticas para usar exclusivamente el contrato (`home`, `onboarding`, `drill`, `progress`).
+3. [x] Agregar cobertura E2E extra para regresiones de URL canónica.
