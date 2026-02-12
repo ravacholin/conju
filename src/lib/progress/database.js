@@ -2289,12 +2289,37 @@ export async function revertUserIdMigration(newUserId, oldUserId) {
 export async function saveUserSettings(userId, settings, options = {}) {
   try {
     const { alreadySynced = false } = options;
+    const parseSettingsLastUpdated = (recordLike) => {
+      const rawValue = recordLike?.settings?.lastUpdated ?? recordLike?.lastUpdated ?? null;
+      if (typeof rawValue === "number" && Number.isFinite(rawValue)) {
+        return rawValue;
+      }
+      if (typeof rawValue === "string" && rawValue.length > 0) {
+        const parsed = Date.parse(rawValue);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      return 0;
+    };
 
     // Use consistent ID per user (no timestamp) to UPDATE existing record instead of creating new ones
     const settingsId = `settings-${userId}`;
 
     // Get existing record to preserve createdAt and check for changes
     const existing = await getFromDB(STORAGE_CONFIG.STORES.USER_SETTINGS, settingsId);
+    const incomingUpdatedAt = parseSettingsLastUpdated({ settings });
+    const existingUpdatedAt = parseSettingsLastUpdated(existing);
+
+    // Guard against out-of-order writes: never let an older snapshot overwrite a newer one.
+    if (existing && incomingUpdatedAt > 0 && existingUpdatedAt > 0 && incomingUpdatedAt < existingUpdatedAt) {
+      if (isDev) {
+        logger.debug("saveUserSettings", "Ignoring stale settings snapshot", {
+          userId,
+          incomingUpdatedAt,
+          existingUpdatedAt,
+        });
+      }
+      return existing;
+    }
 
     // Deep equality check to prevent sync loops
     // If settings are identical to existing record, preserve the current synced status

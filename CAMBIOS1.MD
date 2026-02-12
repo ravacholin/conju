@@ -213,5 +213,5 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 
 ## Siguiente backlog activo (Fase 2.3)
 1. [x] Unificar debounce/flush de persistencia de settings con cola serializada.
-2. [ ] Auditar y reducir posibles write races remanentes entre stores.
-3. [ ] Documentar invariantes de orden de escritura para sync.
+2. [x] Auditar y reducir posibles write races remanentes entre stores.
+3. [x] Documentar invariantes de orden de escritura para sync.

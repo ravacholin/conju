@@ -203,6 +203,21 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/state/settingsPersistence.test.js`
 - cubre debounce, flush inmediato y serializacion con request en vuelo.
 
+## Cambios realizados (P0 - slice 13: guard anti-stale en save de settings + invariantes)
+- Se agrego protección contra escrituras fuera de orden en:
+- `src/lib/progress/database.js` (`saveUserSettings`)
+- Regla:
+- si llega un snapshot con `lastUpdated` más viejo que el ya persistido, se ignora y se preserva el registro más nuevo.
+- Esto reduce write-races entre debounce local, flush y merges/sync.
+- Test agregado:
+- `src/lib/progress/database.userSettingsRace.test.js`
+- casos cubiertos:
+- snapshot viejo no sobreescribe snapshot nuevo.
+- snapshot nuevo sí sobreescribe correctamente.
+- Se documentaron invariantes operativas de escritura/orden:
+- `docs/state/settings-write-invariants.md`
+- incluyendo pipeline único (`schedule` + `flush`), serialización, anti-stale y orden de sync.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.
