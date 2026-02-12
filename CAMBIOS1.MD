@@ -200,3 +200,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [x] Definir ADR de navegacion y contrato canonico de ruta.
 2. [x] Migrar rutas criticas para usar exclusivamente el contrato (`home`, `onboarding`, `drill`, `progress`).
 3. [x] Agregar cobertura E2E extra para regresiones de URL canónica.
+
+## Siguiente backlog activo (Fase 2.1)
+1. [x] Bloquear `set` de keys desconocidas en `useSettings` en runtime.
+2. [ ] Auditar escrituras restantes a `useSettings` y mover estado efimero pendiente a store de sesion.
+3. [ ] Agregar checklist de claves de estado persistente vs efimero.

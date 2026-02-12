@@ -114,6 +114,32 @@ const createDefaultSettings = () => ({
   currentBlock: null
 })
 
+const SETTINGS_STATE_KEYS = Object.freeze(Object.keys(createDefaultSettings()))
+const SETTINGS_STATE_KEYS_SET = new Set(SETTINGS_STATE_KEYS)
+
+const sanitizeSettingsUpdate = (update, source = 'unknown') => {
+  if (!update || typeof update !== 'object') {
+    return {}
+  }
+
+  const sanitized = {}
+  const unknownKeys = []
+
+  Object.keys(update).forEach((key) => {
+    if (SETTINGS_STATE_KEYS_SET.has(key)) {
+      sanitized[key] = update[key]
+    } else if (key !== 'lastUpdated') {
+      unknownKeys.push(key)
+    }
+  })
+
+  if (unknownKeys.length > 0 && import.meta.env?.DEV) {
+    console.warn(`useSettings.set ignored unknown keys (${source})`, unknownKeys)
+  }
+
+  return sanitized
+}
+
 const PERSISTED_SETTINGS_KEYS = [
   'lastUpdated',
   'level',
@@ -264,11 +290,12 @@ const useSettings = create(
       const set = (update) => {
         if (typeof update === 'function') {
           originalSet((state) => {
-            const newState = update(state)
-            return { ...newState, lastUpdated: Date.now() }
+            const partialState = sanitizeSettingsUpdate(update(state), 'fn')
+            return { ...partialState, lastUpdated: Date.now() }
           })
         } else {
-          originalSet({ ...update, lastUpdated: Date.now() })
+          const partialState = sanitizeSettingsUpdate(update, 'object')
+          originalSet({ ...partialState, lastUpdated: Date.now() })
         }
       }
 
@@ -276,7 +303,7 @@ const useSettings = create(
         ...defaultSettings,
 
         // Métodos para actualizar configuración
-        set: (newSettings) => set((state) => ({ ...state, ...newSettings, lastUpdated: Date.now() })),
+        set: (newSettings) => set(newSettings),
         setLevel: (level) => set({ level, lastUpdated: Date.now() }),
 
         // User level system methods
@@ -439,4 +466,9 @@ export async function flushSettings() {
   }
 }
 
-export { useSettings, LEVELS } 
+export function resetSettingsForTests() {
+  clearTimeout(persistTimeout)
+  useSettings.setState(createDefaultSettings())
+}
+
+export { useSettings, LEVELS, SETTINGS_STATE_KEYS } 

@@ -119,6 +119,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Resultado validado:
 - `npx playwright test tests/e2e/navigation-critical.e2e.js --project=chromium` en verde con 4 escenarios.
 
+## Cambios realizados (P0 - slice 8: guard runtime para keys desconocidas en settings)
+- Se agrego hardening en `useSettings` para rechazar claves desconocidas al hacer `set(...)`:
+- `src/state/settings.js`
+- Se incorporo sanitizacion de updates:
+- solo se aplican claves definidas en el schema de estado base,
+- claves desconocidas se ignoran (con warning en DEV).
+- Se simplifico `set` público para aplicar solo patch parcial (evita merges de estado completo innecesarios).
+- Se exporto helper de test para resetear estado de settings:
+- `resetSettingsForTests()`.
+- Tests nuevos:
+- `src/state/settings.test.js`
+- cubren bloqueo de claves desconocidas y preservación de métodos del store.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.
