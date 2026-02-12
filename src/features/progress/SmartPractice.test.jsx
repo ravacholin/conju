@@ -1,10 +1,12 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, it, beforeEach, afterEach } from 'vitest'
+
+const setSettingsMock = vi.fn()
 
 vi.mock('../../state/settings.js', () => ({
   useSettings: () => ({
-    set: vi.fn(),
+    set: setSettingsMock,
   }),
 }))
 
@@ -26,6 +28,7 @@ import SmartPractice from './SmartPractice.jsx'
 
 describe('SmartPractice recommendations', () => {
   beforeEach(() => {
+    setSettingsMock.mockReset()
     vi.spyOn(Date, 'now').mockReturnValue(new Date('2024-01-15T00:00:00Z').getTime())
   })
 
@@ -70,5 +73,23 @@ describe('SmartPractice recommendations', () => {
     expect(screen.getByText(/Repasar indicative-pres/)).toBeInTheDocument()
     expect(screen.getByText(/Aprender indicative-pretIndef/)).toBeInTheDocument()
     expect(screen.queryByText(/nonfinite-ger/)).not.toBeInTheDocument()
+  })
+
+  it('supports keyboard activation for recommendation cards', async () => {
+    const onNavigateToDrill = vi.fn()
+
+    render(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalMastery: 0.2 }}
+        onNavigateToDrill={onNavigateToDrill}
+      />
+    )
+
+    const card = await screen.findByRole('button', { name: /Comenzar a practicar/i })
+    fireEvent.keyDown(card, { key: 'Enter' })
+
+    expect(setSettingsMock).toHaveBeenCalledWith({ practiceMode: 'mixed' })
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
   })
 })

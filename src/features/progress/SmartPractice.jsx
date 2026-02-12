@@ -316,6 +316,14 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     onNavigateToDrill()
   }
 
+  const handleRecommendationKeyDown = (event, rec) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+    event.preventDefault()
+    handleRecommendationClick(rec)
+  }
+
   // Get error insights if available
   const errorInsights = useMemo(() => {
     // For now, return null since we're streamlining the interface
@@ -354,6 +362,10 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
             key={index}
             className={`recommendation-card priority-${rec.priority} ${rec.mlPowered ? 'ml-powered' : ''}`}
             onClick={() => handleRecommendationClick(rec)}
+            onKeyDown={(event) => handleRecommendationKeyDown(event, rec)}
+            role="button"
+            tabIndex={0}
+            aria-label={`${rec.title}. ${rec.description}`}
           >
             <div className="rec-header">
               <img src={rec.icon} alt={rec.title} className="rec-icon" />
@@ -410,9 +422,9 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
                   {rec.planProgress} • {rec.estimatedDuration}
                 </div>
               )}
-              <button className="rec-action">
+              <span className="rec-action" aria-hidden="true">
                 {rec.action} →
-              </button>
+              </span>
             </div>
           </div>
         ))}

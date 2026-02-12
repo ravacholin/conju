@@ -267,6 +267,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P2
 - P2 finalizado (slices 1 a 8 completos y documentados).
 
+## Cambios realizados (P3 - slice 1: accesibilidad en tarjetas de practica inteligente)
+- Se mejoro `SmartPractice` para navegacion por teclado real en recomendaciones:
+- cada tarjeta ahora expone `role="button"` + `tabIndex=0` + activacion con `Enter`/`Space`.
+- Se elimino el `button` anidado visual (ahora `span`) para evitar semantica interactiva duplicada.
+- Resultado: recomendaciones accionables tanto por mouse como por teclado, con menor friccion de accesibilidad.
+- Tests agregados/actualizados:
+- `src/features/progress/SmartPractice.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
