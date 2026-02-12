@@ -176,6 +176,10 @@ jobs:
           npm run perf:generator:check || echo "Generator benchmark regression detected (non-blocking)"
         continue-on-error: true
 
+      - name: Linguistic golden report
+        run: IRREGULAR_GOLDEN_STRICT=${{ vars.IRREGULAR_GOLDEN_STRICT || '0' }} npm run audit:irregular-golden
+        continue-on-error: true
+
       - name: Bundle analysis
         run: |
           # Generate bundle analysis using built-in Vite tools
@@ -195,6 +199,8 @@ jobs:
             docs/performance/generator-benchmark.json
             docs/performance/generator-benchmark.md
             docs/performance/generator-benchmark-check.md
+            docs/linguistic/irregular-golden-report.json
+            docs/linguistic/irregular-golden-report.md
 
 # Status Check Summary
   status-check:
@@ -222,6 +228,12 @@ jobs:
           # Performance test failure is not critical for overall success
           if [[ "${{ needs.performance-test.result }}" == "failure" ]]; then
             echo "⚠️ Performance tests failed but overall pipeline continues"
+          fi
+
+          # Optional strict linguistic gate (gradual activation via repo variable)
+          if [[ "${{ vars.IRREGULAR_GOLDEN_STRICT }}" == "1" && "${{ needs.performance-test.result }}" == "failure" ]]; then
+            echo "❌ IRREGULAR_GOLDEN_STRICT=1 and performance/linguistic checks failed"
+            exit 1
           fi
 
           echo "✅ All quality gates passed!"

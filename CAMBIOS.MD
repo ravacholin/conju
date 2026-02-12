@@ -894,6 +894,64 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P15
 - P15 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P16 - slice 1: fixtures estables para irregularidades top y edge cases)
+- Se incorporaron fixtures estables para validacion linguistica de irregularidades en:
+- `src/lib/data/fixtures/irregularGoldenFixtures.js`
+- Cobertura inicial incluida:
+- no finitos irregulares (gerundio + participio) para verbos top.
+- preteritos fuertes/supletivos en `la_general` para verbos criticos.
+- Se agrego test de estructura/consistencia de fixtures:
+- `src/lib/data/fixtures/irregularGoldenFixtures.test.js`
+
+## Cambios realizados (P16 - slice 2: golden tests de no-finitos y preteritos fuertes)
+- Se agregaron golden tests de regresion basados en fixtures:
+- `src/lib/core/irregularGolden.nonfinite.test.js`
+- `src/lib/core/irregularGolden.preterite.test.js`
+- Los tests verifican:
+- match exacto de gerundio/participio esperado.
+- match de familias esperadas para preteritos fuertes.
+- match de formas `pretIndef` (`1s`, `3s`, `3p`) contra dataset real de `verbDataService`.
+- Tambien se reforzaron tests de migracion inicial canonical:
+- `src/lib/core/nonfiniteBuilder.test.js`
+- `src/lib/core/conjugationRules.nonfinite.test.js`
+
+## Cambios realizados (P16 - slice 3: comparador before/after para regresion linguistica)
+- Se agrego comparador automatizado de fixtures vs salida actual:
+- `scripts/compareIrregularGolden.mjs`
+- Nuevo comando:
+- `npm run audit:irregular-golden`
+- El comparador genera reporte versionable en:
+- `docs/linguistic/irregular-golden-report.json`
+- `docs/linguistic/irregular-golden-report.md`
+- Baseline actual: `Checks 44`, `Mismatches 0`.
+
+## Estado P16
+- P16 finalizado (slices 1 a 3 completos y documentados).
+
+## Cambios realizados (P17 - slice 1: reporte linguistico publicado en CI)
+- Se integro publicacion del reporte de regresion linguistica en CI:
+- `/.github/workflows/ci.yml` ejecuta `npm run audit:irregular-golden`.
+- Se suben artefactos del reporte:
+- `docs/linguistic/irregular-golden-report.json`
+- `docs/linguistic/irregular-golden-report.md`
+
+## Cambios realizados (P17 - slice 2: criterio de severidad para mismatches linguísticos)
+- Se extendio el comparador `scripts/compareIrregularGolden.mjs` con severidad por mismatch:
+- `critical`: faltante de forma o valor incorrecto en golden preterite.
+- `high`: mismatch en gerundio/participio de fixtures.
+- `medium`: desvio de familia esperada.
+- El reporte ahora incluye `severitySummary` (`critical/high/medium`).
+
+## Cambios realizados (P17 - slice 3: modo estricto opcional para gate gradual)
+- Se habilito modo estricto por entorno en el comparador:
+- `IRREGULAR_GOLDEN_STRICT=1`
+- CI ahora lo consume via variable de repositorio:
+- `vars.IRREGULAR_GOLDEN_STRICT` (default `0`).
+- En `status-check`, si `IRREGULAR_GOLDEN_STRICT=1` y falla el job de performance/linguistic checks, el pipeline pasa a fallar.
+
+## Estado P17
+- P17 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

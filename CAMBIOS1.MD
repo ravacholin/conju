@@ -237,6 +237,16 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Migrar un primer subconjunto (top verbos/familias) a la fuente canonical con tests de no regresion.
 
 ## Siguiente backlog activo (Fase 4.2)
-1. [ ] Definir fixtures estables por verbos top y casos limite.
-2. [ ] Crear golden tests para no-finitos irregulares y preteritos fuertes.
-3. [ ] Integrar comparador before/after para detectar regresion linguistica.
+1. [x] Definir fixtures estables por verbos top y casos limite.
+2. [x] Crear golden tests para no-finitos irregulares y preteritos fuertes.
+3. [x] Integrar comparador before/after para detectar regresion linguistica.
+
+## Siguiente backlog activo (Fase 4.3)
+1. [x] Publicar reporte de inconsistencias linguisticas como artefacto en CI.
+2. [x] Definir criterio de severidad (critico/alto/medio) para mismatches linguísticos.
+3. [x] Activar modo estricto opcional (`IRREGULAR_GOLDEN_STRICT=1`) en pipeline para gate gradual.
+
+## Siguiente backlog activo (Fase 5.1)
+1. [ ] Reducir bloques de bajo impacto en primera vista del dashboard.
+2. [ ] Mantener CTA accionable por bloque principal visible.
+3. [ ] Medir impacto en tiempo de render inicial del dashboard.
