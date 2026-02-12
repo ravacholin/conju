@@ -177,6 +177,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests de migración agregados:
 - `src/state/settings.migration.test.js`
 
+## Cambios realizados (P0 - slice 11: snapshots historicos y migracion tolerante)
+- Se reforzó sanitización de snapshots persistidos para evitar pérdida total de configuración válida si una sola key viene corrupta.
+- Cambio clave en `src/state/settings.js`:
+- validación por campo (key-by-key) en lugar de invalidar snapshot completo por un error puntual.
+- Se agregaron casos de regresión con snapshots históricos representativos:
+- `src/state/settings.migration.test.js`
+- Casos cubiertos:
+- preservación de campos válidos cuando otro campo viene malformado.
+- carga de snapshot tipo v1 con normalizaciones esperadas sin perder config útil.
+- remoción de claves legacy efímeras de drill en migración.
+- Con esto, la apertura de snapshots viejos ahora mantiene configuración válida en lugar de resetear a defaults por un único campo inválido.
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

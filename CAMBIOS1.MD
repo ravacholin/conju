@@ -208,5 +208,5 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 
 ## Siguiente backlog activo (Fase 2.2)
 1. [x] Formalizar pipeline de migraciones por version en `useSettings`.
-2. [ ] Agregar casos de migracion para snapshots historicos reales.
-3. [ ] Verificar apertura de snapshots viejos sin perdida de config valida.
+2. [x] Agregar casos de migracion para snapshots historicos reales.
+3. [x] Verificar apertura de snapshots viejos sin perdida de config valida.

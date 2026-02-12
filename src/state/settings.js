@@ -250,18 +250,29 @@ const persistedSettingsSchema = z.object({
 
 const sanitizePersistedSettings = (persistedState) => {
   const defaults = pickPersistedSettings(createDefaultSettings())
-  const parsed = persistedSettingsSchema.safeParse(persistedState || {})
+  const source = (persistedState && typeof persistedState === 'object') ? persistedState : {}
+  const sanitized = { ...defaults }
+  const fieldSchemas = persistedSettingsSchema.shape
 
-  if (!parsed.success) {
-    console.warn('Settings hydration failed, using defaults', parsed.error)
-    return defaults
-  }
+  PERSISTED_SETTINGS_KEYS.forEach((key) => {
+    if (!(key in source)) return
 
-  return {
-    ...defaults,
-    ...parsed.data,
-    lastUpdated: parsed.data.lastUpdated ?? defaults.lastUpdated
-  }
+    const schema = fieldSchemas[key]
+    if (!schema) return
+
+    const parsed = schema.safeParse(source[key])
+    if (parsed.success) {
+      sanitized[key] = parsed.data
+      return
+    }
+
+    if (import.meta.env?.DEV) {
+      console.warn(`Settings hydration ignored invalid key: ${key}`, parsed.error)
+    }
+  })
+
+  sanitized.lastUpdated = sanitized.lastUpdated ?? defaults.lastUpdated
+  return sanitized
 }
 
 const migrateLegacyPersistedState = (persistedState, fromVersion = 0) => {
