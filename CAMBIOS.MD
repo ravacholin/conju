@@ -87,6 +87,21 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - validacion de payload consistente,
 - migracion alineada con catalogo `docs/events/progress-events.md`.
 
+## Cambios realizados (P0 - slice 6: contrato canonico de rutas + ADR)
+- Se definio contrato unico de routing en:
+- `src/lib/routing/routeContract.js`
+- Reglas formalizadas:
+- modos validos centralizados (`onboarding`, `drill`, `learning`, `progress`, `story`, `timeline`).
+- `step` solo permitido para `onboarding` (se ignora en otros modos).
+- Se refactorizo `Router` para consumir el contrato central:
+- parseo URL (`parseRouteFromURL`),
+- normalizacion (`normalizeRoute`),
+- construccion de URL canónica (`buildRouteURL`).
+- Se creo ADR de decision arquitectonica:
+- `docs/adr/0001-routing-single-source-of-truth.md`
+- Test agregado:
+- `src/lib/routing/routeContract.test.js`
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.

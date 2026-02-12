@@ -195,3 +195,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [x] Crear `docs/performance-sla.md` y baseline inicial.
 2. [x] Crear catalogo de eventos globales con schema.
 3. [x] Inicializar Playwright con 3 escenarios criticos de navegacion.
+
+## Siguiente backlog activo (Fase 1.2)
+1. [x] Definir ADR de navegacion y contrato canonico de ruta.
+2. [ ] Migrar rutas criticas para usar exclusivamente el contrato (`home`, `onboarding`, `drill`, `progress`).
+3. [ ] Agregar cobertura E2E extra para regresiones de URL canónica.

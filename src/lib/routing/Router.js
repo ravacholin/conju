@@ -2,6 +2,12 @@
  * Simple but robust router for the Spanish Conjugator app
  * Replaces manual History API management with a centralized solution
  */
+import {
+  DEFAULT_ROUTE,
+  buildRouteURL,
+  normalizeRoute,
+  parseRouteFromURL
+} from './routeContract.js'
 
 const debug = (method, ...args) => {
   if (!import.meta.env?.DEV) return
@@ -42,34 +48,13 @@ class Router {
    */
   parseCurrentURL() {
     try {
-      const pathname = window.location.pathname || '/'
-      const params = new URLSearchParams(window.location.search || '')
-
-      // Try pathname-based routing first (modern)
-      const pathMatch = pathname.match(/^\/(onboarding|drill|learning|progress|story|timeline)(\/(\d+))?/)
-      if (pathMatch) {
-        const mode = pathMatch[1]
-        const step = pathMatch[3] ? parseInt(pathMatch[3], 10) : null
-
-        return {
-          mode,
-          step: step && step >= 1 && step <= 8 ? step : null,
-          timestamp: Date.now()
-        }
-      }
-
-      // Fallback to query string mode (legacy compatibility)
-      const mode = params.get('mode') || 'onboarding'
-      const step = parseInt(params.get('step'), 10) || null
-
-      return {
-        mode: ['onboarding', 'drill', 'learning', 'progress', 'story', 'timeline'].includes(mode) ? mode : 'onboarding',
-        step: step && step >= 1 && step <= 8 ? step : null,
-        timestamp: Date.now()
-      }
+      return parseRouteFromURL({
+        pathname: window.location.pathname || '/',
+        search: window.location.search || ''
+      })
     } catch (error) {
       debug('warn', 'Error parsing URL:', error)
-      return { mode: 'onboarding', step: null, timestamp: Date.now() }
+      return normalizeRoute(DEFAULT_ROUTE)
     }
   }
 
@@ -81,7 +66,7 @@ class Router {
 
     try {
       // Safety timeout to prevent infinite lock
-      const safetyTimeout = setTimeout(() => {
+      setTimeout(() => {
         if (this.isNavigating) {
           console.warn('Router: Navigation timed out, forcing reset')
           this.isNavigating = false
@@ -90,18 +75,7 @@ class Router {
 
       this.isNavigating = true
 
-      const newRoute = {
-        mode: route.mode || 'onboarding',
-        step: route.step || null,
-        timestamp: Date.now(),
-        ...route
-      }
-
-      // Validate route
-      if (!['onboarding', 'drill', 'learning', 'progress', 'story', 'timeline'].includes(newRoute.mode)) {
-        debug('warn', 'Invalid route mode:', newRoute.mode)
-        newRoute.mode = 'onboarding'
-      }
+      const newRoute = normalizeRoute(route)
 
       // Update browser history
       const historyState = {
@@ -142,11 +116,7 @@ class Router {
 
       if (state && state.appNav) {
         // Valid app navigation state
-        const route = {
-          mode: state.mode || 'onboarding',
-          step: state.step || null,
-          timestamp: state.timestamp || Date.now()
-        }
+        const route = normalizeRoute(state)
 
         debug('log', '📋 Valid app navigation state found:', route)
         this.currentRoute = route
@@ -161,7 +131,7 @@ class Router {
     } catch (error) {
       console.error('Error handling popstate:', error)
       // Fallback to default route
-      const fallbackRoute = { mode: 'onboarding', step: null, timestamp: Date.now() }
+      const fallbackRoute = normalizeRoute(DEFAULT_ROUTE)
       this.currentRoute = fallbackRoute
       this.notifyListeners(fallbackRoute, 'popstate')
     }
@@ -174,12 +144,7 @@ class Router {
    * Uses pathname-based routing for clean URLs (/progress, /drill/3)
    */
   buildURL(route) {
-    // Build pathname-based URL
-    let path = `/${route.mode}`
-    if (route.step) {
-      path += `/${route.step}`
-    }
-    return path
+    return buildRouteURL(route)
   }
 
   /**
