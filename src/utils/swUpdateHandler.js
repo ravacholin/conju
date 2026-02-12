@@ -7,6 +7,72 @@ let updateAvailable = false
 let registration = null
 let initialized = false
 let updateIntervalId = null
+let lastUpdateCheckAt = 0
+
+const ACTIVE_CHECK_INTERVAL_MS = 5 * 60 * 1000
+const MIN_CHECK_GAP_MS = 60 * 1000
+
+function clearExistingInterval() {
+  if (typeof window !== 'undefined' && window.__CONJU_SW_UPDATE_INTERVAL__) {
+    clearInterval(window.__CONJU_SW_UPDATE_INTERVAL__)
+    window.__CONJU_SW_UPDATE_INTERVAL__ = null
+  }
+}
+
+function scheduleIdleCheck() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const performCheck = () => {
+    safeCheckForUpdate('idle')
+  }
+
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(performCheck, { timeout: 5000 })
+    return
+  }
+
+  setTimeout(performCheck, 1500)
+}
+
+function safeCheckForUpdate(_reason, options = {}) {
+  const { force = false } = options
+
+  if (!registration || typeof registration.update !== 'function') {
+    return
+  }
+
+  if (!force && typeof document !== 'undefined' && document.hidden) {
+    return
+  }
+
+  const now = Date.now()
+  if (!force && now - lastUpdateCheckAt < MIN_CHECK_GAP_MS) {
+    return
+  }
+  lastUpdateCheckAt = now
+
+  Promise.resolve(registration.update()).catch((error) => {
+    if (import.meta.env?.DEV) {
+      console.warn('SW update check failed:', error)
+    }
+  })
+}
+
+function setupReactiveUpdateChecks() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.addEventListener('focus', () => safeCheckForUpdate('focus'))
+  window.addEventListener('online', () => safeCheckForUpdate('online', { force: true }))
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      safeCheckForUpdate('visibility')
+    }
+  })
+}
 
 /**
  * Initialize service worker update detection
@@ -26,20 +92,20 @@ export function initSWUpdateHandler() {
       try {
         registration = await navigator.serviceWorker.ready
 
-        // Check for updates every 30 seconds when app is active
+        clearExistingInterval()
+
+        // Poll liviano + triggers reactivos (focus/visibility/online)
         if (!updateIntervalId) {
-          if (typeof window !== 'undefined' && window.__CONJU_SW_UPDATE_INTERVAL__) {
-            clearInterval(window.__CONJU_SW_UPDATE_INTERVAL__)
-          }
           updateIntervalId = setInterval(() => {
-            if (!document.hidden) {
-              registration.update()
-            }
-          }, 30000)
+            safeCheckForUpdate('interval')
+          }, ACTIVE_CHECK_INTERVAL_MS)
           if (typeof window !== 'undefined') {
             window.__CONJU_SW_UPDATE_INTERVAL__ = updateIntervalId
           }
         }
+
+        setupReactiveUpdateChecks()
+        scheduleIdleCheck()
 
         // Listen for new service worker installation
         registration.addEventListener('updatefound', () => {
@@ -140,9 +206,7 @@ export function applyUpdate() {
  * Force check for updates
  */
 export function checkForUpdate() {
-  if (registration) {
-    registration.update()
-  }
+  safeCheckForUpdate('manual', { force: true })
 }
 
 // Initialize when module loads

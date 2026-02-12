@@ -55,6 +55,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/lib/cache/ProgressDataCache.test.js` (TTL override, force refresh, invalidacion por tipo/usuario y mapeo de eventos).
 
+## Cambios realizados (P1 - slice 4: SW update checks menos agresivos)
+- Se rediseño `swUpdateHandler` para reducir polling agresivo de updates:
+- Intervalo de chequeo paso de `30s` a `5min` cuando la app esta activa.
+- Se agrego throttling minimo (`60s`) entre checks para evitar rafagas.
+- Se agregaron triggers reactivos para chequear en momentos utiles:
+- `focus` de ventana.
+- `visibilitychange` al volver a pestaña visible.
+- `online` (forzado) al recuperar conexion.
+- Se agrego chequeo diferido en idle (`requestIdleCallback` o fallback con timeout).
+- `checkForUpdate()` ahora usa el mismo pipeline seguro (`safeCheckForUpdate`) en modo forzado.
+- Se mantiene deduplicacion global de intervalos via `window.__CONJU_SW_UPDATE_INTERVAL__`.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
