@@ -521,6 +521,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/practiceReminderEvaluator.test.js`
 
+## Cambios realizados (P11 - slice 2: robustez de PracticeReminders en runtime no-browser)
+- Se agrego guard defensivo en `PracticeReminders` para evitar registrar listeners cuando `window/document` no existen.
+- Se agregaron tests de comportamiento del componente para validar:
+- disparo de toast cuando corresponde recordatorio.
+- no disparo cuando el recordatorio esta desactivado.
+- Tests agregados/actualizados:
+- `src/features/progress/PracticeReminders.test.jsx`
+- `src/features/progress/practiceReminderEvaluator.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

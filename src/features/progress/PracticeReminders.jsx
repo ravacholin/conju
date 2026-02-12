@@ -65,6 +65,9 @@ export default function PracticeReminders({
       lastTriggeredRef.current = ''
       return undefined
     }
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return undefined
+    }
 
     const checkReminder = () => {
       const reminderState = shouldTriggerPracticeReminder({
