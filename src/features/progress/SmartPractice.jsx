@@ -4,6 +4,12 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
 import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import {
+  buildSmartPracticeRecommendationKey,
+  getCachedSmartPracticeRecommendation,
+  cacheSmartPracticeRecommendation,
+  getOrCreateRecommendationRequest
+} from './smartPracticeMlCache.js'
 
 const logger = createLogger('features:SmartPractice')
 
@@ -39,6 +45,10 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const settings = useSettings()
   const [mlRecommendations, setMLRecommendations] = useState(null)
   const [loadingML, setLoadingML] = useState(false)
+  const recommendationKey = useMemo(
+    () => buildSmartPracticeRecommendationKey(userStats || {}),
+    [userStats]
+  )
 
   // Get user-friendly labels for mood/tense combinations
   const getMoodTenseLabel = (mood, tense) => {
@@ -47,29 +57,55 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
 
   // Fetch ML recommendations when component mounts or userStats changes
   useEffect(() => {
+    let cancelled = false
+
     const fetchMLRecommendations = async () => {
       if (!userStats) return
 
-      setLoadingML(true)
+      const cached = getCachedSmartPracticeRecommendation(recommendationKey)
+      if (cached) {
+        if (!cancelled) {
+          setMLRecommendations(cached)
+          setLoadingML(false)
+        }
+        return
+      }
+
+      if (!cancelled) {
+        setLoadingML(true)
+      }
       try {
-        const sessionPlan = await mlRecommendationEngine.generateSessionRecommendations({
-          duration: 20,
-          preferredDifficulty: 'medium',
-          includeNewContent: true,
-          adaptToState: true
-        })
-        setMLRecommendations(sessionPlan)
+        const sessionPlan = await getOrCreateRecommendationRequest(
+          recommendationKey,
+          () => mlRecommendationEngine.generateSessionRecommendations({
+            duration: 20,
+            preferredDifficulty: 'medium',
+            includeNewContent: true,
+            adaptToState: true
+          })
+        )
+        cacheSmartPracticeRecommendation(recommendationKey, sessionPlan)
+        if (!cancelled) {
+          setMLRecommendations(sessionPlan)
+        }
         logger.debug('ML recommendations generated', sessionPlan)
       } catch (error) {
         logger.error('Failed to generate ML recommendations', error)
-        setMLRecommendations(null)
+        if (!cancelled) {
+          setMLRecommendations(null)
+        }
       } finally {
-        setLoadingML(false)
+        if (!cancelled) {
+          setLoadingML(false)
+        }
       }
     }
 
     fetchMLRecommendations()
-  }, [userStats])
+    return () => {
+      cancelled = true
+    }
+  }, [userStats, recommendationKey])
 
   // Analyze user data to generate smart recommendations (fallback heuristics)
   const heuristicRecommendations = useMemo(() => {

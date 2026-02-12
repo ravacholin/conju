@@ -275,6 +275,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests agregados/actualizados:
 - `src/features/progress/SmartPractice.test.jsx`
 
+## Cambios realizados (P3 - slice 2: cache y deduplicacion de recomendaciones ML)
+- Se agrego cache en memoria con TTL para recomendaciones ML de `SmartPractice`:
+- clave estable por señales relevantes de `userStats`.
+- reutilizacion de resultados recientes para evitar recalculo innecesario.
+- deduplicacion de requests en vuelo para prevenir llamadas duplicadas concurrentes.
+- Se incorporo guard de cancelacion en `useEffect` para evitar updates de estado tras unmount.
+- Nueva capa utilitaria:
+- `src/features/progress/smartPracticeMlCache.js`
+- Tests agregados/actualizados:
+- `src/features/progress/smartPracticeMlCache.test.js`
+- `src/features/progress/SmartPractice.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

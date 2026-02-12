@@ -1,6 +1,7 @@
 import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi, describe, it, beforeEach, afterEach } from 'vitest'
+import { __resetSmartPracticeRecommendationCache } from './smartPracticeMlCache.js'
 
 const setSettingsMock = vi.fn()
 
@@ -25,10 +26,13 @@ vi.mock('../../lib/progress/mlRecommendations.js', () => ({
 }))
 
 import SmartPractice from './SmartPractice.jsx'
+import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
 
 describe('SmartPractice recommendations', () => {
   beforeEach(() => {
     setSettingsMock.mockReset()
+    __resetSmartPracticeRecommendationCache()
+    mlRecommendationEngine.generateSessionRecommendations.mockClear()
     vi.spyOn(Date, 'now').mockReturnValue(new Date('2024-01-15T00:00:00Z').getTime())
   })
 
@@ -91,5 +95,31 @@ describe('SmartPractice recommendations', () => {
 
     expect(setSettingsMock).toHaveBeenCalledWith({ practiceMode: 'mixed' })
     expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+  })
+
+  it('reuses cached ML recommendation for equivalent user stats', async () => {
+    const { rerender } = render(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 10, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
+    })
+
+    rerender(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 10, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
+    })
   })
 })
