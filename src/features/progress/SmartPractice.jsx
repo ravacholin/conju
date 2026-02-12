@@ -117,6 +117,10 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   }, [userStats, recommendationKey, refreshSeed])
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
     const handleProgressUpdate = (event) => {
       const detail = event?.detail || {}
       const shouldRefreshRecommendations = Boolean(

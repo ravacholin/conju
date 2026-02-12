@@ -65,6 +65,10 @@ export default function SRSPanel({ onNavigateToDrill }) {
   }))
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
     const openHandler = () => setShowQueueModal(true)
     loadSRSData()
     window.addEventListener('progress:open-review-queue', openHandler)
@@ -74,6 +78,10 @@ export default function SRSPanel({ onNavigateToDrill }) {
   }, [loadSRSData])
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
     const handleSRSUpdated = () => {
       srsUpdateDebouncerRef.current.trigger()
     }

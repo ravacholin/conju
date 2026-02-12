@@ -501,6 +501,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/SRSPanel.test.jsx`
 - `src/features/progress/eventDebouncer.test.js`
 
+## Cambios realizados (P10 - slice 3: guards SSR para listeners de ventana en progreso)
+- Se agregaron guards `typeof window !== 'undefined'` en efectos que registran listeners globales en:
+- `SmartPractice` (`progress:dataUpdated`)
+- `SRSPanel` (`progress:open-review-queue`, `progress:srs-updated`)
+- Esto evita errores en entornos sin `window` y mejora robustez para renderizado no-browser/tests.
+- Tests agregados/actualizados:
+- `src/features/progress/SmartPractice.test.jsx`
+- `src/features/progress/SRSPanel.test.jsx`
+
+## Estado P10
+- P10 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
