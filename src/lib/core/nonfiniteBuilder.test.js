@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildGerund } from './nonfiniteBuilder.js'
+import { buildGerund, buildParticiple } from './nonfiniteBuilder.js'
 
 describe('buildGerund', () => {
   // -uar verbs should NOT use -yendo; ensure no regression from vowel-class change
@@ -23,3 +23,13 @@ describe('buildGerund', () => {
   })
 })
 
+describe('buildParticiple', () => {
+  it('uses canonical irregular participles for core verbs', () => {
+    expect(buildParticiple('hacer')).toBe('hecho')
+    expect(buildParticiple('ver')).toBe('visto')
+  })
+
+  it('keeps extended fallback participles during migration', () => {
+    expect(buildParticiple('desenvolver')).toBe('desenvuelto')
+  })
+})

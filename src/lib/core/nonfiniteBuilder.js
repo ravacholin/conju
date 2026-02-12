@@ -1,37 +1,24 @@
 // Generador de formas no finitas (gerundio/participio) con irregulares comunes
+import { getCanonicalGerund, getCanonicalParticiple } from '../data/irregularCanonical.js'
 
-// Mapa de gerundios irregulares frecuentes
-const IRREGULAR_GERUNDS = {
-  'ir': 'yendo',
-  'poder': 'pudiendo',
-  'venir': 'viniendo',
-  'decir': 'diciendo',
-  'traer': 'trayendo',
+// Mapa extendido local mientras se completa la migración al dataset canónico.
+const EXTENDED_IRREGULAR_GERUNDS = {
   'caer': 'cayendo',
   'leer': 'leyendo',
   'creer': 'creyendo',
   'oír': 'oyendo',
-  'construir': 'construyendo',
   'destruir': 'destruyendo',
   'huir': 'huyendo',
-  'incluir': 'incluyendo',
   'concluir': 'concluyendo',
   'contribuir': 'contribuyendo',
-  'dormir': 'durmiendo',
-  'morir': 'muriendo',
-  'pedir': 'pidiendo',
-  'sentir': 'sintiendo',
   'preferir': 'prefiriendo',
   'mentir': 'mintiendo',
   'competir': 'compitiendo',
   'medir': 'midiendo',
   'vestir': 'vistiendo',
-  'seguir': 'siguiendo',
   'conseguir': 'consiguiendo',
   'perseguir': 'persiguiendo',
-  'elegir': 'eligiendo',
   'repetir': 'repitiendo',
-  'servir': 'sirviendo',
   'reír': 'riendo',
   // Ampliación e→i (-ir)
   'despedir': 'despidiendo',
@@ -56,18 +43,10 @@ const IRREGULAR_GERUNDS = {
   'proveer': 'proveyendo'
 }
 
-// Participios irregulares (valor) para cubrir los más comunes
-const IRREGULAR_PARTICIPLES = {
+const EXTENDED_IRREGULAR_PARTICIPLES = {
   'abrir': 'abierto',
-  'escribir': 'escrito',
-  'hacer': 'hecho',
-  'poner': 'puesto',
-  'ver': 'visto',
-  'volver': 'vuelto',
   'romper': 'roto',
-  'morir': 'muerto',
   'cubrir': 'cubierto',
-  'decir': 'dicho',
   'resolver': 'resuelto',
   'devolver': 'devuelto',
   'revolver': 'revuelto',
@@ -86,8 +65,9 @@ const IRREGULAR_PARTICIPLES = {
 
 export function buildGerund(lemma) {
   if (!lemma || typeof lemma !== 'string') return null
-  // Irregular explícito
-  if (IRREGULAR_GERUNDS[lemma]) return IRREGULAR_GERUNDS[lemma]
+  const canonical = getCanonicalGerund(lemma)
+  if (canonical) return canonical
+  if (EXTENDED_IRREGULAR_GERUNDS[lemma]) return EXTENDED_IRREGULAR_GERUNDS[lemma]
   // Regla -yendo para vocal + -er/-ir (leer, caer, oír) y -uir
   const endsWith = (s) => lemma.endsWith(s)
   const stem = lemma.slice(0, -2)
@@ -112,7 +92,9 @@ export function buildGerund(lemma) {
 
 export function buildParticiple(lemma) {
   if (!lemma || typeof lemma !== 'string') return null
-  if (IRREGULAR_PARTICIPLES[lemma]) return IRREGULAR_PARTICIPLES[lemma]
+  const canonical = getCanonicalParticiple(lemma)
+  if (canonical?.primary) return canonical.primary
+  if (EXTENDED_IRREGULAR_PARTICIPLES[lemma]) return EXTENDED_IRREGULAR_PARTICIPLES[lemma]
   if (lemma.endsWith('ar')) return lemma.replace(/ar$/, 'ado')
   if (lemma.endsWith('er')) return lemma.replace(/er$/, 'ido')
   if (lemma.endsWith('ir')) return lemma.replace(/ir$/, 'ido')

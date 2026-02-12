@@ -849,6 +849,51 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P14
 - P14 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P15 - slice 1: inventario de fuentes de irregularidades y duplicados)
+- Se implemento auditoria automatica para mapear fuentes activas de reglas/irregularidades:
+- `scripts/auditIrregularSources.mjs`
+- Nuevo comando:
+- `npm run audit:irregular-sources`
+- La auditoria genera inventario versionable en:
+- `docs/linguistic/irregular-sources-inventory.json`
+- `docs/linguistic/irregular-sources-inventory.md`
+- Hallazgos concretos registrados:
+- solapamiento alto entre fuentes tecnicas y learning (`94` lemmas en comun por ejemplos).
+- divergencias en gerundios entre `irregularPatterns` y `nonfiniteBuilder` (muchos lemmas solo en builder).
+- divergencias en participios entre `irregularPatterns`, `nonfiniteBuilder` y `conjugationRules`.
+- Se deja base objetiva para avanzar la consolidacion canonical de Fase 4.1.
+
+## Cambios realizados (P15 - slice 2: definicion de estructura canonical unica)
+- Se definio el dataset canónico v1 para irregularidades en:
+- `src/lib/data/irregularCanonical.js`
+- Estructura canonical incorporada:
+- `nonfinite.gerund[lemma]`
+- `nonfinite.participle[lemma] -> { primary, alternates }`
+- `finite.futureConditionalRoots[lemma] -> { root, group }`
+- API utilitaria expuesta:
+- `getCanonicalGerund`
+- `getCanonicalParticiple`
+- `getCanonicalFutureRoot`
+- `validateIrregularCanonical`
+- Se documento el contrato canonical y criterio de migracion en:
+- `docs/linguistic/irregular-canonical-schema.md`
+- Tests agregados:
+- `src/lib/data/irregularCanonical.test.js`
+
+## Cambios realizados (P15 - slice 3: migracion inicial a fuente canonical con no-regresion)
+- Se migro un subconjunto inicial (verbos/familias no finitas de alta frecuencia) para consumir la fuente canónica:
+- `src/lib/core/nonfiniteBuilder.js` ahora prioriza:
+- `getCanonicalGerund`
+- `getCanonicalParticiple`
+- Se mantiene mapa local extendido como fallback para cubrir casos no migrados aun.
+- `src/lib/core/conjugationRules.js` (`hasIrregularParticiple`) ahora consulta primero el canonical dataset y luego fallback legacy extendido.
+- Se agregaron pruebas de no regresion para la migracion inicial:
+- `src/lib/core/nonfiniteBuilder.test.js`
+- `src/lib/core/conjugationRules.nonfinite.test.js`
+
+## Estado P15
+- P15 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

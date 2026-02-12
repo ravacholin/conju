@@ -4,6 +4,7 @@
 // Import and re-export from centralized accent utils
 import { normalize } from '../utils/accentUtils.js'
 import { createLogger } from '../utils/logger.js'
+import { getCanonicalParticiple } from '../data/irregularCanonical.js'
 
 const logger = createLogger('core:conjugationRules')
 
@@ -496,9 +497,13 @@ export function hasIrregularParticiple(lemma) {
   if (!lemma || typeof lemma !== 'string') {
     return false
   }
+
+  if (getCanonicalParticiple(lemma)) {
+    return true
+  }
   
-  // Lista de verbos con participios irregulares conocidos
-  const irregularParticiples = {
+  // Cobertura extendida mientras se completa la migración al dataset canónico.
+  const legacyExtendedParticiples = {
     // Participios más comunes
     'abrir': 'abierto',
     'escribir': 'escrito', 
@@ -557,6 +562,6 @@ export function hasIrregularParticiple(lemma) {
     'antever': 'antevisto'
   }
   
-  return Object.prototype.hasOwnProperty.call(irregularParticiples, lemma)
+  return Object.prototype.hasOwnProperty.call(legacyExtendedParticiples, lemma)
 }
 export { isEnhancedRegularForm }

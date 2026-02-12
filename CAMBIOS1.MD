@@ -232,6 +232,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Documentar umbrales y criterio de fallo para endurecer gate de performance.
 
 ## Siguiente backlog activo (Fase 4.1)
-1. [ ] Inventariar reglas/fuentes de irregularidades hoy activas y detectar duplicados.
-2. [ ] Definir estructura canonical unica para irregularidades/reglas.
-3. [ ] Migrar un primer subconjunto (top verbos/familias) a la fuente canonical con tests de no regresion.
+1. [x] Inventariar reglas/fuentes de irregularidades hoy activas y detectar duplicados.
+2. [x] Definir estructura canonical unica para irregularidades/reglas.
+3. [x] Migrar un primer subconjunto (top verbos/familias) a la fuente canonical con tests de no regresion.
+
+## Siguiente backlog activo (Fase 4.2)
+1. [ ] Definir fixtures estables por verbos top y casos limite.
+2. [ ] Crear golden tests para no-finitos irregulares y preteritos fuertes.
+3. [ ] Integrar comparador before/after para detectar regresion linguistica.
