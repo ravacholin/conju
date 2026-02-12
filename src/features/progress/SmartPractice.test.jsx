@@ -93,7 +93,15 @@ describe('SmartPractice recommendations', () => {
     const card = await screen.findByRole('button', { name: /Comenzar a practicar/i })
     fireEvent.keyDown(card, { key: 'Enter' })
 
-    expect(setSettingsMock).toHaveBeenCalledWith({ practiceMode: 'mixed' })
+    expect(setSettingsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        practiceMode: 'mixed',
+        specificMood: null,
+        specificTense: null,
+        reviewSessionType: 'due',
+        reviewSessionFilter: {}
+      })
+    )
     expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
   })
 

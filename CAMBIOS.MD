@@ -332,6 +332,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P4
 - P4 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P5 - slice 1: SmartPractice con navegacion drill normalizada)
+- `SmartPractice` ahora usa `buildDrillSettingsUpdate` como fuente unica para configurar Drill.
+- Se eliminaron updates ad-hoc de settings que podian dejar estado residual entre modos.
+- Beneficio: transiciones mas consistentes entre recomendaciones `specific` y `mixed`.
+- Tests agregados/actualizados:
+- `src/features/progress/SmartPractice.test.jsx`
+- `src/features/progress/drillNavigationConfig.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

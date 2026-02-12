@@ -4,6 +4,7 @@ import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { SUPPORTED_HEATMAP_COMBOS, SUPPORTED_HEATMAP_COMBO_SET } from './heatMapConfig.js'
 import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
 import { createLogger } from '../../lib/utils/logger.js'
+import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import {
   buildSmartPracticeRecommendationKey,
   getCachedSmartPracticeRecommendation,
@@ -328,24 +329,26 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const handleRecommendationClick = (rec) => {
     if (!onNavigateToDrill) return
 
-    let settingsUpdate = {}
+    let settingsUpdate = buildDrillSettingsUpdate()
 
     switch (rec.type) {
       case 'focus-weakness':
       case 'maintain-mastery':
       case 'explore-new':
-        settingsUpdate.practiceMode = 'specific'
-        settingsUpdate.specificMood = rec.targetMood
-        settingsUpdate.specificTense = rec.targetTense
+        settingsUpdate = buildDrillSettingsUpdate({}, {
+          practiceMode: 'specific',
+          specificMood: rec.targetMood,
+          specificTense: rec.targetTense
+        })
         break
       case 'mixed-practice':
-        settingsUpdate.practiceMode = 'mixed'
+        settingsUpdate = buildDrillSettingsUpdate({}, { practiceMode: 'mixed' })
         break
       case 'get-started':
-        settingsUpdate.practiceMode = 'mixed'
+        settingsUpdate = buildDrillSettingsUpdate({}, { practiceMode: 'mixed' })
         break
       default:
-        settingsUpdate.practiceMode = 'mixed'
+        settingsUpdate = buildDrillSettingsUpdate({}, { practiceMode: 'mixed' })
     }
 
     settings.set(settingsUpdate)
