@@ -205,3 +205,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 1. [x] Bloquear `set` de keys desconocidas en `useSettings` en runtime.
 2. [x] Auditar escrituras restantes a `useSettings` y mover estado efimero pendiente a store de sesion.
 3. [x] Agregar checklist de claves de estado persistente vs efimero.
+
+## Siguiente backlog activo (Fase 2.2)
+1. [x] Formalizar pipeline de migraciones por version en `useSettings`.
+2. [ ] Agregar casos de migracion para snapshots historicos reales.
+3. [ ] Verificar apertura de snapshots viejos sin perdida de config valida.

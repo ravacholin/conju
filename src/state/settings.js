@@ -15,7 +15,7 @@ export const PRACTICE_MODES = {
   BY_TOPIC: 'by_topic'
 }
 
-const SETTINGS_VERSION = 2
+const SETTINGS_VERSION = 3
 
 const createDefaultSettings = () => ({
   // Sync tracking
@@ -264,6 +264,39 @@ const sanitizePersistedSettings = (persistedState) => {
   }
 }
 
+const migrateLegacyPersistedState = (persistedState, fromVersion = 0) => {
+  const next = { ...(persistedState || {}) }
+
+  // Legacy runtime drill context was moved to session store.
+  if (fromVersion < 3) {
+    delete next.currentBlock
+    delete next.reviewSessionType
+    delete next.reviewSessionFilter
+  }
+
+  // Older snapshots may include "both" dialect marker.
+  if (next.region === 'both') {
+    next.region = 'global'
+  }
+
+  // Normalize malformed reminder days from historical snapshots.
+  if (Array.isArray(next.practiceReminderDays)) {
+    next.practiceReminderDays = Array.from(new Set(
+      next.practiceReminderDays
+        .map((day) => Number(day))
+        .filter((day) => Number.isInteger(day))
+        .map((day) => ((day % 7) + 7) % 7)
+    )).sort((a, b) => a - b)
+  }
+
+  return next
+}
+
+export const migratePersistedSettings = (persistedState, fromVersion = 0) => {
+  const migrated = migrateLegacyPersistedState(persistedState, fromVersion)
+  return sanitizePersistedSettings(migrated)
+}
+
 // Lazy cache warmup - only warm up when actually needed
 // Warmup is triggered by Drill component on mount to avoid penalizing time-to-interactive
 export const warmupCachesIfNeeded = (() => {
@@ -410,7 +443,7 @@ const useSettings = create(
     {
       name: 'spanish-conjugator-settings',
       version: SETTINGS_VERSION,
-      migrate: (persistedState) => sanitizePersistedSettings(persistedState),
+      migrate: (persistedState, fromVersion) => migratePersistedSettings(persistedState, fromVersion),
       partialize: (state) => pickPersistedSettings(state)
     }
   )

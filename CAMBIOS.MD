@@ -163,6 +163,20 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test nuevo:
 - `src/state/session.test.js`
 
+## Cambios realizados (P0 - slice 10: versionado y migraciones formales de settings)
+- Se establecio pipeline explícito de migraciones por versión en `useSettings`:
+- `src/state/settings.js`
+- Se incrementó versión del store persistido:
+- `SETTINGS_VERSION: 3`
+- Nueva API de migración:
+- `migratePersistedSettings(persistedState, fromVersion)`
+- Migraciones implementadas:
+- eliminación de claves legacy de runtime Drill (`currentBlock`, `reviewSessionType`, `reviewSessionFilter`) desde snapshots viejos.
+- normalización de alias regional legacy (`both` -> `global`).
+- normalización de `practiceReminderDays` con valores legacy mixtos.
+- Tests de migración agregados:
+- `src/state/settings.migration.test.js`
+
 ## Cambios realizados (P1 - slice 1: filtro especifico)
 - Se optimizo el filtrado de practica especifica en `DrillFormFilters` con indice memoizado por combinacion `mood|tense`.
 - `filterForSpecificPractice` ahora evita escaneo completo repetido del pool cuando la practica es especifica.
