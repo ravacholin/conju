@@ -86,6 +86,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `generateNextItem` ahora reporta fallbacks y errores criticos con contexto estructurado (settings, stack, tipo de fallback) sin ruido de consola directa.
 - Los flujos de fallback de emergencia ahora usan `logger.debug/info/warn/error`, manteniendo trazabilidad en dev sin saturar salida ni mezclar canales.
 
+## Cambios realizados (P1 - slice 7: recuperacion guiada cuando el pool queda vacio)
+- Se fortalecio la UX de diagnostico en Drill para convertir sugerencias en acciones aplicables.
+- `DrillMode` ahora ofrece botones accionables por sugerencia (no solo texto), aplicando ajustes y regenerando automaticamente:
+- cambiar a modo mixto.
+- ampliar tipo de verbo a `all`.
+- quitar filtro de familia.
+- ampliar pronombres.
+- Se extrajo logica de diagnostico a modulo dedicado:
+- `src/components/drill/generationDiagnostics.js`
+- Se estandarizo logging de DrillMode con `createLogger`, removiendo `console.warn/error` directos en timeouts y manejo de eventos.
+- Test agregado:
+- `src/components/drill/generationDiagnostics.test.js` para validar sugerencias y detalle de diagnostico.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

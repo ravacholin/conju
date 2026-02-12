@@ -64,23 +64,19 @@
  * @see {@link ./QuickSwitchPanel.jsx} - Panel de configuración rápida
  */
 
-import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react'
+import React, { useState, useEffect, Suspense, useCallback } from 'react'
 import DrillHeader from './DrillHeader.jsx'
 import { safeLazy } from '../../lib/utils/lazyImport.js';
 import { useSessionStore } from '../../state/session.js'
+import { createLogger } from '../../lib/utils/logger.js'
+import { buildGenerationDetail, buildGenerationSuggestions } from './generationDiagnostics.js'
 
 const QuickSwitchPanel = safeLazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = safeLazy(() => import('./GamesPanel.jsx'))
 const PronunciationPanel = safeLazy(() => import('./PronunciationPanelSafe.jsx'))
 import Drill from '../../features/drill/Drill.jsx'
 
-const logger = {
-  debug(message, ...args) {
-    if (import.meta.env?.DEV && !import.meta?.vitest) {
-      console.log(message, ...args)
-    }
-  }
-}
+const logger = createLogger('drill:mode')
 
 /**
  * Componente principal del modo práctica rápida
@@ -116,12 +112,6 @@ function DrillMode({
   const pronunciationPanelRef = React.useRef(null)
   const LOADING_TIMEOUT_REF = React.useRef(null)
   const startPersonalizedSession = useSessionStore((state) => state.startPersonalizedSession)
-
-  const closeAllPanels = () => {
-    setShowQuickSwitch(false)
-    setShowGames(false)
-    setShowPronunciation(false)
-  }
 
   const handleToggleQuickSwitch = useCallback((show = null) => {
     const newShow = show !== null ? show : !showQuickSwitch
@@ -199,31 +189,8 @@ function DrillMode({
 
       const totalForms = Number(stats?.totalForms || 0)
       const eligibleForms = Number(stats?.eligibleForms || 0)
-      const suggestions = []
-
-      if (settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense) {
-        suggestions.push('Cambia a modo mixto o elegí otro tiempo.')
-      }
-
-      if (settings.practiceMode === 'theme') {
-        suggestions.push('Probá cambiar de tema o volver a modo mixto.')
-      }
-
-      if (settings.verbType && settings.verbType !== 'all') {
-        suggestions.push('Usá "Todos" en tipo de verbo para ampliar el pool.')
-      }
-
-      if (settings.selectedFamily) {
-        suggestions.push('Quitá la familia irregular para ampliar el pool.')
-      }
-
-      if (settings.practicePronoun && settings.practicePronoun !== 'all') {
-        suggestions.push('Ampliá el pronombre o el dialecto.')
-      }
-
-      const detail = totalForms === 0
-        ? 'No se pudieron cargar formas para tu región.'
-        : 'No hay formas que cumplan la configuración actual.'
+      const suggestions = buildGenerationSuggestions(settings)
+      const detail = buildGenerationDetail(totalForms)
 
       return {
         detail,
@@ -240,6 +207,43 @@ function DrillMode({
     }
   }, [getGenerationStats, isGenerationViable, settings.practiceMode, settings.practicePronoun, settings.selectedFamily, settings.specificMood, settings.specificTense, settings.verbType])
 
+  const applyGenerationSuggestion = useCallback((suggestionId) => {
+    if (!suggestionId) {
+      return
+    }
+
+    switch (suggestionId) {
+      case 'switch-to-mixed':
+      case 'switch-theme-to-mixed':
+        if (typeof onPracticeModeChange === 'function') {
+          onPracticeModeChange('mixed')
+        } else {
+          settings.set({
+            practiceMode: 'mixed',
+            specificMood: null,
+            specificTense: null
+          })
+        }
+        break
+      case 'verb-type-all':
+        settings.set({ verbType: 'all' })
+        break
+      case 'clear-family':
+        settings.set({ selectedFamily: null })
+        break
+      case 'pronoun-all':
+        settings.set({ practicePronoun: 'all' })
+        break
+      default:
+        return
+    }
+
+    setLoadingError(null)
+    setLoadingTimeout(false)
+    setGenerationIssue(null)
+    onRegenerateItem()
+  }, [onPracticeModeChange, onRegenerateItem, settings])
+
   // Enhanced safety net: if no item is present, trigger regeneration with escalating timeouts
   useEffect(() => {
     if (!currentItem && typeof onRegenerateItem === 'function') {
@@ -254,14 +258,14 @@ function DrillMode({
           logger.debug('🔄 DrillMode: Quick retry for missing currentItem')
           onRegenerateItem()
         } catch (error) {
-          console.error('🚨 DrillMode: Quick retry failed', error)
+          logger.error('Quick retry failed', error)
         }
       }, 300)
 
       // Timeout warning after 8 seconds
       const timeoutWarningId = setTimeout(() => {
         if (!currentItem) {
-          console.warn('⏰ DrillMode: Item generation taking longer than expected')
+          logger.warn('Item generation taking longer than expected')
           setLoadingTimeout(true)
           buildGenerationDiagnostics().then(setGenerationIssue)
         }
@@ -270,7 +274,7 @@ function DrillMode({
       // Final timeout and error after 15 seconds
       const finalTimeoutId = setTimeout(() => {
         if (!currentItem) {
-          console.error('💥 DrillMode: Item generation failed - timeout after 15 seconds')
+          logger.error('Item generation failed - timeout after 15 seconds')
           setLoadingError('La generación de ejercicios está tardando más de lo esperado. Esto puede deberse a una configuración muy restrictiva.')
           buildGenerationDiagnostics().then(setGenerationIssue)
         }
@@ -386,7 +390,7 @@ function DrillMode({
           onRegenerateItem()
         }
       } catch (error) {
-        console.error('Error handling progress navigation:', error)
+        logger.error('Error handling progress navigation', error)
       }
     }
 
@@ -469,8 +473,17 @@ function DrillMode({
                   )}
                   {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
                     <ul>
-                      {generationIssue.suggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
+                      {generationIssue.suggestions.map((suggestion) => (
+                        <li key={suggestion.id}>
+                          {suggestion.reason}
+                          <button
+                            type="button"
+                            onClick={() => applyGenerationSuggestion(suggestion.id)}
+                            style={{ marginLeft: '8px' }}
+                          >
+                            {suggestion.label}
+                          </button>
+                        </li>
                       ))}
                     </ul>
                   )}
@@ -513,8 +526,17 @@ function DrillMode({
                     )}
                     {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
                       <ul style={{ marginTop: '8px' }}>
-                        {generationIssue.suggestions.map((suggestion, index) => (
-                          <li key={index}>{suggestion}</li>
+                        {generationIssue.suggestions.map((suggestion) => (
+                          <li key={suggestion.id}>
+                            {suggestion.reason}
+                            <button
+                              type="button"
+                              onClick={() => applyGenerationSuggestion(suggestion.id)}
+                              style={{ marginLeft: '8px' }}
+                            >
+                              {suggestion.label}
+                            </button>
+                          </li>
                         ))}
                       </ul>
                     )}
