@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getMsUntilNextMinute, normalizeReminderDays } from './practiceReminderScheduler.js'
+import { shouldTriggerPracticeReminder } from './practiceReminderEvaluator.js'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
 const WEEKDAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -66,46 +67,25 @@ export default function PracticeReminders({
     }
 
     const checkReminder = () => {
-      const now = new Date()
-      const todayIndex = now.getDay()
-      if (!reminderDays.includes(todayIndex)) {
+      const reminderState = shouldTriggerPracticeReminder({
+        now: new Date(),
+        reminderEnabled: practiceReminderEnabled,
+        reminderTime: normalizeTime(practiceReminderTime),
+        reminderDays,
+        lastTriggeredKey: lastTriggeredRef.current,
+        goalType: dailyGoalType,
+        goalValue,
+        progressToday
+      })
+
+      lastTriggeredRef.current = reminderState.nextLastTriggeredKey
+      if (!reminderState.shouldNotify) {
         return
       }
 
-      const [hours, minutes] = normalizeTime(practiceReminderTime).split(':').map(Number)
-      if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
-        return
-      }
-
-      const nowMinutes = now.getHours() * 60 + now.getMinutes()
-      const scheduledMinutes = hours * 60 + minutes
-      const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`
-
-      if (nowMinutes < scheduledMinutes) {
-        if (lastTriggeredRef.current !== todayKey) {
-          return
-        }
-        // Permitir un nuevo recordatorio si el usuario editó la hora hacia atrás
-        lastTriggeredRef.current = ''
-        return
-      }
-
-      if (lastTriggeredRef.current === todayKey) {
-        return
-      }
-
-      const target = goalValue > 0 ? goalValue : (dailyGoalType === 'minutes' ? 15 : 20)
-      const current = progressToday
-
-      if (target > 0 && current >= target) {
-        lastTriggeredRef.current = todayKey
-        return
-      }
-
-      lastTriggeredRef.current = todayKey
       const unitLabel = goalUnit
       onShowToast?.({
-        message: `¿Ya alcanzaste tu meta diaria de ${target} ${unitLabel}? ¡Un repaso rápido aún cuenta!`,
+        message: `¿Ya alcanzaste tu meta diaria de ${reminderState.target} ${unitLabel}? ¡Un repaso rápido aún cuenta!`,
         type: 'info',
         duration: 4200
       })

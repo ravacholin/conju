@@ -513,6 +513,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P10
 - P10 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P11 - slice 1: evaluador puro para recordatorios de practica)
+- Se extrajo la decision de disparo del recordatorio diario a una capa pura:
+- `src/features/progress/practiceReminderEvaluator.js`
+- `PracticeReminders` ahora delega la logica de elegibilidad/estado (`lastTriggeredKey`) a esta utilidad.
+- Beneficio: menor complejidad en UI y reglas testeables sin depender del componente.
+- Tests agregados/actualizados:
+- `src/features/progress/practiceReminderEvaluator.test.js`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
