@@ -108,56 +108,58 @@ export default function ProgressDashboard({
     }
   }
 
+  const applyDrillConfigAndNavigate = React.useCallback((drillConfig = {}) => {
+    if (typeof onNavigateToDrill !== 'function') {
+      return
+    }
+
+    setSettings(buildDrillSettingsUpdate(drillConfig))
+    onNavigateToDrill()
+  }, [onNavigateToDrill, setSettings])
+
   const handleStartPlannedSession = React.useCallback((session) => {
     if (!session || typeof onNavigateToDrill !== 'function') {
       return
     }
 
     const drillConfig = session.drillConfig || {}
-    setSettings(buildDrillSettingsUpdate(drillConfig))
-    onNavigateToDrill()
-  }, [onNavigateToDrill, setSettings])
+    applyDrillConfigAndNavigate(drillConfig)
+  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
   // Handle SRS Review Now action
   const handleSRSReviewNow = React.useCallback(() => {
     if (!onNavigateToDrill) return
 
-    setSettings(buildDrillSettingsUpdate({}, { practiceMode: 'review' }))
-    onNavigateToDrill()
-  }, [onNavigateToDrill, setSettings])
+    applyDrillConfigAndNavigate({ practiceMode: 'review' })
+  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
   const handleStartCoachSession = React.useCallback((sessionPlan) => {
     if (!sessionPlan?.drillConfig || typeof onNavigateToDrill !== 'function') {
       return
     }
 
-    const drillConfig = sessionPlan.drillConfig
-    setSettings(buildDrillSettingsUpdate(drillConfig))
-    onNavigateToDrill()
-  }, [onNavigateToDrill, setSettings])
+    applyDrillConfigAndNavigate(sessionPlan.drillConfig)
+  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
   const handleStartFocusTrack = React.useCallback((track) => {
     if (!track?.drillConfig || typeof onNavigateToDrill !== 'function') {
       return
     }
 
-    const drillConfig = track.drillConfig
-    setSettings(buildDrillSettingsUpdate(drillConfig))
-    onNavigateToDrill()
-  }, [onNavigateToDrill, setSettings])
+    applyDrillConfigAndNavigate(track.drillConfig)
+  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
   const handleStartCorrectiveDrill = React.useCallback((item) => {
     if (!item?.mood || !item?.tense || typeof onNavigateToDrill !== 'function') {
       return
     }
 
-    setSettings(buildDrillSettingsUpdate({}, {
+    applyDrillConfigAndNavigate({
       practiceMode: 'specific',
       specificMood: item.mood,
       specificTense: item.tense
-    }))
-    onNavigateToDrill()
-  }, [onNavigateToDrill, setSettings])
+    })
+  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
 
   // Listen for progress navigation events (from heat map clicks, etc.)
   React.useEffect(() => {

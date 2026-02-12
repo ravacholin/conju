@@ -363,6 +363,16 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P5
 - P5 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P6 - slice 1: unificacion de navegacion a Drill en dashboard)
+- Se incorporo `applyDrillConfigAndNavigate` en `ProgressDashboard` para centralizar:
+- normalizacion de settings de Drill (`buildDrillSettingsUpdate`).
+- disparo de navegacion a Drill.
+- Se elimino duplicacion de logica en handlers de:
+- plan diario, SRS review, coach mode, focus mode y panel de errores frecuentes.
+- Se agrego test dedicado de wiring para validar que la sesion iniciada desde `DailyPlanPanel` aplica config normalizada antes de navegar.
+- Tests agregados/actualizados:
+- `src/features/progress/ProgressDashboard.navigation.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
