@@ -1,6 +1,6 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const settingsState = {
   dailyGoalType: 'attempts',
@@ -29,6 +29,10 @@ describe('PracticeReminders', () => {
     settingsState.setPracticeReminderEnabled.mockReset()
     settingsState.setPracticeReminderTime.mockReset()
     settingsState.togglePracticeReminderDay.mockReset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('shows reminder toast when daily target is still pending and time has passed', async () => {
@@ -63,5 +67,29 @@ describe('PracticeReminders', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(onShowToast).not.toHaveBeenCalled()
     expect(screen.getByText(/Recordatorios inteligentes/i)).toBeInTheDocument()
+  })
+
+  it('prevents duplicate rapid navigate actions from reminder card', async () => {
+    vi.useFakeTimers()
+    const onNavigateToDrill = vi.fn()
+
+    render(
+      <PracticeReminders
+        reminders={[{ id: 'r1', priority: 'high', message: 'Repaso pendiente' }]}
+        userStats={{ attemptsToday: 0 }}
+        onNavigateToDrill={onNavigateToDrill}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: /Practicar ahora/i })
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+
+    vi.advanceTimersByTime(260)
+    fireEvent.click(button)
+    expect(onNavigateToDrill).toHaveBeenCalledTimes(2)
+    vi.useRealTimers()
   })
 })

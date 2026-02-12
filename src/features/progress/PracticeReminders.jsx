@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getMsUntilNextMinute, normalizeReminderDays } from './practiceReminderScheduler.js'
 import { shouldTriggerPracticeReminder } from './practiceReminderEvaluator.js'
+import { createActionCooldown } from './actionCooldown.js'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
 const WEEKDAY_LABELS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
@@ -59,6 +60,11 @@ export default function PracticeReminders({
   const progressPercent = goalValue > 0 ? Math.min(100, Math.round((progressToday / goalValue) * 100)) : 0
 
   const lastTriggeredRef = useRef('')
+  const actionCooldownRef = useRef(createActionCooldown({ delayMs: 250 }))
+
+  useEffect(() => () => {
+    actionCooldownRef.current.cancel()
+  }, [])
 
   useEffect(() => {
     if (!practiceReminderEnabled) {
@@ -140,14 +146,16 @@ export default function PracticeReminders({
   ])
 
   const handleQuickEnable = () => {
-    if (!practiceReminderEnabled) {
-      setPracticeReminderEnabled(true)
-    }
-    setPracticeReminderTime(normalizedTime)
-    onShowToast?.({
-      message: `Recordatorio diario activado a las ${normalizedTime}.`,
-      type: 'success',
-      duration: 3200
+    actionCooldownRef.current.run(() => {
+      if (!practiceReminderEnabled) {
+        setPracticeReminderEnabled(true)
+      }
+      setPracticeReminderTime(normalizedTime)
+      onShowToast?.({
+        message: `Recordatorio diario activado a las ${normalizedTime}.`,
+        type: 'success',
+        duration: 3200
+      })
     })
   }
 
@@ -166,7 +174,11 @@ export default function PracticeReminders({
             Activar recordatorio diario
           </button>
           {onNavigateToDrill && (
-            <button type="button" className="reminder-button secondary" onClick={onNavigateToDrill}>
+            <button
+              type="button"
+              className="reminder-button secondary"
+              onClick={() => actionCooldownRef.current.run(() => onNavigateToDrill())}
+            >
               Practicar ahora
             </button>
           )}

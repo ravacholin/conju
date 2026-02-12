@@ -530,6 +530,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/PracticeReminders.test.jsx`
 - `src/features/progress/practiceReminderEvaluator.test.js`
 
+## Cambios realizados (P11 - slice 3: cooldown de acciones en tarjetas de recordatorio)
+- `PracticeReminders` ahora usa `createActionCooldown` para evitar doble-disparo rapido en acciones:
+- `Activar recordatorio diario`.
+- `Practicar ahora`.
+- Se agrega cleanup del cooldown al desmontar el componente.
+- Tests agregados/actualizados:
+- `src/features/progress/PracticeReminders.test.jsx` (nuevo caso de clicks rapidos coalescidos)
+- `src/features/progress/actionCooldown.test.js`
+
+## Estado P11
+- P11 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
