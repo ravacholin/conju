@@ -252,6 +252,11 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Medir impacto en tiempo de render inicial del dashboard.
 
 ## Siguiente backlog activo (Fase 5.2)
-1. [ ] Documentar dependencias de cache e invalidacion por tipo de dato en progreso.
-2. [ ] Definir TTL explicito para bloques del dashboard (heatmap, errores, recomendaciones, plan).
-3. [ ] Cubrir con tests de invalidez por evento (`progress:*`, sync, cambios de settings).
+1. [x] Documentar dependencias de cache e invalidacion por tipo de dato en progreso.
+2. [x] Definir TTL explicito para bloques del dashboard (heatmap, errores, recomendaciones, plan).
+3. [x] Cubrir con tests de invalidez por evento (`progress:*`, sync, cambios de settings).
+
+## Siguiente backlog activo (Fase 5.3)
+1. [ ] Reducir recomputos pesados del dashboard moviendo cálculos secundarios a ejecución diferida.
+2. [ ] Validar que refresh parcial no reprocese bloques no impactados por el evento.
+3. [ ] Medir mejora de refresco incremental vs refresh completo (tiempo y costo de operaciones).

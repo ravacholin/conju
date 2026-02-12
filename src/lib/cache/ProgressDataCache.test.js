@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { ProgressDataCache, resolveProgressUpdateKeys } from './ProgressDataCache.js'
+import {
+  EVENT_TYPE_TO_CACHE_TYPES,
+  PROGRESS_CACHE_TTL_MS,
+  ProgressDataCache,
+  resolveProgressUpdateKeys
+} from './ProgressDataCache.js'
 
 describe('ProgressDataCache cancellation', () => {
   it('rejects pending loads when aborted', async () => {
@@ -27,6 +32,17 @@ describe('ProgressDataCache cancellation', () => {
 })
 
 describe('ProgressDataCache policies', () => {
+  it('defines explicit TTL policy for dashboard data types', () => {
+    expect(PROGRESS_CACHE_TTL_MS).toMatchObject({
+      heatMap: expect.any(Number),
+      recommendations: expect.any(Number),
+      pronunciationStats: expect.any(Number),
+      studyPlan: expect.any(Number),
+      advancedAnalytics: expect.any(Number),
+      dynamicLevelProgress: expect.any(Number)
+    })
+  })
+
   it('supports per-entry TTL overrides', async () => {
     const cache = new ProgressDataCache()
     const loader = vi.fn(() => Promise.resolve({ ok: true }))
@@ -67,6 +83,11 @@ describe('ProgressDataCache policies', () => {
 })
 
 describe('resolveProgressUpdateKeys', () => {
+  it('maps known event types to cache keys', () => {
+    expect(EVENT_TYPE_TO_CACHE_TYPES.settings_change).toEqual(['recommendations', 'heatMap'])
+    expect(EVENT_TYPE_TO_CACHE_TYPES.challenge_completed).toContain('dailyChallenges')
+  })
+
   it('returns mapped keys for drill_result', () => {
     const keys = resolveProgressUpdateKeys({ type: 'drill_result' })
     expect(keys).toContain('heatMap')
@@ -82,5 +103,9 @@ describe('resolveProgressUpdateKeys', () => {
   it('returns null for full refresh events', () => {
     expect(resolveProgressUpdateKeys({ type: 'sync' })).toBeNull()
     expect(resolveProgressUpdateKeys({ forceFullRefresh: true })).toBeNull()
+  })
+
+  it('resolves settings_change to partial invalidation', () => {
+    expect(resolveProgressUpdateKeys({ type: 'settings_change' })).toEqual(['recommendations', 'heatMap'])
   })
 })

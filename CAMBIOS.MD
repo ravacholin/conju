@@ -981,6 +981,41 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P18
 - P18 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P19 - slice 1: contrato de dependencias cache/invalidez documentado)
+- Se documento contrato operativo de cache del dashboard en:
+- `docs/performance/progress-cache-contract.md`
+- Incluye:
+- tipos de dato y TTL por bloque,
+- mapeo de eventos `progress:*` a invalidacion parcial,
+- dependencias por seccion del dashboard.
+
+## Cambios realizados (P19 - slice 2: TTL explicito para bloques del dashboard)
+- Se formalizo politica TTL unificada en `ProgressDataCache`:
+- `PROGRESS_CACHE_TTL_MS` ahora cubre core + heavy analytics + bloques dinamicos.
+- Se extendio `useProgressDashboardData` para cachear tambien secciones heavy con `progressDataCache.get`:
+- `studyPlan`
+- `advancedAnalytics`
+- `community`
+- `offlineStatus`
+- `expertMode`
+- `dynamicLevelEvaluation`
+- `dynamicLevelProgress`
+- `dynamicLevelInfo`
+- `levelRecommendation`
+
+## Cambios realizados (P19 - slice 3: tests de invalidez por evento y contrato de cache)
+- Se amplio cobertura en:
+- `src/lib/cache/ProgressDataCache.test.js`
+- Validaciones agregadas:
+- politica TTL explicita por data type.
+- mapeo de eventos a keys (`settings_change`, `challenge_completed`, etc.).
+- resolucion de invalidacion parcial vs full refresh.
+- Se mantuvo cobertura de eventos `progress:*`/sync en:
+- `src/features/progress/useProgressDashboardData.test.js`
+
+## Estado P19
+- P19 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

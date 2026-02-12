@@ -2,6 +2,26 @@
 // Reduce solicitudes duplicadas y mejora el rendimiento del dashboard
 import { onProgressEvent, PROGRESS_EVENTS } from '../events/progressEventBus.js'
 
+const PROGRESS_CACHE_TTL_MS = Object.freeze({
+  heatMap: 3 * 60 * 1000,
+  userStats: 2 * 60 * 1000,
+  weeklyGoals: 10 * 60 * 1000,
+  weeklyProgress: 1 * 60 * 1000,
+  errorIntel: 5 * 60 * 1000,
+  recommendations: 3 * 60 * 1000,
+  dailyChallenges: 60 * 1000,
+  pronunciationStats: 3 * 60 * 1000,
+  studyPlan: 5 * 60 * 1000,
+  advancedAnalytics: 6 * 60 * 1000,
+  community: 2 * 60 * 1000,
+  offlineStatus: 30 * 1000,
+  expertMode: 5 * 60 * 1000,
+  dynamicLevelEvaluation: 2 * 60 * 1000,
+  dynamicLevelProgress: 60 * 1000,
+  dynamicLevelInfo: 5 * 60 * 1000,
+  levelRecommendation: 2 * 60 * 1000
+})
+
 class ProgressDataCache {
   constructor() {
     this.cache = new Map()
@@ -14,15 +34,7 @@ class ProgressDataCache {
     }
     
     // Configuraciones de TTL específicas por tipo de dato
-    this.ttlConfig = {
-      heatMap: 3 * 60 * 1000,        // 3 min - cambia poco
-      userStats: 2 * 60 * 1000,      // 2 min - actualiza moderadamente  
-      weeklyGoals: 10 * 60 * 1000,   // 10 min - muy estático
-      weeklyProgress: 1 * 60 * 1000, // 1 min - actualiza frecuentemente
-      errorIntel: 5 * 60 * 1000,     // 5 min - análisis más pesado
-      recommendations: 3 * 60 * 1000,  // 3 min - basado en datos cached
-      dailyChallenges: 60 * 1000       // 1 min - métricas diarias cambian rápido
-    }
+    this.ttlConfig = { ...PROGRESS_CACHE_TTL_MS }
   }
   
   /**
@@ -375,3 +387,4 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
 }
 
 export { progressDataCache, ProgressDataCache, resolveProgressUpdateKeys, CORE_CACHE_TYPES }
+export { EVENT_TYPE_TO_CACHE_TYPES, PROGRESS_CACHE_TTL_MS }
