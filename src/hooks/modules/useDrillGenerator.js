@@ -264,7 +264,7 @@ export const useDrillGenerator = () => {
             return mixedFallbackItem
           }
 
-          console.log('🆘 useDrillGenerator: Mixed fallback failed, using emergency fallback')
+          logger.warn('generateNextItem', 'Mixed fallback failed, using emergency fallback')
           const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
           setLastGeneratedItem(emergencyItem)
           return emergencyItem
@@ -338,7 +338,7 @@ export const useDrillGenerator = () => {
             return mixedFallbackItem
           }
 
-          console.log('🆘 useDrillGenerator: Mixed fallback returned null, using emergency fallback')
+          logger.warn('generateNextItem', 'Mixed fallback returned null, using emergency fallback')
           const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
           setLastGeneratedItem(emergencyItem)
           return emergencyItem
@@ -371,15 +371,15 @@ export const useDrillGenerator = () => {
         return mixedFallbackItem
       }
 
-      console.log('🆘 useDrillGenerator: All fallbacks failed, using emergency fallback')
+      logger.warn('generateNextItem', 'All fallbacks failed, using emergency fallback')
       const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
 
     } catch (error) {
-      console.error('💥 CRITICAL ERROR in useDrillGenerator:', error)
-      console.error('💥 Error stack:', error.stack)
-      console.error('💥 Settings causing error:', {
+      logger.error('generateNextItem', 'Critical generator error', {
+        error,
+        stack: error?.stack,
         level: FRESH_SETTINGS.level,
         region: FRESH_SETTINGS.region,
         practiceMode: FRESH_SETTINGS.practiceMode,
@@ -392,7 +392,7 @@ export const useDrillGenerator = () => {
       })
       logger.error('generateNextItem', 'Error during item generation', error)
 
-      console.log('🆘 useDrillGenerator: Creating emergency fallback after critical error')
+      logger.warn('generateNextItem', 'Creating emergency fallback after critical error')
       const emergencyItem = await createEmergencyFallbackItem(FRESH_SETTINGS)
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
@@ -521,7 +521,11 @@ export const useDrillGenerator = () => {
  * @returns {Object} A valid drill item that always works
  */
 async function createEmergencyFallbackItem(settings) {
-  console.log('🔍 REAL FALLBACK: Looking for actual forms for:', settings.specificMood, settings.specificTense, 'region:', settings.region)
+  logger.debug('createEmergencyFallbackItem', 'Searching fallback form', {
+    specificMood: settings.specificMood,
+    specificTense: settings.specificTense,
+    region: settings.region
+  })
 
   // Define target mood/tense outside try block so it's available throughout function
   const targetMood = settings.specificMood || 'indicative'
@@ -532,15 +536,21 @@ async function createEmergencyFallbackItem(settings) {
     const { getAllowedPersonsForRegion } = await import('../../lib/core/curriculumGate.js')
     const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
 
-    console.log('🌍 Emergency fallback: filtering by region', settings.region, 'allowed persons:', Array.from(allowedPersons))
+    logger.debug('createEmergencyFallbackItem', 'Applying regional constraints in fallback', {
+      region: settings.region,
+      allowedPersons: Array.from(allowedPersons)
+    })
 
     // STEP 1: Try to get forms directly from database, bypassing all caching
     const { getAllVerbs } = await import('../../lib/core/verbDataService.js')
     const allVerbs = await getAllVerbs()
 
-    console.log('📚 Direct database access: got', allVerbs.length, 'verbs')
+    logger.debug('createEmergencyFallbackItem', 'Loaded verbs for fallback', { verbs: allVerbs.length })
 
-    console.log('🎯 Looking for forms with mood:', targetMood, 'tense:', targetTense)
+    logger.debug('createEmergencyFallbackItem', 'Searching exact mood/tense fallback', {
+      targetMood,
+      targetTense
+    })
 
     const matchingForms = []
 
@@ -570,13 +580,22 @@ async function createEmergencyFallbackItem(settings) {
       }
     }
 
-    console.log('✅ Found', matchingForms.length, 'REAL forms for', targetMood, targetTense, 'respecting regional constraints')
+    logger.debug('createEmergencyFallbackItem', 'Exact fallback candidates found', {
+      count: matchingForms.length,
+      targetMood,
+      targetTense
+    })
 
     // STEP 3: If we found real forms, use one randomly
     if (matchingForms.length > 0) {
       const selectedForm = matchingForms[Math.floor(Math.random() * matchingForms.length)]
 
-      console.log('🎉 Using REAL form:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, selectedForm.value)
+      logger.info('createEmergencyFallbackItem', 'Using exact fallback form', {
+        lemma: selectedForm.lemma,
+        mood: selectedForm.mood,
+        tense: selectedForm.tense,
+        person: selectedForm.person
+      })
 
       const realItem = {
         id: `real_fallback_${Date.now()}`,
@@ -600,7 +619,10 @@ async function createEmergencyFallbackItem(settings) {
       // Smart fallback: if subjunctive, fall back to present subjunctive, not indicative
       const fallbackTense = targetMood === 'subjunctive' ? 'subjPres' : 'pres'
 
-      console.log('⚠️ No exact match found, trying', targetMood, fallbackTense, 'as fallback')
+      logger.warn('createEmergencyFallbackItem', 'No exact fallback match, trying relaxed tense', {
+        targetMood,
+        fallbackTense
+      })
 
       const moodForms = []
 
@@ -632,7 +654,12 @@ async function createEmergencyFallbackItem(settings) {
       if (moodForms.length > 0) {
         const selectedForm = moodForms[Math.floor(Math.random() * moodForms.length)]
 
-        console.log('🔄 Using mood fallback:', selectedForm.lemma, selectedForm.mood, selectedForm.tense, 'respecting regional constraints')
+        logger.info('createEmergencyFallbackItem', 'Using mood-level fallback', {
+          lemma: selectedForm.lemma,
+          mood: selectedForm.mood,
+          tense: selectedForm.tense,
+          person: selectedForm.person
+        })
 
         return {
           id: `mood_fallback_${Date.now()}`,
@@ -651,11 +678,14 @@ async function createEmergencyFallbackItem(settings) {
     }
 
   } catch (error) {
-    console.error('❌ Error in real fallback system:', error)
+    logger.error('createEmergencyFallbackItem', 'Error in fallback search', error)
   }
 
   // STEP 5: Only if everything fails, show clear error message
-  console.error(`💥 CRITICAL: No forms found for ${targetMood}/${targetTense}. Database may be corrupted.`)
+  logger.error('createEmergencyFallbackItem', 'No forms found for fallback criteria', {
+    targetMood,
+    targetTense
+  })
 
   return {
     id: `critical_error_${Date.now()}`,

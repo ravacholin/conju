@@ -546,14 +546,21 @@ export function useDrillMode() {
  * IMPORTANT: Respects regional filtering to ensure correct person forms
  */
 async function createEmergencyFallbackItem(settings = {}) {
-  console.log('🔍 useDrillMode: REAL FALLBACK - Looking for actual forms for:', settings.specificMood, settings.specificTense, 'region:', settings.region)
+  logger.debug('createEmergencyFallbackItem', 'Searching real fallback form', {
+    specificMood: settings.specificMood,
+    specificTense: settings.specificTense,
+    region: settings.region
+  })
 
   try {
     // Import regional filtering function
     const { getAllowedPersonsForRegion } = await import('../lib/core/curriculumGate.js')
     const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
 
-    console.log('🌍 Emergency fallback: filtering by region', settings.region, 'allowed persons:', Array.from(allowedPersons))
+    logger.debug('createEmergencyFallbackItem', 'Applying regional person filter', {
+      region: settings.region,
+      allowedPersons: Array.from(allowedPersons)
+    })
 
     // Import the main verb database
     const { getVerbs } = await import('../data/verbsLazy.js')
@@ -642,11 +649,16 @@ async function createEmergencyFallbackItem(settings = {}) {
         selectionMethod: 'drill_real_fallback'
       }
 
-      console.log('✅ useDrillMode: REAL fallback found:', selectedForm.lemma, selectedForm.mood, selectedForm.tense)
+      logger.info('createEmergencyFallbackItem', 'Real fallback found', {
+        lemma: selectedForm.lemma,
+        mood: selectedForm.mood,
+        tense: selectedForm.tense,
+        person: selectedForm.person
+      })
       return emergencyItem
     }
   } catch (error) {
-    console.error('❌ useDrillMode: Error searching for real forms:', error)
+    logger.error('createEmergencyFallbackItem', 'Error searching real fallback forms', error)
   }
 
   // Only if absolutely everything fails, use minimal fallback
@@ -664,6 +676,6 @@ async function createEmergencyFallbackItem(settings = {}) {
     selectionMethod: 'drill_absolute_fallback'
   }
 
-  console.log('🆘 useDrillMode: Absolute fallback used')
+  logger.warn('createEmergencyFallbackItem', 'Absolute fallback used')
   return emergencyItem
 }

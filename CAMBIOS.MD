@@ -78,6 +78,14 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Tests nuevos:
 - `src/hooks/useSyncStatus.test.js` cubriendo deduplicacion de listeners, teardown del ultimo consumidor y politica de polling en hidden/visible.
 
+## Cambios realizados (P1 - slice 6: limpieza de logs ruidosos en drill)
+- Se reemplazaron `console.log`/`console.error` en rutas criticas de generacion por `logger` estructurado.
+- Archivos impactados:
+- `src/hooks/modules/useDrillGenerator.js`
+- `src/hooks/useDrillMode.js`
+- `generateNextItem` ahora reporta fallbacks y errores criticos con contexto estructurado (settings, stack, tipo de fallback) sin ruido de consola directa.
+- Los flujos de fallback de emergencia ahora usan `logger.debug/info/warn/error`, manteniendo trazabilidad en dev sin saturar salida ni mezclar canales.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
