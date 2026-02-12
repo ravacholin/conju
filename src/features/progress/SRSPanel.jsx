@@ -4,6 +4,7 @@ import { useSettings } from '../../state/settings.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { useSRSQueue } from '../../hooks/useSRSQueue.js'
 import { buildSrsReviewDrillConfig, buildSrsReviewFilter } from './srsReviewSessionConfig.js'
+import { createActionCooldown } from './actionCooldown.js'
 import SRSReviewQueueModal from './SRSReviewQueueModal.jsx'
 import GamificationDisplay from '../../components/gamification/GamificationDisplay.jsx'
 import SRSAnalytics from '../../components/srs/SRSAnalytics.jsx'
@@ -33,8 +34,7 @@ export default function SRSPanel({ onNavigateToDrill }) {
     statsSignature: '',
     skipNext: false
   })
-  const startReviewLockRef = useRef(false)
-  const startReviewReleaseRef = useRef(null)
+  const startReviewCooldownRef = useRef(createActionCooldown({ delayMs: 250 }))
   const srsUpdateDebounceRef = useRef(null)
 
   const loadSRSData = useCallback(async () => {
@@ -154,41 +154,25 @@ export default function SRSPanel({ onNavigateToDrill }) {
 
   const startReviewSession = (sessionType = 'all') => {
     try {
-      if (startReviewLockRef.current) {
-        return
-      }
+      startReviewCooldownRef.current.run(() => {
+        const filter = buildSrsReviewFilter(sessionType)
+        settings.set(buildSrsReviewDrillConfig(sessionType))
 
-      const filter = buildSrsReviewFilter(sessionType)
-
-      startReviewLockRef.current = true
-      if (startReviewReleaseRef.current) {
-        clearTimeout(startReviewReleaseRef.current)
-      }
-
-      settings.set(buildSrsReviewDrillConfig(sessionType))
-      
-      if (onNavigateToDrill) {
-        onNavigateToDrill()
-      } else {
-        window.dispatchEvent(new CustomEvent('progress:navigate', { 
-          detail: { focus: 'review', sessionType, filter } 
-        }))
-      }
-
-      startReviewReleaseRef.current = setTimeout(() => {
-        startReviewLockRef.current = false
-        startReviewReleaseRef.current = null
-      }, 250)
+        if (onNavigateToDrill) {
+          onNavigateToDrill()
+        } else {
+          window.dispatchEvent(new CustomEvent('progress:navigate', {
+            detail: { focus: 'review', sessionType, filter }
+          }))
+        }
+      })
     } catch (error) {
       logger.error('Error starting review session:', error)
     }
   }
 
   useEffect(() => () => {
-    if (startReviewReleaseRef.current) {
-      clearTimeout(startReviewReleaseRef.current)
-      startReviewReleaseRef.current = null
-    }
+    startReviewCooldownRef.current.cancel()
   }, [])
 
   const getMasteryColor = (score) => {

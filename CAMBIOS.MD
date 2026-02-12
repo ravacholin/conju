@@ -473,6 +473,17 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/actionCooldown.test.js`
 - `src/features/progress/ProgressDashboard.navigation.test.jsx`
 
+## Cambios realizados (P9 - slice 3: SRSPanel migrado a cooldown compartido)
+- `SRSPanel` ahora usa `createActionCooldown` para el guard anti doble-disparo de `startReviewSession`.
+- Se elimino logica manual de lock+timeout local, manteniendo el mismo comportamiento funcional.
+- Esto alinea el control de concurrencia de acciones con el dashboard y reduce codigo duplicado.
+- Tests agregados/actualizados:
+- `src/features/progress/SRSPanel.test.jsx`
+- `src/features/progress/actionCooldown.test.js`
+
+## Estado P9
+- P9 finalizado (slices 1 a 3 completos y documentados).
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
