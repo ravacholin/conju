@@ -6,6 +6,7 @@ import { mlRecommendationEngine } from '../../lib/progress/mlRecommendations.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import { buildSmartPracticeRecommendationKeyItem } from './smartPracticeRecommendationKey.js'
+import { createEventDebouncer } from './eventDebouncer.js'
 import {
   buildSmartPracticeRecommendationKey,
   getCachedSmartPracticeRecommendation,
@@ -49,7 +50,10 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const [mlRecommendations, setMLRecommendations] = useState(null)
   const [loadingML, setLoadingML] = useState(false)
   const [refreshSeed, setRefreshSeed] = useState(0)
-  const refreshDebounceRef = useRef(null)
+  const refreshDebouncerRef = useRef(createEventDebouncer({
+    delayMs: 250,
+    onDebounced: () => setRefreshSeed((value) => value + 1)
+  }))
   const recommendationKey = useMemo(
     () => buildSmartPracticeRecommendationKey(userStats || {}),
     [userStats]
@@ -130,22 +134,12 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
       }
 
       invalidateCachedSmartPracticeRecommendation(recommendationKey)
-      if (refreshDebounceRef.current) {
-        clearTimeout(refreshDebounceRef.current)
-      }
-
-      refreshDebounceRef.current = setTimeout(() => {
-        refreshDebounceRef.current = null
-        setRefreshSeed((value) => value + 1)
-      }, 250)
+      refreshDebouncerRef.current.trigger(detail)
     }
 
     window.addEventListener('progress:dataUpdated', handleProgressUpdate)
     return () => {
-      if (refreshDebounceRef.current) {
-        clearTimeout(refreshDebounceRef.current)
-        refreshDebounceRef.current = null
-      }
+      refreshDebouncerRef.current.cancel()
       window.removeEventListener('progress:dataUpdated', handleProgressUpdate)
     }
   }, [recommendationKey])

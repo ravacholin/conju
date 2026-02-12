@@ -484,6 +484,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P9
 - P9 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P10 - slice 1: debouncer reusable para eventos de progreso)
+- Se agrego utilidad reusable `createEventDebouncer`:
+- `src/features/progress/eventDebouncer.js`
+- Se integro en `SmartPractice` para reemplazar manejo manual de timeout en `progress:dataUpdated`.
+- Beneficio: menos codigo de timer ad-hoc y comportamiento de coalescing centralizado/testeable.
+- Tests agregados/actualizados:
+- `src/features/progress/eventDebouncer.test.js`
+- `src/features/progress/SmartPractice.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
