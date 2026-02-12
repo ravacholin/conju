@@ -371,7 +371,7 @@ export function scheduleAutoSync(intervalMs = 300000) {
  */
 export function cancelScheduledSync() {
   const timerApi = typeof globalThis !== 'undefined' ? globalThis : undefined
-  if (autoSyncTimerId && timerApi?.clearInterval) {
+  if (autoSyncTimerId !== null && autoSyncTimerId !== undefined && timerApi?.clearInterval) {
     timerApi.clearInterval(autoSyncTimerId)
     if (isDev) logger.debug('cancelScheduledSync', 'Auto-sync timer cancelado', { timerId: autoSyncTimerId })
   }

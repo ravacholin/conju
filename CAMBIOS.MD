@@ -108,6 +108,12 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - Test agregado:
 - `src/lib/progress/index.test.js` verifica deduplicacion del scheduler y limpieza correcta en reset.
 
+## Cambios realizados (P1 - slice 9: robustez de cancelacion de auto-sync)
+- Se corrigio `cancelScheduledSync` en `src/lib/progress/cloudSync.js` para limpiar tambien timers con id `0` (caso valido en algunos runtimes/test env).
+- Antes la condicion truthy podia omitir `clearInterval(0)` y dejar estado inconsistente.
+- Test agregado en `src/lib/progress/cloudSync.memoryLeak.test.js`:
+- valida que `cancelScheduledSync()` invoque `clearInterval(0)` cuando `setInterval` devuelve `0`.
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

@@ -23,8 +23,6 @@ describe('CloudSync Memory Leak Prevention', () => {
     it('should cancel auto-sync timer when cancelScheduledSync is called', () => {
       // Schedule auto-sync
       scheduleAutoSync(1000)
-
-      const statusBefore = getSyncStatus()
       // Note: We can't directly check timer ID, but we can verify cleanup behavior
 
       // Cancel
@@ -143,6 +141,25 @@ describe('CloudSync Memory Leak Prevention', () => {
       expect(true).toBe(true)
 
       cancelScheduledSync()
+    })
+
+    it('should clear scheduled timer even when timer id is 0', () => {
+      const originalSetInterval = globalThis.setInterval
+      const originalClearInterval = globalThis.clearInterval
+      const clearIntervalSpy = vi.fn()
+
+      try {
+        globalThis.setInterval = vi.fn(() => 0)
+        globalThis.clearInterval = clearIntervalSpy
+
+        scheduleAutoSync(1000)
+        cancelScheduledSync()
+
+        expect(clearIntervalSpy).toHaveBeenCalledWith(0)
+      } finally {
+        globalThis.setInterval = originalSetInterval
+        globalThis.clearInterval = originalClearInterval
+      }
     })
   })
 
