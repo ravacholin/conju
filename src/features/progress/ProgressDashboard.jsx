@@ -12,6 +12,7 @@ import ProgressOverview from './ProgressOverview.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
 import DailyPlanPanel from './DailyPlanPanel.jsx'
 import ProgressUnlocksPanel from './ProgressUnlocksPanel.jsx'
+import LearningJourneyPanel from './LearningJourneyPanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
 const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
@@ -266,6 +267,14 @@ export default function ProgressDashboard({
         <DailyPlanPanel
           studyPlan={studyPlan}
           onStartSession={handleStartPlannedSession}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Learning Journey">
+        <LearningJourneyPanel
+          userStats={userStats}
+          studyPlan={studyPlan}
+          onNavigateToDrill={onNavigateToDrill}
         />
       </SafeComponent>
 

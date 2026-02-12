@@ -207,6 +207,19 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/DailyPlanPanel.test.jsx`
 - `src/features/progress/dailyPlanChecklist.test.js`
 
+## Cambios realizados (P2 - slice 5: ruta de aprendizaje adaptativa)
+- Se agrego `LearningJourneyPanel` con una ruta de progreso clara en 3 hitos:
+- Base estable (intentos), Consistencia (racha) y Dominio operativo (mastery).
+- Cada hito muestra progreso porcentual y CTA `Practicar ahora` mientras este pendiente.
+- Se incorporo un mensaje adaptativo segun estado real del usuario y plan disponible.
+- Se extrajo la logica a una capa pura testeable:
+- `src/features/progress/learningJourneyPlan.js`
+- Integracion en `ProgressDashboard` para conectar progreso -> accion en Drill.
+- Tests agregados/actualizados:
+- `src/features/progress/learningJourneyPlan.test.js`
+- `src/features/progress/LearningJourneyPanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
