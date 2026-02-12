@@ -174,6 +174,18 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 - `src/features/progress/DailyPlanPanel.test.jsx`
 - `src/features/progress/ProgressDashboard.smoke.test.jsx` (incluye panel en smoke).
 
+## Cambios realizados (P2 - slice 2: story/timeline desbloqueables por progreso real)
+- Se agrego `ProgressUnlocksPanel` para vincular progreso con recompensas de experiencia:
+- desbloqueo de Story por intentos totales.
+- desbloqueo de Timeline por racha o dominio global.
+- Cada recompensa muestra requisito actual y estado (`Bloqueado` / `Abrir ahora`) con CTA directa.
+- Integracion en `ProgressDashboard` y cableado de navegacion real desde `AppRouter`:
+- `onNavigateToStory`
+- `onNavigateToTimeline`
+- Tests agregados/actualizados:
+- `src/features/progress/ProgressUnlocksPanel.test.jsx`
+- `src/features/progress/ProgressDashboard.smoke.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`

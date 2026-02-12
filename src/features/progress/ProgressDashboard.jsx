@@ -11,6 +11,7 @@ import { safeLazy } from '../../lib/utils/lazyImport.js'
 import ProgressOverview from './ProgressOverview.jsx'
 import PracticeReminders from './PracticeReminders.jsx'
 import DailyPlanPanel from './DailyPlanPanel.jsx'
+import ProgressUnlocksPanel from './ProgressUnlocksPanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
 const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
@@ -28,7 +29,12 @@ const logger = createLogger('features:ProgressDashboard')
  * Streamlined Progress Dashboard - Focused on actionable learning features
  * Consolidates 29+ components into 4 clean, purposeful sections
  */
-export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill }) {
+export default function ProgressDashboard({
+  onNavigateHome,
+  onNavigateToDrill,
+  onNavigateToStory,
+  onNavigateToTimeline
+}) {
   const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
   const syncAvailable = isSyncEnabled()
@@ -260,6 +266,14 @@ export default function ProgressDashboard({ onNavigateHome, onNavigateToDrill })
         <DailyPlanPanel
           studyPlan={studyPlan}
           onStartSession={handleStartPlannedSession}
+        />
+      </SafeComponent>
+
+      <SafeComponent name="Progress Unlocks">
+        <ProgressUnlocksPanel
+          userStats={userStats}
+          onNavigateToStory={onNavigateToStory}
+          onNavigateToTimeline={onNavigateToTimeline}
         />
       </SafeComponent>
 

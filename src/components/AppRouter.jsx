@@ -605,6 +605,8 @@ function AppRouter() {
               // This ensures settings are fully applied before regeneration
               router.navigate({ mode: 'drill' })
             }}
+            onNavigateToStory={handleStartStoryMode}
+            onNavigateToTimeline={handleStartTimelineMode}
           />
         </React.Suspense>
       </>
