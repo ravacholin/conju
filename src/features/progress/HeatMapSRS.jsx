@@ -288,6 +288,14 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
     }
   }
 
+  const handleCellKeyDown = (event, mood, tense) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+    event.preventDefault()
+    handleCellClick(mood, tense)
+  }
+
   // Handle SRS click for specific mood/tense combination
   const handleSRSClick = (mood, tense, event) => {
     event.stopPropagation() // Prevent cell click
@@ -303,6 +311,14 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
       // Wait for settings to propagate before navigating (increased delay for reliability)
       setTimeout(() => onNavigateToDrill(), 150)
     }
+  }
+
+  const handleSRSKeyDown = (event, mood, tense) => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+    event.preventDefault()
+    handleSRSClick(mood, tense, event)
   }
 
   // Handle SRS practice
@@ -476,14 +492,22 @@ export default function HeatMapSRS({ data, onNavigateToDrill }) {
                       key={tense.key}
                       className={`data-cell ${cellData.level} ${cellData.srsStatus === 'due' ? 'srs-due' : ''}`}
                       onClick={() => handleCellClick(mood, tense.key)}
+                      onKeyDown={(event) => handleCellKeyDown(event, mood, tense.key)}
+                      role="button"
+                      tabIndex={0}
                       title={`${config.label} - ${tenseLabel}`}
+                      aria-label={`Practicar ${config.label} ${tenseLabel}`}
                     >
                       <div className="cell-content">
                         {cellData.srsStatus === 'due' && (
                           <div
                             className="srs-indicator clickable"
                             onClick={(e) => handleSRSClick(mood, tense.key, e)}
+                            onKeyDown={(event) => handleSRSKeyDown(event, mood, tense.key)}
+                            role="button"
+                            tabIndex={0}
                             title={`Practicar SRS: ${config.label} - ${tenseLabel}`}
+                            aria-label={`Practicar SRS ${config.label} ${tenseLabel}`}
                           >
                             <img src="/icons/timer.png" alt="SRS" className="srs-badge" />
                           </div>

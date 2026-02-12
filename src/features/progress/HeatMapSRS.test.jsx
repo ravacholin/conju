@@ -1,14 +1,15 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 
-const { getHeatMapDataMock } = vi.hoisted(() => ({
-  getHeatMapDataMock: vi.fn()
+const { getHeatMapDataMock, setSettingsMock } = vi.hoisted(() => ({
+  getHeatMapDataMock: vi.fn(),
+  setSettingsMock: vi.fn()
 }))
 
 vi.mock('../../state/settings.js', () => ({
   useSettings: () => ({
-    set: vi.fn()
+    set: setSettingsMock
   })
 }))
 
@@ -48,6 +49,7 @@ import HeatMapSRS from './HeatMapSRS.jsx'
 describe('HeatMapSRS', () => {
   beforeEach(() => {
     getHeatMapDataMock.mockClear()
+    setSettingsMock.mockClear()
   })
 
   it('no realiza un fetch adicional cuando recibe datos iniciales válidos', async () => {
@@ -71,5 +73,34 @@ describe('HeatMapSRS', () => {
       expect(getHeatMapDataMock).not.toHaveBeenCalled()
     })
   })
-})
 
+  it('permite activar práctica específica con teclado en una celda', async () => {
+    const sampleData = {
+      range: 'all',
+      heatMap: {
+        'indicativo-presente': {
+          mastery: 0.72,
+          attempts: 5,
+          lastAttempt: 1700000000000
+        }
+      },
+      updatedAt: 1700000000000
+    }
+    const onNavigateToDrill = vi.fn()
+
+    render(<HeatMapSRS data={sampleData} onNavigateToDrill={onNavigateToDrill} />)
+
+    const targetCell = await screen.findByRole('button', { name: /Practicar Indicativo Presente/i })
+    fireEvent.keyDown(targetCell, { key: 'Enter' })
+
+    expect(setSettingsMock).toHaveBeenCalledWith({
+      practiceMode: 'specific',
+      specificMood: 'indicativo',
+      specificTense: 'presente'
+    })
+
+    await waitFor(() => {
+      expect(onNavigateToDrill).toHaveBeenCalledTimes(1)
+    })
+  })
+})

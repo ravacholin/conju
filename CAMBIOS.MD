@@ -301,6 +301,15 @@ Este documento identifica debilidades, flaquezas, riesgos y oportunidades de mej
 ## Estado P3
 - P3 finalizado (slices 1 a 3 completos y documentados).
 
+## Cambios realizados (P4 - slice 1: accesibilidad teclado en heatmap)
+- Se hizo accesible por teclado el grid de `HeatMapSRS`:
+- cada celda practica ahora expone `role="button"` y `tabIndex=0`.
+- activacion por `Enter`/`Space` con el mismo flujo de click.
+- indicador SRS tambien es activable por teclado con semantica explicita.
+- Se agregaron `aria-label` descriptivos por mood/tense para mejorar navegacion asistida.
+- Tests agregados/actualizados:
+- `src/features/progress/HeatMapSRS.test.jsx`
+
 Tests ejecutados:
 - `npx vitest run src/hooks/useOnboardingFlow.test.js src/components/onboarding/navigationBack.test.jsx`
 - `npx vitest run src/hooks/useDrillMode.generation-smoke.test.js src/hooks/useDrillMode.result-normalization.test.js`
