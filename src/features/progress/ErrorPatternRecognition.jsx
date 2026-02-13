@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js'
+import { buildStableListKey } from './progressListKeys.js'
 
 export default function ErrorPatternRecognition({ attempts, mastery, onPatternAction }) {
   const patterns = useMemo(() => {
@@ -49,7 +50,11 @@ export default function ErrorPatternRecognition({ attempts, mastery, onPatternAc
         <h3>🔮 Predicciones y Recomendaciones</h3>
         <div className="insights-grid">
           {generatePredictiveInsights(patterns).map((insight, index) => (
-            <InsightCard key={index} insight={insight} onAction={onPatternAction} />
+            <InsightCard
+              key={buildStableListKey('pattern-insight', insight, ['title', 'priority', 'prediction'], `fallback-${index}`)}
+              insight={insight}
+              onAction={onPatternAction}
+            />
           ))}
         </div>
       </div>
@@ -75,7 +80,12 @@ function PatternCategory({ title, patterns, onPatternAction, color }) {
       <div className="patterns-list">
         {patterns.map((pattern, index) => (
           <PatternCard
-            key={index}
+            key={buildStableListKey(
+              'pattern-card',
+              pattern,
+              ['title', 'severity', 'description', 'insight'],
+              `fallback-${index}`
+            )}
             pattern={pattern}
             onPatternAction={onPatternAction}
             categoryColor={color}
@@ -144,7 +154,7 @@ function PatternCard({ pattern, onPatternAction, categoryColor }) {
               <span className="data-label">Contextos:</span>
               <div className="context-tags">
                 {pattern.data.contexts.map((context, i) => (
-                  <span key={i} className="context-tag">{context}</span>
+                  <span key={buildStableListKey('pattern-context', context, [], `fallback-${i}`)} className="context-tag">{context}</span>
                 ))}
               </div>
             </div>
@@ -157,7 +167,7 @@ function PatternCard({ pattern, onPatternAction, categoryColor }) {
       </div>
 
       {pattern.recommendations.map((rec, index) => (
-        <div key={index} className="pattern-recommendation">
+        <div key={buildStableListKey('pattern-rec', rec, [], `fallback-${index}`)} className="pattern-recommendation">
           🎯 <strong>Recomendación:</strong> {rec}
         </div>
       ))}
@@ -166,7 +176,7 @@ function PatternCard({ pattern, onPatternAction, categoryColor }) {
         <div className="pattern-actions">
           {pattern.actions.map((action, index) => (
             <button
-              key={index}
+              key={buildStableListKey('pattern-action', action, ['id', 'type', 'label'], `fallback-${index}`)}
               className="pattern-action-btn"
               style={{ borderColor: categoryColor }}
               onClick={() => onPatternAction(action)}

@@ -1,4 +1,5 @@
 import React from 'react'
+import { buildStableListKey } from './progressListKeys.js'
 
 export default function GeneralRecommendations({ recommendations = [], onSelect }) {
   return (
@@ -11,7 +12,7 @@ export default function GeneralRecommendations({ recommendations = [], onSelect 
         {recommendations.length > 0 ? (
           recommendations.slice(0, 3).map((rec, index) => (
             <div
-              key={index}
+              key={buildStableListKey('general-rec', rec, ['type', 'title', 'description', 'priority'], `fallback-${index}`)}
               className={`recommendation-card priority-${rec.priority}`}
               onClick={() => onSelect && onSelect(rec)}
               role="button"

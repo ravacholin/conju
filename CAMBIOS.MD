@@ -1336,3 +1336,55 @@ Tests ejecutados:
 
 ### Verificación
 - `npx vitest run src/data/verbs.subjImpf-regression.test.js src/data/verbs.subjImpf-integrity.test.js` ✅
+
+## Cambios realizados (Fase 7.1 - slice 1: estabilidad de refresh en SmartPractice)
+- `SmartPractice` ahora debouncea cambios de `recommendationKey` (200ms) antes de disparar recomputación ML.
+- Objetivo: evitar thrash y llamadas redundantes cuando `userStats` cambia en ráfaga por filtros rápidos.
+- Se mantuvo el refresh por `progress:dataUpdated` con debouncer existente (250ms), combinando ambas protecciones.
+- Nuevo test: `debounces ML recomputation when user stats change rapidly` en `src/features/progress/SmartPractice.test.jsx`.
+- Verificación: `npx vitest run src/features/progress/SmartPractice.test.jsx` ✅.
+
+## Cambios realizados (Fase 7.1 - slice 2: keys estables en listas dinámicas)
+- Se eliminó uso de `key={index}` en listas dinámicas de componentes de progreso con interacción frecuente:
+- `src/features/progress/ErrorPatternRecognition.jsx`
+- `src/features/progress/PracticeRecommendations.jsx`
+- `src/features/progress/GeneralRecommendations.jsx`
+- Se incorporó helper reutilizable `buildStableListKey` en:
+- `src/features/progress/progressListKeys.js`
+- Se agregaron tests unitarios del helper:
+- `src/features/progress/progressListKeys.test.js`
+- Impacto esperado: menor riesgo de remount innecesario y mejor preservación de estado/render al reordenar o refrescar recomendaciones.
+- Verificación: `npx vitest run src/features/progress/progressListKeys.test.js src/features/progress/GeneralRecommendations.test.jsx src/features/progress/SmartPractice.test.jsx` ✅.
+
+## Estado consolidado (para retomar rápido)
+
+### Ya resuelto en esta tanda
+- Integridad crítica de conjugaciones `subjImpf` restaurada para casos reportados y casos adicionales detectados en auditoría.
+- Guardrails de datos añadidos:
+- `src/data/verbs.subjImpf-regression.test.js`
+- `src/data/verbs.subjImpf-integrity.test.js`
+- Auditoría técnica documentada en:
+- `docs/linguistic/db-rules-audit-2026-02-12.md`
+- SmartPractice endurecido contra inestabilidad de refresco:
+- debounce de recomputación ML por cambios rápidos de stats.
+- reducción de remounts por keys inestables en listas dinámicas de progreso.
+
+### Pendiente inmediato (siguiente slice activo)
+- Fase 7.1 - slice 3: medir impacto real en re-render del dashboard ante cambios rápidos.
+- Objetivo de salida:
+- baseline reproducible antes/después,
+- métrica de renders/recomputes y tiempo de refresco,
+- criterio explícito de aceptación para no degradar UX.
+- Entregables recomendados:
+- test/medición en `src/features/progress/useProgressDashboardData.test.js` o script dedicado en `scripts/`,
+- reporte en `docs/performance/progress-refresh-measurement.md` con números before/after,
+- si corresponde, ajuste fino de dependencias/memoización en `SmartPractice` y consumidores del dashboard.
+
+### Pendientes próximos después de 7.1
+- Fase 7.2 (seguridad/privacidad):
+- eliminar dependencia de secretos de sync en frontend cuando aplique,
+- definir y documentar token exchange seguro vía backend.
+- Fase 8 (operación/CI):
+- endurecer presupuestos de performance en CI (de no bloqueante a bloqueante donde aplique),
+- hygiene final de artefactos legacy/backups,
+- formato fijo de changelog técnico por release.

@@ -184,4 +184,43 @@ describe('SmartPractice recommendations', () => {
     })
     expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(2)
   })
+
+  it('debounces ML recomputation when user stats change rapidly', async () => {
+    vi.useFakeTimers()
+
+    const { rerender } = render(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 10, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    rerender(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 11, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+    rerender(
+      <SmartPractice
+        heatMapData={null}
+        userStats={{ totalAttempts: 12, totalMastery: 55, streakDays: 2 }}
+        onNavigateToDrill={() => {}}
+      />
+    )
+
+    await act(async () => {
+      vi.advanceTimersByTime(199)
+      await Promise.resolve()
+    })
+    expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(0)
+
+    await act(async () => {
+      vi.advanceTimersByTime(5)
+      await Promise.resolve()
+    })
+    expect(mlRecommendationEngine.generateSessionRecommendations).toHaveBeenCalledTimes(1)
+  })
 })

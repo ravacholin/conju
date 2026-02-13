@@ -50,6 +50,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
   const [mlRecommendations, setMLRecommendations] = useState(null)
   const [loadingML, setLoadingML] = useState(false)
   const [refreshSeed, setRefreshSeed] = useState(0)
+  const [debouncedRecommendationKey, setDebouncedRecommendationKey] = useState('')
   const refreshDebouncerRef = useRef(createEventDebouncer({
     delayMs: 250,
     onDebounced: () => setRefreshSeed((value) => value + 1)
@@ -59,19 +60,32 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     [userStats]
   )
 
+  useEffect(() => {
+    if (!recommendationKey) {
+      setDebouncedRecommendationKey('')
+      return undefined
+    }
+
+    const timeoutId = setTimeout(() => {
+      setDebouncedRecommendationKey(recommendationKey)
+    }, 200)
+
+    return () => clearTimeout(timeoutId)
+  }, [recommendationKey])
+
   // Get user-friendly labels for mood/tense combinations
   const getMoodTenseLabel = useCallback((mood, tense) => {
     return formatMoodTense(mood, tense)
   }, [])
 
-  // Fetch ML recommendations when component mounts or userStats changes
+  // Fetch ML recommendations after debouncing key changes to avoid thrash on rapid filter switches
   useEffect(() => {
     let cancelled = false
 
     const fetchMLRecommendations = async () => {
-      if (!userStats) return
+      if (!userStats || !debouncedRecommendationKey) return
 
-      const cached = getCachedSmartPracticeRecommendation(recommendationKey)
+      const cached = getCachedSmartPracticeRecommendation(debouncedRecommendationKey)
       if (cached) {
         if (!cancelled) {
           setMLRecommendations(cached)
@@ -85,7 +99,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
       }
       try {
         const sessionPlan = await getOrCreateRecommendationRequest(
-          recommendationKey,
+          debouncedRecommendationKey,
           () => mlRecommendationEngine.generateSessionRecommendations({
             duration: 20,
             preferredDifficulty: 'medium',
@@ -93,7 +107,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
             adaptToState: true
           })
         )
-        cacheSmartPracticeRecommendation(recommendationKey, sessionPlan)
+        cacheSmartPracticeRecommendation(debouncedRecommendationKey, sessionPlan)
         if (!cancelled) {
           setMLRecommendations(sessionPlan)
         }
@@ -114,7 +128,7 @@ export default function SmartPractice({ heatMapData, userStats, onNavigateToDril
     return () => {
       cancelled = true
     }
-  }, [userStats, recommendationKey, refreshSeed])
+  }, [userStats, debouncedRecommendationKey, refreshSeed])
 
   useEffect(() => {
     if (typeof window === 'undefined') {

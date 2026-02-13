@@ -7,6 +7,7 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import './practice-recommendations.css'
 import { createLogger } from '../../lib/utils/logger.js'
 import { emitProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
+import { buildStableListKey } from './progressListKeys.js'
 
 const logger = createLogger('features:PracticeRecommendations')
 
@@ -237,7 +238,12 @@ export default function PracticeRecommendations({
             
             return (
               <div
-                key={index}
+                key={buildStableListKey(
+                  'practice-rec',
+                  rec,
+                  ['type', 'title', 'targetCombination.mood', 'targetCombination.tense', 'priority'],
+                  `fallback-${index}`
+                )}
                 className={`recommendation-card ${priorityClass}`}
               >
                 <div className="recommendation-header">
@@ -340,7 +346,10 @@ export default function PracticeRecommendations({
             </div>
             <div className="session-activities">
               {(selectedSession.activities || []).map((activity, index) => (
-                <div key={index} className="session-activity">
+                <div
+                  key={buildStableListKey('session-activity', activity, ['type', 'title', 'allocatedTime'], `fallback-${index}`)}
+                  className="session-activity"
+                >
                   <span className="activity-icon">{getRecommendationIconPath(activity.type)}</span>
                   <span className="activity-title">{activity.title}</span>
                   <span className="activity-time">

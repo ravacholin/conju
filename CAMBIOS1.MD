@@ -277,8 +277,8 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 3. [x] Integrar reporte a11y como artefacto en CI.
 
 ## Siguiente backlog activo (Fase 7.1)
-1. [ ] Revisar debounce/refresh de recomendaciones en SmartPractice con foco en estabilidad al cambiar filtros rápido.
-2. [ ] Auditar keys de listas dinámicas restantes para evitar remounts evitables.
+1. [x] Revisar debounce/refresh de recomendaciones en SmartPractice con foco en estabilidad al cambiar filtros rápido.
+2. [x] Auditar keys de listas dinámicas restantes para evitar remounts evitables.
 3. [ ] Medir impacto en re-render de dashboard tras cambios rápidos de configuración.
 
 ## Interrupción crítica resuelta - Integridad lingüística (`subjImpf`) (2026-02-12)
@@ -308,3 +308,38 @@ Definir un plan ejecutable, incremental y verificable para resolver las mejoras 
 ### Estado
 - Integridad de `subjImpf` protegida con test automático en dataset actual.
 - Se puede retomar roadmap principal (Fase 7.1) con menor riesgo de regresión lingüística silenciosa.
+
+## Estado de continuidad (actualizado)
+
+### Checkpoint actual del roadmap
+- Fase 7.1:
+1. [x] Debounce/refresh de recomendaciones en SmartPractice.
+2. [x] Keys estables en listas dinámicas críticas para evitar remounts evitables.
+3. [ ] Medición de impacto en re-render del dashboard con cambios rápidos de configuración.
+
+### Próximo slice recomendado (7.1.3) - definición detallada
+1. Instrumentar medición reproducible de refresco:
+- contar invocaciones de recomputes por bloque en `useProgressDashboardData`.
+- medir tiempo de refresco incremental vs full refresh en escenario de cambios rápidos.
+2. Crear escenario de stress controlado:
+- ráfaga de eventos (`progress:dataUpdated`) y cambios de stats/filtros en ventana corta.
+- validar que debounce + keys estables reduzcan trabajo redundante.
+3. Criterio de aceptación:
+- reducción medible en recomputes no esenciales respecto a baseline previo.
+- sin regresión funcional en recomendaciones y navegación a drill.
+4. Evidencia requerida:
+- test o script automatizable,
+- reporte en `docs/performance/progress-refresh-measurement.md`,
+- entrada resumida en `CAMBIOS.MD`.
+
+### Backlog siguiente (después de cerrar 7.1)
+
+#### Fase 7.2 - Seguridad y privacidad
+1. Migrar estrategia de sync para no depender de secretos en frontend.
+2. Definir contrato de token exchange backend (rotación/expiración mínima).
+3. Documentar política de datos (qué se guarda, retención, opt-in analytics).
+
+#### Fase 8 - Operación y mantenimiento
+1. Convertir chequeos de performance clave en gate de CI (cuando baseline esté estable).
+2. Limpiar artefactos legacy/backups y documentar checklist de release técnico.
+3. Estandarizar changelog técnico por release (cambios, riesgo, rollback, métricas).
