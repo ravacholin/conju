@@ -189,6 +189,7 @@ export default function ProgressDashboard({
           userStats={userStats}
           studyPlan={studyPlan}
           onNavigateToDrill={onNavigateToDrill}
+          expanded={detailsExpanded}
           onExpandChange={setDetailsExpanded}
         />
       </SafeComponent>

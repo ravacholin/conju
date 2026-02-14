@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import SafeComponent from '../../components/SafeComponent.jsx'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
 
@@ -12,16 +12,11 @@ export default function DetailsPanel({
   userStats,
   studyPlan,
   onNavigateToDrill,
+  expanded,
   onExpandChange
 }) {
-  const [expanded, setExpanded] = useState(false)
-
   const toggleExpanded = () => {
-    setExpanded(prev => {
-      const next = !prev
-      onExpandChange?.(next)
-      return next
-    })
+    onExpandChange?.(!expanded)
   }
 
   return (

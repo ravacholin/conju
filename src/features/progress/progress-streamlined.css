@@ -82,15 +82,15 @@
 }
 
 .nav-icon {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   filter: brightness(0) invert(1) !important;
   transition: transform 0.2s ease;
 }
 
 .nav-icon.logo-icon {
-  width: 48px;
-  height: 48px;
+  width: 60px;
+  height: 60px;
 }
 
 .nav-btn:hover .nav-icon {
