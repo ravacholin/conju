@@ -1,7 +1,11 @@
+/* ============================================
+   Account Management Modal — Brutalist Dark Theme
+   ============================================ */
+
 .account-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,15 +13,15 @@
 }
 
 .account-modal {
-  width: min(420px, 90%);
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+  width: min(420px, 92%);
+  max-height: 85vh;
+  background: var(--bg, #000);
+  border: 1px solid var(--text, #fff);
+  box-shadow: 6px 6px 0 var(--text, #fff);
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: 90vh;
   overflow-y: auto;
 }
 
@@ -25,20 +29,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
 }
 
 .account-modal__header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text, #fff);
   margin: 0;
 }
 
 .account-modal__close {
   background: transparent;
-  border: none;
-  font-size: 1.25rem;
+  border: 1px solid var(--border, #333);
+  color: var(--text, #fff);
+  width: 28px;
+  height: 28px;
+  font-size: 0.9rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 100ms;
+}
+
+.account-modal__close:hover {
+  border-color: var(--text, #fff);
 }
 
 .account-modal__body {
@@ -57,67 +75,99 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-weight: 500;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted, #888);
 }
 
 .account-modal__input {
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border, #333);
+  color: var(--text, #fff);
   padding: 10px 12px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  font-family: var(--font-ui, sans-serif);
+  transition: border-color 100ms;
 }
 
 .account-modal__input:focus {
-  border-color: #0c6efd;
+  border-color: var(--text, #fff);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(12, 110, 253, 0.15);
 }
 
 .account-modal__input--readonly {
-  background: #f3f4f6;
-  color: #4b5563;
+  color: var(--muted, #888);
+  border-style: dashed;
 }
 
 .account-modal__actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 .account-modal__button {
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-weight: 600;
+  border: 1px solid var(--border, #333);
+  border-radius: 0;
+  padding: 8px 16px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
+  transition: border-color 100ms, background 100ms;
 }
 
 .account-modal__button.primary {
-  background: #0c6efd;
-  color: #fff;
+  background: var(--text, #fff);
+  color: var(--bg, #000);
+  border-color: var(--text, #fff);
+}
+
+.account-modal__button.primary:hover {
+  background: var(--muted, #888);
 }
 
 .account-modal__button.primary:disabled {
-  background: #9ca3af;
+  background: transparent;
+  color: var(--muted-2, #555);
+  border-color: var(--muted-2, #555);
   cursor: not-allowed;
 }
 
 .account-modal__button.secondary {
-  background: #e5e7eb;
-  color: #111827;
+  background: transparent;
+  color: var(--text, #fff);
+}
+
+.account-modal__button.secondary:hover {
+  border-color: var(--text, #fff);
 }
 
 .account-modal__error {
-  color: #b91c1c;
-  font-weight: 500;
+  color: var(--accent-error, #f00);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px;
+  border: 1px solid var(--accent-error, #f00);
 }
 
 .account-modal__success {
-  color: #047857;
-  font-weight: 500;
+  color: var(--accent-success, #0f0);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .account-modal__status {
   text-align: center;
-  color: #4b5563;
+  color: var(--muted, #888);
+  font-size: 0.85rem;
+  padding: 20px 0;
 }
