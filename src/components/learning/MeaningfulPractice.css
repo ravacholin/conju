@@ -1062,18 +1062,16 @@
 /* ===== NAVIGATION HEADER ===== */
 .drill-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
   padding: 1rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  gap: 0.5rem;
 }
 
 .header-nav {
   display: flex;
   gap: 1rem;
-  justify-content: center;
 }
 
 .back-to-menu-btn,
