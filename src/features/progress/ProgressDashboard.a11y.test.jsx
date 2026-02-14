@@ -1,6 +1,5 @@
 import React from 'react'
 import { render } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import axe from 'axe-core'
 
@@ -16,20 +15,10 @@ vi.mock('../../hooks/useSRSQueue.js', () => ({
   useSRSQueue: () => ({ stats: null })
 }))
 
-vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div>Progress Overview</div> }))
-vi.mock('./PracticeReminders.jsx', () => ({ default: () => <div>Practice Reminders</div> }))
-vi.mock('./DailyPlanPanel.jsx', () => ({ default: () => <div>Daily Plan</div> }))
-vi.mock('./ProgressUnlocksPanel.jsx', () => ({ default: () => <div>Progress Unlocks</div> }))
-vi.mock('./LearningJourneyPanel.jsx', () => ({ default: () => <div>Learning Journey</div> }))
-vi.mock('./CoachModePanel.jsx', () => ({ default: () => <div>Coach Mode</div> }))
-vi.mock('./FocusModePanel.jsx', () => ({ default: () => <div>Focus Mode</div> }))
-vi.mock('./FrequentErrorsPanel.jsx', () => ({ default: () => <div>Frequent Errors</div> }))
-vi.mock('./PronunciationStatsWidget.jsx', () => ({ default: () => <div>Pronunciation Stats</div> }))
-vi.mock('./AccuracyTrendCard.jsx', () => ({ default: () => <div>Accuracy Trend</div> }))
+vi.mock('./SummaryStrip.jsx', () => ({ default: () => <div>Summary</div> }))
+vi.mock('./UnifiedPracticeAction.jsx', () => ({ default: () => <div>Practice</div> }))
 vi.mock('./HeatMapSRS.jsx', () => ({ default: () => <div>Heat Map</div> }))
-vi.mock('./SmartPractice.jsx', () => ({ default: () => <div>Smart Practice</div> }))
-vi.mock('./StudyInsights.jsx', () => ({ default: () => <div>Study Insights</div> }))
-vi.mock('./ErrorIntelligence.jsx', () => ({ default: () => <div>Error Intelligence</div> }))
+vi.mock('./DetailsPanel.jsx', () => ({ default: () => <div>Details</div> }))
 
 vi.mock('./useProgressDashboardData.js', () => ({
   default: (...args) => useProgressDashboardDataMock(...args)
@@ -64,26 +53,10 @@ const createHookState = () => ({
 })
 
 describe('ProgressDashboard a11y', () => {
-  it('has no critical accessibility violations in first view', async () => {
+  it('has no critical accessibility violations', async () => {
     useProgressDashboardDataMock.mockReturnValue(createHookState())
 
     const { container } = render(<ProgressDashboard />)
-
-    const result = await axe.run(container, {
-      rules: {
-        'color-contrast': { enabled: false }
-      }
-    })
-
-    expect(result.violations).toEqual([])
-  })
-
-  it('has no critical accessibility violations with advanced sections enabled', async () => {
-    useProgressDashboardDataMock.mockReturnValue(createHookState())
-    const user = userEvent.setup()
-
-    const { container, getByRole } = render(<ProgressDashboard />)
-    await user.click(getByRole('button', { name: /Ver análisis avanzados/i }))
 
     const result = await axe.run(container, {
       rules: {

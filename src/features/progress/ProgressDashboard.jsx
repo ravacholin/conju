@@ -1,5 +1,4 @@
 import React from 'react'
-import { syncNow, isSyncEnabled } from '../../lib/progress/userManager/index.js'
 import useProgressDashboardData from './useProgressDashboardData.js'
 import Toast from '../../components/Toast.jsx'
 import SafeComponent from '../../components/SafeComponent.jsx'
@@ -10,50 +9,33 @@ import { buildDrillSettingsUpdate } from './drillNavigationConfig.js'
 import { createActionCooldown } from './actionCooldown.js'
 import { safeLazy } from '../../lib/utils/lazyImport.js'
 import { onProgressEvent, PROGRESS_EVENTS } from '../../lib/events/progressEventBus.js'
+import AccountButton from '../../components/auth/AccountButton.jsx'
+import SummaryStrip from './SummaryStrip.jsx'
+import UnifiedPracticeAction from './UnifiedPracticeAction.jsx'
+import DetailsPanel from './DetailsPanel.jsx'
 
-// New streamlined components
-import ProgressOverview from './ProgressOverview.jsx'
-import PracticeReminders from './PracticeReminders.jsx'
-import DailyPlanPanel from './DailyPlanPanel.jsx'
-import ProgressUnlocksPanel from './ProgressUnlocksPanel.jsx'
-import LearningJourneyPanel from './LearningJourneyPanel.jsx'
-import CoachModePanel from './CoachModePanel.jsx'
-import FocusModePanel from './FocusModePanel.jsx'
-import FrequentErrorsPanel from './FrequentErrorsPanel.jsx'
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
-const SmartPractice = safeLazy(() => import('./SmartPractice.jsx'))
-const StudyInsights = safeLazy(() => import('./StudyInsights.jsx'))
-const PronunciationStatsWidget = safeLazy(() => import('./PronunciationStatsWidget.jsx'))
-const AccuracyTrendCard = safeLazy(() => import('./AccuracyTrendCard.jsx'))
-const ErrorIntelligence = safeLazy(() => import('./ErrorIntelligence.jsx'))
 
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('features:ProgressDashboard')
 
-
 /**
- * Streamlined Progress Dashboard - Focused on actionable learning features
- * Consolidates 29+ components into 4 clean, purposeful sections
+ * Progress Dashboard — 5 sections:
+ * [0] Header nav bar
+ * [1] Summary strip (4 key numbers)
+ * [2] Unified practice action (1 primary + 2 secondary)
+ * [3] Heat map (mood × tense mastery)
+ * [4] Details panel (expandable)
  */
 export default function ProgressDashboard({
   onNavigateHome,
-  onNavigateToDrill,
-  onNavigateToStory,
-  onNavigateToTimeline
+  onNavigateToDrill
 }) {
-  const [syncing, setSyncing] = React.useState(false)
   const [toast, setToast] = React.useState(null)
-  const [showAdvancedSections, setShowAdvancedSections] = React.useState(false)
-  const drillNavigationCooldownRef = React.useRef(createActionCooldown({ delayMs: 250 }))
-  const dashboardMountStartedAtRef = React.useRef(
-    typeof performance !== 'undefined' && typeof performance.now === 'function'
-      ? performance.now()
-      : Date.now()
-  )
-  const firstViewLoggedRef = React.useRef(false)
-  const syncAvailable = isSyncEnabled()
+  const [detailsExpanded, setDetailsExpanded] = React.useState(false)
+  const drillCooldownRef = React.useRef(createActionCooldown({ delayMs: 250 }))
   const setSettings = useSettings(state => state.set)
   const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
   const { stats: srsStats } = useSRSQueue()
@@ -63,7 +45,6 @@ export default function ProgressDashboard({
     errorIntel,
     userStats,
     studyPlan,
-    practiceReminders,
     loading,
     error,
     systemReady,
@@ -71,61 +52,12 @@ export default function ProgressDashboard({
     pronunciationStats,
     sectionsStatus,
     initialSectionsReady
-  } = useProgressDashboardData({ enableSecondaryData: showAdvancedSections })
-
-  const handleShowToast = React.useCallback((toastConfig) => {
-    if (!toastConfig || !toastConfig.message) {
-      return
-    }
-    setToast({
-      message: toastConfig.message,
-      type: toastConfig.type || 'info',
-      duration: toastConfig.duration || 3200
-    })
-  }, [setToast])
-
-  const handleSync = async () => {
-    try {
-      if (!syncAvailable) {
-        setToast({
-          message: 'Sincronización no disponible.',
-          type: 'info'
-        })
-        return
-      }
-
-      setSyncing(true)
-      const res = await syncNow()
-
-      if (res?.success) {
-        setToast({
-          message: 'Sincronización completa.',
-          type: 'success'
-        })
-        refresh()
-      } else {
-        setToast({
-          message: 'Error al sincronizar. Verificá tu conexión.',
-          type: 'error'
-        })
-      }
-    } catch (e) {
-      logger.error('Error en sincronización:', e)
-      setToast({
-        message: 'Error al sincronizar.',
-        type: 'error'
-      })
-    } finally {
-      setSyncing(false)
-    }
-  }
+  } = useProgressDashboardData({ enableSecondaryData: detailsExpanded })
 
   const applyDrillConfigAndNavigate = React.useCallback((drillConfig = {}) => {
-    if (typeof onNavigateToDrill !== 'function') {
-      return
-    }
+    if (typeof onNavigateToDrill !== 'function') return
 
-    drillNavigationCooldownRef.current.run(() => {
+    drillCooldownRef.current.run(() => {
       setSettings(buildDrillSettingsUpdate(drillConfig))
       setDrillRuntimeContext({
         currentBlock: drillConfig?.currentBlock ?? null,
@@ -137,130 +69,29 @@ export default function ProgressDashboard({
   }, [onNavigateToDrill, setSettings, setDrillRuntimeContext])
 
   React.useEffect(() => () => {
-    drillNavigationCooldownRef.current.cancel()
+    drillCooldownRef.current.cancel()
   }, [])
 
-  const handleStartPlannedSession = React.useCallback((session) => {
-    if (!session || typeof onNavigateToDrill !== 'function') {
-      return
-    }
-
-    const drillConfig = session.drillConfig || {}
-    applyDrillConfigAndNavigate(drillConfig)
-  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
-
-  // Handle SRS Review Now action
-  const handleSRSReviewNow = React.useCallback(() => {
-    if (!onNavigateToDrill) return
-
+  const handleSRSReview = React.useCallback(() => {
     applyDrillConfigAndNavigate({ practiceMode: 'review' })
-  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
+  }, [applyDrillConfigAndNavigate])
 
-  const handleStartCoachSession = React.useCallback((sessionPlan) => {
-    if (!sessionPlan?.drillConfig || typeof onNavigateToDrill !== 'function') {
-      return
-    }
-
-    applyDrillConfigAndNavigate(sessionPlan.drillConfig)
-  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
-
-  const handleStartFocusTrack = React.useCallback((track) => {
-    if (!track?.drillConfig || typeof onNavigateToDrill !== 'function') {
-      return
-    }
-
-    applyDrillConfigAndNavigate(track.drillConfig)
-  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
-
-  const handleStartCorrectiveDrill = React.useCallback((item) => {
-    if (!item?.mood || !item?.tense || typeof onNavigateToDrill !== 'function') {
-      return
-    }
-
-    applyDrillConfigAndNavigate({
-      practiceMode: 'specific',
-      specificMood: item.mood,
-      specificTense: item.tense
-    })
-  }, [applyDrillConfigAndNavigate, onNavigateToDrill])
-
-  const handleQuickPractice = React.useCallback(() => {
-    if (typeof onNavigateToDrill === 'function') {
+  // Listen for progress navigation events (from heat map clicks)
+  React.useEffect(() => {
+    const handleNav = (detail) => {
+      if (!detail || !onNavigateToDrill) return
+      logger.debug('Progress navigation event received:', detail)
       onNavigateToDrill()
     }
+    return onProgressEvent(PROGRESS_EVENTS.NAVIGATE, handleNav, { validate: true })
   }, [onNavigateToDrill])
-
-  // Listen for progress navigation events (from heat map clicks, etc.)
-  React.useEffect(() => {
-    const handleProgressNavigate = (detail) => {
-      if (!detail || !onNavigateToDrill) return
-
-      try {
-        // Settings are already set by the component that dispatched the event
-        // Just navigate to drill mode - DrillMode will handle the rest
-        logger.debug('Progress navigation event received:', detail)
-        onNavigateToDrill()
-      } catch (error) {
-        logger.error('Error handling progress navigation:', error)
-      }
-    }
-
-    return onProgressEvent(PROGRESS_EVENTS.NAVIGATE, handleProgressNavigate, { validate: true })
-  }, [onNavigateToDrill])
-
-  React.useEffect(() => {
-    if (!initialSectionsReady || firstViewLoggedRef.current) {
-      return
-    }
-
-    const now = typeof performance !== 'undefined' && typeof performance.now === 'function'
-      ? performance.now()
-      : Date.now()
-    const elapsed = Number((now - dashboardMountStartedAtRef.current).toFixed(2))
-    firstViewLoggedRef.current = true
-    logger.debug('Progress first view ready', { elapsedMs: elapsed })
-  }, [initialSectionsReady])
-
-  // Manual sync only - removed auto-sync to prevent double load on mount
-  // Users can manually sync via the sync button if needed
 
   const getSectionState = React.useCallback((keys) => {
     const list = Array.isArray(keys) ? keys : [keys]
-
-    if (list.some((key) => sectionsStatus?.[key] === 'error')) {
-      return 'error'
-    }
-
-    if (list.some((key) => sectionsStatus?.[key] !== 'success')) {
-      return 'loading'
-    }
-
+    if (list.some((k) => sectionsStatus?.[k] === 'error')) return 'error'
+    if (list.some((k) => sectionsStatus?.[k] !== 'success')) return 'loading'
     return 'success'
   }, [sectionsStatus])
-
-  const renderSection = (state, component, placeholderText, errorText) => {
-    if (state === 'success') {
-      return component
-    }
-
-    if (state === 'error') {
-      return (
-        <div className="section-placeholder section-placeholder-error">
-          <span>{errorText || 'No pudimos cargar esta sección.'}</span>
-          <button type="button" className="section-placeholder-action" onClick={refresh}>
-            Reintentar
-          </button>
-        </div>
-      )
-    }
-
-    return (
-      <div className="section-placeholder">
-        <div className="section-placeholder-spinner" />
-        <span>{placeholderText}</span>
-      </div>
-    )
-  }
 
   if (loading && !initialSectionsReady) {
     return (
@@ -274,24 +105,14 @@ export default function ProgressDashboard({
   if (error) {
     return (
       <div className="progress-dashboard error">
-        <h2>
-          <img src="/icons/error.png" alt="Error" className="section-icon" />
-          Error
-        </h2>
+        <h2>Error</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>
-          Recargar
-        </button>
+        <button onClick={() => window.location.reload()}>Recargar</button>
       </div>
     )
   }
 
-  const overviewState = getSectionState(['userStats'])
-  const pronunciationState = getSectionState(['pronunciationStats'])
   const heatMapState = getSectionState(['heatMap'])
-  const smartPracticeState = getSectionState(['heatMap', 'recommendations'])
-  const insightsState = getSectionState(['userStats', 'heatMap', 'studyPlan', 'advancedAnalytics'])
-  const errorIntelState = getSectionState(['errorIntel'])
 
   return (
     <div className="progress-dashboard">
@@ -305,212 +126,72 @@ export default function ProgressDashboard({
         />
       )}
 
-      {/* SRS Review Queue Banner */}
-      {srsStats && srsStats.total > 0 && (
-        <div className="srs-review-banner" onClick={handleSRSReviewNow}>
-          <div className="srs-banner-content">
-            <img src="/icons/timer.png" alt="SRS Review" className="srs-banner-icon" />
-            <div className="srs-banner-text">
-              <strong>{srsStats.total}</strong> {srsStats.total === 1 ? 'elemento listo' : 'elementos listos'} para repasar
-              {srsStats.overdue > 0 && (
-                <span className="srs-urgent"> • {srsStats.overdue} {srsStats.overdue === 1 ? 'vencido' : 'vencidos'}</span>
-              )}
-            </div>
-          </div>
-          <button className="srs-banner-action">
-            Revisar ahora →
+      {/* [0] Header Bar */}
+      <nav className="dashboard-nav">
+        <div className="dashboard-nav-left">
+          <button type="button" className="nav-btn" onClick={() => window.history.back()} title="Volver">
+            <img src="/back.png" alt="Volver" className="nav-icon" />
+          </button>
+          <button type="button" className="nav-btn" onClick={onNavigateHome} title="Inicio">
+            <img src="/home.png" alt="Inicio" className="nav-icon" />
+          </button>
+          <button type="button" className="nav-btn logo-btn" onClick={() => onNavigateToDrill?.()} title="Practicar">
+            <img src="/verbosmain.png" alt="Practicar" className="nav-icon logo-icon" />
           </button>
         </div>
-      )}
+        <AccountButton />
+      </nav>
 
-      <SafeComponent name="Practice Reminders">
-        <PracticeReminders
-          reminders={practiceReminders}
+      {/* [1] Summary Strip */}
+      <SafeComponent name="Summary">
+        <SummaryStrip
+          srsStats={srsStats}
           userStats={userStats}
-          onNavigateToDrill={onNavigateToDrill}
-          onShowToast={handleShowToast}
+          onSRSReview={handleSRSReview}
         />
       </SafeComponent>
 
-      <SafeComponent name="Daily Plan">
-        <DailyPlanPanel
-          studyPlan={studyPlan}
-          onStartSession={handleStartPlannedSession}
-        />
-      </SafeComponent>
-
-      <div className="progress-primary-actions" data-testid="progress-primary-actions">
-        <button type="button" onClick={handleQuickPractice} className="primary-action-btn">
-          Practicar ahora
-        </button>
-        <button type="button" onClick={handleSRSReviewNow} className="primary-action-btn">
-          Repasar SRS
-        </button>
-        <button type="button" onClick={refresh} className="primary-action-btn">
-          Actualizar progreso
-        </button>
-      </div>
-
-      <SafeComponent name="Coach Mode">
-        <CoachModePanel
+      {/* [2] Unified Practice Action */}
+      <SafeComponent name="Practice Action">
+        <UnifiedPracticeAction
+          srsStats={srsStats}
           userStats={userStats}
           heatMapData={heatMapData}
-          onStartCoach={handleStartCoachSession}
-        />
-      </SafeComponent>
-
-      <SafeComponent name="Focus Mode">
-        <FocusModePanel
-          userStats={userStats}
-          heatMapData={heatMapData}
-          onStartFocusTrack={handleStartFocusTrack}
-        />
-      </SafeComponent>
-
-      <SafeComponent name="Frequent Errors">
-        <FrequentErrorsPanel
           errorIntel={errorIntel}
-          onStartCorrectiveDrill={handleStartCorrectiveDrill}
+          onStartDrill={applyDrillConfigAndNavigate}
         />
       </SafeComponent>
 
-      <SafeComponent name="Progress Overview">
-        {renderSection(
-          overviewState,
-          (
-            <ProgressOverview
-              userStats={userStats}
-              onNavigateHome={onNavigateHome}
-              onNavigateToDrill={onNavigateToDrill}
-              syncing={syncing}
-              onSync={handleSync}
-              syncEnabled={syncAvailable}
-              onRefresh={refresh}
-            />
-          ),
-          'Cargando resumen de progreso...',
-          'No pudimos obtener tus estadísticas.'
-        )}
-      </SafeComponent>
-
-      <SafeComponent name="Accuracy Trend">
-        <div className="progress-advanced-toggle">
-          <button
-            type="button"
-            onClick={() => setShowAdvancedSections((prev) => !prev)}
-            className="advanced-toggle-btn"
-          >
-            {showAdvancedSections ? 'Ocultar análisis avanzados' : 'Ver análisis avanzados'}
-          </button>
-        </div>
-      </SafeComponent>
-
-      <SafeComponent name="Heat Map & SRS">
+      {/* [3] Heat Map */}
+      <SafeComponent name="Heat Map">
         <React.Suspense fallback={<div className="section-placeholder"><span>Cargando mapa de calor...</span></div>}>
-          {renderSection(
-            heatMapState,
-            (
-              <HeatMapSRS
-                data={heatMapData}
-                onNavigateToDrill={onNavigateToDrill}
-              />
-            ),
-            'Cargando mapa de calor...',
-            'No pudimos cargar el mapa de calor.'
+          {heatMapState === 'success' ? (
+            <HeatMapSRS data={heatMapData} onNavigateToDrill={onNavigateToDrill} />
+          ) : heatMapState === 'error' ? (
+            <div className="section-placeholder section-placeholder-error">
+              <span>No pudimos cargar el mapa de calor.</span>
+              <button type="button" className="section-placeholder-action" onClick={refresh}>Reintentar</button>
+            </div>
+          ) : (
+            <div className="section-placeholder">
+              <div className="section-placeholder-spinner" />
+              <span>Cargando mapa de calor...</span>
+            </div>
           )}
         </React.Suspense>
       </SafeComponent>
 
-      <SafeComponent name="Smart Practice">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Generando práctica inteligente...</span></div>}>
-          {renderSection(
-            smartPracticeState,
-            (
-              <SmartPractice
-                heatMapData={heatMapData}
-                userStats={userStats}
-                onNavigateToDrill={onNavigateToDrill}
-              />
-            ),
-            'Generando práctica inteligente...',
-            'No pudimos preparar la práctica inteligente.'
-          )}
-        </React.Suspense>
+      {/* [4] Details (expandable) */}
+      <SafeComponent name="Details">
+        <DetailsPanel
+          pronunciationStats={pronunciationStats}
+          errorIntel={errorIntel}
+          userStats={userStats}
+          studyPlan={studyPlan}
+          onNavigateToDrill={onNavigateToDrill}
+          onExpandChange={setDetailsExpanded}
+        />
       </SafeComponent>
-
-      {showAdvancedSections && (
-        <>
-          <SafeComponent name="Learning Journey">
-            <LearningJourneyPanel
-              userStats={userStats}
-              studyPlan={studyPlan}
-              onNavigateToDrill={onNavigateToDrill}
-            />
-          </SafeComponent>
-
-          <SafeComponent name="Progress Unlocks">
-            <ProgressUnlocksPanel
-              userStats={userStats}
-              onNavigateToStory={onNavigateToStory}
-              onNavigateToTimeline={onNavigateToTimeline}
-            />
-          </SafeComponent>
-
-          <SafeComponent name="Accuracy Trend">
-            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando tendencia...</span></div>}>
-              <AccuracyTrendCard stats={pronunciationStats} />
-            </React.Suspense>
-          </SafeComponent>
-
-          <SafeComponent name="Pronunciation Lab">
-            <React.Suspense fallback={<div className="section-placeholder"><span>Analizando estadísticas de pronunciación...</span></div>}>
-              {renderSection(
-                pronunciationState,
-                (
-                  <PronunciationStatsWidget
-                    stats={pronunciationStats}
-                    onNavigateToDrill={onNavigateToDrill}
-                  />
-                ),
-                'Analizando estadísticas de pronunciación...',
-                'No pudimos cargar las estadísticas de pronunciación.'
-              )}
-            </React.Suspense>
-          </SafeComponent>
-
-          <SafeComponent name="Error Intelligence">
-            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando errores comunes...</span></div>}>
-              {renderSection(
-                errorIntelState,
-                (
-                  <ErrorIntelligence data={errorIntel} onNavigateToDrill={onNavigateToDrill} />
-                ),
-                'Cargando errores comunes...',
-                'No pudimos cargar el análisis de errores.'
-              )}
-            </React.Suspense>
-          </SafeComponent>
-
-          <SafeComponent name="Study Insights">
-            <React.Suspense fallback={<div className="section-placeholder"><span>Calculando recomendaciones avanzadas...</span></div>}>
-              {renderSection(
-                insightsState,
-                (
-                  <StudyInsights
-                    userStats={userStats}
-                    heatMapData={heatMapData}
-                    studyPlan={studyPlan}
-                    onNavigateToDrill={onNavigateToDrill}
-                  />
-                ),
-                'Calculando recomendaciones avanzadas...',
-                'No pudimos calcular las analíticas de estudio.'
-              )}
-            </React.Suspense>
-          </SafeComponent>
-        </>
-      )}
-
     </div>
   )
 }

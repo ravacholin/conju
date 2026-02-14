@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
 const useProgressDashboardDataMock = vi.fn()
-const errorIntelligenceSpy = vi.fn()
 
 vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
@@ -22,32 +21,22 @@ vi.mock('../../hooks/useSRSQueue.js', () => ({
   })
 }))
 
-vi.mock('./ProgressOverview.jsx', () => ({ default: () => <div data-testid="progress-overview" /> }))
-vi.mock('./PracticeReminders.jsx', () => ({ default: () => <div data-testid="practice-reminders" /> }))
-vi.mock('./DailyPlanPanel.jsx', () => ({ default: () => <div data-testid="daily-plan-panel" /> }))
-vi.mock('./ProgressUnlocksPanel.jsx', () => ({ default: () => <div data-testid="progress-unlocks-panel" /> }))
-vi.mock('./LearningJourneyPanel.jsx', () => ({ default: () => <div data-testid="learning-journey-panel" /> }))
-vi.mock('./CoachModePanel.jsx', () => ({ default: () => <div data-testid="coach-mode-panel" /> }))
-vi.mock('./FocusModePanel.jsx', () => ({ default: () => <div data-testid="focus-mode-panel" /> }))
-vi.mock('./FrequentErrorsPanel.jsx', () => ({ default: () => <div data-testid="frequent-errors-panel" /> }))
-vi.mock('./PronunciationStatsWidget.jsx', () => ({ default: () => <div data-testid="pronunciation-widget" /> }))
-vi.mock('./AccuracyTrendCard.jsx', () => ({ default: () => <div data-testid="accuracy-trend-card" /> }))
+vi.mock('./SummaryStrip.jsx', () => ({ default: () => <div data-testid="summary-strip" /> }))
+vi.mock('./UnifiedPracticeAction.jsx', () => ({ default: () => <div data-testid="unified-practice" /> }))
 vi.mock('./HeatMapSRS.jsx', () => ({ default: () => <div data-testid="heat-map" /> }))
-vi.mock('./SmartPractice.jsx', () => ({ default: () => <div data-testid="smart-practice" /> }))
-vi.mock('./StudyInsights.jsx', () => ({ default: () => <div data-testid="study-insights" /> }))
-vi.mock('./ErrorIntelligence.jsx', () => ({
-  default: (props) => {
-    errorIntelligenceSpy(props)
-    return <div data-testid="error-intelligence" />
-  }
+vi.mock('./DetailsPanel.jsx', () => ({
+  default: ({ onExpandChange }) => (
+    <div data-testid="details-panel">
+      <button type="button" onClick={() => onExpandChange?.(true)}>Ver más</button>
+    </div>
+  )
 }))
+vi.mock('./AccuracyTrendCard.jsx', () => ({ default: () => <div data-testid="accuracy-trend-card" /> }))
+vi.mock('./ErrorIntelligence.jsx', () => ({ default: () => <div data-testid="error-intelligence" /> }))
+vi.mock('./LearningJourneyPanel.jsx', () => ({ default: () => <div data-testid="learning-journey-panel" /> }))
 
 vi.mock('./useProgressDashboardData.js', () => ({
   default: (...args) => useProgressDashboardDataMock(...args)
-}))
-
-vi.mock('../../hooks/useSRSQueue.js', () => ({
-  useSRSQueue: () => ({ stats: null })
 }))
 
 import ProgressDashboard from './ProgressDashboard.jsx'
@@ -85,32 +74,13 @@ beforeEach(() => {
 })
 
 describe('ProgressDashboard (smoke)', () => {
-  it('renders core sections when data is ready', async () => {
+  it('renders all 5 sections when data is ready', async () => {
     render(<ProgressDashboard />)
 
-    expect(screen.getByTestId('progress-overview')).toBeInTheDocument()
-    expect(screen.getByTestId('practice-reminders')).toBeInTheDocument()
-    expect(screen.getByTestId('daily-plan-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('coach-mode-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('focus-mode-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('frequent-errors-panel')).toBeInTheDocument()
-    expect(screen.getByTestId('progress-primary-actions')).toBeInTheDocument()
+    expect(screen.getByTestId('summary-strip')).toBeInTheDocument()
+    expect(screen.getByTestId('unified-practice')).toBeInTheDocument()
     expect(await screen.findByTestId('heat-map')).toBeInTheDocument()
-    expect(await screen.findByTestId('smart-practice')).toBeInTheDocument()
-    expect(screen.queryByTestId('accuracy-trend-card')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('pronunciation-widget')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('study-insights')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('error-intelligence')).not.toBeInTheDocument()
-
-    const toggle = screen.getByRole('button', { name: /Ver análisis avanzados/i })
-    fireEvent.click(toggle)
-
-    expect(await screen.findByTestId('progress-unlocks-panel')).toBeInTheDocument()
-    expect(await screen.findByTestId('learning-journey-panel')).toBeInTheDocument()
-    expect(await screen.findByTestId('accuracy-trend-card')).toBeInTheDocument()
-    expect(await screen.findByTestId('pronunciation-widget')).toBeInTheDocument()
-    expect(await screen.findByTestId('study-insights')).toBeInTheDocument()
-    expect(await screen.findByTestId('error-intelligence')).toBeInTheDocument()
+    expect(screen.getByTestId('details-panel')).toBeInTheDocument()
   })
 
   it('defers rendering when data has not been loaded yet', () => {
@@ -128,21 +98,11 @@ describe('ProgressDashboard (smoke)', () => {
     expect(screen.getByText('Cargando progreso...')).toBeInTheDocument()
   })
 
-  it('passes error intelligence data from the hook without extra fetches', async () => {
-    const errorIntelData = { summary: 'top mistakes' }
-    useProgressDashboardDataMock.mockReturnValue(
-      createHookState({
-        errorIntel: errorIntelData
-      })
-    )
-
+  it('renders nav bar with back, home, and practice buttons', () => {
     render(<ProgressDashboard />)
 
-    expect(useProgressDashboardDataMock).toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: /Ver análisis avanzados/i }))
-    await screen.findByTestId('error-intelligence')
-    expect(errorIntelligenceSpy).toHaveBeenCalled()
-    const lastCall = errorIntelligenceSpy.mock.calls.at(-1)
-    expect(lastCall[0].data).toBe(errorIntelData)
+    expect(screen.getByTitle('Volver')).toBeInTheDocument()
+    expect(screen.getByTitle('Inicio')).toBeInTheDocument()
+    expect(screen.getByTitle('Practicar')).toBeInTheDocument()
   })
 })
