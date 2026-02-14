@@ -7,7 +7,6 @@ const ErrorIntelligence = safeLazy(() => import('./ErrorIntelligence.jsx'))
 import LearningJourneyPanel from './LearningJourneyPanel.jsx'
 
 export default function DetailsPanel({
-  pronunciationStats,
   errorIntel,
   userStats,
   studyPlan,
@@ -32,8 +31,8 @@ export default function DetailsPanel({
       {expanded && (
         <div className="details-content">
           <SafeComponent name="Accuracy Trend">
-            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando tendencia...</span></div>}>
-              <AccuracyTrendCard stats={pronunciationStats} />
+            <React.Suspense fallback={<div className="section-placeholder"><span>Cargando rendimiento...</span></div>}>
+              <AccuracyTrendCard userStats={userStats} errorIntel={errorIntel} />
             </React.Suspense>
           </SafeComponent>
 

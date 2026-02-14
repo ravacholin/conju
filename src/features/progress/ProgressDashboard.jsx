@@ -184,7 +184,6 @@ export default function ProgressDashboard({
       {/* [4] Details (expandable) */}
       <SafeComponent name="Details">
         <DetailsPanel
-          pronunciationStats={pronunciationStats}
           errorIntel={errorIntel}
           userStats={userStats}
           studyPlan={studyPlan}

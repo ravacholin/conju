@@ -21,11 +21,11 @@ describe('errorFeedbackCoach', () => {
   it('uses fallback rule for unknown combinations', () => {
     const cards = buildErrorFeedbackCards({
       heatmap: {
-        cells: [{ mood: 'conditional', tense: 'condPerf', errorRate: 0.5, attempts: 3 }]
+        cells: [{ mood: 'indicative', tense: 'plusc', errorRate: 0.5, attempts: 3 }]
       }
     })
 
-    expect(cards[0].title).toContain('conditional')
+    expect(cards[0].title).toContain('Indicativo')
     expect(cards[0].rule).toContain('Revisá la regla')
   })
 })

@@ -557,6 +557,403 @@
 }
 
 /* ═══════════════════════════════════════
+   [5] Error Intelligence
+   ═══════════════════════════════════════ */
+
+.ei-container {
+  display: grid;
+  gap: 1.25rem;
+  background: rgba(17, 17, 17, 0.7);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  padding: 1.5rem;
+}
+
+.ei-compact {
+  font-size: 0.95rem;
+}
+
+.ei-loading {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+.ei-section-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ei-section-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Error Rate Summary */
+.ei-rate-summary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ei-rate-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ei-rate-value {
+  font-family: 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.ei-rate-detail {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ei-trend {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid rgba(245, 245, 245, 0.1);
+}
+
+.ei-trend-worse {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.25);
+}
+
+.ei-trend-better {
+  color: #5ee6a5;
+  border-color: rgba(94, 230, 165, 0.25);
+}
+
+.ei-trend-stable {
+  color: #ffd166;
+  border-color: rgba(255, 209, 102, 0.25);
+}
+
+/* Error Heatmap */
+.ei-heatmap-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ei-heatmap-scroll {
+  overflow-x: auto;
+}
+
+.ei-heatmap-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ei-heatmap-header {
+  padding: 6px 8px;
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.ei-heatmap-corner {
+  text-align: left;
+}
+
+.ei-heatmap-mood {
+  padding: 6px 8px;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.ei-heatmap-cell {
+  padding: 6px;
+  border: 1px solid rgba(245, 245, 245, 0.06);
+  text-align: center;
+  font-size: 0.72rem;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.7);
+  transition: border-color 0.15s ease;
+}
+
+.ei-heatmap-clickable {
+  cursor: pointer;
+}
+
+.ei-heatmap-clickable:hover {
+  border-color: #fff;
+}
+
+.ei-compact .ei-heatmap-header,
+.ei-compact .ei-heatmap-mood {
+  padding: 4px 6px;
+}
+
+.ei-compact .ei-heatmap-cell {
+  padding: 4px;
+  font-size: 0.68rem;
+}
+
+/* Difficult Verbs */
+.ei-difficult-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ei-difficult-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ei-difficult-card {
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  padding: 0.75rem 1rem;
+  min-width: 200px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ei-difficult-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ei-difficult-combo {
+  font-size: 0.9rem;
+}
+
+.ei-difficult-meta {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Practice Buttons */
+.ei-practice-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaa;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+}
+
+.ei-practice-btn:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+/* Feedback Cards */
+.ei-feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ei-feedback-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ei-feedback-card {
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ei-feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ei-feedback-title {
+  font-size: 0.95rem;
+}
+
+.ei-feedback-rate {
+  font-size: 0.72rem;
+  color: #ff6b6b;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.ei-feedback-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ei-feedback-body p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+}
+
+.ei-feedback-rule strong,
+.ei-feedback-example strong,
+.ei-feedback-counter strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ═══════════════════════════════════════
+   [6] Learning Journey
+   ═══════════════════════════════════════ */
+
+.lj-container {
+  background: rgba(17, 17, 17, 0.7);
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lj-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lj-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lj-counter {
+  font-size: 0.72rem;
+  font-family: 'Courier New', monospace;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lj-message {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}
+
+.lj-checkpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lj-checkpoint {
+  border: 1px solid rgba(245, 245, 245, 0.08);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.lj-completed {
+  opacity: 0.5;
+  border-color: rgba(94, 230, 165, 0.15);
+}
+
+.lj-checkpoint-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.lj-checkpoint-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.lj-checkpoint-title {
+  font-size: 0.9rem;
+}
+
+.lj-checkpoint-desc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lj-checkpoint-pct {
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.lj-progress-bar {
+  height: 6px;
+  background: #111;
+  border: 1px solid #333;
+  overflow: hidden;
+}
+
+.lj-progress-fill {
+  height: 100%;
+  background: #fff;
+  transition: width 0.3s ease;
+}
+
+.lj-completed .lj-progress-fill {
+  background: #5ee6a5;
+}
+
+.lj-action-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaa;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  align-self: flex-start;
+}
+
+.lj-action-btn:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════
    Responsive
    ═══════════════════════════════════════ */
 
@@ -622,6 +1019,19 @@
   .nav-icon.logo-icon {
     width: 38px;
     height: 38px;
+  }
+
+  .ei-container,
+  .lj-container {
+    padding: 1.25rem 1rem;
+  }
+
+  .ei-difficult-list {
+    flex-direction: column;
+  }
+
+  .ei-difficult-card {
+    min-width: unset;
   }
 }
 

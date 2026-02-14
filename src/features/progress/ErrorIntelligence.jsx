@@ -19,7 +19,6 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   const settings = useSettings()
   const setDrillRuntimeContext = useSessionStore((state) => state.setDrillRuntimeContext)
 
-  // If external data arrives, use it; otherwise fetch
   useEffect(() => {
     let cancelled = false
       ; (async () => {
@@ -42,13 +41,11 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
     return () => { cancelled = true }
   }, [externalData])
 
-  // Sync internal compact state when prop changes
   useEffect(() => { setIsCompact(!!compact) }, [compact])
 
   const heatmapMatrix = useMemo(() => {
     const { moods = [], tenses = [], cells = [] } = data.heatmap || {}
     const map = new Map(cells.map(c => [`${c.mood}|${c.tense}`, c]))
-    // In compact mode, show only top 6 tenses by total attempts
     let tensesToShow = tenses
     if (isCompact) {
       const tally = new Map()
@@ -57,7 +54,6 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
       }
       tensesToShow = Array.from(tally.entries()).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([t]) => t)
     }
-    // In compact, also trim tags to top 3 (already sorted by impact at source)
     return { moods, tenses: tensesToShow, map }
   }, [data.heatmap, isCompact])
 
@@ -88,114 +84,129 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   }
 
   if (loading) {
-    return <div className="error-intelligence"><p>Cargando inteligencia de errores...</p></div>
+    return <div className="ei-container"><p className="ei-loading">Cargando análisis de errores...</p></div>
   }
 
+  const errorRate = Math.round(((data.summary?.errorRate7 || 0) * 100))
+  const incorrect = data.summary?.incorrect7 || 0
+  const total = data.summary?.total7 || 0
+  const trend = data.summary?.trend
+
   return (
-    <div className="error-intelligence" style={{ display: 'grid', gap: '1.25rem', fontSize: isCompact ? '0.95rem' : undefined }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <strong style={{ fontSize: '1.05rem' }}>Tasa de error (últimos 7 días):</strong>
-          <span style={{ fontFamily: 'monospace' }}>
-            {Math.round(((data.summary?.errorRate7 || 0) * 100))}%
-          </span>
-          <span style={{ opacity: 0.75, fontSize: 12 }}>
-            {data.summary?.incorrect7 || 0} / {data.summary?.total7 || 0}
-          </span>
-          {data.summary && (
-            <span style={{ marginLeft: 8, fontSize: 12, color: data.summary.trend === 'up' ? '#ff6b6b' : data.summary.trend === 'down' ? '#5ee6a5' : '#ffd166' }}>
-              {data.summary.trend === 'up' ? '▲ peor' : data.summary.trend === 'down' ? '▼ mejor' : '■ estable'}
-            </span>
-          )}
+    <div className={`ei-container ${isCompact ? 'ei-compact' : ''}`}>
+      {/* Error Rate Summary */}
+      <div className="ei-rate-summary">
+        <div className="ei-rate-main">
+          <h3 className="ei-section-title">Errores recientes</h3>
+          <span className="ei-rate-value">{errorRate}%</span>
+          <span className="ei-rate-detail">{incorrect} de {total} intentos (7 días)</span>
         </div>
+        {trend && (
+          <span className={`ei-trend ei-trend-${trend === 'up' ? 'worse' : trend === 'down' ? 'better' : 'stable'}`}>
+            {trend === 'up' ? '▲ Empeorando' : trend === 'down' ? '▼ Mejorando' : '■ Estable'}
+          </span>
+        )}
       </div>
-      {/* (Se elimina "Temas prioritarios" para evitar redundancia con módulos superiores) */}
 
-      {/* Heatmap Modo x Tiempo por tasa de error */}
-      <section>
-        <h4 style={{ margin: '0 0 0.5rem 0' }}>Mapa de errores (Modo × Tiempo)</h4>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>Modo / Tiempo</th>
-                {heatmapMatrix.tenses.map(t => (
-                  <th key={t} style={{ padding: isCompact ? '4px 6px' : '6px 8px', fontWeight: 500, opacity: 0.8, whiteSpace: 'nowrap' }}>{formatTense(t)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {heatmapMatrix.moods.map(mood => (
-                <tr key={mood}>
-                  <td style={{ padding: isCompact ? '4px 6px' : '6px 8px', opacity: 0.9, whiteSpace: 'nowrap' }}>{formatMood(mood)}</td>
-                  {heatmapMatrix.tenses.map(tense => {
-                    const c = heatmapMatrix.map.get(`${mood}|${tense}`)
-                    const rate = c?.errorRate || 0
-                    const intensity = Math.round(rate * 100)
-                    const bg = `rgba(220, 53, 69, ${Math.min(0.75, rate + 0.08)})`
-                    return (
-                      <td key={tense} title={`${Math.round(rate * 100)}% · ${c?.attempts || 0} ej.`}
-                        onClick={() => c && startMicroDrill({ mood, tense })}
-                        style={{ cursor: c ? 'pointer' : 'default', padding: isCompact ? 4 : 6, border: '1px solid rgba(245,245,245,0.06)', background: rate > 0 ? bg : 'rgba(17,17,17,0.5)', textAlign: 'center', fontSize: isCompact ? 11 : 12 }}>
-                        {c ? `${intensity}%` : '—'}
-                      </td>
-                    )
-                  })}
+      {/* Error Heatmap */}
+      {heatmapMatrix.tenses.length > 0 && (
+        <section className="ei-heatmap-section">
+          <h4 className="ei-section-title">Mapa de errores</h4>
+          <p className="ei-section-hint">Tocá una celda para practicar esa combinación</p>
+          <div className="ei-heatmap-scroll">
+            <table className="ei-heatmap-table">
+              <thead>
+                <tr>
+                  <th className="ei-heatmap-header ei-heatmap-corner">Modo</th>
+                  {heatmapMatrix.tenses.map(t => (
+                    <th key={t} className="ei-heatmap-header">{formatTense(t)}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {heatmapMatrix.moods.map(mood => (
+                  <tr key={mood}>
+                    <td className="ei-heatmap-mood">{formatMood(mood)}</td>
+                    {heatmapMatrix.tenses.map(tense => {
+                      const c = heatmapMatrix.map.get(`${mood}|${tense}`)
+                      const rate = c?.errorRate || 0
+                      const intensity = Math.round(rate * 100)
+                      const bg = rate > 0
+                        ? `rgba(220, 53, 69, ${Math.min(0.75, rate + 0.08)})`
+                        : 'rgba(17,17,17,0.5)'
+                      return (
+                        <td
+                          key={tense}
+                          className={`ei-heatmap-cell ${c ? 'ei-heatmap-clickable' : ''}`}
+                          title={c ? `${intensity}% error en ${c.attempts} intentos — click para practicar` : ''}
+                          onClick={() => c && startMicroDrill({ mood, tense })}
+                          style={{ background: bg }}
+                        >
+                          {c ? `${intensity}%` : '·'}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
-      {/* Leeches prioritarios */}
+      {/* Difficult Verbs (formerly "Leeches") */}
       {data.leeches?.length > 0 && (
-        <section>
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Rescate de leeches</h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        <section className="ei-difficult-section">
+          <h4 className="ei-section-title">Verbos que necesitan refuerzo</h4>
+          <div className="ei-difficult-list">
             {data.leeches.map((l, i) => (
-              <div key={i} style={{
-                background: 'rgba(17,17,17,0.7)',
-                border: '1px solid rgba(245,245,245,0.08)',
-                borderRadius: 12,
-                padding: isCompact ? '8px 10px' : '10px 12px',
-                minWidth: isCompact ? 200 : 220
-              }}>
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>{formatCombo(l)}</div>
-                <div style={{ fontSize: 12, opacity: 0.8 }}>Lapses: {l.lapses} · Ease: {Math.round((l.ease || 0) * 100) / 100}</div>
-                <div style={{ fontSize: 12, opacity: 0.8 }}>Próx.: {formatDue(l.nextDue)}</div>
-                <div style={{ marginTop: 8 }}>
-                  <button className="btn btn-compact" onClick={() => startMicroDrill({ mood: l.mood, tense: l.tense })}>Practicar</button>
+              <div key={i} className="ei-difficult-card">
+                <div className="ei-difficult-info">
+                  <strong className="ei-difficult-combo">{formatCombo(l)}</strong>
+                  <span className="ei-difficult-meta">
+                    {l.lapses} {l.lapses === 1 ? 'error repetido' : 'errores repetidos'}
+                  </span>
+                  <span className="ei-difficult-meta">Repasar: {formatDue(l.nextDue)}</span>
                 </div>
+                <button
+                  type="button"
+                  className="ei-practice-btn"
+                  onClick={() => startMicroDrill({ mood: l.mood, tense: l.tense })}
+                >
+                  Practicar
+                </button>
               </div>
             ))}
           </div>
         </section>
       )}
 
+      {/* Feedback Cards */}
       {feedbackCards.length > 0 && (
-        <section>
-          <h4 style={{ margin: '0 0 0.5rem 0' }}>Feedback guiado (regla + ejemplo)</h4>
-          <div style={{ display: 'grid', gap: 10 }}>
+        <section className="ei-feedback-section">
+          <h4 className="ei-section-title">Reglas y tips</h4>
+          <div className="ei-feedback-list">
             {feedbackCards.map((card) => (
-              <div
-                key={card.id}
-                style={{
-                  background: 'rgba(17,17,17,0.72)',
-                  border: '1px solid rgba(245,245,245,0.08)',
-                  borderRadius: 12,
-                  padding: isCompact ? '8px 10px' : '10px 12px'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                  <strong>{card.title}</strong>
-                  <span style={{ opacity: 0.8 }}>{card.errorRate}% error</span>
+              <div key={card.id} className="ei-feedback-card">
+                <div className="ei-feedback-header">
+                  <strong className="ei-feedback-title">{card.title}</strong>
+                  <span className="ei-feedback-rate">{card.errorRate}% error</span>
                 </div>
-                <div style={{ marginTop: 6, fontSize: 13 }}>
-                  <div><strong>Regla:</strong> {card.rule}</div>
-                  <div><strong>Ejemplo:</strong> {card.example}</div>
-                  <div><strong>Contraejemplo:</strong> {card.counterExample}</div>
+                <div className="ei-feedback-body">
+                  <p className="ei-feedback-rule"><strong>Regla:</strong> {card.rule}</p>
+                  <p className="ei-feedback-example"><strong>Ejemplo:</strong> {card.example}</p>
+                  <p className="ei-feedback-counter"><strong>Evitá:</strong> {card.counterExample}</p>
                 </div>
+                <button
+                  type="button"
+                  className="ei-practice-btn"
+                  onClick={() => {
+                    const [mood, tense] = card.id.split('|')
+                    if (mood && tense) startMicroDrill({ mood, tense })
+                  }}
+                >
+                  Practicar esto
+                </button>
               </div>
             ))}
           </div>
@@ -205,12 +216,9 @@ export default function ErrorIntelligence({ data: externalData = null, compact =
   )
 }
 
-// (Sparkline eliminado junto con Temas prioritarios)
-
 function formatCombo(obj) {
   if (!obj) return ''
-  const mood = obj.mood, tense = obj.tense
-  return `${formatMood(mood)} · ${formatTense(tense)}`
+  return `${formatMood(obj.mood)} · ${formatTense(obj.tense)}`
 }
 
 function formatMood(mood) {

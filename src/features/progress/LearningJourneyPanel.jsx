@@ -8,42 +8,43 @@ export default function LearningJourneyPanel({ userStats, studyPlan, onNavigateT
   )
 
   return (
-    <section className="learning-journey-panel" data-testid="learning-journey-panel">
-      <div className="section-header">
-        <h2>
-          <img src="/icons/openbook.png" alt="Ruta de aprendizaje" className="section-icon" />
-          Ruta de aprendizaje
-        </h2>
-        <p>{journey.adaptiveMessage}</p>
+    <section className="lj-container" data-testid="learning-journey-panel">
+      <div className="lj-header">
+        <h3 className="lj-title">Tu progreso</h3>
+        <span className="lj-counter">{journey.totalCompleted}/{journey.totalCheckpoints} hitos</span>
       </div>
+      <p className="lj-message">{journey.adaptiveMessage}</p>
 
-      <ul className="reminder-list">
+      <div className="lj-checkpoints">
         {journey.checkpoints.map((checkpoint) => (
-          <li key={checkpoint.id} className={`reminder-card ${checkpoint.completed ? 'priority-low' : 'priority-medium'}`}>
-            <div className="reminder-text">
-              <strong>{checkpoint.title}</strong>
-              <div>{checkpoint.description}</div>
-              <small>Progreso: {checkpoint.progress}%</small>
+          <div key={checkpoint.id} className={`lj-checkpoint ${checkpoint.completed ? 'lj-completed' : ''}`}>
+            <div className="lj-checkpoint-top">
+              <div className="lj-checkpoint-info">
+                <strong className="lj-checkpoint-title">
+                  {checkpoint.completed ? '✓ ' : ''}{checkpoint.title}
+                </strong>
+                <span className="lj-checkpoint-desc">{checkpoint.description}</span>
+              </div>
+              <span className="lj-checkpoint-pct">{checkpoint.progress}%</span>
+            </div>
+            <div className="lj-progress-bar">
+              <div
+                className="lj-progress-fill"
+                style={{ width: `${checkpoint.progress}%` }}
+              />
             </div>
             {!checkpoint.completed && (
-              <div className="reminder-actions">
-                <button type="button" className="reminder-button secondary" onClick={() => onNavigateToDrill?.()}>
-                  Practicar ahora
-                </button>
-              </div>
+              <button
+                type="button"
+                className="lj-action-btn"
+                onClick={() => onNavigateToDrill?.()}
+              >
+                {checkpoint.actionLabel}
+              </button>
             )}
-          </li>
+          </div>
         ))}
-      </ul>
-
-      {journey.nextCheckpoint && !journey.nextCheckpoint.completed && (
-        <div className="weekly-goals-callout">
-          <h3>Siguiente hito</h3>
-          <p>
-            {journey.nextCheckpoint.title}: {journey.nextCheckpoint.progress}% completado.
-          </p>
-        </div>
-      )}
+      </div>
     </section>
   )
 }
