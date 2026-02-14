@@ -80,8 +80,12 @@ export const selectNextForm = async ({
     try {
       const recommendation = await getNextRecommendedItem(settings.level || 'B1')
       if (recommendation) {
-        const { mood, tense, verbId } = recommendation
-        let candidateForms = eligibleForms.filter(f => f.mood === mood && f.tense === tense)
+        // Extract mood/tense from targetCombination (where all recommendation types store them)
+        const target = recommendation.targetCombination || recommendation
+        const { mood, tense, verbId } = target
+        let candidateForms = mood && tense
+          ? eligibleForms.filter(f => f.mood === mood && f.tense === tense)
+          : []
 
         if (verbId) {
           const specificVerbForms = candidateForms.filter(f => f.lemma === verbId)

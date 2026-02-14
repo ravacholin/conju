@@ -120,14 +120,18 @@ export const applyReviewSessionFilter = (
 export const selectDueCandidate = (dueCells, reviewSessionType) => {
   if (!Array.isArray(dueCells) || dueCells.length === 0) return null
 
-  switch (reviewSessionType) {
-    case 'specific':
-    case 'urgent':
-    case 'light':
-    case 'due':
-    case 'today':
-      return dueCells.find(Boolean) || null
-    default:
-      return dueCells.find(Boolean) || null
+  const valid = dueCells.filter(Boolean)
+  if (valid.length === 0) return null
+
+  // For explicit review sessions, respect the ordered priority (most overdue first)
+  if (reviewSessionType) {
+    return valid[0]
   }
+
+  // For general mixed practice (no explicit review session), randomize among
+  // due items to prevent always selecting the same mood/tense/person combination.
+  // This avoids a self-reinforcing loop where the first due item gets practiced
+  // repeatedly while other due items are starved.
+  const index = Math.floor(Math.random() * valid.length)
+  return valid[index]
 }
