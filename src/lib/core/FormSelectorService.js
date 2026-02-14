@@ -236,7 +236,7 @@ export async function selectForm(eligible, settings, context = {}) {
   // It is now handled in the hook/component level when starting a new session
 
 
-  // Fast path for specific practice: simple random selection from eligible pool
+  // Fast path for specific practice: use variety engine for verb/person variety
   if (practiceMode === 'specific') {
     // ENHANCED SELECTION: For regular practice, ensure better distribution of verb endings
     if (verbType === 'regular') {
@@ -245,13 +245,6 @@ export async function selectForm(eligible, settings, context = {}) {
         'ar': eligible.filter(f => f.lemma?.endsWith('ar')),
         'er': eligible.filter(f => f.lemma?.endsWith('er')),
         'ir': eligible.filter(f => f.lemma?.endsWith('ir'))
-      };
-
-      // Enhanced selection: favor underrepresented endings
-      const endingCounts = {
-        'ar': formsByEnding.ar.length,
-        'er': formsByEnding.er.length,
-        'ir': formsByEnding.ir.length
       };
 
       // If we have -ir verbs, give them 30% selection chance to ensure they appear
@@ -276,8 +269,11 @@ export async function selectForm(eligible, settings, context = {}) {
     return eligible[idx]
   }
 
-  // Simple selection for mixed practice as well to keep tests fast and deterministic
-  const selectedForm = eligible[Math.floor(Math.random() * eligible.length)]
+  // CRITICAL FIX: Use variety engine for mixed/level practice to ensure tense, person,
+  // and verb variety. Previously used pure random which caused repetitive exercises
+  // (e.g., always pretérito indefinido yo in B2 mixed mode).
+  const variedForm = varietyEngine.selectVariedForm(eligible, level, practiceMode, {})
+  const selectedForm = variedForm || eligible[Math.floor(Math.random() * eligible.length)]
 
   if (selectedForm) {
 
@@ -461,6 +457,9 @@ function applyWeightedSelection(forms) {
       } else {
         regularForms.push(form)
       }
+    } else {
+      // Forms not in VERB_LOOKUP_MAP default to regular to avoid being silently dropped
+      regularForms.push(form)
     }
   })
 
