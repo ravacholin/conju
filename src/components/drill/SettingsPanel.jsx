@@ -152,7 +152,7 @@ function SettingsPanel({
             <option value="">Todas las familias</option>
             <optgroup label="── Grupos Principales (Presente) ──">
               <option value="STEM_CHANGES">Verbos que Diptongan (pensar, volver, pedir)</option>
-              <option value="FIRST_PERSON_IRREGULAR">Irregulares en YO (tengo, conozco, salgo)</option>
+              <option value="FIRST_PERSON_IRREGULAR">Irregulares en YO (tengo, conozco, estoy)</option>
             </optgroup>
             <optgroup label="── Familias Específicas ──">
               <option value="G_VERBS">Irregulares en YO (tener, conocer, vencer)</option>

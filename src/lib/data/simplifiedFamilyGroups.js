@@ -36,12 +36,13 @@ export const SIMPLIFIED_GROUPS = {
       'ZCO_VERBS',     // conocer→conozco, parecer→parezco, conducir→conduzco
       'ZO_VERBS',      // vencer→venzo, ejercer→ejerzo
       'JO_VERBS',      // proteger→protejo, elegir→elijo
-      'GU_DROP'        // seguir→sigo, distinguir→distingo
+      'GU_DROP',       // seguir→sigo, distinguir→distingo
+      'YO_OY'          // estar→estoy, ser→soy, dar→doy, ir→voy
     ],
     // Tiempos donde este grupo es relevante
     relevantTenses: ['pres', 'subjPres'],
-    // Verbos ejemplares para mostrar - USAR PROTOTIPOS PEDAGÓGICOS: conocer (-zco), salir/hacer (-go)
-    exampleVerbs: ['conocer', 'salir', 'hacer'],
+    // Verbos ejemplares para mostrar
+    exampleVerbs: ['conocer', 'salir', 'hacer', 'estar'],
     color: '#2196F3' // Azul para irregulares en yo
   },
 

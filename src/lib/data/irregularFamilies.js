@@ -313,6 +313,16 @@ export const IRREGULAR_FAMILIES = {
     paradigmaticVerbs: ['prohibir', 'reunir', 'aislar']
   },
 
+  'YO_OY': {
+    id: 'YO_OY',
+    name: 'Verbos con -oy en yo',
+    description: 'estar→estoy, ser→soy, dar→doy, ir→voy',
+    examples: ['estar', 'ser', 'dar', 'ir'],
+    pattern: 'terminación -oy en 1ª persona presente: estoy, soy, doy, voy',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['estar', 'ser', 'dar', 'ir']
+  },
+
   'MONOSYLLABIC_IRREG': {
     id: 'MONOSYLLABIC_IRREG',
     name: 'Monosílabos irregulares',
@@ -350,8 +360,8 @@ export const IRREGULARITY_CLUSTERS = {
   YO_IRREGULARS: {
     id: 'YO_IRREGULARS',
     name: 'Irregulares en yo',
-    description: 'Consonante alternante y terminaciones en -go/-zco/-zo',
-    families: ['G_VERBS', 'JO_VERBS', 'GU_DROP', 'ZCO_VERBS', 'ZO_VERBS']
+    description: 'Consonante alternante, terminaciones en -go/-zco/-zo y -oy',
+    families: ['G_VERBS', 'JO_VERBS', 'GU_DROP', 'ZCO_VERBS', 'ZO_VERBS', 'YO_OY']
   },
   ACCENT_MORPHOLOGY: {
     id: 'ACCENT_MORPHOLOGY',
@@ -487,6 +497,8 @@ export function categorizeVerb(lemma, _verbData) {
     // Diptongación e→ie
     'pensar': ['DIPHT_E_IE'],
     'cerrar': ['DIPHT_E_IE'],
+    'perder': ['DIPHT_E_IE'],
+    'entender': ['DIPHT_E_IE'],
     'empezar': ['DIPHT_E_IE', 'ORTH_ZAR'],
     'comenzar': ['DIPHT_E_IE', 'ORTH_ZAR'],
     'despertar': ['DIPHT_E_IE'],
@@ -518,7 +530,7 @@ export function categorizeVerb(lemma, _verbData) {
     
     // Pretéritos fuertes
     'andar': ['PRET_UV'],
-    'estar': ['PRET_UV', 'PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
+    'estar': ['YO_OY', 'PRET_UV', 'PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     'saber': ['PRET_U', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
     'caber': ['PRET_U'],
     'querer': ['DIPHT_E_IE', 'PRET_I'],
@@ -527,9 +539,9 @@ export function categorizeVerb(lemma, _verbData) {
     'producir': ['ZCO_VERBS', 'PRET_J'],
     
     // Supletivos
-    'ir': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
-    'ser': ['PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
-    'dar': ['PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
+    'ir': ['YO_OY', 'PRET_SUPPL', 'IMPERATIVE_IRREG', 'IRREG_GERUNDS', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
+    'ser': ['YO_OY', 'PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
+    'dar': ['YO_OY', 'PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
     'haber': ['PRET_SUPPL', 'PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
     
