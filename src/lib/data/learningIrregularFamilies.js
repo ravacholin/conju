@@ -430,6 +430,9 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   // YO irregular con -g → nueva familia de YO con -g
   'G_VERBS': 'LEARNING_YO_G_PRESENT',
 
+  // Verbos con -oy en yo → muy irregulares (estar, ser, dar, ir)
+  'YO_OY': 'LEARNING_VERY_IRREGULAR',
+
   // Muy irregulares → nueva familia para ser/estar/ir/dar
   'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, estar, dar
 
