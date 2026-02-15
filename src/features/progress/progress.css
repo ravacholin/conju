@@ -1148,12 +1148,12 @@
 
   /* Aumentar tamaño de iconos en mobile para mejor usabilidad táctil */
   .menu-icon {
-    width: 64px !important;
-    height: 64px !important;
+    width: 96px !important;
+    height: 96px !important;
   }
 
   .icon-btn {
-    padding: 10px !important;
+    padding: 12px !important;
   }
 
   .icon-row {
