@@ -145,6 +145,9 @@ function AppRouter() {
   // Stable route handler function
   // Stable handleRouteChange with minimal dependencies to prevent subscription leaks
   const handleRouteChange = useCallback((route, _type) => {
+    // Scroll to top on every route change to avoid stale scroll position (especially on mobile)
+    window.scrollTo(0, 0)
+
     setCurrentMode(route.mode)
 
     if (route.mode === 'onboarding' && route.step) {

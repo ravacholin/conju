@@ -701,8 +701,6 @@ export function useOnboardingFlow() {
     if (import.meta.env.DEV) {
       console.log('ACTION: handleHome');
     }
-    // Scroll to top when returning to menu
-    window.scrollTo({ top: 0, behavior: 'smooth' })
     if (setCurrentMode) {
       setCurrentMode('onboarding')
     }
