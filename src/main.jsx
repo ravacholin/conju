@@ -195,7 +195,7 @@ if (typeof window !== 'undefined') {
             setTimeout(() => {
               if (syncNow) {
                 syncNow().catch((error) => {
-                  // Log sync error - el SyncStatusIndicator mostrará el error al usuario
+                  // Log sync error
                   bootstrapLogger.warn('Sync failed on window focus', error);
                 });
               }

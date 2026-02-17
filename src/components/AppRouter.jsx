@@ -34,7 +34,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useSettings } from '../state/settings.js'
 import OnboardingFlow from './onboarding/OnboardingFlow.jsx'
-import SyncStatusIndicator from './sync/SyncStatusIndicator.jsx'
 import { lazy } from 'react'
 import { lazyWithRetry } from '../utils/dynamicImportRetry.js'
 import { useShallow } from 'zustand/react/shallow'
@@ -497,41 +496,36 @@ function AppRouter() {
 
   if (currentMode === 'onboarding') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <OnboardingFlow
-          onStartPractice={handleStartPractice}
-          setCurrentMode={setCurrentMode}
-          // Pass all hook functions as props
-          onboardingStep={onboardingFlow.onboardingStep}
-          selectDialect={onboardingFlow.selectDialect}
-          selectLevel={onboardingFlow.selectLevel}
-          selectPracticeMode={onboardingFlow.selectPracticeMode}
-          selectMood={onboardingFlow.selectMood}
-          selectTense={onboardingFlow.selectTense}
-          selectVerbType={onboardingFlow.selectVerbType}
-          selectFamily={onboardingFlow.selectFamily}
-          goBack={onboardingFlow.goBack}
-          goToLevelDetails={onboardingFlow.goToLevelDetails}
-          handleHome={onboardingFlow.handleHome}
-          settings={onboardingFlow.settings}
-          getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
-          getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
-          getModeSamples={onboardingFlow.getModeSamples}
-          getConjugationExample={onboardingFlow.getConjugationExample}
-          onGoToProgress={handleGoToProgress}
-          onStartLearningNewTense={handleStartLearningNewTense}
-        />
-      </>
+      <OnboardingFlow
+        onStartPractice={handleStartPractice}
+        setCurrentMode={setCurrentMode}
+        // Pass all hook functions as props
+        onboardingStep={onboardingFlow.onboardingStep}
+        selectDialect={onboardingFlow.selectDialect}
+        selectLevel={onboardingFlow.selectLevel}
+        selectPracticeMode={onboardingFlow.selectPracticeMode}
+        selectMood={onboardingFlow.selectMood}
+        selectTense={onboardingFlow.selectTense}
+        selectVerbType={onboardingFlow.selectVerbType}
+        selectFamily={onboardingFlow.selectFamily}
+        goBack={onboardingFlow.goBack}
+        goToLevelDetails={onboardingFlow.goToLevelDetails}
+        handleHome={onboardingFlow.handleHome}
+        settings={onboardingFlow.settings}
+        getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
+        getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
+        getModeSamples={onboardingFlow.getModeSamples}
+        getConjugationExample={onboardingFlow.getConjugationExample}
+        onGoToProgress={handleGoToProgress}
+        onStartLearningNewTense={handleStartLearningNewTense}
+      />
     )
   }
 
   if (currentMode === 'drill') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <React.Suspense fallback={<div className="loading">Cargando práctica...</div>}>
-          <DrillMode
+      <React.Suspense fallback={<div className="loading">Cargando práctica...</div>}>
+        <DrillMode
           currentItem={drillMode.currentItem}
           settings={settings}
           onDrillResult={drillMode.handleDrillResult}
@@ -551,77 +545,63 @@ function AppRouter() {
           onNavigateToTimeline={handleStartTimelineMode}
           getGenerationStats={drillMode.getGenerationStats}
           isGenerationViable={drillMode.isGenerationViable}
-          />
-        </React.Suspense>
-      </>
+        />
+      </React.Suspense>
     )
   }
 
   if (currentMode === 'story') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <React.Suspense fallback={<div className="loading">Cargando historias...</div>}>
-          <StoryMode
-            onBack={handleStartPractice}
-            onHome={handleHome}
-          />
-        </React.Suspense>
-      </>
+      <React.Suspense fallback={<div className="loading">Cargando historias...</div>}>
+        <StoryMode
+          onBack={handleStartPractice}
+          onHome={handleHome}
+        />
+      </React.Suspense>
     )
   }
 
   if (currentMode === 'timeline') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <React.Suspense fallback={<div className="loading">Cargando línea de tiempo...</div>}>
-          <TimelineMode
-            onBack={handleStartPractice}
-            onHome={handleHome}
-          />
-        </React.Suspense>
-      </>
+      <React.Suspense fallback={<div className="loading">Cargando línea de tiempo...</div>}>
+        <TimelineMode
+          onBack={handleStartPractice}
+          onHome={handleHome}
+        />
+      </React.Suspense>
     )
   }
 
   if (currentMode === 'learning') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <React.Suspense fallback={<div className="loading">Cargando aprendizaje...</div>}>
-          <LearnTenseFlowContainer
-            onHome={handleHome}
-            onGoToProgress={handleGoToProgress}
-          />
-        </React.Suspense>
-      </>
+      <React.Suspense fallback={<div className="loading">Cargando aprendizaje...</div>}>
+        <LearnTenseFlowContainer
+          onHome={handleHome}
+          onGoToProgress={handleGoToProgress}
+        />
+      </React.Suspense>
     )
   }
 
   if (currentMode === 'progress') {
     return (
-      <>
-        <SyncStatusIndicator />
-        <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
-          <ProgressDashboard
-            onNavigateHome={handleProgressMenu}
-            onNavigateToDrill={() => {
-              // Navigate first, let the AppRouter's useEffect handle drill regeneration
-              // This ensures settings are fully applied before regeneration
-              router.navigate(ROUTES.drill())
-            }}
-            onNavigateToStory={handleStartStoryMode}
-            onNavigateToTimeline={handleStartTimelineMode}
-          />
-        </React.Suspense>
-      </>
+      <React.Suspense fallback={<div className="loading">Cargando progreso...</div>}>
+        <ProgressDashboard
+          onNavigateHome={handleProgressMenu}
+          onNavigateToDrill={() => {
+            // Navigate first, let the AppRouter's useEffect handle drill regeneration
+            // This ensures settings are fully applied before regeneration
+            router.navigate(ROUTES.drill())
+          }}
+          onNavigateToStory={handleStartStoryMode}
+          onNavigateToTimeline={handleStartTimelineMode}
+        />
+      </React.Suspense>
     )
   }
 
   return (
     <div className="App">
-      <SyncStatusIndicator />
       <div className="loading">Cargando aplicación...</div>
     </div>
   )
