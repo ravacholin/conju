@@ -1013,14 +1013,18 @@
     padding: 0.5rem 1rem;
   }
 
+  .nav-btn {
+    padding: 0.5rem;
+  }
+
   .nav-icon {
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
   }
 
   .nav-icon.logo-icon {
-    width: 38px;
-    height: 38px;
+    width: 52px;
+    height: 52px;
   }
 
   .ei-container,
