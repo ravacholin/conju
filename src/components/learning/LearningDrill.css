@@ -1,5 +1,10 @@
 /* Learning Drill - Clean design matching main app */
 
+/* Eliminar el espacio entre el header sticky y la tarjeta de conjugación */
+.App:has(.learning-drill) .main-content {
+  padding-top: 0;
+}
+
 .learning-drill {
   text-align: center;
   max-width: 650px;
