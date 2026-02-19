@@ -921,7 +921,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
             </button>
           </div>
         </header>
-        <div className="main-content drill-main-content">
+        <div className="main-content">
           <div className="drill-container learning-drill">
             <div className="center-column"><p>No hay ejercicios disponibles.</p></div>
           </div>
@@ -975,7 +975,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
         </Suspense>
       )}
 
-      <div className="main-content drill-main-content">
+      <div className="main-content">
         <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
 
           <div className="chrono-panel">

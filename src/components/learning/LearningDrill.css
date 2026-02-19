@@ -1,10 +1,5 @@
 /* Learning Drill - Clean design matching main app */
 
-/* Eliminar espacio horrible entre header y tarjeta — web y mobile */
-.drill-main-content.main-content {
-  padding-top: 0;
-}
-
 .learning-drill {
   text-align: center;
   max-width: 650px;
