@@ -42,8 +42,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p,
@@ -843,6 +848,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -853,6 +859,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1099,8 +1106,8 @@
 
 .back-icon,
 .home-icon {
-  width: 16px;
-  height: 16px;
+  width: 36px;
+  height: 36px;
   opacity: 0.8;
   transition: opacity 0.2s ease;
 }
