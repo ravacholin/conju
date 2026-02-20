@@ -10,7 +10,7 @@ function PracticeModeSelection({ onSelectPracticeMode, onBack }) {
           onClick={() => onSelectPracticeMode('mixed')}
           title="Seleccionar práctica mixta"
         >
-          <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>MIXTA</div>
+          <div className="option-title">MIXTA</div>
           <p>Mezclá todos los tiempos y modos de tu nivel</p>
           <p className="example">Variedad completa para práctica general</p>
         </ClickableCard>
@@ -20,7 +20,7 @@ function PracticeModeSelection({ onSelectPracticeMode, onBack }) {
           onClick={() => onSelectPracticeMode('specific')}
           title="Seleccionar formas específicas"
         >
-          <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>ESPECÍFICA</div>
+          <div className="option-title">ESPECÍFICA</div>
           <p>Enfocate en un tiempo/modo específico de tu nivel</p>
           <p className="example">Ideal para dominar formas particulares</p>
         </ClickableCard>

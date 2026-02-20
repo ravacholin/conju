@@ -12,7 +12,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('A1')}
             title="Seleccionar nivel A1 - Principiante"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>A1</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>A1</div>
             <p>PRINCIPIANTE</p>
             <p className="example">Presente</p>
           </ClickableCard>
@@ -22,7 +22,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('A2')}
             title="Seleccionar nivel A2 - Elemental"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>A2</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>A2</div>
             <p>ELEMENTAL</p>
             <p className="example">Pretéritos, Futuro, Imperativo</p>
           </ClickableCard>
@@ -32,7 +32,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('B1')}
             title="Seleccionar nivel B1 - Intermedio"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>B1</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>B1</div>
             <p>INTERMEDIO</p>
             <p className="example">Futuro compuesto, Condicional</p>
           </ClickableCard>
@@ -42,7 +42,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('B2')}
             title="Seleccionar nivel B2 - Intermedio alto"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>B2</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>B2</div>
             <p>INTERMEDIO ALTO</p>
             <p className="example">Subjuntivo imperfecto</p>
           </ClickableCard>
@@ -52,7 +52,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('C1')}
             title="Seleccionar nivel C1 - Avanzado"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>C1</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>C1</div>
             <p>AVANZADO</p>
             <p className="example">Discurso preciso y fluido</p>
           </ClickableCard>
@@ -62,7 +62,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onSelectLevel('C2')}
             title="Seleccionar nivel C2 - Superior"
           >
-            <div style={{ fontSize: '4rem', fontWeight: 900, marginBottom: '0.5rem' }}>C2</div>
+            <div className="option-title" style={{ fontSize: '4rem' }}>C2</div>
             <p>SUPERIOR</p>
             <p className="example">Dominio nativo</p>
           </ClickableCard>
@@ -73,7 +73,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
               onClick={onStartLevelTest}
               title="Test de nivel adaptativo - Determina tu nivel automáticamente"
             >
-              <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>TEST</div>
+              <div className="option-title" style={{ fontSize: '2.5rem' }}>TEST</div>
               <p>DETERMINAR NIVEL</p>
               <p className="example">Automático • Adaptativo</p>
             </ClickableCard>
@@ -99,7 +99,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           onClick={onGoToLevelDetails}
           title="Practicar por nivel específico (A1-C2)"
         >
-          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>NIVELES</div>
+          <div className="option-title" style={{ fontSize: '2.5rem' }}>NIVELES</div>
           <p>POR DIFICULTAD (A1-C2)</p>
           <p className="example">Camino progresivo estructurado</p>
         </ClickableCard>
@@ -109,7 +109,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           onClick={() => onSelectPracticeMode('theme')}
           title="Practicar temas específicos (presente, subjuntivo, etc.)"
         >
-          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>TEMAS</div>
+          <div className="option-title" style={{ fontSize: '2.5rem' }}>TEMAS</div>
           <p>POR TIEMPO VERBAL</p>
           <p className="example">Presente, Subjuntivo, etc.</p>
         </ClickableCard>
@@ -119,7 +119,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
           onClick={onStartLearningNewTense}
           title="Aprender un tiempo verbal nuevo con un método guiado"
         >
-          <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>APRENDER</div>
+          <div className="option-title" style={{ fontSize: '2.5rem' }}>APRENDER</div>
           <p>LECCIONES GUIADAS</p>
           <p className="example">Explicaciones y práctica paso a paso</p>
         </ClickableCard>
@@ -130,7 +130,7 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
             onClick={() => onGoToProgress()}
             title="Ver progreso y analíticas"
           >
-            <div style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>PROGRESO</div>
+            <div className="option-title" style={{ fontSize: '2.5rem' }}>PROGRESO</div>
             <p>ESTADÍSTICAS</p>
             <p className="example">Analíticas y mapa de calor</p>
           </ClickableCard>

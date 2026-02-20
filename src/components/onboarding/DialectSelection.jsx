@@ -9,7 +9,7 @@ function DialectSelection({ onSelectDialect }) {
         onClick={() => onSelectDialect('rioplatense')}
         title="Seleccionar dialecto rioplatense (vos)"
       >
-        <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>VOS</div>
+        <div className="option-title">VOS</div>
         <p>Argentina, Uruguay</p>
         <p className="example">vos tenés, vos hablás</p>
       </ClickableCard>
@@ -19,7 +19,7 @@ function DialectSelection({ onSelectDialect }) {
         onClick={() => onSelectDialect('la_general')}
         title="Seleccionar dialecto latinoamericano general (tú)"
       >
-        <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>TÚ</div>
+        <div className="option-title">TÚ</div>
         <p>Latinoamérica</p>
         <p className="example">tú tienes, tú hablas</p>
       </ClickableCard>
@@ -29,7 +29,7 @@ function DialectSelection({ onSelectDialect }) {
         onClick={() => onSelectDialect('peninsular')}
         title="Seleccionar dialecto peninsular (tú y vosotros)"
       >
-        <div style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+        <div className="option-title" style={{ fontSize: '2rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
           <span>TÚ</span>
           <span style={{ fontSize: '0.6em', opacity: 0.7 }}>+</span>
           <span>VOSOTROS</span>
@@ -43,7 +43,7 @@ function DialectSelection({ onSelectDialect }) {
         onClick={() => onSelectDialect('both')}
         title="Seleccionar todos los dialectos"
       >
-        <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>TODOS</div>
+        <div className="option-title">TODOS</div>
         <p>Global</p>
         <p className="example">tú, vos y vosotros</p>
       </ClickableCard>

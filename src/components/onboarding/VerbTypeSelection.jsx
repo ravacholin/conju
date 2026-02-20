@@ -10,7 +10,7 @@ function VerbTypeSelection({ onSelectVerbType, onBack }) {
           onClick={() => onSelectVerbType('all')}
           title="Seleccionar todos los tipos de verbos"
         >
-          <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>TODOS</div>
+          <div className="option-title">TODOS</div>
           <p>REGULARES E IRREGULARES</p>
           <p className="example">Práctica completa</p>
         </ClickableCard>
@@ -20,7 +20,7 @@ function VerbTypeSelection({ onSelectVerbType, onBack }) {
           onClick={() => onSelectVerbType('regular')}
           title="Seleccionar solo verbos regulares"
         >
-          <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>REGULARES</div>
+          <div className="option-title">REGULARES</div>
           <p>SEGUIR LA REGLA</p>
           <p className="example">hablar, comer, vivir</p>
         </ClickableCard>
@@ -30,7 +30,7 @@ function VerbTypeSelection({ onSelectVerbType, onBack }) {
           onClick={() => onSelectVerbType('irregular')}
           title="Seleccionar solo verbos irregulares"
         >
-          <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '0.5rem' }}>IRREGULARES</div>
+          <div className="option-title">IRREGULARES</div>
           <p>VERBOS ESPECIALES</p>
           <p className="example">ser, estar, tener, ir</p>
         </ClickableCard>

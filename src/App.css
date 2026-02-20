@@ -428,17 +428,13 @@ body {
 }
 
 .option-card {
-  background: #000000;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border: 2px solid var(--border);
+  background: transparent;
+  border: 2px solid var(--text);
   border-radius: 0;
   padding: 2.5rem;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   position: relative;
-  overflow: visible;
-  will-change: transform, box-shadow;
   text-align: center;
   box-shadow: none;
   display: flex;
@@ -455,19 +451,25 @@ body {
 
 /* Neo-Brutalist hover effect: sharp offset shadow */
 .option-card:hover {
-  background: #000000;
-  border-color: #ffffff;
-  transform: translate(-6px, -6px);
-  box-shadow: var(--shadow-hard);
+  background: var(--text);
+  border-color: var(--text);
+  transform: translate(-4px, -4px);
+  box-shadow: 6px 6px 0px var(--accent-orange);
   z-index: 10;
 }
 
-.option-card:hover h3 {
-  color: #ffffff;
+.option-card:hover h3,
+.option-card:hover .option-title,
+.option-card:hover div[style*="fontSize"] {
+  color: var(--bg) !important;
 }
 
-.option-card:hover p {
-  color: #aaa;
+.option-card:hover p,
+.option-card:hover .example,
+.option-card:hover .conjugation-example,
+.option-card.compact:hover .conjugation-example {
+  color: var(--bg) !important;
+  border-color: var(--bg) !important;
 }
 
 .option-card.compact {
@@ -482,12 +484,13 @@ body {
 
 .option-card.compact h3 {
   margin: 0 0 1rem 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .option-card.compact .conjugation-example {
@@ -512,8 +515,8 @@ body {
 }
 
 .option-card:hover .compact .conjugation-example {
-  border-top-color: #ffffff;
-  color: #ffffff;
+  border-top-color: var(--bg);
+  color: var(--bg);
 }
 
 .game-icon {
@@ -568,7 +571,7 @@ body {
 }
 
 .option-card h3 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
   color: var(--text);
@@ -578,8 +581,9 @@ body {
   gap: 1rem;
   justify-content: center;
   line-height: 1.1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 /* Más espacio entre ícono y texto en los primeros dos boxes de dialectos - SOLO para el menú de dialectos */
@@ -600,15 +604,15 @@ body {
 .option-card .example {
   margin: 0;
   font-size: 0.9rem;
-  opacity: 0.8;
-  color: var(--muted-2);
+  font-weight: 600;
+  color: var(--muted);
   font-family: var(--font-mono);
   line-height: 1.4;
   padding-left: 0.75rem;
-  border-left: 3px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid var(--text);
+  background: transparent;
   padding: 0.5rem 0.75rem;
-  border-radius: 0 6px 6px 0;
+  border-radius: 0;
   margin-top: 0.25rem;
   flex-grow: 1;
   display: flex;
@@ -616,15 +620,31 @@ body {
 }
 
 .conjugation-example {
-  font-size: 0.8rem;
-  color: var(--muted-2);
+  font-size: 0.85rem;
+  color: var(--muted);
   margin-top: 0.25rem;
   font-family: var(--font-mono);
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.3;
 }
 
 
+
+.option-title {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  color: var(--text);
+  transition: color 0.15s ease;
+}
+
+.option-card.compact .option-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
 
 /* Drill container */
 .drill-container {
@@ -924,34 +944,34 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
+  background: var(--text);
   color: var(--bg);
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  padding: 1rem 1.5rem;
+  border-radius: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   min-width: 140px;
-  min-height: 44px;
+  min-height: 48px;
   position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 4px 16px rgba(245, 245, 245, 0.1),
-    0 1px 0 rgba(245, 245, 245, 0.2) inset;
+  box-shadow: 4px 4px 0px var(--accent-orange);
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 8px 24px rgba(245, 245, 245, 0.15),
-    0 1px 0 rgba(245, 245, 245, 0.3) inset;
+  background: var(--text);
+  color: var(--bg);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--accent-orange);
 }
 
 .btn:active {
-  transform: translateY(-1px) scale(1.01);
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--accent-orange);
 }
 
 .btn:disabled {
@@ -981,12 +1001,19 @@ body {
 .btn-secondary {
   background: transparent;
   color: var(--text);
-  border: 1px solid var(--border-2);
+  border: 2px solid var(--text);
+  box-shadow: 4px 4px 0px var(--text);
 }
 
 .btn-secondary:hover {
-  background: var(--hover);
-  border-color: var(--border-2);
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  box-shadow: 6px 6px 0px var(--text);
+}
+
+.btn-secondary:active {
+  box-shadow: 0px 0px 0px var(--text);
 }
 
 
@@ -1295,25 +1322,23 @@ body {
 }
 
 .settings-panel {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 20px;
+  background: transparent;
+  border: 2px solid var(--text);
+  border-radius: 0;
   padding: 2.5rem;
   margin-bottom: 2rem;
   max-width: 550px;
   width: 100%;
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
+  box-shadow: 6px 6px 0px var(--text);
 }
 
 .settings-panel h3 {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   margin-bottom: 1.5rem;
   color: var(--text);
-  font-weight: 500;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
 }
 
 .setting-group {
@@ -1331,28 +1356,23 @@ body {
 .setting-select {
   width: 100%;
   padding: 0.8rem 1rem;
-  border: 1px solid var(--border-2);
-  border-radius: 10px;
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid var(--text);
+  border-radius: 0;
+  background: var(--bg);
   color: var(--text);
-  font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(245, 245, 245, 0.02) inset;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 4px 4px 0px var(--text);
 }
 
 .setting-select:focus {
   outline: none;
-  border-color: var(--accent-blue);
-  background: rgba(17, 17, 17, 0.9);
-  transform: scale(1.01);
-  box-shadow:
-    0 0 0 2px rgba(142, 180, 227, 0.1),
-    0 4px 8px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(142, 180, 227, 0.08) inset;
+  border-color: var(--accent-orange);
+  background: var(--bg);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--accent-orange);
 }
 
 .setting-select option {
@@ -1372,16 +1392,23 @@ body {
   gap: 0.5rem;
   cursor: pointer;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-2);
-  border-radius: 8px;
-  background: var(--hover);
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
+  border: 2px solid var(--text);
+  border-radius: 0;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0px var(--text);
 }
 
 .radio-group label:hover {
-  background: var(--panel);
-  border-color: var(--border-2);
+  background: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--accent-orange);
 }
 
 .radio-group input[type="radio"] {
@@ -1679,38 +1706,25 @@ body {
     opacity: 1 !important;
   }
 
-  /* Reducir espaciado general en mobile */
   .option-card {
     padding: 1.5rem !important;
     margin-bottom: 1rem !important;
     /* Improve contrast vs background on mobile */
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: rgba(255, 255, 255, 0.18) !important;
-    box-shadow:
-      0 8px 24px rgba(0, 0, 0, 0.45),
-      0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+    background: transparent !important;
+    border: 2px solid var(--text) !important;
+    box-shadow: 4px 4px 0px var(--text) !important;
   }
 
-  /* Click-only sweep (mobile): applied when .click-anim class toggles */
-  .option-card.click-anim::after {
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.05) 46%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.05) 54%,
-        transparent 100%);
-    animation: clickSweep 0.5s ease-out 1;
+  .option-card:hover {
+    box-shadow: 6px 6px 0px var(--accent-orange) !important;
+    background: var(--text) !important;
+    border-color: var(--text) !important;
   }
 
-  /* Fallback: trigger on native :active as well (for non-ClickableCard usages) */
-  .option-card:active::after {
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.05) 46%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.05) 54%,
-        transparent 100%);
-    animation: clickSweep 0.45s ease-out 1;
+  /* Neo-Brutalist simplified swipe/click effect on touch */
+  .option-card:active {
+    box-shadow: 0px 0px 0px var(--accent-orange) !important;
+    transform: translate(4px, 4px) !important;
   }
 
   .option-card.compact {

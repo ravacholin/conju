@@ -47,7 +47,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
               onClick={() => onSelectFamily(null)}
               title="Seleccionar todos los verbos irregulares"
             >
-              <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
+              <h3 className="option-title"><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
               <p>Todas las familias juntas</p>
               <p className="example">Máxima variedad</p>
             </ClickableCard>
@@ -57,7 +57,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
               onClick={() => onSelectFamily('STEM_CHANGES')}
               title="Seleccionar verbos que diptongan"
             >
-              <h3>Verbos que Diptongan</h3>
+              <h3 className="option-title">Verbos que Diptongan</h3>
               <p className="hint">Cambios de raíz: e→ie, o→ue, e→i</p>
               <p className="conjugation-example">pensar→pienso, volver→vuelvo, pedir→pido</p>
             </ClickableCard>
@@ -67,7 +67,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
               onClick={() => onSelectFamily('FIRST_PERSON_IRREGULAR')}
               title="Seleccionar verbos irregulares en primera persona"
             >
-              <h3>Irregulares en YO</h3>
+              <h3 className="option-title">Irregulares en YO</h3>
               <p className="hint">1ª persona irregular que afecta el subjuntivo</p>
               <p className="conjugation-example">tengo, conozco, salgo, protejo</p>
             </ClickableCard>
@@ -77,7 +77,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
               onClick={() => onSelectFamily('PRET_UV')}
               title="Seleccionar verbos con pretérito -uv-"
             >
-              <h3>Pretérito -uv-</h3>
+              <h3 className="option-title">Pretérito -uv-</h3>
               <p className="conjugation-example">andar, estar, tener</p>
             </ClickableCard>
 
@@ -86,7 +86,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
               onClick={() => onSelectFamily('PRET_J')}
               title="Seleccionar verbos con pretérito -j-"
             >
-              <h3>Pretérito -j-</h3>
+              <h3 className="option-title">Pretérito -j-</h3>
               <p className="conjugation-example">decir, traer</p>
             </ClickableCard>
           </div>
@@ -106,7 +106,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
             onClick={() => onSelectFamily(null)}
             title="Seleccionar todos los verbos irregulares"
           >
-            <h3><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
+            <h3 className="option-title"><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
             <p>Todas las familias juntas</p>
             <p className="example">Máxima variedad</p>
           </ClickableCard>
@@ -136,7 +136,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
                 onClick={() => onSelectFamily(group.id)}
                 title={`Seleccionar ${group.name}`}
               >
-                <h3>{group.name}</h3>
+                <h3 className="option-title">{group.name}</h3>
                 <p className="hint">{group.explanation}</p>
                 <p className="conjugation-example">{group.description}</p>
               </ClickableCard>
@@ -161,7 +161,7 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
                 onClick={() => onSelectFamily(family.id)}
                 title={`Seleccionar ${family.name}`}
               >
-                <h3>{family.name}</h3>
+                <h3 className="option-title">{family.name}</h3>
                 <p className="conjugation-example">{family.description}</p>
               </ClickableCard>
             )
