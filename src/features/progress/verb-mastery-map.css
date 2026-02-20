@@ -1,4 +1,4 @@
-/* VerbMasteryMap - Consistent with main app design system */
+/* VerbMasteryMap - Brutalist */
 
 .verb-mastery-map {
   display: flex;
@@ -7,92 +7,50 @@
 }
 
 .verb-mastery-map.empty {
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 3rem 2rem;
   text-align: center;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
 }
 
 .empty-state h3 {
-  font-size: 1.618rem;
-  font-weight: 300;
+  font-size: 1.1rem;
+  font-weight: 800;
   margin-bottom: 1rem;
   color: var(--text);
-  letter-spacing: -0.015em;
-  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .empty-state p {
-  margin: 0.618rem 0;
-  font-size: 1rem;
-  line-height: 1.618;
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
   color: var(--muted);
-  font-weight: 350;
-  letter-spacing: -0.005em;
   max-width: 50ch;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Mood sections - matching dashboard-section styling */
+/* Mood sections */
 .mood-section {
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 2rem;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.mood-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 245, 245, 0.02) 50%,
-    transparent
-  );
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.mood-section:hover::before {
-  left: 100%;
+  transition: all 0.15s ease;
 }
 
 .mood-section:hover {
-  background: rgba(21, 21, 21, 0.9);
-  border-color: rgba(245, 245, 245, 0.12);
-  transform: translateY(-2px) scale(1.005);
-  box-shadow: 
-    0 12px 48px rgba(0, 0, 0, 0.6),
-    0 1px 0 rgba(245, 245, 245, 0.08) inset;
+  border-color: #333;
 }
 
 .mood-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.618rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(245, 245, 245, 0.08);
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .mood-title {
@@ -104,25 +62,21 @@
 .mood-title .mood-icon img { width: 24px; height: 24px; filter: grayscale(100%); }
 
 .mood-icon {
-  font-size: 1.618rem;
+  font-size: 1.5rem;
   opacity: 0.9;
 }
 
 .mood-info h3 {
-  font-size: 1.3rem;
-  font-weight: 450;
+  font-size: 1rem;
+  font-weight: 800;
   margin: 0 0 0.25rem 0;
   color: var(--text);
-  letter-spacing: -0.01em;
-  line-height: 1.3;
 }
 
 .mood-description {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--muted);
   margin: 0;
-  font-weight: 350;
-  letter-spacing: -0.005em;
 }
 
 .mood-stats {
@@ -135,25 +89,25 @@
 }
 
 .stat-value {
-  font-size: 1.618rem;
-  font-weight: 200;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
   line-height: 1.2;
   display: block;
-  letter-spacing: -0.02em;
-  font-optical-sizing: auto;
 }
 
 .stat-label {
-  font-size: 0.75rem;
-  color: var(--muted-2);
+  font-size: 0.65rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
   margin-top: 0.25rem;
-  font-weight: 450;
+  font-weight: 600;
+  font-family: var(--font-mono);
 }
 
-/* Tense grid - matching stats-grid pattern */
+/* Tense grid */
 .tense-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -161,198 +115,151 @@
 }
 
 .tense-card {
-  background: rgba(21, 21, 21, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1.25rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
   text-align: center;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(245, 245, 245, 0.03) inset;
-  position: relative;
-  overflow: hidden;
-}
-
-.tense-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 245, 245, 0.02) 50%,
-    transparent
-  );
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.tense-card:hover::before {
-  left: 100%;
 }
 
 .tense-card:hover {
-  background: rgba(21, 21, 21, 0.8);
-  border-color: rgba(245, 245, 245, 0.12);
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.08) inset;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
-/* Mastery level styling - using CSS variables */
+.tense-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Mastery level styling */
 .tense-card.mastery-excellent {
-  border-color: rgba(125, 233, 184, 0.3);
-  background: rgba(125, 233, 184, 0.05);
+  border-color: rgba(94, 230, 165, 0.3);
+  background: rgba(94, 230, 165, 0.06);
 }
 
 .tense-card.mastery-excellent:hover {
-  border-color: rgba(125, 233, 184, 0.4);
-  background: rgba(125, 233, 184, 0.08);
-  box-shadow: 
-    0 8px 32px rgba(125, 233, 184, 0.2),
-    0 1px 0 rgba(125, 233, 184, 0.1) inset;
+  border-color: #5ee6a5;
+  box-shadow: 3px 3px 0 #5ee6a5;
 }
 
 .tense-card.mastery-good {
-  border-color: rgba(142, 180, 227, 0.3);
-  background: rgba(142, 180, 227, 0.05);
+  border-color: rgba(94, 230, 165, 0.15);
+  background: rgba(94, 230, 165, 0.03);
 }
 
 .tense-card.mastery-good:hover {
-  border-color: rgba(142, 180, 227, 0.4);
-  background: rgba(142, 180, 227, 0.08);
-  box-shadow: 
-    0 8px 32px rgba(142, 180, 227, 0.2),
-    0 1px 0 rgba(142, 180, 227, 0.1) inset;
+  border-color: #5ee6a5;
+  box-shadow: 3px 3px 0 #5ee6a5;
 }
 
 .tense-card.mastery-fair {
-  border-color: rgba(245, 214, 136, 0.3);
-  background: rgba(245, 214, 136, 0.05);
+  border-color: rgba(255, 209, 102, 0.3);
+  background: rgba(255, 209, 102, 0.06);
 }
 
 .tense-card.mastery-fair:hover {
-  border-color: rgba(245, 214, 136, 0.4);
-  background: rgba(245, 214, 136, 0.08);
-  box-shadow: 
-    0 8px 32px rgba(245, 214, 136, 0.2),
-    0 1px 0 rgba(245, 214, 136, 0.1) inset;
+  border-color: #ffd166;
+  box-shadow: 3px 3px 0 #ffd166;
 }
 
 .tense-card.mastery-poor {
-  border-color: rgba(255, 159, 122, 0.3);
-  background: rgba(255, 159, 122, 0.05);
+  border-color: rgba(255, 107, 107, 0.3);
+  background: rgba(255, 107, 107, 0.06);
 }
 
 .tense-card.mastery-poor:hover {
-  border-color: rgba(255, 159, 122, 0.4);
-  background: rgba(255, 159, 122, 0.08);
-  box-shadow: 
-    0 8px 32px rgba(255, 159, 122, 0.2),
-    0 1px 0 rgba(255, 159, 122, 0.1) inset;
+  border-color: #ff6b6b;
+  box-shadow: 3px 3px 0 #ff6b6b;
 }
 
 .tense-card.mastery-none {
-  border-color: rgba(168, 168, 168, 0.15);
-  background: rgba(168, 168, 168, 0.03);
+  border-color: #1a1a1a;
   opacity: 0.8;
 }
 
 .tense-card.mastery-none:hover {
-  border-color: rgba(168, 168, 168, 0.25);
-  background: rgba(168, 168, 168, 0.06);
+  border-color: #555;
   opacity: 1;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(168, 168, 168, 0.1) inset;
+  box-shadow: 3px 3px 0 #555;
 }
 
 .tense-name {
-  font-weight: 500;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text);
-  font-size: 0.9rem;
-  margin-bottom: 0.618rem;
-  letter-spacing: -0.01em;
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .tense-score {
-  font-size: 1.8rem;
-  font-weight: 200;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
   line-height: 1;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.025em;
-  font-optical-sizing: auto;
 }
 
 .tense-status {
-  font-size: 0.75rem;
-  color: var(--muted-2);
+  font-size: 0.65rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 450;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  font-family: var(--font-mono);
 }
 
-/* Tooltip - matching heat-map-tooltip */
+/* Tooltip */
 .mastery-tooltip {
   position: fixed;
-  background: rgba(17, 17, 17, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 245, 245, 0.15);
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #333;
   color: var(--text);
   padding: 1rem;
-  border-radius: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   z-index: 1000;
   pointer-events: none;
   max-width: 280px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-  transition: opacity 0.2s ease;
 }
 
 .tooltip-header {
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(245, 245, 245, 0.1);
+  border-bottom: 1px solid #333;
   padding-bottom: 0.5rem;
-  color: var(--accent-blue);
-  font-size: 0.95rem;
+  color: var(--text);
+  font-size: 0.8rem;
 }
 
 .tooltip-content > div {
   margin: 0.25rem 0;
   color: var(--muted);
-  font-weight: 350;
+  font-size: 0.8rem;
 }
 
 .tooltip-action {
   margin-top: 0.5rem;
-  color: var(--accent-blue);
-  font-size: 0.85rem;
-  opacity: 0.8;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Legend - matching heat-map-legend */
+/* Legend */
 .mastery-legend {
-  background: rgba(21, 21, 21, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1.5rem;
-  margin-top: 1.618rem;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(245, 245, 245, 0.03) inset;
+  margin-top: 1.5rem;
 }
 
 .legend-items {
@@ -367,84 +274,81 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 .legend-color {
   width: 14px;
   height: 14px;
-  border-radius: 0;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
 }
 
 .legend-color.mastery-excellent {
-  background: rgba(125, 233, 184, 0.8);
-  border-color: rgba(125, 233, 184, 0.5);
+  background: #5ee6a5;
+  border-color: #5ee6a5;
 }
 
 .legend-color.mastery-good {
-  background: rgba(142, 180, 227, 0.8);
-  border-color: rgba(142, 180, 227, 0.5);
+  background: rgba(94, 230, 165, 0.4);
+  border-color: rgba(94, 230, 165, 0.6);
 }
 
 .legend-color.mastery-fair {
-  background: rgba(245, 214, 136, 0.8);
-  border-color: rgba(245, 214, 136, 0.5);
+  background: #ffd166;
+  border-color: #ffd166;
 }
 
 .legend-color.mastery-poor {
-  background: rgba(255, 159, 122, 0.8);
-  border-color: rgba(255, 159, 122, 0.5);
+  background: #ff6b6b;
+  border-color: #ff6b6b;
 }
 
-/* Responsive design */
+/* Responsive */
 @media (max-width: 768px) {
   .verb-mastery-map {
     gap: 1.5rem;
   }
-  
+
   .mood-section {
     padding: 1.5rem;
   }
-  
+
   .mood-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .mood-stats {
     gap: 1rem;
   }
-  
+
   .tense-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-  
+
   .tense-card {
     padding: 1rem;
   }
-  
+
   .tense-score {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
-  
+
   .legend-items {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
   }
-  
+
   .mastery-tooltip {
     max-width: 240px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
-}
-
-/* Dark theme support - already built-in with CSS variables */
-@media (prefers-color-scheme: dark) {
-  /* All styles already use CSS variables, so they adapt automatically */
 }

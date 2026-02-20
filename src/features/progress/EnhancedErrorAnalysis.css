@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: var(--font-ui);
 }
 
 .enhanced-error-analysis.loading {
@@ -20,8 +20,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(245, 245, 245, 0.08);
-  border-top: 3px solid rgba(245, 245, 245, 0.4);
+  border: 3px solid #1a1a1a;
+  border-top: 3px solid #fff;
   border-radius: 0;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
@@ -36,7 +36,7 @@
 .analysis-header {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .view-selector {
@@ -50,27 +50,37 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 15, 15, 0.45);
+  border: 1px solid #333;
+  background: transparent;
   color: var(--muted);
   border-radius: 0;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.15s ease;
+  font-weight: 700;
   font-size: 13px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .view-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: transparent;
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.view-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .view-btn.active {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .view-btn .view-icon {
@@ -100,10 +110,11 @@
 .card-heading h3 {
   margin: 0;
   font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text);
+  font-family: var(--font-mono);
 }
 
 .card-icon {
@@ -119,9 +130,11 @@
   align-items: center;
   gap: 12px;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 800;
   margin: 0 0 24px 0;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .section-title .section-icon {
@@ -144,16 +157,22 @@
 }
 
 .dashboard-card {
-  background: rgba(17, 17, 17, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 22px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .dashboard-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-2px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #fff;
+}
+
+.dashboard-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .emotional-stats {
@@ -167,7 +186,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .stat-row:last-child {
@@ -175,9 +194,9 @@
 }
 
 .stat-value {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
-  font-family: 'SF Mono', Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .action-buttons {
@@ -191,21 +210,30 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #333;
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--text);
   cursor: pointer;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: all 0.15s ease;
   text-align: left;
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+  background: transparent;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.action-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .action-icon {
@@ -233,16 +261,19 @@
 
 .rate-number {
   font-size: 48px;
-  font-weight: 700;
-  font-family: 'SF Mono', Consolas, monospace;
+  font-weight: 800;
+  font-family: var(--font-mono);
   color: var(--text);
   line-height: 1;
 }
 
 .rate-trend {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 /* Patterns View */
@@ -260,8 +291,8 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 60px 20px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   color: var(--text);
   display: flex;
@@ -271,28 +302,34 @@
 }
 
 .pattern-card {
-  background: rgba(17, 17, 17, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 22px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .pattern-card.high {
-  border-left: 4px solid rgba(255, 255, 255, 0.4);
+  border-left: 4px solid #fff;
 }
 
 .pattern-card.medium {
-  border-left: 4px solid rgba(255, 255, 255, 0.25);
+  border-left: 4px solid #999;
 }
 
 .pattern-card.low {
-  border-left: 4px solid rgba(255, 255, 255, 0.15);
+  border-left: 4px solid #555;
 }
 
 .pattern-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-2px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #fff;
+}
+
+.pattern-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .pattern-header {
@@ -305,14 +342,19 @@
 .pattern-header h3 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .severity-badge {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: #fff;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 .pattern-description {
@@ -325,8 +367,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 12px 16px;
   margin: 12px 0;
@@ -338,26 +380,33 @@
 .pattern-action-btn {
   width: 100%;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #fff;
+  color: #000;
+  border: 1px solid #fff;
   border-radius: 0;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  letter-spacing: 0.04em;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  transition: all 0.15s ease;
   margin-top: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .pattern-action-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
+}
+
+.pattern-action-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .empty-state-icon {
@@ -402,30 +451,36 @@
 }
 
 .challenge-card {
-  background: rgba(17, 17, 17, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 22px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
   overflow: hidden;
 }
 
 .challenge-card.boss {
-  border-left: 4px solid rgba(255, 255, 255, 0.4);
+  border-left: 4px solid #fff;
 }
 
 .challenge-card.rescue {
-  border-left: 4px solid rgba(255, 255, 255, 0.25);
+  border-left: 4px solid #999;
 }
 
 .challenge-card.consistency {
-  border-left: 4px solid rgba(255, 255, 255, 0.18);
+  border-left: 4px solid #555;
 }
 
 .challenge-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-3px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #fff;
+}
+
+.challenge-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .challenge-header {
@@ -444,7 +499,10 @@
 .challenge-header h3 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .challenge-icon {
@@ -464,12 +522,12 @@
   width: 8px;
   height: 8px;
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.12);
-  transition: background 0.2s ease;
+  background: #1a1a1a;
+  transition: background 0.15s ease;
 }
 
 .difficulty-dot.active {
-  background: rgba(255, 255, 255, 0.6);
+  background: #fff;
 }
 
 .challenge-progress {
@@ -482,31 +540,31 @@
 .progress-bar {
   flex: 1;
   height: 8px;
-  background: rgba(245, 245, 245, 0.1);
+  background: #1a1a1a;
   border-radius: 0;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: rgba(255, 255, 255, 0.45);
+  background: #fff;
   border-radius: 0;
-  transition: width 0.3s ease;
+  transition: width 0.15s ease;
 }
 
 .progress-text {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--muted);
-  font-family: 'SF Mono', Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .challenge-reward {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 10px 14px;
   margin: 12px 0;
@@ -517,25 +575,32 @@
 .challenge-btn {
   width: 100%;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #fff;
+  color: #000;
+  border: 1px solid #fff;
   border-radius: 0;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
-  letter-spacing: 0.04em;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .challenge-btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
+}
+
+.challenge-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 /* Forensics View */
@@ -557,27 +622,34 @@
   align-items: center;
   gap: 20px;
   padding: 16px;
-  background: rgba(17, 17, 17, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .timeline-day:hover {
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-2px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.timeline-day:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .timeline-day.high-error {
-  border-left: 4px solid rgba(255, 255, 255, 0.4);
+  border-left: 4px solid #fff;
 }
 
 .timeline-date {
   min-width: 80px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--muted);
   font-size: 14px;
   text-align: center;
+  font-family: var(--font-mono);
 }
 
 .timeline-content {
@@ -597,8 +669,8 @@
   width: 8px;
   border-radius: 0;
   min-height: 10px;
-  transition: height 0.3s ease;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.1));
+  transition: height 0.15s ease;
+  background: #fff;
 }
 
 .day-details {
@@ -609,7 +681,7 @@
 }
 
 .error-summary {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
 }
 
@@ -620,7 +692,10 @@
 }
 
 .emotional-state {
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 /* Responsive Design */
@@ -675,7 +750,7 @@
 .dashboard-card,
 .pattern-card,
 .challenge-card {
-  animation: slideInFromBottom 0.3s ease-out;
+  animation: slideInFromBottom 0.15s ease;
 }
 
 .dashboard-card:nth-child(2) {
@@ -704,10 +779,10 @@
 }
 
 .enhanced-error-analysis *:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 .enhanced-error-analysis button:focus {
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+  box-shadow: 3px 3px 0 #fff;
 }

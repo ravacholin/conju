@@ -83,7 +83,7 @@ export default function ProgressJourney({ compact = false }) {
         threshold: 50,
         achieved: totalAttempts >= 50,
         value: Math.min(totalAttempts, 50),
-        color: '#3b82f6'
+        color: '#ffffff'
       },
       {
         id: 'dedicated_learner',
@@ -303,7 +303,7 @@ export default function ProgressJourney({ compact = false }) {
                           className="progress-fill"
                           style={{
                             width: `${(milestone.value / milestone.threshold) * 100}%`,
-                            backgroundColor: "#007bff"
+                            backgroundColor: "var(--accent-primary)"
                           }}
                         />
                       </div>

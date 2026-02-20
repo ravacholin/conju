@@ -205,7 +205,7 @@ export function ErrorRadar({ axes = [] }) {
                 </button>
               </div>
               {openTag === axis.tag && (
-                <div style={{ padding: '8px 10px', border: '1px solid rgba(245,245,245,0.08)', borderRadius: 8, background: 'rgba(17,17,17,0.6)' }}>
+                <div style={{ padding: '8px 10px', border: '1px solid rgba(245,245,245,0.08)', borderRadius: 0, background: 'rgba(17,17,17,0.6)' }}>
                   {(examplesByTag[axis.tag] || []).length === 0 ? (
                     <div style={{ opacity: 0.8, fontSize: 13 }}>Sin ejemplos recientes</div>
                   ) : (

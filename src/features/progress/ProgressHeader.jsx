@@ -30,17 +30,17 @@ const refreshButtonStyles = `
     gap: 0.5rem;
     padding: 0.55rem 1.1rem;
     border-radius: 0;
-    border: 1px solid rgba(79, 70, 229, 0.3);
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(129, 140, 248, 0.12));
-    color: #1a237e;
-    font-weight: 600;
+    border: 2px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-weight: 700;
     cursor: pointer;
     transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
   }
 
   .refresh-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.18), rgba(129, 140, 248, 0.18));
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.18);
+    background: var(--hover, #222222);
+    box-shadow: 3px 3px 0px var(--border);
     transform: translateY(-1px);
   }
 
@@ -54,14 +54,14 @@ const refreshButtonStyles = `
     width: 0.75rem;
     height: 0.75rem;
     border-radius: 0;
-    border: 2px solid rgba(79, 70, 229, 0.3);
-    border-top-color: rgba(79, 70, 229, 0.85);
+    border: 2px solid var(--border);
+    border-top-color: var(--text);
     animation: dashboard-spin 0.9s linear infinite;
   }
 
   .refresh-status {
     font-size: 0.85rem;
-    color: #4a5568;
+    color: var(--muted);
   }
 
   @keyframes dashboard-spin {

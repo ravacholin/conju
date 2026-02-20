@@ -1,14 +1,14 @@
-/* Estilos para el Indicador de Estado de Flow */
+/* Flow Indicator - Neo-Brutalist */
 
 .flow-indicator {
   position: relative;
   z-index: 1000;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-ui);
   user-select: none;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
-/* Posicionamiento */
+/* Positioning */
 .flow-indicator.top-right {
   position: fixed;
   top: 20px;
@@ -26,7 +26,7 @@
   margin: 0 auto;
 }
 
-/* Tamaños */
+/* Sizes */
 .flow-indicator.minimal .flow-indicator-main {
   width: 40px;
   height: 40px;
@@ -47,38 +47,44 @@
   font-size: 16px;
 }
 
-/* Indicador principal */
+/* Main indicator */
 .flow-indicator-main {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(17, 17, 17, 0.92);
-  backdrop-filter: blur(10px);
-  border-radius: 0;
-  border: 2px solid var(--flow-color, var(--border));
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background: transparent;
+  border: 2px solid var(--flow-color, #333);
+  box-shadow: none;
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 
 .flow-indicator-main:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.flow-indicator-main:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .flow-emoji {
   font-size: 1.2em;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .flow-label {
-  font-weight: 600;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text);
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
 }
 
-/* Animaciones de pulso y brillo */
+/* Pulse and glow animations */
 .flow-indicator-main.pulse {
   animation: flow-pulse 2s ease-in-out infinite;
 }
@@ -93,60 +99,57 @@
 }
 
 @keyframes flow-glow {
-  0% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
-  100% { box-shadow: 0 4px 30px var(--flow-color)40; }
+  0% { box-shadow: none; }
+  100% { box-shadow: 0 0 0 2px var(--flow-color); }
 }
 
-/* Indicador de momentum */
+/* Momentum indicator */
 .momentum-indicator {
   position: absolute;
   top: -8px;
   right: -8px;
   width: 28px;
   height: 28px;
-  background: rgba(17, 17, 17, 0.92);
-  backdrop-filter: blur(10px);
-  border-radius: 0;
+  background: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  border: 2px solid var(--border-2);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border: 2px solid #333;
+  box-shadow: none;
+  transition: all 0.15s ease;
 }
 
 .momentum-indicator:hover {
-  transform: scale(1.1);
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 #fff;
 }
 
-/* Animación de cambio de estado */
+/* State change animation */
 .flow-state-change .flow-indicator-main {
   animation: state-change-flash 1s ease-in-out;
 }
 
 @keyframes state-change-flash {
   0% { transform: scale(1); }
-  25% { transform: scale(1.1); filter: brightness(1.2); }
+  25% { transform: scale(1.1); }
   50% { transform: scale(1.05); }
-  75% { transform: scale(1.08); filter: brightness(1.1); }
+  75% { transform: scale(1.08); }
   100% { transform: scale(1); }
 }
 
-/* Panel de detalles */
+/* Details panel */
 .flow-details-panel {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 12px;
   width: 320px;
-  background: rgba(17, 17, 17, 0.92);
-  backdrop-filter: blur(15px);
-  border-radius: 0;
+  background: #0a0a0a;
   padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  animation: panel-slide-in 0.3s ease-out;
+  box-shadow: 6px 6px 0 #fff;
+  border: 1px solid #333;
+  animation: panel-slide-in 0.15s ease-out;
   z-index: 1001;
 }
 
@@ -169,7 +172,7 @@
   }
 }
 
-/* Secciones del panel */
+/* Panel sections */
 .flow-state-section,
 .momentum-section,
 .metrics-section,
@@ -184,7 +187,7 @@
   margin-bottom: 0;
 }
 
-/* Estado principal */
+/* Main state */
 .state-header {
   display: flex;
   align-items: center;
@@ -193,7 +196,6 @@
 
 .state-emoji-large {
   font-size: 32px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .state-info {
@@ -203,25 +205,28 @@
 .state-title {
   margin: 0;
   font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .state-description {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--muted);
   line-height: 1.4;
 }
 
-/* Headers de sección */
+/* Section headers */
 .section-header {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .section-icon {
@@ -229,9 +234,12 @@
 }
 
 .section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* Momentum */
@@ -240,8 +248,8 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
 }
 
 .momentum-icon-large {
@@ -249,12 +257,15 @@
 }
 
 .momentum-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Métricas */
+/* Metrics */
 .metrics-grid {
   display: flex;
   flex-direction: column;
@@ -268,34 +279,35 @@
 }
 
 .metric-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
   width: 70px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .metric-bar {
   flex: 1;
   height: 6px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 0;
+  background: #1a1a1a;
   overflow: hidden;
   position: relative;
 }
 
 .metric-fill {
   height: 100%;
-  border-radius: 0;
   transition: width 0.5s ease;
 }
 
 .metric-fill.confidence {
-  background: linear-gradient(90deg, var(--success), var(--accent-green));
+  background: #5ee6a5;
 }
 
 .metric-fill.flow-time {
-  background: linear-gradient(90deg, var(--accent-blue), var(--primary));
+  background: #fff;
 }
 
 .metric-fill.consistency {
@@ -303,15 +315,16 @@
 }
 
 .metric-value {
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: var(--text);
   width: 35px;
   text-align: right;
   flex-shrink: 0;
 }
 
-/* Display de racha */
+/* Streak display */
 .streak-display {
   display: flex;
   align-items: center;
@@ -320,9 +333,10 @@
 }
 
 .streak-number {
+  font-family: var(--font-mono);
   font-size: 18px;
-  font-weight: 700;
-  color: var(--error);
+  font-weight: 800;
+  color: #ff6b6b;
 }
 
 .streak-icon {
@@ -335,7 +349,7 @@
   50% { opacity: 0.7; }
 }
 
-/* Estadísticas de sesión */
+/* Session stats */
 .session-stats {
   display: flex;
   flex-direction: column;
@@ -347,78 +361,47 @@
   justify-content: space-between;
   align-items: center;
   padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
 }
 
 .stat-label {
-  font-size: 12px;
-  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .stat-value {
+  font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: var(--text);
 }
 
-/* Responsividad */
+/* Responsiveness */
 @media (max-width: 480px) {
   .flow-details-panel {
     width: 280px;
     right: -20px;
   }
-  
+
   .flow-indicator.top-right {
     top: 15px;
     right: 15px;
   }
-  
+
   .metrics-grid {
     gap: 10px;
   }
-  
+
   .metric-item {
     gap: 8px;
   }
-  
+
   .metric-label {
     width: 60px;
-    font-size: 11px;
-  }
-}
-
-/* Estados de color: el color solo afecta borde y glow (no fondo) para tema oscuro */
-
-/* Modo oscuro */
-@media (prefers-color-scheme: dark) {
-  .flow-indicator-main,
-  .momentum-indicator,
-  .flow-details-panel {
-    background: rgba(30, 30, 30, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-.flow-label,
-.state-title,
-.section-title,
-.momentum-label,
-.stat-value {
-  color: var(--text);
-}
-  
-.state-description,
-.stat-label,
-.metric-label {
-  color: var(--muted);
-}
-  
-  .metric-bar {
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  .session-stat,
-  .momentum-info {
-    background: rgba(255, 255, 255, 0.05);
+    font-size: 10px;
   }
 }

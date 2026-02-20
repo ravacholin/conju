@@ -1,102 +1,69 @@
-/* Estilos elegantes para recomendaciones de práctica - Tema oscuro minimalista */
+/* Practice Recommendations - Neo-Brutalist */
 
 .practice-recommendations {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 2.5rem 2rem;
-  box-shadow: 
-    0 16px 64px rgba(0, 0, 0, 0.5),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
-  margin-bottom: 2.618rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: none;
+  margin-bottom: 2rem;
+  transition: all 0.15s ease;
   position: relative;
   overflow: hidden;
-}
-
-.practice-recommendations::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 245, 245, 0.02) 50%,
-    transparent
-  );
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.practice-recommendations:hover::before {
-  left: 100%;
 }
 
 .recommendations-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.618rem;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(245, 245, 245, 0.08);
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .recommendations-header h3 {
   margin: 0;
   color: var(--text);
-  font-size: 1.414rem;
-  font-weight: 450;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   line-height: 1.3;
-  font-optical-sizing: auto;
+  text-transform: uppercase;
 }
 
 .focus-mode-selector .mode-select {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-2);
-  border-radius: 0;
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid #333;
+  background: transparent;
   color: var(--text);
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(245, 245, 245, 0.03) inset;
+  transition: all 0.15s ease;
 }
 
 .focus-mode-selector .mode-select:hover {
-  background: rgba(17, 17, 17, 0.9);
-  border-color: var(--border-2);
-  transform: translateY(-1px);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(245, 245, 245, 0.05) inset;
+  background: transparent;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .focus-mode-selector .mode-select:focus {
   outline: none;
-  border-color: var(--accent-blue);
-  background: rgba(17, 17, 17, 0.9);
-  box-shadow: 
-    0 0 0 2px rgba(142, 180, 227, 0.15),
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(142, 180, 227, 0.1) inset;
+  border-color: #fff;
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .focus-mode-selector .mode-select option {
-  background: var(--panel);
+  background: #0a0a0a;
   color: var(--text);
 }
 
-/* Estados de carga y error - Tema oscuro */
+/* Loading and error states */
 .practice-recommendations.loading,
 .practice-recommendations.error {
   text-align: center;
@@ -114,9 +81,8 @@
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(245, 245, 245, 0.1);
-  border-top: 3px solid var(--accent-blue);
-  border-radius: 0;
+  border: 3px solid #1a1a1a;
+  border-top: 3px solid #fff;
   animation: spin 1s linear infinite;
 }
 
@@ -126,48 +92,50 @@
 }
 
 .retry-btn {
-  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
-  color: var(--bg);
+  background: #fff;
+  color: #000;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 0;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 4px 16px rgba(245, 245, 245, 0.1),
-    0 1px 0 rgba(245, 245, 245, 0.2) inset;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s ease;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .retry-btn:hover {
-  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 
-    0 8px 24px rgba(245, 245, 245, 0.15),
-    0 1px 0 rgba(245, 245, 245, 0.3) inset;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
 }
 
-/* Sin recomendaciones - Tema oscuro */
+.retry-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* No recommendations */
 .no-recommendations {
   text-align: center;
   padding: 2rem;
-  background: rgba(125, 233, 184, 0.08);
-  border: 1px solid rgba(125, 233, 184, 0.2);
-  border-radius: 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent;
+  border: 1px solid #5ee6a5;
 }
 
 .no-recommendations p {
   margin: 0.5rem 0;
-  color: var(--accent-green);
-  font-weight: 400;
-  line-height: 1.618;
-  letter-spacing: -0.005em;
+  color: #5ee6a5;
+  font-weight: 700;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
 }
 
-/* Lista de recomendaciones - Tema oscuro elegante */
+/* Recommendations list */
 .recommendations-list {
   display: flex;
   flex-direction: column;
@@ -176,64 +144,39 @@
 }
 
 .recommendation-card {
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(21, 21, 21, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.15s ease;
+  background: transparent;
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(245, 245, 245, 0.03) inset;
-}
-
-.recommendation-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(245, 245, 245, 0.02) 50%,
-    transparent
-  );
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.recommendation-card:hover::before {
-  left: 100%;
 }
 
 .recommendation-card:hover {
-  background: rgba(21, 21, 21, 0.8);
-  border-color: rgba(245, 245, 245, 0.15);
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(245, 245, 245, 0.08) inset;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.recommendation-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .recommendation-card.high {
-  border-left: 4px solid rgba(255, 159, 122, 0.6);
-  background: rgba(255, 159, 122, 0.05);
+  border-left: 4px solid #ff6b6b;
+  background: transparent;
 }
 
 .recommendation-card.medium {
-  border-left: 4px solid rgba(245, 214, 136, 0.6);
-  background: rgba(245, 214, 136, 0.05);
+  border-left: 4px solid #ffd166;
+  background: transparent;
 }
 
 .recommendation-card.low {
-  border-left: 4px solid rgba(125, 233, 184, 0.6);
-  background: rgba(125, 233, 184, 0.05);
+  border-left: 4px solid #5ee6a5;
+  background: transparent;
 }
 
 .recommendation-header {
@@ -254,49 +197,48 @@
   flex-grow: 1;
   margin: 0;
   color: var(--text);
-  font-size: 1.1rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   line-height: 1.3;
+  text-transform: uppercase;
 }
 
 .priority-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 0;
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  letter-spacing: 0.08em;
+  border: 1px solid #333;
 }
 
 .priority-badge.high {
-  background: rgba(255, 159, 122, 0.15);
-  border-color: rgba(255, 159, 122, 0.3);
-  color: var(--accent-red);
+  background: transparent;
+  border-color: #ff6b6b;
+  color: #ff6b6b;
 }
 
 .priority-badge.medium {
-  background: rgba(245, 214, 136, 0.15);
-  border-color: rgba(245, 214, 136, 0.3);
-  color: var(--accent-orange);
+  background: transparent;
+  border-color: #ffd166;
+  color: #ffd166;
 }
 
 .priority-badge.low {
-  background: rgba(125, 233, 184, 0.15);
-  border-color: rgba(125, 233, 184, 0.3);
-  color: var(--accent-green);
+  background: transparent;
+  border-color: #5ee6a5;
+  color: #5ee6a5;
 }
 
 .recommendation-description {
   margin: 0 0 1rem 0;
   color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.618;
-  font-weight: 350;
-  letter-spacing: -0.005em;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
 .recommendation-meta {
@@ -310,40 +252,40 @@
 .duration-badge,
 .target-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 0;
-  font-size: 0.75rem;
-  font-weight: 450;
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.difficulty-badge.green { background: rgba(125, 233, 184, 0.15); border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
-.difficulty-badge.orange { background: rgba(245, 214, 136, 0.15); border-color: rgba(245, 214, 136, 0.3); color: var(--accent-orange); }
-.difficulty-badge.red { background: rgba(255, 159, 122, 0.15); border-color: rgba(255, 159, 122, 0.3); color: var(--accent-red); }
-.difficulty-badge.blue { background: rgba(142, 180, 227, 0.15); border-color: rgba(142, 180, 227, 0.3); color: var(--accent-blue); }
-.difficulty-badge.purple { background: rgba(168, 168, 168, 0.15); border-color: rgba(168, 168, 168, 0.3); color: var(--muted); }
-.difficulty-badge.teal { background: rgba(125, 233, 184, 0.15); border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
-.difficulty-badge.gray { background: rgba(168, 168, 168, 0.15); border-color: rgba(168, 168, 168, 0.3); color: var(--muted-2); }
+.difficulty-badge.green { background: transparent; border-color: #5ee6a5; color: #5ee6a5; }
+.difficulty-badge.orange { background: transparent; border-color: #ffd166; color: #ffd166; }
+.difficulty-badge.red { background: transparent; border-color: #ff6b6b; color: #ff6b6b; }
+.difficulty-badge.blue { background: transparent; border-color: #fff; color: #fff; }
+.difficulty-badge.purple { background: transparent; border-color: var(--muted); color: var(--muted); }
+.difficulty-badge.teal { background: transparent; border-color: #5ee6a5; color: #5ee6a5; }
+.difficulty-badge.gray { background: transparent; border-color: var(--muted-2); color: var(--muted-2); }
 
 .duration-badge {
-  background: rgba(142, 180, 227, 0.15);
-  border-color: rgba(142, 180, 227, 0.3);
-  color: var(--accent-blue);
+  background: transparent;
+  border-color: #fff;
+  color: #fff;
 }
 
 .target-badge {
-  background: rgba(168, 168, 168, 0.15);
-  border-color: rgba(168, 168, 168, 0.3);
+  background: transparent;
+  border-color: var(--muted);
   color: var(--muted);
-  font-family: 'Courier New', monospace;
-  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
 }
 
 .recommendation-details {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(245, 245, 245, 0.08);
+  border-top: 1px solid #1a1a1a;
   font-size: 0.85rem;
 }
 
@@ -355,27 +297,26 @@
 
 .detail-item strong {
   color: var(--muted);
-  font-weight: 500;
+  font-weight: 700;
 }
 
-/* Planificador de sesión - Tema oscuro */
+/* Session planner */
 .session-planner {
-  background: rgba(142, 180, 227, 0.05);
-  border: 1px solid rgba(142, 180, 227, 0.15);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #333;
   padding: 2rem;
   margin: 2rem 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .session-planner h4 {
   margin: 0 0 1.25rem 0;
-  color: var(--accent-blue);
-  font-size: 1.2rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   line-height: 1.3;
+  text-transform: uppercase;
 }
 
 .session-controls {
@@ -387,63 +328,67 @@
 
 .session-btn {
   padding: 0.75rem 1.25rem;
-  border: 1px solid rgba(142, 180, 227, 0.2);
-  border-radius: 0;
-  background: rgba(21, 21, 21, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--accent-blue);
+  border: 1px solid #333;
+  background: transparent;
+  color: #fff;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 450;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s ease;
   flex: 1;
   min-width: 140px;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(142, 180, 227, 0.05) inset;
 }
 
 .session-btn:hover {
-  background: rgba(17, 17, 17, 0.8);
-  border-color: rgba(142, 180, 227, 0.3);
-  transform: translateY(-1px) scale(1.01);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 0 rgba(142, 180, 227, 0.1) inset;
+  background: transparent;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
-.session-btn.short { border-color: rgba(125, 233, 184, 0.3); color: var(--accent-green); }
-.session-btn.medium { border-color: rgba(245, 214, 136, 0.3); color: var(--accent-orange); }
-.session-btn.long { border-color: rgba(255, 159, 122, 0.3); color: var(--accent-red); }
+.session-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.session-btn.short { border-color: #5ee6a5; color: #5ee6a5; }
+.session-btn.short:hover { box-shadow: 3px 3px 0 #5ee6a5; }
+.session-btn.medium { border-color: #ffd166; color: #ffd166; }
+.session-btn.medium:hover { box-shadow: 3px 3px 0 #ffd166; }
+.session-btn.long { border-color: #ff6b6b; color: #ff6b6b; }
+.session-btn.long:hover { box-shadow: 3px 3px 0 #ff6b6b; }
 
 .session-preview {
-  background: rgba(21, 21, 21, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(142, 180, 227, 0.2);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #333;
   padding: 1.25rem;
   margin-top: 1.25rem;
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    0 1px 0 rgba(142, 180, 227, 0.05) inset;
 }
 
 .session-preview h5 {
   margin: 0 0 0.75rem 0;
-  color: var(--accent-blue);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
 }
 
 .session-stats {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--muted-2);
   flex-wrap: wrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .session-activities {
@@ -458,16 +403,16 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(245, 245, 245, 0.05);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   font-size: 0.85rem;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .session-activity:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(245, 245, 245, 0.08);
+  border-color: #333;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 #fff;
 }
 
 .activity-icon {
@@ -478,81 +423,96 @@
 .activity-title {
   flex-grow: 1;
   color: var(--muted);
-  font-weight: 400;
+  font-weight: 700;
+  font-size: 0.8rem;
 }
 
 .activity-time {
   color: var(--muted-2);
-  font-size: 0.75rem;
-  font-weight: 450;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .start-session-btn {
   width: 100%;
-  background: linear-gradient(135deg, var(--text) 0%, rgba(245, 245, 245, 0.9) 100%);
-  color: var(--bg);
+  background: #fff;
+  color: #000;
   border: none;
   padding: 0.875rem;
-  border-radius: 0;
-  font-size: 1rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 4px 16px rgba(245, 245, 245, 0.1),
-    0 1px 0 rgba(245, 245, 245, 0.2) inset;
+  transition: all 0.15s ease;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .start-session-btn:hover {
-  background: linear-gradient(135deg, var(--muted) 0%, rgba(194, 194, 194, 0.95) 100%);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 
-    0 8px 24px rgba(245, 245, 245, 0.15),
-    0 1px 0 rgba(245, 245, 245, 0.3) inset;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
 }
 
-/* Footer - Tema oscuro */
+.start-session-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Footer */
 .recommendations-footer {
   text-align: center;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(245, 245, 245, 0.08);
+  border-top: 1px solid #1a1a1a;
 }
 
 .refresh-btn {
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border-2);
+  border: 1px solid #333;
   padding: 0.5rem 1rem;
-  border-radius: 0;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   margin-bottom: 0.75rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.15s ease;
 }
 
 .refresh-btn:hover {
-  background: var(--hover);
-  border-color: var(--border-2);
+  background: transparent;
+  border-color: #fff;
   color: var(--text);
-  transform: translateY(-1px);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.refresh-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .update-note {
   margin: 0;
   color: var(--muted-2);
-  font-size: 0.75rem;
-  font-style: italic;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-style: normal;
   opacity: 0.8;
   line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Responsive - Tema oscuro */
+/* Responsive */
 @media (max-width: 768px) {
   .practice-recommendations {
     padding: 1.5rem;
-    border-radius: 0;
     margin-bottom: 1.5rem;
   }
 
@@ -563,7 +523,7 @@
   }
 
   .recommendations-header h3 {
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-align: center;
   }
 
@@ -580,7 +540,7 @@
   .session-stats {
     flex-direction: column;
     gap: 0.5rem;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .recommendation-meta {
@@ -624,113 +584,102 @@
   gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(245, 245, 245, 0.08);
+  border-top: 1px solid #1a1a1a;
 }
 
 .practice-now-btn {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  border: 1px solid rgba(79, 172, 254, 0.3);
-  color: white;
+  background: #fff;
+  border: none;
+  color: #000;
   padding: 0.75rem 1.25rem;
-  border-radius: 0;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.25);
+  transition: all 0.15s ease;
+  box-shadow: 4px 4px 0 var(--accent-orange);
   flex: 1;
   justify-content: center;
   min-width: 140px;
 }
 
 .practice-now-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.35);
-  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
 }
 
 .practice-now-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .practice-now-btn .inline-icon {
   width: 16px;
   height: 16px;
-  filter: brightness(0) invert(1);
+  filter: brightness(0);
 }
 
 .details-btn {
-  background: rgba(245, 245, 245, 0.06);
-  border: 1px solid rgba(245, 245, 245, 0.12);
-  color: rgba(245, 245, 245, 0.8);
+  background: transparent;
+  border: 1px solid #333;
+  color: var(--muted);
   padding: 0.75rem 1rem;
-  border-radius: 0;
-  font-weight: 500;
-  font-size: 0.85rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
 }
 
 .details-btn:hover {
-  background: rgba(245, 245, 245, 0.1);
-  color: rgba(245, 245, 245, 0.95);
-  border-color: rgba(245, 245, 245, 0.2);
-  transform: translateY(-1px);
+  border-color: #fff;
+  color: var(--text);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .details-btn:active {
-  transform: translateY(0);
-  background: rgba(245, 245, 245, 0.08);
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
-/* Priority-based styling for practice buttons - Dark theme friendly */
+/* Priority-based styling for practice buttons */
 .recommendation-card.high .practice-now-btn {
-  background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
-  border-color: rgba(253, 121, 168, 0.3);
-  box-shadow: 0 4px 12px rgba(253, 121, 168, 0.25);
+  box-shadow: 4px 4px 0 #ff6b6b;
 }
 
 .recommendation-card.high .practice-now-btn:hover {
-  background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
-  box-shadow: 0 6px 20px rgba(253, 121, 168, 0.35);
+  box-shadow: 6px 6px 0 #ff6b6b;
 }
 
 .recommendation-card.medium .practice-now-btn {
-  background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
-  border-color: rgba(253, 203, 110, 0.3);
-  box-shadow: 0 4px 12px rgba(253, 203, 110, 0.25);
-  color: #2d3436;
+  box-shadow: 4px 4px 0 #ffd166;
 }
 
 .recommendation-card.medium .practice-now-btn:hover {
-  background: linear-gradient(135deg, #f39c12 0%, #d35400 100%);
-  box-shadow: 0 6px 20px rgba(253, 203, 110, 0.35);
+  box-shadow: 6px 6px 0 #ffd166;
 }
 
 .recommendation-card.medium .practice-now-btn .inline-icon {
-  filter: brightness(0) invert(0);
-}
-
-/* Subtle glow effect for high priority buttons */
-.recommendation-card.high .practice-now-btn {
-  box-shadow: 0 4px 12px rgba(253, 121, 168, 0.3), 0 0 0 1px rgba(253, 121, 168, 0.1);
+  filter: brightness(0);
 }
 
 /* Focus states for accessibility */
 .practice-now-btn:focus,
 .details-btn:focus {
-  outline: 2px solid rgba(79, 172, 254, 0.6);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 .recommendation-card.high .practice-now-btn:focus {
-  outline-color: rgba(253, 121, 168, 0.6);
+  outline-color: #ff6b6b;
 }
 
 .recommendation-card.medium .practice-now-btn:focus {
-  outline-color: rgba(253, 203, 110, 0.6);
+  outline-color: #ffd166;
 }

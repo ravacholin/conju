@@ -14,7 +14,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text);
 }
 
@@ -26,6 +29,7 @@
 .expert-description {
   margin: 0;
   color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .expert-content {
@@ -47,34 +51,49 @@
 
 .expert-profile {
   text-align: left;
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 0.85rem;
-  background: rgba(14, 14, 14, 0.9);
+  background: transparent;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.15s ease;
   color: var(--text);
+}
+
+.expert-profile:hover {
+  border-color: #fff;
+  box-shadow: 3px 3px 0 #fff;
+  transform: translate(-2px, -2px);
+}
+
+.expert-profile:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .expert-profile strong {
   display: block;
   margin-bottom: 0.25rem;
+  font-weight: 700;
 }
 
 .expert-profile span {
-  color: rgba(245, 245, 245, 0.6);
+  color: #555;
   font-size: 0.85rem;
 }
 
 .expert-profile.active {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.25);
+  border-color: #fff;
+  background: #fff;
+  color: #000;
+}
+
+.expert-profile.active span {
+  color: #333;
 }
 
 .expert-summary {
-  background: rgba(14, 14, 14, 0.9);
-  border: 1px solid rgba(245, 245, 245, 0.06);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1rem;
 }
 
@@ -92,15 +111,18 @@
 }
 
 .expert-summary dt {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(245, 245, 245, 0.55);
+  letter-spacing: 0.1em;
+  color: #555;
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .expert-summary dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
 }
 

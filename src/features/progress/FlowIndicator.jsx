@@ -141,7 +141,7 @@ export const FlowIndicator = ({
         style={{ 
           // Fondo neutro oscuro; el color de estado se aplica al borde vía --flow-color
           backgroundColor: 'rgba(17, 17, 17, 0.92)',
-          boxShadow: stateConfig.glow ? `0 0 16px ${stateConfig.color}35` : 'none'
+          boxShadow: stateConfig.glow ? `3px 3px 0px ${stateConfig.color}` : 'none'
         }}
       >
         <span className="flow-emoji">{stateConfig.emoji}</span>

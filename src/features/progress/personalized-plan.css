@@ -1,3 +1,5 @@
+/* Personalized Plan - Neo-Brutalist */
+
 .personalized-plan {
   display: flex;
   flex-direction: column;
@@ -23,21 +25,29 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
   color: var(--text);
-  border: 1px solid rgba(245, 245, 245, 0.1);
-  border-radius: 0;
+  border: 1px solid #333;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 450;
-  transition: all 0.2s ease;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s ease;
 }
 
 .plan-refresh:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(245, 245, 245, 0.2);
-  transform: translateY(-1px);
+  background: transparent;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.plan-refresh:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .plan-refresh img {
@@ -48,8 +58,11 @@
 }
 
 .plan-timestamp {
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .plan-overview {
@@ -57,10 +70,8 @@
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: rgba(21, 21, 21, 0.8);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1.5rem;
 }
 
@@ -78,14 +89,17 @@
 
 .plan-overview-metrics .metric-label {
   display: block;
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(245, 245, 245, 0.55);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .plan-overview-metrics .metric-value {
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-weight: 800;
   font-size: 1.05rem;
   color: var(--text);
 }
@@ -103,17 +117,22 @@
 }
 
 .plan-goal-card {
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--text);
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .plan-goal-card:hover {
-  border-color: rgba(245, 245, 245, 0.15);
-  transform: translateY(-1px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.plan-goal-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .plan-goal-header {
@@ -123,11 +142,15 @@
 }
 
 .plan-goal-bonus {
-  font-size: 0.75rem;
-  color: rgba(125, 233, 184, 0.85);
-  background: rgba(125, 233, 184, 0.12);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #5ee6a5;
+  background: transparent;
   padding: 0.1rem 0.4rem;
-  border-radius: 0;
+  border: 1px solid #5ee6a5;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .plan-goal-description {
@@ -139,8 +162,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  font-size: 0.75rem;
-  color: rgba(245, 245, 245, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .plan-timeline .plan-weeks {
@@ -150,29 +177,42 @@
 }
 
 .plan-week {
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--text);
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .plan-week:hover {
-  border-color: rgba(245, 245, 245, 0.15);
-  transform: translateY(-1px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.plan-week:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .plan-week-header {
   display: flex;
   justify-content: space-between;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
 }
 
 .plan-week-focus {
-  font-size: 0.8rem;
-  color: rgba(99, 102, 241, 0.7);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .plan-week-targets {
@@ -194,17 +234,22 @@
 }
 
 .plan-session-block {
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--text);
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .plan-session-block:hover {
-  border-color: rgba(245, 245, 245, 0.15);
-  transform: translateY(-1px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.plan-session-block:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .plan-session-block p,
@@ -214,22 +259,20 @@
 }
 
 .plan-scheduling {
-  border: 1px solid rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  border: 1px solid #1a1a1a;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--muted);
 }
 
 .plan-placeholder {
   padding: 1rem;
-  border-radius: 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   color: var(--muted);
-  border: 1px solid rgba(245, 245, 245, 0.08);
+  border: 1px solid #1a1a1a;
 }
 
-/* Nuevos estilos para plan interactivo */
+/* Interactive plan styles */
 .plan-header-main {
   display: flex;
   flex-direction: column;
@@ -243,16 +286,19 @@
 }
 
 .plan-progress-text {
-  font-size: 0.85rem;
-  color: rgba(245, 245, 245, 0.7);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .plan-progress-bar-compact {
   flex: 1;
   height: 6px;
-  background: rgba(245, 245, 245, 0.08);
-  border-radius: 0;
+  background: #1a1a1a;
   overflow: hidden;
   min-width: 120px;
   max-width: 200px;
@@ -260,7 +306,7 @@
 
 .plan-progress-fill-compact {
   height: 100%;
-  background: rgba(125, 233, 184, 0.8);
+  background: #5ee6a5;
   transition: width 0.4s ease;
 }
 
@@ -274,6 +320,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
 }
 
 .plan-sessions-grid {
@@ -289,7 +339,7 @@
   opacity: 0.8;
 }
 
-/* Responsive ajustes */
+/* Responsive */
 @media (max-width: 768px) {
   .plan-header {
     flex-direction: column;

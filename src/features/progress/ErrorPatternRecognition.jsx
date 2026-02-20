@@ -21,14 +21,14 @@ export default function ErrorPatternRecognition({ attempts, mastery, onPatternAc
           title="🕒 Patrones Temporales"
           patterns={patterns.temporal}
           onPatternAction={onPatternAction}
-          color="#17a2b8"
+          color="var(--accent-warning)"
         />
 
         <PatternCategory
           title="🧘 Patrones Emocionales"
           patterns={patterns.emotional}
           onPatternAction={onPatternAction}
-          color="#6f42c1"
+          color="var(--accent-orange)"
         />
 
         <PatternCategory

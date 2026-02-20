@@ -1,7 +1,7 @@
-/* Progress Journey Styles */
+/* Progress Journey - Neo-Brutalist */
+
 .progress-journey {
-  background: #1a1a1a;
-  border-radius: 8px;
+  background: transparent;
   padding: 24px;
   border: 1px solid #333;
 }
@@ -19,9 +19,8 @@
 .progress-journey.loading .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--border-light, #e2e8f0);
-  border-top-color: var(--primary, #666);
-  border-radius: 50%;
+  border: 3px solid #1a1a1a;
+  border-top-color: #fff;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
 }
@@ -42,35 +41,40 @@
 
 .journey-start h3 {
   margin: 0 0 12px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 24px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .journey-start p {
   margin: 0 0 20px 0;
-  color: var(--text-secondary, #64748b);
+  color: var(--muted);
   font-size: 16px;
   line-height: 1.5;
   max-width: 400px;
 }
 
 .start-encouragement {
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #333;
   padding: 12px 20px;
-  color: #ccc;
-  font-weight: 500;
-  font-size: 14px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
   display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* Compact Journey */
 .progress-journey.compact {
   padding: 16px;
-  background: #2a2a2a;
-  border: 1px solid #404040;
+  background: transparent;
+  border: 1px solid #333;
 }
 
 .journey-summary {
@@ -98,19 +102,21 @@
 }
 
 .journey-stats .value {
+  font-family: var(--font-mono);
   font-size: 20px;
-  font-weight: 700;
-  color: var(--primary, #666);
+  font-weight: 800;
+  color: #fff;
   line-height: 1;
 }
 
 .journey-stats .label {
-  font-size: 11px;
-  color: var(--text-secondary, #64748b);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
   margin-top: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.1em;
+  font-weight: 700;
 }
 
 /* Full Journey */
@@ -125,9 +131,12 @@
   justify-content: center;
   gap: 8px;
   margin: 0 0 8px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 28px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .section-icon {
@@ -136,21 +145,20 @@
 }
 
 .journey-subtitle {
-  color: var(--text-secondary, #64748b);
-  font-size: 16px;
-  font-style: italic;
+  color: var(--muted);
+  font-size: 14px;
+  font-style: normal;
   font-weight: 400;
 }
 
 /* Journey Hero */
 .journey-hero {
-  background: #2a2a2a;
-  border-radius: 8px;
+  background: transparent;
   padding: 32px;
   color: white;
   text-align: center;
   margin-bottom: 32px;
-  border: 1px solid #404040;
+  border: 1px solid #333;
 }
 
 .hero-stats {
@@ -169,25 +177,26 @@
 }
 
 .hero-stat.primary .value {
+  font-family: var(--font-mono);
   font-size: 48px;
   font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-stat .value {
+  font-family: var(--font-mono);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hero-stat .label {
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   opacity: 0.9;
   margin-top: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.12em;
+  font-weight: 700;
 }
 
 .motivational-message {
@@ -195,10 +204,9 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: #333;
-  border-radius: 8px;
+  background: transparent;
   padding: 16px 24px;
-  border: 1px solid #404040;
+  border: 1px solid #333;
 }
 
 .message-icon {
@@ -207,9 +215,12 @@
 }
 
 .message-text {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 /* Milestones Section */
@@ -219,12 +230,15 @@
 
 .milestones-section h4 {
   margin: 0 0 24px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 20px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .milestones-timeline {
@@ -253,35 +267,34 @@
   width: 2px;
   height: 40px;
   margin-top: 12px;
-  border-radius: 1px;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 .connector-line.completed {
-  background: #28a745;
+  background: #5ee6a5;
 }
 
 .connector-line.remaining {
-  background: #404040;
+  background: #1a1a1a;
 }
 
 .milestone-icon {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
   position: relative;
   z-index: 2;
+  border: 2px solid #333;
 }
 
 .milestone.achieved .milestone-icon {
   animation: milestone-achieved 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-color: #5ee6a5;
 }
 
 @keyframes milestone-achieved {
@@ -296,28 +309,36 @@
 }
 
 .milestone-info {
-  background: #2a2a2a;
-  border-radius: 8px;
+  background: transparent;
   padding: 20px;
-  border: 1px solid #404040;
-  transition: all 0.2s ease;
+  border: 1px solid #1a1a1a;
+  transition: all 0.15s ease;
+}
+
+.milestone-info:hover {
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .milestone.achieved .milestone-info {
-  background: #2d2d2d;
-  border-color: #555;
+  background: transparent;
+  border-color: #333;
 }
 
 .milestone-title {
   margin: 0 0 8px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .milestone-description {
   margin: 0 0 16px 0;
-  color: var(--text-secondary, #64748b);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.4;
 }
@@ -328,14 +349,14 @@
 }
 
 .achievement-badge {
-  background: #10b981;
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
+  background: #5ee6a5;
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
   padding: 4px 12px;
-  border-radius: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
 }
 
 .milestone-progress {
@@ -346,22 +367,23 @@
 
 .progress-bar {
   height: 8px;
-  background: #404040;
-  border-radius: 4px;
+  background: #1a1a1a;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-text {
-  font-size: 12px;
-  color: var(--text-secondary, #64748b);
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 700;
   text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Next Milestone */
@@ -371,71 +393,82 @@
 
 .next-milestone h4 {
   margin: 0 0 16px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .next-milestone-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: #2a2a2a;
-  border: 2px dashed #404040;
-  border-radius: 8px;
+  background: transparent;
+  border: 2px dashed #333;
   padding: 20px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .next-milestone-card:hover {
-  background: #333;
+  background: transparent;
   border-style: solid;
-  border-color: #555;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .next-icon {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   color: white;
   flex-shrink: 0;
+  border: 2px solid #333;
 }
 
 .next-info h5 {
   margin: 0 0 4px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 16px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .next-info p {
   margin: 0 0 8px 0;
-  color: var(--text-secondary, #64748b);
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.4;
 }
 
 .remaining {
-  font-size: 12px;
-  color: var(--primary, #666);
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
 }
 
 /* Journey Insights */
 .journey-insights h4 {
   margin: 0 0 20px 0;
-  color: var(--text-primary, #1a202c);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .insights-grid {
@@ -448,15 +481,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #2a2a2a;
-  border-radius: 8px;
+  background: transparent;
   padding: 16px;
-  border: 1px solid #404040;
-  transition: all 0.2s ease;
+  border: 1px solid #1a1a1a;
+  transition: all 0.15s ease;
 }
 
 .insight-card:hover {
-  background: #333;
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .insight-icon {
@@ -469,30 +503,32 @@
 }
 
 .insight-value {
+  font-family: var(--font-mono);
   font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary, #1a202c);
+  font-weight: 800;
+  color: var(--text);
   line-height: 1.2;
 }
 
 .insight-value.positive {
-  color: #059669;
+  color: #5ee6a5;
 }
 
 .insight-value.negative {
-  color: #dc2626;
+  color: #ff6b6b;
 }
 
 .insight-value.neutral {
-  color: var(--text-secondary, #64748b);
+  color: var(--muted);
 }
 
 .insight-label {
-  font-size: 12px;
-  color: var(--text-secondary, #64748b);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  letter-spacing: 0.1em;
+  font-weight: 700;
   margin-top: 2px;
 }
 
@@ -556,43 +592,5 @@
 
   .journey-stats .value {
     font-size: 18px;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .progress-journey {
-    --card-background: #1e293b;
-    --background-secondary: #334155;
-    --background-tertiary: #475569;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border-light: #475569;
-  }
-
-  .milestone-info {
-    background: #2a2a2a;
-  }
-
-  .insight-card {
-    background: #2a2a2a;
-  }
-
-  .progress-bar {
-    background: #404040;
-  }
-
-  .start-encouragement {
-    background: #2a2a2a;
-    border-color: #404040;
-    color: #ccc;
-  }
-
-  .progress-journey.compact {
-    background: #2a2a2a;
-  }
-
-  .next-milestone-card {
-    background: #2a2a2a;
   }
 }

@@ -1,6 +1,6 @@
 .accuracy-trend-card {
-  background: rgba(17, 17, 17, 0.7);
-  border: 1px solid rgba(245, 245, 245, 0.08);
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@
 .accuracy-trend-title {
   margin: 0;
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -26,28 +26,29 @@
   display: inline-flex;
   flex-direction: column;
   align-items: flex-end;
-  background: rgba(245, 245, 245, 0.05);
+  background: transparent;
   padding: 0.4rem 0.65rem;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  font-weight: 600;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  border: 1px solid #333;
 }
 
 .trend-chip.trend-up {
   color: #5ee6a5;
-  border-color: rgba(94, 230, 165, 0.25);
+  border-color: rgba(94, 230, 165, 0.3);
 }
 
 .trend-chip.trend-down {
   color: #ff6b6b;
-  border-color: rgba(255, 107, 107, 0.25);
+  border-color: rgba(255, 107, 107, 0.3);
 }
 
 .trend-chip.trend-stable {
   color: #ffd166;
-  border-color: rgba(255, 209, 102, 0.25);
+  border-color: rgba(255, 209, 102, 0.3);
 }
 
 .trend-label {
@@ -56,14 +57,14 @@
 
 .trend-delta {
   font-size: 0.85rem;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .accuracy-trend-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  border: 1px solid rgba(245, 245, 245, 0.06);
+  gap: 0;
+  border: 1px solid #222;
 }
 
 .summary-item {
@@ -71,7 +72,7 @@
   flex-direction: column;
   gap: 0.2rem;
   padding: 0.75rem;
-  border-right: 1px solid rgba(245, 245, 245, 0.06);
+  border-right: 1px solid #222;
 }
 
 .summary-item:last-child {
@@ -79,24 +80,27 @@
 }
 
 .summary-label {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.65rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .summary-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text, #fff);
-  font-family: 'Courier New', monospace;
+  color: var(--text);
+  font-family: var(--font-mono);
 }
 
 .summary-sub {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.65rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 /* Mastery Distribution */
@@ -109,11 +113,12 @@
 
 .distribution-title {
   margin: 0;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.08em;
+  color: #555;
+  font-family: var(--font-mono);
 }
 
 .distribution-bar {
@@ -151,10 +156,12 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.65rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .legend-dot {
@@ -178,7 +185,7 @@
 .accuracy-empty {
   margin: 0;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.5);
+  color: #555;
   font-size: 0.9rem;
 }
 
@@ -193,7 +200,7 @@
 
   .summary-item {
     border-right: none;
-    border-bottom: 1px solid rgba(245, 245, 245, 0.06);
+    border-bottom: 1px solid #222;
   }
 
   .summary-item:last-child {

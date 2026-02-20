@@ -78,7 +78,7 @@ export default function CommunityPulse({ snapshot }) {
             background: isLoading ? 'var(--hover)' : 'var(--accent-blue)',
             color: 'var(--text)',
             border: '1px solid var(--border)',
-            borderRadius: '4px',
+            borderRadius: 0,
             padding: '6px 12px',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             fontSize: '13px'
@@ -95,7 +95,7 @@ export default function CommunityPulse({ snapshot }) {
           border: '1px solid var(--accent-blue)',
           color: 'var(--text)',
           padding: '12px 16px',
-          borderRadius: '8px',
+          borderRadius: 0,
           marginBottom: '16px',
           textAlign: 'center'
         }}>

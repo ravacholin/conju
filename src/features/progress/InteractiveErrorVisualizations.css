@@ -4,15 +4,15 @@
   margin: 0 auto;
 }
 
-/* Controles de Visualización */
+/* Controles de Visualizacion */
 .visualization-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
   padding: 16px 20px;
-  background: rgba(17, 17, 17, 0.6);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
 }
 
@@ -24,30 +24,39 @@
 
 .viz-btn {
   padding: 10px 18px;
-  border: 1px solid rgba(245, 245, 245, 0.15);
-  background: rgba(17, 17, 17, 0.7);
+  border: 1px solid #333;
+  background: transparent;
   color: var(--muted);
   border-radius: 0;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.15s ease;
+  font-weight: 700;
   font-size: 14px;
   min-width: 120px;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .viz-btn:hover {
-  background: rgba(17, 17, 17, 0.9);
+  background: transparent;
   color: var(--text);
-  border-color: rgba(245, 245, 245, 0.25);
-  transform: translateY(-1px);
+  border-color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 #fff;
+}
+
+.viz-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .viz-btn.active {
-  background: var(--accent-red);
-  color: white;
-  border-color: var(--accent-red);
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .time-range-selector {
@@ -58,28 +67,30 @@
 
 .time-range-select {
   padding: 8px 12px;
-  background: rgba(17, 17, 17, 0.8);
-  border: 1px solid rgba(245, 245, 245, 0.15);
+  background: #0a0a0a;
+  border: 1px solid #333;
   border-radius: 0;
   color: var(--text);
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  font-family: var(--font-mono);
 }
 
 .time-range-select:hover,
 .time-range-select:focus {
-  border-color: rgba(245, 245, 245, 0.3);
+  border-color: #fff;
   outline: none;
 }
 
 /* Contenedor Principal */
 .visualization-container {
-  background: rgba(17, 17, 17, 0.4);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 24px;
   min-height: 600px;
+  animation: fadeInScale 0.15s ease;
 }
 
 /* Error Constellation Map */
@@ -91,28 +102,30 @@
 
 .constellation-canvas {
   flex: 1;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
   border-radius: 0;
-  background: rgba(25, 25, 112, 0.3);
+  background: #0a0a0a;
   cursor: crosshair;
 }
 
 .constellation-tooltip {
   position: absolute;
-  background: rgba(17, 17, 17, 0.95);
-  border: 1px solid rgba(245, 245, 245, 0.2);
+  background: #0a0a0a;
+  border: 1px solid #fff;
   border-radius: 0;
   padding: 12px;
   pointer-events: none;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
+  animation: fadeInScale 0.15s ease;
 }
 
 .tooltip-header {
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 6px;
   color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .tooltip-stats {
@@ -126,8 +139,8 @@
 
 .constellation-legend {
   width: 200px;
-  background: rgba(17, 17, 17, 0.8);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 16px;
   height: fit-content;
@@ -136,8 +149,11 @@
 .constellation-legend h4 {
   margin: 0 0 16px 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .legend-item {
@@ -158,7 +174,8 @@
 .legend-count {
   margin-left: auto;
   color: var(--muted);
-  font-family: 'SF Mono', Consolas, monospace;
+  font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 /* Advanced Timeline */
@@ -178,7 +195,10 @@
 .timeline-header h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .timeline-metrics {
@@ -196,8 +216,8 @@
 
 .metric-value {
   font-size: 20px;
-  font-weight: 700;
-  font-family: 'SF Mono', Consolas, monospace;
+  font-weight: 800;
+  font-family: var(--font-mono);
   color: var(--accent-red);
 }
 
@@ -205,26 +225,34 @@
   font-size: 12px;
   color: var(--muted);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 .timeline-svg {
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
   border-radius: 0;
-  background: rgba(17, 17, 17, 0.3);
+  background: #0a0a0a;
 }
 
 .timeline-detail-panel {
   margin-top: 24px;
-  background: rgba(17, 17, 17, 0.6);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 20px;
+  animation: slideDown 0.15s ease;
 }
 
 .timeline-detail-panel h4 {
   margin: 0 0 16px 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .period-stats {
@@ -243,8 +271,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: rgba(17, 17, 17, 0.5);
-  border: 1px solid rgba(245, 245, 245, 0.05);
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
   border-radius: 0;
 }
 
@@ -254,14 +282,17 @@
 }
 
 .stat-value {
-  font-weight: 600;
-  font-family: 'SF Mono', Consolas, monospace;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 .error-breakdown h5 {
   margin: 0 0 12px 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .error-bar-container {
@@ -280,7 +311,7 @@
 .error-bar {
   flex: 1;
   height: 8px;
-  background: rgba(245, 245, 245, 0.1);
+  background: #1a1a1a;
   border-radius: 0;
   overflow: hidden;
 }
@@ -288,15 +319,15 @@
 .error-bar-fill {
   height: 100%;
   border-radius: 0;
-  transition: width 0.3s ease;
+  transition: width 0.15s ease;
 }
 
 .error-count {
   min-width: 30px;
   text-align: right;
   font-size: 12px;
-  font-weight: 600;
-  font-family: 'SF Mono', Consolas, monospace;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 /* Heatmap Evolution */
@@ -316,7 +347,10 @@
 .heatmap-controls h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .heatmap-legend {
@@ -325,36 +359,41 @@
   gap: 12px;
   font-size: 12px;
   color: var(--muted);
+  font-family: var(--font-mono);
 }
 
 .color-solid {
   width: 100px;
   height: 12px;
-  background: rgba(220, 53, 69, 0.5);
+  background: #ff6b6b;
   border-radius: 0;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
 }
 
 .heatmap-canvas {
   width: 100%;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
   border-radius: 0;
-  background: rgba(17, 17, 17, 0.3);
+  background: #0a0a0a;
   cursor: pointer;
 }
 
 .heatmap-details {
   margin-top: 16px;
-  background: rgba(17, 17, 17, 0.6);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 16px;
+  animation: slideInFromRight 0.15s ease;
 }
 
 .heatmap-details h4 {
   margin: 0 0 12px 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .cell-stats {
@@ -366,9 +405,11 @@
 
 .cell-stats > div {
   padding: 6px 10px;
-  background: rgba(17, 17, 17, 0.5);
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
   border-radius: 0;
-  font-family: 'SF Mono', Consolas, monospace;
+  font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 /* Error Network Graph */
@@ -387,7 +428,10 @@
 .network-header h3 {
   margin: 0 0 8px 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .network-header p {
@@ -398,25 +442,29 @@
 
 .network-svg {
   flex: 1;
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  border: 1px solid #333;
   border-radius: 0;
-  background: rgba(17, 17, 17, 0.3);
+  background: #0a0a0a;
 }
 
 .network-details {
   width: 280px;
-  background: rgba(17, 17, 17, 0.8);
-  border: 1px solid rgba(245, 245, 245, 0.1);
+  background: transparent;
+  border: 1px solid #333;
   border-radius: 0;
   padding: 20px;
   height: fit-content;
+  animation: slideInFromRight 0.15s ease;
 }
 
 .network-details h4 {
   margin: 0 0 16px 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 .node-stats {
@@ -431,7 +479,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 6px 10px;
-  background: rgba(17, 17, 17, 0.5);
+  background: #0a0a0a;
   border-radius: 0;
   font-size: 13px;
 }
@@ -443,7 +491,10 @@
 .connected-errors h5 {
   margin: 0 0 12px 0;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
 }
 
 .related-error {
@@ -452,33 +503,42 @@
   align-items: center;
   padding: 6px 8px;
   margin-bottom: 6px;
-  background: rgba(245, 245, 245, 0.02);
+  background: #0a0a0a;
   border-radius: 0;
   font-size: 12px;
 }
 
 .correlation-strength {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--accent-red);
-  font-family: 'SF Mono', Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 .focus-error-btn {
   width: 100%;
   padding: 12px;
-  background: var(--accent-red);
-  color: white;
-  border: none;
+  background: #fff;
+  color: #000;
+  border: 1px solid #fff;
   border-radius: 0;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  box-shadow: 4px 4px 0 var(--accent-orange);
 }
 
 .focus-error-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--accent-orange);
+}
+
+.focus-error-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 /* Responsive Design */
@@ -551,7 +611,7 @@
   }
 }
 
-/* Animaciones y Transiciones */
+/* Animations */
 @keyframes fadeInScale {
   0% {
     opacity: 0;
@@ -563,18 +623,6 @@
   }
 }
 
-.visualization-container {
-  animation: fadeInScale 0.4s ease-out;
-}
-
-.constellation-tooltip {
-  animation: fadeInScale 0.2s ease-out;
-}
-
-.timeline-detail-panel {
-  animation: slideDown 0.3s ease-out;
-}
-
 @keyframes slideDown {
   0% {
     opacity: 0;
@@ -584,11 +632,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.heatmap-details,
-.network-details {
-  animation: slideInFromRight 0.3s ease-out;
 }
 
 @keyframes slideInFromRight {
@@ -604,15 +647,15 @@
 
 /* Hover Effects */
 .constellation-canvas:hover {
-  box-shadow: 0 0 20px rgba(220, 53, 69, 0.2);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .heatmap-canvas:hover {
-  box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .network-svg:hover {
-  box-shadow: 0 0 20px rgba(23, 162, 184, 0.2);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 /* Accessibility */
@@ -624,18 +667,18 @@
 }
 
 .interactive-error-visualizations *:focus {
-  outline: 2px solid var(--accent-red);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 .interactive-error-visualizations button:focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3);
+  box-shadow: 3px 3px 0 #fff;
 }
 
 /* Canvas cursor states */
 .constellation-canvas,
 .heatmap-canvas {
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.15s ease;
 }
 
 /* SVG styles for D3 elements */
@@ -650,7 +693,7 @@
 .network-svg .node {
   stroke: #fff;
   stroke-width: 1.5px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .network-svg .node:hover {
@@ -661,11 +704,11 @@
 .network-svg .label {
   pointer-events: none;
   text-anchor: middle;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: var(--font-mono);
 }
 
 .timeline-svg .timeline-point {
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .timeline-svg .timeline-point:hover {
@@ -674,7 +717,7 @@
 }
 
 .timeline-svg .error-area {
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .timeline-svg .error-area:hover {

@@ -27,6 +27,12 @@
   --accent-warning: #ffaa00;
   --accent-orange: #ff5722;
 
+  /* Mastery Levels */
+  --mastery-high: #5ee6a5;
+  --mastery-medium: #ffd166;
+  --mastery-low: #ff6b6b;
+  --mastery-none: #555555;
+
   /* UI Elements */
   --focus-ring: #ffffff;
   --shadow-hard: 6px 6px 0px 0px #ffffff;

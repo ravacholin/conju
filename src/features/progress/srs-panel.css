@@ -1,9 +1,8 @@
-/* Panel SRS - Diseño minimalista y claro */
+/* Panel SRS - Brutalist */
 
 .srs-panel {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 2rem;
   margin-bottom: 2rem;
   width: 100%;
@@ -12,7 +11,6 @@
 /* Gamification Section */
 .srs-gamification-section {
   margin: 16px 0;
-  border-radius: 0;
   overflow: hidden;
 }
 
@@ -28,17 +26,14 @@
 }
 
 .srs-analytics-section {
-  border-radius: 0;
   overflow: hidden;
 }
 
 .srs-journey-section {
-  border-radius: 0;
   overflow: hidden;
 }
 
 .srs-notifications-section {
-  border-radius: 0;
   overflow: hidden;
 }
 
@@ -62,27 +57,25 @@
 .srs-title h3 {
   margin: 0 0 1rem 0;
   color: var(--text);
-  font-size: 1.618rem;
-  font-weight: 300;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .srs-explanation {
   margin: 0 0 1rem 0;
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.85rem;
   line-height: 1.5;
-  font-weight: 350;
 }
 
 .srs-how-it-works {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 0.75rem 1rem;
   margin-top: 0.5rem;
 }
@@ -94,39 +87,45 @@
 
 .how-text {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-style: italic;
-  font-weight: 300;
 }
 
 .toggle-details-btn {
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 0;
+  border: 1px solid #333;
   padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
   color: var(--muted);
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 400;
+  transition: all 0.15s ease;
 }
 
 .toggle-details-btn:hover {
-  background: var(--hover);
-  border-color: var(--border-2);
+  border-color: #fff;
   color: var(--text);
-  transform: translateY(-1px);
+  box-shadow: 3px 3px 0 #fff;
+  transform: translate(-2px, -2px);
+}
+
+.toggle-details-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .toggle-details-btn.secondary {
-  border-color: var(--accent-light);
-  color: var(--accent);
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
 }
 
 .toggle-details-btn.secondary:hover {
-  background: rgba(37, 99, 235, 0.1);
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--accent-orange);
+  color: #000;
+  box-shadow: 3px 3px 0 #fff;
 }
 
 /* Loading */
@@ -139,9 +138,8 @@
 .srs-loading .spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--border);
-  border-top: 2px solid var(--accent);
-  border-radius: 0;
+  border: 2px solid #333;
+  border-top: 2px solid #fff;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
 }
@@ -150,18 +148,22 @@
 .srs-overview {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 16px;
+  gap: 0;
   margin-bottom: 24px;
+  border: 1px solid #1a1a1a;
 }
 
 .srs-stat-card {
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 0;
+  background: transparent;
+  border-right: 1px solid #1a1a1a;
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
+}
+
+.srs-stat-card:last-child {
+  border-right: none;
 }
 
 .stat-indicator {
@@ -170,24 +172,22 @@
   left: 0;
   right: 0;
   height: 3px;
-  border-radius: 0;
 }
 
 .stat-indicator.urgent-indicator {
-  background: #dc3545;
+  background: var(--accent-error);
 }
 
 .stat-indicator.ready-indicator {
-  background: #28a745;
+  background: #5ee6a5;
 }
 
 .stat-indicator.scheduled-indicator {
-  background: #007bff;
+  background: #fff;
 }
 
 .srs-stat-card:hover {
-  background: #333;
-  border-color: #555;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .stat-icon {
@@ -203,10 +203,10 @@
 }
 
 .stat-number {
-  font-size: 2.2rem;
-  font-weight: 200;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
-  letter-spacing: -0.02em;
 }
 
 .stat-progress {
@@ -218,9 +218,8 @@
 .progress-ring {
   width: 40px;
   height: 40px;
-  border-radius: 0;
   position: relative;
-  background: #404040;
+  background: #333;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,56 +232,59 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  background: #1a1a1a;
-  border-radius: 0;
+  background: #000;
 }
 
 .progress-text {
   position: relative;
   z-index: 1;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
 }
 
 .srs-stat-card.urgent .progress-ring {
-  background: #dc3545;
+  background: var(--accent-error);
 }
 
 .srs-stat-card.ready .progress-ring {
-  background: #28a745;
+  background: #5ee6a5;
 }
 
 .srs-stat-card.scheduled .progress-ring {
-  background: #007bff;
+  background: #fff;
 }
 
 .stat-time {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--muted);
-  font-weight: 400;
   margin-top: 0.5rem;
   padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   text-align: center;
 }
 
 .stat-label {
-  font-size: 1rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: var(--text);
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 0.25rem;
 }
 
 .stat-sublabel {
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-weight: 300;
-  opacity: 0.8;
+  font-size: 0.75rem;
+  color: #555;
 }
 
-/* Actions - Rediseño elegante */
+/* Actions */
 .srs-actions {
   margin: 2rem 0;
 }
@@ -290,17 +292,23 @@
 .srs-main-btn {
   width: 100%;
   padding: 0;
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 0;
-  transition: all 0.2s ease;
+  background: transparent;
+  border: 1px solid #333;
+  transition: all 0.15s ease;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
 }
 
 .srs-main-btn:hover {
-  background: #333;
-  border-color: #555;
+  border-color: #fff;
+  box-shadow: 6px 6px 0 #fff;
+  transform: translate(-4px, -4px);
+}
+
+.srs-main-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .btn-content {
@@ -321,22 +329,24 @@
 }
 
 .btn-title {
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text);
   margin-bottom: 0.25rem;
 }
 
 .btn-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  font-weight: 300;
 }
 
 .btn-arrow {
   font-size: 1.2rem;
   color: var(--muted);
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
 .srs-main-btn:hover .btn-arrow {
@@ -347,9 +357,8 @@
 .srs-no-items {
   text-align: center;
   padding: 2rem 1rem;
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   margin-bottom: 1rem;
 }
 
@@ -359,7 +368,7 @@
   opacity: 0.7;
 }
 
-/* Empty state (Sistema en reposo) */
+/* Empty state */
 .srs-empty {
   text-align: center;
   padding: 2rem 1rem;
@@ -367,7 +376,6 @@
 .empty-icon { margin-bottom: 1rem; }
 .empty-icon img { display: block; margin: 0 auto; }
 
-/* Override global .empty-icon sizing inside SRS empty to truly center */
 .srs-empty .empty-icon {
   width: auto !important;
   height: auto !important;
@@ -378,20 +386,21 @@
   margin-right: auto;
 }
 
-/* Ensure the no-items icon is also perfectly centered */
 .srs-no-items .no-items-icon img { display: block; margin: 0 auto; }
 
 .no-items-title {
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--text);
   margin-bottom: 0.5rem;
 }
 
 .no-items-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--muted);
-  font-weight: 300;
 }
 
 /* Quick options */
@@ -405,9 +414,8 @@
 
 .btn-compact {
   padding: 0.6rem 1.2rem !important;
-  font-size: 0.9rem !important;
+  font-size: 0.8rem !important;
   min-width: auto !important;
-  border-radius: 0;
 }
 
 .btn {
@@ -415,48 +423,59 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border-radius: 0;
-  border: 1px solid;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border: 1px solid #333;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   position: relative;
+  background: transparent;
+  color: var(--text);
+}
+
+.btn:hover {
+  border-color: #fff;
+  box-shadow: 3px 3px 0 #fff;
+  transform: translate(-2px, -2px);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #404040;
+  border: 1px solid #333;
   color: var(--text);
-  font-weight: 400;
-  transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: #2a2a2a;
-  border-color: #555;
+  border-color: #fff;
+  box-shadow: 3px 3px 0 #fff;
 }
 
 .btn-badge {
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 0;
   padding: 2px 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   margin-left: auto;
 }
 
-/* Details Section - Rediseño minimalista */
+/* Details Section */
 .srs-details {
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 1.5rem;
   margin-top: 2rem;
 }
@@ -473,15 +492,16 @@
 .srs-details-header h4 {
   margin: 0 0 1rem 0;
   color: var(--text);
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .legend-explanation {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin-bottom: 0.75rem;
-  font-weight: 300;
 }
 
 .legend-items {
@@ -497,35 +517,37 @@
 .legend-item {
   display: inline-flex;
   align-items: center;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
   padding: 0.4rem 0.75rem;
-  border-radius: 0;
   border: 1px solid;
-  font-weight: 400;
 }
 
 .legend-item.urgent-overdue {
-  background: rgba(220, 53, 69, 0.1);
-  border-color: var(--accent-red);
-  color: #ff9999;
+  background: transparent;
+  border-color: var(--accent-error);
+  color: var(--accent-error);
 }
 
 .legend-item.urgent-high {
-  background: rgba(255, 193, 7, 0.1);
-  border-color: var(--warning);
-  color: #ffcc99;
+  background: transparent;
+  border-color: var(--accent-warning);
+  color: var(--accent-warning);
 }
 
 .legend-item.urgent-medium {
-  background: rgba(40, 167, 69, 0.1);
-  border-color: var(--accent-green);
-  color: #99ff99;
+  background: transparent;
+  border-color: #5ee6a5;
+  color: #5ee6a5;
 }
 
 .legend-item.urgent-low {
-  background: rgba(23, 162, 184, 0.1);
-  border-color: var(--accent-blue);
-  color: #99ccff;
+  background: transparent;
+  border-color: #fff;
+  color: #fff;
 }
 
 /* Items List */
@@ -540,36 +562,30 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-radius: 0;
-  border: 1px solid #404040;
-  background: #2a2a2a;
-  transition: all 0.2s ease;
+  border: 1px solid #1a1a1a;
+  background: transparent;
+  transition: all 0.15s ease;
   margin-bottom: 0.75rem;
 }
 
 .srs-item:hover {
-  background: #333;
-  border-color: #555;
+  border-color: #fff;
 }
 
 .srs-item.urgent-overdue {
-  border-left: 4px solid #dc3545;
-  background: #2d2a2a;
+  border-left: 4px solid var(--accent-error);
 }
 
 .srs-item.urgent-high {
-  border-left: 4px solid #ffc107;
-  background: #2d2c2a;
+  border-left: 4px solid var(--accent-warning);
 }
 
 .srs-item.urgent-medium {
-  border-left: 4px solid #28a745;
-  background: #2a2d2a;
+  border-left: 4px solid #5ee6a5;
 }
 
 .srs-item.urgent-low {
-  border-left: 4px solid #007bff;
-  background: #2a2c2d;
+  border-left: 4px solid #fff;
 }
 
 .srs-item-content {
@@ -581,16 +597,16 @@
 }
 
 .srs-item-name {
-  font-weight: 500;
+  font-weight: 700;
+  font-family: var(--font-mono);
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 
 .srs-item-person {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  font-weight: 300;
 }
 
 .srs-item-meta {
@@ -613,48 +629,50 @@
 
 .mastery-label,
 .timing-label {
-  font-size: 0.7rem;
-  color: var(--muted);
+  font-size: 0.6rem;
+  color: #555;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1em;
   margin-bottom: 0.25rem;
-  font-weight: 500;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 .mastery-value {
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
   padding: 0.2rem 0.5rem;
 }
 
 .timing-value {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
   color: var(--text);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .mastery-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
   padding: 2px 6px;
-  border-radius: 0;
   color: white;
 }
 
 .mastery-value.mastery-high {
-  color: var(--accent-green);
-  background: rgba(40, 167, 69, 0.1);
+  color: #5ee6a5;
+  background: rgba(94, 230, 165, 0.06);
 }
 
 .mastery-value.mastery-medium {
-  color: var(--warning);
-  background: rgba(255, 193, 7, 0.1);
+  color: #ffd166;
+  background: rgba(255, 209, 102, 0.06);
 }
 
 .mastery-value.mastery-low {
-  color: var(--accent-red);
-  background: rgba(220, 53, 69, 0.1);
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.06);
 }
 
 .srs-item-timing {
@@ -662,36 +680,39 @@
 }
 
 .urgency-badge {
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   padding: 3px 8px;
-  border-radius: 0;
   margin-bottom: 4px;
   display: inline-block;
 }
 
 .urgency-badge.urgent-overdue {
-  background: var(--accent-red);
+  background: var(--accent-error);
   color: white;
 }
 
 .urgency-badge.urgent-high {
-  background: var(--warning);
+  background: var(--accent-warning);
   color: #000;
 }
 
 .urgency-badge.urgent-medium {
-  background: var(--accent-green);
-  color: white;
+  background: #5ee6a5;
+  color: #000;
 }
 
 .urgency-badge.urgent-low {
-  background: var(--accent-blue);
-  color: white;
+  background: #fff;
+  color: #000;
 }
 
 .time-info {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
   color: var(--muted);
 }
 
@@ -700,7 +721,7 @@
   padding: 1rem;
   color: var(--muted);
   font-style: italic;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid #1a1a1a;
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
@@ -713,13 +734,12 @@
   opacity: 0.6;
 }
 
-/* Empty State - Rediseño elegante */
+/* Empty State */
 .srs-empty {
   text-align: center;
   padding: 3rem 2rem;
-  background: #2a2a2a;
-  border: 1px solid #404040;
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   margin-top: 1rem;
 }
 
@@ -736,23 +756,23 @@
 
 .empty-content h4 {
   color: var(--text);
-  font-size: 1.3rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 0.75rem;
 }
 
 .empty-main {
   color: var(--muted);
-  font-size: 1rem;
+  font-size: 0.85rem;
   margin-bottom: 0.5rem;
-  font-weight: 350;
 }
 
 .empty-sub {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin-bottom: 1.5rem;
-  font-weight: 300;
   opacity: 0.8;
 }
 
@@ -761,13 +781,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #333;
-  border: 1px solid #404040;
-  border-radius: 0;
+  background: transparent;
+  border: 1px solid #1a1a1a;
   padding: 0.75rem 1rem;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  font-weight: 300;
 }
 
 .tip-icon {
@@ -787,11 +805,12 @@
   }
 
   .srs-overview {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid #1a1a1a;
   }
 
   .srs-stat-card {
+    border-bottom: 1px solid #1a1a1a;
     padding: 1rem;
   }
 
@@ -800,12 +819,8 @@
     height: 32px;
   }
 
-  .progress-text {
-    font-size: 0.65rem;
-  }
-
   .stat-number {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .srs-actions {
