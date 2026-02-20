@@ -29,11 +29,7 @@ function DialectSelection({ onSelectDialect }) {
         onClick={() => onSelectDialect('peninsular')}
         title="Seleccionar dialecto peninsular (tú y vosotros)"
       >
-        <div className="option-title" style={{ fontSize: '2rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-          <span>TÚ</span>
-          <span style={{ fontSize: '0.6em', opacity: 0.7 }}>+</span>
-          <span>VOSOTROS</span>
-        </div>
+        <div className="option-title">TÚ + VOSOTROS</div>
         <p>España</p>
         <p className="example">vosotros tenéis</p>
       </ClickableCard>

@@ -334,12 +334,12 @@ body {
   align-items: center;
   gap: 0.8rem;
   margin: 1rem 0 3rem;
-  color: #444;
-  font-size: 0.8rem;
+  color: var(--muted-2);
+  font-size: 0.75rem;
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-weight: 800;
 }
 
 .breadcrumb .crumb {
@@ -382,19 +382,20 @@ body {
   font-weight: 900;
   margin-bottom: 1rem;
   color: #ffffff;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   line-height: 0.85;
   text-transform: uppercase;
   text-align: center;
   border-bottom: none;
+  font-family: var(--font-mono);
 }
 
 .onboarding h2 {
-  font-size: 1.5rem;
-  font-weight: 400;
+  font-size: 1.2rem;
+  font-weight: 500;
   margin-bottom: 2rem;
-  color: #888;
-  letter-spacing: 0.05em;
+  color: var(--muted);
+  letter-spacing: 0.06em;
   line-height: 1.4;
   text-transform: uppercase;
   border-bottom: none;
@@ -404,16 +405,17 @@ body {
 }
 
 .onboarding p {
-  font-size: 1rem;
-  margin-bottom: 3rem;
-  color: #888;
-  line-height: 1.6;
-  font-weight: 400;
-  letter-spacing: 0;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   max-width: 60ch;
   margin-left: auto;
   margin-right: auto;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
 }
 
 .options-grid {
@@ -483,22 +485,24 @@ body {
 }
 
 .option-card.compact h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.25rem;
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text);
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   font-family: var(--font-mono);
 }
 
 .option-card.compact .conjugation-example {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   opacity: 1;
-  color: #666;
+  color: var(--muted);
   font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.02em;
   line-height: 1.4;
   padding-left: 0;
   border-left: none;
@@ -510,7 +514,7 @@ body {
   display: flex;
   align-items: center;
   width: 100%;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border);
   padding-top: 0.75rem;
 }
 
@@ -571,17 +575,17 @@ body {
 }
 
 .option-card h3 {
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   justify-content: center;
-  line-height: 1.1;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   font-family: var(--font-mono);
 }
@@ -593,57 +597,65 @@ body {
 }
 
 .option-card p {
-  font-size: 1rem;
+  font-size: 0.85rem;
   color: var(--muted);
-  margin-bottom: 0.618rem;
-  line-height: 1.618;
-  font-weight: 350;
-  letter-spacing: -0.005em;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .option-card .example {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--muted);
   font-family: var(--font-mono);
+  letter-spacing: 0.02em;
   line-height: 1.4;
   padding-left: 0.75rem;
-  border-left: 3px solid var(--text);
+  border-left: 2px solid var(--muted-2);
   background: transparent;
   padding: 0.5rem 0.75rem;
   border-radius: 0;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
   flex-grow: 1;
   display: flex;
   align-items: center;
+  text-transform: none;
 }
 
 .conjugation-example {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--muted);
   margin-top: 0.25rem;
   font-family: var(--font-mono);
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 
 
 
 .option-title {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   line-height: 1;
   text-transform: uppercase;
   font-family: var(--font-mono);
+  letter-spacing: -0.02em;
   color: var(--text);
   transition: color 0.15s ease;
 }
 
 .option-card.compact .option-title {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
 }
 
 /* Drill container */
@@ -703,12 +715,13 @@ body {
 
 .verb-lemma {
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 900;
   margin-bottom: 0.5rem;
   color: #ffffff;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1;
   text-transform: uppercase;
+  font-family: var(--font-mono);
 }
 
 .conjugation-context {
@@ -726,7 +739,9 @@ body {
   color: #ffffff;
   margin-bottom: 1rem;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .input-container {
@@ -2888,7 +2903,7 @@ body {
   transform: translateY(-1px);
 }
 
-.option-title {
+.test-option .option-title {
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--text);

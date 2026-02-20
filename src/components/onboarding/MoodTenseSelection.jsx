@@ -83,7 +83,7 @@ function MoodTenseSelection({
               onClick={() => onSelectTense(tense)}
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
-              <div className="option-title" style={{ fontSize: '1.8rem' }}>{getTenseLabel(tense)}</div>
+              <div className="option-title" >{getTenseLabel(tense)}</div>
               <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
@@ -109,7 +109,7 @@ function MoodTenseSelection({
               onClick={() => onSelectMood(mood)}
               title={`Seleccionar ${getMoodLabel(mood)}`}
             >
-              <div className="option-title" style={{ fontSize: '2.5rem' }}>{getMoodLabel(mood)}</div>
+              <div className="option-title" >{getMoodLabel(mood)}</div>
               <p className="example">yo hablo, tú hablas, él/ella habla</p>
             </ClickableCard>
           ))}
@@ -140,7 +140,7 @@ function MoodTenseSelection({
               onClick={() => onSelectTense(tense)}
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
-              <div className="option-title" style={{ fontSize: '1.8rem' }}>{getTenseLabel(tense)}</div>
+              <div className="option-title" >{getTenseLabel(tense)}</div>
               <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
@@ -164,7 +164,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('indicative')}
             title="Seleccionar modo indicativo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>INDICATIVO</div>
+            <div className="option-title" >INDICATIVO</div>
             <p className="example">yo hablo, tú hablas, él/ella habla</p>
           </ClickableCard>
 
@@ -173,7 +173,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('subjunctive')}
             title="Seleccionar modo subjuntivo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>SUBJUNTIVO</div>
+            <div className="option-title" >SUBJUNTIVO</div>
             <p className="example">yo hable, tú hables, él/ella hable</p>
           </ClickableCard>
 
@@ -182,7 +182,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('imperative')}
             title="Seleccionar modo imperativo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>IMPERATIVO</div>
+            <div className="option-title" >IMPERATIVO</div>
             <p className="example">tú habla, vos hablá, usted hable</p>
           </ClickableCard>
 
@@ -191,7 +191,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('conditional')}
             title="Seleccionar modo condicional"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>CONDICIONAL</div>
+            <div className="option-title" >CONDICIONAL</div>
             <p className="example">yo hablaría, tú hablarías, él/ella hablaría</p>
           </ClickableCard>
 
@@ -200,7 +200,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('nonfinite')}
             title="Seleccionar formas no conjugadas"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>NO CONJUGADAS</div>
+            <div className="option-title" >NO CONJUGADAS</div>
             <p className="example">hablando, hablado</p>
           </ClickableCard>
         </div>
@@ -228,7 +228,7 @@ function MoodTenseSelection({
               onClick={() => onSelectTense(tense)}
               title={`Seleccionar ${getTenseLabel(tense)}`}
             >
-              <div className="option-title" style={{ fontSize: '1.8rem' }}>{getTenseLabel(tense)}</div>
+              <div className="option-title" >{getTenseLabel(tense)}</div>
               <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
             </ClickableCard>
           ))}
@@ -252,7 +252,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('indicative')}
             title="Seleccionar modo indicativo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>INDICATIVO</div>
+            <div className="option-title" >INDICATIVO</div>
             <p className="example">yo hablo, tú hablas, él/ella habla</p>
           </ClickableCard>
 
@@ -261,7 +261,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('subjunctive')}
             title="Seleccionar modo subjuntivo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>SUBJUNTIVO</div>
+            <div className="option-title" >SUBJUNTIVO</div>
             <p className="example">yo hable, tú hables, él/ella hable</p>
           </ClickableCard>
 
@@ -270,7 +270,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('imperative')}
             title="Seleccionar modo imperativo"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>IMPERATIVO</div>
+            <div className="option-title" >IMPERATIVO</div>
             <p className="example">tú habla, vos hablá, usted hable</p>
           </ClickableCard>
 
@@ -279,7 +279,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('conditional')}
             title="Seleccionar modo condicional"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>CONDICIONAL</div>
+            <div className="option-title" >CONDICIONAL</div>
             <p className="example">yo hablaría, tú hablarías, él/ella hablaría</p>
           </ClickableCard>
 
@@ -288,7 +288,7 @@ function MoodTenseSelection({
             onClick={() => onSelectMood('nonfinite')}
             title="Seleccionar formas no conjugadas"
           >
-            <div className="option-title" style={{ fontSize: '2.5rem' }}>NO CONJUGADAS</div>
+            <div className="option-title" >NO CONJUGADAS</div>
             <p className="example">hablando, hablado</p>
           </ClickableCard>
         </div>
