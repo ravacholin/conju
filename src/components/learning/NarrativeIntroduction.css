@@ -261,6 +261,12 @@
   text-underline-offset: 2px;
 }
 
+/* Override irreg-frag inside sentence highlights (orange bg → orange text is invisible) */
+.story-sentence .highlight .irreg-frag {
+  color: #ffffff !important;
+  text-decoration-color: #ffffff;
+}
+
 .verb-deconstruction.irregular .form-separator {
   color: var(--text);
   opacity: 0.9;
