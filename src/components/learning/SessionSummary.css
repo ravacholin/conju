@@ -1,4 +1,4 @@
-/* Session Summary - Clean design matching main app */
+/* Session Summary — Brutalist Dark Theme */
 
 .session-summary {
   text-align: center;
@@ -8,10 +8,11 @@
 
 .summary-header h1 {
   font-size: 1.75rem;
-  font-weight: 400;
+  font-weight: 800;
   color: var(--text);
   margin-bottom: 1rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
 /* Grade Display */
@@ -25,32 +26,32 @@
   width: 120px;
   height: 120px;
   border: 2px solid var(--border);
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
 }
 
-.grade-circle.grade-a { border-color: var(--accent-green); }
-.grade-circle.grade-b { border-color: var(--accent-blue); }
+.grade-circle.grade-a { border-color: var(--accent-success); }
+.grade-circle.grade-b { border-color: var(--text); }
 .grade-circle.grade-c { border-color: var(--accent-orange); }
 .grade-circle.grade-d,
-.grade-circle.grade-f { border-color: var(--accent-red); }
+.grade-circle.grade-f { border-color: var(--accent-error); }
 
 .grade-text {
   font-size: 3rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.02em;
+  font-family: var(--font-mono);
 }
 
-.grade-text.grade-a { color: var(--accent-green); }
-.grade-text.grade-b { color: var(--accent-blue); }
+.grade-text.grade-a { color: var(--accent-success); }
+.grade-text.grade-b { color: var(--text); }
 .grade-text.grade-c { color: var(--accent-orange); }
 .grade-text.grade-d,
-.grade-text.grade-f { color: var(--accent-red); }
+.grade-text.grade-f { color: var(--accent-error); }
 
-/* Metrics using chrono-panel style */
+/* Metrics */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -59,30 +60,31 @@
 }
 
 .metric-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
   padding: 1rem;
   text-align: center;
 }
 
 .metric-value {
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.5rem;
   color: var(--text);
+  font-family: var(--font-mono);
 }
 
-.metric-value.excellent { color: var(--accent-green); }
-.metric-value.good { color: var(--accent-blue); }
+.metric-value.excellent { color: var(--accent-success); }
+.metric-value.good { color: var(--text); }
 .metric-value.fair { color: var(--accent-orange); }
-.metric-value.poor { color: var(--accent-red); }
+.metric-value.poor { color: var(--accent-error); }
 
 .metric-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   color: var(--muted);
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
 }
 
 /* Stats sections */
@@ -94,19 +96,21 @@
 }
 
 .stats-section {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
   padding: 1.5rem;
   text-align: left;
 }
 
 .stats-section h3 {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
   margin-bottom: 1rem;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
 }
 
 .stats-list {
@@ -119,7 +123,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
 }
 
 .stat-row:last-child {
@@ -128,11 +132,13 @@
 
 .stat-row span:first-child {
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .stat-row span:last-child {
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font-mono);
 }
 
 /* Error patterns */
@@ -147,9 +153,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
-  background: rgba(220, 53, 69, 0.05);
-  border: 1px solid rgba(220, 53, 69, 0.15);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-error);
 }
 
 .pattern-name {
@@ -158,12 +164,13 @@
 }
 
 .pattern-count {
-  background: rgba(220, 53, 69, 0.2);
-  color: var(--accent-red);
+  background: transparent;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
   padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
 }
 
 /* Recommendations */
@@ -178,9 +185,8 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
 }
 
 .rec-icon {
@@ -204,34 +210,51 @@
 }
 
 .btn-primary {
-  background: var(--accent-blue);
-  color: white;
+  background: var(--text);
+  color: var(--bg);
   padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  border: 1px solid var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-primary:hover {
-  background: #0056b3;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.btn-primary:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .practice-more-btn {
-  background: var(--panel);
+  background: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .practice-more-btn:hover {
-  background: var(--hover);
+  border-color: var(--text);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.practice-more-btn:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 /* Mobile */
@@ -239,29 +262,29 @@
   .session-summary {
     padding: 1.5rem;
   }
-  
+
   .summary-header h1 {
     font-size: 1.5rem;
   }
-  
+
   .grade-circle {
     width: 100px;
     height: 100px;
   }
-  
+
   .grade-text {
     font-size: 2.5rem;
   }
-  
+
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .summary-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .btn-primary,
   .practice-more-btn {
     width: 100%;
