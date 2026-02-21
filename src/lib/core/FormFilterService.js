@@ -466,6 +466,8 @@ export function createFallbackPool(forms, settings, context = {}) {
   const {
     level,
     region,
+    useVoseo,
+    useVosotros,
     practiceMode,
     specificMood,
     specificTense,
@@ -512,11 +514,16 @@ export function createFallbackPool(forms, settings, context = {}) {
     if (f.mood === 'nonfinite') return true
 
     if (region === 'rioplatense') {
+      // Rioplatense: vos only — no tú, no vosotros
       return !['2s_tu', '2p_vosotros'].includes(f.person)
     } else if (region === 'peninsular') {
+      // Spain: tú + vosotros — no vos
       return f.person !== '2s_vos'
     } else if (region === 'la_general') {
-      return !['2s_vos', '2p_vosotros'].includes(f.person)
+      // Latin America base: tú only, unless flags enable more
+      if (!useVoseo && f.person === '2s_vos') return false
+      if (!useVosotros && f.person === '2p_vosotros') return false
+      return true
     } else {
       return ['1s', '2s_tu', '2s_vos', '3s', '1p', '2p_vosotros', '3p'].includes(f.person)
     }

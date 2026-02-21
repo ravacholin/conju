@@ -70,23 +70,29 @@ export function getAllowedCombosForLevel(level) {
   return set;
 }
 
-export function getAllowedPersonsForRegion(region) {
+export function getAllowedPersonsForRegion(region, { useVoseo = false, useVosotros = false } = {}) {
   const ALL = new Set(['1s', '2s_tu', '2s_vos', '3s', '1p', '2p_vosotros', '3p']);
   if (region === 'rioplatense') {
+    // Rioplatense: vos only (no tú, no vosotros)
     return new Set(['1s', '2s_vos', '3s', '1p', '3p']);
   }
-  if (region === 'la_general') {
-    return new Set(['1s', '2s_tu', '3s', '1p', '3p']);
-  }
   if (region === 'peninsular') {
+    // Spain: tú + vosotros (no vos)
     return new Set(['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p']);
+  }
+  if (region === 'la_general') {
+    // Latin America base: tú only, unless flags enable more
+    const persons = new Set(['1s', '2s_tu', '3s', '1p', '3p']);
+    if (useVoseo) persons.add('2s_vos');
+    if (useVosotros) persons.add('2p_vosotros');
+    return persons;
   }
   return ALL;
 }
 
 export function gateFormsByCurriculumAndDialect(forms, settings) {
-  const { level, region, practiceMode, cameFromTema, specificMood, specificTense } = settings || {};
-  const allowedPersons = getAllowedPersonsForRegion(region);
+  const { level, region, useVoseo, useVosotros, practiceMode, cameFromTema, specificMood, specificTense } = settings || {};
+  const allowedPersons = getAllowedPersonsForRegion(region, { useVoseo, useVosotros });
 
   // Debug logging for regional filtering issues
   if (import.meta.env.DEV && region && region !== 'global') {

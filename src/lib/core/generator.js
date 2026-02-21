@@ -367,16 +367,17 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
 
       // Apply dialect filtering
       if (region === 'rioplatense') {
-        if (!useVoseo && f.person === '2s_vos') return false
-        // Fixed: When using voseo, filter out tuteo forms (mutually exclusive)
-        if (useVoseo && f.person === '2s_tu') return false
-        if (!useVoseo && !useTuteo && f.person === '2s_tu') return false
+        // Rioplatense: vos only — no tú, no vosotros
+        if (f.person === '2s_tu') return false
         if (f.person === '2p_vosotros') return false
       } else if (region === 'peninsular') {
+        // Spain: tú + vosotros — no vos
         if (f.person === '2s_vos') return false
         if (!useVosotros && f.person === '2p_vosotros') return false
       } else if (region === 'la_general') {
-        if (f.person === '2s_vos' || f.person === '2p_vosotros') return false
+        // Latin America base: tú only, unless flags enable more
+        if (!useVoseo && f.person === '2s_vos') return false
+        if (!useVosotros && f.person === '2p_vosotros') return false
       }
 
       return true

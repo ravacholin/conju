@@ -555,7 +555,7 @@ async function createEmergencyFallbackItem(settings = {}) {
   try {
     // Import regional filtering function
     const { getAllowedPersonsForRegion } = await import('../lib/core/curriculumGate.js')
-    const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general')
+    const allowedPersons = getAllowedPersonsForRegion(settings.region || 'la_general', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros })
 
     logger.debug('createEmergencyFallbackItem', 'Applying regional person filter', {
       region: settings.region,
