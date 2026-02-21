@@ -71,7 +71,6 @@
  */
 
 import React from 'react'
-import Toast from '../Toast.jsx'
 import DialectSelection from './DialectSelection.jsx'
 import LevelSelection from './LevelSelection.jsx'
 import PracticeModeSelection from './PracticeModeSelection.jsx'
@@ -111,84 +110,66 @@ function OnboardingFlow({
   onGoToProgress
 }) {
 
-  const [toast, setToast] = React.useState(null)
   const [showLevelTest, setShowLevelTest] = React.useState(false)
   const [showPlacementSummary, setShowPlacementSummary] = React.useState(false)
   const [lastPlacementResult, setLastPlacementResult] = React.useState(null)
   const [reportSaved, setReportSaved] = React.useState(false)
-  const showToast = (message, type = 'success') => setToast({ message, type })
-  const dialectLabel = (d) => ({ rioplatense: 'Rioplatense', la_general: 'Latinoamericano', peninsular: 'Peninsular', both: 'Todos' }[d] || 'Configurado')
 
   // Wrap handlers to add toasts
   // Wrap handlers to add toasts
   const handleSelectDialect = (d) => {
     try {
       selectDialect(d)
-      showToast(`Dialecto ${dialectLabel(d)} configurado`)
     } catch (error) {
       console.error('Error selecting dialect:', error)
-      showToast('Error al configurar dialecto', 'error')
     }
   }
   const handleSelectLevel = (lvl) => {
     try {
       selectLevel(lvl)
-      showToast(`Nivel ${lvl} establecido`)
     } catch (error) {
       console.error('Error selecting level:', error)
-      showToast('Error al establecer nivel', 'error')
     }
   }
   const handleSelectPracticeMode = (mode) => {
     try {
       selectPracticeMode(mode, onStartPractice);
-      showToast(`Modo de práctica: ${mode === 'mixed' ? 'Mixta' : mode === 'specific' ? 'Específica' : mode}`)
     } catch (error) {
       console.error('Error selecting practice mode:', error)
-      showToast('Error al seleccionar modo', 'error')
     }
   }
   const handleSelectMood = (mood) => {
     try {
       selectMood(mood)
-      showToast(`Modo seleccionado`)
     } catch (error) {
       console.error('Error selecting mood:', error)
-      showToast('Error al seleccionar modo', 'error')
     }
   }
   const handleSelectTense = (tense) => {
     try {
       selectTense(tense)
-      showToast(`Tiempo seleccionado`)
     } catch (error) {
       console.error('Error selecting tense:', error)
-      showToast('Error al seleccionar tiempo', 'error')
     }
   }
   const handleSelectVerbType = (verbType, onStart) => {
     try {
       selectVerbType(verbType, onStart)
-      showToast(`Tipo: ${verbType}`)
     } catch (error) {
       console.error('Error selecting verb type:', error)
-      showToast('Error al seleccionar tipo', 'error')
     }
   }
   const handleSelectFamily = (familyId, onStart) => {
     try {
       selectFamily(familyId, onStart)
-      showToast(`Familia seleccionada`)
     } catch (error) {
       console.error('Error selecting family:', error)
-      showToast('Error al seleccionar familia', 'error')
     }
   }
 
   // Level test handlers
   const handleStartLevelTest = () => {
     setShowLevelTest(true)
-    showToast('Iniciando test de nivel adaptativo')
   }
 
   const handleLevelTestComplete = (result) => {
@@ -200,16 +181,11 @@ function OnboardingFlow({
     }
     if (result && result.determinedLevel) {
       selectLevel(result.determinedLevel)
-      showToast(`Nivel ${result.determinedLevel} determinado automáticamente`)
-    }
-    if (result?.report) {
-      showToast('Informe del test de nivel listo para revisar', 'info')
     }
   }
 
   const handleLevelTestCancel = () => {
     setShowLevelTest(false)
-    showToast('Test de nivel cancelado', 'info')
   }
 
   const handleSavePlacementReport = () => {
@@ -217,7 +193,6 @@ function OnboardingFlow({
     if (typeof settings.setPlacementTestReport === 'function') {
       settings.setPlacementTestReport(lastPlacementResult.report)
       setReportSaved(true)
-      showToast('Informe guardado en tus ajustes')
     }
   }
 
@@ -372,15 +347,7 @@ function OnboardingFlow({
             </>
           )}
         </div>
-        {toast?.message && (
-          <Toast
-            key={`${toast.type}-${toast.message}`}
-            message={toast.message}
-            type={toast.type}
-            duration={1400}
-            onClose={() => setToast(null)}
-          />
-        )}
+
       </div>
     </div>
   );
