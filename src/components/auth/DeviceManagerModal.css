@@ -10,6 +10,12 @@
   align-items: center;
   justify-content: center;
   z-index: 1200;
+  animation: overlay-fade-in 0.2s ease forwards;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .device-modal {
@@ -20,6 +26,18 @@
   box-shadow: 6px 6px 0 var(--text, #fff);
   display: flex;
   flex-direction: column;
+  animation: modal-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .device-modal__header {
@@ -51,11 +69,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 100ms;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .device-modal__close:hover {
   border-color: var(--text, #fff);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--text, #fff);
+}
+
+.device-modal__close:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .device-modal__body {
@@ -134,7 +159,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: border-color 100ms, background 100ms;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 .device-card__button.primary {
@@ -143,8 +168,14 @@
   border-color: var(--text, #fff);
 }
 
-.device-card__button.primary:hover {
-  background: var(--muted, #888);
+.device-card__button.primary:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--muted, #888);
+}
+
+.device-card__button.primary:active:not(:disabled) {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .device-card__button.secondary {
@@ -154,6 +185,13 @@
 
 .device-card__button.secondary:hover {
   border-color: var(--text, #fff);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--text, #fff);
+}
+
+.device-card__button.secondary:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .device-card__button.danger {
@@ -163,7 +201,14 @@
 }
 
 .device-card__button.danger:hover {
-  background: rgba(255, 0, 0, 0.1);
+  background: rgba(255, 0, 0, 0.08);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--accent-error, #f00);
+}
+
+.device-card__button.danger:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .device-card__button:disabled {
@@ -186,10 +231,12 @@
   padding: 6px 10px;
   font-family: var(--font-mono, monospace);
   font-size: 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .device-card__input:focus {
   border-color: var(--text, #fff);
+  box-shadow: 3px 3px 0 var(--text, #fff);
   outline: none;
 }
 
@@ -218,11 +265,18 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: border-color 100ms;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .device-modal__button:hover {
   border-color: var(--text, #fff);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 var(--text, #fff);
+}
+
+.device-modal__button:active {
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 /* Status messages */
@@ -240,4 +294,11 @@
   color: var(--muted, #888);
   font-size: 0.85rem;
   padding: 20px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .device-modal-overlay,
+  .device-modal {
+    animation: none;
+  }
 }
