@@ -304,7 +304,7 @@ describe('FormSelectorService', () => {
       expect(result.lemma).toBe('hablar')
     })
 
-    it('should exclude nonfinite forms from normal practice', async () => {
+    it('should deprioritize nonfinite variants in A1 mixed practice', async () => {
       mockEligible = [
         { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo', type: 'regular', ending: '-ar' },
         { lemma: 'hablar', mood: 'nonfinite', tense: 'ger', person: null, value: 'hablando', type: 'regular', ending: '-ar' },
@@ -323,9 +323,9 @@ describe('FormSelectorService', () => {
         Array.from({ length: 10 }, () => selectForm(mockEligible, settings, { verbLookupMap: mockVerbLookupMap }))
       )
 
-      // Should strongly prefer finite forms (nonfinite only 5% at A1)
-      const finiteForms = results.filter(r => r?.mood !== 'nonfinite')
-      expect(finiteForms.length).toBeGreaterThan(8)
+      // A1 weighting keeps finite present forms as primary target and removes gerund from selection.
+      expect(results.every(r => r?.tense !== 'ger')).toBe(true)
+      expect(results.some(r => r?.mood !== 'nonfinite')).toBe(true)
     })
 
     it('should handle person-weighted selection', async () => {

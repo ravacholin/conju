@@ -326,7 +326,7 @@ describe('useProgressDashboardData', () => {
     })
   })
 
-  it('genera recordatorios cuando no hay práctica reciente', async () => {
+  it('mantiene el contrato actualizado del hook sin exponer reminders legacy', async () => {
     const { result } = renderHook(() => useProgressDashboardData())
 
     await waitFor(() => {
@@ -339,10 +339,11 @@ describe('useProgressDashboardData', () => {
     })
 
     await waitFor(() => {
-      expect(Array.isArray(result.current.practiceReminders)).toBe(true)
+      expect(result.current.loading).toBe(false)
     })
 
-    expect(result.current.practiceReminders.some(reminder => reminder.id === 'no-practice-yet')).toBe(true)
+    expect(result.current.practiceReminders).toBeUndefined()
+    expect(result.current.studyPlan).toBeNull()
   })
 
   it('difiere analíticas secundarias hasta habilitar modo avanzado', async () => {

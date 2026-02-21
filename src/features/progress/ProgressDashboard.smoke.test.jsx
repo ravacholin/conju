@@ -7,6 +7,7 @@ const useProgressDashboardDataMock = vi.fn()
 vi.mock('../../lib/progress/userManager/index.js', () => ({
   syncNow: vi.fn(() => Promise.resolve({ success: true })),
   isSyncEnabled: vi.fn(() => true),
+  isLocalSyncMode: vi.fn(() => false),
   getCurrentUserId: vi.fn(() => 'test-user')
 }))
 
