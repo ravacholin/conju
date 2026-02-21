@@ -58,7 +58,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: |
+          npm ci --prefer-offline --no-audit
+          npm ci --prefix server --prefer-offline --no-audit
 
       - name: Run unit tests
         run: npm test -- --reporter=verbose --coverage

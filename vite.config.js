@@ -40,9 +40,13 @@ export default defineConfig(({ mode }) => ({
             handler: 'NetworkFirst',
             options: {
               cacheName: 'dynamic-assets',
-              cacheKeyWillBeUsed: async ({ request }) => {
-                // Force fresh fetch for chunks when they fail to load
-                return `${request.url}?t=${Date.now()}`
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 7 * 24 * 60 * 60
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }

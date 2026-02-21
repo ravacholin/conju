@@ -27,6 +27,12 @@ vi.mock('@testing-library/react', async () => {
 // ENVIRONMENT SETUP
 // =============================================================================
 
+// Isolate server-side sqlite fixtures per Vitest worker process.
+if (!process.env.DB_DIR) {
+  const workerId = process.env.VITEST_POOL_ID || String(process.pid)
+  process.env.DB_DIR = `.data/vitest-db-${workerId}`
+}
+
 // Performance API mock for consistent testing
 globalThis.performance = globalThis.performance || {
   now: vi.fn(() => Date.now()),

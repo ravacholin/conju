@@ -1,17 +1,31 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from 'vitest'
 import { createAccount, authenticateAccount } from '../../server/src/auth-service.js'
-import { db } from '../../server/src/db.js'
+import { db, migrate } from '../../server/src/db.js'
 
 describe('Email Normalization', () => {
-  const resetDb = () => {
-    db.prepare('DELETE FROM attempts').run()
-    db.prepare('DELETE FROM mastery').run()
-    db.prepare('DELETE FROM schedules').run()
-    db.prepare('DELETE FROM sessions').run()
-    db.prepare('DELETE FROM user_devices').run()
-    db.prepare('DELETE FROM users').run()
-    db.prepare('DELETE FROM accounts').run()
-  }
+  const resetDb = db.transaction(() => {
+    // Delete children before parents to satisfy FK constraints.
+    const tables = [
+      'attempts',
+      'mastery',
+      'schedules',
+      'sessions',
+      'user_settings',
+      'daily_challenges',
+      'events',
+      'user_stats',
+      'user_devices',
+      'users',
+      'accounts'
+    ]
+    for (const table of tables) {
+      db.prepare(`DELETE FROM ${table}`).run()
+    }
+  })
+
+  beforeAll(() => {
+    migrate()
+  })
 
   beforeEach(() => {
     // Clean up tables before each test respecting foreign key constraints
