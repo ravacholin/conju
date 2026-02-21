@@ -103,6 +103,7 @@ jobs:
     name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
     runs-on: ubuntu-latest
     needs: [pre-deploy-tests, e2e-tests]
+    if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
     environment: ${{ github.event.inputs.environment || 'staging' }}
     steps:
       - name: Checkout
