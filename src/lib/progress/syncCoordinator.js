@@ -169,7 +169,7 @@ function needsCoverageBackfill(localRecords = [], remoteRecords = []) {
   return false
 }
 
-export async function syncAccountData() {
+export async function syncAccountData({ skipWakeUp = false } = {}) {
   safeLogger.debug('syncAccountData: inicio')
 
   const syncConfig = getSyncConfigDebug()
@@ -263,7 +263,9 @@ export async function syncAccountData() {
     })
   }
 
-  await wakeUpServer()
+  if (!skipWakeUp) {
+    await wakeUpServer()
+  }
 
   try {
     safeLogger.debug('syncAccountData: llamando a /auth/sync/download')
@@ -768,7 +770,7 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
     safeLogger.info('syncNow: usuario autenticado, intentando sincronización de cuenta multi-dispositivo')
     syncStrategy = 'account'
     try {
-      accountSyncResult = await syncAccountData()
+      accountSyncResult = await syncAccountData({ skipWakeUp: true })
       usedAccountSync = true
       if (accountSyncResult?.success === false) {
         safeLogger.warn('syncNow: sincronización de cuenta falló, continuando con legacy', {

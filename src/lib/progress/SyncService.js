@@ -21,7 +21,7 @@
  * @architecture
  * - **Stateless**: No mantiene estado entre requests (usa localStorage para cola)
  * - **Fault-tolerant**: Reintenta operaciones fallidas automáticamente
- * - **Mobile-friendly**: Timeouts ajustados para conexiones lentas (25s wake-up)
+ * - **Mobile-friendly**: Timeouts ajustados para conexiones lentas (wake-up acotado)
  *
  * @example
  * // Sincronizar datos con el servidor
@@ -52,6 +52,9 @@ import AuthTokenManager from './AuthTokenManager.js'
 const logger = createLogger('progress:SyncService')
 const isDev = import.meta?.env?.DEV
 const MAX_QUEUE_SIZE = PROGRESS_CONFIG?.SYNC?.MAX_QUEUE_SIZE ?? 500
+const WAKE_UP_TIMEOUT_MS = 8000
+const WAKE_UP_CACHE_WINDOW_MS = 60000
+let lastWakeUpOkAt = 0
 
 /**
  * Clave de localStorage para la cola de sincronización offline
@@ -286,6 +289,15 @@ export async function wakeUpServer() {
   const SYNC_BASE_URL = AuthTokenManager.getSyncEndpoint()
   if (!SYNC_BASE_URL) return false
 
+  if (lastWakeUpOkAt && Date.now() - lastWakeUpOkAt < WAKE_UP_CACHE_WINDOW_MS) {
+    if (isDev) {
+      logger.debug('wakeUpServer', 'Saltando wake-up reciente', {
+        elapsedMs: Date.now() - lastWakeUpOkAt
+      })
+    }
+    return true
+  }
+
   try {
     if (isDev) {
       logger.info('wakeUpServer', 'Intentando despertar servidor')
@@ -321,7 +333,7 @@ export async function wakeUpServer() {
 
     // Mobile-compatible timeout
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 25000)
+    const timeoutId = setTimeout(() => controller.abort(), WAKE_UP_TIMEOUT_MS)
 
     const response = await fetch(requestUrl, {
       method: 'GET',
@@ -340,6 +352,7 @@ export async function wakeUpServer() {
     }
 
     if (response.ok) {
+      lastWakeUpOkAt = Date.now()
       if (isDev) {
         logger.info('wakeUpServer', 'Servidor responde OK')
       }
@@ -365,10 +378,10 @@ export async function wakeUpServer() {
  * Realiza una petición POST JSON al servidor de sincronización
  * @param {string} path - Path del endpoint (ej: '/progress/attempts/bulk')
  * @param {Object} body - Cuerpo de la petición
- * @param {number} [timeoutMs=30000] - Timeout en milisegundos
+ * @param {number} [timeoutMs=12000] - Timeout en milisegundos
  * @returns {Promise<Object>}
  */
-export async function postJSON(path, body, timeoutMs = 30000) {
+export async function postJSON(path, body, timeoutMs = 12000) {
   const SYNC_BASE_URL = AuthTokenManager.getSyncEndpoint()
 
   if (!SYNC_BASE_URL || typeof fetch === 'undefined') {

@@ -25,6 +25,36 @@ const bootstrapDebugState = {
   lastAutoSyncResult: null
 }
 
+const AUTO_SYNC_INTERVAL_MS = 60 * 1000
+const PROGRESS_SYNC_DEBOUNCE_MS = 7000
+const PROGRESS_SYNC_LISTENER_KEY = '__CONJU_PROGRESS_SYNC_LISTENER__'
+
+function installProgressUpdateSync(syncNow) {
+  if (typeof window === 'undefined' || typeof syncNow !== 'function') return
+  if (window[PROGRESS_SYNC_LISTENER_KEY]) return
+
+  let pendingSyncTimeout = null
+  const include = ['attempts', 'mastery', 'schedules', 'sessions']
+
+  window.addEventListener('progress:dataUpdated', (event) => {
+    if (event?.detail?.type === 'sync') return
+
+    if (pendingSyncTimeout) {
+      clearTimeout(pendingSyncTimeout)
+    }
+
+    pendingSyncTimeout = setTimeout(() => {
+      pendingSyncTimeout = null
+      syncNow({ include }).catch((error) => {
+        bootstrapLogger.warn('⚠️ Progress-triggered sync failed', error)
+        bootstrapDebugState.lastError = error
+      })
+    }, PROGRESS_SYNC_DEBOUNCE_MS)
+  })
+
+  window[PROGRESS_SYNC_LISTENER_KEY] = true
+}
+
 registerDebugTool('bootstrap', {
   getStatus: () => ({ ...bootstrapDebugState })
 })
@@ -112,15 +142,19 @@ if (typeof window !== 'undefined') {
 
       // Schedule periodic sync
       try {
-        scheduleAutoSync(5 * 60 * 1000)
+        scheduleAutoSync(AUTO_SYNC_INTERVAL_MS)
       } catch (e) {
         bootstrapLogger.warn('No se pudo programar auto-sync', e)
         bootstrapDebugState.lastError = e
       }
 
+      installProgressUpdateSync(syncNow)
+
       // Sync on focus
       window.addEventListener('focus', () => {
-        setTimeout(() => { syncNow().catch(() => {}) }, 600)
+        setTimeout(() => {
+          syncNow({ include: ['attempts', 'mastery', 'schedules', 'sessions'] }).catch(() => {})
+        }, 600)
       })
 
       lazyLoadingSuccessful = true
@@ -184,17 +218,19 @@ if (typeof window !== 'undefined') {
           }
 
           try {
-            scheduleAutoSync(5 * 60 * 1000)
+            scheduleAutoSync(AUTO_SYNC_INTERVAL_MS)
           } catch (e) {
             bootstrapLogger.warn('Fallback sync setup failed', e)
             bootstrapDebugState.lastError = e
           }
 
+          installProgressUpdateSync(syncNow)
+
           // Simple focus sync for fallback
           window.addEventListener('focus', () => {
             setTimeout(() => {
               if (syncNow) {
-                syncNow().catch((error) => {
+                syncNow({ include: ['attempts', 'mastery', 'schedules', 'sessions'] }).catch((error) => {
                   // Log sync error
                   bootstrapLogger.warn('Sync failed on window focus', error);
                 });
