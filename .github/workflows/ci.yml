@@ -66,7 +66,13 @@ jobs:
           fi
 
       - name: Run unit tests
-        run: npm test -- --reporter=verbose --coverage
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            npm test -- --reporter=verbose
+          else
+            npm test -- --reporter=verbose --coverage
+          fi
         env:
           VITEST_SKIP_SERVER_TESTS: ${{ matrix.os == 'windows-latest' && '1' || '0' }}
 
