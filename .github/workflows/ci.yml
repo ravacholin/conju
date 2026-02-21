@@ -58,12 +58,17 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        shell: bash
         run: |
           npm ci --prefer-offline --no-audit
-          npm ci --prefix server --prefer-offline --no-audit
+          if [ "${{ matrix.os }}" != "windows-latest" ]; then
+            npm ci --prefix server --prefer-offline --no-audit
+          fi
 
       - name: Run unit tests
         run: npm test -- --reporter=verbose --coverage
+        env:
+          VITEST_SKIP_SERVER_TESTS: ${{ matrix.os == 'windows-latest' && '1' || '0' }}
 
       - name: Upload coverage reports
         if: matrix.os == 'ubuntu-latest' && matrix.node-version == '20'

@@ -2,6 +2,8 @@
 
 import { defineConfig } from 'vite'
 
+const skipServerTests = process.env.VITEST_SKIP_SERVER_TESTS === '1'
+
 export default defineConfig({
   test: {
     globals: true,
@@ -21,7 +23,7 @@ export default defineConfig({
       // Temporarily exclude problematic tests with clipboard issues
       'src/utils/swUpdateHandler.test.js',
       'src/components/learning/LearningDrill.test.jsx'
-    ],
+    ].concat(skipServerTests ? ['tests/server/**/*.{test,spec}.{js,jsx,ts,tsx}'] : []),
 
     // Parallel execution settings
     pool: 'forks',

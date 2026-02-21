@@ -163,7 +163,10 @@ test.describe('Complete User Flows', () => {
 
     // Navigate to progress view
     await page.goto('/progress')
-    await expect(page.locator('text=Progreso y Analíticas')).toBeVisible()
+    await expect(page).toHaveURL(/\/progress(?:$|\?)/)
+    await expect(
+      page.locator('.progress-dashboard, h1:has-text("Progreso y Analíticas")').first()
+    ).toBeVisible()
     await maybeScreenshot(page, 'progress-view.png')
   })
 

@@ -37,6 +37,13 @@ async function resetClientState(page) {
   })
 }
 
+async function expectProgressView(page) {
+  await expect(page).toHaveURL(/\/progress(?:$|\?)/)
+  await expect(
+    page.locator('.progress-dashboard, h1:has-text("Progreso y Analíticas")').first()
+  ).toBeVisible()
+}
+
 test.describe('Critical navigation flows', () => {
   test('onboarding end-to-end reaches drill', async ({ page }) => {
     await resetClientState(page)
@@ -85,15 +92,14 @@ test.describe('Critical navigation flows', () => {
     await expect(page.locator('input#conjugation-input')).toBeVisible()
 
     await page.goto('/progress')
-    await expect(page.getByText(/Progreso y Analíticas/i)).toBeVisible()
+    await expectProgressView(page)
 
     await page.goBack()
     await expect(page).toHaveURL(/\/drill(?:$|\?)/)
     await expect(page.locator('input#conjugation-input')).toBeVisible()
 
     await page.goForward()
-    await expect(page).toHaveURL(/\/progress(?:$|\?)/)
-    await expect(page.getByText(/Progreso y Analíticas/i)).toBeVisible()
+    await expectProgressView(page)
   })
 
   test('normalizes legacy and non-canonical urls', async ({ page }) => {
