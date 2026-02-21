@@ -69,8 +69,8 @@ test.describe('Smoke Tests - Critical User Paths', () => {
     await page.goto('/')
 
     // Check for PWA meta tags
-    const manifest = page.locator('link[rel="manifest"]')
-    await expect(manifest).toHaveAttribute('href')
+    const manifests = page.locator('link[rel="manifest"]')
+    await expect(manifests.first()).toHaveAttribute('href')
 
     // Check for PWA icons
     const icons = page.locator('link[rel="icon"]')
