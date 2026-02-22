@@ -435,6 +435,7 @@ export default function Drill({
             id="conjugation-input"
             name="conjugation"
             type="text"
+            autoComplete="off"
             className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -512,6 +513,7 @@ export default function Drill({
               <input
                 ref={firstRef}
                 className="conjugation-input"
+                autoComplete="off"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Escribí la primera forma..."
@@ -533,6 +535,7 @@ export default function Drill({
               <input
                 ref={secondRef}
                 className="conjugation-input"
+                autoComplete="off"
                 value={secondInput}
                 onChange={(e) => setSecondInput(e.target.value)}
                 placeholder="Escribí la segunda forma..."

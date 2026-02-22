@@ -689,6 +689,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             <input
               ref={inputRef}
               type="text"
+              autoComplete="off"
               className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
