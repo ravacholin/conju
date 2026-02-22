@@ -996,6 +996,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
                 <input
                   ref={inputRef}
                   type="text"
+                  autoComplete="off"
                   className={`conjugation-input ${result}`}
                   placeholder="Escribe la conjugación..."
                   value={inputValue}

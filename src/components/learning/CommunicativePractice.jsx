@@ -595,8 +595,9 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
                 ))}
             </div>
             <div className="input-area">
-                <input 
+                <input
                     type="text"
+                    autoComplete="off"
                     placeholder="Escribe tu respuesta..."
                     value={inputValue}
                     onChange={e => setInputValue(e.target.value)}

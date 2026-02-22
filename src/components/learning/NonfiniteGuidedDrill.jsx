@@ -470,6 +470,7 @@ function NonfiniteGuidedDrill({
             <input
               ref={inputRef}
               type="text"
+              autoComplete="off"
               className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}

@@ -280,6 +280,7 @@ function ConversationMode({ scenario, onBack, onComplete }) {
           <input
             ref={inputRef}
             type="text"
+            autoComplete="off"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
             placeholder="Escribe tu respuesta o usa el micrófono..."

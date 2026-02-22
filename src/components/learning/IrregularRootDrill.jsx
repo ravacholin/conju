@@ -434,6 +434,7 @@ function IrregularRootDrill({
               <input
                 ref={inputRef}
                 id="irregular-answer"
+                autoComplete="off"
                 className={`conjugation-input ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}
                 value={inputValue}
                 onChange={(event) => setInputValue(event.target.value)}
