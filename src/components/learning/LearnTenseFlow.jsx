@@ -71,9 +71,6 @@ import {
 import { abTesting } from '../../lib/learning/analytics.js';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
-import MeaningfulPractice from './MeaningfulPractice.jsx';
-import CommunicativePractice from './CommunicativePractice.jsx';
-import PronunciationPractice from './PronunciationPractice.jsx';
 import IrregularRootDrill from './IrregularRootDrill.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
 import NonfiniteGuidedDrill from './NonfiniteGuidedDrill.jsx';
@@ -82,7 +79,6 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearnTenseFlow.css';
 import { useSettings } from '../../state/settings.js';
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
-import { buildFormsForRegion, getEligibleFormsForSettings } from '../../lib/core/eligibility.js';
 import { getExampleVerbs, getVerbByLemma } from '../../lib/core/verbDataService.js';
 
 
@@ -325,75 +321,6 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
 
   const durationOptions = useMemo(() => getSessionDurationOptions(), []);
 
-  const [eligibleForms, setEligibleForms] = useState([]);
-  const [eligibleFormsLoading, setEligibleFormsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!selectedTense?.tense || !selectedTense?.mood) {
-      setEligibleForms([])
-      setEligibleFormsLoading(false)
-      return
-    }
-
-    let cancelled = false
-
-    async function loadEligibleForms() {
-      if (!cancelled) {
-        setEligibleFormsLoading(true)
-      }
-      try {
-        const basePool = await buildFormsForRegion(settings.region || 'la_general', settings)
-        const safeBasePool = Array.isArray(basePool) ? basePool : []
-        console.log('📊 BasePool for pronunciation practice:', {
-          region: settings.region || 'la_general',
-          totalForms: safeBasePool.length,
-          sampleForms: safeBasePool.slice(0, 3)
-        });
-
-        const pronunciationSettings = {
-          ...settings,
-          practiceMode: 'theme',           // Less restrictive than 'specific'
-          cameFromTema: true,             // Bypass curriculum level restrictions
-          specificMood: selectedTense.mood,     // Keep for soft filtering
-          specificTense: selectedTense.tense,   // Keep for soft filtering
-          verbType: verbType || 'all',
-          selectedFamilies
-        }
-
-        console.log('⚙️ Pronunciation settings (less restrictive):', pronunciationSettings);
-
-        const gated = getEligibleFormsForSettings(safeBasePool, pronunciationSettings)
-        const safeEligibleForms = Array.isArray(gated) ? gated : []
-
-        console.log('🎯 Eligible forms after gating:', {
-          totalEligible: safeEligibleForms.length,
-          targetTense: selectedTense.tense,
-          targetMood: selectedTense.mood,
-          formsOfTargetTense: safeEligibleForms.filter(f => f.tense === selectedTense.tense).length,
-          sampleForms: safeEligibleForms.filter(f => f.tense === selectedTense.tense).slice(0, 5)
-        });
-
-        if (!cancelled) {
-          setEligibleForms(safeEligibleForms)
-        }
-      } catch (error) {
-        logger.error('No se pudieron generar formas elegibles para el flujo de aprendizaje', error)
-        if (!cancelled) {
-          setEligibleForms([])
-        }
-      } finally {
-        if (!cancelled) {
-          setEligibleFormsLoading(false)
-        }
-      }
-    }
-
-    loadEligibleForms()
-
-    return () => {
-      cancelled = true
-    }
-  }, [selectedTense, settings, verbType, selectedFamilies])
 
   const isNonfinite = selectedTense?.tense === 'ger' || selectedTense?.tense === 'part';
 
@@ -595,23 +522,8 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   };
 
   const handleMechanicalPhaseComplete = () => {
-    if (shouldUseRootDrill) {
-      logger.debug('Root-focused drill complete, finalizando sesión.');
-      handleFinish();
-      return;
-    }
-    logger.debug('Mechanical phase complete, moving to meaningful practice.');
-    setCurrentStep('meaningful_practice');
-  };
-
-  const handleMeaningfulPhaseComplete = () => {
-    logger.debug('Meaningful phase complete, moving to pronunciation practice.');
-    setCurrentStep('pronunciation_practice');
-  };
-
-  const handlePronunciationPhaseComplete = () => {
-    logger.debug('Pronunciation practice complete, moving to communicative practice.');
-    setCurrentStep('communicative_practice');
+    logger.debug('Mechanical phase complete, finishing session.');
+    handleFinish();
   };
 
   if (exampleVerbsLoading) {
@@ -622,13 +534,6 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     )
   }
 
-  if (eligibleFormsLoading) {
-    return (
-      <div className="learning-flow-loading">
-        <p>Cargando actividades de práctica…</p>
-      </div>
-    )
-  }
 
   if (currentStep === 'introduction') {
     return (
@@ -780,47 +685,6 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     );
   }
 
-  if (currentStep === 'meaningful_practice') {
-    return (
-      <ErrorBoundary>
-        <MeaningfulPractice
-          tense={selectedTense?.tense}
-          mood={selectedTense?.mood}
-          eligibleForms={eligibleForms}
-          onBack={() => setCurrentStep('practice')}
-          onHome={onHome}
-          onComplete={handleMeaningfulPhaseComplete}
-        />
-      </ErrorBoundary>
-    );
-  }
-
-  if (currentStep === 'pronunciation_practice') {
-    return (
-      <ErrorBoundary>
-        <PronunciationPractice
-          tense={selectedTense}
-          eligibleForms={eligibleForms}
-          onBack={() => setCurrentStep('meaningful_practice')}
-          onContinue={handlePronunciationPhaseComplete}
-        />
-      </ErrorBoundary>
-    );
-  }
-
-  if (currentStep === 'communicative_practice') {
-    return (
-      <ErrorBoundary>
-        <CommunicativePractice 
-          tense={selectedTense}
-          verbType={verbType}
-          selectedFamilies={selectedFamilies}
-          onBack={() => setCurrentStep('pronunciation_practice')}
-          onFinish={handleFinish}
-        />
-      </ErrorBoundary>
-    );
-  }
 
   // Step 1: Tense Selection
   if (currentStep === 'tense-selection') {

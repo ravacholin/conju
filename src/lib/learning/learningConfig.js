@@ -199,9 +199,6 @@ export const LEARNING_FLOW_STEPS = [
   'guided_drill_ir',
   'recap',
   'practice',
-  'meaningful_practice',
-  'pronunciation_practice',
-  'communicative_practice'
 ];
 
 /**

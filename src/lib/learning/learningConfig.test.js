@@ -195,7 +195,9 @@ describe('Learning Configuration Module', () => {
       expect(LEARNING_FLOW_STEPS).toContain('guided_drill_ar')
       expect(LEARNING_FLOW_STEPS).toContain('recap')
       expect(LEARNING_FLOW_STEPS).toContain('practice')
-      expect(LEARNING_FLOW_STEPS).toContain('communicative_practice')
+      expect(LEARNING_FLOW_STEPS).not.toContain('communicative_practice')
+      expect(LEARNING_FLOW_STEPS).not.toContain('meaningful_practice')
+      expect(LEARNING_FLOW_STEPS).not.toContain('pronunciation_practice')
     })
 
     it('should navigate to next step correctly', () => {

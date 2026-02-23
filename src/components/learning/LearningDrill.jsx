@@ -53,7 +53,7 @@ import SessionSummary from './SessionSummary.jsx';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
 import { grade } from '../../lib/core/grader.js';
 import { chooseNext } from '../../lib/core/generator.js';
-import { FORM_LOOKUP_MAP } from '../../lib/core/optimizedCache.js';
+import { FORM_LOOKUP_MAP, initializeMaps } from '../../lib/core/optimizedCache.js';
 import { classifyError } from '../../lib/progress/errorClassification.js';
 import { useSettings } from '../../state/settings.js';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
@@ -329,6 +329,9 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     });
 
     try {
+      if (FORM_LOOKUP_MAP.size === 0) {
+        await initializeMaps();
+      }
       const excludeSet = new Set((excludeLemmas || []).map(l => (l || '').trim()))
       const allForms = Array.from(FORM_LOOKUP_MAP.values())
       const filteredForms = excludeSet.size > 0 ? allForms.filter(f => !excludeSet.has(f.lemma)) : allForms
@@ -990,7 +993,9 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
           {currentItem ? (
             <>
               <div className={`verb-lemma ${swapAnim ? 'swap' : ''}`}>{currentItem.lemma}</div>
-              <div className={`person-display ${swapAnim ? 'swap' : ''}`}>{getPersonText(currentItem.person)}</div>
+              {currentItem.mood !== 'nonfinite' && (
+                <div className={`person-display ${swapAnim ? 'swap' : ''}`}>{getPersonText(currentItem.person)}</div>
+              )}
 
               <div className="input-container">
                 <input
@@ -998,7 +1003,10 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
                   type="text"
                   autoComplete="off"
                   className={`conjugation-input ${result}`}
-                  placeholder="Escribe la conjugación..."
+                  placeholder={currentItem.mood === 'nonfinite'
+                    ? (currentItem.tense === 'part' ? 'Escribe el participio...' : 'Escribe el gerundio...')
+                    : 'Escribe la conjugación...'
+                  }
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   disabled={isProcessing || result !== 'idle'}
