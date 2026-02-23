@@ -120,8 +120,7 @@ export const ADAPTIVE_LEVELS = {
       guided_drills: 1.3,        // More guided practice
       recap: 1.2,               // Longer recap
       practice: 0.8,            // Less free practice
-      meaningful_practice: 0.9,
-      communicative_practice: 0.9
+      pronunciation_practice: 0.9
     }
   },
   INTERMEDIATE: {
@@ -136,8 +135,7 @@ export const ADAPTIVE_LEVELS = {
       guided_drills: 1.0,
       recap: 1.0,
       practice: 1.1,
-      meaningful_practice: 1.0,
-      communicative_practice: 1.0
+      pronunciation_practice: 1.0
     }
   },
   ADVANCED: {
@@ -152,8 +150,7 @@ export const ADAPTIVE_LEVELS = {
       guided_drills: 0.7,        // Shorter guided practice
       recap: 0.8,
       practice: 1.2,            // More free practice
-      meaningful_practice: 1.2,
-      communicative_practice: 1.2
+      pronunciation_practice: 1.2
     }
   }
 };
@@ -184,9 +181,8 @@ export const PHASE_DISTRIBUTION = {
   introduction: 0.15,           // 15%
   guided_drills: 0.35,         // 35%
   recap: 0.10,                 // 10%
-  practice: 0.20,              // 20%
-  meaningful_practice: 0.10,    // 10%
-  communicative_practice: 0.10  // 10%
+  practice: 0.25,              // 25%
+  pronunciation_practice: 0.15  // 15%
 };
 
 /**
@@ -199,9 +195,7 @@ export const LEARNING_FLOW_STEPS = [
   'guided_drill_ir',
   'recap',
   'practice',
-  'meaningful_practice',
-  'pronunciation_practice',
-  'communicative_practice'
+  'pronunciation_practice'
 ];
 
 /**

@@ -16,14 +16,11 @@
  * Fases del flujo de aprendizaje:
  * 1. 'tense-selection': Selección de tiempo verbal con ejemplos dinámicos
  * 2. 'type-selection': Elección entre verbos regulares/irregulares con categorías pedagógicas
- * 3. 'duration-selection': Configuración de duración personalizada de sesión
- * 4. 'introduction': Introducción narrativa con contexto cultural
- * 5. 'guided_drill_*': Práctica mecánica guiada por conjugaciones (-ar, -er, -ir)
- * 6. 'recap': Resumen y consolidación de patrones aprendidos
- * 7. 'practice': Práctica mecánica con verbos adicionales (excluyendo ejemplos iniciales)
- * 8. 'meaningful_practice': Práctica contextual con oraciones completas
- * 9. 'pronunciation_practice': Práctica de pronunciación con audio
- * 10. 'communicative_practice': Práctica comunicativa con situaciones reales
+ * 3. 'introduction': Introducción narrativa con contexto cultural
+ * 4. 'guided_drill_*': Práctica mecánica guiada por conjugaciones (-ar, -er, -ir)
+ * 5. 'recap': Resumen y consolidación de patrones aprendidos
+ * 6. 'practice': Práctica mecánica con verbos adicionales (excluyendo ejemplos iniciales)
+ * 7. 'pronunciation_practice': Práctica de pronunciación con audio
  * 
  * @example
  * ```jsx
@@ -71,8 +68,6 @@ import {
 import { abTesting } from '../../lib/learning/analytics.js';
 import NarrativeIntroduction from './NarrativeIntroduction.jsx';
 import LearningDrill from './LearningDrill.jsx';
-import MeaningfulPractice from './MeaningfulPractice.jsx';
-import CommunicativePractice from './CommunicativePractice.jsx';
 import PronunciationPractice from './PronunciationPractice.jsx';
 import IrregularRootDrill from './IrregularRootDrill.jsx';
 import EndingsDrill from './EndingsDrill.jsx';
@@ -600,18 +595,13 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
       handleFinish();
       return;
     }
-    logger.debug('Mechanical phase complete, moving to meaningful practice.');
-    setCurrentStep('meaningful_practice');
-  };
-
-  const handleMeaningfulPhaseComplete = () => {
-    logger.debug('Meaningful phase complete, moving to pronunciation practice.');
+    logger.debug('Mechanical phase complete, moving to pronunciation practice.');
     setCurrentStep('pronunciation_practice');
   };
 
   const handlePronunciationPhaseComplete = () => {
-    logger.debug('Pronunciation practice complete, moving to communicative practice.');
-    setCurrentStep('communicative_practice');
+    logger.debug('Pronunciation practice complete, finishing session.');
+    handleFinish();
   };
 
   if (exampleVerbsLoading) {
@@ -780,43 +770,14 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
     );
   }
 
-  if (currentStep === 'meaningful_practice') {
-    return (
-      <ErrorBoundary>
-        <MeaningfulPractice
-          tense={selectedTense?.tense}
-          mood={selectedTense?.mood}
-          eligibleForms={eligibleForms}
-          onBack={() => setCurrentStep('practice')}
-          onHome={onHome}
-          onComplete={handleMeaningfulPhaseComplete}
-        />
-      </ErrorBoundary>
-    );
-  }
-
   if (currentStep === 'pronunciation_practice') {
     return (
       <ErrorBoundary>
         <PronunciationPractice
           tense={selectedTense}
           eligibleForms={eligibleForms}
-          onBack={() => setCurrentStep('meaningful_practice')}
+          onBack={() => setCurrentStep('practice')}
           onContinue={handlePronunciationPhaseComplete}
-        />
-      </ErrorBoundary>
-    );
-  }
-
-  if (currentStep === 'communicative_practice') {
-    return (
-      <ErrorBoundary>
-        <CommunicativePractice 
-          tense={selectedTense}
-          verbType={verbType}
-          selectedFamilies={selectedFamilies}
-          onBack={() => setCurrentStep('pronunciation_practice')}
-          onFinish={handleFinish}
         />
       </ErrorBoundary>
     );
