@@ -357,8 +357,8 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
       return false
     }
 
-    // Step 2: Filter forms that match the criteria
-    const matchingForms = allForms.filter(f => {
+    // Step 2: Check if any form matches the criteria (early exit on first match)
+    const isAvailable = allForms.some(f => {
       // Must match mood and tense
       if (f.mood !== mood || f.tense !== tense) return false
 
@@ -382,8 +382,6 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
 
       return true
     })
-
-    const isAvailable = matchingForms.length > 0
 
     return isAvailable
   } catch (error) {

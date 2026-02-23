@@ -199,9 +199,9 @@ export function grade(input, expected, settings){
 
   // Dieresis enforcement (B2+)
   if (!correct && settings.requireDieresis) {
-    const expectHasU = /g[uü](e|i)/i.test(expected.value)
-    const expectNeedsDia = /g[u]e|g[u]i/i.test(expected.value) && /g[u]e|g[u]i/i.test(input) && !/gü(e|i)/i.test(input)
-    if (expectHasU && expectNeedsDia) {
+    const expectedHasDieresis = /gü[ei]/i.test(expected.value)
+    const inputMissingDieresis = /gu[ei]/i.test(input) && !/gü[ei]/i.test(input)
+    if (expectedHasDieresis && inputMissingDieresis) {
       return {
         correct: false,
         accepted: null,

@@ -156,7 +156,7 @@ export function calculateNextIntervalSM2(
       Math.max(0, interval - fuzz),
       interval + fuzz,
     );
-    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : randomizedRaw;
+    randomized = interval >= 1 ? Math.max(1, randomizedRaw) : Math.max(interval * 0.5, randomizedRaw);
   }
 
   // Calcular próxima fecha de revisión
