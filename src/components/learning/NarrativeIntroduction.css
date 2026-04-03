@@ -267,6 +267,12 @@
   text-decoration-color: #ffffff;
 }
 
+/* Override irreg-frag inside yo-form-highlight (orange bg → orange text is invisible) */
+.yo-form-highlight .irreg-frag {
+  color: #ffffff !important;
+  text-decoration-color: #ffffff;
+}
+
 .verb-deconstruction.irregular .form-separator {
   color: var(--text);
   opacity: 0.9;
