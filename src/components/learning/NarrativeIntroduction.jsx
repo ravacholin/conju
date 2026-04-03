@@ -614,6 +614,65 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
   )
 }
 
+// Función para renderizar verbos con cambio ortográfico (-car→-qu, -gar→-gu) en pretérito/subjuntivo
+// Muestra que el cambio ocurre SOLO en la 1ª persona del pretérito (o en todo el subjuntivo)
+function renderOrthographicDeconstruction(exampleVerbs, tense) {
+  const isOrthoTense = tense?.tense === 'pretIndef' || tense?.tense === 'subjPres'
+  if (!isOrthoTense) return null
+
+  const carVerbs = exampleVerbs.filter(v => v.lemma.endsWith('car'))
+  const garVerbs = exampleVerbs.filter(v => v.lemma.endsWith('gar'))
+  if (carVerbs.length === 0 && garVerbs.length === 0) return null
+
+  const renderGroup = (verbs, rule, change) => {
+    if (verbs.length === 0) return null
+    return (
+      <div key={rule} className="deconstruction-item">
+        <div className="verb-deconstruction irregular" style={{ flexDirection: 'column', gap: '0.75rem', alignItems: 'flex-start' }}>
+          <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.6, fontFamily: 'var(--font-mono)' }}>
+            {rule}
+          </div>
+          {verbs.map((verbObj, idx) => {
+            const lemma = verbObj.lemma
+            const paradigm = verbObj.paradigms?.find(p =>
+              p.forms?.some(f => f.mood === (tense.tense === 'pretIndef' ? 'indicative' : 'subjunctive') && f.tense === tense.tense)
+            )
+            const person = tense.tense === 'pretIndef' ? '1s' : '1s'
+            const yoForm = paradigm?.forms?.find(f =>
+              f.mood === (tense.tense === 'pretIndef' ? 'indicative' : 'subjunctive') &&
+              f.tense === tense.tense && f.person === person
+            )?.value || lemma
+            const stem = lemma.slice(0, -2)
+            const endingChar = tense.tense === 'pretIndef' ? 'é' : 'e'
+            const expectedYo = stem + endingChar
+            return (
+              <div key={`orth-${idx}`} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="verb-lemma">{lemma}</div>
+                <span className="arrow">→</span>
+                <div className="verb-deconstruction irregular">
+                  <span className="conjugated-form">
+                    {renderWithIrregularHighlights(yoForm, expectedYo)}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+          <div style={{ fontSize: '0.85rem', color: 'var(--accent-orange)', fontFamily: 'var(--font-mono)', marginTop: '0.25rem' }}>
+            {change}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {renderGroup(carVerbs, 'Verbos -car', 'c → qu (delante de -e, para conservar el sonido /k/)')}
+      {renderGroup(garVerbs, 'Verbos -gar', 'g → gu (delante de -e, para conservar el sonido /g/)')}
+    </>
+  )
+}
+
 // Función para renderizar verbos irregulares en YO (presente) mostrando la forma conjugada en YO
 function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
   if (!tense || tense.tense !== 'pres' || tense.mood !== 'indicativo') {
@@ -1173,6 +1232,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                     const yoIrregularBlock = renderIrregularYoDeconstruction(exampleVerbs, tense, settings)
                     if (yoIrregularBlock) {
                       return yoIrregularBlock
+                    }
+
+                    // Verificar si tenemos verbos ortográficos (-car/-gar)
+                    const orthographicBlock = renderOrthographicDeconstruction(exampleVerbs, tense)
+                    if (orthographicBlock) {
+                      return orthographicBlock
                     }
 
                     // Verificar si tenemos pretéritos fuertes para renderizarlos agrupados

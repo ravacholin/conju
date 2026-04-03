@@ -18,21 +18,26 @@ export const storyData = {
         comer: '__VERB__ con su equipo a las 2.',
         vivir: '__VERB__ cerca de la oficina.',
 
-        // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos (-go, -zco, -oy)
+        // IRREGULARES EN YO - Narrativa coherente de rutina personal con verbos prototípicos
+        // -zco: conocer, parecer, conducir
         conocer: 'Yo __VERB__ a todos mis vecinos.',
+        parecer: 'A veces yo __VERB__ muy serio, pero no lo soy.',
+        conducir: 'Yo __VERB__ al trabajo cada mañana.',
+        // -go: salir, poner, hacer
         salir: 'Yo __VERB__ de casa a las 7.',
-        estar: 'Yo __VERB__ en el trabajo todo el día.',
         hacer: 'Yo __VERB__ ejercicio por la mañana.',
         poner: 'Yo __VERB__ la mesa para comer.',
+        // muy irregulares: ser, estar, ir
+        estar: 'Yo __VERB__ en el trabajo todo el día.',
+        ir: 'María __VERB__ al trabajo en metro.',
+        ser: 'Carlos __VERB__ programador.',
 
         // DIPTONGOS - Narrativa coherente de flexibilidad laboral
+        pensar: 'Yo __VERB__ en el trabajo mientras desayuno.',
+        dormir: 'Mi gato __VERB__ todo el día en el sofá.',
         poder: 'María __VERB__ trabajar desde casa.',
         querer: 'Ella __VERB__ cambiar de proyecto.',
         pedir: 'Pedro __VERB__ ayuda cuando la necesita.',
-
-        // MUY IRREGULARES - Narrativa coherente de descripción personal/profesional
-        ser: 'Carlos __VERB__ programador.',
-        ir: 'María __VERB__ al trabajo en metro.',
     }
   },
   pretIndef: {
@@ -53,8 +58,17 @@ export const storyData = {
         
         // MUY IRREGULARES DEL PRETÉRITO - Narrativa coherente de viaje especial
         estar: 'Ana __VERB__ en París la semana pasada.',
+        tener: '__VERB__ que madrugar para coger el vuelo.',
         hacer: '__VERB__ turismo por toda la ciudad.',
         querer: '__VERB__ ver todos los museos.',
+
+        // ORTOGRÁFICOS -car/-gar (1ª persona: busqué, llegué)
+        buscar: 'Yo __VERB__ mi pasaporte antes de salir.',
+        sacar: 'Yo __VERB__ fotos de todos los monumentos.',
+        tocar: 'Yo __VERB__ el timbre pero nadie abrió.',
+        llegar: 'Yo __VERB__ tarde al aeropuerto.',
+        pagar: 'Yo __VERB__ la entrada con tarjeta.',
+        apagar: 'Yo __VERB__ las luces antes de salir.',
         
         // IRREGULARES EN 3ª PERSONA - Narrativa coherente de rutina nocturna familiar
         pedir: 'El niño __VERB__ un cuento antes de dormir.',
@@ -293,7 +307,7 @@ export const storyData = {
       },
       verbSpecific: {
           hablar: 'El tema ya ha sido __VERB__ en la reunión.',
-          comer: 'La comida ha sido __VERB__ con mucho gusto.',
+          comer: 'Todo lo preparado ha sido __VERB__ con gusto.',
           vivir: 'Esos momentos han sido __VERB__ intensamente.',
       }
     },

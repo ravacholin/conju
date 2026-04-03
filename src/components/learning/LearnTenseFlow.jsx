@@ -116,17 +116,27 @@ const PARTICIPLE_FAMILY_ID = 'LEARNING_IRREG_PARTICIPLES'
 async function selectExampleVerbs({ verbType, selectedFamilies, tense, region }) {
   logger.debug('Selecting coherent verbs', { verbType, selectedFamilies, tense, region })
 
-  // PRIORITY 1: For irregular YO verbs in present, use the perfect examples
+  // PRIORITY 1: For irregular YO verbs in present, use family-specific examples
   if (verbType === 'irregular' && tense === 'pres' && Array.isArray(selectedFamilies)) {
     const hasYoG = selectedFamilies.includes('LEARNING_YO_G_PRESENT')
     const hasYoZco = selectedFamilies.includes('LEARNING_YO_ZCO_PRESENT')
     const hasVeryIrregular = selectedFamilies.includes('LEARNING_VERY_IRREGULAR')
 
-    // If user selected YO irregulars, force the perfect examples
     if (hasYoG || hasYoZco || hasVeryIrregular) {
-      const perfectExamples = ['conocer', 'salir', 'estar'] // conozco (-zco), salgo (-go), estoy (-oy)
-      const verbs = []
+      // Use examples representative of the specific selected family
+      let perfectExamples
+      if (hasYoZco && !hasYoG && !hasVeryIrregular) {
+        perfectExamples = ['conocer', 'parecer', 'conducir'] // conozco, parezco, conduzco
+      } else if (hasYoG && !hasYoZco && !hasVeryIrregular) {
+        perfectExamples = ['salir', 'poner', 'hacer'] // salgo, pongo, hago
+      } else if (hasVeryIrregular && !hasYoZco && !hasYoG) {
+        perfectExamples = ['ser', 'estar', 'ir'] // soy/eres/es, estoy, voy
+      } else {
+        // Multiple families selected — pick one representative from each
+        perfectExamples = ['conocer', 'salir', 'ser'] // -zco, -go, muy irregular
+      }
 
+      const verbs = []
       for (const lemma of perfectExamples) {
         try {
           const verb = await getVerbByLemma(lemma)
@@ -137,7 +147,7 @@ async function selectExampleVerbs({ verbType, selectedFamilies, tense, region })
       }
 
       if (verbs.length === 3) {
-        logger.debug('Using perfect YO irregular examples:', verbs.map(v => v.lemma))
+        logger.debug('Using family-specific YO irregular examples:', verbs.map(v => v.lemma))
         return verbs
       }
     }
