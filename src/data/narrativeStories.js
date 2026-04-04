@@ -27,6 +27,8 @@ export const storyData = {
         salir: 'Yo __VERB__ de casa a las 7.',
         hacer: 'Yo __VERB__ ejercicio por la mañana.',
         poner: 'Yo __VERB__ la mesa para comer.',
+        // sé (irregular único)
+        saber: 'Yo __VERB__ perfectamente cómo funciona.',
         // muy irregulares: ser, estar, ir
         estar: 'Yo __VERB__ en el trabajo todo el día.',
         ir: 'María __VERB__ al trabajo en metro.',

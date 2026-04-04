@@ -132,8 +132,8 @@ async function selectExampleVerbs({ verbType, selectedFamilies, tense, region })
       } else if (hasVeryIrregular && !hasYoZco && !hasYoG) {
         perfectExamples = ['ser', 'estar', 'ir'] // soy/eres/es, estoy, voy
       } else {
-        // Multiple families selected — pick one representative from each
-        perfectExamples = ['conocer', 'salir', 'ser'] // -zco, -go, muy irregular
+        // Multiple families selected — pick one representative from each (-zco, -go, sé)
+        perfectExamples = ['conocer', 'salir', 'saber']
       }
 
       const verbs = []
