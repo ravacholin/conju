@@ -200,6 +200,16 @@ function getStandardEndings(group, tense) {
       ar: ['ara', 'aras', 'ara', 'áramos', 'arais', 'aran'],
       er: ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran'],
       ir: ['iera', 'ieras', 'iera', 'iéramos', 'ierais', 'ieran']
+    },
+    impAff: {
+      ar: ['', 'a', 'e', 'emos', 'ad', 'en'],
+      er: ['', 'e', 'a', 'amos', 'ed', 'an'],
+      ir: ['', 'e', 'a', 'amos', 'id', 'an']
+    },
+    impNeg: {
+      ar: ['', 'es', 'e', 'emos', 'éis', 'en'],
+      er: ['', 'as', 'a', 'amos', 'áis', 'an'],
+      ir: ['', 'as', 'a', 'amos', 'áis', 'an']
     }
   };
 
@@ -1345,6 +1355,11 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                             if (grp === 'ar' && base === 'as') base = 'ás';
                             else if (grp === 'er' && base === 'es') base = 'és';
                             else if (grp === 'ir' && base === 'es') base = 'ís';
+                          }
+                          if (p === '2s_vos' && tense.tense === 'impAff') {
+                            if (grp === 'ar') base = 'á';
+                            else if (grp === 'er') base = 'é';
+                            else if (grp === 'ir') base = 'í';
                           }
 
                           if (base) return base;
