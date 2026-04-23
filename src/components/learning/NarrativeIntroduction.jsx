@@ -1100,7 +1100,10 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           ? '1s'
           : (/^\s*Nosotros\b/i.test(sentenceTemplate) ? '1p' : '3s'))
       // Usar el modo correcto (indicative, conditional, subjunctive, etc.) para obtener la forma
-      const conjugation = getConjugation(verbObj, personHint, tense.mood);
+      let conjugation = getConjugation(verbObj, personHint, tense.mood);
+      if (tense.tense === 'impNeg' && typeof conjugation === 'string') {
+        conjugation = conjugation.replace(/^no\s+/i, '');
+      }
 
       // Calcular la forma regular esperada para poder hacer el diff
       let expectedRegular = '';
