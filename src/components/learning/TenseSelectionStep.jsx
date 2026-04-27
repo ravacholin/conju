@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from '../onboarding/MenuOptionCard.jsx'
+import LearningMenuLayout from './LearningMenuLayout.jsx'
 import { MOOD_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
 import { getVerbForms } from '../../lib/core/verbDataService.js'
 
@@ -106,36 +107,40 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
   }
 
   return (
-    <div className="App">
-      <div className="onboarding learn-flow">
-        <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
-          <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-        </ClickableCard>
-
+    <LearningMenuLayout
+      step="01"
+      kicker="LEARNING"
+      title="Elegí el tiempo"
+      description="Este flujo enseña un tiempo por vez. Elegí el bloque verbal y después definís qué tipo de verbos trabajar."
+      onHome={onHome}
+      footer={(
+        <button className="back-btn" onClick={onHome}>
+          <img src="/back.png" alt="Volver" className="back-icon" />
+        </button>
+      )}
+    >
         {Object.entries(availableTenses).map(([mood, tenses]) => (
           <div key={mood} className="tense-section">
             <h2>{MOOD_LABELS[mood] || mood}</h2>
             <div className="options-grid">
               {tenses.map(tense => (
-                <ClickableCard
+                <MenuOptionCard
                   key={tense}
-                  className="option-card"
+                  className="learning-option-card"
+                  eyebrow={MOOD_LABELS[mood] || mood}
+                  badge="TIEMPO"
+                  title={formatMoodTense(mood, tense)}
+                  subtitle="Ruta de aprendizaje"
+                  description="Introducción, práctica guiada y aplicación progresiva."
+                  detail={getPersonConjugationExample(mood, tense)}
                   onClick={() => onSelect(mood, tense)}
-                  title={`Seleccionar ${formatMoodTense(mood, tense)}`}
-                >
-                  <h3>{formatMoodTense(mood, tense)}</h3>
-                  <p className="example">{getPersonConjugationExample(mood, tense)}</p>
-                </ClickableCard>
+                  cardTitle={`Seleccionar ${formatMoodTense(mood, tense)}`}
+                />
               ))}
             </div>
           </div>
         ))}
-
-        <button className="back-btn" onClick={onHome}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
-      </div>
-    </div>
+    </LearningMenuLayout>
   )
 }
 

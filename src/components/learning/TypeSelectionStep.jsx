@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from '../onboarding/MenuOptionCard.jsx'
+import LearningMenuLayout from './LearningMenuLayout.jsx'
 import { formatMoodTense } from '../../lib/utils/verbLabels.js'
 
 const buildIrregularCategories = (tenseKey, availableFamilies) => {
@@ -106,47 +107,54 @@ function TypeSelectionStep({ selectedTense, availableFamilies = [], onSelectType
   )
 
   return (
-    <div className="App">
-      <div className="onboarding learn-flow">
-        <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
-          <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-        </ClickableCard>
-
+    <LearningMenuLayout
+      step="02"
+      kicker="MATERIAL"
+      title="Elegí el tipo de verbos"
+      description={`Para ${selectedTense ? formatMoodTense(selectedTense.mood, selectedTense.tense) : 'este tiempo'}, podés ir por patrones regulares o atacar familias irregulares concretas.`}
+      onHome={onHome}
+      footer={(
+        <button className="back-btn" onClick={onBack}>
+          <img src="/back.png" alt="Volver" className="back-icon" />
+        </button>
+      )}
+    >
         <div className="tense-section">
-          <h2>Elegir tipo de verbos para {selectedTense ? formatMoodTense(selectedTense.mood, selectedTense.tense) : ''}</h2>
+          <h2>{selectedTense ? formatMoodTense(selectedTense.mood, selectedTense.tense) : ''}</h2>
           <div className="options-grid">
-            <ClickableCard
-              className="option-card"
+            <MenuOptionCard
+              className="learning-option-card"
+              eyebrow="BASE"
+              badge="REG"
+              title="Regulares"
+              subtitle="Patrones estables"
+              description="Ideal para fijar terminaciones y lógica del tiempo sin ruido extra."
+              detail="hablar, comer, vivir"
               onClick={() => onSelectType('regular')}
-              title="Practicar verbos regulares"
-            >
-              <h3>Regulares</h3>
-              <p className="example">hablar, comer, vivir</p>
-            </ClickableCard>
+              cardTitle="Practicar verbos regulares"
+            />
 
             {Object.entries(irregularCategories).map(([key, category]) => {
               if (category.families.length === 0) return null
 
               return (
-                <ClickableCard
+                <MenuOptionCard
                   key={key}
-                  className="option-card"
+                  className="learning-option-card"
+                  eyebrow="IRREGULAR"
+                  badge={String(category.families.length).padStart(2, '0')}
+                  title={category.name}
+                  subtitle="Familia pedagógica"
+                  description="Agrupación enfocada para aprender un patrón reconocible."
+                  detail={category.description}
                   onClick={() => onSelectType('irregular', category.families.map(f => f.id))}
-                  title={`Practicar ${category.name.toLowerCase()}`}
-                >
-                  <h3>{category.name}</h3>
-                  <p className="example">{category.description}</p>
-                </ClickableCard>
+                  cardTitle={`Practicar ${category.name.toLowerCase()}`}
+                />
               )
             })}
           </div>
         </div>
-
-        <button className="back-btn" onClick={onBack}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
-      </div>
-    </div>
+    </LearningMenuLayout>
   )
 }
 

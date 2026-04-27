@@ -319,7 +319,7 @@ body {
 }
 
 /* Onboarding styles */
-.onboarding {
+.main-menu-onboarding {
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
@@ -1813,7 +1813,7 @@ body {
   }
 
   /* Reducir espaciado en onboarding */
-  .onboarding {
+  .main-menu-onboarding {
     padding: 1.5rem !important;
   }
 
@@ -2031,7 +2031,7 @@ body {
     padding: 0.4rem 0.6rem !important;
   }
 
-  .onboarding {
+  .main-menu-onboarding {
     padding: 1.25rem !important;
   }
 
@@ -3610,5 +3610,397 @@ body {
   .placement-report-button {
     width: 100%;
     text-align: center;
+  }
+}
+
+/* Menu redesign */
+.main-menu-onboarding {
+  max-width: 1280px;
+  padding: 0 2rem 3rem;
+}
+
+.main-menu-onboarding .menu-shell {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0 auto 2rem;
+  width: 100%;
+}
+
+.main-menu-onboarding .menu-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.8fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.main-menu-onboarding .menu-shell-compact,
+.main-menu-onboarding .menu-shell-minimal {
+  gap: 1rem;
+}
+
+.main-menu-onboarding .menu-hero-compact {
+  grid-template-columns: minmax(0, 1.9fr) minmax(180px, 0.55fr);
+}
+
+.main-menu-onboarding .menu-hero-minimal {
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 0.34fr);
+  align-items: start;
+}
+
+.main-menu-onboarding .menu-hero-main,
+.main-menu-onboarding .menu-status-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 1.5rem;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-menu-onboarding .menu-hero-main::before,
+.main-menu-onboarding .menu-status-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 45%),
+    linear-gradient(225deg, rgba(255, 255, 255, 0.03), transparent 35%);
+  pointer-events: none;
+}
+
+.main-menu-onboarding .menu-step-line {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.main-menu-onboarding .menu-step-index,
+.main-menu-onboarding .menu-step-kicker,
+.main-menu-onboarding .menu-option-eyebrow,
+.main-menu-onboarding .menu-option-badge,
+.main-menu-onboarding .menu-status-label,
+.main-menu-onboarding .menu-brand-caption span:last-child {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.main-menu-onboarding .menu-step-index {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+  color: #ffffff;
+}
+
+.main-menu-onboarding .menu-step-kicker {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.78rem;
+}
+
+.main-menu-onboarding .menu-hero h1 {
+  font-size: clamp(2.4rem, 4.4vw, 5.2rem);
+  line-height: 0.92;
+  margin: 0 0 1rem;
+  max-width: 12ch;
+  text-align: left;
+}
+
+.main-menu-onboarding .menu-shell-hero .menu-hero-main h1 {
+  font-size: clamp(1.9rem, 3.3vw, 3.5rem);
+  line-height: 0.96;
+  max-width: 10ch;
+}
+
+.main-menu-onboarding .menu-shell-hero .menu-hero-description {
+  font-size: 0.84rem;
+  line-height: 1.58;
+}
+
+.main-menu-onboarding .menu-shell-hero[data-step="02"] .menu-hero-main h1 {
+  font-size: clamp(1.85rem, 3.1vw, 3.3rem);
+  line-height: 0.96;
+  max-width: 11ch;
+}
+
+.main-menu-onboarding .menu-hero-description {
+  margin: 0;
+  max-width: 62ch;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  text-transform: none;
+  letter-spacing: 0.03em;
+}
+
+.main-menu-onboarding .menu-hero-compact .menu-hero-main {
+  padding: 1.2rem 1.25rem;
+}
+
+.main-menu-onboarding .menu-hero-minimal .menu-hero-main {
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.main-menu-onboarding .menu-hero-compact h1 {
+  font-size: clamp(2rem, 3.2vw, 3.3rem);
+  max-width: 16ch;
+}
+
+.main-menu-onboarding .menu-hero-minimal h1 {
+  font-size: clamp(1.45rem, 2.3vw, 2.2rem);
+  line-height: 1;
+  max-width: 24ch;
+  margin-bottom: 0.55rem;
+}
+
+.main-menu-onboarding .menu-hero-minimal .menu-hero-description {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  max-width: 72ch;
+}
+
+.main-menu-onboarding .menu-brand-column {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 1rem;
+}
+
+.main-menu-onboarding .app-logo {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  margin-bottom: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 52%),
+    rgba(255, 255, 255, 0.02);
+  padding: 1.5rem;
+}
+
+.main-menu-onboarding .menu-hero-compact .app-logo,
+.main-menu-onboarding .menu-hero-minimal .app-logo {
+  padding: 1rem;
+}
+
+.main-menu-onboarding .menu-hero-minimal .app-logo img {
+  width: 96px;
+  height: 96px;
+}
+
+.main-menu-onboarding .menu-hero-minimal .menu-brand-caption {
+  display: none;
+}
+
+.main-menu-onboarding .menu-brand-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.main-menu-onboarding .menu-brand-caption span:first-child {
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.main-menu-onboarding .menu-brand-caption span:last-child {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.main-menu-onboarding .menu-status-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.main-menu-onboarding .menu-status-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.main-menu-onboarding .menu-status-header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.58);
+  max-width: 50ch;
+  text-align: right;
+  text-transform: none;
+}
+
+.main-menu-onboarding .menu-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.main-menu-onboarding .menu-status-panel-compact .menu-status-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.main-menu-onboarding .menu-status-panel-compact .menu-status-header {
+  margin-bottom: 0.8rem;
+}
+
+.main-menu-onboarding .menu-status-panel-compact .menu-status-header p {
+  font-size: 0.78rem;
+}
+
+.main-menu-onboarding .menu-status-item {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  text-align: left;
+}
+
+.main-menu-onboarding .menu-status-item.is-empty {
+  grid-column: 1 / -1;
+}
+
+.main-menu-onboarding .menu-status-label {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.main-menu-onboarding .menu-status-value {
+  font-size: 0.94rem;
+  line-height: 1.35;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.main-menu-onboarding .options-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-bottom: 2.5rem;
+}
+
+.main-menu-onboarding .option-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 1.4rem;
+  text-align: left;
+  justify-content: space-between;
+  align-items: stretch;
+  min-height: 280px;
+}
+
+.main-menu-onboarding .option-card:hover {
+  background: #f2f2f2;
+  border-color: #f2f2f2;
+  box-shadow: 10px 10px 0px rgba(255, 255, 255, 0.85);
+}
+
+.main-menu-onboarding .option-card.compact {
+  min-height: 240px;
+}
+
+.main-menu-onboarding .menu-option-card.featured {
+  min-height: 300px;
+}
+
+.main-menu-onboarding .menu-option-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.main-menu-onboarding .menu-option-eyebrow,
+.main-menu-onboarding .menu-option-badge {
+  font-size: 0.68rem;
+}
+
+.main-menu-onboarding .menu-option-eyebrow {
+  color: rgba(255, 255, 255, 0.54);
+}
+
+.main-menu-onboarding .menu-option-badge {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.3rem 0.45rem;
+  white-space: nowrap;
+}
+
+.main-menu-onboarding .menu-option-body {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.main-menu-onboarding .menu-option-card .option-title {
+  font-size: clamp(1.5rem, 3vw, 2.7rem);
+  margin-bottom: 0;
+}
+
+.main-menu-onboarding .menu-option-card.compact .option-title {
+  font-size: 1.1rem;
+}
+
+.main-menu-onboarding .menu-option-subtitle,
+.main-menu-onboarding .menu-option-description,
+.main-menu-onboarding .menu-option-detail {
+  margin: 0;
+}
+
+.main-menu-onboarding .menu-option-subtitle {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.main-menu-onboarding .menu-option-description {
+  color: rgba(255, 255, 255, 0.62);
+  text-transform: none;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  max-width: none;
+}
+
+.main-menu-onboarding .menu-option-detail {
+  margin-top: 1rem;
+  min-height: 64px;
+}
+
+@media (max-width: 900px) {
+  .main-menu-onboarding .menu-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .main-menu-onboarding .menu-status-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .main-menu-onboarding .menu-status-header p {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-menu-onboarding {
+    padding: 0 1rem 2rem;
+  }
+
+  .main-menu-onboarding .menu-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main-menu-onboarding .option-card,
+  .main-menu-onboarding .option-card.compact,
+  .main-menu-onboarding .menu-option-card.featured {
+    min-height: auto;
   }
 }

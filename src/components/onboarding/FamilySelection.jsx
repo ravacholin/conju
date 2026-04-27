@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 import { getFamiliesForMood, getFamiliesForTense } from '../../lib/data/irregularFamilies.js'
 import {
   getSimplifiedGroupsForMood,
@@ -42,53 +42,65 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
       content = (
         <>
           <div className="options-grid">
-            <ClickableCard
-              className="option-card featured"
+            <MenuOptionCard
+              className="featured"
+              eyebrow="AMPLIO"
+              badge="ALL"
+              title="TODOS LOS IRREGULARES"
+              subtitle="Todas las familias juntas"
+              description="Máxima variedad para explorar patrones cruzados."
+              detail="Máxima variedad"
               onClick={() => onSelectFamily(null)}
-              title="Seleccionar todos los verbos irregulares"
-            >
-              <h3 className="option-title"><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
-              <p>Todas las familias juntas</p>
-              <p className="example">Máxima variedad</p>
-            </ClickableCard>
+              cardTitle="Seleccionar todos los verbos irregulares"
+            />
 
-            <ClickableCard
-              className="option-card compact"
+            <MenuOptionCard
+              className="compact"
+              eyebrow="RAÍZ"
+              badge="01"
+              title="VERBOS QUE DIPTONGAN"
+              subtitle="Cambios de raíz"
+              description="e→ie, o→ue, e→i"
+              detail="pensar→pienso, volver→vuelvo, pedir→pido"
               onClick={() => onSelectFamily('STEM_CHANGES')}
-              title="Seleccionar verbos que diptongan"
-            >
-              <h3 className="option-title">Verbos que Diptongan</h3>
-              <p className="hint">Cambios de raíz: e→ie, o→ue, e→i</p>
-              <p className="conjugation-example">pensar→pienso, volver→vuelvo, pedir→pido</p>
-            </ClickableCard>
+              cardTitle="Seleccionar verbos que diptongan"
+            />
 
-            <ClickableCard
-              className="option-card compact"
+            <MenuOptionCard
+              className="compact"
+              eyebrow="YO"
+              badge="02"
+              title="IRREGULARES EN YO"
+              subtitle="Primera persona irregular"
+              description="Afecta también familias del subjuntivo."
+              detail="tengo, conozco, salgo, protejo"
               onClick={() => onSelectFamily('FIRST_PERSON_IRREGULAR')}
-              title="Seleccionar verbos irregulares en primera persona"
-            >
-              <h3 className="option-title">Irregulares en YO</h3>
-              <p className="hint">1ª persona irregular que afecta el subjuntivo</p>
-              <p className="conjugation-example">tengo, conozco, salgo, protejo</p>
-            </ClickableCard>
+              cardTitle="Seleccionar verbos irregulares en primera persona"
+            />
 
-            <ClickableCard
-              className="option-card compact"
+            <MenuOptionCard
+              className="compact"
+              eyebrow="PRETÉRITO"
+              badge="03"
+              title="PRETÉRITO -UV-"
+              subtitle="Radical alterado"
+              description="Familia clásica de pretérito fuerte."
+              detail="andar, estar, tener"
               onClick={() => onSelectFamily('PRET_UV')}
-              title="Seleccionar verbos con pretérito -uv-"
-            >
-              <h3 className="option-title">Pretérito -uv-</h3>
-              <p className="conjugation-example">andar, estar, tener</p>
-            </ClickableCard>
+              cardTitle="Seleccionar verbos con pretérito -uv-"
+            />
 
-            <ClickableCard
-              className="option-card compact"
+            <MenuOptionCard
+              className="compact"
+              eyebrow="PRETÉRITO"
+              badge="04"
+              title="PRETÉRITO -J-"
+              subtitle="Tema consonántico"
+              description="Casos intensos de irregularidad narrativa."
+              detail="decir, traer"
               onClick={() => onSelectFamily('PRET_J')}
-              title="Seleccionar verbos con pretérito -j-"
-            >
-              <h3 className="option-title">Pretérito -j-</h3>
-              <p className="conjugation-example">decir, traer</p>
-            </ClickableCard>
+              cardTitle="Seleccionar verbos con pretérito -j-"
+            />
           </div>
           {backButton}
         </>
@@ -100,16 +112,18 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
     } else {
       const optionCards = [
         (
-          <ClickableCard
+          <MenuOptionCard
             key="all-irregulars"
-            className="option-card featured"
+            className="featured"
+            eyebrow="AMPLIO"
+            badge="ALL"
+            title="TODOS LOS IRREGULARES"
+            subtitle="Todas las familias juntas"
+            description="Mantiene todos los patrones abiertos para máxima cobertura."
+            detail="Máxima variedad"
             onClick={() => onSelectFamily(null)}
-            title="Seleccionar todos los verbos irregulares"
-          >
-            <h3 className="option-title"><img src="/diana.png" alt="Diana" className="option-icon" /> Todos los Irregulares</h3>
-            <p>Todas las familias juntas</p>
-            <p className="example">Máxima variedad</p>
-          </ClickableCard>
+            cardTitle="Seleccionar todos los verbos irregulares"
+          />
         )
       ]
 
@@ -128,18 +142,20 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
         if (!simplifiedGroups || simplifiedGroups.length === 0) {
           shouldAutoSelect = true
         } else {
-          simplifiedGroups.forEach(group => {
+          simplifiedGroups.forEach((group) => {
             optionCards.push(
-              <ClickableCard
+              <MenuOptionCard
                 key={group.id}
-                className="option-card compact"
+                className="compact"
+                eyebrow="GRUPO"
+                badge={group.id}
+                title={group.name}
+                subtitle={group.explanation}
+                description="Patrón irregular concentrado."
+                detail={group.description}
                 onClick={() => onSelectFamily(group.id)}
-                title={`Seleccionar ${group.name}`}
-              >
-                <h3 className="option-title">{group.name}</h3>
-                <p className="hint">{group.explanation}</p>
-                <p className="conjugation-example">{group.description}</p>
-              </ClickableCard>
+                cardTitle={`Seleccionar ${group.name}`}
+              />
             )
           })
         }
@@ -153,17 +169,20 @@ function FamilySelection({ settings = {}, onSelectFamily, onBack }) {
         if (!availableFamilies || availableFamilies.length === 0) {
           shouldAutoSelect = true
         } else {
-          availableFamilies.slice(0, 8).forEach(family => {
+          availableFamilies.slice(0, 8).forEach((family) => {
             optionCards.push(
-              <ClickableCard
+              <MenuOptionCard
                 key={family.id}
-                className="option-card compact"
+                className="compact"
+                eyebrow="FAMILIA"
+                badge={family.id}
+                title={family.name}
+                subtitle="Patrón irregular"
+                description="Entrada puntual para repetición concentrada."
+                detail={family.description}
                 onClick={() => onSelectFamily(family.id)}
-                title={`Seleccionar ${family.name}`}
-              >
-                <h3 className="option-title">{family.name}</h3>
-                <p className="conjugation-example">{family.description}</p>
-              </ClickableCard>
+                cardTitle={`Seleccionar ${family.name}`}
+              />
             )
           })
         }

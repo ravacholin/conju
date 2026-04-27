@@ -1,65 +1,7 @@
-/**
- * MoodTenseSelection.jsx - Componente de selección específica de modo y tiempo verbal
- * 
- * Este componente maneja la selección granular de modos y tiempos verbales
- * para práctica específica, adaptándose dinámicamente al contexto del usuario.
- * 
- * @component
- * @description
- * Responsabilidades principales:
- * - Selección secuencial de modo verbal (indicativo, subjuntivo, imperativo)
- * - Selección específica de tiempo verbal dentro del modo elegido
- * - Filtrado dinámico por nivel CEFR cuando aplicable
- * - Generación de ejemplos contextuales para cada opción
- * - Manejo de múltiples flujos de entrada (desde menú principal vs. desde nivel)
- * 
- * Escenarios de renderizado:
- * 1. Nivel + modo específico → Selección de tiempo filtrada por nivel
- * 2. Nivel + práctica específica → Selección de modo filtrada por nivel
- * 3. Práctica específica + modo → Selección completa de tiempos
- * 4. Práctica específica sin nivel → Selección completa de modos
- * 
- * @example
- * ```jsx
- * // Desde OnboardingFlow para práctica específica
- * <MoodTenseSelection
- *   settings={settings}
- *   onSelectMood={onboardingFlow.selectMood}
- *   onSelectTense={onboardingFlow.selectTense}
- *   onBack={handleBack}
- *   getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
- *   getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
- *   getConjugationExample={onboardingFlow.getConjugationExample}
- * />
- * ```
- * 
- * @param {Object} props - Propiedades del componente
- * @param {Object} props.settings - Configuraciones globales de usuario (Zustand store)
- * @param {Function} props.onSelectMood - Handler para seleccionar modo verbal
- * @param {Function} props.onSelectTense - Handler para seleccionar tiempo específico
- * @param {Function} props.onBack - Handler para navegación hacia atrás
- * @param {Function} props.getAvailableMoodsForLevel - Obtener modos disponibles por nivel CEFR
- * @param {Function} props.getAvailableTensesForLevelAndMood - Obtener tiempos por nivel y modo
- * @param {Function} props.getConjugationExample - Generar ejemplo de conjugación contextual
- * 
- * @requires ClickableCard - Componente base de selección
- * @requires verbLabels - Utilidades para etiquetas y filtrado de tiempos
- * 
- * @see {@link ../../lib/utils/verbLabels.js} - Utilidades de etiquetas y filtrado
- * @see {@link ../shared/ClickableCard.jsx} - Componente base de interfaz
- * @see {@link ../../hooks/useOnboardingFlow.js} - Hook con lógica de filtrado
- */
-
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 
-/**
- * Componente de selección específica de modo y tiempo verbal
- * 
- * @param {Object} props - Propiedades del componente según la documentación JSDoc superior
- * @returns {JSX.Element} El componente de selección de modo/tiempo
- */
 function MoodTenseSelection({
   settings,
   onSelectMood,
@@ -67,25 +9,24 @@ function MoodTenseSelection({
   onBack,
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
-  // getModeSamples,
   getConjugationExample
 }) {
-
   if (settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
-    // Level-specific practice with mood already selected - show tense selection
     return (
       <>
         <div className="options-grid">
-          {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map(tense => (
-            <ClickableCard
+          {getAvailableTensesForLevelAndMood(settings.level, settings.specificMood).map((tense) => (
+            <MenuOptionCard
               key={tense}
-              className="option-card"
+              eyebrow={getMoodLabel(settings.specificMood)}
+              badge={settings.level}
+              title={getTenseLabel(tense)}
+              subtitle="Tiempo habilitado por tu nivel"
+              description="Recorte directo del drill sin modificar la mecánica de corrección."
+              detail={getConjugationExample(settings.specificMood, tense)}
               onClick={() => onSelectTense(tense)}
-              title={`Seleccionar ${getTenseLabel(tense)}`}
-            >
-              <div className="option-title" >{getTenseLabel(tense)}</div>
-              <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
-            </ClickableCard>
+              cardTitle={`Seleccionar ${getTenseLabel(tense)}`}
+            />
           ))}
         </div>
 
@@ -97,21 +38,23 @@ function MoodTenseSelection({
   }
 
   if (settings.level && settings.practiceMode === 'specific') {
-    // Specific practice from level - show filtered moods
     const availableMoods = getAvailableMoodsForLevel(settings.level)
+
     return (
       <>
         <div className="options-grid">
-          {availableMoods.map(mood => (
-            <ClickableCard
+          {availableMoods.map((mood) => (
+            <MenuOptionCard
               key={mood}
-              className="option-card"
+              eyebrow={settings.level}
+              badge="MODO"
+              title={getMoodLabel(mood)}
+              subtitle="Modo verbal"
+              description="Activa solo este bloque para filtrar tiempos y ejemplos relevantes."
+              detail="yo hablo, tú hablas, él/ella habla"
               onClick={() => onSelectMood(mood)}
-              title={`Seleccionar ${getMoodLabel(mood)}`}
-            >
-              <div className="option-title" >{getMoodLabel(mood)}</div>
-              <p className="example">yo hablo, tú hablas, él/ella habla</p>
-            </ClickableCard>
+              cardTitle={`Seleccionar ${getMoodLabel(mood)}`}
+            />
           ))}
         </div>
 
@@ -123,26 +66,21 @@ function MoodTenseSelection({
   }
 
   if (!settings.level && settings.practiceMode === 'specific' && settings.specificMood) {
-    // Coming from main menu - show tense selection
-    console.log('MoodTenseSelection: Showing tense selection', {
-      specificMood: settings.specificMood
-    });
-
-    // Use higher-level helper for examples
-
     return (
       <>
         <div className="options-grid">
-          {getTensesForMood(settings.specificMood).map(tense => (
-            <ClickableCard
+          {getTensesForMood(settings.specificMood).map((tense) => (
+            <MenuOptionCard
               key={tense}
-              className="option-card"
+              eyebrow={getMoodLabel(settings.specificMood)}
+              badge="FOCO"
+              title={getTenseLabel(tense)}
+              subtitle="Tiempo verbal"
+              description="Entrada limpia a práctica temática o específica."
+              detail={getConjugationExample(settings.specificMood, tense)}
               onClick={() => onSelectTense(tense)}
-              title={`Seleccionar ${getTenseLabel(tense)}`}
-            >
-              <div className="option-title" >{getTenseLabel(tense)}</div>
-              <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
-            </ClickableCard>
+              cardTitle={`Seleccionar ${getTenseLabel(tense)}`}
+            />
           ))}
         </div>
 
@@ -152,58 +90,70 @@ function MoodTenseSelection({
       </>
     )
   }
+
+  const moodCards = (
+    <div className="options-grid">
+      <MenuOptionCard
+        eyebrow="FINITAS"
+        badge="01"
+        title="INDICATIVO"
+        subtitle="Hechos, hábitos y relato"
+        description="El bloque más amplio para tiempos de uso central."
+        detail="yo hablo, tú hablas, él/ella habla"
+        onClick={() => onSelectMood('indicative')}
+        cardTitle="Seleccionar modo indicativo"
+      />
+
+      <MenuOptionCard
+        eyebrow="FINITAS"
+        badge="02"
+        title="SUBJUNTIVO"
+        subtitle="Hipótesis, deseo y matiz"
+        description="Recorta la práctica a contraste modal fino."
+        detail="yo hable, tú hables, él/ella hable"
+        onClick={() => onSelectMood('subjunctive')}
+        cardTitle="Seleccionar modo subjuntivo"
+      />
+
+      <MenuOptionCard
+        eyebrow="MANDATO"
+        badge="03"
+        title="IMPERATIVO"
+        subtitle="Órdenes e instrucciones"
+        description="Concentra las personas útiles para directivas y comandos."
+        detail="tú habla, vos hablá, usted hable"
+        onClick={() => onSelectMood('imperative')}
+        cardTitle="Seleccionar modo imperativo"
+      />
+
+      <MenuOptionCard
+        eyebrow="HIPÓTESIS"
+        badge="04"
+        title="CONDICIONAL"
+        subtitle="Consecuencia y posibilidad"
+        description="Modo ideal para estructuras de probabilidad y cortesía."
+        detail="yo hablaría, tú hablarías, él/ella hablaría"
+        onClick={() => onSelectMood('conditional')}
+        cardTitle="Seleccionar modo condicional"
+      />
+
+      <MenuOptionCard
+        eyebrow="NO FINITAS"
+        badge="05"
+        title="NO CONJUGADAS"
+        subtitle="Infinitivo, gerundio y participio"
+        description="Ataca las formas periféricas sin entrar en paradigma personal."
+        detail="hablando, hablado"
+        onClick={() => onSelectMood('nonfinite')}
+        cardTitle="Seleccionar formas no conjugadas"
+      />
+    </div>
+  )
 
   if (!settings.level && settings.practiceMode === 'specific') {
-    // Coming from forms specific without level - show mood selection
-    console.log('MoodTenseSelection: Showing mood selection');
     return (
       <>
-        <div className="options-grid">
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('indicative')}
-            title="Seleccionar modo indicativo"
-          >
-            <div className="option-title" >INDICATIVO</div>
-            <p className="example">yo hablo, tú hablas, él/ella habla</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('subjunctive')}
-            title="Seleccionar modo subjuntivo"
-          >
-            <div className="option-title" >SUBJUNTIVO</div>
-            <p className="example">yo hable, tú hables, él/ella hable</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('imperative')}
-            title="Seleccionar modo imperativo"
-          >
-            <div className="option-title" >IMPERATIVO</div>
-            <p className="example">tú habla, vos hablá, usted hable</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('conditional')}
-            title="Seleccionar modo condicional"
-          >
-            <div className="option-title" >CONDICIONAL</div>
-            <p className="example">yo hablaría, tú hablarías, él/ella hablaría</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('nonfinite')}
-            title="Seleccionar formas no conjugadas"
-          >
-            <div className="option-title" >NO CONJUGADAS</div>
-            <p className="example">hablando, hablado</p>
-          </ClickableCard>
-        </div>
+        {moodCards}
 
         <button onClick={onBack} className="back-btn">
           <img src="/back.png" alt="Volver" className="back-icon" />
@@ -212,25 +162,22 @@ function MoodTenseSelection({
     )
   }
 
-  // Theme mode: show tense selection if mood already selected
   if (settings.practiceMode === 'theme' && settings.specificMood) {
-    console.log('MoodTenseSelection: Theme mode - showing tense selection for mood:', settings.specificMood);
-
-    // Use higher-level helper for examples
-
     return (
       <>
         <div className="options-grid">
-          {getTensesForMood(settings.specificMood).map(tense => (
-            <ClickableCard
+          {getTensesForMood(settings.specificMood).map((tense) => (
+            <MenuOptionCard
               key={tense}
-              className="option-card"
+              eyebrow={getMoodLabel(settings.specificMood)}
+              badge="TEMA"
+              title={getTenseLabel(tense)}
+              subtitle="Tiempo verbal"
+              description="Entrada temática directa para practicar un bloque concreto."
+              detail={getConjugationExample(settings.specificMood, tense)}
               onClick={() => onSelectTense(tense)}
-              title={`Seleccionar ${getTenseLabel(tense)}`}
-            >
-              <div className="option-title" >{getTenseLabel(tense)}</div>
-              <p className="example">{getConjugationExample(settings.specificMood, tense)}</p>
-            </ClickableCard>
+              cardTitle={`Seleccionar ${getTenseLabel(tense)}`}
+            />
           ))}
         </div>
 
@@ -241,57 +188,10 @@ function MoodTenseSelection({
     )
   }
 
-  // Theme mode: show mood selection
   if (settings.practiceMode === 'theme') {
-    console.log('MoodTenseSelection: Theme mode - showing mood selection');
     return (
       <>
-        <div className="options-grid">
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('indicative')}
-            title="Seleccionar modo indicativo"
-          >
-            <div className="option-title" >INDICATIVO</div>
-            <p className="example">yo hablo, tú hablas, él/ella habla</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('subjunctive')}
-            title="Seleccionar modo subjuntivo"
-          >
-            <div className="option-title" >SUBJUNTIVO</div>
-            <p className="example">yo hable, tú hables, él/ella hable</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('imperative')}
-            title="Seleccionar modo imperativo"
-          >
-            <div className="option-title" >IMPERATIVO</div>
-            <p className="example">tú habla, vos hablá, usted hable</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('conditional')}
-            title="Seleccionar modo condicional"
-          >
-            <div className="option-title" >CONDICIONAL</div>
-            <p className="example">yo hablaría, tú hablarías, él/ella hablaría</p>
-          </ClickableCard>
-
-          <ClickableCard
-            className="option-card"
-            onClick={() => onSelectMood('nonfinite')}
-            title="Seleccionar formas no conjugadas"
-          >
-            <div className="option-title" >NO CONJUGADAS</div>
-            <p className="example">hablando, hablado</p>
-          </ClickableCard>
-        </div>
+        {moodCards}
 
         <button onClick={onBack} className="back-btn">
           <img src="/back.png" alt="Volver" className="back-icon" />

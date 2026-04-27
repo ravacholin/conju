@@ -1,48 +1,52 @@
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 
 function DialectSelection({ onSelectDialect }) {
   return (
     <div className="options-grid dialect-selection">
-      <ClickableCard
-        className="option-card"
+      <MenuOptionCard
+        eyebrow="CONTRASTE"
+        badge="01"
+        title="VOS"
+        subtitle="Argentina y Uruguay"
+        description="Sistema rioplatense con voseo como eje principal."
+        detail="vos tenés, vos hablás"
         onClick={() => onSelectDialect('rioplatense')}
-        title="Seleccionar dialecto rioplatense (vos)"
-      >
-        <div className="option-title">VOS</div>
-        <p>Argentina, Uruguay</p>
-        <p className="example">vos tenés, vos hablás</p>
-      </ClickableCard>
+        cardTitle="Seleccionar dialecto rioplatense (vos)"
+      />
 
-      <ClickableCard
-        className="option-card"
+      <MenuOptionCard
+        eyebrow="BASE"
+        badge="02"
+        title="TÚ"
+        subtitle="Latinoamérica"
+        description="Variante general pensada para la mayoría de materiales estándar."
+        detail="tú tienes, tú hablas"
         onClick={() => onSelectDialect('la_general')}
-        title="Seleccionar dialecto latinoamericano general (tú)"
-      >
-        <div className="option-title">TÚ</div>
-        <p>Latinoamérica</p>
-        <p className="example">tú tienes, tú hablas</p>
-      </ClickableCard>
+        cardTitle="Seleccionar dialecto latinoamericano general (tú)"
+      />
 
-      <ClickableCard
-        className="option-card"
+      <MenuOptionCard
+        eyebrow="PENINSULAR"
+        badge="03"
+        title="TÚ + VOSOTROS"
+        subtitle="España"
+        description="Incluye segunda persona plural y mantiene contraste castellano."
+        detail="vosotros tenéis"
         onClick={() => onSelectDialect('peninsular')}
-        title="Seleccionar dialecto peninsular (tú y vosotros)"
-      >
-        <div className="option-title">TÚ + VOSOTROS</div>
-        <p>España</p>
-        <p className="example">vosotros tenéis</p>
-      </ClickableCard>
+        cardTitle="Seleccionar dialecto peninsular (tú y vosotros)"
+      />
 
-      <ClickableCard
-        className="option-card"
+      <MenuOptionCard
+        eyebrow="AMPLIO"
+        badge="04"
+        title="TODOS"
+        subtitle="Cobertura global"
+        description="Mantiene abiertas todas las variantes para máxima mezcla."
+        detail="tú, vos y vosotros"
         onClick={() => onSelectDialect('both')}
-        title="Seleccionar todos los dialectos"
-      >
-        <div className="option-title">TODOS</div>
-        <p>Global</p>
-        <p className="example">tú, vos y vosotros</p>
-      </ClickableCard>
+        cardTitle="Seleccionar todos los dialectos"
+      />
     </div>
   )
 }

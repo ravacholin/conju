@@ -1,29 +1,31 @@
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 
 function PracticeModeSelection({ onSelectPracticeMode, onBack }) {
   return (
     <>
       <div className="options-grid">
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="AMPLIO"
+          badge="MIX"
+          title="MIXTA"
+          subtitle="Panorama completo"
+          description="Mezcla modos y tiempos habilitados por tu nivel para trabajar variedad real."
+          detail="Variedad completa para práctica general"
           onClick={() => onSelectPracticeMode('mixed')}
-          title="Seleccionar práctica mixta"
-        >
-          <div className="option-title">MIXTA</div>
-          <p>Mezclá todos los tiempos y modos de tu nivel</p>
-          <p className="example">Variedad completa para práctica general</p>
-        </ClickableCard>
+          cardTitle="Seleccionar práctica mixta"
+        />
 
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="PRECISA"
+          badge="FOCUS"
+          title="ESPECÍFICA"
+          subtitle="Un bloque a la vez"
+          description="Aísla un modo y un tiempo para practicar con intención y repetición útil."
+          detail="Ideal para dominar formas particulares"
           onClick={() => onSelectPracticeMode('specific')}
-          title="Seleccionar formas específicas"
-        >
-          <div className="option-title">ESPECÍFICA</div>
-          <p>Enfocate en un tiempo/modo específico de tu nivel</p>
-          <p className="example">Ideal para dominar formas particulares</p>
-        </ClickableCard>
+          cardTitle="Seleccionar formas específicas"
+        />
       </div>
 
       <button onClick={onBack} className="back-btn">

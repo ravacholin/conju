@@ -1,5 +1,6 @@
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from '../onboarding/MenuOptionCard.jsx'
+import LearningMenuLayout from './LearningMenuLayout.jsx'
 import { getSessionDurationOptions as getDefaultDurationOptions } from '../../lib/learning/learningConfig.js'
 
 function DurationSelectionStep({
@@ -11,26 +12,35 @@ function DurationSelectionStep({
   durationOptions = getDefaultDurationOptions()
 }) {
   return (
-    <div className="App">
-      <div className="onboarding learn-flow">
-        <ClickableCard className="app-logo" onClick={onHome} title="Volver al menú">
-          <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-        </ClickableCard>
-
+    <LearningMenuLayout
+      step="03"
+      kicker="SESIÓN"
+      title="Definí la duración"
+      description="Ajustá el tamaño de la sesión antes de entrar al recorrido guiado. Podés usar una pasada breve o una tanda más profunda."
+      onHome={onHome}
+      footer={(
+        <button className="back-btn" onClick={onBack}>
+          <img src="/back.png" alt="Volver" className="back-icon" />
+        </button>
+      )}
+    >
         <div className="tense-section">
           <h2>Duración de la sesión</h2>
 
           <div className="options-grid">
             {durationOptions.map(durationConfig => (
-              <ClickableCard
+              <MenuOptionCard
                 key={durationConfig.minutes}
-                className={`option-card${selectedDuration === durationConfig.minutes ? ' selected' : ''}`}
+                className={`learning-option-card${selectedDuration === durationConfig.minutes ? ' selected' : ''}`}
+                eyebrow="RITMO"
+                badge={`${durationConfig.minutes}M`}
+                title={durationConfig.label}
+                subtitle={durationConfig.title}
+                description="Configura la longitud del bloque guiado."
+                detail={durationConfig.description}
                 onClick={() => onSelectDuration(durationConfig.minutes)}
-                title={durationConfig.title}
-              >
-                <h3>{durationConfig.label}</h3>
-                <p className="example">{durationConfig.description}</p>
-              </ClickableCard>
+                cardTitle={durationConfig.title}
+              />
             ))}
           </div>
 
@@ -43,12 +53,7 @@ function DurationSelectionStep({
             </button>
           )}
         </div>
-
-        <button className="back-btn" onClick={onBack}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
-      </div>
-    </div>
+    </LearningMenuLayout>
   )
 }
 

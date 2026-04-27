@@ -1,39 +1,42 @@
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 
 function VerbTypeSelection({ onSelectVerbType, onBack }) {
   return (
     <>
       <div className="options-grid">
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="AMPLIO"
+          badge="ALL"
+          title="TODOS"
+          subtitle="Regulares e irregulares"
+          description="No restringe el generador: deja entrar toda la variedad disponible."
+          detail="Práctica completa"
           onClick={() => onSelectVerbType('all')}
-          title="Seleccionar todos los tipos de verbos"
-        >
-          <div className="option-title">TODOS</div>
-          <p>REGULARES E IRREGULARES</p>
-          <p className="example">Práctica completa</p>
-        </ClickableCard>
+          cardTitle="Seleccionar todos los tipos de verbos"
+        />
 
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="SISTEMA"
+          badge="REG"
+          title="REGULARES"
+          subtitle="Seguir la regla"
+          description="Ideal para afinar terminaciones y consolidar patrones estables."
+          detail="hablar, comer, vivir"
           onClick={() => onSelectVerbType('regular')}
-          title="Seleccionar solo verbos regulares"
-        >
-          <div className="option-title">REGULARES</div>
-          <p>SEGUIR LA REGLA</p>
-          <p className="example">hablar, comer, vivir</p>
-        </ClickableCard>
+          cardTitle="Seleccionar solo verbos regulares"
+        />
 
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="TENSIÓN"
+          badge="IRR"
+          title="IRREGULARES"
+          subtitle="Verbos especiales"
+          description="Recorta el drill a los casos de mayor fricción y memoria."
+          detail="ser, estar, tener, ir"
           onClick={() => onSelectVerbType('irregular')}
-          title="Seleccionar solo verbos irregulares"
-        >
-          <div className="option-title">IRREGULARES</div>
-          <p>VERBOS ESPECIALES</p>
-          <p className="example">ser, estar, tener, ir</p>
-        </ClickableCard>
+          cardTitle="Seleccionar solo verbos irregulares"
+        />
       </div>
 
       <button onClick={onBack} className="back-btn">

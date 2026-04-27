@@ -79,6 +79,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import PlacementTest from '../levels/PlacementTest.jsx'
+import { getStepMeta, getSettingsSummary } from './menuMetadata.js'
 
 /**
  * Componente principal del flujo de configuración inicial
@@ -114,6 +115,9 @@ function OnboardingFlow({
   const [showPlacementSummary, setShowPlacementSummary] = React.useState(false)
   const [lastPlacementResult, setLastPlacementResult] = React.useState(null)
   const [reportSaved, setReportSaved] = React.useState(false)
+  const stepMeta = getStepMeta(onboardingStep, settings)
+  const settingsSummary = getSettingsSummary(settings)
+  const shellLayout = stepMeta.layout || 'split'
 
   // Wrap handlers to add toasts
   // Wrap handlers to add toasts
@@ -216,7 +220,7 @@ function OnboardingFlow({
 
   return (
     <div className="App">
-      <div className="onboarding">
+      <div className="onboarding main-menu-onboarding">
         <div className="center-column">
           {showPlacementSummary && lastPlacementResult?.report && (
             <PlacementReportModal
@@ -236,10 +240,52 @@ function OnboardingFlow({
             />
           ) : (
             <>
-              {/* Header with logo */}
-              <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
-                <img src="/verbosmain_transparent.png" alt="VerbOS" width="180" height="180" />
-              </ClickableCard>
+              <section className={`menu-shell menu-shell-${shellLayout}`} data-step={stepMeta.step}>
+                <header className={`menu-hero menu-hero-${shellLayout}`}>
+                  <div className="menu-hero-main">
+                    <div className="menu-step-line">
+                      <span className="menu-step-index">{stepMeta.step}</span>
+                      <span className="menu-step-kicker">{stepMeta.kicker}</span>
+                    </div>
+                    <h1>{stepMeta.title}</h1>
+                    <p className="menu-hero-description">{stepMeta.description}</p>
+                  </div>
+
+                  <div className="menu-brand-column">
+                    <ClickableCard className="app-logo" onClick={() => handleHome(setCurrentMode)} title="Ir al menú ¿Qué querés practicar?">
+                      <img src="/verbosmain_transparent.png" alt="VerbOS" width="160" height="160" />
+                    </ClickableCard>
+
+                    <div className="menu-brand-caption">
+                      <span>VERBOS</span>
+                      <span>Sistema de menús</span>
+                    </div>
+                  </div>
+                </header>
+
+                {shellLayout !== 'minimal' && (
+                  <section className={`menu-status-panel menu-status-panel-${shellLayout}`} aria-label="Configuración actual">
+                    <div className="menu-status-header">
+                      <h2>Estado actual</h2>
+                      <p>La práctica no cambia. Solo estás definiendo qué entra al drill.</p>
+                    </div>
+
+                    <div className="menu-status-grid">
+                      {settingsSummary.length > 0 ? settingsSummary.map((item) => (
+                        <div key={`${item.label}-${item.value}`} className="menu-status-item">
+                          <span className="menu-status-label">{item.label}</span>
+                          <strong className="menu-status-value">{item.value}</strong>
+                        </div>
+                      )) : (
+                        <div className="menu-status-item is-empty">
+                          <span className="menu-status-label">Configuración</span>
+                          <strong className="menu-status-value">Todavía no definiste filtros</strong>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                )}
+              </section>
 
               {/* Step 1: Dialect Selection */}
               {onboardingStep === 1 && (

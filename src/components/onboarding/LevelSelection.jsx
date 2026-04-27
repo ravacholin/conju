@@ -1,86 +1,101 @@
 import React from 'react'
-import ClickableCard from '../shared/ClickableCard.jsx'
+import MenuOptionCard from './MenuOptionCard.jsx'
 
-function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetails, onBack, showLevelDetails = false, onGoToProgress, onStartLearningNewTense, onStartLevelTest }) {
+function LevelSelection({
+  onSelectLevel,
+  onSelectPracticeMode,
+  onGoToLevelDetails,
+  onBack,
+  showLevelDetails = false,
+  onGoToProgress,
+  onStartLearningNewTense,
+  onStartLevelTest
+}) {
   if (showLevelDetails) {
-    // Step 3: Specific level selection
     return (
       <>
         <div className="options-grid">
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="ACCESO"
+            badge="01"
+            title="A1"
+            subtitle="Principiante"
+            description="Entrada directa a las formas núcleo."
+            detail="Presente"
             onClick={() => onSelectLevel('A1')}
-            title="Seleccionar nivel A1 - Principiante"
-          >
-            <div className="option-title" >A1</div>
-            <p>PRINCIPIANTE</p>
-            <p className="example">Presente</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel A1 - Principiante"
+          />
 
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="BASE"
+            badge="02"
+            title="A2"
+            subtitle="Elemental"
+            description="Amplía repertorio con primeros tiempos narrativos."
+            detail="Pretéritos, Futuro, Imperativo"
             onClick={() => onSelectLevel('A2')}
-            title="Seleccionar nivel A2 - Elemental"
-          >
-            <div className="option-title" >A2</div>
-            <p>ELEMENTAL</p>
-            <p className="example">Pretéritos, Futuro, Imperativo</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel A2 - Elemental"
+          />
 
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="TRACCIÓN"
+            badge="03"
+            title="B1"
+            subtitle="Intermedio"
+            description="Consolida contraste temporal y precisión verbal."
+            detail="Futuro compuesto, Condicional"
             onClick={() => onSelectLevel('B1')}
-            title="Seleccionar nivel B1 - Intermedio"
-          >
-            <div className="option-title" >B1</div>
-            <p>INTERMEDIO</p>
-            <p className="example">Futuro compuesto, Condicional</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel B1 - Intermedio"
+          />
 
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="PRECISIÓN"
+            badge="04"
+            title="B2"
+            subtitle="Intermedio alto"
+            description="Empieza a exigir control real de variación y subordinación."
+            detail="Subjuntivo imperfecto"
             onClick={() => onSelectLevel('B2')}
-            title="Seleccionar nivel B2 - Intermedio alto"
-          >
-            <div className="option-title" >B2</div>
-            <p>INTERMEDIO ALTO</p>
-            <p className="example">Subjuntivo imperfecto</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel B2 - Intermedio alto"
+          />
 
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="MATIZ"
+            badge="05"
+            title="C1"
+            subtitle="Avanzado"
+            description="Pensado para discurso flexible, rápido y fino."
+            detail="Discurso preciso y fluido"
             onClick={() => onSelectLevel('C1')}
-            title="Seleccionar nivel C1 - Avanzado"
-          >
-            <div className="option-title" >C1</div>
-            <p>AVANZADO</p>
-            <p className="example">Discurso preciso y fluido</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel C1 - Avanzado"
+          />
 
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="DOMINIO"
+            badge="06"
+            title="C2"
+            subtitle="Superior"
+            description="Máxima complejidad y repertorio verbal completo."
+            detail="Dominio nativo"
             onClick={() => onSelectLevel('C2')}
-            title="Seleccionar nivel C2 - Superior"
-          >
-            <div className="option-title" >C2</div>
-            <p>SUPERIOR</p>
-            <p className="example">Dominio nativo</p>
-          </ClickableCard>
+            cardTitle="Seleccionar nivel C2 - Superior"
+          />
 
           {onStartLevelTest && (
-            <ClickableCard
-              className="option-card level-test-card"
+            <MenuOptionCard
+              className="level-test-card"
+              eyebrow="AUTOMÁTICO"
+              badge="TEST"
+              title="TEST"
+              subtitle="Determinar nivel"
+              description="Diagnóstico adaptativo para elegir dificultad sin fricción."
+              detail="Automático • Adaptativo"
               onClick={onStartLevelTest}
-              title="Test de nivel adaptativo - Determina tu nivel automáticamente"
-            >
-              <div className="option-title" >TEST</div>
-              <p>DETERMINAR NIVEL</p>
-              <p className="example">Automático • Adaptativo</p>
-            </ClickableCard>
+              cardTitle="Test de nivel adaptativo - Determina tu nivel automáticamente"
+            />
           )}
         </div>
 
-        {/* Hint text that includes navigation keywords for test expectations */}
         <p>Volver al menú: Por tema / Por nivel</p>
 
         <button onClick={onBack} className="back-btn">
@@ -90,50 +105,53 @@ function LevelSelection({ onSelectLevel, onSelectPracticeMode, onGoToLevelDetail
     )
   }
 
-  // Step 2: Unified level selection - direct to level selection
   return (
     <>
       <div className="options-grid">
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="PROGRESIÓN"
+          badge="A1-C2"
+          title="NIVELES"
+          subtitle="Por dificultad"
+          description="Recorrido estructurado por tramo CEFR con filtros pedagógicos."
+          detail="Camino progresivo estructurado"
           onClick={onGoToLevelDetails}
-          title="Practicar por nivel específico (A1-C2)"
-        >
-          <div className="option-title" >NIVELES</div>
-          <p>POR DIFICULTAD (A1-C2)</p>
-          <p className="example">Camino progresivo estructurado</p>
-        </ClickableCard>
+          cardTitle="Practicar por nivel específico (A1-C2)"
+        />
 
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="FOCO"
+          badge="MODO"
+          title="TEMAS"
+          subtitle="Por tiempo verbal"
+          description="Entrá directo a un territorio verbal concreto sin pasar por la escala CEFR."
+          detail="Presente, Subjuntivo, etc."
           onClick={() => onSelectPracticeMode('theme')}
-          title="Practicar temas específicos (presente, subjuntivo, etc.)"
-        >
-          <div className="option-title" >TEMAS</div>
-          <p>POR TIEMPO VERBAL</p>
-          <p className="example">Presente, Subjuntivo, etc.</p>
-        </ClickableCard>
+          cardTitle="Practicar temas específicos (presente, subjuntivo, etc.)"
+        />
 
-        <ClickableCard
-          className="option-card"
+        <MenuOptionCard
+          eyebrow="GUIADO"
+          badge="LEARN"
+          title="APRENDER"
+          subtitle="Lecciones guiadas"
+          description="Flujo pedagógico paso a paso para incorporar tiempos nuevos."
+          detail="Explicaciones y práctica paso a paso"
           onClick={onStartLearningNewTense}
-          title="Aprender un tiempo verbal nuevo con un método guiado"
-        >
-          <div className="option-title" >APRENDER</div>
-          <p>LECCIONES GUIADAS</p>
-          <p className="example">Explicaciones y práctica paso a paso</p>
-        </ClickableCard>
+          cardTitle="Aprender un tiempo verbal nuevo con un método guiado"
+        />
 
         {onGoToProgress && (
-          <ClickableCard
-            className="option-card"
+          <MenuOptionCard
+            eyebrow="TRACKING"
+            badge="DATA"
+            title="PROGRESO"
+            subtitle="Estadísticas"
+            description="Dashboard con métricas, mapas y recomendaciones."
+            detail="Analíticas y mapa de calor"
             onClick={() => onGoToProgress()}
-            title="Ver progreso y analíticas"
-          >
-            <div className="option-title" >PROGRESO</div>
-            <p>ESTADÍSTICAS</p>
-            <p className="example">Analíticas y mapa de calor</p>
-          </ClickableCard>
+            cardTitle="Ver progreso y analíticas"
+          />
         )}
       </div>
 
