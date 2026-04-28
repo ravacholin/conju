@@ -379,3 +379,89 @@
     font-size: 1.3rem;
   }
 }
+
+/* Mobile: fit menus on-screen without scroll */
+@media (max-width: 640px) {
+  .learning-menu-layout {
+    padding: 0 0.75rem 1.5rem;
+  }
+
+  .learning-menu-shell {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Hide logo — recovers the full-width header column */
+  .learning-menu-brand {
+    display: none;
+  }
+
+  /* Single-column header with compact padding */
+  .learning-menu-header {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-menu-copy {
+    padding: 0.85rem 1rem;
+  }
+
+  .learning-menu-meta {
+    margin-bottom: 0.45rem;
+  }
+
+  .learning-menu-layout .learning-menu-copy h1 {
+    font-size: clamp(1.4rem, 6.5vw, 1.9rem);
+    margin-bottom: 0.3rem;
+    line-height: 1;
+  }
+
+  .learning-menu-description {
+    font-size: 0.74rem;
+    line-height: 1.4;
+  }
+
+  .learning-menu-body {
+    gap: 0.75rem;
+  }
+
+  /* Options grid: 2 columns */
+  .learn-flow .options-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  /* Compact learning option cards */
+  .learn-flow .learning-option-card {
+    min-height: auto;
+    padding: 0.8rem 0.85rem;
+  }
+
+  .learn-flow .learning-option-card .menu-option-top {
+    margin-bottom: 0.3rem;
+  }
+
+  /* Hide verbose content — title + subtitle are sufficient */
+  .learn-flow .learning-option-card .menu-option-description {
+    display: none;
+  }
+
+  .learn-flow .learning-option-card .menu-option-detail {
+    display: none;
+    min-height: 0;
+    margin: 0;
+  }
+
+  /* Tense sections more compact */
+  .tense-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .tense-section h2 {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .learn-flow .back-btn {
+    margin: 1.25rem auto 0;
+  }
+}
