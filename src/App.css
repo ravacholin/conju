@@ -3991,16 +3991,116 @@ body {
 
 @media (max-width: 640px) {
   .main-menu-onboarding {
-    padding: 0 1rem 2rem;
+    padding: 0 0.75rem 1.5rem;
   }
 
+  /* Compact the header shell */
+  .main-menu-onboarding .menu-shell {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Hide logo column — saves ~180px of vertical space */
+  .main-menu-onboarding .menu-brand-column {
+    display: none;
+  }
+
+  /* Compact hero panel */
+  .main-menu-onboarding .menu-hero-main,
+  .main-menu-onboarding .menu-hero-compact .menu-hero-main,
+  .main-menu-onboarding .menu-hero-minimal .menu-hero-main {
+    padding: 0.85rem 1rem;
+  }
+
+  .main-menu-onboarding .menu-step-line {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Reduce h1 to a compact size that still reads well */
+  .main-menu-onboarding .menu-hero h1,
+  .main-menu-onboarding .menu-hero-compact h1,
+  .main-menu-onboarding .menu-hero-minimal h1,
+  .main-menu-onboarding .menu-shell-hero .menu-hero-main h1,
+  .main-menu-onboarding .menu-shell-hero[data-step="02"] .menu-hero-main h1 {
+    font-size: clamp(1.45rem, 6.5vw, 2rem);
+    margin: 0 0 0.35rem;
+    max-width: none;
+    line-height: 1;
+  }
+
+  .main-menu-onboarding .menu-hero-description,
+  .main-menu-onboarding .menu-hero-minimal .menu-hero-description,
+  .main-menu-onboarding .menu-shell-hero .menu-hero-description {
+    font-size: 0.74rem;
+    line-height: 1.4;
+    max-width: none;
+  }
+
+  /* Compact status panel */
+  .main-menu-onboarding .menu-status-panel {
+    padding: 0.65rem 0.9rem;
+  }
+
+  .main-menu-onboarding .menu-status-header {
+    margin-bottom: 0.45rem;
+  }
+
+  /* Hide the explanatory subtitle in status header — wastes space */
+  .main-menu-onboarding .menu-status-header p {
+    display: none;
+  }
+
+  /* Status grid: 2 columns compact chips */
   .main-menu-onboarding .menu-status-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
   }
 
+  .main-menu-onboarding .menu-status-panel-compact .menu-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-menu-onboarding .menu-status-item {
+    padding: 0.4rem 0.6rem;
+    gap: 0.12rem;
+  }
+
+  /* Options grid: 2 columns so 4 cards = 2×2, fits without scroll */
+  .main-menu-onboarding .options-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Remove tall min-height from all card variants */
   .main-menu-onboarding .option-card,
   .main-menu-onboarding .option-card.compact,
   .main-menu-onboarding .menu-option-card.featured {
     min-height: auto;
+    padding: 0.8rem 0.85rem;
+  }
+
+  .main-menu-onboarding .menu-option-top {
+    margin-bottom: 0.3rem;
+  }
+
+  /* Card title: readable but compact */
+  .main-menu-onboarding .menu-option-card .option-title {
+    font-size: clamp(1.15rem, 4.8vw, 1.55rem);
+  }
+
+  .main-menu-onboarding .menu-option-card.compact .option-title {
+    font-size: 0.95rem;
+  }
+
+  /* Hide long description and conjugation example — title + subtitle suffice on mobile */
+  .main-menu-onboarding .menu-option-description {
+    display: none;
+  }
+
+  .main-menu-onboarding .menu-option-detail {
+    display: none;
+    min-height: 0;
+    margin-top: 0;
   }
 }
