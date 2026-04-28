@@ -79,7 +79,7 @@ import VerbTypeSelection from './VerbTypeSelection.jsx'
 import FamilySelection from './FamilySelection.jsx'
 import ClickableCard from '../shared/ClickableCard.jsx'
 import PlacementTest from '../levels/PlacementTest.jsx'
-import { getStepMeta, getSettingsSummary } from './menuMetadata.js'
+import { getStepMeta } from './menuMetadata.js'
 
 /**
  * Componente principal del flujo de configuración inicial
@@ -116,7 +116,6 @@ function OnboardingFlow({
   const [lastPlacementResult, setLastPlacementResult] = React.useState(null)
   const [reportSaved, setReportSaved] = React.useState(false)
   const stepMeta = getStepMeta(onboardingStep, settings)
-  const settingsSummary = getSettingsSummary(settings)
   const shellLayout = stepMeta.layout || 'split'
 
   // Wrap handlers to add toasts
@@ -263,28 +262,6 @@ function OnboardingFlow({
                   </div>
                 </header>
 
-                {shellLayout !== 'minimal' && (
-                  <section className={`menu-status-panel menu-status-panel-${shellLayout}`} aria-label="Configuración actual">
-                    <div className="menu-status-header">
-                      <h2>Estado actual</h2>
-                      <p>La práctica no cambia. Solo estás definiendo qué entra al drill.</p>
-                    </div>
-
-                    <div className="menu-status-grid">
-                      {settingsSummary.length > 0 ? settingsSummary.map((item) => (
-                        <div key={`${item.label}-${item.value}`} className="menu-status-item">
-                          <span className="menu-status-label">{item.label}</span>
-                          <strong className="menu-status-value">{item.value}</strong>
-                        </div>
-                      )) : (
-                        <div className="menu-status-item is-empty">
-                          <span className="menu-status-label">Configuración</span>
-                          <strong className="menu-status-value">Todavía no definiste filtros</strong>
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                )}
               </section>
 
               {/* Step 1: Dialect Selection */}
