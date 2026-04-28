@@ -3647,8 +3647,7 @@ body {
   align-items: start;
 }
 
-.main-menu-onboarding .menu-hero-main,
-.main-menu-onboarding .menu-status-panel {
+.main-menu-onboarding .menu-hero-main {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
     rgba(255, 255, 255, 0.02);
@@ -3659,8 +3658,7 @@ body {
   overflow: hidden;
 }
 
-.main-menu-onboarding .menu-hero-main::before,
-.main-menu-onboarding .menu-status-panel::before {
+.main-menu-onboarding .menu-hero-main::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -3681,7 +3679,6 @@ body {
 .main-menu-onboarding .menu-step-kicker,
 .main-menu-onboarding .menu-option-eyebrow,
 .main-menu-onboarding .menu-option-badge,
-.main-menu-onboarding .menu-status-label,
 .main-menu-onboarding .menu-brand-caption span:last-child {
   font-family: var(--font-mono);
   text-transform: uppercase;
@@ -3813,70 +3810,6 @@ body {
   color: rgba(255, 255, 255, 0.58);
 }
 
-.main-menu-onboarding .menu-status-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-end;
-  margin-bottom: 1rem;
-}
-
-.main-menu-onboarding .menu-status-header h2 {
-  margin: 0;
-  font-size: 1rem;
-  color: #ffffff;
-}
-
-.main-menu-onboarding .menu-status-header p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.58);
-  max-width: 50ch;
-  text-align: right;
-  text-transform: none;
-}
-
-.main-menu-onboarding .menu-status-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.9rem;
-}
-
-.main-menu-onboarding .menu-status-panel-compact .menu-status-grid {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-}
-
-.main-menu-onboarding .menu-status-panel-compact .menu-status-header {
-  margin-bottom: 0.8rem;
-}
-
-.main-menu-onboarding .menu-status-panel-compact .menu-status-header p {
-  font-size: 0.78rem;
-}
-
-.main-menu-onboarding .menu-status-item {
-  display: grid;
-  gap: 0.45rem;
-  padding: 0.95rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.03);
-  text-align: left;
-}
-
-.main-menu-onboarding .menu-status-item.is-empty {
-  grid-column: 1 / -1;
-}
-
-.main-menu-onboarding .menu-status-label {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.48);
-}
-
-.main-menu-onboarding .menu-status-value {
-  font-size: 0.94rem;
-  line-height: 1.35;
-  color: #ffffff;
-  text-transform: uppercase;
-}
 
 .main-menu-onboarding .options-grid {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -3979,14 +3912,6 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .main-menu-onboarding .menu-status-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .main-menu-onboarding .menu-status-header p {
-    text-align: left;
-  }
 }
 
 @media (max-width: 640px) {
@@ -4034,35 +3959,6 @@ body {
     font-size: 0.74rem;
     line-height: 1.4;
     max-width: none;
-  }
-
-  /* Compact status panel */
-  .main-menu-onboarding .menu-status-panel {
-    padding: 0.65rem 0.9rem;
-  }
-
-  .main-menu-onboarding .menu-status-header {
-    margin-bottom: 0.45rem;
-  }
-
-  /* Hide the explanatory subtitle in status header — wastes space */
-  .main-menu-onboarding .menu-status-header p {
-    display: none;
-  }
-
-  /* Status grid: 2 columns compact chips */
-  .main-menu-onboarding .menu-status-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.4rem;
-  }
-
-  .main-menu-onboarding .menu-status-panel-compact .menu-status-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .main-menu-onboarding .menu-status-item {
-    padding: 0.4rem 0.6rem;
-    gap: 0.12rem;
   }
 
   /* Options grid: 2 columns so 4 cards = 2×2, fits without scroll */
