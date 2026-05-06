@@ -22,8 +22,8 @@ describe('TypeSelectionStep', () => {
       />
     )
 
-    expect(screen.getByText(/Regulares/)).toBeInTheDocument()
-    expect(screen.getByText('Irregulares en YO')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'regulares' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Irregulares en YO' })).toBeInTheDocument()
   })
 
   it('calls onSelectType with "regular" when regular option is clicked', () => {
@@ -38,7 +38,7 @@ describe('TypeSelectionStep', () => {
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /practicar verbos regulares/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'regulares' }))
 
     expect(handleSelect).toHaveBeenCalledTimes(1)
     expect(handleSelect).toHaveBeenCalledWith('regular')
@@ -56,7 +56,7 @@ describe('TypeSelectionStep', () => {
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /practicar irregulares en yo/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Irregulares en YO' }))
 
     expect(handleSelect).toHaveBeenCalledTimes(1)
     // The component correctly includes LEARNING_VERY_IRREGULAR in YO irregular category
