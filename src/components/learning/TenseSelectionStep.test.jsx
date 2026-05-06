@@ -21,9 +21,8 @@ describe('TenseSelectionStep', () => {
     render(<TenseSelectionStep {...defaultProps} />)
 
     await waitFor(() => {
-      expect(screen.getByText('Presente')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Presente' })).toBeInTheDocument()
     })
-    expect(screen.getByRole('button', { name: 'Volver al menú' })).toBeInTheDocument()
   })
 
   it('calls onSelect when a tense is chosen', async () => {
@@ -31,9 +30,9 @@ describe('TenseSelectionStep', () => {
     render(<TenseSelectionStep {...defaultProps} onSelect={onSelect} />)
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /seleccionar presente/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Presente' })).toBeInTheDocument()
     })
-    fireEvent.click(screen.getByRole('button', { name: /seleccionar presente/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Presente' }))
 
     expect(onSelect).toHaveBeenCalledTimes(1)
     expect(onSelect).toHaveBeenCalledWith('indicativo', 'pres')
@@ -43,10 +42,7 @@ describe('TenseSelectionStep', () => {
     const onHome = vi.fn()
     render(<TenseSelectionStep {...defaultProps} onHome={onHome} />)
 
-    await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Volver al menú' })).toBeInTheDocument()
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Volver al menú' }))
+    fireEvent.click(screen.getByTitle('Volver'))
 
     expect(onHome).toHaveBeenCalledTimes(1)
   })

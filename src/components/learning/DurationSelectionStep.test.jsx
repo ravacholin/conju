@@ -18,24 +18,24 @@ describe('DurationSelectionStep', () => {
     durationOptions
   }
 
-  it('renders duration options and hides continue button until a duration is selected', () => {
+  it('renders duration options', () => {
     render(<DurationSelectionStep {...defaultProps} />)
 
-    expect(screen.getByText('10 minutos')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /continuar/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '10 minutos' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '25 minutos' })).toBeInTheDocument()
   })
 
   it('calls onSelectDuration when a duration option is clicked', () => {
     const handleSelect = vi.fn()
     render(<DurationSelectionStep {...defaultProps} onSelectDuration={handleSelect} />)
 
-    fireEvent.click(screen.getByText('10 minutos'))
+    fireEvent.click(screen.getByRole('button', { name: '10 minutos' }))
 
     expect(handleSelect).toHaveBeenCalledTimes(1)
     expect(handleSelect).toHaveBeenCalledWith(10)
   })
 
-  it('shows continue button and triggers onStart when a duration is selected', () => {
+  it('triggers onStart when clicking the already-selected option', () => {
     const handleStart = vi.fn()
     render(
       <DurationSelectionStep
@@ -45,8 +45,8 @@ describe('DurationSelectionStep', () => {
       />
     )
 
-    const continueButton = screen.getByRole('button', { name: /continuar/i })
-    fireEvent.click(continueButton)
+    // Second click on the already-selected option confirms and triggers start
+    fireEvent.click(screen.getByRole('button', { name: '25 minutos' }))
 
     expect(handleStart).toHaveBeenCalledTimes(1)
   })

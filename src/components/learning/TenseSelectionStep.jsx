@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import MenuOptionCard from '../onboarding/MenuOptionCard.jsx'
-import LearningMenuLayout from './LearningMenuLayout.jsx'
-import { MOOD_LABELS, formatMoodTense } from '../../lib/utils/verbLabels.js'
+import React, { useEffect, useState, useMemo } from 'react'
+import LearningStepView from './LearningStepView.jsx'
+import { MOOD_LABELS, formatMoodTense, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { getVerbForms } from '../../lib/core/verbDataService.js'
 
 const REFERENCE_LEMMAS = ['hablar', 'comer', 'vivir']
@@ -23,37 +22,25 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
             }
           })
         )
-
         setReferenceForms(new Map(pairs))
       } catch (error) {
         console.error('TenseSelectionStep: fallo al cargar verbos de referencia', error)
         setReferenceForms(new Map())
       }
     }
-
     loadReferenceForms()
   }, [region])
 
   const getFormsForLemma = (lemma) => referenceForms.get(lemma) || []
-  if (!availableTenses || Object.keys(availableTenses).length === 0) {
-    return null
-  }
 
   const getPersonConjugationExample = (moodKey, tenseKey) => {
-    // Para gerundios y participios, mostrar los 3 verbos modelo
     if (tenseKey === 'ger' || tenseKey === 'part') {
       const modelVerbs = ['hablar', 'comer', 'vivir']
       const examples = []
-
       for (const lemma of modelVerbs) {
         const forms = getFormsForLemma(lemma)
         const match = forms.find(f => f.mood === 'nonfinite' && f.tense === tenseKey)
-        if (match?.value) {
-          examples.push(match.value)
-          continue
-        }
-
-        // Si no hay forma específica, generar forma regular
+        if (match?.value) { examples.push(match.value); continue }
         const stem = lemma.slice(0, -2)
         if (tenseKey === 'ger') {
           examples.push(lemma.endsWith('ar') ? stem + 'ando' : stem + 'iendo')
@@ -61,20 +48,15 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
           examples.push(lemma.endsWith('ar') ? stem + 'ado' : stem + 'ido')
         }
       }
-
       return examples.join(', ')
     }
 
-    // Para otros tiempos, usar el verbo de referencia "hablar"
     const hablarForms = getFormsForLemma('hablar')
     if (hablarForms.length === 0) return ''
 
     const moodMap = {
-      indicativo: 'indicative',
-      subjuntivo: 'subjunctive',
-      imperativo: 'imperative',
-      condicional: 'conditional',
-      nonfinite: 'nonfinite'
+      indicativo: 'indicative', subjuntivo: 'subjunctive',
+      imperativo: 'imperative', condicional: 'conditional', nonfinite: 'nonfinite'
     }
 
     const englishMood = moodMap[moodKey] || moodKey
@@ -102,45 +84,42 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     if (f2) parts.push(`${useVoseo ? 'vos' : 'tú'} ${f2}`)
     const f3 = getForm('3s')
     if (f3) parts.push(`ella ${f3}`)
-
     return parts.join(', ')
   }
 
+  const options = useMemo(() => {
+    if (!availableTenses || Object.keys(availableTenses).length === 0) return []
+    return Object.entries(availableTenses).flatMap(([mood, tenses]) =>
+      tenses.map(tense => ({
+        id: `${mood}__${tense}`,
+        label: formatMoodTense(mood, tense),
+        tag: (getMoodLabel ? getMoodLabel(mood) : MOOD_LABELS[mood] || mood).toUpperCase().slice(0, 4),
+        gloss: MOOD_LABELS[mood] || mood,
+        ex: getPersonConjugationExample(mood, tense),
+        onSelect: () => onSelect(mood, tense),
+      }))
+    )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableTenses, useVoseo, referenceForms])
+
+  if (!availableTenses || Object.keys(availableTenses).length === 0) return null
+
+  const stepConfig = {
+    n: '01',
+    kicker: 'TIEMPO VERBAL',
+    prompt: 'Elegís...',
+    aux: 'Un tiempo por vez. Después definís el tipo de verbos.',
+    options,
+  }
+
   return (
-    <LearningMenuLayout
-      step="01"
-      kicker="LEARNING"
-      title="Elegí el tiempo"
-      description="Este flujo enseña un tiempo por vez. Elegí el bloque verbal y después definís qué tipo de verbos trabajar."
-      onHome={onHome}
-      footer={(
-        <button className="back-btn" onClick={onHome}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
-      )}
-    >
-        {Object.entries(availableTenses).map(([mood, tenses]) => (
-          <div key={mood} className="tense-section">
-            <h2>{MOOD_LABELS[mood] || mood}</h2>
-            <div className="options-grid">
-              {tenses.map(tense => (
-                <MenuOptionCard
-                  key={tense}
-                  className="learning-option-card"
-                  eyebrow={MOOD_LABELS[mood] || mood}
-                  badge="TIEMPO"
-                  title={formatMoodTense(mood, tense)}
-                  subtitle="Ruta de aprendizaje"
-                  description="Introducción, práctica guiada y aplicación progresiva."
-                  detail={getPersonConjugationExample(mood, tense)}
-                  onClick={() => onSelect(mood, tense)}
-                  cardTitle={`Seleccionar ${formatMoodTense(mood, tense)}`}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-    </LearningMenuLayout>
+    <LearningStepView
+      stepConfig={stepConfig}
+      onBack={onHome}
+      breadcrumb={[{ label: 'FLUJO', value: 'aprender' }]}
+      stepNum={1}
+      totalSteps={3}
+    />
   )
 }
 

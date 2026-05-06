@@ -1,6 +1,5 @@
-import React from 'react'
-import MenuOptionCard from '../onboarding/MenuOptionCard.jsx'
-import LearningMenuLayout from './LearningMenuLayout.jsx'
+import React, { useMemo } from 'react'
+import LearningStepView from './LearningStepView.jsx'
 import { getSessionDurationOptions as getDefaultDurationOptions } from '../../lib/learning/learningConfig.js'
 
 function DurationSelectionStep({
@@ -11,49 +10,44 @@ function DurationSelectionStep({
   onHome,
   durationOptions = getDefaultDurationOptions()
 }) {
+  const options = useMemo(() =>
+    durationOptions.map(d => ({
+      id: String(d.minutes),
+      label: d.label,
+      tag: `${d.minutes}M`,
+      gloss: d.title || d.label,
+      ex: d.description,
+      onSelect: () => {
+        onSelectDuration(d.minutes)
+        // Avanza automáticamente si ya hay una duración seleccionada o si se confirma la misma
+        if (selectedDuration === d.minutes) {
+          onStart?.()
+        }
+      },
+    })),
+    [durationOptions, selectedDuration, onSelectDuration, onStart]
+  )
+
+  const stepConfig = {
+    n: '03',
+    kicker: 'DURACIÓN',
+    prompt: 'La sesión dura...',
+    aux: 'Ajustá el bloque antes de entrar al recorrido guiado.',
+    options,
+  }
+
   return (
-    <LearningMenuLayout
-      step="03"
-      kicker="SESIÓN"
-      title="Definí la duración"
-      description="Ajustá el tamaño de la sesión antes de entrar al recorrido guiado. Podés usar una pasada breve o una tanda más profunda."
-      onHome={onHome}
-      footer={(
-        <button className="back-btn" onClick={onBack}>
-          <img src="/back.png" alt="Volver" className="back-icon" />
-        </button>
-      )}
-    >
-        <div className="tense-section">
-          <h2>Duración de la sesión</h2>
-
-          <div className="options-grid">
-            {durationOptions.map(durationConfig => (
-              <MenuOptionCard
-                key={durationConfig.minutes}
-                className={`learning-option-card${selectedDuration === durationConfig.minutes ? ' selected' : ''}`}
-                eyebrow="RITMO"
-                badge={`${durationConfig.minutes}M`}
-                title={durationConfig.label}
-                subtitle={durationConfig.title}
-                description="Configura la longitud del bloque guiado."
-                detail={durationConfig.description}
-                onClick={() => onSelectDuration(durationConfig.minutes)}
-                cardTitle={durationConfig.title}
-              />
-            ))}
-          </div>
-
-          {selectedDuration && (
-            <button
-              className="btn start-learning-btn"
-              onClick={onStart}
-            >
-              Continuar
-            </button>
-          )}
-        </div>
-    </LearningMenuLayout>
+    <LearningStepView
+      stepConfig={stepConfig}
+      onBack={onBack}
+      breadcrumb={[
+        { label: 'FLUJO', value: 'aprender' },
+        { label: 'SESIÓN', value: selectedDuration ? `${selectedDuration}min` : '—' },
+      ]}
+      stepNum={3}
+      totalSteps={3}
+      selectedId={selectedDuration != null ? String(selectedDuration) : undefined}
+    />
   )
 }
 
