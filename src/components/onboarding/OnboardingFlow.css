@@ -1,0 +1,482 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,700;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+.verbos-onboarding {
+  position: fixed;
+  inset: 0;
+  background: #0c0c0c;
+  color: #f4f1ea;
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'ss01', 'ss02', 'cv11';
+  overflow: hidden;
+  z-index: 200;
+}
+
+.verbos-onboarding * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.verbos-onboarding ::selection {
+  background: #ff4d1c;
+  color: #0c0c0c;
+}
+
+/* ── Scrollbar hidden ── */
+.vo-noscroll::-webkit-scrollbar { display: none; }
+.vo-noscroll { scrollbar-width: none; }
+
+/* ── Keyframes ── */
+@keyframes voBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes voScanIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+@keyframes voLiftIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.vo-scan-in {
+  animation: voScanIn 0.45s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+.vo-lift-in {
+  animation: voLiftIn 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.vo-cursor {
+  animation: voBlink 1s steps(2) infinite;
+}
+
+/* ── Layout shell ── */
+.vo-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid #1f1d18;
+  background: #0c0c0c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6e6a60;
+  z-index: 50;
+}
+
+.vo-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-top: 1px solid #1f1d18;
+  background: #0c0c0c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #2a2823;
+  z-index: 50;
+}
+
+.vo-footer-hints { display: flex; gap: 16px; }
+.vo-footer-hints span { white-space: nowrap; }
+.vo-footer-hints em { font-style: normal; color: #6e6a60; }
+
+.vo-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.vo-logo-dot {
+  width: 8px;
+  height: 8px;
+  background: #ff4d1c;
+  flex-shrink: 0;
+}
+
+.vo-logo-name {
+  color: #f4f1ea;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.vo-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  max-width: 40%;
+}
+
+.vo-breadcrumb-sep { color: #2a2823; }
+.vo-breadcrumb-label { color: #6e6a60; }
+.vo-breadcrumb-val { color: #f4f1ea; margin-left: 4px; }
+
+.vo-step-counter span { color: #f4f1ea; }
+
+/* ── Background grid ── */
+.vo-grid {
+  position: fixed;
+  inset: 44px 0 32px 0;
+  background-image:
+    linear-gradient(#1f1d18 1px, transparent 1px),
+    linear-gradient(90deg, #1f1d18 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vo-vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.vo-crosshair {
+  position: fixed;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Two-panel step view ── */
+.vo-step {
+  position: absolute;
+  top: 44px; bottom: 32px; left: 0; right: 0;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  z-index: 3;
+}
+
+.vo-left {
+  position: relative;
+  padding: 40px 40px 32px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #1f1d18;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.vo-step-tag {
+  position: absolute;
+  top: 24px; right: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #2a2823;
+}
+
+.vo-watermark {
+  position: absolute;
+  top: 54px; right: 24px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(160px, 26vw, 400px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.06em;
+  color: #2a2823;
+  line-height: 0.78;
+  pointer-events: none;
+  opacity: 0.45;
+  user-select: none;
+}
+
+.vo-left-bottom {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+}
+
+.vo-aux {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #6e6a60;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.vo-prompt {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 22px;
+  font-weight: 300;
+  color: #6e6a60;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.vo-focal-word {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  text-transform: lowercase;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  max-width: 100%;
+  margin-bottom: 18px;
+}
+
+.vo-meta {
+  display: flex;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed #2a2823;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.vo-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.vo-meta-key { color: #2a2823; }
+.vo-meta-val { color: #f4f1ea; }
+.vo-meta-ex { font-style: italic; text-transform: none; letter-spacing: 0.04em; }
+
+.vo-meta-right { margin-left: auto; text-align: right; }
+
+/* ── Right panel ── */
+.vo-right {
+  position: relative;
+  padding: 40px 56px 32px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.vo-options-label {
+  position: absolute;
+  top: 24px; left: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #2a2823;
+}
+
+.vo-options-list { display: flex; flex-direction: column; }
+
+.vo-option {
+  position: relative;
+  border-bottom: 1px solid #1f1d18;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  transition: padding-left 0.18s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.vo-option:last-child { border-bottom: none; }
+
+.vo-option-num {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.15s;
+}
+
+.vo-option-num-box {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  border: 1px solid;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.vo-option-tick {
+  width: 28px;
+  height: 1px;
+  margin-left: 4px;
+}
+
+.vo-option-label {
+  font-family: 'Inter Tight', sans-serif;
+  letter-spacing: -0.025em;
+  text-transform: lowercase;
+  line-height: 1.05;
+  transition: all 0.15s;
+  flex: 1;
+  min-width: 0;
+}
+
+.vo-option-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vo-option-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  width: 16px;
+  transition: all 0.18s;
+  flex-shrink: 0;
+}
+
+/* ── Placement test overlay ── */
+.vo-placement-overlay {
+  position: absolute;
+  top: 44px; bottom: 32px; left: 0; right: 0;
+  z-index: 10;
+  background: #0c0c0c;
+  overflow-y: auto;
+  display: flex;
+  align-items: flex-start;
+  padding: 32px 56px;
+}
+
+/* ── Placement report modal ── */
+.placement-report-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 24px;
+}
+
+.placement-report-modal {
+  background: #141412;
+  border: 1px solid #1f1d18;
+  max-width: 560px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 40px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #f4f1ea;
+}
+
+.placement-report-header { margin-bottom: 32px; }
+.placement-report-header h3 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.placement-report-header p { font-size: 11px; letter-spacing: 0.12em; color: #6e6a60; text-transform: uppercase; }
+
+.placement-report-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  border: 1px solid #1f1d18;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-label { font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #6e6a60; }
+.summary-value { font-size: 28px; font-family: 'Inter Tight', sans-serif; font-weight: 700; font-style: italic; }
+
+.placement-report-section { margin-bottom: 20px; }
+.placement-report-section h4 { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #6e6a60; margin-bottom: 10px; }
+.placement-report-section ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.placement-report-section li { font-size: 12px; letter-spacing: 0.06em; padding: 8px 0; border-bottom: 1px solid #1f1d18; }
+
+.placement-report-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.placement-report-button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: none;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.placement-report-button:hover { opacity: 0.8; }
+.placement-report-button.primary { background: #ff4d1c; color: #0c0c0c; flex: 1; }
+.placement-report-button.secondary { background: transparent; color: #f4f1ea; border: 1px solid #1f1d18; }
+.placement-report-button.ghost { background: transparent; color: #6e6a60; }
+
+/* ── Mobile ── */
+@media (max-width: 680px) {
+  .vo-step {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+  }
+
+  .vo-left {
+    border-right: none;
+    border-bottom: 1px solid #1f1d18;
+    padding: 28px 20px 24px 20px;
+    min-height: 220px;
+  }
+
+  .vo-watermark { font-size: clamp(80px, 28vw, 160px); }
+
+  .vo-right {
+    padding: 20px 20px 20px 20px;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .vo-options-label { top: 8px; left: 20px; }
+  .vo-right { padding-top: 36px; }
+
+  .vo-breadcrumb { display: none; }
+
+  .vo-footer-hints { gap: 10px; }
+
+  .vo-left-bottom { margin-top: 20px; }
+}
