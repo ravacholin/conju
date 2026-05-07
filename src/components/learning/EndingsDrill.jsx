@@ -6,6 +6,11 @@ import { highlightStemVowel } from './highlightHelpers.js';
 import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
+import '../onboarding/OnboardingFlow.css';
+
+const ACCENT = '#ff4d1c'
+const INK    = '#f4f1ea'
+const INK2   = '#6e6a60'
 
 import { safeLazy } from '../../lib/utils/lazyImport.js';
 
@@ -592,9 +597,11 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
   if (!verb || !deconstruction || !currentPronoun) {
     return (
-      <div className="App">
-        <div className="drill-container learning-drill">
-          <p>Cargando ejercicio...</p>
+      <div className="verbos-onboarding">
+        <div className="vo-grid" aria-hidden="true" />
+        <div className="vo-vignette" aria-hidden="true" />
+        <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',color:INK2,fontFamily:'JetBrains Mono,monospace',fontSize:11,letterSpacing:'0.14em',textTransform:'uppercase' }}>
+          cargando ejercicio...
         </div>
       </div>
     );
@@ -603,54 +610,38 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   // const tenseName = TENSE_LABELS[tense.tense] || tense.tense; // header label removed in favor of icon bar
   const groupKey = (verb.lemma || '').endsWith('ar') ? 'ar' : (verb.lemma || '').endsWith('er') ? 'er' : (verb.lemma || '').endsWith('ir') ? 'ir' : 'x';
 
+  const highlightData = highlightStemVowel(verb.lemma);
+
   return (
-    <div className="App" onKeyDown={handleGlobalKeyDown} tabIndex={-1}>
-      <header className="header">
-        <div className="icon-row">
-          <button
-            onClick={() => { onBack && onBack(); }}
-            className="icon-btn"
-            title="Volver"
-            aria-label="Volver"
-          >
-            <img src="/back.png" alt="Volver" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => setShowAccentKeys(v => !v)}
-            className="icon-btn"
-            title="Tildes"
-            aria-label="Tildes"
-          >
-            <img src="/enie.png" alt="Tildes" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => { onHome && onHome(); }}
-            className="icon-btn"
-            title="Inicio"
-            aria-label="Inicio"
-          >
-            <img src="/home.png" alt="Inicio" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => handleTogglePronunciation()}
-            className="icon-btn"
-            title="Práctica de pronunciación"
-          >
-            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => { onGoToProgress && onGoToProgress(); }}
-            className="icon-btn"
-            title="Métricas"
-            aria-label="Métricas"
-          >
-            <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-          </button>
+    <div className="verbos-onboarding" onKeyDown={handleGlobalKeyDown} tabIndex={-1}>
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      {[{top:56,left:12},{top:56,right:12},{bottom:44,left:12},{bottom:44,right:12}].map((pos,i) => (
+        <div key={i} className="vo-crosshair" style={pos}>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M0 7H14M7 0V14" stroke={ACCENT} strokeWidth="1" />
+          </svg>
+        </div>
+      ))}
+
+      <header className="vo-header">
+        <div className="vo-logo" onClick={onBack} title="Volver" style={{ cursor:'pointer' }}>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+          <span style={{ marginLeft: 8 }}>aprender</span>
+        </div>
+        <div className="vo-breadcrumb">
+          <span className="vo-breadcrumb-label">verbo </span>
+          <span className="vo-breadcrumb-sep">/</span>
+          <span className="vo-breadcrumb-val"> {verb.lemma}</span>
+        </div>
+        <div style={{ fontFamily:'JetBrains Mono,monospace',fontSize:10,letterSpacing:'0.14em',textTransform:'uppercase',color:INK2 }}>
+          FALTAN <span style={{ color: INK, fontWeight:700 }}>{drillQueue.length - currentIndex}</span>
         </div>
       </header>
 
       {showPronunciation && (
-        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+        <Suspense fallback={null}>
           <PronunciationPanel
             ref={pronunciationPanelRef}
             currentItem={currentItem}
@@ -661,139 +652,116 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         </Suspense>
       )}
 
-      <div className="main-content">
-        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''} group-${groupKey}`}>
+      <div className="ld-main eds-main">
+        <div className="ld-card">
 
-          {(() => {
-            const highlightData = highlightStemVowel(verb.lemma);
-            return (
-              <div className="verb-lemma">
-                {highlightData.hasHighlight ? (
-                  <>
-                    {highlightData.beforeVowel}
-                    <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
-                    {highlightData.afterVowel}
-                    <span style={{ color: 'var(--accent-orange)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
-                  </>
-                ) : (
-                  verb.lemma
-                )}
-              </div>
-            );
-          })()}
+          {/* Verb focal */}
+          <div className="ld-verb-focal">
+            {highlightData.hasHighlight ? (
+              <>
+                {highlightData.beforeVowel}
+                <span style={{ color: ACCENT }}>{highlightData.vowel.toUpperCase()}</span>
+                {highlightData.afterVowel}
+                <span style={{ color: ACCENT, opacity: 0.7 }}>{highlightData.ending.toUpperCase()}</span>
+              </>
+            ) : verb.lemma}
+          </div>
 
-          {/* No panel extra: mantener el layout idéntico al de regulares */}
-          <div className="person-display">{currentPronoun.text}</div>
+          {/* Person */}
+          <div className="ld-person-mono">{currentPronoun.text}</div>
 
-          <div className="input-container">
+          {/* Input */}
+          <div className="ld-input-wrap">
             <input
               ref={inputRef}
               type="text"
               autoComplete="off"
-              className={`conjugation-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
+              className={`ld-input ${result ? (result.correct ? 'correct' : 'incorrect') : ''}`}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               readOnly={result !== null}
               autoFocus
-              placeholder="Escribe la conjugación..."
+              placeholder="conjugar..."
             />
-            {showAccentKeys && (
-              <div className="accent-keypad" style={{ marginTop: '1rem' }}>
-                {specialChars.map(ch => (
-                  <button
-                    key={ch}
-                    type="button"
-                    className="accent-key"
-                    onClick={() => insertChar(ch)}
-                    tabIndex={-1}
-                  >{ch}</button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="action-buttons">
-            {!result ? (
-              <button className="btn" onClick={handleSubmit} disabled={!inputValue.trim()}>Continuar</button>
-            ) : (
-              <button className="btn" onClick={handleContinue}>Continuar</button>
-            )}
-          </div>
-
-          {result && (
-            <div className={`result ${result.correct ? 'correct' : 'incorrect'}`}>
-              <div className="result-top">
-                {result.correct ? (
-                  <p>¡Correcto!</p>
-                ) : (
-                  <p>La respuesta correcta es: <strong>{result.value}</strong></p>
-                )}
-                <button
-                  type="button"
-                  className="tts-btn"
-                  onClick={handleSpeak}
-                  title="Pronunciar"
-                  aria-label="Pronunciar"
-                >
-                  <img src="/megaf-imperat.png" alt="Pronunciar" />
+            {result && (
+              <div className={`ld-result-bar ${result.correct ? 'correct' : 'incorrect'}`}>
+                {result.correct
+                  ? <span className="ld-correct">✓ correcto</span>
+                  : <span className="ld-incorrect">→ <strong>{result.value}</strong></span>
+                }
+                <button type="button" className="ld-tts-btn" onClick={handleSpeak} title="Pronunciar" aria-label="Pronunciar">
+                  <img src="/megaf-imperat.png" alt="Pronunciar" style={{ width:20,height:20,filter:'invert(1) opacity(0.6)' }} />
                 </button>
               </div>
+            )}
+          </div>
+
+          {/* Accent keypad */}
+          {showAccentKeys && (
+            <div className="ld-accent-row">
+              {specialChars.map(ch => (
+                <button key={ch} type="button" className="ld-accent-key" onClick={() => insertChar(ch)} tabIndex={-1}>{ch}</button>
+              ))}
             </div>
           )}
 
-          <div className="endings-reference">
-            <h4>Formas de referencia</h4>
-            <div className="endings-reference-table">
-              {PRONOUNS_DISPLAY.map((pronoun) => {
-                const actualForm = personToFormMap[pronoun.key];
-                const analysis = irregularityAnalysis?.analysis.find(a => a.person === pronoun.key);
-                const isIrregular = analysis?.isIrregular;
-
-                return (
-                  <div key={pronoun.key} className={`ending-row ${pronoun.key === currentPronoun.key ? 'highlighted' : ''} ${isIrregular ? 'irregular' : ''}`}>
-                    <span className="ending-person">{pronoun.text}</span>
-                    {irregularityAnalysis?.hasIrregularities ? (
-                      <div className="form-comparison">
-                        <span className="ending-value full-form">
-                          {isIrregular && analysis ? (
-                            <>
-                              <span className="expected-form-strike">{analysis.expected}</span>
-                              <span className="actual-form-highlight">
-                                {renderWithHighlights(actualForm, analysis.expected)}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="regular-form">{actualForm}</span>
-                          )}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="ending-value full-form">
-                        {(() => {
-                          const ending = endingFor(tense.tense, pronoun.key);
-                          if (ending && actualForm.endsWith(ending)) {
-                            const stem = actualForm.slice(0, actualForm.length - ending.length);
-                            return (
-                              <>
-                                <span className="stem">{stem}</span>
-                                <span className="ending-suffix">{ending}</span>
-                              </>
-                            );
-                          }
-                          return actualForm;
-                        })()}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+          {/* Action */}
+          <div className="ld-actions">
+            {!result
+              ? <button className="ld-confirm-btn" onClick={handleSubmit} disabled={!inputValue.trim()}>confirmar</button>
+              : <button className="ld-confirm-btn" onClick={handleContinue}>continuar</button>
+            }
           </div>
+        </div>
 
-          <div className="round-counter">Faltan: {drillQueue.length - currentIndex}</div>
+        {/* Reference table */}
+        <div className="eds-reference">
+          {PRONOUNS_DISPLAY.map((pronoun) => {
+            const actualForm = personToFormMap[pronoun.key];
+            const analysis = irregularityAnalysis?.analysis.find(a => a.person === pronoun.key);
+            const isIrregular = analysis?.isIrregular;
+            const isCurrent = pronoun.key === currentPronoun.key;
+            return (
+              <div key={pronoun.key} className={`eds-ref-row${isCurrent ? ' eds-ref-current' : ''}${isIrregular ? ' eds-ref-irreg' : ''}`}>
+                <span className="eds-ref-person">{pronoun.text}</span>
+                <span className="eds-ref-form">
+                  {irregularityAnalysis?.hasIrregularities ? (
+                    isIrregular && analysis ? (
+                      <>{renderWithHighlights(actualForm, analysis.expected)}</>
+                    ) : actualForm
+                  ) : (
+                    (() => {
+                      const ending = endingFor(tense.tense, pronoun.key);
+                      if (ending && actualForm?.endsWith(ending)) {
+                        const stem = actualForm.slice(0, actualForm.length - ending.length);
+                        return <><span style={{ opacity:0.5 }}>{stem}</span><span style={{ color: ACCENT, fontWeight:700 }}>{ending}</span></>;
+                      }
+                      return actualForm;
+                    })()
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
+        {/* Utilities */}
+        <div className="ld-utils">
+          <button className="ld-util-btn" onClick={() => setShowAccentKeys(v => !v)} title="Tildes" style={{ background: showAccentKeys ? ACCENT : 'transparent', color: showAccentKeys ? '#0c0c0c' : INK2 }}>Ñ</button>
+          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación">◉</button>
+          {onGoToProgress && <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas">⬡</button>}
+          {onHome && <button className="ld-util-btn" onClick={onHome} title="Inicio">⌂</button>}
         </div>
       </div>
+
+      <footer className="vo-footer">
+        <div className="vo-footer-hints">
+          <span><em>↵</em> confirmar</span>
+          <span><em>← / esc</em> volver</span>
+        </div>
+        <div>{verb.lemma.toUpperCase()}</div>
+        <div>GUIDED DRILL · OK</div>
+      </footer>
     </div>
   );
 }

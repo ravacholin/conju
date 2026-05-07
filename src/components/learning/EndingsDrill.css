@@ -1,4 +1,77 @@
-/* EndingsDrill - Consistent with main app design */
+/* EndingsDrill - VERB/OS shell */
+
+/* ── Extended main area for EndingsDrill (adds reference table) ── */
+.eds-main {
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  gap: 12px;
+}
+
+/* ── Reference table ── */
+.eds-reference {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #1f1d18;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.eds-ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #1f1d18;
+  transition: background 0.12s;
+}
+
+.eds-ref-row:last-child { border-bottom: none; }
+
+.eds-ref-current {
+  background: rgba(255, 77, 28, 0.08);
+  border-left: 2px solid #ff4d1c;
+  padding-left: 14px;
+}
+
+.eds-ref-irreg {
+  border-left: 2px solid rgba(255, 77, 28, 0.4);
+  padding-left: 14px;
+}
+
+.eds-ref-current.eds-ref-irreg {
+  border-left: 2px solid #ff4d1c;
+}
+
+.eds-ref-person {
+  color: #6e6a60;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eds-ref-form {
+  color: #f4f1ea;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.eds-ref-current .eds-ref-person {
+  color: #ff4d1c;
+}
+
+.eds-ref-current .eds-ref-form {
+  font-weight: 700;
+}
+
+@media (max-width: 680px) {
+  .eds-main {
+    padding-top: 4px;
+    gap: 8px;
+  }
+}
+
+/* ── Legacy styles below ── */
 
 .drill-container {
     display: flex;
