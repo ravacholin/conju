@@ -13,6 +13,12 @@ import { normalize } from '../../lib/utils/accentUtils.js'
 import AccentKeypad from '../shared/AccentKeypad.jsx'
 import './LearningDrill.css'
 import './IrregularRootDrill.css'
+import '../onboarding/OnboardingFlow.css'
+
+const ACCENT = '#ff4d1c'
+const INK    = '#f4f1ea'
+const INK2   = '#6e6a60'
+const INK3   = '#2a2823'
 import { highlightStemVowel } from './highlightHelpers.js'
 
 import { safeLazy } from '../../lib/utils/lazyImport.js';
@@ -70,7 +76,6 @@ function IrregularRootDrill({
   const useVoseo = settings.useVoseo === true
   const containerRef = useRef(null)
   const inputRef = useRef(null)
-  const [entered, setEntered] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
   const [showAccentKeypad, setShowAccentKeypad] = useState(false)
   const pronunciationPanelRef = useRef(null)
@@ -94,11 +99,6 @@ function IrregularRootDrill({
   const [status, setStatus] = useState('idle') // idle | correct | incorrect
   const [stats, setStats] = useState({ correct: 0, total: 0 })
   const [timeLeft, setTimeLeft] = useState(duration ? duration * 60 : null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setEntered(true), 10)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     let built = []
@@ -135,35 +135,25 @@ function IrregularRootDrill({
   const tenseLabel = tense ? TENSE_LABELS[tense.tense] || formatMoodTense(tense.mood, tense.tense) : ''
 
   const renderFallback = (title, body) => (
-    <div className="App">
-      <header className="header">
-        <div className="icon-row">
-          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
-            <img src="/back.png" alt="Volver" className="menu-icon" />
-          </button>
-          {onGoToProgress && (
-            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
-              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-            </button>
-          )}
-          {onHome && (
-            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
-            </button>
-          )}
+    <div className="verbos-onboarding">
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      <header className="vo-header">
+        <div className="vo-logo" onClick={onBack} title="Volver" style={{ cursor:'pointer' }}>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+          <span style={{ marginLeft: 8 }}>drill</span>
         </div>
       </header>
-      <div className="main-content">
-        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
-          <div className="irregular-root empty">
-            <h2>{title}</h2>
-            <p>{body}</p>
-            <div className="action-buttons">
-              <button className="btn" onClick={onBack}>Volver</button>
-            </div>
-          </div>
-        </div>
+      <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',maxWidth:400,textAlign:'center',padding:32 }}>
+        <div style={{ fontFamily:'Inter Tight,sans-serif',fontSize:24,fontWeight:900,fontStyle:'italic',color:INK,marginBottom:16 }}>{title}</div>
+        <div style={{ fontFamily:'JetBrains Mono,monospace',fontSize:11,color:INK2,letterSpacing:'0.1em',marginBottom:24 }}>{body}</div>
+        <button className="ld-confirm-btn" onClick={onBack}>← volver</button>
       </div>
+      <footer className="vo-footer">
+        <div className="vo-footer-hints"><span><em>←</em> volver</span></div>
+        <div>DRILL</div><div>—</div>
+      </footer>
     </div>
   )
 
@@ -345,43 +335,40 @@ function IrregularRootDrill({
     )
   }
 
+  const irdHighlight = highlightStemVowel(currentQuestion.lemma)
+
   return (
-    <div className="App" ref={containerRef}>
-      <header className="header">
-        <div className="icon-row">
-          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
-            <img src="/back.png" alt="Volver" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => setShowAccentKeypad(prev => !prev)}
-            className={`icon-btn ${showAccentKeypad ? 'active' : ''}`}
-            title="Tildes"
-            aria-label="Tildes"
-          >
-            <img src="/enie.png" alt="Tildes" className="menu-icon" />
-          </button>
-          {onHome && (
-            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
-            </button>
-          )}
-          <button
-            onClick={() => handleTogglePronunciation()}
-            className="icon-btn"
-            title="Práctica de pronunciación"
-          >
-            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
-          </button>
-          {onGoToProgress && (
-            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
-              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-            </button>
-          )}
+    <div className="verbos-onboarding" ref={containerRef}>
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      {[{top:56,left:12},{top:56,right:12},{bottom:44,left:12},{bottom:44,right:12}].map((pos,i) => (
+        <div key={i} className="vo-crosshair" style={pos}>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M0 7H14M7 0V14" stroke={ACCENT} strokeWidth="1" />
+          </svg>
+        </div>
+      ))}
+
+      <header className="vo-header">
+        <div className="vo-logo" onClick={onBack} title="Volver" style={{ cursor:'pointer' }}>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+          <span style={{ marginLeft: 8 }}>drill</span>
+        </div>
+        <div className="vo-breadcrumb">
+          <span className="vo-breadcrumb-label">{tenseLabel.toLowerCase()} </span>
+          <span className="vo-breadcrumb-sep">/</span>
+          <span className="vo-breadcrumb-val"> irregulares</span>
+        </div>
+        <div style={{ display:'flex',gap:16,fontFamily:'JetBrains Mono,monospace',fontSize:10,letterSpacing:'0.12em',textTransform:'uppercase',color:INK2 }}>
+          {timeLeft != null && <span>TIEMPO <span style={{ color: INK }}>{Math.max(timeLeft,0)}s</span></span>}
+          <span>{Math.min(index+1,questions.length)}<span style={{ color:INK3 }}>/{questions.length}</span></span>
+          <span>✓ <span style={{ color: INK }}>{stats.correct}</span></span>
         </div>
       </header>
 
       {showPronunciation && (
-        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+        <Suspense fallback={null}>
           <PronunciationPanel
             ref={pronunciationPanelRef}
             currentItem={currentItem}
@@ -392,84 +379,79 @@ function IrregularRootDrill({
         </Suspense>
       )}
 
-      <div className="main-content">
-        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
-          <div className="irregular-root-card">
-            <div className="drill-header">
-              <div>
-                <h2>{tenseLabel} · irregularidades clave</h2>
-                <p className="drill-subtitle">Practica saltando entre verbos irregulares para fijar las raíces especiales.</p>
-              </div>
-              {timeLeft != null && (
-                <div className="chrono-badge">{Math.max(timeLeft, 0)}s</div>
-              )}
-            </div>
+      <div className="ld-main eds-main">
+        <div className="ld-card">
 
-            <div className="irregular-verb">
-              <span className="verb-label">Verbo</span>
-              {(() => {
-                const highlightData = highlightStemVowel(currentQuestion.lemma);
-                return (
-                  <span className="verb-lemma">
-                    {highlightData.hasHighlight ? (
-                      <>
-                        {highlightData.beforeVowel}
-                        <span className="stem-vowel-highlight">{highlightData.vowel.toUpperCase()}</span>
-                        {highlightData.afterVowel}
-                        <span style={{ color: 'var(--accent-orange)', opacity: 0.9 }}>{highlightData.ending.toUpperCase()}</span>
-                      </>
-                    ) : (
-                      currentQuestion.lemma
-                    )}
-                  </span>
-                );
-              })()}
-            </div>
+          {/* Verb focal */}
+          <div className="ld-verb-focal">
+            {irdHighlight.hasHighlight ? (
+              <>
+                {irdHighlight.beforeVowel}
+                <span style={{ color: ACCENT }}>{irdHighlight.vowel.toUpperCase()}</span>
+                {irdHighlight.afterVowel}
+                <span style={{ color: ACCENT, opacity: 0.7 }}>{irdHighlight.ending.toUpperCase()}</span>
+              </>
+            ) : currentQuestion.lemma}
+          </div>
 
+          {/* Hint block */}
+          <div className="ird-hint-block">
             {mode === 'future_cond' && renderFutureCondDetails(currentQuestion)}
             {mode !== 'future_cond' && renderNonFiniteDetails(currentQuestion)}
+          </div>
 
-            <form className="root-form" onSubmit={handleSubmit}>
-              <label htmlFor="irregular-answer" className="sr-only">Tu respuesta</label>
-              <input
-                ref={inputRef}
-                id="irregular-answer"
-                autoComplete="off"
-                className={`conjugation-input ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}
-                value={inputValue}
-                onChange={(event) => setInputValue(event.target.value)}
-                placeholder="Escribe la forma correcta"
-                autoFocus
-              />
-
-              {/* Teclado de tildes */}
-              {showAccentKeypad && (
-                <AccentKeypad
-                  targetRef={inputRef}
-                  onValueChange={setInputValue}
-                />
-              )}
-
-              <div className="action-buttons">
-                <button type="submit" className="btn" disabled={!inputValue.trim()}>Validar</button>
-                {onBack && <button type="button" className="btn secondary" onClick={onBack}>Volver</button>}
+          {/* Input */}
+          <form className="ld-input-wrap" onSubmit={handleSubmit}>
+            <input
+              ref={inputRef}
+              id="irregular-answer"
+              autoComplete="off"
+              className={`ld-input ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="forma correcta..."
+              autoFocus
+            />
+            {status !== 'idle' && (
+              <div className={`ld-result-bar ${status}`}>
+                {status === 'correct'
+                  ? <span className="ld-correct">✓ perfecto</span>
+                  : <span className="ld-incorrect">→ <strong>{getExpectedAnswers(currentQuestion)[0]}</strong></span>
+                }
               </div>
-            </form>
+            )}
+          </form>
 
-            <div className={`feedback ${status}`}>
-              {status === 'correct' && '¡Perfecto! La raíz irregular está dominada.'}
-              {status === 'incorrect' && (
-                <span>Respuesta esperada: {getExpectedAnswers(currentQuestion)[0]}</span>
-              )}
-            </div>
+          {/* Accent keypad */}
+          {showAccentKeypad && (
+            <AccentKeypad targetRef={inputRef} onValueChange={setInputValue} />
+          )}
 
-            <footer className="root-footer">
-              <span>Progreso: {Math.min(index + 1, questions.length)} / {questions.length}</span>
-              <span>Aciertos: {stats.correct} de {stats.total}</span>
-            </footer>
+          {/* Action */}
+          <div className="ld-actions">
+            <button type="button" className="ld-confirm-btn" onClick={handleSubmit} disabled={!inputValue.trim() || status !== 'idle'}>
+              confirmar
+            </button>
           </div>
         </div>
+
+        {/* Utilities */}
+        <div className="ld-utils">
+          <button className="ld-util-btn" onClick={() => setShowAccentKeypad(v => !v)} title="Tildes" style={{ background: showAccentKeypad ? ACCENT : 'transparent', color: showAccentKeypad ? '#0c0c0c' : INK2 }}>Ñ</button>
+          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación">◉</button>
+          {onGoToProgress && <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas">⬡</button>}
+          {onHome && <button className="ld-util-btn" onClick={onHome} title="Inicio">⌂</button>}
+        </div>
       </div>
+
+      <footer className="vo-footer">
+        <div className="vo-footer-hints">
+          <span><em>↵</em> confirmar</span>
+          <span><em>←</em> volver</span>
+        </div>
+        <div>{tenseLabel.toUpperCase()} · IRREGULARES</div>
+        <div>DRILL · OK</div>
+      </footer>
     </div>
   )
 }

@@ -68,6 +68,12 @@ import {
 import { recordLearningSession } from '../../lib/learning/analytics.js';
 import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
+import '../onboarding/OnboardingFlow.css';
+
+const ACCENT = '#ff4d1c'
+const INK    = '#f4f1ea'
+const INK2   = '#6e6a60'
+const INK3   = '#2a2823'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 
 const logger = createLogger('LearningDrill');
@@ -900,35 +906,27 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
 
   if (!currentItem) {
     return (
-      <div className="App">
-        <header className="header">
-          <div className="icon-row">
-            <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
-              <img src="/back.png" alt="Volver" className="menu-icon" />
-            </button>
-            <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
-              <img src="/enie.png" alt="Tildes" className="menu-icon" />
-            </button>
-            <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
-            </button>
-            <button
-              onClick={() => handleTogglePronunciation()}
-              className="icon-btn"
-              title="Práctica de pronunciación"
-            >
-              <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
-            </button>
-            <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
-              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-            </button>
+      <div className="verbos-onboarding">
+        <div className="vo-grid" aria-hidden="true" />
+        <div className="vo-vignette" aria-hidden="true" />
+        <header className="vo-header">
+          <div className="vo-logo" onClick={onBack} title="Volver" style={{ cursor: 'pointer' }}>
+            <div className="vo-logo-dot" style={{ background: ACCENT }} />
+            <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+            <span style={{ marginLeft: 8 }}>drill</span>
+          </div>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', color: INK2 }}>
+            CARGANDO...
           </div>
         </header>
-        <div className="main-content">
-          <div className="drill-container learning-drill">
-            <div className="center-column"><p>No hay ejercicios disponibles.</p></div>
-          </div>
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          cargando ejercicios...
         </div>
+        <footer className="vo-footer">
+          <div className="vo-footer-hints"><span><em>←</em> volver</span></div>
+          <div>DRILL</div>
+          <div>...</div>
+        </footer>
       </div>
     );
   }
@@ -938,36 +936,41 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     return <SessionSummary onFinish={onFinish} summary={summary} />;
   }
 
-  // const tenseName = TENSE_LABELS[tense?.tense] || tense?.tense; // header shows only icons
+  const tenseLabelDisplay = (TENSE_LABELS[tense?.tense] || tense?.tense || '').toLowerCase();
+  const moodLabelDisplay = (tense?.mood || '').toLowerCase();
 
   return (
-    <div className="App" onKeyDown={handleKeyDown} tabIndex={-1} ref={containerRef}>
-      <header className="header">
-        <div className="icon-row">
-          <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
-            <img src="/back.png" alt="Volver" className="menu-icon" />
-          </button>
-          <button onClick={() => setShowAccentKeys(v => !v)} className="icon-btn" title="Tildes" aria-label="Tildes">
-            <img src="/enie.png" alt="Tildes" className="menu-icon" />
-          </button>
-          <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-            <img src="/home.png" alt="Inicio" className="menu-icon" />
-          </button>
-          <button
-            onClick={() => handleTogglePronunciation()}
-            className="icon-btn"
-            title="Práctica de pronunciación"
-          >
-            <img src="/boca.png" alt="Pronunciación" className="menu-icon" />
-          </button>
-          <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
-            <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
-          </button>
+    <div className="verbos-onboarding" onKeyDown={handleKeyDown} tabIndex={-1} ref={containerRef}>
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      {[{top:56,left:12},{top:56,right:12},{bottom:44,left:12},{bottom:44,right:12}].map((pos,i) => (
+        <div key={i} className="vo-crosshair" style={pos}>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M0 7H14M7 0V14" stroke={ACCENT} strokeWidth="1" />
+          </svg>
+        </div>
+      ))}
+
+      <header className="vo-header">
+        <div className="vo-logo" onClick={onBack} title="Volver" style={{ cursor: 'pointer' }}>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+          <span style={{ marginLeft: 8 }}>drill</span>
+        </div>
+        <div className="vo-breadcrumb">
+          <span className="vo-breadcrumb-label">{moodLabelDisplay} </span>
+          <span className="vo-breadcrumb-sep">/</span>
+          <span className="vo-breadcrumb-val"> {tenseLabelDisplay}</span>
+        </div>
+        <div style={{ display: 'flex', gap: 16, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: INK2 }}>
+          <span>RACHA <span style={{ color: correctStreak > 0 ? ACCENT : INK, fontWeight: 700 }} className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></span>
+          <span>PREC <span style={{ color: INK }}>{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</span></span>
+          {failedItemsQueue.length > 0 && <span style={{ color: ACCENT }}>↺ {failedItemsQueue.length}</span>}
         </div>
       </header>
 
       {showPronunciation && (
-        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+        <Suspense fallback={null}>
           <PronunciationPanel
             ref={pronunciationPanelRef}
             currentItem={currentPronunciationItem}
@@ -978,92 +981,89 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
         </Suspense>
       )}
 
-      <div className="main-content">
-        <div className={`drill-container learning-drill page-transition ${entered ? 'page-in' : ''}`}>
+      {/* Main drill area */}
+      <div className="ld-main">
+        <div className={`ld-card${entered ? ' vo-lift-in' : ''}${swapAnim ? ' ld-swap' : ''}`}>
 
-          <div className="chrono-panel">
-            <div className="chrono-item"><div className="chrono-value">{sessionStats.points.toLocaleString()}</div><div className="chrono-label">Puntos</div></div>
-            <div className="chrono-item"><div className="chrono-value streak-value">🔥 <span className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></div><div className="chrono-label">Racha</div></div>
-            <div className="chrono-item"><div className="chrono-value">{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</div><div className="chrono-label">Precisión</div></div>
-            {failedItemsQueue.length > 0 && (
-              <div className="chrono-item"><div className="chrono-value" style={{ color: '#ff6b6b' }}>🔄 {failedItemsQueue.length}</div><div className="chrono-label">Por revisar</div></div>
+          {/* Verb focal display */}
+          <div className="ld-verb-focal">{currentItem.lemma}</div>
+
+          {/* Person */}
+          {currentItem.mood !== 'nonfinite' && (
+            <div className="ld-person-mono">{getPersonText(currentItem.person)}</div>
+          )}
+
+          {/* Input */}
+          <div className="ld-input-wrap">
+            <input
+              ref={inputRef}
+              type="text"
+              autoComplete="off"
+              className={`ld-input ${result}`}
+              placeholder={currentItem.mood === 'nonfinite'
+                ? (currentItem.tense === 'part' ? 'participio...' : 'gerundio...')
+                : 'conjugar...'
+              }
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              disabled={isProcessing || result !== 'idle'}
+              autoFocus
+            />
+            {result !== 'idle' && (
+              <div className={`ld-result-bar ${result}`}>
+                {result === 'correct'
+                  ? <span className="ld-correct">✓ correcto</span>
+                  : <span className="ld-incorrect">→ <strong>{currentItem.value}</strong></span>
+                }
+                <button type="button" className="ld-tts-btn" onClick={handleSpeak} title="Pronunciar" aria-label="Pronunciar">
+                  <img src="/megaf-imperat.png" alt="Pronunciar" style={{ width: 20, height: 20, filter: 'invert(1) opacity(0.6)' }} />
+                </button>
+              </div>
             )}
           </div>
 
-          {currentItem ? (
-            <>
-              <div className={`verb-lemma ${swapAnim ? 'swap' : ''}`}>{currentItem.lemma}</div>
-              {currentItem.mood !== 'nonfinite' && (
-                <div className={`person-display ${swapAnim ? 'swap' : ''}`}>{getPersonText(currentItem.person)}</div>
-              )}
-
-              <div className="input-container">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  autoComplete="off"
-                  className={`conjugation-input ${result}`}
-                  placeholder={currentItem.mood === 'nonfinite'
-                    ? (currentItem.tense === 'part' ? 'Escribe el participio...' : 'Escribe el gerundio...')
-                    : 'Escribe la conjugación...'
-                  }
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+          {/* Accent keypad */}
+          {showAccentKeys && (
+            <div className="ld-accent-row">
+              {specialChars.map(ch => (
+                <button
+                  key={ch}
+                  type="button"
+                  className="ld-accent-key"
+                  onClick={() => insertChar(ch)}
                   disabled={isProcessing || result !== 'idle'}
-                  autoFocus
-                />
-                {showAccentKeys && (
-                  <div className="accent-keypad" style={{ marginTop: '1rem' }}>
-                    {specialChars.map(ch => (
-                      <button
-                        key={ch}
-                        type="button"
-                        className="accent-key"
-                        onClick={() => insertChar(ch)}
-                        disabled={isProcessing || result !== 'idle'}
-                        tabIndex={-1}
-                      >{ch}</button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {result !== 'idle' && (
-                <div className={`result ${result}`}>
-                  <div className="result-top">
-                    {result === 'correct' ? (
-                      <div className="correct-feedback">¡Correcto!</div>
-                    ) : (
-                      <div className="incorrect-feedback">
-                        La respuesta correcta es: <span className="correct-answer">{currentItem.value}</span>
-                      </div>
-                    )}
-                    <button
-                      type="button"
-                      className="tts-btn"
-                      onClick={handleSpeak}
-                      title="Pronunciar"
-                      aria-label="Pronunciar"
-                    >
-                      <img src="/megaf-imperat.png" alt="Pronunciar" />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="action-buttons">
-                {result === 'idle' ? (
-                  <button className="btn" onClick={handleCheckAnswer} disabled={!inputValue.trim() || isProcessing}>Continuar</button>
-                ) : (
-                  <button className="btn" onClick={handleContinue} disabled={isProcessing}>Continuar</button>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="loading">Cargando...</div>
+                  tabIndex={-1}
+                >{ch}</button>
+              ))}
+            </div>
           )}
+
+          {/* Action */}
+          <div className="ld-actions">
+            {result === 'idle'
+              ? <button className="ld-confirm-btn" onClick={handleCheckAnswer} disabled={!inputValue.trim() || isProcessing}>confirmar</button>
+              : <button className="ld-confirm-btn" onClick={handleContinue} disabled={isProcessing}>continuar</button>
+            }
+          </div>
+        </div>
+
+        {/* Utility row */}
+        <div className="ld-utils">
+          <button className="ld-util-btn" onClick={() => setShowAccentKeys(v => !v)} title="Tildes" style={{ fontFamily: 'JetBrains Mono, monospace', background: showAccentKeys ? ACCENT : 'transparent', color: showAccentKeys ? '#0c0c0c' : INK2 }}>Ñ</button>
+          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación" style={{ fontFamily: 'JetBrains Mono, monospace' }}>◉</button>
+          <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas" style={{ fontFamily: 'JetBrains Mono, monospace' }}>⬡</button>
+          <button className="ld-util-btn" onClick={onHome} title="Inicio" style={{ fontFamily: 'JetBrains Mono, monospace' }}>⌂</button>
         </div>
       </div>
+
+      <footer className="vo-footer">
+        <div className="vo-footer-hints">
+          <span><em>↵</em> confirmar</span>
+          <span><em>← / esc</em> volver</span>
+        </div>
+        <div>{tenseLabelDisplay.toUpperCase()}</div>
+        <div>DRILL · OK</div>
+      </footer>
     </div>
   );
 }

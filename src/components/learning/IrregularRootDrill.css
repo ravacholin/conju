@@ -1,3 +1,29 @@
+/* ── VERB/OS hint block ── */
+.ird-hint-block {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #1f1d18;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e6a60;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ird-hint-block .root-meta { display:flex; flex-direction:column; gap:8px; }
+.ird-hint-block .root-line { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.ird-hint-block .hint-label { color:#2a2823; }
+.ird-hint-block .hint-value { color:#f4f1ea; font-weight:700; }
+.ird-hint-block .root-highlight { color:#0c0c0c; background:#ff4d1c; font-weight:700; padding:2px 8px; letter-spacing:0.06em; }
+.ird-hint-block .nonfinite-highlight { color:#0c0c0c; background:#ff4d1c; font-weight:700; padding:2px 8px; }
+.ird-hint-block .hint-note { color:#2a2823; font-size:10px; text-transform:none; font-style:italic; margin:0; }
+.ird-hint-block .hint-note.alternate { color:#6e6a60; }
+
+/* ── Legacy styles below ── */
+
 .irregular-root-card {
   width: 100%;
   max-width: 720px;
