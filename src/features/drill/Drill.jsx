@@ -614,10 +614,11 @@ export default function Drill({
               type="button"
               className="tts-btn"
               onClick={handleSpeak}
-              title="Pronunciar"
-              aria-label="Pronunciar"
+              title="Escuchar pronunciación"
+              aria-label="Escuchar pronunciación"
             >
-              <img src="/megaf-imperat.png" alt="Pronunciar" />
+              <img src="/megaf-imperat.png" alt="" />
+              <span>escuchar</span>
             </button>
           </div>
           {result.correct && result.note && result.note.trim() !== '¡Correcto!' && (

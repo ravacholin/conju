@@ -107,6 +107,7 @@ function DrillMode({
   const [showAccentKeys, setShowAccentKeys] = useState(false)
   const [showGames, setShowGames] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
   const [loadingError, setLoadingError] = useState(null)
   const [loadingTimeout, setLoadingTimeout] = useState(false)
   const [generationIssue, setGenerationIssue] = useState(null)
@@ -485,6 +486,7 @@ function DrillMode({
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}
         showPronunciation={showPronunciation}
+        isRecording={isRecording}
       />
 
       {showQuickSwitch && (
@@ -518,6 +520,7 @@ function DrillMode({
             onClose={() => handleTogglePronunciation(false)}
             handleResult={onDrillResult}
             onContinue={onContinue}
+            onRecordingChange={setIsRecording}
           />
         </Suspense>
       )}
