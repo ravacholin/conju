@@ -1,5 +1,43 @@
 import React from 'react'
 import { useSettings } from '../../state/settings.js'
+import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
+
+const DIALECT_LABEL = {
+  rioplatense: 'vos',
+  la_general:  'tú',
+  peninsular:  'tú·vos',
+  both:        'todos',
+}
+
+const MODE_LABEL = {
+  mixed:  'mixto',
+  specific: 'específico',
+  review: 'repaso srs',
+  theme:  'por tema',
+}
+
+function buildBreadcrumb(settings) {
+  const items = []
+
+  if (settings.region) {
+    items.push({ label: 'DIALECTO', value: DIALECT_LABEL[settings.region] || settings.region })
+  }
+
+  if (settings.level) {
+    items.push({ label: 'NIVEL', value: settings.level })
+  }
+
+  if (settings.practiceMode) {
+    items.push({ label: 'MODO', value: MODE_LABEL[settings.practiceMode] || settings.practiceMode })
+  }
+
+  if (settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense) {
+    const { tenseLabel } = getSafeMoodTenseLabels(settings.specificMood, settings.specificTense)
+    items.push({ label: 'FOCO', value: tenseLabel })
+  }
+
+  return items.slice(-3)
+}
 
 function DrillHeader({
   onToggleQuickSwitch,
@@ -16,30 +54,50 @@ function DrillHeader({
 }) {
   const settings = useSettings()
   const isReviewMode = settings.practiceMode === 'review'
+  const breadcrumb = buildBreadcrumb(settings)
 
   return (
     <header className="header">
-      {isReviewMode && (
-        <div className="srs-mode-badge">
-          <img src="/icons/timer.png" alt="SRS" className="srs-badge-icon" />
-          <span>Sesión de Repaso SRS</span>
-        </div>
-      )}
+      {/* Left: VERB/OS logo → home */}
+      <div className="vd-logo" onClick={onHome} title="Ir al inicio">
+        <div className="vd-logo-dot" />
+        <span className="vd-logo-name">
+          VERB<span style={{ color: '#ff4d1c' }}>/</span>OS
+        </span>
+      </div>
+
+      {/* Center: practice context breadcrumb */}
+      <div className="vd-breadcrumb" aria-label="Contexto de práctica">
+        {isReviewMode ? (
+          <span className="srs-mode-badge">
+            <img src="/icons/timer.png" alt="SRS" className="srs-badge-icon" />
+            <span>REPASO SRS</span>
+          </span>
+        ) : breadcrumb.length === 0 ? (
+          <span style={{ color: '#2a2823' }}>— · —</span>
+        ) : (
+          breadcrumb.map((item, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span className="vd-breadcrumb-sep">/</span>}
+              <span>
+                <span className="vd-breadcrumb-label">{item.label} </span>
+                <span className="vd-breadcrumb-val">{item.value}</span>
+              </span>
+            </React.Fragment>
+          ))
+        )}
+      </div>
+
+      {/* Right: action icon buttons */}
       <div className="icon-row">
         <button
           type="button"
-          onClick={() => {
-            if (showQuickSwitch) {
-              onToggleQuickSwitch(false)
-            } else {
-              onToggleQuickSwitch(true)
-            }
-          }}
+          onClick={() => onToggleQuickSwitch(showQuickSwitch ? false : true)}
           className="icon-btn"
           title="Cambiar rápido"
           aria-label="Cambiar rápido"
         >
-          <img src="/config.png" alt="Config" className="menu-icon" />
+          <img src="/config.png" alt="Config" />
         </button>
 
         <button
@@ -49,53 +107,37 @@ function DrillHeader({
           title="Tildes"
           aria-label="Tildes"
         >
-          <img src="/enie.png" alt="Tildes" className="menu-icon" />
-        </button>
-
-        <button
-          type="button"
-          onClick={onHome}
-          className="icon-btn"
-          title="Menú"
-          aria-label="Menú"
-        >
-          <img src="/home.png" alt="Menú" className="menu-icon" />
+          <img src="/enie.png" alt="Tildes" />
         </button>
 
         <button
           type="button"
           onClick={() => onTogglePronunciation()}
           className="icon-btn"
-          title="Práctica de pronunciación"
-          aria-label="Práctica de pronunciación"
+          title="Pronunciación"
+          aria-label="Pronunciación"
         >
-          <img src="/boca.png" alt="Pronunciación" className="menu-icon-pronunciation" />
+          <img src="/boca.png" alt="Pronunciación" />
         </button>
 
         <button
           type="button"
-          onClick={() => {
-            if (showGames) {
-              onToggleGames(false)
-            } else {
-              onToggleGames(true)
-            }
-          }}
+          onClick={() => onToggleGames(showGames ? false : true)}
           className="icon-btn"
           title="Juegos"
           aria-label="Juegos"
         >
-          <img src="/dice.png" alt="Juegos" className="menu-icon" />
+          <img src="/dice.png" alt="Juegos" />
         </button>
 
         <button
           type="button"
           onClick={() => onNavigateToProgress()}
           className="icon-btn"
-          title="Progreso y Analíticas"
-          aria-label="Progreso y Analíticas"
+          title="Progreso"
+          aria-label="Progreso"
         >
-          <img src="/icons/chart.png" alt="Progreso" className="menu-icon" />
+          <img src="/icons/chart.png" alt="Progreso" />
         </button>
       </div>
     </header>

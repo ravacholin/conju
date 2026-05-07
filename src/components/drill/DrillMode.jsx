@@ -70,6 +70,7 @@ import { safeLazy } from '../../lib/utils/lazyImport.js';
 import { useSessionStore } from '../../state/session.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { buildGenerationDetail, buildGenerationSuggestions } from './generationDiagnostics.js'
+import './DrillVerbos.css'
 
 const QuickSwitchPanel = safeLazy(() => import('./QuickSwitchPanel.jsx'))
 const GamesPanel = safeLazy(() => import('./GamesPanel.jsx'))
@@ -449,8 +450,29 @@ function DrillMode({
     return () => window.removeEventListener('progress:navigate', handler)
   }, [setDrillRuntimeContext, onStartSpecificPractice, onRegenerateItem, onPracticeModeChange, settings])
 
+  /* ── Decorative corner crosshairs ── */
+  const crosshairPositions = [
+    { top: 56, left: 12 },
+    { top: 56, right: 12 },
+    { bottom: 44, left: 12 },
+    { bottom: 44, right: 12 },
+  ]
+
   return (
-    <div className="App">
+    <div className="verbos-drill">
+      {/* Background grid */}
+      <div className="vd-grid" aria-hidden="true" />
+      <div className="vd-vignette" aria-hidden="true" />
+
+      {/* Corner crosshairs */}
+      {crosshairPositions.map((pos, i) => (
+        <div key={i} className="vd-crosshair" style={pos} aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 14 14">
+            <path d="M0 7H14M7 0V14" stroke="#ff4d1c" strokeWidth="1" />
+          </svg>
+        </div>
+      ))}
+
       <DrillHeader
         onToggleQuickSwitch={handleToggleQuickSwitch}
         onToggleAccentKeys={handleToggleAccentKeys}
@@ -466,7 +488,7 @@ function DrillMode({
       />
 
       {showQuickSwitch && (
-        <Suspense fallback={<div className="loading">Cargando opciones rápidas...</div>}>
+        <Suspense fallback={<div className="loading">CARGANDO...</div>}>
           <QuickSwitchPanel
             settings={settings}
             onApply={handleQuickSwitchApply}
@@ -479,7 +501,7 @@ function DrillMode({
       )}
 
       {showGames && (
-        <Suspense fallback={<div className="loading">Cargando juegos...</div>}>
+        <Suspense fallback={<div className="loading">CARGANDO...</div>}>
           <GamesPanel
             settings={settings}
             onClose={() => handleToggleGames(false)}
@@ -489,7 +511,7 @@ function DrillMode({
       )}
 
       {showPronunciation && (
-        <Suspense fallback={<div className="loading">Cargando pronunciación...</div>}>
+        <Suspense fallback={<div className="loading">CARGANDO...</div>}>
           <PronunciationPanel
             ref={pronunciationPanelRef}
             currentItem={currentItem}
@@ -511,7 +533,7 @@ function DrillMode({
         ) : loadingError ? (
           <div className="loading-error">
             <div className="error-message">
-              <h3>⚠️ Error de generación</h3>
+              <h3>ERROR DE GENERACIÓN</h3>
               <p>{loadingError}</p>
               {generationIssue && (
                 <div className="generation-diagnostics">
@@ -526,14 +548,15 @@ function DrillMode({
                     <p>Detalle técnico: {generationIssue.error}</p>
                   )}
                   {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
-                    <ul>
+                    <ul style={{ marginTop: 8, paddingLeft: 0, listStyle: 'none' }}>
                       {generationIssue.suggestions.map((suggestion) => (
-                        <li key={suggestion.id}>
+                        <li key={suggestion.id} style={{ marginBottom: 6 }}>
                           {suggestion.reason}
                           <button
                             type="button"
+                            className="retry-button"
                             onClick={() => applyGenerationSuggestion(suggestion.id)}
-                            style={{ marginLeft: '8px' }}
+                            style={{ marginLeft: 8 }}
                           >
                             {suggestion.label}
                           </button>
@@ -553,13 +576,13 @@ function DrillMode({
                   }}
                   className="retry-button"
                 >
-                  🔄 Intentar de nuevo
+                  REINTENTAR
                 </button>
                 <button
                   onClick={() => window.location.reload()}
                   className="reload-button"
                 >
-                  🔄 Recargar página
+                  RECARGAR
                 </button>
               </div>
             </div>
@@ -568,53 +591,42 @@ function DrillMode({
           <div className="loading">
             {loadingTimeout ? (
               <div>
-                <div>⏳ Generando ejercicio...</div>
-                <div style={{ fontSize: '0.9em', marginTop: '10px', opacity: 0.7 }}>
-                  Esto está tardando más de lo esperado. Si el problema persiste, intenta cambiar la configuración.
+                <div>GENERANDO EJERCICIO...</div>
+                <div style={{ marginTop: 10, opacity: 0.6 }}>
+                  Esto está tardando más de lo esperado.
                 </div>
                 {generationIssue && (
-                  <div style={{ marginTop: '12px', fontSize: '0.9em', opacity: 0.85 }}>
-                    <div><strong>Diagnóstico:</strong> {generationIssue.detail}</div>
-                    {typeof generationIssue.totalForms === 'number' && typeof generationIssue.eligibleForms === 'number' && (
-                      <div>Formas totales: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</div>
-                    )}
-                    {generationIssue.filteringReport?.emptyReason && (
-                      <div>Causa detectada: {generationIssue.filteringReport.emptyReason}</div>
-                    )}
-                    {Array.isArray(generationIssue.suggestions) && generationIssue.suggestions.length > 0 && (
-                      <ul style={{ marginTop: '8px' }}>
-                        {generationIssue.suggestions.map((suggestion) => (
-                          <li key={suggestion.id}>
-                            {suggestion.reason}
-                            <button
-                              type="button"
-                              onClick={() => applyGenerationSuggestion(suggestion.id)}
-                              style={{ marginLeft: '8px' }}
-                            >
-                              {suggestion.label}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                  <div style={{ marginTop: 12, opacity: 0.85 }}>
+                    <div>DIAGNÓSTICO: {generationIssue.detail}</div>
+                    {typeof generationIssue.totalForms === 'number' && (
+                      <div>Formas: {generationIssue.totalForms} · Elegibles: {generationIssue.eligibleForms}</div>
                     )}
                   </div>
                 )}
                 <button
-                  onClick={() => {
-                    logger.debug('🔄 DrillMode: Manual retry triggered by user')
-                    onRegenerateItem()
-                  }}
-                  style={{ marginTop: '15px', padding: '8px 16px' }}
+                  onClick={() => onRegenerateItem()}
+                  className="retry-button"
+                  style={{ marginTop: 14 }}
                 >
-                  Forzar regeneración
+                  FORZAR REGENERACIÓN
                 </button>
               </div>
             ) : (
-              'Cargando próxima conjugación...'
+              'CARGANDO...'
             )}
           </div>
         )}
       </main>
+
+      {/* Footer with keyboard hints */}
+      <footer className="vd-footer">
+        <div className="vd-footer-hints">
+          <span><em>↵</em> verificar · continuar</span>
+          <span><em>esc</em> limpiar</span>
+        </div>
+        <div style={{ color: '#6e6a60' }}>PRÁCTICA</div>
+        <div>SISTEMA · OK</div>
+      </footer>
     </div>
   )
 }
