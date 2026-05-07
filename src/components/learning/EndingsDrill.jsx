@@ -201,8 +201,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   const [inputValue, setInputValue] = useState('');
   const [result, setResult] = useState(null); // null | { correct: boolean, ... }
   const inputRef = useRef(null);
-  const [entered, setEntered] = useState(true);
-  const [leaving] = useState(false);
   const settings = useSettings();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
   const [showPronunciation, setShowPronunciation] = useState(false);
@@ -221,10 +219,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     inputRef.current?.focus();
   }, [verb?.lemma, PRONOUNS_DISPLAY]);
 
-  useEffect(() => {
-    // Ensure it's visible immediately
-    setEntered(true);
-  }, [verb?.lemma]);
 
   const currentPronoun = drillQueue[currentIndex];
 
@@ -606,9 +600,6 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       </div>
     );
   }
-
-  // const tenseName = TENSE_LABELS[tense.tense] || tense.tense; // header label removed in favor of icon bar
-  const groupKey = (verb.lemma || '').endsWith('ar') ? 'ar' : (verb.lemma || '').endsWith('er') ? 'er' : (verb.lemma || '').endsWith('ir') ? 'ir' : 'x';
 
   const highlightData = highlightStemVowel(verb.lemma);
 

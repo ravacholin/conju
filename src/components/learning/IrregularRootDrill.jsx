@@ -18,6 +18,7 @@ import '../onboarding/OnboardingFlow.css'
 const ACCENT = '#ff4d1c'
 const INK    = '#f4f1ea'
 const INK2   = '#6e6a60'
+const INK3   = '#2a2823'
 import { highlightStemVowel } from './highlightHelpers.js'
 
 import { safeLazy } from '../../lib/utils/lazyImport.js';
@@ -75,7 +76,6 @@ function IrregularRootDrill({
   const useVoseo = settings.useVoseo === true
   const containerRef = useRef(null)
   const inputRef = useRef(null)
-  const [entered, setEntered] = useState(false)
   const [showPronunciation, setShowPronunciation] = useState(false)
   const [showAccentKeypad, setShowAccentKeypad] = useState(false)
   const pronunciationPanelRef = useRef(null)
@@ -99,11 +99,6 @@ function IrregularRootDrill({
   const [status, setStatus] = useState('idle') // idle | correct | incorrect
   const [stats, setStats] = useState({ correct: 0, total: 0 })
   const [timeLeft, setTimeLeft] = useState(duration ? duration * 60 : null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setEntered(true), 10)
-    return () => clearTimeout(timer)
-  }, [])
 
   useEffect(() => {
     let built = []
