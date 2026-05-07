@@ -13,7 +13,13 @@ import {
 } from '../../lib/data/irregularPatterns.js';
 import { SafeTemplate } from '../../lib/utils/htmlSanitizer.jsx';
 import './NarrativeIntroduction.css';
+import '../onboarding/OnboardingFlow.css';
 import { useSettings } from '../../state/settings.js';
+
+const ACCENT = '#ff4d1c'
+const INK    = '#f4f1ea'
+const INK2   = '#6e6a60'
+const INK3   = '#2a2823'
 import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 import { highlightStemVowel } from './highlightHelpers.js';
 
@@ -926,7 +932,6 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   }, []);
 
   const handleAnimatedContinue = () => {
-    // play leave animation then continue
     setLeaving(true);
     setTimeout(() => {
       onContinue && onContinue();
@@ -940,13 +945,27 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     }, 300);
   };
 
+  useEffect(() => {
+    const fn = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); handleAnimatedContinue(); }
+      else if (e.key === 'Escape' || e.key === 'ArrowLeft') { e.preventDefault(); handleAnimatedBack(); }
+      else if (e.key === 'Backspace' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault(); handleAnimatedBack();
+      }
+    };
+    window.addEventListener('keydown', fn);
+    return () => window.removeEventListener('keydown', fn);
+  }, [leaving]);
+
   if (!tense) {
     return (
-      <div className="App learn-flow">
-        <div className="center-column">
-          <p>No tense selected.</p>
-          <button onClick={handleAnimatedBack} className="back-btn">
-            <img src="/back.png" alt="Volver" className="back-icon" />
+      <div className="verbos-onboarding">
+        <div className="vo-grid" aria-hidden="true" />
+        <div className="vo-vignette" aria-hidden="true" />
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'JetBrains Mono, monospace' }}>
+          <p>No hay tiempo seleccionado.</p>
+          <button onClick={handleAnimatedBack} style={{ marginTop: 16, background: ACCENT, color: '#0c0c0c', border: 'none', padding: '12px 24px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer' }}>
+            ← volver
           </button>
         </div>
       </div>
@@ -1199,212 +1218,199 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     return sentences;
   };
 
-  return (
-    <div className="App">
-      <div className="onboarding learn-flow narrative-intro">
-        <div className="narrative-header">
-          <button onClick={onBack} className="back-btn">
-            <img src="/back.png" alt="Volver" className="back-icon" />
-          </button>
-          <h1>{tenseName}</h1>
-          <p className="subtitle">{moodName}</p>
-        </div>
+  const len = tenseName.length;
+  const lenFactor = len <= 6 ? 1 : len <= 10 ? 0.78 : len <= 16 ? 0.58 : len <= 22 ? 0.44 : 0.34;
+  const focalSize = `clamp(32px, ${Math.max(4, 11 * lenFactor)}vw, ${Math.round(160 * lenFactor)}px)`;
 
-        <div className={`narrative-content page-transition ${entered ? 'page-in' : ''} ${leaving ? 'page-out' : ''}`}>
-          {tenseStoryData ? (
-            <>
-              <div className="story-placeholder">
-                <h3>{tenseStoryData.title}</h3>
-                {renderStorySentences()}
+  const renderDeconstructionContent = () => {
+    if (['fut', 'cond'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
+      return renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings);
+    }
+    if (['ger', 'part'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
+      return renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings);
+    }
+    const futureRootBlock = renderFutureRootDeconstruction(exampleVerbs, tense, settings);
+    if (futureRootBlock) return futureRootBlock;
+    const nonFiniteBlock = renderNonFiniteIrregularDeconstruction(exampleVerbs, tense);
+    if (nonFiniteBlock) return nonFiniteBlock;
+    const yoIrregularBlock = renderIrregularYoDeconstruction(exampleVerbs, tense, settings);
+    if (yoIrregularBlock) return yoIrregularBlock;
+    const orthographicBlock = renderOrthographicDeconstruction(exampleVerbs, tense);
+    if (orthographicBlock) return orthographicBlock;
+    const hasStrongPreterites = exampleVerbs && exampleVerbs.some(v => isStrongPreterite(v, tense));
+    if (hasStrongPreterites) return renderStrongPreteriteDeconstruction(exampleVerbs, settings);
+    const thirdPersonVerbs = ['pedir','dormir','leer','servir','sentir','morir','seguir','repetir','preferir','mentir','vestir','construir','destruir','incluir','concluir','influir','huir','creer','caer','traer','oír'];
+    const hasThirdPersonIrregulars = exampleVerbs && exampleVerbs.some(v => thirdPersonVerbs.includes(v.lemma));
+    if (hasThirdPersonIrregulars && tense.tense === 'pretIndef') {
+      return renderThirdPersonIrregularDeconstruction(exampleVerbs, settings);
+    }
+    return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs
+      .sort((a, b) => {
+        const order = v => v.lemma.endsWith('ar') ? 0 : v.lemma.endsWith('er') ? 1 : v.lemma.endsWith('ir') ? 2 : 3;
+        return order(a) - order(b);
+      })
+      .map((verbObj, index) => {
+        const pronouns = pronounsForDialect();
+        const verb = verbObj.lemma;
+        const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
+        const lemmaStem = (v) => (typeof v === 'string' && (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir'))) ? v.slice(0, -2) : v;
+        const isIrregular = verbObj.type === 'irregular';
+        const moodMapping = { 'indicativo':'indicative','subjuntivo':'subjunctive','imperativo':'imperative','condicional':'conditional' };
+        const englishMood = moodMapping[tense.mood] || tense.mood;
+        const realForms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
+        if (isIrregular && realForms && realForms.length > 0) {
+          const expectedForms = expectedRegularForms(verbObj);
+          return (
+            <div key={`${group}-${index}`} className="deconstruction-item">
+              <div className="verb-lemma">{renderHighlightedLemma(verb)}</div>
+              <div className="verb-deconstruction irregular">
+                <span className="irregular-forms">
+                  {realForms.map((form, idx) => (
+                    <span key={`${group}-${idx}-${form}`} className="conjugated-form">
+                      {renderWithIrregularHighlights(form, expectedForms[idx] || '')}
+                      {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
+                    </span>
+                  ))}
+                </span>
               </div>
-
-              <div className="deconstruction-placeholder">
-                <div className="deconstruction-list">
-                  {(() => {
-                    // Primero verificar si es futuro/condicional con verbos regulares
-                    if (['fut', 'cond'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
-                      return renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings)
-                    }
-
-                    // Verificar si es gerundio/participio con verbos regulares
-                    if (['ger', 'part'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
-                      return renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings)
-                    }
-
-                    const futureRootBlock = renderFutureRootDeconstruction(exampleVerbs, tense, settings)
-                    if (futureRootBlock) {
-                      return futureRootBlock
-                    }
-
-                    const nonFiniteBlock = renderNonFiniteIrregularDeconstruction(exampleVerbs, tense)
-                    if (nonFiniteBlock) {
-                      return nonFiniteBlock
-                    }
-
-                    // Verificar si tenemos verbos irregulares en YO (presente) para renderizarlos con forma conjugada
-                    const yoIrregularBlock = renderIrregularYoDeconstruction(exampleVerbs, tense, settings)
-                    if (yoIrregularBlock) {
-                      return yoIrregularBlock
-                    }
-
-                    // Verificar si tenemos verbos ortográficos (-car/-gar)
-                    const orthographicBlock = renderOrthographicDeconstruction(exampleVerbs, tense)
-                    if (orthographicBlock) {
-                      return orthographicBlock
-                    }
-
-                    // Verificar si tenemos pretéritos fuertes para renderizarlos agrupados
-                    const hasStrongPreterites = exampleVerbs && exampleVerbs.some(verbObj =>
-                      isStrongPreterite(verbObj, tense)
-                    );
-
-                    if (hasStrongPreterites) {
-                      return renderStrongPreteriteDeconstruction(exampleVerbs, settings);
-                    }
-
-                    // Verificar si tenemos verbos irregulares solo en terceras personas
-                    const hasThirdPersonIrregulars = exampleVerbs && exampleVerbs.some(verbObj => {
-                      // Fallback directo para los verbos más comunes de 3ª persona irregular
-                      const thirdPersonVerbs = ['pedir', 'dormir', 'leer', 'servir', 'sentir', 'morir', 'seguir', 'repetir', 'preferir', 'mentir', 'vestir', 'construir', 'destruir', 'incluir', 'concluir', 'influir', 'huir', 'creer', 'caer', 'traer', 'oír'];
-                      return thirdPersonVerbs.includes(verbObj.lemma);
-                    });
-
-                    if (hasThirdPersonIrregulars && tense.tense === 'pretIndef') {
-                      return renderThirdPersonIrregularDeconstruction(exampleVerbs, settings);
-                    }
-
-                    // Si no hay pretéritos fuertes ni irregulares de terceras personas, usar la lógica normal
-                    return exampleVerbs && exampleVerbs.length > 0 && exampleVerbs
-                      .sort((a, b) => {
-                        // Ordenar por terminación: -ar, -er, -ir
-                        const getEndingOrder = (verb) => {
-                          if (verb.lemma.endsWith('ar')) return 0;
-                          if (verb.lemma.endsWith('er')) return 1;
-                          if (verb.lemma.endsWith('ir')) return 2;
-                          return 3;
-                        };
-                        return getEndingOrder(a) - getEndingOrder(b);
-                      })
-                      .map((verbObj, index) => {
-                        const pronouns = pronounsForDialect();
-                        const verb = verbObj.lemma;
-                        const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-                        const lemmaStem = (v) => {
-                          if (typeof v !== 'string') return '';
-                          if (v.endsWith('ar') || v.endsWith('er') || v.endsWith('ir')) {
-                            return v.slice(0, -2);
-                          }
-                          return v;
-                        };
-
-                        const isIrregular = verbObj.type === 'irregular';
-
-                        // Convertir mood de español a inglés para la búsqueda en BD
-                        const moodMapping = {
-                          'indicativo': 'indicative',
-                          'subjuntivo': 'subjunctive',
-                          'imperativo': 'imperative',
-                          'condicional': 'conditional'
-                        };
-                        const englishMood = moodMapping[tense.mood] || tense.mood;
-
-                        const realForms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
-
-                        if (isIrregular && realForms && realForms.length > 0) {
-                          const expectedForms = expectedRegularForms(verbObj);
-                          const highlightData = highlightStemVowel(verb);
-                          return (
-                            <div key={`${group}-${index}`} className="deconstruction-item">
-
-                              <div className="verb-lemma">
-                                {renderHighlightedLemma(verb)}
-                              </div>
-                              <div className="verb-deconstruction irregular">
-                                <span className="irregular-forms">
-                                  {realForms.map((form, idx) => (
-                                    <span key={`${group}-${idx}-${form}`} className="conjugated-form">
-                                      {renderWithIrregularHighlights(form, expectedForms[idx] || '')}
-                                      {idx < realForms.length - 1 && <span className="form-separator"> • </span>}
-                                    </span>
-                                  ))}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        const formMap = getFormMapForVerb(verbObj);
-                        let realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
-
-                        // Para condicional y futuro regulares, usar el infinitivo completo en lugar de la raíz
-                        const isConditionalOrFutureRegular =
-                          ((tense.tense === 'cond' && tense.mood === 'condicional') ||
-                            (tense.tense === 'fut' && tense.mood === 'indicativo')) &&
-                          verbObj.type === 'regular';
-
-                        if (isConditionalOrFutureRegular) {
-                          realStem = verb; // Usar infinitivo completo (hablar, comer, vivir)
-                        }
-
-                        const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
-
-                        const dialectEndings = pronouns.map(p => {
-                          const baseOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
-                          const grp = group.slice(-2);
-                          const key = p === '2s_vos' ? '2s_tu' : p;
-                          let base = standardEndings?.[baseOrder.indexOf(key)] || '';
-
-                          if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
-                            if (grp === 'ar' && base === 'as') base = 'ás';
-                            else if (grp === 'er' && base === 'es') base = 'és';
-                            else if (grp === 'ir' && base === 'es') base = 'ís';
-                          }
-                          if (p === '2s_vos' && tense.tense === 'impAff') {
-                            if (grp === 'ar') base = 'á';
-                            else if (grp === 'er') base = 'é';
-                            else if (grp === 'ir') base = 'í';
-                          }
-
-                          if (base) return base;
-
-                          const formVal = formMap[p];
-                          return endingFromForm(formVal, realStem, base);
-                        });
-
-                        const highlightData = highlightStemVowel(verb);
-                        return (
-                          <div key={`${group}-${index}`} className="deconstruction-item">
-                            <div className="verb-lemma">
-                              {renderHighlightedLemma(verb)}
-                            </div>
-                            <div className="verb-deconstruction">
-                              <span className="verb-stem">{realStem}-</span>
-                              <span className="verb-endings">
-                                <span className="ending-carousel">
-                                  {dialectEndings.map((ending, idx) => (
-                                    <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
-                                  ))}
-                                </span>
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      });
-                  })()}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="story-placeholder">
-              <p>Introducción para "{tenseName}" no implementada aún.</p>
             </div>
-          )}
+          );
+        }
+        const formMap = getFormMapForVerb(verbObj);
+        let realStem = detectRealStem(verbObj, tense.tense, tense.mood) || lemmaStem(verb);
+        const isConditionalOrFutureRegular =
+          ((tense.tense === 'cond' && tense.mood === 'condicional') || (tense.tense === 'fut' && tense.mood === 'indicativo')) &&
+          verbObj.type === 'regular';
+        if (isConditionalOrFutureRegular) realStem = verb;
+        const standardEndings = getStandardEndings(group.slice(-2), tense.tense);
+        const dialectEndings = pronouns.map(p => {
+          const baseOrderArr = ['1s','2s_tu','3s','1p','2p_vosotros','3p'];
+          const grp = group.slice(-2);
+          const key = p === '2s_vos' ? '2s_tu' : p;
+          let base = standardEndings?.[baseOrderArr.indexOf(key)] || '';
+          if (p === '2s_vos' && tense.mood === 'indicativo' && tense.tense === 'pres') {
+            if (grp === 'ar' && base === 'as') base = 'ás';
+            else if (grp === 'er' && base === 'es') base = 'és';
+            else if (grp === 'ir' && base === 'es') base = 'ís';
+          }
+          if (p === '2s_vos' && tense.tense === 'impAff') {
+            if (grp === 'ar') base = 'á'; else if (grp === 'er') base = 'é'; else if (grp === 'ir') base = 'í';
+          }
+          if (base) return base;
+          return endingFromForm(formMap[p], realStem, base);
+        });
+        return (
+          <div key={`${group}-${index}`} className="deconstruction-item">
+            <div className="verb-lemma">{renderHighlightedLemma(verb)}</div>
+            <div className="verb-deconstruction">
+              <span className="verb-stem">{realStem}-</span>
+              <span className="verb-endings">
+                <span className="ending-carousel">
+                  {dialectEndings.map((ending, idx) => (
+                    <span key={`${group}-${idx}-${ending}`} className="ending-item">{ending}</span>
+                  ))}
+                </span>
+              </span>
+            </div>
+          </div>
+        );
+      });
+  };
+
+  return (
+    <div className={`verbos-onboarding${leaving ? ' ni-leaving' : ''}`}>
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      {[{top:56,left:12},{top:56,right:12},{bottom:44,left:12},{bottom:44,right:12}].map((pos,i) => (
+        <div key={i} className="vo-crosshair" style={pos}>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M0 7H14M7 0V14" stroke={ACCENT} strokeWidth="1" />
+          </svg>
+        </div>
+      ))}
+
+      <header className="vo-header">
+        <div className="vo-logo" onClick={handleAnimatedBack} title="Volver" style={{ cursor: 'pointer' }}>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
+          <span style={{ marginLeft: 8 }}>aprender</span>
+        </div>
+        <div className="vo-breadcrumb">
+          <span className="vo-breadcrumb-label">{moodName.toLowerCase()} </span>
+          <span className="vo-breadcrumb-sep">/</span>
+          <span className="vo-breadcrumb-val"> {tenseName.toLowerCase()}</span>
+        </div>
+        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
+          INTRO · <span style={{ color: INK }}>01</span>
+        </div>
+      </header>
+
+      <div className={`vo-step${entered ? ' vo-lift-in' : ''}`}>
+        {/* LEFT: focal word */}
+        <div className="vo-left">
+          <div className="vo-step-tag">──── INTRODUCCIÓN</div>
+          <div className="vo-watermark" aria-hidden="true">01</div>
+          <div className="vo-left-bottom">
+            <div className="vo-aux">▸ {moodName.toLowerCase()}</div>
+            <div className="vo-prompt">tiempo verbal</div>
+            <div
+              key={tenseName}
+              className="vo-focal-word vo-scan-in"
+              style={{ fontSize: focalSize, color: ACCENT }}
+            >
+              {tenseName.toLowerCase()}
+              <span
+                className="vo-cursor"
+                style={{ display:'inline-block', width:'0.07em', height:'0.68em', background: ACCENT, marginLeft:'0.05em', verticalAlign:'baseline', transform:'translateY(-0.05em)' }}
+              />
+            </div>
+            <div className="vo-meta">
+              {exampleVerbs && exampleVerbs.slice(0, 3).map((verbObj, i) => (
+                <div key={i} className="vo-meta-item">
+                  <span className="vo-meta-key">V{i + 1}</span>
+                  <span className="vo-meta-val">{verbObj.lemma}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <button className="btn" onClick={handleAnimatedContinue}>
-          Continuar
-        </button>
+        {/* RIGHT: story + deconstruction */}
+        <div className="vo-right vo-noscroll ni-right-panel" style={{ justifyContent: 'flex-start', overflowY: 'auto', paddingTop: 48 }}>
+          <div className="vo-options-label">ANÁLISIS ─────</div>
+          <div className="ni-content-inner">
+            {tenseStoryData ? (
+              <>
+                <div className="story-placeholder">
+                  <h3>{tenseStoryData.title}</h3>
+                  {renderStorySentences()}
+                </div>
+                <div className="deconstruction-placeholder">
+                  <div className="deconstruction-list">
+                    {renderDeconstructionContent()}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="story-placeholder">
+                <p style={{ color: INK2 }}>Introducción para "{tenseName}" no implementada aún.</p>
+              </div>
+            )}
+            <button className="ni-continue-btn" onClick={handleAnimatedContinue}>
+              continuar <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8em' }}>→</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      <footer className="vo-footer">
+        <div className="vo-footer-hints">
+          <span><em>↵</em> continuar</span>
+          <span><em>← / esc</em> volver</span>
+        </div>
+        <div>{moodName.toUpperCase()} · {tenseName.toUpperCase()}</div>
+        <div>LEARNING · OK</div>
+      </footer>
     </div>
   );
 }

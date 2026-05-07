@@ -1,4 +1,246 @@
-/* Learning Drill - Clean design matching main app */
+/* Learning Drill - VERB/OS shell */
+
+/* ── Main drill area ── */
+.ld-main {
+  position: fixed;
+  top: 44px;
+  bottom: 32px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 3;
+  padding: 20px;
+}
+
+/* ── Drill card ── */
+.ld-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.ld-swap {
+  animation: ld-swap-anim 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes ld-swap-anim {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  35%  { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  70%  { opacity: 0.8; transform: translateY(2px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Verb focal word ── */
+.ld-verb-focal {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  color: #ff4d1c;
+  text-transform: lowercase;
+  text-align: center;
+}
+
+/* ── Person display ── */
+.ld-person-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6e6a60;
+  text-align: center;
+}
+
+/* ── Input area ── */
+.ld-input-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #1f1d18;
+}
+
+.ld-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f4f1ea;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  padding: 16px 20px;
+  text-align: center;
+  caret-color: #ff4d1c;
+  transition: background 0.15s;
+}
+
+.ld-input::placeholder {
+  color: #2a2823;
+  font-style: italic;
+}
+
+.ld-input:focus {
+  background: rgba(255, 77, 28, 0.04);
+}
+
+.ld-input.correct  { background: rgba(80, 200, 120, 0.08); }
+.ld-input.incorrect { background: rgba(255, 77, 28, 0.08); }
+
+/* ── Result bar ── */
+.ld-result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid #1f1d18;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.ld-result-bar.correct  { background: rgba(80, 200, 120, 0.06); }
+.ld-result-bar.incorrect { background: rgba(255, 77, 28, 0.06); }
+
+.ld-correct {
+  color: #50c878;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ld-incorrect {
+  color: #f4f1ea;
+}
+
+.ld-incorrect strong {
+  color: #ff4d1c;
+  font-weight: 700;
+}
+
+.ld-tts-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+.ld-tts-btn:hover { opacity: 1; }
+
+/* ── Accent keypad ── */
+.ld-accent-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ld-accent-key {
+  background: transparent;
+  border: 1px solid #1f1d18;
+  color: #f4f1ea;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.ld-accent-key:hover:not(:disabled) {
+  border-color: #ff4d1c;
+  color: #ff4d1c;
+}
+
+.ld-accent-key:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Action button ── */
+.ld-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.ld-confirm-btn {
+  background: #ff4d1c;
+  color: #0c0c0c;
+  border: none;
+  padding: 14px 40px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  min-width: 180px;
+}
+
+.ld-confirm-btn:hover:not(:disabled) { opacity: 0.85; }
+.ld-confirm-btn:active:not(:disabled) { opacity: 0.7; }
+.ld-confirm-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* ── Utility buttons ── */
+.ld-utils {
+  display: flex;
+  gap: 8px;
+}
+
+.ld-util-btn {
+  background: transparent;
+  border: 1px solid #1f1d18;
+  color: #6e6a60;
+  font-size: 14px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.ld-util-btn:hover {
+  border-color: #ff4d1c;
+  color: #ff4d1c;
+}
+
+/* ── Mobile ── */
+@media (max-width: 680px) {
+  .ld-main {
+    padding: 12px;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .ld-verb-focal {
+    font-size: clamp(36px, 12vw, 72px);
+  }
+
+  .ld-input {
+    font-size: 20px;
+    padding: 14px 16px;
+  }
+
+  .ld-confirm-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ── Legacy styles below ── */
 
 .learning-drill {
   text-align: center;
