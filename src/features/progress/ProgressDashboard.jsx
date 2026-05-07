@@ -16,14 +16,36 @@ import DetailsPanel from './DetailsPanel.jsx'
 
 const HeatMapSRS = safeLazy(() => import('./HeatMapSRS.jsx'))
 
+import '../../components/onboarding/OnboardingFlow.css'
 import './progress-streamlined.css'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('features:ProgressDashboard')
 
+const ACCENT = '#ff4d1c'
+const INK    = '#f4f1ea'
+const INK2   = '#6e6a60'
+const INK3   = '#2a2823'
+
+function Crosshairs() {
+  const positions = [
+    { top: 56, left: 12 },
+    { top: 56, right: 12 },
+    { bottom: 44, left: 12 },
+    { bottom: 44, right: 12 },
+  ]
+  return positions.map((pos, i) => (
+    <div key={i} className="vo-crosshair" style={pos}>
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M0 7H14M7 0V14" stroke={ACCENT} strokeWidth="1" />
+      </svg>
+    </div>
+  ))
+}
+
 /**
  * Progress Dashboard — 5 sections:
- * [0] Header nav bar
+ * [0] Header nav bar (VERB/OS)
  * [1] Summary strip (4 key numbers)
  * [2] Unified practice action (1 primary + 2 secondary)
  * [3] Heat map (mood × tense mastery)
@@ -49,7 +71,6 @@ export default function ProgressDashboard({
     error,
     systemReady,
     refresh,
-    pronunciationStats,
     sectionsStatus,
     initialSectionsReady
   } = useProgressDashboardData({ enableSecondaryData: detailsExpanded })
@@ -76,7 +97,6 @@ export default function ProgressDashboard({
     applyDrillConfigAndNavigate({ practiceMode: 'review' })
   }, [applyDrillConfigAndNavigate])
 
-  // Listen for progress navigation events (from heat map clicks)
   React.useEffect(() => {
     const handleNav = (detail) => {
       if (!detail || !onNavigateToDrill) return
@@ -95,19 +115,50 @@ export default function ProgressDashboard({
 
   if (loading && !initialSectionsReady) {
     return (
-      <div className="progress-dashboard loading">
-        <div className="spinner"></div>
-        <p>{!systemReady ? 'Inicializando...' : 'Cargando progreso...'}</p>
+      <div className="verbos-onboarding vp-shell">
+        <div className="vo-grid" aria-hidden="true" />
+        <div className="vo-vignette" aria-hidden="true" />
+        <header className="vo-header">
+          <div className="vo-logo">
+            <div className="vo-logo-dot" style={{ background: ACCENT }} />
+            <span className="vo-logo-name">
+              VERB<span style={{ color: ACCENT }}>/</span>OS
+            </span>
+            <span style={{ marginLeft: 8, color: INK2 }}>progreso</span>
+          </div>
+        </header>
+        <div className="vp-content vp-loading">
+          <div className="vp-spinner" />
+          <p style={{ color: INK2, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            {!systemReady ? 'Inicializando...' : 'Cargando progreso...'}
+          </p>
+        </div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="progress-dashboard error">
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Recargar</button>
+      <div className="verbos-onboarding vp-shell">
+        <div className="vo-grid" aria-hidden="true" />
+        <div className="vo-vignette" aria-hidden="true" />
+        <header className="vo-header">
+          <div className="vo-logo">
+            <div className="vo-logo-dot" style={{ background: ACCENT }} />
+            <span className="vo-logo-name">
+              VERB<span style={{ color: ACCENT }}>/</span>OS
+            </span>
+          </div>
+        </header>
+        <div className="vp-content vp-loading">
+          <p style={{ color: ACCENT, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
+            ERROR
+          </p>
+          <p style={{ color: INK2, fontSize: 13, marginBottom: 20 }}>{error}</p>
+          <button className="vp-retry-btn" onClick={() => window.location.reload()}>
+            Recargar
+          </button>
+        </div>
       </div>
     )
   }
@@ -115,7 +166,11 @@ export default function ProgressDashboard({
   const heatMapState = getSectionState(['heatMap'])
 
   return (
-    <div className="progress-dashboard">
+    <div className="verbos-onboarding vp-shell">
+      <div className="vo-grid" aria-hidden="true" />
+      <div className="vo-vignette" aria-hidden="true" />
+      <Crosshairs />
+
       {toast?.message && (
         <Toast
           key={`${toast.type}-${toast.message}`}
@@ -126,72 +181,118 @@ export default function ProgressDashboard({
         />
       )}
 
-      {/* [0] Header Bar */}
-      <nav className="dashboard-nav">
-        <div className="dashboard-nav-left">
-          <button type="button" className="nav-btn" onClick={() => window.history.back()} title="Volver">
-            <img src="/back.png" alt="Volver" className="nav-icon" />
+      {/* [0] VERB/OS Header */}
+      <header className="vo-header">
+        <div className="vo-logo">
+          <button
+            type="button"
+            className="vp-back-btn"
+            onClick={() => window.history.back()}
+            title="Volver"
+            aria-label="Volver"
+          >
+            ←
           </button>
-          <button type="button" className="nav-btn" onClick={onNavigateHome} title="Inicio">
-            <img src="/home.png" alt="Inicio" className="nav-icon" />
-          </button>
-          <button type="button" className="nav-btn logo-btn" onClick={() => onNavigateToDrill?.()} title="Practicar">
-            <img src="/verbosmain.png" alt="Practicar" className="nav-icon logo-icon" />
-          </button>
+          <div className="vo-logo-dot" style={{ background: ACCENT }} />
+          <span
+            className="vo-logo-name"
+            style={{ cursor: 'pointer' }}
+            onClick={onNavigateHome}
+            title="Inicio"
+          >
+            VERB<span style={{ color: ACCENT }}>/</span>OS
+          </span>
+          <span style={{ marginLeft: 8, color: INK2 }}>progreso</span>
         </div>
-        <AccountButton />
-      </nav>
 
-      {/* [1] Summary Strip */}
-      <SafeComponent name="Summary">
-        <SummaryStrip
-          srsStats={srsStats}
-          userStats={userStats}
-          onSRSReview={handleSRSReview}
-        />
-      </SafeComponent>
-
-      {/* [2] Unified Practice Action */}
-      <SafeComponent name="Practice Action">
-        <UnifiedPracticeAction
-          srsStats={srsStats}
-          userStats={userStats}
-          heatMapData={heatMapData}
-          errorIntel={errorIntel}
-          onStartDrill={applyDrillConfigAndNavigate}
-        />
-      </SafeComponent>
-
-      {/* [3] Heat Map */}
-      <SafeComponent name="Heat Map">
-        <React.Suspense fallback={<div className="section-placeholder"><span>Cargando mapa de calor...</span></div>}>
-          {heatMapState === 'success' ? (
-            <HeatMapSRS data={heatMapData} onNavigateToDrill={onNavigateToDrill} />
-          ) : heatMapState === 'error' ? (
-            <div className="section-placeholder section-placeholder-error">
-              <span>No pudimos cargar el mapa de calor.</span>
-              <button type="button" className="section-placeholder-action" onClick={refresh}>Reintentar</button>
-            </div>
-          ) : (
-            <div className="section-placeholder">
-              <div className="section-placeholder-spinner" />
-              <span>Cargando mapa de calor...</span>
-            </div>
+        <div className="vo-breadcrumb" aria-label="Estadísticas">
+          {userStats && (
+            <>
+              <span>
+                <span className="vo-breadcrumb-label">racha </span>
+                <span className="vo-breadcrumb-val">{userStats.streakDays || 0}d</span>
+              </span>
+              <span className="vo-breadcrumb-sep">/</span>
+              <span>
+                <span className="vo-breadcrumb-label">dominio </span>
+                <span className="vo-breadcrumb-val">
+                  {Math.round(Math.min(100, Math.max(0,
+                    (userStats.totalMastery ?? userStats.overallMastery ?? userStats.averageMastery ?? 0) > 1
+                      ? (userStats.totalMastery ?? userStats.overallMastery ?? userStats.averageMastery ?? 0)
+                      : (userStats.totalMastery ?? userStats.overallMastery ?? userStats.averageMastery ?? 0) * 100
+                  )))}%
+                </span>
+              </span>
+            </>
           )}
-        </React.Suspense>
-      </SafeComponent>
+        </div>
 
-      {/* [4] Details (expandable) */}
-      <SafeComponent name="Details">
-        <DetailsPanel
-          errorIntel={errorIntel}
-          userStats={userStats}
-          studyPlan={studyPlan}
-          onNavigateToDrill={onNavigateToDrill}
-          expanded={detailsExpanded}
-          onExpandChange={setDetailsExpanded}
-        />
-      </SafeComponent>
+        <AccountButton />
+      </header>
+
+      {/* Scrollable content */}
+      <div className="vp-content vo-noscroll">
+        {/* [1] Summary Strip */}
+        <SafeComponent name="Summary">
+          <SummaryStrip
+            srsStats={srsStats}
+            userStats={userStats}
+            onSRSReview={handleSRSReview}
+          />
+        </SafeComponent>
+
+        {/* [2] Unified Practice Action */}
+        <SafeComponent name="Practice Action">
+          <UnifiedPracticeAction
+            srsStats={srsStats}
+            userStats={userStats}
+            heatMapData={heatMapData}
+            errorIntel={errorIntel}
+            onStartDrill={applyDrillConfigAndNavigate}
+          />
+        </SafeComponent>
+
+        {/* [3] Heat Map */}
+        <SafeComponent name="Heat Map">
+          <React.Suspense fallback={<div className="section-placeholder"><span>Cargando mapa de calor...</span></div>}>
+            {heatMapState === 'success' ? (
+              <HeatMapSRS data={heatMapData} onNavigateToDrill={onNavigateToDrill} />
+            ) : heatMapState === 'error' ? (
+              <div className="section-placeholder section-placeholder-error">
+                <span>No pudimos cargar el mapa de calor.</span>
+                <button type="button" className="section-placeholder-action" onClick={refresh}>Reintentar</button>
+              </div>
+            ) : (
+              <div className="section-placeholder">
+                <div className="section-placeholder-spinner" />
+                <span>Cargando mapa de calor...</span>
+              </div>
+            )}
+          </React.Suspense>
+        </SafeComponent>
+
+        {/* [4] Details (expandable) */}
+        <SafeComponent name="Details">
+          <DetailsPanel
+            errorIntel={errorIntel}
+            userStats={userStats}
+            studyPlan={studyPlan}
+            onNavigateToDrill={onNavigateToDrill}
+            expanded={detailsExpanded}
+            onExpandChange={setDetailsExpanded}
+          />
+        </SafeComponent>
+      </div>
+
+      {/* VERB/OS Footer */}
+      <footer className="vo-footer">
+        <div className="vo-footer-hints">
+          <span><em>↑↓</em> navegar</span>
+          <span><em>←</em> volver</span>
+        </div>
+        <div style={{ color: INK3 }}>VERB/OS · PROGRESS</div>
+        <div style={{ color: INK3 }}>OK</div>
+      </footer>
     </div>
   )
 }
