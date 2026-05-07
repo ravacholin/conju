@@ -1,5 +1,308 @@
 /* Learning Drill - VERB/OS shell */
 
+/* ── CSS variables (same tokens as DrillVerbos) ── */
+.verbos-onboarding {
+  --vd-bg:     #0c0b08;
+  --vd-ink:    #f4f1ea;
+  --vd-ink2:   #6e6a60;
+  --vd-ink3:   #2a2823;
+  --vd-line:   #1f1d18;
+  --vd-accent: #ff4d1c;
+  --vd-green:  #5ee6a5;
+  --vd-red:    #ff6b6b;
+  --vd-font:   'Inter Tight', -apple-system, sans-serif;
+  --vd-mono:   'JetBrains Mono', monospace;
+}
+
+/* ── Pronunciation panel overlay (below vo-header, above main content) ── */
+.verbos-onboarding > div.pronunciation-panel-v2 {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--vd-bg);
+  border-bottom: 1px solid var(--vd-line);
+  overflow-y: auto;
+  max-height: calc(100vh - 44px - 32px);
+}
+
+/* ── Pronunciation panel internals ── */
+.verbos-onboarding .pronunciation-panel-v2 {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  font-family: var(--vd-mono);
+}
+
+.verbos-onboarding .pron-target-block {
+  text-align: center;
+  margin-bottom: 24px;
+  border: 1px solid var(--vd-line);
+  padding: 20px 24px 18px;
+  position: relative;
+}
+
+.verbos-onboarding .pron-target-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+  margin-bottom: 8px;
+}
+
+.verbos-onboarding .pron-target-word {
+  font-family: var(--vd-font);
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--vd-accent);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.verbos-onboarding .pron-target-context {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+}
+
+.verbos-onboarding .pron-listen-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: 1px solid var(--vd-line);
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: var(--vd-ink2);
+}
+
+.verbos-onboarding .pron-listen-btn:hover {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+  background: rgba(255,77,28,0.06);
+}
+
+.verbos-onboarding .pron-listen-btn img,
+.verbos-onboarding .pron-listen-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.verbos-onboarding .pron-mic-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.verbos-onboarding .pron-mic-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 0;
+  border: 2px solid var(--vd-line);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+  color: var(--vd-ink2);
+}
+
+.verbos-onboarding .pron-mic-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+.verbos-onboarding .pron-mic-btn:hover:not(:disabled) {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+  background: rgba(255,77,28,0.06);
+}
+
+.verbos-onboarding .pron-mic-btn.recording {
+  border-color: var(--vd-accent);
+  background: rgba(255,77,28,0.12);
+  color: var(--vd-accent);
+  animation: vdMicPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes vdMicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,28,0.3); }
+  50%       { box-shadow: 0 0 0 10px rgba(255,77,28,0); }
+}
+
+.verbos-onboarding .pron-mic-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.verbos-onboarding .pron-mic-label {
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+}
+
+.verbos-onboarding .pron-mic-label.recording {
+  color: var(--vd-accent);
+}
+
+.verbos-onboarding .pron-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 32px;
+  margin: 4px 0 8px;
+}
+
+.verbos-onboarding .pron-wave-bar {
+  width: 3px;
+  background: var(--vd-accent);
+  border-radius: 0;
+  min-height: 3px;
+  transition: height 0.05s ease;
+  opacity: 0.7;
+}
+
+.verbos-onboarding .pron-transcript {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--vd-ink2);
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.verbos-onboarding .pron-transcript span {
+  color: var(--vd-ink);
+}
+
+.verbos-onboarding .pron-result {
+  border: 1px solid var(--vd-line);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  animation: vdLiftIn 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes vdLiftIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.verbos-onboarding .pron-result.perfect   { border-color: var(--vd-green); }
+.verbos-onboarding .pron-result.excellent { border-color: var(--vd-green); }
+.verbos-onboarding .pron-result.good      { border-color: #9fda8a; }
+.verbos-onboarding .pron-result.needs-work{ border-color: #e0c05a; }
+.verbos-onboarding .pron-result.incorrect { border-color: var(--vd-red); }
+.verbos-onboarding .pron-result.error     { border-color: var(--vd-red); }
+
+.verbos-onboarding .pron-score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.verbos-onboarding .pron-score-number {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--vd-ink);
+}
+
+.verbos-onboarding .pron-result.perfect   .pron-score-number,
+.verbos-onboarding .pron-result.excellent .pron-score-number { color: var(--vd-green); }
+.verbos-onboarding .pron-result.good      .pron-score-number { color: #9fda8a; }
+.verbos-onboarding .pron-result.needs-work .pron-score-number { color: #e0c05a; }
+.verbos-onboarding .pron-result.incorrect .pron-score-number,
+.verbos-onboarding .pron-result.error     .pron-score-number { color: var(--vd-red); }
+
+.verbos-onboarding .pron-score-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--vd-line);
+}
+
+.verbos-onboarding .pron-score-bar {
+  height: 100%;
+  transition: width 0.5s ease;
+  background: var(--vd-green);
+}
+
+.verbos-onboarding .pron-result.needs-work .pron-score-bar { background: #e0c05a; }
+.verbos-onboarding .pron-result.incorrect  .pron-score-bar { background: var(--vd-red); }
+.verbos-onboarding .pron-result.error      .pron-score-bar { background: var(--vd-red); }
+
+.verbos-onboarding .pron-feedback-text {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--vd-ink2);
+  margin-bottom: 6px;
+}
+
+.verbos-onboarding .pron-ok-msg {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vd-green);
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.verbos-onboarding .pron-suggestions {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--vd-ink2);
+  margin-top: 6px;
+  list-style: none;
+  padding: 0;
+}
+
+.verbos-onboarding .pron-suggestions li::before {
+  content: '→ ';
+  color: var(--vd-accent);
+}
+
+.verbos-onboarding .pron-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.verbos-onboarding .pron-close-btn {
+  font-family: var(--vd-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--vd-line);
+  color: var(--vd-ink2);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.verbos-onboarding .pron-close-btn:hover {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+}
+
 /* ── Main drill area ── */
 .ld-main {
   position: fixed;
