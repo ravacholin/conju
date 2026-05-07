@@ -235,6 +235,28 @@
   color: #ff4d1c;
 }
 
+/* Punto pulsante en el ícono del micrófono mientras se graba */
+.ld-util-btn.ld-util-recording {
+  position: relative;
+}
+
+.ld-util-btn.ld-util-recording::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff4d1c;
+  animation: ldRecDot 1s ease-in-out infinite;
+}
+
+@keyframes ldRecDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
 /* ── Mobile ── */
 @media (max-width: 680px) {
   .ld-main {
