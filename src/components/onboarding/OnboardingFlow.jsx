@@ -611,12 +611,19 @@ function OnboardingFlow({
 
       {/* Top header */}
       <header className="vo-header">
-        <div className="vo-logo" onClick={handleLogoClick} title="Ir al inicio">
-          <div className="vo-logo-dot" style={{ background: ACCENT }} />
-          <span className="vo-logo-name">
-            VERB<span style={{ color: ACCENT }}>/</span>OS
-          </span>
-          <span style={{ marginLeft: 8 }}>v0.1</span>
+        <div className="vo-header-left">
+          {onboardingStep > 1 && !showLevelTest && (
+            <button className="vo-back-btn" onClick={handleBack} aria-label="Volver al paso anterior">
+              ← VOLVER
+            </button>
+          )}
+          <div className="vo-logo" onClick={handleLogoClick} title="Ir al inicio">
+            <div className="vo-logo-dot" style={{ background: ACCENT }} />
+            <span className="vo-logo-name">
+              VERB<span style={{ color: ACCENT }}>/</span>OS
+            </span>
+            <span style={{ marginLeft: 8 }}>v0.1</span>
+          </div>
         </div>
 
         <div className="vo-breadcrumb" aria-label="Progreso de configuración">
