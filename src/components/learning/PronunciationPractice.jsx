@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { BackSvg } from '../shared/DrillIcons.jsx';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SpeechRecognitionService from '../../lib/pronunciation/speechRecognition.js';
 import PronunciationAnalyzer from '../../lib/pronunciation/pronunciationAnalyzer.js';
@@ -354,7 +355,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           <div className="pronunciation-container">
             <div className="drill-header">
               <button onClick={onBack} className="back-to-menu-btn">
-                <img src="/back.png" alt="Volver" className="back-icon" />
+                <BackSvg size={20} />
                 Volver
               </button>
               <h2>Práctica de Pronunciación</h2>
@@ -639,7 +640,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           <div className="pronunciation-container">
             <div className="drill-header">
               <button onClick={onBack} className="back-to-menu-btn">
-                <img src="/back.png" alt="Volver" className="back-icon" />
+                <BackSvg size={20} />
                 Volver
               </button>
               <h2>Práctica de Pronunciación</h2>
@@ -661,7 +662,7 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
           <div className="pronunciation-container">
             <div className="drill-header">
               <button onClick={onBack} className="back-to-menu-btn">
-                <img src="/back.png" alt="Volver" className="back-icon" />
+                <BackSvg size={20} />
                 Volver
               </button>
               <h2>Práctica de Pronunciación</h2>

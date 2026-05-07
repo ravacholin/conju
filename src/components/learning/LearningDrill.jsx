@@ -48,6 +48,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react';
+import { AccentsSvg, MicSvg, ChartSvg, HomeSvg, SpeakerSvg } from '../shared/DrillIcons.jsx';
 import { TENSE_LABELS } from '../../lib/utils/verbLabels.js';
 import SessionSummary from './SessionSummary.jsx';
 import { useProgressTracking } from '../../features/drill/useProgressTracking.js';
@@ -1015,8 +1016,8 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
                   ? <span className="ld-correct">✓ correcto</span>
                   : <span className="ld-incorrect">→ <strong>{currentItem.value}</strong></span>
                 }
-                <button type="button" className="ld-tts-btn" onClick={handleSpeak} title="Pronunciar" aria-label="Pronunciar">
-                  <img src="/megaf-imperat.png" alt="Pronunciar" style={{ width: 20, height: 20, filter: 'invert(1) opacity(0.6)' }} />
+                <button type="button" className="ld-tts-btn" onClick={handleSpeak} title="Escuchar pronunciación" aria-label="Escuchar pronunciación">
+                  <SpeakerSvg /><span>escuchar</span>
                 </button>
               </div>
             )}
@@ -1049,10 +1050,18 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
 
         {/* Utility row */}
         <div className="ld-utils">
-          <button className="ld-util-btn" onClick={() => setShowAccentKeys(v => !v)} title="Tildes" style={{ fontFamily: 'JetBrains Mono, monospace', background: showAccentKeys ? ACCENT : 'transparent', color: showAccentKeys ? '#0c0c0c' : INK2 }}>Ñ</button>
-          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación" style={{ fontFamily: 'JetBrains Mono, monospace' }}>◉</button>
-          <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas" style={{ fontFamily: 'JetBrains Mono, monospace' }}>⬡</button>
-          <button className="ld-util-btn" onClick={onHome} title="Inicio" style={{ fontFamily: 'JetBrains Mono, monospace' }}>⌂</button>
+          <button className={`ld-util-btn${showAccentKeys ? ' ld-util-active' : ''}`} onClick={() => setShowAccentKeys(v => !v)} title="Tildes" aria-label="Tildes" aria-pressed={showAccentKeys}>
+            <AccentsSvg size={18} />
+          </button>
+          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación" aria-label="Pronunciación">
+            <MicSvg size={18} />
+          </button>
+          <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas" aria-label="Métricas">
+            <ChartSvg size={18} />
+          </button>
+          <button className="ld-util-btn" onClick={onHome} title="Inicio" aria-label="Inicio">
+            <HomeSvg size={18} />
+          </button>
         </div>
       </div>
 

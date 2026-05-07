@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { BackSvg, HomeSvg } from '../shared/DrillIcons.jsx';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
@@ -890,12 +891,12 @@ function MeaningfulPractice({
         <div className="header-nav">
           {onBack && (
             <button onClick={onBack} className="back-to-menu-btn" aria-label="Volver">
-              <img src="/back.png" alt="Volver" className="back-icon" />
+              <BackSvg size={20} />
             </button>
           )}
           {onHome && (
             <button onClick={onHome} className="icon-btn" aria-label="Inicio" title="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
+              <HomeSvg size={20} />
             </button>
           )}
       </div>

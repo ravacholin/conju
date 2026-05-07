@@ -178,47 +178,40 @@
 .verbos-drill .icon-btn {
   background: transparent;
   border: 1px solid transparent;
-  padding: 6px 7px;
+  padding: 5px 7px;
   line-height: 0;
-  color: var(--vd-ink2);
+  /* Muted white — clearly visible but not blinding */
+  color: rgba(244, 241, 234, 0.55);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
   position: relative;
 }
 
-.verbos-drill .icon-btn img,
 .verbos-drill .icon-btn svg {
-  filter: invert(1) brightness(0.72);
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   display: block;
+  flex-shrink: 0;
 }
 
 .verbos-drill .icon-btn:hover {
   border-color: var(--vd-line);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.05);
   color: var(--vd-ink);
   transform: none;
   box-shadow: none;
 }
 
-.verbos-drill .icon-btn:hover img,
-.verbos-drill .icon-btn:hover svg {
-  filter: invert(1) brightness(1);
-}
-
 .verbos-drill .icon-btn.active {
   border-color: var(--vd-accent);
-  background: rgba(255, 77, 28, 0.08);
+  background: rgba(255, 77, 28, 0.1);
+  color: var(--vd-accent);
 }
 
-.verbos-drill .icon-btn.active img,
-.verbos-drill .icon-btn.active svg {
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
-}
+/* No filter overrides needed — SVGs use currentColor */
 
 /* Pronunciation icon — pulsing dot when recording */
 .verbos-drill .icon-btn.recording::after {

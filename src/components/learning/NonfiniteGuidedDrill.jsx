@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { BackSvg, AccentsSvg, ChartSvg, HomeSvg } from '../shared/DrillIcons.jsx'
 import { useSettings } from '../../state/settings.js'
 import { buildGerund, buildParticiple } from '../../lib/core/nonfiniteBuilder.js'
 import { getVerbByLemma, preloadNonfiniteSets } from '../../lib/core/verbDataService.js'
@@ -393,7 +394,7 @@ function NonfiniteGuidedDrill({
         <header className="header">
           <div className="icon-row">
             <button onClick={onBack} className="icon-btn" title="Volver" aria-label="Volver">
-              <img src="/back.png" alt="Volver" className="menu-icon" />
+              <BackSvg size={20} />
             </button>
           </div>
         </header>
@@ -419,16 +420,16 @@ function NonfiniteGuidedDrill({
             title="Tildes"
             aria-label="Tildes"
           >
-            <img src="/enie.png" alt="Tildes" className="menu-icon" />
+            <AccentsSvg size={20} />
           </button>
           {onGoToProgress && (
             <button onClick={onGoToProgress} className="icon-btn" title="Métricas" aria-label="Métricas">
-              <img src="/icons/chart.png" alt="Métricas" className="menu-icon" />
+              <ChartSvg size={20} />
             </button>
           )}
           {onHome && (
             <button onClick={onHome} className="icon-btn" title="Inicio" aria-label="Inicio">
-              <img src="/home.png" alt="Inicio" className="menu-icon" />
+              <HomeSvg size={20} />
             </button>
           )}
         </div>
