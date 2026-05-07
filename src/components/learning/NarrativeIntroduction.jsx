@@ -1376,28 +1376,29 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
         </div>
 
         {/* RIGHT: story + deconstruction */}
-        <div className="vo-right vo-noscroll ni-right-panel" style={{ justifyContent: 'flex-start', overflowY: 'auto', paddingTop: 48 }}>
-          <div className="vo-options-label">ANÁLISIS ─────</div>
+        <div className="vo-right vo-noscroll ni-right-panel">
           <div className="ni-content-inner">
             {tenseStoryData ? (
               <>
-                <div className="story-placeholder">
-                  <h3>{tenseStoryData.title}</h3>
+                <div className="ni-section-header">CONTEXTO</div>
+                <div className="ni-story-block">
+                  <div className="ni-story-title">{tenseStoryData.title}</div>
                   {renderStorySentences()}
                 </div>
-                <div className="deconstruction-placeholder">
+                <div className="ni-section-header">ANÁLISIS</div>
+                <div className="ni-analysis-block">
                   <div className="deconstruction-list">
                     {renderDeconstructionContent()}
                   </div>
                 </div>
               </>
             ) : (
-              <div className="story-placeholder">
-                <p style={{ color: INK2 }}>Introducción para "{tenseName}" no implementada aún.</p>
+              <div className="ni-story-block">
+                <p className="ni-not-implemented">Introducción para "{tenseName}" no implementada aún.</p>
               </div>
             )}
             <button className="ni-continue-btn" onClick={handleAnimatedContinue}>
-              continuar <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8em' }}>→</span>
+              continuar <span className="ni-continue-arrow">→</span>
             </button>
           </div>
         </div>
