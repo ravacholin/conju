@@ -39,6 +39,13 @@ function buildBreadcrumb(settings) {
   return items.slice(-3)
 }
 
+const MicSvg = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ width: 20, height: 20 }}>
+    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+  </svg>
+)
+
 function DrillHeader({
   onToggleQuickSwitch,
   onToggleAccentKeys,
@@ -50,7 +57,8 @@ function DrillHeader({
   onHome,
   showQuickSwitch,
   showGames,
-  showPronunciation: _showPronunciation
+  showPronunciation,
+  isRecording
 }) {
   const settings = useSettings()
   const isReviewMode = settings.practiceMode === 'review'
@@ -93,9 +101,10 @@ function DrillHeader({
         <button
           type="button"
           onClick={() => onToggleQuickSwitch(showQuickSwitch ? false : true)}
-          className="icon-btn"
-          title="Cambiar rápido"
-          aria-label="Cambiar rápido"
+          className={`icon-btn${showQuickSwitch ? ' active' : ''}`}
+          title="Configuración rápida"
+          aria-label="Configuración rápida"
+          aria-pressed={showQuickSwitch}
         >
           <img src="/config.png" alt="Config" />
         </button>
@@ -104,8 +113,8 @@ function DrillHeader({
           type="button"
           onClick={() => onToggleAccentKeys()}
           className="icon-btn"
-          title="Tildes"
-          aria-label="Tildes"
+          title="Tildes especiales"
+          aria-label="Tildes especiales"
         >
           <img src="/enie.png" alt="Tildes" />
         </button>
@@ -113,19 +122,21 @@ function DrillHeader({
         <button
           type="button"
           onClick={() => onTogglePronunciation()}
-          className="icon-btn"
+          className={`icon-btn${showPronunciation ? ' active' : ''}${isRecording ? ' recording' : ''}`}
           title="Pronunciación"
           aria-label="Pronunciación"
+          aria-pressed={showPronunciation}
         >
-          <img src="/boca.png" alt="Pronunciación" />
+          <MicSvg />
         </button>
 
         <button
           type="button"
           onClick={() => onToggleGames(showGames ? false : true)}
-          className="icon-btn"
-          title="Juegos"
-          aria-label="Juegos"
+          className={`icon-btn${showGames ? ' active' : ''}`}
+          title="Modos de juego"
+          aria-label="Modos de juego"
+          aria-pressed={showGames}
         >
           <img src="/dice.png" alt="Juegos" />
         </button>

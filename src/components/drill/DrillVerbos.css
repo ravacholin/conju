@@ -170,7 +170,7 @@
 /* Icon buttons in header */
 .verbos-drill .icon-row {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   align-items: center;
   flex-shrink: 0;
 }
@@ -178,7 +178,7 @@
 .verbos-drill .icon-btn {
   background: transparent;
   border: 1px solid transparent;
-  padding: 5px;
+  padding: 6px 7px;
   line-height: 0;
   color: var(--vd-ink2);
   display: inline-flex;
@@ -186,26 +186,56 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s;
+  position: relative;
 }
 
-.verbos-drill .icon-btn img {
-  filter: invert(1) brightness(0.55);
-  width: 18px;
-  height: 18px;
+.verbos-drill .icon-btn img,
+.verbos-drill .icon-btn svg {
+  filter: invert(1) brightness(0.72);
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 .verbos-drill .icon-btn:hover {
   border-color: var(--vd-line);
+  background: rgba(255,255,255,0.04);
   color: var(--vd-ink);
+  transform: none;
+  box-shadow: none;
 }
 
-.verbos-drill .icon-btn:hover img {
+.verbos-drill .icon-btn:hover img,
+.verbos-drill .icon-btn:hover svg {
   filter: invert(1) brightness(1);
 }
 
-.verbos-drill .icon-btn:hover {
-  transform: none;
-  box-shadow: none;
+.verbos-drill .icon-btn.active {
+  border-color: var(--vd-accent);
+  background: rgba(255, 77, 28, 0.08);
+}
+
+.verbos-drill .icon-btn.active img,
+.verbos-drill .icon-btn.active svg {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
+}
+
+/* Pronunciation icon — pulsing dot when recording */
+.verbos-drill .icon-btn.recording::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vd-accent);
+  animation: vdRecDot 1s ease-in-out infinite;
+}
+
+@keyframes vdRecDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
 }
 
 /* SRS badge in header */
@@ -503,21 +533,36 @@
 
 .verbos-drill .tts-btn {
   background: transparent;
-  border: none;
-  padding: 0;
+  border: 1px solid var(--vd-line);
+  padding: 6px 8px;
   line-height: 0;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
+  color: var(--vd-ink2);
+  gap: 5px;
+  font-family: var(--vd-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.verbos-drill .tts-btn:hover { opacity: 1; }
+.verbos-drill .tts-btn:hover {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+  background: rgba(255,77,28,0.06);
+}
+
 .verbos-drill .tts-btn img {
-  width: 20px;
-  height: 20px;
-  filter: invert(1);
+  width: 16px;
+  height: 16px;
+  filter: invert(1) brightness(0.7);
+  display: block;
+}
+
+.verbos-drill .tts-btn:hover img {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
 }
 
 /* ── Diff component ── */
@@ -745,6 +790,293 @@
   box-shadow: none;
 }
 
+/* ── Pronunciation panel redesign ── */
+.verbos-drill .pronunciation-panel-v2 {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  font-family: var(--vd-mono);
+}
+
+.verbos-drill .pron-target-block {
+  text-align: center;
+  margin-bottom: 24px;
+  border: 1px solid var(--vd-line);
+  padding: 20px 24px 18px;
+  position: relative;
+}
+
+.verbos-drill .pron-target-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+  margin-bottom: 8px;
+}
+
+.verbos-drill .pron-target-word {
+  font-family: var(--vd-font);
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--vd-accent);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.verbos-drill .pron-target-context {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+}
+
+/* Play-pronunciation button (listen) */
+.verbos-drill .pron-listen-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: 1px solid var(--vd-line);
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: var(--vd-ink2);
+}
+
+.verbos-drill .pron-listen-btn:hover {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+  background: rgba(255,77,28,0.06);
+}
+
+.verbos-drill .pron-listen-btn img,
+.verbos-drill .pron-listen-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.verbos-drill .pron-listen-btn img {
+  filter: invert(1) brightness(0.6);
+}
+
+.verbos-drill .pron-listen-btn:hover img {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
+}
+
+/* Mic button */
+.verbos-drill .pron-mic-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.verbos-drill .pron-mic-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 0;
+  border: 2px solid var(--vd-line);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+  color: var(--vd-ink2);
+}
+
+.verbos-drill .pron-mic-btn svg {
+  width: 28px;
+  height: 28px;
+  color: inherit;
+  fill: currentColor;
+}
+
+.verbos-drill .pron-mic-btn:hover:not(:disabled) {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+  background: rgba(255,77,28,0.06);
+}
+
+.verbos-drill .pron-mic-btn.recording {
+  border-color: var(--vd-accent);
+  background: rgba(255,77,28,0.12);
+  color: var(--vd-accent);
+  animation: vdMicPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes vdMicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,28,0.3); }
+  50%       { box-shadow: 0 0 0 10px rgba(255,77,28,0); }
+}
+
+.verbos-drill .pron-mic-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.verbos-drill .pron-mic-label {
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+}
+
+.verbos-drill .pron-mic-label.recording {
+  color: var(--vd-accent);
+}
+
+/* Waveform */
+.verbos-drill .pron-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 32px;
+  margin: 4px 0 8px;
+}
+
+.verbos-drill .pron-wave-bar {
+  width: 3px;
+  background: var(--vd-accent);
+  border-radius: 0;
+  min-height: 3px;
+  transition: height 0.05s ease;
+  opacity: 0.7;
+}
+
+/* Transcript display */
+.verbos-drill .pron-transcript {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--vd-ink2);
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.verbos-drill .pron-transcript span {
+  color: var(--vd-ink);
+}
+
+/* Result block */
+.verbos-drill .pron-result {
+  border: 1px solid var(--vd-line);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  animation: vdLiftIn 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.verbos-drill .pron-result.perfect   { border-color: var(--vd-green); }
+.verbos-drill .pron-result.excellent { border-color: var(--vd-green); }
+.verbos-drill .pron-result.good      { border-color: #9fda8a; }
+.verbos-drill .pron-result.needs-work{ border-color: #e0c05a; }
+.verbos-drill .pron-result.incorrect { border-color: var(--vd-red); }
+.verbos-drill .pron-result.error     { border-color: var(--vd-red); }
+
+.verbos-drill .pron-score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.verbos-drill .pron-score-number {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--vd-ink);
+}
+
+.verbos-drill .pron-result.perfect   .pron-score-number,
+.verbos-drill .pron-result.excellent .pron-score-number { color: var(--vd-green); }
+.verbos-drill .pron-result.good      .pron-score-number { color: #9fda8a; }
+.verbos-drill .pron-result.needs-work .pron-score-number { color: #e0c05a; }
+.verbos-drill .pron-result.incorrect .pron-score-number,
+.verbos-drill .pron-result.error     .pron-score-number { color: var(--vd-red); }
+
+.verbos-drill .pron-score-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--vd-line);
+}
+
+.verbos-drill .pron-score-bar {
+  height: 100%;
+  transition: width 0.5s ease;
+  background: var(--vd-green);
+}
+.verbos-drill .pron-result.needs-work .pron-score-bar { background: #e0c05a; }
+.verbos-drill .pron-result.incorrect  .pron-score-bar { background: var(--vd-red); }
+.verbos-drill .pron-result.error      .pron-score-bar { background: var(--vd-red); }
+
+.verbos-drill .pron-feedback-text {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--vd-ink2);
+  margin-bottom: 6px;
+  text-transform: none;
+}
+
+.verbos-drill .pron-ok-msg {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vd-green);
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+/* Suggestions */
+.verbos-drill .pron-suggestions {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  color: var(--vd-ink2);
+  margin-top: 6px;
+  list-style: none;
+  padding: 0;
+}
+
+.verbos-drill .pron-suggestions li::before {
+  content: '→ ';
+  color: var(--vd-accent);
+}
+
+/* Close button */
+.verbos-drill .pron-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.verbos-drill .pron-close-btn {
+  font-family: var(--vd-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--vd-line);
+  color: var(--vd-ink2);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.verbos-drill .pron-close-btn:hover {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
+}
+
 .verbos-drill .quick-switch-panel .setting-group {
   margin-bottom: 14px;
 }
@@ -779,7 +1111,8 @@
 /* These appear after DrillHeader and before main-content */
 .verbos-drill > div.quick-switch-panel,
 .verbos-drill > div.games-panel,
-.verbos-drill > div.pronunciation-panel-safe {
+.verbos-drill > div.pronunciation-panel-safe,
+.verbos-drill > div.pronunciation-panel-v2 {
   position: absolute;
   top: 44px;
   left: 0;
@@ -787,6 +1120,8 @@
   z-index: 10;
   background: var(--vd-bg);
   border-bottom: 1px solid var(--vd-line);
+  overflow-y: auto;
+  max-height: calc(100vh - 44px - 32px);
 }
 
 /* ── Mobile ── */

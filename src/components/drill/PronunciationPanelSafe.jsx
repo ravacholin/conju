@@ -7,41 +7,75 @@ import { createLogger } from '../../lib/utils/logger.js';
 import { useSettings } from '../../state/settings.js';
 import { getSpeechLanguagePreferences } from '../../lib/pronunciation/languagePreferences.js';
 
+const logger = createLogger('PronunciationPanelSafe');
+
+const MicIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+  </svg>
+);
+
+const SpeakerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+  </svg>
+);
+
+const RESULT_CLASS = (accuracy, error) => {
+  if (error) return 'error';
+  if (accuracy >= 100) return 'perfect';
+  if (accuracy >= 92) return 'excellent';
+  if (accuracy >= 80) return 'good';
+  if (accuracy >= 65) return 'needs-work';
+  return 'incorrect';
+};
+
 const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
   currentItem,
   onClose,
   handleResult,
-  onContinue
+  onContinue,
+  onRecordingChange
 }, ref) {
   const settings = useSettings();
   const { locale: speechLocale, dialect } = useMemo(
     () => getSpeechLanguagePreferences(settings?.region),
     [settings?.region]
   );
-  const logger = useMemo(() => createLogger('PronunciationPanelSafe'), []);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
   const [speechService, setSpeechService] = useState(null);
   const [analyzer] = useState(() => new PronunciationAnalyzer());
   const [isSupported, setIsSupported] = useState(true);
   const [audioWaveform, setAudioWaveform] = useState([]);
-  const [_compatibilityInfo, setCompatibilityInfo] = useState(null);
   const waveformRef = useRef(null);
   const recordingStartTime = useRef(0);
 
-  // Estabilizar props con refs para evitar cambios de dependencias
   const handleResultRef = useRef(handleResult);
   const onContinueRef = useRef(onContinue);
   const onCloseRef = useRef(onClose);
 
-  // Actualizar refs cuando cambien las props
   useEffect(() => {
     handleResultRef.current = handleResult;
     onContinueRef.current = onContinue;
     onCloseRef.current = onClose;
   });
 
-  // Toggle recording function for external control
+  const pronunciationData = useMemo(() => {
+    const result = convertCurrentItemToPronunciation(currentItem, {
+      dialect,
+      region: settings?.region
+    });
+    return result;
+  }, [currentItem, dialect, settings?.region]);
+
+  const playCorrectPronunciation = useCallback(() => {
+    if (pronunciationData?.form) {
+      speakText(pronunciationData.form, speechLocale, { rate: 0.75 });
+    }
+  }, [pronunciationData?.form, speechLocale]);
+
   const toggleRecording = useCallback(async () => {
     if (!speechService) {
       setRecordingResult({
@@ -52,13 +86,11 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       });
       return;
     }
-
     if (isRecording) {
       speechService.stopListening();
     } else {
-      const success = await speechService.startListening({
-        language: speechLocale
-      });
+      setRecordingResult(null);
+      const success = await speechService.startListening({ language: speechLocale });
       if (!success) {
         setRecordingResult({
           accuracy: 0,
@@ -70,49 +102,11 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
     }
   }, [isRecording, speechService, speechLocale]);
 
-  // Expose toggleRecording function via ref
-  useImperativeHandle(ref, () => ({
-    toggleRecording
-  }), [toggleRecording]);
+  useImperativeHandle(ref, () => ({ toggleRecording }), [toggleRecording]);
 
-  // Convertir currentItem a formato de pronunciación - MEMOIZADO para evitar recálculos
-  const pronunciationData = useMemo(() => {
-    logger.debug('Creating pronunciation data from current item', currentItem);
-    const result = convertCurrentItemToPronunciation(currentItem, {
-      dialect,
-      region: settings?.region
-    });
-    logger.debug('Pronunciation data result', result);
-    return result;
-  }, [currentItem, dialect, settings?.region, logger]);
-
-  // Function to play correct pronunciation - DEFINED AFTER pronunciationData
-  const playCorrectPronunciation = useCallback(() => {
-    if (pronunciationData?.form) {
-      logger.debug('Playing correct pronunciation', { form: pronunciationData.form });
-      speakText(pronunciationData.form, speechLocale, {
-        rate: 0.7,
-        onStart: () => logger.debug('Started playing correct pronunciation'),
-        onEnd: () => logger.debug('Finished playing correct pronunciation'),
-        onError: (error) => logger.error('Error playing correct pronunciation', error)
-      });
-    }
-  }, [pronunciationData?.form, speechLocale, logger]);
-
-  // Speech recognition event handlers - ESTABLES CON useCallback
   const handleSpeechResult = useCallback((result) => {
     if (result.isFinal && pronunciationData) {
       setIsRecording(false);
-
-      // DEBUG: Log what we're comparing
-      logger.debug('Pronunciation comparison details', {
-        expected: pronunciationData.form,
-        recognized: result.transcript,
-        exactMatch: pronunciationData.form === result.transcript,
-        lowerCaseMatch:
-          pronunciationData.form.toLowerCase() === result.transcript.toLowerCase(),
-        pronunciationData
-      });
 
       const analysis = analyzer.analyzePronunciation(
         pronunciationData.form,
@@ -127,37 +121,21 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         }
       );
 
-      // Use the new STRICT analysis directly - no fallback needed
-      let finalAnalysis = analysis;
-
       setRecordingResult({
-        ...finalAnalysis,
+        ...analysis,
         originalTranscript: result.transcript,
         alternatives: result.alternatives
       });
 
-      // Track progress using STRICT evaluation (90%+ threshold)
       if (pronunciationData) {
-        const isCorrect = finalAnalysis.isCorrectForSRS;
+        const isCorrect = analysis.isCorrectForSRS;
         const timing = Date.now() - recordingStartTime.current;
 
-        logger.debug('Strict pronunciation result tracking', {
-          isCorrect,
-          accuracy: finalAnalysis.accuracy,
-          pedagogicalScore: finalAnalysis.pedagogicalScore,
-          threshold: '90% (STRICT)',
-          semanticType: finalAnalysis.semanticValidation?.type,
-          hasOnContinue: !!onContinueRef.current,
-          hasOnClose: !!onCloseRef.current,
-          timing
-        });
-
-        // Create proper result object for tracking
         const trackingResult = {
           correct: isCorrect,
           latencyMs: timing,
-          hintsUsed: 0, // Pronunciation doesn't use hints
-          errorTags: finalAnalysis.isCorrectForSRS ? [] : ['pronunciation-error'],
+          hintsUsed: 0,
+          errorTags: isCorrect ? [] : ['pronunciation-error'],
           userAnswer: result.transcript,
           correctAnswer: pronunciationData.form,
           practiceType: 'pronunciation',
@@ -165,36 +143,24 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
             type: 'pronunciation',
             target: pronunciationData.form,
             recognized: result.transcript,
-            accuracy: finalAnalysis.accuracy,
-            pedagogicalScore: finalAnalysis.pedagogicalScore,
-            semanticType: finalAnalysis.semanticValidation?.type,
+            accuracy: analysis.accuracy,
+            pedagogicalScore: analysis.pedagogicalScore,
             confidence: result.confidence,
-            timing: timing
+            timing
           }
         };
 
         handleResultRef.current(trackingResult);
 
-        // Auto-advance if correct (90%+) - continue to next drill after 2 seconds
         if (isCorrect && onContinueRef.current) {
-          logger.debug('Strict auto-advance triggered: continuing in 2 seconds');
           setTimeout(() => {
-            logger.debug('Executing auto-advance: calling onContinue and onClose');
-            // Call continue first to advance to next exercise
             onContinueRef.current();
-            // Then close the pronunciation panel
             onCloseRef.current();
           }, 2000);
-        } else {
-          logger.debug('Auto-advance not triggered', {
-            isCorrect,
-            reason: isCorrect ? 'no onContinue function' : 'accuracy below 90% threshold',
-            hasOnContinue: !!onContinueRef.current
-          });
         }
       }
     }
-  }, [pronunciationData, analyzer, logger]); // Solo dependencias estables
+  }, [pronunciationData, analyzer]);
 
   const handleSpeechError = useCallback((error) => {
     setIsRecording(false);
@@ -208,72 +174,41 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   const handleSpeechStart = useCallback(() => {
     setIsRecording(true);
+    onRecordingChange?.(true);
     recordingStartTime.current = Date.now();
 
-    // Waveform animation - SIN dependencia de isRecording
     let animationRunning = true;
     const animation = () => {
       if (animationRunning) {
-        const newWaveform = Array.from({ length: 20 }, () => Math.random() * 100);
-        setAudioWaveform(newWaveform);
+        setAudioWaveform(Array.from({ length: 24 }, () => 8 + Math.random() * 92));
         waveformRef.current = requestAnimationFrame(animation);
       }
     };
     animation();
-
-    // Cleanup function stored in ref for handleSpeechEnd
-    waveformRef.stopAnimation = () => {
-      animationRunning = false;
-    };
+    waveformRef.stopAnimation = () => { animationRunning = false; };
   }, []);
 
   const handleSpeechEnd = useCallback(() => {
     setIsRecording(false);
-
-    // Stop animation using stored function
-    if (waveformRef.stopAnimation) {
-      waveformRef.stopAnimation();
-    }
-
-    // Cancel any pending animation frame
-    if (waveformRef.current) {
-      cancelAnimationFrame(waveformRef.current);
-    }
-
+    onRecordingChange?.(false);
+    if (waveformRef.stopAnimation) waveformRef.stopAnimation();
+    if (waveformRef.current) cancelAnimationFrame(waveformRef.current);
     setAudioWaveform([]);
-  }, []);
+  }, [onRecordingChange]);
 
-  // Mantener los callbacks sincronizados con los handlers actuales
   useEffect(() => {
     if (!speechService) return;
-
     speechService.setCallbacks({
       onResult: handleSpeechResult,
       onError: handleSpeechError,
       onStart: handleSpeechStart,
       onEnd: handleSpeechEnd
     });
-  }, [
-    speechService,
-    handleSpeechResult,
-    handleSpeechError,
-    handleSpeechStart,
-    handleSpeechEnd
-  ]);
+  }, [speechService, handleSpeechResult, handleSpeechError, handleSpeechStart, handleSpeechEnd]);
 
-  // Initialize speech recognition based on dialect preferences
   useEffect(() => {
-    // Only initialize if window is available (client-side)
     if (typeof window === 'undefined') {
       setIsSupported(false);
-      setCompatibilityInfo({
-        speechRecognition: false,
-        microphone: false,
-        language: 'unknown',
-        dialect,
-        userAgent: 'SSR environment',
-        recommendations: ['Speech recognition not available in server-side environment']
-      });
       return () => {};
     }
 
@@ -287,22 +222,12 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         const compatibility = await service.testCompatibility();
         if (!isMounted) return;
 
-        const compatibilityWithLanguage = {
-          ...compatibility,
-          language: speechLocale,
-          dialect
-        };
-
-        setCompatibilityInfo(compatibilityWithLanguage);
         setIsSupported(compatibility.speechRecognition && compatibility.microphone);
 
         if (compatibility.speechRecognition && compatibility.microphone) {
           await service.initialize({ language: speechLocale });
 
-          // START RECORDING IMMEDIATELY
-          const success = await service.startListening({
-            language: speechLocale
-          });
+          const success = await service.startListening({ language: speechLocale });
 
           if (!success && isMounted) {
             setRecordingResult({
@@ -315,9 +240,7 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
         }
       } catch (error) {
         logger.error('Error initializing speech recognition:', error);
-        if (isMounted) {
-          setIsSupported(false);
-        }
+        if (isMounted) setIsSupported(false);
       }
     };
 
@@ -328,17 +251,21 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
       service.destroy?.();
       setSpeechService((prev) => (prev === service ? null : prev));
     };
-  }, [speechLocale, dialect, logger]);
+  }, [speechLocale, dialect]);
 
-  // No mostrar panel si no hay item actual
+  const handleClose = () => {
+    if (isRecording && speechService) speechService.stopListening();
+    onClose();
+  };
+
   if (!currentItem || !pronunciationData) {
     return (
-      <div className="quick-switch-panel">
-        <div className="setting-group">
-          <p>No hay ítem disponible para pronunciación</p>
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cerrar
-          </button>
+      <div className="pronunciation-panel-v2">
+        <p style={{ color: 'var(--vd-ink2)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', textAlign: 'center', padding: '20px' }}>
+          No hay ítem disponible para pronunciación
+        </p>
+        <div className="pron-footer">
+          <button className="pron-close-btn" onClick={onClose}>Cerrar</button>
         </div>
       </div>
     );
@@ -346,160 +273,123 @@ const PronunciationPanelSafe = forwardRef(function PronunciationPanelSafe({
 
   if (!isSupported) {
     return (
-      <div className="quick-switch-panel">
-        <div className="setting-group">
-          <h3>Reconocimiento de voz no disponible</h3>
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cerrar
-          </button>
+      <div className="pronunciation-panel-v2">
+        <p style={{ color: 'var(--vd-ink2)', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', textAlign: 'center', padding: '20px' }}>
+          Reconocimiento de voz no disponible en este navegador
+        </p>
+        <div className="pron-footer">
+          <button className="pron-close-btn" onClick={onClose}>Cerrar</button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="quick-switch-panel pronunciation-panel">
-      <div className="setting-group">
-        {isRecording ? (
-          <div className="recording-status">
-            <h3>🎤 Se está grabando...</h3>
-            <p>Hacer click otra vez en el micrófono para terminar de pronunciar</p>
+  const resultClass = recordingResult
+    ? RESULT_CLASS(recordingResult.accuracy, recordingResult.error)
+    : '';
 
-            <div className="recording-indicator">
-              <div className="waveform">
-                {audioWaveform.map((height, i) => (
-                  <div
-                    key={i}
-                    className="wave-bar"
-                    style={{ height: `${height}%` }}
-                  />
-                ))}
-              </div>
-            </div>
+  const contextParts = [
+    pronunciationData.person && (PERSON_LABELS[pronunciationData.person] || pronunciationData.person),
+    TENSE_LABELS[pronunciationData.tense] || pronunciationData.tense,
+    MOOD_LABELS[pronunciationData.mood] || pronunciationData.mood
+  ].filter(Boolean);
+
+  return (
+    <div className="pronunciation-panel-v2">
+      {/* Target word to pronounce */}
+      <div className="pron-target-block">
+        <div className="pron-target-label">Pronunciar</div>
+        <div className="pron-target-word">{pronunciationData.form}</div>
+        <div className="pron-target-context">
+          {pronunciationData.verb} · {contextParts.join(' · ')}
+        </div>
+
+        {/* Listen button */}
+        <button
+          className="pron-listen-btn"
+          onClick={playCorrectPronunciation}
+          title="Escuchar pronunciación correcta"
+          aria-label="Escuchar pronunciación correcta"
+        >
+          <SpeakerIcon />
+        </button>
+      </div>
+
+      {/* Mic button + waveform */}
+      <div className="pron-mic-area">
+        <button
+          className={`pron-mic-btn${isRecording ? ' recording' : ''}`}
+          onClick={toggleRecording}
+          disabled={!speechService}
+          title={isRecording ? 'Detener grabación' : 'Grabar pronunciación'}
+          aria-label={isRecording ? 'Detener grabación' : 'Grabar pronunciación'}
+        >
+          <MicIcon />
+        </button>
+
+        {isRecording ? (
+          <div className="pron-waveform">
+            {audioWaveform.map((h, i) => (
+              <div
+                key={i}
+                className="pron-wave-bar"
+                style={{ height: `${Math.max(4, h * 0.3)}px` }}
+              />
+            ))}
           </div>
         ) : (
-          <div className="recording-ready">
-            <h3>Práctica de Pronunciación</h3>
-            <p>Haz click en el micrófono del header para empezar a grabar</p>
+          <div className={`pron-mic-label${isRecording ? ' recording' : ''}`}>
+            {recordingResult
+              ? 'VOLVER A INTENTAR'
+              : 'GRABAR'}
           </div>
+        )}
+
+        {isRecording && (
+          <div className="pron-mic-label recording">GRABANDO — click para detener</div>
         )}
       </div>
 
-      <div className="setting-group">
-        <div className="verb-info">
-          <p className="verb-infinitive">Verbo: <strong>{pronunciationData.verb}</strong></p>
-          <p className="verb-context">
-            {pronunciationData.person && `${PERSON_LABELS[pronunciationData.person] || pronunciationData.person}`} • {' '}
-            {TENSE_LABELS[pronunciationData.tense] || pronunciationData.tense} • {' '}
-            {MOOD_LABELS[pronunciationData.mood] || pronunciationData.mood}
-          </p>
+      {/* Transcript */}
+      {recordingResult?.originalTranscript && (
+        <div className="pron-transcript">
+          Reconocido: <span>"{recordingResult.originalTranscript}"</span>
         </div>
-      </div>
+      )}
 
+      {/* Result block */}
       {recordingResult && (
-        <div className={`setting-group recording-result ${
-          recordingResult.error ? 'error' :
-          recordingResult.accuracy >= 100 ? 'perfect' :
-          recordingResult.accuracy >= 95 ? 'excellent' :
-          recordingResult.accuracy >= 85 ? 'good' :
-          recordingResult.accuracy >= 75 ? 'needs-work' : 'incorrect'
-        }`}>
+        <div className={`pron-result ${resultClass}`}>
           {!recordingResult.error && (
-            <div className="accuracy-header">
-              <div className="accuracy-score">
-                <span className="score-number">{recordingResult.accuracy}%</span>
-                <span className="score-label">Precisión</span>
-              </div>
-              <div className="accuracy-bar">
+            <div className="pron-score-row">
+              <div className="pron-score-number">{recordingResult.accuracy}%</div>
+              <div className="pron-score-bar-wrap">
                 <div
-                  className="accuracy-fill"
+                  className="pron-score-bar"
                   style={{ width: `${recordingResult.accuracy}%` }}
                 />
               </div>
             </div>
           )}
 
-          <div className="feedback">
-            {recordingResult.feedback}
+          <div className="pron-feedback-text">{recordingResult.feedback}</div>
 
-            {/* Show pronunciation help for incorrect answers */}
-            {recordingResult.accuracy < 90 && !recordingResult.error && (
-              <div className="pronunciation-help" style={{
-                marginTop: '12px',
-                padding: '12px',
-                backgroundColor: '#1a1a1a',
-                border: '1px solid #333',
-                borderRadius: '4px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '14px', color: '#e0e0e0', flex: 1 }}>
-                    ¿Necesitas escuchar la pronunciación correcta?
-                  </span>
-                  <button
-                    onClick={playCorrectPronunciation}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      padding: '4px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    <img
-                      src="/megaf-imperat.png"
-                      alt="Reproducir pronunciación correcta"
-                      style={{ width: '24px', height: '24px' }}
-                    />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {recordingResult.accuracy >= 90 && onContinue && (
-              <div className="auto-continue-message" style={{
-                marginTop: '12px',
-                padding: '8px 12px',
-                fontSize: '14px',
-                color: '#4ade80',
-                backgroundColor: '#0a0a0a',
-                border: '1px solid #16a34a',
-                borderRadius: '4px',
-                fontWeight: 'bold'
-              }}>
-                ✓ ¡Pronunciación correcta! Avanzando al siguiente...
-              </div>
-            )}
-          </div>
-
-          {recordingResult.originalTranscript && (
-            <div className="transcript">
-              <strong>Reconocido:</strong> "{recordingResult.originalTranscript}"
-            </div>
+          {recordingResult.accuracy >= 90 && onContinue && (
+            <div className="pron-ok-msg">✓ Pronunciación correcta — avanzando...</div>
           )}
 
-          {recordingResult.suggestions && recordingResult.suggestions.length > 0 && (
-            <div className="suggestions">
-              <strong>Sugerencias:</strong>
-              <ul>
-                {recordingResult.suggestions.slice(0, 2).map((suggestion, i) => (
-                  <li key={i}>{suggestion}</li>
-                ))}
-              </ul>
-            </div>
+          {recordingResult.suggestions?.length > 0 && (
+            <ul className="pron-suggestions">
+              {recordingResult.suggestions.slice(0, 2).map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ul>
           )}
         </div>
       )}
 
-      <div className="setting-group">
-        <button className="btn btn-secondary" onClick={() => {
-          // Stop recording if active when closing
-          if (isRecording && speechService) {
-            speechService.stopListening();
-          }
-          onClose();
-        }}>
+      <div className="pron-footer">
+        <button className="pron-close-btn" onClick={handleClose}>
           Cerrar
         </button>
       </div>
