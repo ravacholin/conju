@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense } from 'react';
-import { SpeakerSvg } from '../shared/DrillIcons.jsx';
+import { SpeakerSvg, AccentsSvg, MicSvg, ChartSvg, HomeSvg } from '../shared/DrillIcons.jsx';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
@@ -205,6 +205,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   const settings = useSettings();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
   const [showPronunciation, setShowPronunciation] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const pronunciationPanelRef = useRef(null);
 
   // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
@@ -640,6 +641,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
             onClose={() => handleTogglePronunciation(false)}
             handleResult={handleDrillResult}
             onContinue={handleContinueFromPronunciation}
+            onRecordingChange={setIsRecording}
           />
         </Suspense>
       )}
@@ -739,10 +741,14 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
 
         {/* Utilities */}
         <div className="ld-utils">
-          <button className="ld-util-btn" onClick={() => setShowAccentKeys(v => !v)} title="Tildes" style={{ background: showAccentKeys ? ACCENT : 'transparent', color: showAccentKeys ? '#0c0c0c' : INK2 }}>Ñ</button>
-          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación">◉</button>
-          {onGoToProgress && <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas">⬡</button>}
-          {onHome && <button className="ld-util-btn" onClick={onHome} title="Inicio">⌂</button>}
+          <button className={`ld-util-btn${showAccentKeys ? ' ld-util-active' : ''}`} onClick={() => setShowAccentKeys(v => !v)} title="Tildes" aria-label="Tildes" aria-pressed={showAccentKeys}>
+            <AccentsSvg size={18} />
+          </button>
+          <button className={`ld-util-btn${showPronunciation ? ' ld-util-active' : ''}${isRecording ? ' ld-util-recording' : ''}`} onClick={() => handleTogglePronunciation()} title="Pronunciación" aria-label="Pronunciación" aria-pressed={showPronunciation}>
+            <MicSvg size={18} />
+          </button>
+          {onGoToProgress && <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas" aria-label="Métricas"><ChartSvg size={18} /></button>}
+          {onHome && <button className="ld-util-btn" onClick={onHome} title="Inicio" aria-label="Inicio"><HomeSvg size={18} /></button>}
         </div>
       </div>
 

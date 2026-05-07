@@ -156,6 +156,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   const settings = useSettings();
   const [showAccentKeys, setShowAccentKeys] = useState(false);
   const [showPronunciation, setShowPronunciation] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const pronunciationPanelRef = useRef(null);
 
   // Toggle pronunciation function
@@ -978,6 +979,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
             onClose={() => handleTogglePronunciation(false)}
             handleResult={handleDrillResult}
             onContinue={handleContinueFromPronunciation}
+            onRecordingChange={setIsRecording}
           />
         </Suspense>
       )}
@@ -1053,7 +1055,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
           <button className={`ld-util-btn${showAccentKeys ? ' ld-util-active' : ''}`} onClick={() => setShowAccentKeys(v => !v)} title="Tildes" aria-label="Tildes" aria-pressed={showAccentKeys}>
             <AccentsSvg size={18} />
           </button>
-          <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación" aria-label="Pronunciación">
+          <button className={`ld-util-btn${showPronunciation ? ' ld-util-active' : ''}${isRecording ? ' ld-util-recording' : ''}`} onClick={() => handleTogglePronunciation()} title="Pronunciación" aria-label="Pronunciación" aria-pressed={showPronunciation}>
             <MicSvg size={18} />
           </button>
           <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas" aria-label="Métricas">
