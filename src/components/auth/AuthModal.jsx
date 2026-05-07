@@ -17,19 +17,15 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     authService.initializeGoogleAuth()
   }, [])
 
-  // Listen for auth events
   useEffect(() => {
     const handleAuthLogin = () => {
-      console.log('🔵 AuthModal: Received auth-login event')
       setLoading(false)
       onSuccess?.()
       onClose()
-      // Reset form
       setFormData({ email: '', password: '', name: '' })
     }
 
     const handleGoogleError = (event) => {
-      console.log('🔴 AuthModal: Received google-auth-error event:', event.detail)
       setLoading(false)
       setError(event.detail.error || 'Error con Google OAuth')
     }
@@ -44,11 +40,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   }, [onSuccess, onClose])
 
   const handleInputChange = useCallback((e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-    setError('') // Clear error when user types
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setError('')
   }, [formData])
 
   const handleSubmit = useCallback(async (e) => {
@@ -58,23 +51,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       if (mode === 'register') {
-        await authService.register(
-          formData.email,
-          formData.password,
-          formData.name || null
-        )
+        await authService.register(formData.email, formData.password, formData.name || null)
       } else {
-        await authService.login(
-          formData.email,
-          formData.password
-        )
+        await authService.login(formData.email, formData.password)
       }
 
       authService.emitLoginEvent()
       onSuccess?.()
       onClose()
-
-      // Reset form
       setFormData({ email: '', password: '', name: '' })
     } catch (err) {
       setError(err.message)
@@ -89,26 +73,19 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
     try {
       if (!authService.isGoogleAvailable()) {
-        setError('Google OAuth no está configurado. Usa email y contraseña.')
+        setError('Google OAuth no está configurado. Usá email y contraseña.')
         setLoading(false)
         return
       }
 
-      console.log('🔵 Iniciando Google Sign-In...')
       const result = await authService.triggerGoogleSignIn()
 
       if (!result) {
-        setError('Google OAuth no está disponible. Prueba con email y contraseña.')
+        setError('Google OAuth no está disponible. Probá con email y contraseña.')
         setLoading(false)
-        return
       }
-
-      // Keep loading state, will be handled by event listeners
-      console.log('🔵 Google Sign-In triggered successfully')
-
-    } catch (error) {
-      console.error('🔴 Google login error:', error)
-      setError('Error con Google OAuth. Prueba con email y contraseña.')
+    } catch (err) {
+      setError('Error con Google OAuth. Probá con email y contraseña.')
       setLoading(false)
     }
   }
@@ -124,8 +101,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="auth-modal-header">
-          <h2>{mode === 'login' ? '🔐 Iniciar Sesión' : '📝 Crear Cuenta'}</h2>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <div className="auth-modal-title-group">
+            <span className="auth-modal-tag">VERB/OS</span>
+            <h2>{mode === 'login' ? 'INICIAR SESIÓN' : 'CREAR CUENTA'}</h2>
+          </div>
+          <button className="close-btn" onClick={onClose} aria-label="Cerrar">✕</button>
         </div>
 
         <div className="auth-modal-content">
@@ -136,10 +116,30 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             }
           </p>
 
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="google-login-btn"
+            disabled={loading || !authService.isGoogleAvailable()}
+            title={!authService.isGoogleAvailable() ? 'Google OAuth no configurado' : ''}
+          >
+            <svg className="google-icon" viewBox="0 0 18 18" aria-hidden="true">
+              <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+              <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+              <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+              <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+            </svg>
+            {authService.isGoogleAvailable() ? 'Continuar con Google' : 'Google OAuth (no configurado)'}
+          </button>
+
+          <div className="auth-divider">
+            <span>o</span>
+          </div>
+
           <form onSubmit={handleSubmit} className="auth-form">
             {mode === 'register' && (
               <div className="form-group">
-                <label htmlFor="name">Nombre (opcional)</label>
+                <label htmlFor="name">NOMBRE <span className="form-optional">(opcional)</span></label>
                 <input
                   type="text"
                   id="name"
@@ -147,12 +147,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Tu nombre"
+                  autoComplete="name"
                 />
               </div>
             )}
 
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">EMAIL</label>
               <input
                 type="email"
                 id="email"
@@ -161,11 +162,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 onChange={handleInputChange}
                 placeholder="tu@email.com"
                 required
+                autoComplete="email"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Contraseña</label>
+              <label htmlFor="password">CONTRASEÑA</label>
               <input
                 type="password"
                 id="password"
@@ -175,13 +177,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 placeholder="Mínimo 6 caracteres"
                 minLength={6}
                 required
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
 
             {error && (
-              <div className="error-message">
-                ⚠️ {error}
-              </div>
+              <div className="error-message">{error}</div>
             )}
 
             <button
@@ -189,49 +190,30 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               className="auth-submit-btn"
               disabled={loading}
             >
-              {loading ? '⏳ Procesando...' : (mode === 'login' ? '🔓 Iniciar Sesión' : '🎯 Crear Cuenta')}
+              {loading ? 'PROCESANDO...' : (mode === 'login' ? 'INICIAR SESIÓN' : 'CREAR CUENTA')}
             </button>
           </form>
-
-          <div className="auth-divider">
-            <span>o</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="google-login-btn"
-            disabled={loading || !authService.isGoogleAvailable()}
-            title={!authService.isGoogleAvailable() ? 'Google OAuth no configurado' : ''}
-          >
-            🌐 {authService.isGoogleAvailable() ? 'Continuar con Google' : 'Google OAuth (no configurado)'}
-          </button>
 
           <div className="auth-switch">
             {mode === 'login' ? (
               <p>
-                ¿No tenés cuenta?{' '}
-                <button type="button" onClick={switchMode} className="link-btn">
-                  Creá una acá
-                </button>
+                ¿Sin cuenta?{' '}
+                <button type="button" onClick={switchMode} className="link-btn">Creá una acá</button>
               </p>
             ) : (
               <p>
                 ¿Ya tenés cuenta?{' '}
-                <button type="button" onClick={switchMode} className="link-btn">
-                  Iniciá sesión
-                </button>
+                <button type="button" onClick={switchMode} className="link-btn">Iniciá sesión</button>
               </p>
             )}
           </div>
 
           <div className="auth-benefits">
-            <h4>✨ Beneficios de tener cuenta:</h4>
+            <div className="auth-benefits__label">POR QUÉ CREAR CUENTA</div>
             <ul>
-              <li>📱 Sincronización entre dispositivos</li>
-              <li>☁️ Backup automático de tu progreso</li>
-              <li>📊 Historial completo de aprendizaje</li>
-              <li>🎯 Recomendaciones personalizadas</li>
+              <li>Sincronización entre dispositivos</li>
+              <li>Backup automático de progreso</li>
+              <li>Historial completo de aprendizaje</li>
             </ul>
           </div>
         </div>
