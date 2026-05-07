@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback, Suspense } from 'react';
+import { SpeakerSvg } from '../shared/DrillIcons.jsx';
 import { diffChars } from 'diff';
 import { useSettings } from '../../state/settings.js';
 import { categorizeLearningVerb } from '../../lib/data/learningIrregularFamilies.js';
@@ -681,7 +682,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
                   : <span className="ld-incorrect">→ <strong>{result.value}</strong></span>
                 }
                 <button type="button" className="ld-tts-btn" onClick={handleSpeak} title="Pronunciar" aria-label="Pronunciar">
-                  <img src="/megaf-imperat.png" alt="Pronunciar" style={{ width:20,height:20,filter:'invert(1) opacity(0.6)' }} />
+                  <SpeakerSvg />
                 </button>
               </div>
             )}

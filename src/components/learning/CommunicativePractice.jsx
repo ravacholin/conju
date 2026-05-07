@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { BackSvg } from '../shared/DrillIcons.jsx';
 import { formatMoodTense } from '../../lib/utils/verbLabels.js';
 import { updateSchedule } from '../../lib/progress/srs.js';
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
@@ -581,7 +582,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
       <div className="center-column">
         <div className="drill-header-learning">
             <button onClick={onBack} className="back-btn-drill">
-                <img src="/back.png" alt="Volver" className="back-icon" />
+                <BackSvg size={20} />
             </button>
             <h2>Práctica Comunicativa: {formatMoodTense(tense.mood, tense.tense)}</h2>
         </div>

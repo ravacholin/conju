@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
+import { ConfigSvg, AccentsSvg, MicSvg, DiceSvg, ChartSvg } from '../shared/DrillIcons.jsx'
 
 const DIALECT_LABEL = {
   rioplatense: 'vos',
@@ -38,52 +39,6 @@ function buildBreadcrumb(settings) {
 
   return items.slice(-3)
 }
-
-/* Inline SVG icon components — use currentColor so CSS color/opacity applies cleanly */
-const ConfigSvg = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-    <line x1="4" y1="6" x2="20" y2="6"/>
-    <line x1="4" y1="12" x2="20" y2="12"/>
-    <line x1="4" y1="18" x2="20" y2="18"/>
-    <circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/>
-    <circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/>
-    <circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/>
-  </svg>
-)
-
-const AccentsSvg = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <text x="2" y="19" fontFamily="serif" fontSize="18" fontWeight="bold" fill="currentColor">Ñ</text>
-  </svg>
-)
-
-const MicSvg = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-  </svg>
-)
-
-const DiceSvg = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-    <circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/>
-    <circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-    <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
-    <circle cx="8.5" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-    <circle cx="15.5" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-  </svg>
-)
-
-const ChartSvg = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="12" width="4" height="9" rx="0.5"/>
-    <rect x="10" y="6" width="4" height="15" rx="0.5"/>
-    <rect x="17" y="9" width="4" height="12" rx="0.5"/>
-    <line x1="2" y1="21.5" x2="22" y2="21.5" stroke="currentColor" strokeWidth="1.5"/>
-  </svg>
-)
 
 function DrillHeader({
   onToggleQuickSwitch,

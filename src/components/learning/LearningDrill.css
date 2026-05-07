@@ -130,13 +130,23 @@
 
 .ld-tts-btn {
   background: transparent;
-  border: none;
+  border: 1px solid #1f1d18;
   cursor: pointer;
-  padding: 4px;
-  opacity: 0.5;
-  transition: opacity 0.15s;
+  padding: 5px 8px;
+  color: rgba(244, 241, 234, 0.55);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.15s, border-color 0.15s;
 }
-.ld-tts-btn:hover { opacity: 1; }
+.ld-tts-btn:hover {
+  color: #f4f1ea;
+  border-color: #ff4d1c;
+}
 
 /* ── Accent keypad ── */
 .ld-accent-row {
@@ -204,16 +214,24 @@
 .ld-util-btn {
   background: transparent;
   border: 1px solid #1f1d18;
-  color: #6e6a60;
-  font-size: 14px;
-  padding: 8px 12px;
+  color: rgba(244, 241, 234, 0.55);
+  padding: 8px 10px;
   cursor: pointer;
-  transition: all 0.15s;
-  line-height: 1;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ld-util-btn:hover {
   border-color: #ff4d1c;
+  color: #f4f1ea;
+}
+
+.ld-util-active {
+  border-color: #ff4d1c;
+  background: rgba(255, 77, 28, 0.1);
   color: #ff4d1c;
 }
 

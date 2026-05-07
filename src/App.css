@@ -222,20 +222,23 @@ body {
   border: 1px solid transparent;
   padding: 6px;
   line-height: 0;
-  color: var(--text);
+  color: rgba(244, 241, 234, 0.55);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.1s ease;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.icon-btn svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .icon-btn:hover {
-  transform: translate(-2px, -2px);
   border: 1px solid var(--border-active);
-  background: var(--bg);
-  color: var(--text);
-  box-shadow: var(--shadow-hard-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f4f1ea;
 }
 
 .icon-btn:hover img {
