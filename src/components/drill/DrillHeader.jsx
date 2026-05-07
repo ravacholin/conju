@@ -2,6 +2,7 @@ import React from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
 import { ConfigSvg, AccentsSvg, MicSvg, DiceSvg, ChartSvg } from '../shared/DrillIcons.jsx'
+import router from '../../lib/routing/Router.js'
 
 const DIALECT_LABEL = {
   rioplatense: 'vos',
@@ -60,12 +61,23 @@ function DrillHeader({
 
   return (
     <header className="header">
-      {/* Left: VERB/OS logo → home */}
-      <div className="vd-logo" onClick={onHome} title="Ir al inicio">
-        <div className="vd-logo-dot" />
-        <span className="vd-logo-name">
-          VERB<span style={{ color: '#ff4d1c' }}>/</span>OS
-        </span>
+      {/* Left: back button + VERB/OS logo */}
+      <div className="vd-header-left">
+        <button
+          type="button"
+          className="vd-back-btn"
+          onClick={() => router.back()}
+          title="Volver"
+          aria-label="Volver"
+        >
+          ←
+        </button>
+        <div className="vd-logo" onClick={onHome} title="Ir al inicio">
+          <div className="vd-logo-dot" />
+          <span className="vd-logo-name">
+            VERB<span style={{ color: '#ff4d1c' }}>/</span>OS
+          </span>
+        </div>
       </div>
 
       {/* Center: practice context breadcrumb */}

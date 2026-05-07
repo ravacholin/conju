@@ -96,6 +96,33 @@
 .vo-footer-hints span { white-space: nowrap; }
 .vo-footer-hints em { font-style: normal; color: #6e6a60; }
 
+.vo-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.vo-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #6e6a60;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 120ms ease;
+  user-select: none;
+}
+
+.vo-back-btn:hover {
+  color: #ff4d1c;
+}
+
 .vo-logo {
   display: flex;
   align-items: center;
