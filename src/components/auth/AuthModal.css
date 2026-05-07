@@ -1,197 +1,150 @@
 /* ============================================
-   Auth Modal — Brutalist Dark Theme
+   Auth Modal — VERB/OS Design System
    ============================================ */
 
 .auth-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   padding: 20px;
-  animation: overlay-fade-in 0.2s ease forwards;
+  animation: overlay-fade-in 0.15s ease forwards;
 }
 
 @keyframes overlay-fade-in {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 .auth-modal {
   background: var(--bg, #000);
-  border: 1px solid var(--text, #fff);
-  box-shadow: 6px 6px 0 var(--text, #fff);
-  max-width: 440px;
+  border: 1px solid var(--border, #333);
+  box-shadow: 4px 4px 0 var(--border, #333);
+  max-width: 400px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  animation: modal-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes modal-enter {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Header */
 .auth-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border, #333);
+}
+
+.auth-modal-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.auth-modal-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--muted-2, #555);
+  text-transform: uppercase;
 }
 
 .auth-modal-header h2 {
   margin: 0;
   font-family: var(--font-mono, monospace);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--text, #fff);
 }
 
 .close-btn {
   background: transparent;
   border: 1px solid var(--border, #333);
-  color: var(--text, #fff);
-  width: 28px;
-  height: 28px;
-  font-size: 1rem;
+  color: var(--muted, #888);
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: color 100ms, border-color 100ms;
+  flex-shrink: 0;
 }
 
 .close-btn:hover {
   border-color: var(--text, #fff);
-  transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  color: var(--text, #fff);
 }
 
-.close-btn:active {
-  transform: translate(0, 0);
-  box-shadow: none;
-}
-
+/* Content */
 .auth-modal-content {
-  padding: 24px;
+  padding: 20px;
 }
 
 .auth-description {
-  margin: 0 0 24px 0;
+  margin: 0 0 18px 0;
   color: var(--muted, #888);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   text-align: center;
   font-family: var(--font-mono, monospace);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
-.auth-form {
-  margin-bottom: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--muted, #888);
-  font-weight: 600;
-  font-size: 0.75rem;
-  font-family: var(--font-mono, monospace);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.form-group input {
+/* Google button */
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid var(--border, #333);
   background: transparent;
   color: var(--text, #fff);
-  font-size: 0.95rem;
-  font-family: var(--font-ui, sans-serif);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  box-sizing: border-box;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--text, #fff);
-  box-shadow: 3px 3px 0 var(--text, #fff);
-}
-
-.form-group input::placeholder {
-  color: var(--muted-2, #555);
-}
-
-.error-message {
-  background: transparent;
-  border: 1px solid var(--accent-error, #f00);
-  color: var(--accent-error, #f00);
-  padding: 10px 14px;
-  margin-bottom: 20px;
+  border: 1px solid var(--border, #333);
   font-size: 0.8rem;
-  font-family: var(--font-mono, monospace);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.auth-submit-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: var(--text, #fff);
-  color: var(--bg, #000);
-  border: 1px solid var(--text, #fff);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--font-mono, monospace);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  margin-bottom: 20px;
-  box-shadow: 4px 4px 0 var(--accent-orange, #ff5722);
+  transition: border-color 100ms, color 100ms;
+  margin-bottom: 18px;
 }
 
-.auth-submit-btn:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange, #ff5722);
+.google-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
-.auth-submit-btn:active:not(:disabled) {
-  transform: translate(0, 0);
-  box-shadow: none;
+.google-login-btn:hover:not(:disabled) {
+  border-color: var(--text, #fff);
 }
 
-.auth-submit-btn:disabled {
-  opacity: 0.4;
+.google-login-btn:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
+/* Divider */
 .auth-divider {
   position: relative;
   text-align: center;
-  margin: 24px 0;
+  margin: 0 0 18px 0;
 }
 
 .auth-divider::before {
@@ -206,56 +159,108 @@
 
 .auth-divider span {
   background: var(--bg, #000);
-  color: var(--muted, #888);
-  padding: 0 16px;
-  font-size: 0.75rem;
+  color: var(--muted-2, #555);
+  padding: 0 12px;
+  font-size: 0.7rem;
   font-family: var(--font-mono, monospace);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   position: relative;
 }
 
-.google-login-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: transparent;
-  color: var(--text, #fff);
-  border: 1px solid var(--border, #333);
-  font-size: 0.85rem;
-  font-weight: 600;
+/* Form */
+.auth-form {
+  margin-bottom: 16px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted, #888);
+  font-weight: 700;
+  font-size: 0.65rem;
   font-family: var(--font-mono, monospace);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-  margin-bottom: 24px;
+  letter-spacing: 0.1em;
 }
 
-.google-login-btn:hover:not(:disabled) {
+.form-optional {
+  color: var(--muted-2, #555);
+  font-weight: 400;
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border, #333);
+  background: transparent;
+  color: var(--text, #fff);
+  font-size: 0.9rem;
+  font-family: var(--font-mono, monospace);
+  transition: border-color 100ms;
+  box-sizing: border-box;
+  caret-color: var(--accent-orange, #ff5722);
+}
+
+.form-group input:focus {
+  outline: none;
   border-color: var(--text, #fff);
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--text, #fff);
 }
 
-.google-login-btn:active:not(:disabled) {
-  transform: translate(0, 0);
-  box-shadow: none;
+.form-group input::placeholder {
+  color: var(--muted-2, #555);
 }
 
-.google-login-btn:disabled {
-  opacity: 0.4;
+.error-message {
+  border: 1px solid var(--accent-error, #f00);
+  color: var(--accent-error, #f00);
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.04em;
+}
+
+/* Submit */
+.auth-submit-btn {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--text, #fff);
+  color: var(--bg, #000);
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
+/* Switch mode */
 .auth-switch {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .auth-switch p {
   margin: 0;
   color: var(--muted, #888);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-family: var(--font-mono, monospace);
 }
 
@@ -265,82 +270,61 @@
   color: var(--text, #fff);
   cursor: pointer;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 2px;
   font-size: inherit;
   font-family: inherit;
   padding: 0;
-  margin: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 100ms;
 }
 
-.link-btn:hover {
-  opacity: 0.7;
-}
+.link-btn:hover { opacity: 0.7; }
 
+/* Benefits */
 .auth-benefits {
-  background: transparent;
-  padding: 16px;
   border: 1px solid var(--border, #333);
+  padding: 12px 14px;
 }
 
-.auth-benefits h4 {
-  margin: 0 0 12px 0;
-  color: var(--muted, #888);
-  font-size: 0.75rem;
+.auth-benefits__label {
   font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--muted-2, #555);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  margin-bottom: 8px;
 }
 
 .auth-benefits ul {
   margin: 0;
-  padding-left: 0;
+  padding: 0;
   list-style: none;
 }
 
 .auth-benefits li {
   color: var(--muted, #888);
-  font-size: 0.8rem;
-  margin-bottom: 8px;
-  padding-left: 0;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  padding: 3px 0;
+  padding-left: 14px;
+  position: relative;
 }
 
-.auth-benefits li:last-child {
-  margin-bottom: 0;
+.auth-benefits li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--muted-2, #555);
 }
 
-/* Mobile responsive */
+/* Mobile */
 @media (max-width: 600px) {
-  .auth-modal-overlay {
-    padding: 10px;
-  }
-
-  .auth-modal {
-    max-height: 95vh;
-  }
-
-  .auth-modal-header {
-    padding: 16px 20px;
-  }
-
-  .auth-modal-content {
-    padding: 20px;
-  }
-
-  .form-group input {
-    padding: 10px 12px;
-  }
-
-  .auth-submit-btn,
-  .google-login-btn {
-    padding: 12px 16px;
-  }
+  .auth-modal-overlay { padding: 10px; }
+  .auth-modal-header { padding: 14px 16px; }
+  .auth-modal-content { padding: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .auth-modal-overlay,
-  .auth-modal {
-    animation: none;
-  }
+  .auth-modal { animation: none; }
 }

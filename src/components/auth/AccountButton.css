@@ -1,177 +1,170 @@
 /* ============================================
-   Account Button — Brutalist Design System
+   Account Button — nativo VERB/OS vo-header
+   Diseñado para vivir en el header de 44px con
+   fondo #0c0c0c, fuente JetBrains Mono 10px.
    ============================================ */
 
-/* --- Container --- */
 .acct-container {
   position: relative;
-  display: inline-block;
-}
-
-/* --- Login button (unauthenticated) --- */
-.acct-login-btn {
   display: inline-flex;
   align-items: center;
-  background: transparent;
-  color: var(--text, #fff);
-  border: 1px solid var(--border, #333);
-  border-radius: 0;
-  padding: 6px 14px;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 80ms, box-shadow 80ms;
 }
 
-.acct-login-btn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 2px 2px 0 var(--text, #fff);
-  border-color: var(--text, #fff);
-}
-
-.acct-login-btn:active {
-  transform: translate(0, 0);
-  box-shadow: none;
-}
-
-/* --- Trigger button (authenticated) --- */
-.acct-trigger {
+/* ─────────────────────────────────────────
+   Botón de login (no autenticado)
+   Vive en el vo-header — usa sus mismos tokens
+   ───────────────────────────────────────── */
+.acct-login-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: transparent;
-  border: 1px solid var(--border, #333);
-  border-radius: 0;
-  padding: 4px 8px;
+  /* Borde sutil pero visible sobre el fondo oscuro #0c0c0c */
+  border: 1px solid #2a2823;
+  padding: 5px 11px;
   cursor: pointer;
-  transition: border-color 120ms, box-shadow 80ms;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6e6a60;
+  transition: color 120ms, border-color 120ms;
+  white-space: nowrap;
+}
+
+.acct-login-btn:hover {
+  color: #f4f1ea;
+  border-color: #6e6a60;
+}
+
+.acct-login-label {
+  /* texto principal */
+}
+
+.acct-login-arrow {
+  color: #ff4d1c;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────
+   Trigger button (autenticado)
+   Muestra: [inicial] nombre · estado
+   ───────────────────────────────────────── */
+.acct-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e6a60;
+  transition: color 120ms, border-color 120ms;
+  white-space: nowrap;
 }
 
 .acct-trigger:hover,
 .acct-trigger--open {
-  border-color: var(--text, #fff);
-  box-shadow: 2px 2px 0 var(--text, #fff);
+  color: #f4f1ea;
+  border-color: #2a2823;
 }
 
-.acct-trigger:active {
-  box-shadow: none;
-  transform: translate(1px, 1px);
-}
-
-.acct-avatar {
-  width: 28px;
-  height: 28px;
-  background: var(--text, #fff);
-  color: var(--bg, #000);
-  display: flex;
+/* Cuadrado con la inicial — visible y con propósito */
+.acct-initial {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono, monospace);
+  width: 20px;
+  height: 20px;
+  background: #f4f1ea;
+  color: #0c0c0c;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 9px;
+  letter-spacing: 0;
   flex-shrink: 0;
 }
 
-/* --- Sync badge (next to avatar) --- */
-.acct-sync-badge {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.6rem;
+/* Nombre del usuario */
+.acct-name {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #6e6a60;
+  font-size: 10px;
+}
+
+.acct-trigger:hover .acct-name,
+.acct-trigger--open .acct-name {
+  color: #f4f1ea;
+}
+
+/* Badge de estado sync */
+.acct-status {
+  font-size: 9px;
+  letter-spacing: 0.1em;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 1px 5px;
-  border: 1px solid;
+  padding: 1px 4px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
 }
 
-.acct-sync-badge--ok {
-  color: var(--accent-success, #0f0);
-  border-color: var(--accent-success, #0f0);
-}
-
-.acct-sync-badge--syncing {
-  color: var(--text, #fff);
-  border-color: var(--text, #fff);
-  animation: acct-blink 1s steps(2) infinite;
-}
-
-.acct-sync-badge--error {
-  color: var(--accent-error, #f00);
-  border-color: var(--accent-error, #f00);
-}
-
-.acct-sync-badge--offline {
-  color: var(--muted, #888);
-  border-color: var(--muted, #888);
-  border-style: dashed;
-}
-
-.acct-sync-badge--local {
-  color: var(--muted, #888);
-  border-color: var(--muted, #888);
-}
-
-.acct-sync-badge--stale {
-  color: var(--accent-warning, #fa0);
-  border-color: var(--accent-warning, #fa0);
-}
-
-.acct-sync-badge--unknown {
-  color: var(--muted-2, #555);
-  border-color: var(--muted-2, #555);
-}
+.acct-status--ok      { color: #5ee6a5; }
+.acct-status--syncing { color: #f4f1ea; animation: acct-blink 1s steps(2) infinite; }
+.acct-status--error   { color: #ff6b6b; }
+.acct-status--offline { color: #6e6a60; border-style: dashed; }
+.acct-status--local   { color: #6e6a60; border-style: dashed; }
+.acct-status--stale   { color: #faad14; }
+.acct-status--unknown { color: #2a2823; }
 
 @keyframes acct-blink {
   50% { opacity: 0.3; }
 }
 
-/* --- Dropdown --- */
+/* ─────────────────────────────────────────
+   Dropdown
+   ───────────────────────────────────────── */
 .acct-dropdown {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
   z-index: 1100;
-  min-width: 280px;
-  max-width: 340px;
-  background: var(--bg, #000);
-  border: 1px solid var(--text, #fff);
-  box-shadow: 4px 4px 0 var(--text, #fff);
-  animation: acct-dropdown-in 120ms ease-out;
+  min-width: 256px;
+  background: #0c0c0c;
+  border: 1px solid #2a2823;
+  box-shadow: 4px 4px 0 #1f1d18;
+  animation: acct-in 100ms ease-out;
 }
 
-@keyframes acct-dropdown-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes acct-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Header */
+/* Header del dropdown */
 .acct-dropdown__header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border, #333);
+  gap: 10px;
+  padding: 12px 14px;
 }
 
 .acct-dropdown__avatar {
-  width: 36px;
-  height: 36px;
-  background: var(--text, #fff);
-  color: var(--bg, #000);
+  width: 30px;
+  height: 30px;
+  background: #f4f1ea;
+  color: #0c0c0c;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono, monospace);
+  font-family: 'JetBrains Mono', monospace;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.9rem;
   flex-shrink: 0;
 }
 
@@ -181,18 +174,20 @@
 }
 
 .acct-dropdown__name {
-  color: var(--text, #fff);
+  color: #f4f1ea;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
   font-weight: 600;
-  font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 2px;
 }
 
 .acct-dropdown__email {
-  color: var(--muted, #888);
-  font-size: 0.75rem;
-  font-family: var(--font-mono, monospace);
+  color: #6e6a60;
+  font-size: 0.68rem;
+  font-family: 'JetBrains Mono', monospace;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -201,103 +196,93 @@
 /* Divider */
 .acct-dropdown__divider {
   height: 1px;
-  background: var(--border, #333);
+  background: #1f1d18;
 }
 
-/* Sections */
+/* Section */
 .acct-dropdown__section {
-  padding: 12px 16px;
+  padding: 10px 14px;
+}
+
+.acct-dropdown__section--menu {
+  padding: 4px 0;
 }
 
 .acct-dropdown__section-label {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
   font-weight: 700;
-  color: var(--muted, #888);
-  letter-spacing: 0.12em;
+  color: #2a2823;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-bottom: 8px;
 }
 
-/* Sync status */
-.acct-dropdown__sync-status {
-  margin-bottom: 10px;
+/* Sync grid */
+.acct-dropdown__sync-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin-bottom: 8px;
 }
 
-.acct-dropdown__sync-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 3px 0;
+.acct-dropdown__sync-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: #6e6a60;
+  white-space: nowrap;
+  padding: 2px 0;
 }
 
-.acct-dropdown__sync-label {
-  font-size: 0.8rem;
-  color: var(--muted, #888);
-}
-
-.acct-dropdown__sync-value {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.8rem;
+.acct-dropdown__sync-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--text, #fff);
+  color: #f4f1ea;
+  padding: 2px 0;
 }
 
-.acct-dropdown__sync-value.ok {
-  color: var(--accent-success, #0f0);
-}
-
-.acct-dropdown__sync-value.syncing {
-  color: var(--text, #fff);
-  animation: acct-blink 1s steps(2) infinite;
-}
-
-.acct-dropdown__sync-value.error {
-  color: var(--accent-error, #f00);
-}
-
-.acct-dropdown__sync-value.offline {
-  color: var(--accent-warning, #fa0);
-}
+.acct-dropdown__sync-val.ok       { color: #5ee6a5; }
+.acct-dropdown__sync-val.syncing  { color: #f4f1ea; animation: acct-blink 1s steps(2) infinite; }
+.acct-dropdown__sync-val.error    { color: #ff6b6b; }
+.acct-dropdown__sync-val.offline  { color: #faad14; }
 
 .acct-dropdown__sync-error {
-  margin-top: 6px;
-  padding: 6px 8px;
-  font-family: var(--font-mono, monospace);
-  font-size: 0.7rem;
-  color: var(--accent-error, #f00);
-  border: 1px solid var(--accent-error, #f00);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+  padding: 5px 7px;
+  margin-bottom: 8px;
   word-break: break-word;
 }
 
-/* Action button */
-.acct-dropdown__action-btn {
+/* Sync button */
+.acct-dropdown__sync-btn {
+  display: block;
   width: 100%;
-  padding: 8px;
+  padding: 8px 10px;
   background: transparent;
-  color: var(--text, #fff);
-  border: 1px solid var(--border, #333);
-  font-family: var(--font-mono, monospace);
-  font-size: 0.7rem;
+  color: #6e6a60;
+  border: 1px solid #2a2823;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: border-color 120ms, background 120ms;
+  transition: color 100ms, border-color 100ms;
+  text-align: center;
 }
 
-.acct-dropdown__action-btn:hover:not(:disabled) {
-  border-color: var(--text, #fff);
-  background: rgba(255, 255, 255, 0.05);
+.acct-dropdown__sync-btn:hover:not(:disabled) {
+  color: #f4f1ea;
+  border-color: #6e6a60;
 }
 
-.acct-dropdown__action-btn:active:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.acct-dropdown__action-btn:disabled {
-  color: var(--muted-2, #555);
-  border-color: var(--muted-2, #555);
+.acct-dropdown__sync-btn:disabled {
+  color: #2a2823;
+  border-color: #1f1d18;
   cursor: not-allowed;
 }
 
@@ -307,56 +292,57 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 9px 14px;
   background: none;
   border: none;
-  color: var(--text, #fff);
-  font-size: 0.85rem;
+  color: #6e6a60;
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
   text-align: left;
   cursor: pointer;
-  transition: background 100ms;
+  transition: color 80ms, background 80ms;
+}
+
+.acct-dropdown__menu-item svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  opacity: 0.5;
 }
 
 .acct-dropdown__menu-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  color: #f4f1ea;
+  background: rgba(255,255,255, 0.03);
 }
 
-.acct-dropdown__menu-icon {
-  font-size: 1rem;
-  width: 20px;
-  text-align: center;
-  color: var(--muted, #888);
+.acct-dropdown__menu-item:hover svg {
+  opacity: 0.8;
 }
 
 .acct-dropdown__menu-item--danger {
-  color: var(--accent-error, #f00);
-  padding: 12px 16px;
+  color: #2a2823;
+  padding: 10px 14px 12px;
 }
 
 .acct-dropdown__menu-item--danger:hover {
-  background: rgba(255, 0, 0, 0.08);
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
 }
 
-/* --- Responsive --- */
+/* ─────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────── */
 @media (max-width: 480px) {
+  .acct-name { display: none; }
+
   .acct-login-btn {
-    padding: 5px 10px;
-    font-size: 0.7rem;
-  }
-
-  .acct-avatar {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-  }
-
-  .acct-sync-badge {
-    font-size: 0.55rem;
-    padding: 0 4px;
+    padding: 5px 9px;
+    font-size: 9px;
   }
 
   .acct-dropdown {
-    min-width: 260px;
-    right: -8px;
+    min-width: 230px;
+    right: -4px;
   }
 }

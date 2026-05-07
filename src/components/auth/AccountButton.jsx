@@ -6,28 +6,19 @@ import AccountManagementModal from './AccountManagementModal.jsx'
 import DeviceManagerModal from './DeviceManagerModal.jsx'
 import './AccountButton.css'
 
-function SyncBadge({ syncStatus }) {
-  const { isSyncing, lastSyncTime, syncError, isOnline, syncEnabled, isLocalSync } = syncStatus
-
-  if (isSyncing) {
-    return <span className="acct-sync-badge acct-sync-badge--syncing">SYNC...</span>
-  }
-  if (syncError) {
-    return <span className="acct-sync-badge acct-sync-badge--error">ERROR</span>
-  }
-  if (!isOnline) {
-    return <span className="acct-sync-badge acct-sync-badge--offline">OFFLINE</span>
-  }
-  if (isLocalSync || !syncEnabled) {
-    return <span className="acct-sync-badge acct-sync-badge--local">LOCAL</span>
-  }
+function syncStateLabel(syncStatus) {
+  const { isSyncing, syncError, isOnline, isLocalSync, syncEnabled, lastSyncTime } = syncStatus
+  if (isSyncing)  return { text: 'SYNC...', cls: 'syncing' }
+  if (syncError)  return { text: 'ERROR',   cls: 'error' }
+  if (!isOnline)  return { text: 'OFFLINE', cls: 'offline' }
+  if (isLocalSync || !syncEnabled) return { text: 'LOCAL', cls: 'local' }
   if (lastSyncTime) {
     const mins = Math.floor((Date.now() - lastSyncTime.getTime()) / 60000)
-    if (mins < 1) return <span className="acct-sync-badge acct-sync-badge--ok">OK</span>
-    if (mins < 60) return <span className="acct-sync-badge acct-sync-badge--ok">{mins}m</span>
-    return <span className="acct-sync-badge acct-sync-badge--stale">{Math.floor(mins / 60)}h</span>
+    if (mins < 1)  return { text: 'OK',        cls: 'ok' }
+    if (mins < 60) return { text: `${mins}m`,   cls: 'ok' }
+    return           { text: `${Math.floor(mins/60)}h`, cls: 'stale' }
   }
-  return <span className="acct-sync-badge acct-sync-badge--unknown">--</span>
+  return { text: '--', cls: 'unknown' }
 }
 
 function formatLastSync(lastSyncTime) {
@@ -70,14 +61,12 @@ export default function AccountButton() {
     }
 
     window.addEventListener('account-updated', handleAccountUpdated)
-
     return () => {
       cleanup?.()
       window.removeEventListener('account-updated', handleAccountUpdated)
     }
   }, [])
 
-  // Close dropdown on click outside
   useEffect(() => {
     if (!showDropdown) return
     const handleClickOutside = (e) => {
@@ -92,19 +81,9 @@ export default function AccountButton() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showDropdown])
 
-  const handleLogin = () => {
-    setShowAuthModal(true)
-    setShowDropdown(false)
-  }
-
-  const handleLogout = async () => {
-    await authService.logout()
-    setShowDropdown(false)
-  }
-
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false)
-  }
+  const handleLogin = () => { setShowAuthModal(true); setShowDropdown(false) }
+  const handleLogout = async () => { await authService.logout(); setShowDropdown(false) }
+  const handleAuthSuccess = () => setShowAuthModal(false)
 
   const handleSync = () => {
     window.dispatchEvent(new CustomEvent('trigger-sync'))
@@ -113,22 +92,26 @@ export default function AccountButton() {
   }
 
   const getDisplayName = () => {
-    if (account?.name) return account.name
+    if (account?.name) return account.name.split(' ')[0]
     if (account?.email) return account.email.split('@')[0]
-    return 'Usuario'
+    return 'cuenta'
   }
 
   const getInitial = () => getDisplayName().charAt(0).toUpperCase()
 
+  const sync = syncStateLabel(syncStatus)
+
+  /* ─── Unauthenticated ─── */
   if (!isAuthenticated) {
     return (
       <>
         <button
           onClick={handleLogin}
           className="acct-login-btn"
-          title="Iniciar sesión para sincronizar entre dispositivos"
+          title="Iniciá sesión para sincronizar tu progreso entre dispositivos"
         >
-          INICIAR SESIÓN
+          <span className="acct-login-label">SINCRONIZAR</span>
+          <span className="acct-login-arrow">→</span>
         </button>
 
         <AuthModal
@@ -140,23 +123,26 @@ export default function AccountButton() {
     )
   }
 
+  /* ─── Authenticated ─── */
   return (
     <div className="acct-container">
       <button
         ref={buttonRef}
         onClick={() => setShowDropdown(!showDropdown)}
-        className={`acct-trigger ${showDropdown ? 'acct-trigger--open' : ''}`}
-        title={getDisplayName()}
+        className={`acct-trigger${showDropdown ? ' acct-trigger--open' : ''}`}
+        title={`${getDisplayName()} — sync: ${sync.text}`}
       >
-        <span className="acct-avatar">{getInitial()}</span>
-        <SyncBadge syncStatus={syncStatus} />
+        <span className="acct-initial">{getInitial()}</span>
+        <span className="acct-name">{getDisplayName()}</span>
+        <span className={`acct-status acct-status--${sync.cls}`}>{sync.text}</span>
       </button>
 
       {showDropdown && (
         <div className="acct-dropdown" ref={dropdownRef}>
-          {/* User info header */}
+
+          {/* User header */}
           <div className="acct-dropdown__header">
-            <div className="acct-dropdown__avatar">{getInitial()}</div>
+            <span className="acct-dropdown__avatar">{getInitial()}</span>
             <div className="acct-dropdown__user-info">
               <div className="acct-dropdown__name">{getDisplayName()}</div>
               <div className="acct-dropdown__email">{account?.email}</div>
@@ -165,61 +151,57 @@ export default function AccountButton() {
 
           <div className="acct-dropdown__divider" />
 
-          {/* Sync status section */}
+          {/* Sync section */}
           <div className="acct-dropdown__section">
             <div className="acct-dropdown__section-label">SINCRONIZACIÓN</div>
-            <div className="acct-dropdown__sync-status">
-              <div className="acct-dropdown__sync-row">
-                <span className="acct-dropdown__sync-label">Estado</span>
-                <span className={`acct-dropdown__sync-value ${
-                  syncStatus.isSyncing ? 'syncing' :
-                  syncStatus.syncError ? 'error' :
-                  !syncStatus.isOnline ? 'offline' : 'ok'
-                }`}>
-                  {syncStatus.isSyncing ? 'Sincronizando...' :
-                   syncStatus.syncError ? 'Error' :
-                   !syncStatus.isOnline ? 'Sin conexión' :
-                   syncStatus.isLocalSync ? 'Solo local' : 'Conectado'}
-                </span>
-              </div>
-              <div className="acct-dropdown__sync-row">
-                <span className="acct-dropdown__sync-label">Última sync</span>
-                <span className="acct-dropdown__sync-value">
-                  {formatLastSync(syncStatus.lastSyncTime)}
-                </span>
-              </div>
-              {syncStatus.syncError && (
-                <div className="acct-dropdown__sync-error">
-                  {syncStatus.syncError}
-                </div>
-              )}
+            <div className="acct-dropdown__sync-grid">
+              <span className="acct-dropdown__sync-key">Estado</span>
+              <span className={`acct-dropdown__sync-val ${sync.cls}`}>
+                {syncStatus.isSyncing ? 'Sincronizando' :
+                 syncStatus.syncError ? 'Error' :
+                 !syncStatus.isOnline ? 'Sin conexión' :
+                 syncStatus.isLocalSync ? 'Solo local' : 'Conectado'}
+              </span>
+              <span className="acct-dropdown__sync-key">Última sync</span>
+              <span className="acct-dropdown__sync-val">
+                {formatLastSync(syncStatus.lastSyncTime)}
+              </span>
             </div>
+            {syncStatus.syncError && (
+              <div className="acct-dropdown__sync-error">{syncStatus.syncError}</div>
+            )}
             <button
-              className="acct-dropdown__action-btn"
+              className="acct-dropdown__sync-btn"
               onClick={handleSync}
               disabled={syncStatus.isSyncing || syncTriggered}
             >
               {syncStatus.isSyncing ? 'SINCRONIZANDO...' :
-               syncTriggered ? 'ENVIADO' : 'SINCRONIZAR AHORA'}
+               syncTriggered ? 'ENVIADO ✓' : 'SINCRONIZAR AHORA'}
             </button>
           </div>
 
           <div className="acct-dropdown__divider" />
 
-          {/* Account actions */}
-          <div className="acct-dropdown__section">
+          {/* Menu items */}
+          <div className="acct-dropdown__section acct-dropdown__section--menu">
             <button
               className="acct-dropdown__menu-item"
               onClick={() => { setShowDropdown(false); setShowAccountModal(true) }}
             >
-              <span className="acct-dropdown__menu-icon">&#9881;</span>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.3"/>
+                <path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
               Gestionar cuenta
             </button>
             <button
               className="acct-dropdown__menu-item"
               onClick={() => { setShowDropdown(false); setShowDeviceModal(true) }}
             >
-              <span className="acct-dropdown__menu-icon">&#9744;</span>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="1" y="3" width="9" height="7" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+                <rect x="10" y="6" width="5" height="7" rx="1" stroke="currentColor" strokeWidth="1.3"/>
+              </svg>
               Mis dispositivos
             </button>
           </div>

@@ -1096,6 +1096,7 @@
   color: var(--vd-accent);
 }
 
+/* Legacy .setting-group overrides (still used by SettingsPanel) */
 .verbos-drill .quick-switch-panel .setting-group {
   margin-bottom: 14px;
 }
@@ -1108,6 +1109,190 @@
   color: var(--vd-ink);
   font-family: var(--vd-mono);
   font-size: 11px;
+}
+
+/* ── QuickSwitch panel — VERB/OS native layout ── */
+.verbos-drill .vd-qs-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 20px 24px 0;
+}
+
+.verbos-drill .vd-qs-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--vd-line);
+  min-height: 42px;
+}
+
+.verbos-drill .vd-qs-row:first-child {
+  border-top: 1px solid var(--vd-line);
+}
+
+.verbos-drill .vd-qs-label {
+  font-family: var(--vd-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+  padding: 0 12px 0 0;
+  flex-shrink: 0;
+}
+
+.verbos-drill .vd-qs-select {
+  width: 100%;
+  padding: 11px 10px;
+  border: none;
+  border-left: 1px solid var(--vd-line);
+  background: transparent;
+  color: var(--vd-ink);
+  font-family: var(--vd-mono);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236e6a60' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+.verbos-drill .vd-qs-select:focus {
+  outline: none;
+  background-color: rgba(255,77,28,0.04);
+  color: var(--vd-ink);
+  border-left-color: var(--vd-accent);
+}
+
+.verbos-drill .vd-qs-select option {
+  background: #111;
+  color: var(--vd-ink);
+}
+
+.verbos-drill .vd-qs-hint {
+  font-family: var(--vd-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--vd-ink2);
+  padding: 8px 24px 0;
+}
+
+.verbos-drill .vd-qs-actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+}
+
+/* ── Games panel — VERB/OS native layout ── */
+.verbos-drill .vd-games-panel {
+  padding: 20px 24px;
+}
+
+.verbos-drill .vd-games-label {
+  font-family: var(--vd-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+  margin-bottom: 14px;
+}
+
+.verbos-drill .vd-games-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--vd-line);
+  margin-bottom: 16px;
+}
+
+.verbos-drill .vd-game-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--vd-line);
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms;
+}
+
+.verbos-drill .vd-game-btn:last-child {
+  border-bottom: none;
+}
+
+.verbos-drill .vd-game-btn:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.verbos-drill .vd-game-btn--active {
+  background: rgba(255,77,28,0.06);
+}
+
+.verbos-drill .vd-game-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.7;
+  filter: saturate(0.6);
+}
+
+.verbos-drill .vd-game-btn--active .vd-game-img {
+  opacity: 1;
+  filter: none;
+}
+
+.verbos-drill .vd-game-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.verbos-drill .vd-game-name {
+  font-family: var(--vd-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vd-ink2);
+}
+
+.verbos-drill .vd-game-btn--active .vd-game-name {
+  color: var(--vd-accent);
+}
+
+.verbos-drill .vd-game-desc {
+  font-family: var(--vd-mono);
+  font-size: 9.5px;
+  color: var(--vd-ink3);
+  letter-spacing: 0.04em;
+}
+
+.verbos-drill .vd-game-state {
+  font-family: var(--vd-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  border: 1px solid var(--vd-line);
+  padding: 2px 6px;
+  color: var(--vd-ink3);
+  flex-shrink: 0;
+}
+
+.verbos-drill .vd-game-btn--active .vd-game-state {
+  border-color: var(--vd-accent);
+  color: var(--vd-accent);
 }
 
 /* Loading fallback for panels */
@@ -1130,6 +1315,7 @@
 /* These appear after DrillHeader and before main-content */
 .verbos-drill > div.quick-switch-panel,
 .verbos-drill > div.games-panel,
+.verbos-drill > div.vd-games-panel,
 .verbos-drill > div.pronunciation-panel-safe,
 .verbos-drill > div.pronunciation-panel-v2 {
   position: absolute;
