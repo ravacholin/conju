@@ -768,6 +768,12 @@
   font-weight: 700;
 }
 
+.ni-cell-empty { opacity: 0.35; }
+.ni-form-empty {
+  color: #2a2823;
+  font-size: 0.7rem;
+}
+
 /* Chip de grupo verbal en panel izquierdo */
 .vo-group-chip {
   color: #ff4d1c !important;

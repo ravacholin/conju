@@ -1213,16 +1213,35 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
     const regularVerbs = (exampleVerbs || []).filter(v => v.type === 'regular');
     if (regularVerbs.length === 0) return null;
 
-    // Para fut/cond irregulares, no usar la tabla (dejar al renderDeconstructionContent)
+    // Para fut/cond con irregulares, dejar al renderDeconstructionContent
     if (['fut', 'cond'].includes(tense.tense) && hasIrregularVerbs) return null;
 
     const pronouns = pronounsForDialect();
-    const moodMapping = { indicativo: 'indicative', subjuntivo: 'subjunctive', imperativo: 'imperative', condicional: 'conditional' };
-    const englishMood = moodMapping[tense.mood] || tense.mood;
+    // Orden canónico que usa getStandardEndings: 1s, 2s_tu, 3s, 1p, 2p_vosotros, 3p
+    const stdOrder = ['1s', '2s_tu', '3s', '1p', '2p_vosotros', '3p'];
 
     const PRONOUN_DISPLAY = {
       '1s': 'yo', '2s_tu': 'tú', '2s_vos': 'vos',
       '3s': 'él/ella', '1p': 'nos.', '2p_vosotros': 'vos.', '3p': 'ellos'
+    };
+
+    // Obtiene la terminación correcta para un grupo y pronombre dados,
+    // aplicando los ajustes de acento del voseo (igual que renderDeconstructionContent)
+    const getEndingForPronoun = (group, personKey) => {
+      const endings = getStandardEndings(group, tense.tense);
+      const lookupKey = personKey === '2s_vos' ? '2s_tu' : personKey;
+      let base = endings?.[stdOrder.indexOf(lookupKey)] ?? '';
+      if (personKey === '2s_vos' && tense.tense === 'pres') {
+        if (group === 'ar' && base === 'as') base = 'ás';
+        else if (group === 'er' && base === 'es') base = 'és';
+        else if (group === 'ir' && base === 'es') base = 'ís';
+      }
+      if (personKey === '2s_vos' && tense.tense === 'impAff') {
+        if (group === 'ar') base = 'á';
+        else if (group === 'er') base = 'é';
+        else if (group === 'ir') base = 'í';
+      }
+      return base;
     };
 
     const sortedVerbs = [...regularVerbs].sort((a, b) => {
@@ -1239,20 +1258,26 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           ))}
         </div>
         {sortedVerbs.map(verbObj => {
-          const forms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
-          const stem = detectRealStem(verbObj, tense.tense, tense.mood) || verbObj.lemma.slice(0, -2);
+          const lemma = verbObj.lemma;
+          const group = lemma.endsWith('ar') ? 'ar' : lemma.endsWith('er') ? 'er' : 'ir';
+          const isFutCond = ['fut', 'cond'].includes(tense.tense);
+          const stem = isFutCond ? lemma : (detectRealStem(verbObj, tense.tense, tense.mood) || lemma.slice(0, -2));
           return (
-            <div key={verbObj.lemma} className="ni-paradigm-row">
-              <div className="ni-paradigm-lemma">{renderHighlightedLemma(verbObj.lemma)}</div>
-              {pronouns.map((p, idx) => {
-                const form = forms[idx] || '';
-                const hasStem = form && stem && form.startsWith(stem);
-                const stemPart = hasStem ? stem : '';
-                const endingPart = hasStem ? form.slice(stem.length) : form;
+            <div key={lemma} className="ni-paradigm-row">
+              <div className="ni-paradigm-lemma">{renderHighlightedLemma(lemma)}</div>
+              {pronouns.map(p => {
+                const ending = getEndingForPronoun(group, p);
+                const isEmptySlot = ending === '' && ['impAff', 'impNeg'].includes(tense.tense) && p === '1s';
                 return (
-                  <div key={p} className="ni-paradigm-cell">
-                    {stemPart && <span className="ni-form-stem">{stemPart}</span>}
-                    <span className="ni-form-ending">{endingPart || form}</span>
+                  <div key={p} className={`ni-paradigm-cell${isEmptySlot ? ' ni-cell-empty' : ''}`}>
+                    {isEmptySlot ? (
+                      <span className="ni-form-empty">—</span>
+                    ) : (
+                      <>
+                        <span className="ni-form-stem">{stem}</span>
+                        <span className="ni-form-ending">{ending}</span>
+                      </>
+                    )}
                   </div>
                 );
               })}
