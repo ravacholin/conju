@@ -199,6 +199,7 @@ export const LEARNING_FLOW_STEPS = [
   'guided_drill_ir',
   'recap',
   'practice',
+  'session-complete',
 ];
 
 /**
