@@ -850,8 +850,6 @@
   .ni-paradigm-pronoun { font-size: 7.5px; padding: 0.35rem 0.15rem; }
   .ni-paradigm-lemma { font-size: 0.62rem; padding: 0.5rem 0.35rem; }
   .ni-paradigm-cell { font-size: 0.72rem; padding: 0.5rem 0.15rem; }
-  /* Hide repeated stem — lemma column already shows the verb; only colored ending matters */
-  .ni-form-stem { display: none; }
 }
 
 @media (max-width: 360px) {
@@ -868,6 +866,9 @@
 /* Scoped with .verbos-onboarding--intro so other learning steps keep min-height: 220px */
 
 @media (max-width: 680px) {
+  /* Hide stem on all single-column layouts — lemma column already shows the verb */
+  .ni-form-stem { display: none; }
+
   .verbos-onboarding--intro .vo-left {
     min-height: unset;
     padding: 16px 16px 12px 16px;
