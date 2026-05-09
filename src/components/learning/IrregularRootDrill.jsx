@@ -79,6 +79,8 @@ function IrregularRootDrill({
   const [showPronunciation, setShowPronunciation] = useState(false)
   const [showAccentKeypad, setShowAccentKeypad] = useState(false)
   const pronunciationPanelRef = useRef(null)
+  const handleFinishRef = useRef(handleFinish)
+  handleFinishRef.current = handleFinish
 
   const mode = useMemo(() => {
     if (selectedFamilies.includes(ROOT_FAMILY_ID) && (tense?.tense === 'fut' || tense?.tense === 'cond')) {
@@ -118,18 +120,17 @@ function IrregularRootDrill({
 
   useEffect(() => {
     if (!timeLeft || timeLeft <= 0) return
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (!prev || prev <= 1) {
-          clearInterval(timer)
-          handleFinish()
-          return 0
-        }
-        return prev - 1
-      })
+    const timer = setTimeout(() => {
+      setTimeLeft(prev => (prev && prev > 1) ? prev - 1 : 0)
     }, 1000)
-    return () => clearInterval(timer)
+    return () => clearTimeout(timer)
   }, [timeLeft])
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      handleFinishRef.current(stats)
+    }
+  }, [timeLeft, stats])
 
   const currentQuestion = questions[index] || null
   const tenseLabel = tense ? TENSE_LABELS[tense.tense] || formatMoodTense(tense.mood, tense.tense) : ''
