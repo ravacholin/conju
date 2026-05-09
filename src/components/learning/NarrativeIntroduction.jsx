@@ -903,26 +903,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
 
   useEffect(() => {
     if (!tenseStoryData || !exampleVerbs) return;
-
-    const numSentences = exampleVerbs.length;
-
-    const initialDelay = setTimeout(() => {
-      setVisibleSentence(0); // Show first sentence
-
-      const timer = setInterval(() => {
-        setVisibleSentence(prev => {
-          if (prev < numSentences - 1) {
-            return prev + 1;
-          }
-          clearInterval(timer);
-          return prev;
-        });
-      }, 1200); // Faster between sentences
-
-      return () => clearInterval(timer);
-    }, 2000);
-
-    return () => clearTimeout(initialDelay);
+    // Mostrar el contexto inmediatamente (ya no es el protagonista)
+    const t = setTimeout(() => setVisibleSentence(exampleVerbs.length - 1), 300);
+    return () => clearTimeout(t);
   }, [tenseStoryData, exampleVerbs]);
 
   useEffect(() => {
@@ -1222,6 +1205,64 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const lenFactor = len <= 6 ? 1 : len <= 10 ? 0.78 : len <= 16 ? 0.58 : len <= 22 ? 0.44 : 0.34;
   const focalSize = `clamp(32px, ${Math.max(4, 11 * lenFactor)}vw, ${Math.round(160 * lenFactor)}px)`;
 
+  // Tabla de paradigma para verbos regulares en tiempos finitos
+  const renderParadigmTable = () => {
+    const nonFinite = ['ger', 'part'];
+    if (!tense || nonFinite.includes(tense.tense)) return null;
+
+    const regularVerbs = (exampleVerbs || []).filter(v => v.type === 'regular');
+    if (regularVerbs.length === 0) return null;
+
+    // Para fut/cond irregulares, no usar la tabla (dejar al renderDeconstructionContent)
+    if (['fut', 'cond'].includes(tense.tense) && hasIrregularVerbs) return null;
+
+    const pronouns = pronounsForDialect();
+    const moodMapping = { indicativo: 'indicative', subjuntivo: 'subjunctive', imperativo: 'imperative', condicional: 'conditional' };
+    const englishMood = moodMapping[tense.mood] || tense.mood;
+
+    const PRONOUN_DISPLAY = {
+      '1s': 'yo', '2s_tu': 'tú', '2s_vos': 'vos',
+      '3s': 'él/ella', '1p': 'nos.', '2p_vosotros': 'vos.', '3p': 'ellos'
+    };
+
+    const sortedVerbs = [...regularVerbs].sort((a, b) => {
+      const order = v => v.lemma.endsWith('ar') ? 0 : v.lemma.endsWith('er') ? 1 : 2;
+      return order(a) - order(b);
+    });
+
+    return (
+      <div className="ni-paradigm-table" style={{ '--pronoun-count': pronouns.length }}>
+        <div className="ni-paradigm-header">
+          <div className="ni-paradigm-lemma-cell" />
+          {pronouns.map(p => (
+            <div key={p} className="ni-paradigm-pronoun">{PRONOUN_DISPLAY[p] || p}</div>
+          ))}
+        </div>
+        {sortedVerbs.map(verbObj => {
+          const forms = extractRealConjugatedForms(verbObj, tense.tense, englishMood);
+          const stem = detectRealStem(verbObj, tense.tense, tense.mood) || verbObj.lemma.slice(0, -2);
+          return (
+            <div key={verbObj.lemma} className="ni-paradigm-row">
+              <div className="ni-paradigm-lemma">{renderHighlightedLemma(verbObj.lemma)}</div>
+              {pronouns.map((p, idx) => {
+                const form = forms[idx] || '';
+                const hasStem = form && stem && form.startsWith(stem);
+                const stemPart = hasStem ? stem : '';
+                const endingPart = hasStem ? form.slice(stem.length) : form;
+                return (
+                  <div key={p} className="ni-paradigm-cell">
+                    {stemPart && <span className="ni-form-stem">{stemPart}</span>}
+                    <span className="ni-form-ending">{endingPart || form}</span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const renderDeconstructionContent = () => {
     if (['fut', 'cond'].includes(tense.tense) && hasRegularVerbs && !hasIrregularVerbs) {
       return renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, settings);
@@ -1365,38 +1406,45 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
               />
             </div>
             <div className="vo-meta">
-              {exampleVerbs && exampleVerbs.slice(0, 3).map((verbObj, i) => (
-                <div key={i} className="vo-meta-item">
-                  <span className="vo-meta-key">V{i + 1}</span>
-                  <span className="vo-meta-val">{verbObj.lemma}</span>
-                </div>
-              ))}
+              {exampleVerbs && exampleVerbs.slice(0, 3).map((verbObj, i) => {
+                const lemma = verbObj.lemma;
+                const grp = lemma.endsWith('ar') ? '-ar' : lemma.endsWith('er') ? '-er' : '-ir';
+                return (
+                  <div key={i} className="vo-meta-item">
+                    <span className="vo-meta-key vo-group-chip">{grp}</span>
+                    <span className="vo-meta-val">{lemma}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* RIGHT: story + deconstruction */}
+        {/* RIGHT: terminaciones + context */}
         <div className="vo-right vo-noscroll ni-right-panel">
           <div className="ni-content-inner">
-            {tenseStoryData ? (
+
+            {/* TERMINACIONES — siempre primero */}
+            <div className="ni-section-header">TERMINACIONES</div>
+            <div className="ni-analysis-block">
+              {renderParadigmTable() || (
+                <div className="deconstruction-list">
+                  {renderDeconstructionContent()}
+                </div>
+              )}
+            </div>
+
+            {/* CONTEXTO — solo si hay datos, va después */}
+            {tenseStoryData && (
               <>
                 <div className="ni-section-header">CONTEXTO</div>
                 <div className="ni-story-block">
                   <div className="ni-story-title">{tenseStoryData.title}</div>
                   {renderStorySentences()}
                 </div>
-                <div className="ni-section-header">ANÁLISIS</div>
-                <div className="ni-analysis-block">
-                  <div className="deconstruction-list">
-                    {renderDeconstructionContent()}
-                  </div>
-                </div>
               </>
-            ) : (
-              <div className="ni-story-block">
-                <p className="ni-not-implemented">Introducción para "{tenseName}" no implementada aún.</p>
-              </div>
             )}
+
             <button className="ni-continue-btn" onClick={handleAnimatedContinue}>
               continuar <span className="ni-continue-arrow">→</span>
             </button>

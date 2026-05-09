@@ -701,6 +701,82 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+/* ── Paradigm table (terminaciones) ── */
+
+.ni-paradigm-table {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border: 1px solid #1f1d18;
+  overflow-x: auto;
+}
+
+.ni-paradigm-header,
+.ni-paradigm-row {
+  display: grid;
+  grid-template-columns: 7rem repeat(auto-fill, minmax(4rem, 1fr));
+  align-items: center;
+  border-bottom: 1px solid #1f1d18;
+}
+
+.ni-paradigm-row:last-child { border-bottom: none; }
+
+.ni-paradigm-header { background: rgba(255,255,255,0.02); }
+
+.ni-paradigm-pronoun {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2a2823;
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  border-left: 1px solid #1f1d18;
+}
+
+.ni-paradigm-lemma-cell {
+  padding: 0.5rem 0.75rem;
+}
+
+.ni-paradigm-lemma {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f4f1ea;
+  padding: 0.75rem 0.75rem;
+  border-right: 1px solid #1f1d18;
+  white-space: nowrap;
+}
+
+.ni-paradigm-cell {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  padding: 0.75rem 0.3rem;
+  text-align: center;
+  border-left: 1px solid #1f1d18;
+  white-space: nowrap;
+}
+
+.ni-form-stem {
+  color: #6e6a60;
+  font-weight: 400;
+}
+
+.ni-form-ending {
+  color: #f4f1ea;
+  font-weight: 700;
+}
+
+/* Chip de grupo verbal en panel izquierdo */
+.vo-group-chip {
+  color: #ff4d1c !important;
+  font-style: normal !important;
+}
+
+/* Contexto compacto al final */
+.ni-story-block { margin-bottom: 20px; }
+
 /* ── Animations ── */
 
 @keyframes slideInFromTop {
@@ -758,4 +834,11 @@
   .deconstruction-item.nonfinite-irregular-group {
     padding: 1rem 0;
   }
+
+  .ni-paradigm-table { overflow-x: auto; }
+  .ni-paradigm-header,
+  .ni-paradigm-row { grid-template-columns: 5rem repeat(auto-fill, minmax(3rem, 1fr)); }
+  .ni-paradigm-pronoun { font-size: 7.5px; padding: 0.4rem 0.25rem; }
+  .ni-paradigm-lemma { font-size: 0.65rem; padding: 0.6rem 0.5rem; }
+  .ni-paradigm-cell { font-size: 0.75rem; padding: 0.6rem 0.25rem; }
 }
