@@ -843,7 +843,10 @@
 
   .ni-paradigm-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .ni-paradigm-header,
-  .ni-paradigm-row { grid-template-columns: 3.5rem repeat(var(--pronoun-count, 6), minmax(min-content, 1fr)); }
+  .ni-paradigm-row {
+    min-width: max-content;
+    grid-template-columns: 3.5rem repeat(var(--pronoun-count, 6), minmax(min-content, 1fr));
+  }
   .ni-paradigm-pronoun { font-size: 7.5px; padding: 0.35rem 0.15rem; }
   .ni-paradigm-lemma { font-size: 0.62rem; padding: 0.5rem 0.35rem; }
   .ni-paradigm-cell { font-size: 0.72rem; padding: 0.5rem 0.15rem; }
@@ -853,7 +856,10 @@
 
 @media (max-width: 360px) {
   .ni-paradigm-header,
-  .ni-paradigm-row { grid-template-columns: 3rem repeat(var(--pronoun-count, 6), minmax(min-content, 1fr)); }
+  .ni-paradigm-row {
+    min-width: max-content;
+    grid-template-columns: 3rem repeat(var(--pronoun-count, 6), minmax(min-content, 1fr));
+  }
   .ni-paradigm-lemma { font-size: 0.58rem; padding: 0.4rem 0.25rem; }
   .ni-paradigm-cell { font-size: 0.68rem; padding: 0.4rem 0.1rem; }
 }
