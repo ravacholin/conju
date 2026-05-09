@@ -843,8 +843,10 @@
 
   .ni-paradigm-table { overflow-x: auto; }
   .ni-paradigm-header,
-  .ni-paradigm-row { grid-template-columns: 5rem repeat(auto-fill, minmax(3rem, 1fr)); }
-  .ni-paradigm-pronoun { font-size: 7.5px; padding: 0.4rem 0.25rem; }
-  .ni-paradigm-lemma { font-size: 0.65rem; padding: 0.6rem 0.5rem; }
-  .ni-paradigm-cell { font-size: 0.75rem; padding: 0.6rem 0.25rem; }
+  .ni-paradigm-row { grid-template-columns: 3.5rem repeat(auto-fill, minmax(2.2rem, 1fr)); }
+  .ni-paradigm-pronoun { font-size: 7.5px; padding: 0.35rem 0.15rem; }
+  .ni-paradigm-lemma { font-size: 0.62rem; padding: 0.5rem 0.35rem; }
+  .ni-paradigm-cell { font-size: 0.72rem; padding: 0.5rem 0.15rem; }
+  /* Hide repeated stem — lemma column already shows the verb; only colored ending matters */
+  .ni-form-stem { display: none; }
 }
