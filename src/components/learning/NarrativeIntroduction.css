@@ -850,3 +850,10 @@
   /* Hide repeated stem — lemma column already shows the verb; only colored ending matters */
   .ni-form-stem { display: none; }
 }
+
+@media (max-width: 360px) {
+  .ni-paradigm-header,
+  .ni-paradigm-row { grid-template-columns: 3rem repeat(auto-fill, minmax(2rem, 1fr)); }
+  .ni-paradigm-lemma { font-size: 0.58rem; padding: 0.4rem 0.25rem; }
+  .ni-paradigm-cell { font-size: 0.68rem; padding: 0.4rem 0.1rem; }
+}
