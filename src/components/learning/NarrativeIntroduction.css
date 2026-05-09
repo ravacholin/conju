@@ -850,3 +850,28 @@
   /* Hide repeated stem — lemma column already shows the verb; only colored ending matters */
   .ni-form-stem { display: none; }
 }
+
+@media (max-width: 360px) {
+  .ni-paradigm-header,
+  .ni-paradigm-row { grid-template-columns: 3rem repeat(auto-fill, minmax(2rem, 1fr)); }
+  .ni-paradigm-lemma { font-size: 0.58rem; padding: 0.4rem 0.25rem; }
+  .ni-paradigm-cell { font-size: 0.68rem; padding: 0.4rem 0.1rem; }
+}
+
+/* ── NarrativeIntroduction-specific mobile overrides ── */
+/* Scoped with .verbos-onboarding--intro so other learning steps keep min-height: 220px */
+
+@media (max-width: 680px) {
+  .verbos-onboarding--intro .vo-left {
+    min-height: unset;
+    padding: 16px 16px 12px 16px;
+  }
+  .verbos-onboarding--intro .vo-left-bottom { margin-top: 8px; }
+  .verbos-onboarding--intro .vo-prompt      { font-size: 17px; margin-bottom: 4px; }
+  .verbos-onboarding--intro .vo-aux         { margin-bottom: 8px; }
+  .verbos-onboarding--intro .vo-focal-word  { margin-bottom: 8px; }
+  .verbos-onboarding--intro .vo-meta        { padding-top: 8px; }
+  /* The global .vo-right rule adds padding-top: 36px for .vo-options-label in other steps;
+     NarrativeIntroduction has no such label, so reclaim that space */
+  .verbos-onboarding--intro .ni-right-panel { padding-top: 20px; }
+}

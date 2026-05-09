@@ -1384,7 +1384,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   };
 
   return (
-    <div className={`verbos-onboarding${leaving ? ' ni-leaving' : ''}`}>
+    <div className={`verbos-onboarding verbos-onboarding--intro${leaving ? ' ni-leaving' : ''}`}>
       <div className="vo-grid" aria-hidden="true" />
       <div className="vo-vignette" aria-hidden="true" />
       {[{top:56,left:12},{top:56,right:12},{bottom:44,left:12},{bottom:44,right:12}].map((pos,i) => (
