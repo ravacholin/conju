@@ -798,6 +798,72 @@
 /* ── Mobile ── */
 
 @media (max-width: 768px) {
+  .narrative-introduction .vo-step {
+    grid-template-rows: minmax(104px, auto) minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .narrative-introduction .vo-left {
+    min-height: 0;
+    padding: 18px 20px 12px;
+  }
+
+  .narrative-introduction .vo-step-tag {
+    top: 14px;
+    right: 20px;
+    font-size: 9px;
+  }
+
+  .narrative-introduction .vo-watermark {
+    top: 28px;
+    right: 18px;
+    font-size: clamp(72px, 24vw, 112px);
+    opacity: 0.36;
+  }
+
+  .narrative-introduction .vo-left-bottom {
+    margin-top: 22px;
+  }
+
+  .narrative-introduction .vo-aux {
+    font-size: 9px;
+    margin-bottom: 5px;
+  }
+
+  .narrative-introduction .vo-prompt {
+    font-size: 15px;
+    margin-bottom: 1px;
+  }
+
+  .narrative-introduction .vo-focal-word {
+    font-size: clamp(34px, 12vw, 54px) !important;
+    line-height: 0.86;
+    margin-bottom: 7px;
+    max-width: calc(100vw - 40px);
+  }
+
+  .narrative-introduction .vo-meta {
+    gap: 12px;
+    padding-top: 7px;
+    font-size: 8.5px;
+  }
+
+  .narrative-introduction .vo-right {
+    min-height: 0;
+    padding: 14px 20px 12px;
+    overflow: hidden;
+  }
+
+  .narrative-introduction .ni-right-panel {
+    overflow: hidden;
+  }
+
+  .narrative-introduction .ni-content-inner {
+    height: 100%;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
   .ni-story-block  { margin-bottom: 24px; }
   .ni-section-header { margin-bottom: 14px; }
 
@@ -828,12 +894,182 @@
 }
 
 @media (max-width: 480px) {
-  .story-sentence { font-size: 0.92rem; }
+  .narrative-introduction .vo-header {
+    height: 42px;
+    padding: 0 18px;
+  }
+
+  .narrative-introduction .vo-header .vo-logo {
+    gap: 8px;
+  }
+
+  .narrative-introduction .vo-header .vo-logo > span:last-child {
+    display: none;
+  }
+
+  .narrative-introduction .vo-step {
+    top: 42px;
+    grid-template-rows: minmax(112px, 17vh) minmax(0, 1fr);
+  }
+
+  .narrative-introduction .vo-footer {
+    display: none;
+  }
+
+  .narrative-introduction .vo-grid {
+    inset: 42px 0 0 0;
+  }
+
+  .narrative-introduction .vo-crosshair {
+    display: none;
+  }
+
+  .narrative-introduction .vo-left {
+    padding: 14px 20px 10px;
+  }
+
+  .narrative-introduction .vo-step-tag {
+    top: 12px;
+    font-size: 8px;
+  }
+
+  .narrative-introduction .vo-watermark {
+    top: 30px;
+    font-size: clamp(70px, 28vw, 110px);
+  }
+
+  .narrative-introduction .vo-left-bottom {
+    margin-top: 18px;
+  }
+
+  .narrative-introduction .vo-prompt {
+    font-size: 14px;
+  }
+
+  .narrative-introduction .vo-focal-word {
+    font-size: clamp(32px, 13vw, 50px) !important;
+    margin-bottom: 5px;
+  }
+
+  .narrative-introduction .vo-meta {
+    padding-top: 6px;
+  }
+
+  .narrative-introduction .vo-right {
+    padding: 10px 20px 12px;
+  }
+
+  .narrative-introduction .ni-content-inner {
+    justify-content: flex-start;
+  }
+
+  .narrative-introduction .ni-section-header {
+    font-size: 8.5px;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .narrative-introduction .ni-story-block {
+    margin-bottom: 10px;
+  }
+
+  .narrative-introduction .ni-story-title {
+    font-size: 11px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .story-sentence {
+    font-size: clamp(0.78rem, 3.45vw, 0.9rem);
+    line-height: 1.38;
+    margin-bottom: 0.32rem;
+  }
+
+  .story-sentence .highlight {
+    padding: 0.06em 0.26em;
+  }
+
+  .narrative-introduction .ni-analysis-block {
+    margin-bottom: 8px;
+    min-height: 0;
+  }
+
+  .narrative-introduction .deconstruction-list {
+    display: grid;
+    gap: 0;
+  }
 
   .deconstruction-item { padding: 0.85rem 0; }
 
+  .narrative-introduction .deconstruction-item {
+    display: grid;
+    grid-template-columns: minmax(54px, 0.35fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    min-width: 0;
+  }
+
+  .narrative-introduction .verb-lemma {
+    font-size: clamp(0.68rem, 3vw, 0.8rem);
+    min-width: 0;
+  }
+
+  .narrative-introduction .verb-deconstruction {
+    justify-content: flex-start;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .narrative-introduction .verb-stem {
+    padding: 0.26rem 0.38rem;
+    font-size: clamp(0.68rem, 3vw, 0.78rem);
+  }
+
+  .narrative-introduction .verb-endings {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .narrative-introduction .ending-carousel {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 2px;
+    width: 100%;
+    min-width: 0;
+  }
+
   .verb-stem,
   .ending-item { padding: 0.35rem 0.6rem; font-size: 0.85rem; }
+
+  .narrative-introduction .ending-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 0.28rem 0.12rem;
+    font-size: clamp(0.58rem, 2.55vw, 0.72rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .narrative-introduction .irregular-forms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .narrative-introduction .conjugated-form {
+    font-size: clamp(0.62rem, 2.8vw, 0.76rem);
+  }
+
+  .narrative-introduction .ni-continue-btn {
+    flex: 0 0 auto;
+    padding: 13px 18px;
+    font-size: 15px;
+    margin-top: auto;
+  }
 
   .deconstruction-item.strong-preterite-group,
   .deconstruction-item.future-root-group,
@@ -881,4 +1117,69 @@
   /* The global .vo-right rule adds padding-top: 36px for .vo-options-label in other steps;
      NarrativeIntroduction has no such label, so reclaim that space */
   .verbos-onboarding--intro .ni-right-panel { padding-top: 20px; }
+}
+
+@media (max-width: 380px), (max-height: 700px) {
+  .narrative-introduction .vo-step {
+    grid-template-rows: minmax(94px, 15vh) minmax(0, 1fr);
+  }
+
+  .narrative-introduction .vo-left {
+    padding-top: 10px;
+    padding-bottom: 8px;
+  }
+
+  .narrative-introduction .vo-step-tag,
+  .narrative-introduction .vo-aux,
+  .narrative-introduction .vo-meta-key {
+    display: none;
+  }
+
+  .narrative-introduction .vo-left-bottom {
+    margin-top: 0;
+  }
+
+  .narrative-introduction .vo-prompt {
+    font-size: 12px;
+  }
+
+  .narrative-introduction .vo-focal-word {
+    font-size: clamp(29px, 11.5vw, 42px) !important;
+    margin-bottom: 4px;
+  }
+
+  .narrative-introduction .vo-meta {
+    border-top: 0;
+    padding-top: 0;
+    font-size: 8px;
+  }
+
+  .narrative-introduction .ni-section-header {
+    margin-bottom: 5px;
+  }
+
+  .narrative-introduction .ni-story-title {
+    display: none;
+  }
+
+  .story-sentence {
+    font-size: 0.75rem;
+    line-height: 1.28;
+    margin-bottom: 0.22rem;
+  }
+
+  .narrative-introduction .deconstruction-item {
+    padding: 5px 0;
+  }
+
+  .narrative-introduction .verb-stem,
+  .narrative-introduction .ending-item {
+    padding-top: 0.22rem;
+    padding-bottom: 0.22rem;
+  }
+
+  .narrative-introduction .ni-continue-btn {
+    padding: 11px 16px;
+    font-size: 14px;
+  }
 }
