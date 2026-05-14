@@ -116,7 +116,7 @@
 }
 
 .story-sentence .highlight {
-  color: #0c0c0c;
+  color: #ffffff;
   background: #ff4d1c;
   font-weight: 700;
   padding: 0.1em 0.35em;
@@ -194,14 +194,12 @@
   text-underline-offset: 2px;
 }
 
-/* Overrides inside orange backgrounds */
+/* Overrides inside orange backgrounds — keep white for underline consistency */
 .story-sentence .highlight .irreg-frag {
-  color: #ffffff !important;
   text-decoration-color: #ffffff;
 }
 
 .yo-form-highlight .irreg-frag {
-  color: #ffffff !important;
   text-decoration-color: #ffffff;
 }
 
@@ -308,7 +306,7 @@
 .future-root-highlight {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #0c0c0c;
+  color: #ffffff;
   background: #ff4d1c;
   padding: 0.15rem 0.5rem;
   letter-spacing: 0.06em;
@@ -385,9 +383,9 @@
 
 .nonfinite-item .arrow { color: #6e6a60; font-weight: 700; }
 
-.nonfinite-highlight {
+.narrative-introduction .nonfinite-highlight {
   font-weight: 800;
-  color: #0c0c0c;
+  color: #ffffff;
   background: #ff4d1c;
   padding: 0.15rem 0.45rem;
   letter-spacing: 0.05em;
@@ -408,7 +406,7 @@
 .group-label-large { color: #f4f1ea; opacity: 0.45; font-weight: 800; }
 
 .stem-vowel-highlight-large {
-  color: #0c0c0c;
+  color: #ffffff;
   background: #ff4d1c;
   font-weight: 800;
   font-size: 1.05em;
@@ -524,7 +522,7 @@
 .irregular-yo-verb-complete .yo-form-highlight {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #0c0c0c;
+  color: #ffffff;
   background: #ff4d1c;
   padding: 0.4rem 0.85rem;
   font-family: 'JetBrains Mono', monospace;
