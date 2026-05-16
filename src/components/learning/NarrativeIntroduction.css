@@ -22,7 +22,7 @@
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #2a2823;
+  color: #6e6a60;
   margin-bottom: 20px;
 }
 
@@ -849,11 +849,11 @@
   .narrative-introduction .vo-right {
     min-height: 0;
     padding: 14px 20px 12px;
-    overflow: hidden;
+    overflow-y: auto;
   }
 
   .narrative-introduction .ni-right-panel {
-    overflow: hidden;
+    overflow-y: auto;
   }
 
   .narrative-introduction .ni-content-inner {

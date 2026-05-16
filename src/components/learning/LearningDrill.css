@@ -565,7 +565,8 @@
   .ld-main {
     padding: 12px;
     gap: 12px;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: auto;
   }
 
   .ld-verb-focal {

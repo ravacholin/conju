@@ -88,7 +88,7 @@
   font-size: 9.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #2a2823;
+  color: #6e6a60;
   z-index: 50;
 }
 
@@ -281,7 +281,7 @@
 }
 
 .vo-meta-item { display: flex; flex-direction: column; gap: 4px; }
-.vo-meta-key { color: #2a2823; }
+.vo-meta-key { color: #6e6a60; }
 .vo-meta-val { color: #f4f1ea; }
 .vo-meta-ex { font-style: italic; text-transform: none; letter-spacing: 0.04em; }
 
@@ -479,7 +479,7 @@
 @media (max-width: 680px) {
   .vo-step {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
@@ -489,7 +489,7 @@
     border-right: none;
     border-bottom: 1px solid #1f1d18;
     padding: 28px 20px 24px 20px;
-    min-height: 220px;
+    min-height: 0;
   }
 
   .vo-watermark { font-size: clamp(80px, 28vw, 160px); }
@@ -497,9 +497,8 @@
   .vo-right {
     padding: 20px 20px 20px 20px;
     justify-content: flex-start;
-    overflow-y: auto;
+    overflow-y: visible;
     min-height: 0;
-    -webkit-overflow-scrolling: touch;
   }
 
   .vo-options-label { top: 8px; left: 20px; }

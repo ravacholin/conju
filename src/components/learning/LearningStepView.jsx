@@ -131,7 +131,7 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
                 onClick={() => onSelect(opt)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(opt) }}
               >
-                <div className="vo-option-num" style={{ color: active || selected ? ACCENT : INK3 }}>
+                <div className="vo-option-num" style={{ color: active || selected ? ACCENT : INK2 }}>
                   <span
                     className="vo-option-num-box"
                     style={{
@@ -156,7 +156,7 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
                   {opt.label}
                 </div>
 
-                <div className="vo-option-tag" style={{ color: active || selected ? ACCENT : INK3 }}>
+                <div className="vo-option-tag" style={{ color: active || selected ? ACCENT : INK2 }}>
                   {selected && !active ? '← confirmar' : opt.tag}
                 </div>
 
