@@ -1,12 +1,45 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import LearningStepView from './LearningStepView.jsx'
-import { MOOD_LABELS, formatMoodTense, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
+import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { getVerbForms } from '../../lib/core/verbDataService.js'
 
 const REFERENCE_LEMMAS = ['hablar', 'comer', 'vivir']
+const SUBMENU_MOODS = {
+  subjunctive: ['subjunctive', 'subjuntivo'],
+  imperative: ['imperative', 'imperativo'],
+}
+const ROOT_DIRECT_MOODS = [
+  { aliases: ['indicative', 'indicativo'], tag: 'IND' },
+  { aliases: ['conditional', 'condicional'], tag: 'COND' },
+  { aliases: ['nonfinite'], tag: 'NF' },
+]
+
+function findAvailableMoodKey(availableTenses, moodAliases) {
+  return moodAliases.find(mood => Array.isArray(availableTenses?.[mood]) && availableTenses[mood].length > 0)
+}
+
+function orderTensesForMood(mood, tenses) {
+  const canonicalMood = mood === 'indicativo'
+    ? 'indicative'
+    : mood === 'subjuntivo'
+      ? 'subjunctive'
+      : mood === 'imperativo'
+        ? 'imperative'
+        : mood
+  const order = getTensesForMood(canonicalMood)
+  return [...(tenses || [])].sort((a, b) => {
+    const ai = order.indexOf(a)
+    const bi = order.indexOf(b)
+    if (ai === -1 && bi === -1) return a.localeCompare(b)
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
+}
 
 function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = false, region }) {
   const [referenceForms, setReferenceForms] = useState(new Map())
+  const [selectedMenu, setSelectedMenu] = useState(null)
 
   useEffect(() => {
     async function loadReferenceForms() {
@@ -87,36 +120,97 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     return parts.join(', ')
   }
 
+  useEffect(() => {
+    setSelectedMenu(null)
+  }, [availableTenses])
+
   const options = useMemo(() => {
     if (!availableTenses || Object.keys(availableTenses).length === 0) return []
-    return Object.entries(availableTenses).flatMap(([mood, tenses]) =>
-      tenses.map(tense => ({
+
+    if (selectedMenu) {
+      const mood = findAvailableMoodKey(availableTenses, SUBMENU_MOODS[selectedMenu])
+      const tenses = selectedMenu === 'imperative'
+        ? (availableTenses[mood] || []).filter(tense => tense === 'impAff' || tense === 'impNeg')
+        : (availableTenses[mood] || [])
+
+      return orderTensesForMood(mood, tenses).map(tense => ({
         id: `${mood}__${tense}`,
-        label: formatMoodTense(mood, tense),
-        tag: (getMoodLabel ? getMoodLabel(mood) : MOOD_LABELS[mood] || mood).toUpperCase().slice(0, 4),
-        gloss: MOOD_LABELS[mood] || mood,
+        label: selectedMenu === 'imperative'
+          ? `Imperativo ${getTenseLabel(tense).toLowerCase()}`
+          : getTenseLabel(tense),
+        tag: selectedMenu === 'imperative' ? 'IMP' : 'SUB',
+        gloss: getMoodLabel(mood),
         ex: getPersonConjugationExample(mood, tense),
         onSelect: () => onSelect(mood, tense),
       }))
-    )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [availableTenses, useVoseo, referenceForms])
+    }
+
+    const subjunctiveMood = findAvailableMoodKey(availableTenses, SUBMENU_MOODS.subjunctive)
+    const imperativeMood = findAvailableMoodKey(availableTenses, SUBMENU_MOODS.imperative)
+    const rootOptions = []
+
+    ROOT_DIRECT_MOODS.forEach(({ aliases, tag }) => {
+      const mood = findAvailableMoodKey(availableTenses, aliases)
+      if (!mood) return
+      rootOptions.push(...orderTensesForMood(mood, availableTenses[mood]).map(tense => ({
+        id: `${mood}__${tense}`,
+        label: getTenseLabel(tense),
+        tag,
+        gloss: getMoodLabel(mood),
+        ex: getPersonConjugationExample(mood, tense),
+        onSelect: () => onSelect(mood, tense),
+      })))
+    })
+
+    if (subjunctiveMood) {
+      rootOptions.push({
+        id: 'subjunctive-menu',
+        label: 'subjuntivos',
+        tag: 'SUB',
+        gloss: 'elegir tiempo',
+        ex: 'presente · imperfecto',
+        onSelect: () => setSelectedMenu('subjunctive'),
+      })
+    }
+
+    if (imperativeMood) {
+      rootOptions.push({
+        id: 'imperative-menu',
+        label: 'imperativo',
+        tag: 'IMP',
+        gloss: 'afirmativo o negativo',
+        ex: 'habla · no hables',
+        onSelect: () => setSelectedMenu('imperative'),
+      })
+    }
+
+    return rootOptions
+  }, [availableTenses, useVoseo, referenceForms, selectedMenu])
 
   if (!availableTenses || Object.keys(availableTenses).length === 0) return null
 
   const stepConfig = {
     n: '01',
-    kicker: 'TIEMPO VERBAL',
+    kicker: selectedMenu === 'subjunctive'
+      ? 'SUBJUNTIVO'
+      : selectedMenu === 'imperative'
+        ? 'IMPERATIVO'
+        : 'TEMA',
     prompt: 'Elegís...',
-    aux: 'Un tiempo por vez. Después definís el tipo de verbos.',
+    aux: selectedMenu
+      ? 'Elegí un tiempo para seguir con el tipo de verbos.'
+      : 'Indicativo directo. Subjuntivo e imperativo abren su propio menú.',
     options,
   }
 
   return (
     <LearningStepView
       stepConfig={stepConfig}
-      onBack={onHome}
-      breadcrumb={[{ label: 'FLUJO', value: 'aprender' }]}
+      onBack={selectedMenu ? () => setSelectedMenu(null) : onHome}
+      breadcrumb={[
+        { label: 'FLUJO', value: 'aprender' },
+        ...(selectedMenu ? [{ label: 'TEMA', value: selectedMenu === 'subjunctive' ? 'subjuntivos' : 'imperativo' }] : []),
+      ]}
       stepNum={1}
       totalSteps={3}
     />
