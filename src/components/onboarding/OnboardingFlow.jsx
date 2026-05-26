@@ -32,6 +32,44 @@ const VERB_TYPE_OPTS = [
   { id: 'irregular', label: 'irregulares', tag: 'TENSIÓN', gloss: 'casos duros',     ex: 'ser · estar · tener · ir' },
 ]
 
+const THEME_ROOT_MOOD_OPTS = new Set(['subjunctive', 'imperative'])
+
+function buildThemeTopicOptions({ selectMood, selectTense }) {
+  const buildDirectTenseOptions = (mood, tag) => getTensesForMood(mood).map(tense => ({
+    id: `${mood}-${tense}`,
+    label: getTenseLabel(tense).toLowerCase(),
+    tag,
+    gloss: getMoodLabel(mood).toLowerCase(),
+    ex: '',
+    onSelect: () => {
+      selectMood(mood, { navigate: false })
+      selectTense(tense)
+    },
+  }))
+
+  return [
+    ...buildDirectTenseOptions('indicative', 'IND'),
+    ...buildDirectTenseOptions('conditional', 'COND'),
+    ...buildDirectTenseOptions('nonfinite', 'NF'),
+    {
+      id: 'subjunctive',
+      label: 'subjuntivos',
+      tag: 'SUB',
+      gloss: 'elegir tiempo',
+      ex: 'presente · imperfecto',
+      onSelect: () => selectMood('subjunctive'),
+    },
+    {
+      id: 'imperative',
+      label: 'imperativo',
+      tag: 'IMP',
+      gloss: 'afirmativo o negativo',
+      ex: 'habla · no hables',
+      onSelect: () => selectMood('imperative'),
+    },
+  ]
+}
+
 const FALLBACK_FAMILIES = [
   { id: 'G_VERBS',   name: 'Irregulares en YO',  description: 'tener, poner, salir, conocer, vencer' },
   { id: 'UIR_Y',     name: '-uir (inserción y)',  description: 'construir, huir' },
@@ -160,6 +198,14 @@ function buildStep(step, settings, handlers) {
           options: VERB_TYPE_OPTS.map(o => ({ ...o, onSelect: () => selectVerbType(o.id, onStartPractice) })),
         }
       }
+      if (settings.practiceMode === 'theme') {
+        return {
+          n: '05', kicker: 'TEMA',
+          prompt: 'Trabajás...',
+          aux: 'Indicativo directo. Subjuntivo e imperativo abren su propio menú.',
+          options: buildThemeTopicOptions({ selectMood, selectTense }),
+        }
+      }
       const availMoods = settings.level && settings.practiceMode === 'specific'
         ? getAvailableMoodsForLevel(settings.level).map(id => MOOD_OPTS.find(m => m.id === id)).filter(Boolean)
         : MOOD_OPTS
@@ -179,14 +225,18 @@ function buildStep(step, settings, handlers) {
         }
       }
       if (!settings.specificMood) return null
+      if (settings.practiceMode === 'theme' && !THEME_ROOT_MOOD_OPTS.has(settings.specificMood)) return null
       const tenses = settings.level
         ? getAvailableTensesForLevelAndMood(settings.level, settings.specificMood)
         : getTensesForMood(settings.specificMood)
+      const visibleTenses = settings.practiceMode === 'theme' && settings.specificMood === 'imperative'
+        ? tenses.filter(tense => tense === 'impAff' || tense === 'impNeg')
+        : tenses
       const moodTag = getMoodLabel(settings.specificMood).toUpperCase().slice(0, 3)
       return {
         n: '06', kicker: 'TIEMPO',
         prompt: 'Atacás...', aux: 'Recorte exacto del drill.',
-        options: tenses.map(t => ({
+        options: visibleTenses.map(t => ({
           id: t,
           label: getTenseLabel(t),
           tag: moodTag,

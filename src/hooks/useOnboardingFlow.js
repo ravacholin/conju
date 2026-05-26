@@ -559,13 +559,17 @@ export function useOnboardingFlow() {
     }
   }, [setOnboardingStep, settings])
 
-  const selectMood = useCallback((mood) => {
+  const selectMood = useCallback((mood, options = {}) => {
     if (import.meta.env.DEV) {
       console.log('ACTION: selectMood', mood);
     }
     closeTopPanelsAndFeatures()
     // For theme-based practice (cameFromTema=true), keep the flag set
     settings.set({ specificMood: mood })
+
+    if (options.navigate === false) {
+      return
+    }
     
     const currentSettings = useSettings.getState()
     if (currentSettings.practiceMode === 'theme') {
