@@ -128,6 +128,61 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     if (!availableTenses || Object.keys(availableTenses).length === 0) return []
 
     if (selectedMenu) {
+      if (selectedMenu === 'condicional') {
+        const mood = findAvailableMoodKey(availableTenses, ['conditional', 'condicional'])
+        const tenses = availableTenses[mood] || []
+        return orderTensesForMood(mood, tenses).map(tense => {
+          let label = getTenseLabel(tense)
+          if (tense === 'cond') label = 'Condicional simple'
+          if (tense === 'condPerf') label = 'Condicional compuesto'
+          return {
+            id: `${mood}__${tense}`,
+            label,
+            tag: 'COND',
+            gloss: getMoodLabel(mood),
+            ex: getPersonConjugationExample(mood, tense),
+            onSelect: () => onSelect(mood, tense),
+          }
+        })
+      }
+
+      if (selectedMenu === 'futuro') {
+        const mood = findAvailableMoodKey(availableTenses, ['indicative', 'indicativo'])
+        const tenses = (availableTenses[mood] || []).filter(tense => tense === 'fut' || tense === 'futPerf')
+        return orderTensesForMood(mood, tenses).map(tense => {
+          let label = getTenseLabel(tense)
+          if (tense === 'fut') label = 'Futuro simple'
+          if (tense === 'futPerf') label = 'Futuro compuesto'
+          return {
+            id: `${mood}__${tense}`,
+            label,
+            tag: 'FUT',
+            gloss: getMoodLabel(mood),
+            ex: getPersonConjugationExample(mood, tense),
+            onSelect: () => onSelect(mood, tense),
+          }
+        })
+      }
+
+      if (selectedMenu === 'nonfinite') {
+        const mood = findAvailableMoodKey(availableTenses, ['nonfinite'])
+        const tenses = availableTenses[mood] || []
+        return orderTensesForMood(mood, tenses).map(tense => {
+          let label = getTenseLabel(tense)
+          if (tense === 'ger') label = 'Gerundio'
+          if (tense === 'part') label = 'Participio'
+          if (tense === 'nonfiniteMixed') label = 'Formas no finitas mixtas'
+          return {
+            id: `${mood}__${tense}`,
+            label,
+            tag: 'NF',
+            gloss: getMoodLabel(mood),
+            ex: getPersonConjugationExample(mood, tense),
+            onSelect: () => onSelect(mood, tense),
+          }
+        })
+      }
+
       const mood = findAvailableMoodKey(availableTenses, SUBMENU_MOODS[selectedMenu])
       const tenses = selectedMenu === 'imperative'
         ? (availableTenses[mood] || []).filter(tense => tense === 'impAff' || tense === 'impNeg')
@@ -149,18 +204,55 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
     const imperativeMood = findAvailableMoodKey(availableTenses, SUBMENU_MOODS.imperative)
     const rootOptions = []
 
-    ROOT_DIRECT_MOODS.forEach(({ aliases, tag }) => {
-      const mood = findAvailableMoodKey(availableTenses, aliases)
-      if (!mood) return
-      rootOptions.push(...orderTensesForMood(mood, availableTenses[mood]).map(tense => ({
-        id: `${mood}__${tense}`,
+    // Indicativo (except futuro)
+    const indMood = findAvailableMoodKey(availableTenses, ['indicative', 'indicativo'])
+    if (indMood) {
+      const nonFutTenses = (availableTenses[indMood] || []).filter(tense => tense !== 'fut' && tense !== 'futPerf')
+      rootOptions.push(...orderTensesForMood(indMood, nonFutTenses).map(tense => ({
+        id: `${indMood}__${tense}`,
         label: getTenseLabel(tense),
-        tag,
-        gloss: getMoodLabel(mood),
-        ex: getPersonConjugationExample(mood, tense),
-        onSelect: () => onSelect(mood, tense),
+        tag: 'IND',
+        gloss: getMoodLabel(indMood),
+        ex: getPersonConjugationExample(indMood, tense),
+        onSelect: () => onSelect(indMood, tense),
       })))
-    })
+    }
+
+    const hasFuturo = indMood && (availableTenses[indMood] || []).some(tense => tense === 'fut' || tense === 'futPerf')
+    if (hasFuturo) {
+      rootOptions.push({
+        id: 'futuro-menu',
+        label: 'Futuro',
+        tag: 'FUT',
+        gloss: 'elegir tiempo',
+        ex: 'simple · compuesto',
+        onSelect: () => setSelectedMenu('futuro'),
+      })
+    }
+
+    const condMood = findAvailableMoodKey(availableTenses, ['conditional', 'condicional'])
+    if (condMood && (availableTenses[condMood] || []).length > 0) {
+      rootOptions.push({
+        id: 'conditional-menu',
+        label: 'Condicional',
+        tag: 'COND',
+        gloss: 'elegir tiempo',
+        ex: 'simple · compuesto',
+        onSelect: () => setSelectedMenu('condicional'),
+      })
+    }
+
+    const nfMood = findAvailableMoodKey(availableTenses, ['nonfinite'])
+    if (nfMood && (availableTenses[nfMood] || []).length > 0) {
+      rootOptions.push({
+        id: 'nonfinite-menu',
+        label: 'Formas no finitas',
+        tag: 'NF',
+        gloss: 'elegir forma',
+        ex: 'gerundio · participio · mixto',
+        onSelect: () => setSelectedMenu('nonfinite'),
+      })
+    }
 
     if (subjunctiveMood) {
       rootOptions.push({
@@ -195,12 +287,27 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
       ? 'SUBJUNTIVO'
       : selectedMenu === 'imperative'
         ? 'IMPERATIVO'
-        : 'TEMA',
+        : selectedMenu === 'condicional'
+          ? 'CONDICIONAL'
+          : selectedMenu === 'futuro'
+            ? 'FUTURO'
+            : selectedMenu === 'nonfinite'
+              ? 'FORMAS NO FINITAS'
+              : 'TEMA',
     prompt: 'Elegís...',
     aux: selectedMenu
       ? 'Elegí un tiempo para seguir con el tipo de verbos.'
-      : 'Indicativo directo. Subjuntivo e imperativo abren su propio menú.',
+      : 'Indicativo directo. Futuro, condicional y no finitas abren submenú.',
     options,
+  }
+
+  const getSubmenuLabel = (menu) => {
+    if (menu === 'subjunctive') return 'subjuntivos'
+    if (menu === 'imperative') return 'imperativo'
+    if (menu === 'condicional') return 'condicional'
+    if (menu === 'futuro') return 'futuro'
+    if (menu === 'nonfinite') return 'formas no finitas'
+    return ''
   }
 
   return (
@@ -209,7 +316,7 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
       onBack={selectedMenu ? () => setSelectedMenu(null) : onHome}
       breadcrumb={[
         { label: 'FLUJO', value: 'aprender' },
-        ...(selectedMenu ? [{ label: 'TEMA', value: selectedMenu === 'subjunctive' ? 'subjuntivos' : 'imperativo' }] : []),
+        ...(selectedMenu ? [{ label: 'TEMA', value: getSubmenuLabel(selectedMenu) }] : []),
       ]}
       stepNum={1}
       totalSteps={3}

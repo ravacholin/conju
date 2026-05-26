@@ -27,30 +27,157 @@ const MOOD_OPTS = [
 ]
 
 const VERB_TYPE_OPTS = [
-  { id: 'all',       label: 'todos',       tag: 'AMPLIO',  gloss: 'sin filtro',      ex: 'reg · irreg' },
-  { id: 'regular',   label: 'regulares',   tag: 'SISTEMA', gloss: 'siguen la regla', ex: 'hablar · comer · vivir' },
-  { id: 'irregular', label: 'irregulares', tag: 'TENSIÓN', gloss: 'casos duros',     ex: 'ser · estar · tener · ir' },
+  { id: 'all',       label: 'todos',       tag: 'AMPLIO',  gloss: 'sin filtro',      ex: 'reg · irreg', ariaLabel: 'Seleccionar todos los verbos' },
+  { id: 'regular',   label: 'regulares',   tag: 'SISTEMA', gloss: 'siguen la regla', ex: 'hablar · comer · vivir', ariaLabel: 'Seleccionar solo verbos regulares' },
+  { id: 'irregular', label: 'irregulares', tag: 'TENSIÓN', gloss: 'casos duros',     ex: 'ser · estar · tener · ir', ariaLabel: 'Seleccionar solo verbos irregulares' },
 ]
 
 const THEME_ROOT_MOOD_OPTS = new Set(['subjunctive', 'imperative'])
 
-function buildThemeTopicOptions({ selectMood, selectTense }) {
-  const buildDirectTenseOptions = (mood, tag) => getTensesForMood(mood).map(tense => ({
-    id: `${mood}-${tense}`,
-    label: getTenseLabel(tense).toLowerCase(),
-    tag,
-    gloss: getMoodLabel(mood).toLowerCase(),
-    ex: '',
-    onSelect: () => {
-      selectMood(mood, { navigate: false })
-      selectTense(tense)
-    },
-  }))
+function buildThemeTopicOptions({ selectMood, selectTense, themeSubMenu, setThemeSubMenu }) {
+  if (themeSubMenu === 'condicional') {
+    return [
+      {
+        id: 'conditional-cond',
+        label: 'condicional simple',
+        tag: 'COND',
+        gloss: 'condicional',
+        ex: 'yo hablaría',
+        onSelect: () => {
+          selectMood('conditional', { navigate: false })
+          selectTense('cond')
+        }
+      },
+      {
+        id: 'conditional-condPerf',
+        label: 'condicional compuesto',
+        tag: 'COND',
+        gloss: 'condicional',
+        ex: 'yo habría hablado',
+        onSelect: () => {
+          selectMood('conditional', { navigate: false })
+          selectTense('condPerf')
+        }
+      }
+    ]
+  }
+
+  if (themeSubMenu === 'futuro') {
+    return [
+      {
+        id: 'indicative-fut',
+        label: 'futuro simple',
+        tag: 'FUT',
+        gloss: 'indicativo',
+        ex: 'yo hablaré',
+        onSelect: () => {
+          selectMood('indicative', { navigate: false })
+          selectTense('fut')
+        }
+      },
+      {
+        id: 'indicative-futPerf',
+        label: 'futuro compuesto',
+        tag: 'FUT',
+        gloss: 'indicativo',
+        ex: 'yo habré hablado',
+        onSelect: () => {
+          selectMood('indicative', { navigate: false })
+          selectTense('futPerf')
+        }
+      }
+    ]
+  }
+
+  if (themeSubMenu === 'nonfinite') {
+    return [
+      {
+        id: 'nonfinite-ger',
+        label: 'gerundio',
+        tag: 'NF',
+        gloss: 'no finita',
+        ex: 'hablando',
+        onSelect: () => {
+          selectMood('nonfinite', { navigate: false })
+          selectTense('ger')
+        }
+      },
+      {
+        id: 'nonfinite-part',
+        label: 'participio',
+        tag: 'NF',
+        gloss: 'no finita',
+        ex: 'hablado',
+        onSelect: () => {
+          selectMood('nonfinite', { navigate: false })
+          selectTense('part')
+        }
+      },
+      {
+        id: 'nonfinite-nonfiniteMixed',
+        label: 'formas no finitas mixtas',
+        tag: 'NF',
+        gloss: 'no finita',
+        ex: 'hablando / hablado',
+        onSelect: () => {
+          selectMood('nonfinite', { navigate: false })
+          selectTense('nonfiniteMixed')
+        }
+      }
+    ]
+  }
+
+  const buildDirectTenseOptions = (mood, tag) => getTensesForMood(mood)
+    .filter(tense => mood !== 'indicative' || (tense !== 'fut' && tense !== 'futPerf'))
+    .map(tense => {
+      // Get friendly examples
+      const getEx = (t) => {
+        if (t === 'pres') return 'yo hablo'
+        if (t === 'pretPerf') return 'he hablado'
+        if (t === 'pretIndef') return 'yo hablé'
+        if (t === 'impf') return 'yo hablaba'
+        if (t === 'plusc') return 'yo había hablado'
+        return ''
+      }
+      return {
+        id: `${mood}-${tense}`,
+        label: getTenseLabel(tense).toLowerCase(),
+        tag,
+        gloss: getMoodLabel(mood).toLowerCase(),
+        ex: getEx(tense),
+        onSelect: () => {
+          selectMood(mood, { navigate: false })
+          selectTense(tense)
+        },
+      }
+    })
 
   return [
     ...buildDirectTenseOptions('indicative', 'IND'),
-    ...buildDirectTenseOptions('conditional', 'COND'),
-    ...buildDirectTenseOptions('nonfinite', 'NF'),
+    {
+      id: 'futuro-menu',
+      label: 'futuro',
+      tag: 'FUT',
+      gloss: 'elegir tiempo',
+      ex: 'simple · compuesto',
+      onSelect: () => setThemeSubMenu('futuro')
+    },
+    {
+      id: 'conditional-menu',
+      label: 'condicional',
+      tag: 'COND',
+      gloss: 'elegir tiempo',
+      ex: 'simple · compuesto',
+      onSelect: () => setThemeSubMenu('condicional')
+    },
+    {
+      id: 'nonfinite-menu',
+      label: 'formas no finitas',
+      tag: 'NF',
+      gloss: 'elegir forma',
+      ex: 'gerundio · participio · mixto',
+      onSelect: () => setThemeSubMenu('nonfinite')
+    },
     {
       id: 'subjunctive',
       label: 'subjuntivos',
@@ -138,6 +265,7 @@ function buildStep(step, settings, handlers) {
     selectVerbType, selectFamily, goToLevelDetails, onStartPractice,
     onGoToProgress, onStartLearningNewTense, onStartLevelTest,
     getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood,
+    themeSubMenu, setThemeSubMenu
   } = handlers
 
   switch (step) {
@@ -146,10 +274,10 @@ function buildStep(step, settings, handlers) {
         n: '01', kicker: 'VARIANTE',
         prompt: 'Hablás...', aux: 'Definí el sistema pronominal antes de empezar.',
         options: [
-          { id: 'rioplatense', label: 'vos',           tag: 'AR · UY', gloss: 'rioplatense', ex: 'vos tenés / vos hablás', onSelect: () => selectDialect('rioplatense') },
-          { id: 'la_general',  label: 'tú',            tag: 'LATAM',   gloss: 'estándar',    ex: 'tú tienes / tú hablas',  onSelect: () => selectDialect('la_general') },
-          { id: 'peninsular',  label: 'tú · vosotros', tag: 'ES',      gloss: 'peninsular',  ex: 'vosotros tenéis',        onSelect: () => selectDialect('peninsular') },
-          { id: 'both',        label: 'todos',          tag: 'MIX',     gloss: 'sin filtro',  ex: 'tú · vos · vosotros',   onSelect: () => selectDialect('both') },
+          { id: 'rioplatense', label: 'vos',           tag: 'AR · UY', gloss: 'rioplatense', ex: 'vos tenés / vos hablás', ariaLabel: 'Seleccionar dialecto rioplatense (vos)', onSelect: () => selectDialect('rioplatense') },
+          { id: 'la_general',  label: 'tú',            tag: 'LATAM',   gloss: 'estándar',    ex: 'tú tienes / tú hablas',  ariaLabel: 'Seleccionar dialecto latinoamericano general (tú)', onSelect: () => selectDialect('la_general') },
+          { id: 'peninsular',  label: 'tú · vosotros', tag: 'ES',      gloss: 'peninsular',  ex: 'vosotros tenéis',        ariaLabel: 'Seleccionar dialecto peninsular (tú y vosotros)', onSelect: () => selectDialect('peninsular') },
+          { id: 'both',        label: 'todos',          tag: 'MIX',     gloss: 'sin filtro',  ex: 'tú · vos · vosotros',   ariaLabel: 'Seleccionar todos los dialectos', onSelect: () => selectDialect('both') },
         ],
       }
 
@@ -170,13 +298,13 @@ function buildStep(step, settings, handlers) {
         n: '03', kicker: 'NIVEL',
         prompt: 'Tu nivel es...', aux: 'Elegí un tramo CEFR o dejá que el test te ubique.',
         options: [
-          { id: 'A1',   label: 'A1',           tag: 'PRINCIPIANTE', gloss: 'acceso',               ex: 'presente',               onSelect: () => selectLevel('A1') },
-          { id: 'A2',   label: 'A2',           tag: 'ELEMENTAL',    gloss: 'base',                  ex: 'pretéritos · futuro',    onSelect: () => selectLevel('A2') },
-          { id: 'B1',   label: 'B1',           tag: 'INTERMEDIO',   gloss: 'tracción',              ex: 'condicional · perfectos',onSelect: () => selectLevel('B1') },
-          { id: 'B2',   label: 'B2',           tag: 'INTERMEDIO+',  gloss: 'precisión',             ex: 'subjuntivo imperfecto',  onSelect: () => selectLevel('B2') },
-          { id: 'C1',   label: 'C1',           tag: 'AVANZADO',     gloss: 'matiz',                 ex: 'discurso fluido',        onSelect: () => selectLevel('C1') },
-          { id: 'C2',   label: 'C2',           tag: 'SUPERIOR',     gloss: 'dominio',               ex: 'nativo completo',        onSelect: () => selectLevel('C2') },
-          ...(onStartLevelTest ? [{ id: 'test', label: 'test de nivel', tag: 'AUTO', gloss: 'diagnóstico adaptativo', ex: '5 min · te ubica', onSelect: onStartLevelTest }] : []),
+          { id: 'A1',   label: 'A1',           tag: 'PRINCIPIANTE', gloss: 'acceso',               ex: 'presente',               ariaLabel: 'Seleccionar nivel A1', onSelect: () => selectLevel('A1') },
+          { id: 'A2',   label: 'A2',           tag: 'ELEMENTAL',    gloss: 'base',                  ex: 'pretéritos · futuro',    ariaLabel: 'Seleccionar nivel A2', onSelect: () => selectLevel('A2') },
+          { id: 'B1',   label: 'B1',           tag: 'INTERMEDIO',   gloss: 'tracción',              ex: 'condicional · perfectos',ariaLabel: 'Seleccionar nivel B1', onSelect: () => selectLevel('B1') },
+          { id: 'B2',   label: 'B2',           tag: 'INTERMEDIO+',  gloss: 'precisión',             ex: 'subjuntivo imperfecto',  ariaLabel: 'Seleccionar nivel B2', onSelect: () => selectLevel('B2') },
+          { id: 'C1',   label: 'C1',           tag: 'AVANZADO',     gloss: 'matiz',                 ex: 'discurso fluido',        ariaLabel: 'Seleccionar nivel C1', onSelect: () => selectLevel('C1') },
+          { id: 'C2',   label: 'C2',           tag: 'SUPERIOR',     gloss: 'dominio',               ex: 'nativo completo',        ariaLabel: 'Seleccionar nivel C2', onSelect: () => selectLevel('C2') },
+          ...(onStartLevelTest ? [{ id: 'test', label: 'test de nivel', tag: 'AUTO', gloss: 'diagnóstico adaptativo', ex: '5 min · te ubica', ariaLabel: 'Test de nivel adaptativo', onSelect: onStartLevelTest }] : []),
         ],
       }
 
@@ -199,11 +327,19 @@ function buildStep(step, settings, handlers) {
         }
       }
       if (settings.practiceMode === 'theme') {
+        const kickerMap = {
+          futuro: 'FUTURO',
+          condicional: 'CONDICIONAL',
+          nonfinite: 'FORMAS NO FINITAS'
+        }
         return {
-          n: '05', kicker: 'TEMA',
+          n: '05',
+          kicker: themeSubMenu ? (kickerMap[themeSubMenu] || themeSubMenu.toUpperCase()) : 'TEMA',
           prompt: 'Trabajás...',
-          aux: 'Indicativo directo. Subjuntivo e imperativo abren su propio menú.',
-          options: buildThemeTopicOptions({ selectMood, selectTense }),
+          aux: themeSubMenu
+            ? 'Elegí un tiempo para seguir con el tipo de verbos.'
+            : 'Indicativo directo. Futuro, condicional y no finitas abren submenú.',
+          options: buildThemeTopicOptions({ selectMood, selectTense, themeSubMenu, setThemeSubMenu }),
         }
       }
       const availMoods = settings.level && settings.practiceMode === 'specific'
@@ -386,9 +522,18 @@ function StepView({ stepConfig, animKey, onSelect }) {
               <div
                 key={opt.id ?? i}
                 className="vo-option"
+                role="button"
+                tabIndex={0}
+                aria-label={opt.ariaLabel || opt.label}
                 style={{ paddingLeft: active ? 76 : 52, paddingTop: 14, paddingBottom: 14 }}
                 onMouseEnter={() => setFocusIdx(i)}
                 onClick={() => onSelect(opt)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onSelect(opt)
+                  }
+                }}
               >
                 {/* Number box */}
                 <div className="vo-option-num" style={{ color: active ? ACCENT : INK3 }}>
@@ -561,6 +706,7 @@ function OnboardingFlow({
   const [lastPlacementResult, setLastPlacementResult]   = useState(null)
   const [reportSaved, setReportSaved]                   = useState(false)
   const [animKey, setAnimKey]                           = useState(0)
+  const [themeSubMenu, setThemeSubMenu]                 = useState(null)
 
   // Bump animKey on step change to trigger animations
   const prevStep = useRef(onboardingStep)
@@ -568,6 +714,7 @@ function OnboardingFlow({
     if (onboardingStep !== prevStep.current) {
       prevStep.current = onboardingStep
       setAnimKey(k => k + 1)
+      setThemeSubMenu(null)
     }
   }, [onboardingStep])
 
@@ -596,8 +743,13 @@ function OnboardingFlow({
   }, [lastPlacementResult, settings])
 
   const handleBack = useCallback(() => {
-    try { window.history.back() } catch { /* ignore */ }
-  }, [])
+    if (onboardingStep === 5 && themeSubMenu) {
+      setThemeSubMenu(null)
+      setAnimKey(k => k + 1)
+    } else {
+      try { window.history.back() } catch { /* ignore */ }
+    }
+  }, [onboardingStep, themeSubMenu])
 
   const handleLogoClick = useCallback(() => {
     handleHome(setCurrentMode)
@@ -632,11 +784,13 @@ function OnboardingFlow({
     onStartLevelTest: handleStartLevelTest,
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood,
+    themeSubMenu,
+    setThemeSubMenu,
   }), [
     selectDialect, selectLevel, selectPracticeMode, selectMood, selectTense,
     selectVerbType, selectFamily, goToLevelDetails, onStartPractice, onGoToProgress,
     onStartLearningNewTense, handleStartLevelTest, getAvailableMoodsForLevel,
-    getAvailableTensesForLevelAndMood,
+    getAvailableTensesForLevelAndMood, themeSubMenu, setThemeSubMenu,
   ])
 
   const stepConfig = useMemo(
