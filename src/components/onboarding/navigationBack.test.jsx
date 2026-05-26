@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, /* expect, */ it } from 'vitest'
+import { afterEach, beforeEach, describe, it } from 'vitest'
 import { render, screen, act, waitFor } from '@testing-library/react'
 import React from 'react'
 import AppRouter from '../../components/AppRouter.jsx'
@@ -48,16 +48,16 @@ const chooseDialectVos = async (user) => {
 }
 
 const goToPorTema = async (user) => {
-  const porTema = await screen.findByText(/TEMAS/i)
+  const porTema = await screen.findByText(/practicar por tema/i)
   await act(async () => {
     await user.click(porTema)
   })
 }
 
-const chooseMood = async (user, moodLabel) => {
-  const moodBtn = await screen.findByRole('button', { name: new RegExp(moodLabel, 'i') })
+const goToPorNivel = async (user) => {
+  const porNivel = await screen.findByRole('button', { name: /practicar por nivel/i })
   await act(async () => {
-    await user.click(moodBtn)
+    await user.click(porNivel)
   })
 }
 
@@ -72,7 +72,7 @@ describe('Navegación y Back (flujo actual)', () => {
   // Simplified mock user for testing without clipboard issues
   const user = {
     click: async (element) => {
-      act(() => {
+      await act(async () => {
         element.click()
       })
     }
@@ -86,46 +86,53 @@ describe('Navegación y Back (flujo actual)', () => {
     await resetSettings()
   })
 
-  it('UI Back desde tiempos (paso 6) vuelve a modos (paso 5) en Por tema', async () => {
+  it('UI Back desde subjuntivos (paso 6) vuelve a temas (paso 5) en Por tema', async () => {
     render(<AppRouter />)
 
     await chooseDialectVos(user)
     await goToPorTema(user)
 
-    // Paso 5: elegir modo
-    await chooseMood(user, 'Indicativo')
+    // Paso 5: elegir subjuntivos → va a paso 6 (selección de tiempos subjuntivos)
+    const subjBtn = await screen.findByRole('button', { name: /subjuntivos/i })
+    await act(async () => {
+      await user.click(subjBtn)
+    })
 
-    // Paso 6: ver tiempos (ej. Presente)
-    await screen.findByRole('button', { name: /Presente/i })
+    // Paso 6: ver tiempos del subjuntivo (ej. Imperfecto)
+    await screen.findByRole('button', { name: /Imperfecto/i })
 
-    // Back → vuelve a modos (debe aparecer "Indicativo")
+    // Back → vuelve a paso 5 (debe aparecer "subjuntivos")
     await clickBack(user)
-    await screen.findByRole('button', { name: /Indicativo/i })
+    await screen.findByRole('button', { name: /subjuntivos/i })
   })
 
-  it('Hardware Back desde tiempos (paso 6) vuelve a modos (paso 5)', async () => {
+  it('Hardware Back desde subjuntivos (paso 6) vuelve a temas (paso 5)', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
     await goToPorTema(user)
-    await chooseMood(user, 'Indicativo')
-    await screen.findByRole('button', { name: /Presente/i })
+
+    // Paso 5: elegir subjuntivos → paso 6
+    const subjBtn = await screen.findByRole('button', { name: /subjuntivos/i })
+    await act(async () => {
+      await user.click(subjBtn)
+    })
+    await screen.findByRole('button', { name: /Imperfecto/i })
 
     // Simular hardware back
     await act(async () => {
       window.history.back()
     })
 
-    await screen.findByRole('button', { name: /Indicativo/i })
+    await screen.findByRole('button', { name: /subjuntivos/i })
   })
 
-  it('UI Back desde tipo de verbo (paso 7) vuelve a tiempos (paso 6)', async () => {
+  it('UI Back desde tipo de verbo (paso 7) vuelve a temas (paso 5)', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
     await goToPorTema(user)
-    await chooseMood(user, 'Indicativo')
 
-    // Paso 6: elegir un tiempo para ir al paso 7
-    const presente = await screen.findByRole('button', { name: /Presente/i })
+    // Paso 5: elegir un tiempo directo de indicativo (ej. presente) → va a paso 7
+    const presente = await screen.findByRole('button', { name: /^presente$/i })
     await act(async () => {
       await user.click(presente)
     })
@@ -133,85 +140,87 @@ describe('Navegación y Back (flujo actual)', () => {
     // Paso 7: opciones de tipo de verbo
     await screen.findByRole('button', { name: /Seleccionar solo verbos irregulares/i })
 
-    // Back → vuelve a tiempos (debe volver a ver "Presente")
+    // Back → vuelve a temas (debe volver a ver "presente")
     await clickBack(user)
-    await screen.findByRole('button', { name: /Presente/i })
+    await screen.findByRole('button', { name: /^presente$/i })
   })
 
   it('Por nivel: Back desde paso 3 (niveles) vuelve a paso 2 (menú)', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
 
-    // Paso 2: menú principal (Por nivel / Por tema)
-    const porNivel = await screen.findByText(/NIVELES/i)
-    await act(async () => {
-      await user.click(porNivel)
-    })
+    // Paso 2: menú principal → Por nivel
+    await goToPorNivel(user)
 
     // Paso 3: niveles (A1..C2)
     await screen.findByRole('button', { name: /Seleccionar nivel A1/i })
 
-    // Back → paso 2 (main menu with level selector still active)
+    // Back → paso 2 (main menu)
     await clickBack(user)
-    await screen.findByText(/Volver al menú: Por tema \/ Por nivel/i)
+    await screen.findByRole('button', { name: /practicar por nivel/i })
   })
 
-  it('Por nivel: Back desde paso 4 (modo práctica) vuelve a paso 2', async () => {
+  it('Por nivel: Back desde paso 4 (modo práctica) vuelve a paso 3', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
-    const porNivel = await screen.findByText(/NIVELES/i)
-    await act(async () => {
-      await user.click(porNivel)
-    })
+    await goToPorNivel(user)
+
     const nivelC1 = await screen.findByRole('button', { name: /Seleccionar nivel C1/i })
     await act(async () => {
       await user.click(nivelC1)
     })
 
-    // Paso 4: práctica mixta/específica
-    await screen.findByText(/MIXTA/i)
+    // Paso 4: práctica mezclada / bloque puntual
+    await screen.findByRole('button', { name: /todo mezclado/i })
 
-    // Back → paso 2 (level selection)
+    // Back → paso 3 (level selection)
     await clickBack(user)
-    await screen.findByText(/A1/i)
+    await screen.findByRole('button', { name: /Seleccionar nivel A1/i })
   })
 
   it('Por nivel (specific): Back desde paso 5 (mood sin elegir) vuelve a paso 4', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
-    const porNivel = await screen.findByText(/NIVELES/i)
-    await user.click(porNivel)
+    await goToPorNivel(user)
+
     const nivelB1 = await screen.findByRole('button', { name: /Seleccionar nivel B1/i })
     await user.click(nivelB1)
 
-    // Paso 4: elegir "Formas Específicas"
-    const especificas = await screen.findByText(/ESPECÍFICA/i)
+    // Paso 4: elegir "un bloque puntual"
+    const especificas = await screen.findByRole('button', { name: /un bloque puntual/i })
     await user.click(especificas)
 
     // Paso 5: selección de modo (Indicativo/Subjuntivo...)
-    await screen.findByRole('button', { name: /Indicativo/i })
+    await screen.findByRole('button', { name: /indicativo/i })
 
     // Back → paso 4
     await clickBack(user)
-    await screen.findByText(/MIXTA/i)
+    await screen.findByRole('button', { name: /todo mezclado/i })
   })
 
-  it('Por tema (no finitas): Back desde paso 6 (Gerundio sin tiempo elegido) vuelve a paso 5 (moods)', async () => {
+  it('Por tema (no finitas): submenu abre y Back desde paso 7 vuelve a paso 5', async () => {
     render(<AppRouter />)
     await chooseDialectVos(user)
     await goToPorTema(user)
 
-    // Paso 5: elegir "Formas no conjugadas"
-    const noConjugadas = await screen.findByRole('button', { name: /Formas no conjugadas/i })
-    await user.click(noConjugadas)
+    // Paso 5: elegir "formas no finitas" → activa el submenú
+    const noFinitas = await screen.findByRole('button', { name: /formas no finitas/i })
+    await act(async () => {
+      await user.click(noFinitas)
+    })
 
-    // Paso 6: elegir "Gerundio"
-    const gerundio = await screen.findByRole('button', { name: /Gerundio/i })
-    await user.click(gerundio)
+    // Submenú de formas no finitas: elegir "gerundio"
+    const gerundio = await screen.findByRole('button', { name: /gerundio/i })
+    await act(async () => {
+      await user.click(gerundio)
+    })
 
-    // Back → vuelve a paso 5 (debe aparecer "Formas no conjugadas")
+    // Paso 7: tipo de verbo (debería mostrar "regulares")
+    await screen.findByRole('button', { name: /Seleccionar solo verbos regulares/i })
+
+    // Back → vuelve a paso 5 (debe aparecer "formas no finitas" en el menú raíz)
     await clickBack(user)
-    await screen.findByRole('button', { name: /Formas no conjugadas/i })
+    await screen.findByRole('button', { name: /formas no finitas/i })
   })
 
   it('UI Atrás retrocede exactamente un paso en el historial de onboarding', async () => {
@@ -219,9 +228,14 @@ describe('Navegación y Back (flujo actual)', () => {
 
     await chooseDialectVos(user)
     await goToPorTema(user)
-    await chooseMood(user, 'Indicativo')
 
-    await screen.findByRole('button', { name: /Presente/i })
+    // Paso 5: elegir subjuntivos → paso 6
+    const subjBtn = await screen.findByRole('button', { name: /subjuntivos/i })
+    await act(async () => {
+      await user.click(subjBtn)
+    })
+
+    await screen.findByRole('button', { name: /Imperfecto/i })
     await waitFor(() => {
       expect(router.getCurrentRoute().step).toBe(6)
     })
@@ -234,7 +248,7 @@ describe('Navegación y Back (flujo actual)', () => {
       expect(router.getCurrentRoute().step).toBe(previous - 1)
     })
 
-    await screen.findByRole('button', { name: /Indicativo/i })
+    await screen.findByRole('button', { name: /subjuntivos/i })
   })
 
   it('Evento popstate retrocede exactamente un paso en el historial de onboarding', async () => {
@@ -242,9 +256,14 @@ describe('Navegación y Back (flujo actual)', () => {
 
     await chooseDialectVos(user)
     await goToPorTema(user)
-    await chooseMood(user, 'Indicativo')
 
-    await screen.findByRole('button', { name: /Presente/i })
+    // Paso 5: elegir subjuntivos → paso 6
+    const subjBtn = await screen.findByRole('button', { name: /subjuntivos/i })
+    await act(async () => {
+      await user.click(subjBtn)
+    })
+
+    await screen.findByRole('button', { name: /Imperfecto/i })
     await waitFor(() => {
       expect(router.getCurrentRoute().step).toBe(6)
     })
@@ -262,6 +281,6 @@ describe('Navegación y Back (flujo actual)', () => {
       expect(router.getCurrentRoute().step).toBe(previous - 1)
     })
 
-    await screen.findByRole('button', { name: /Indicativo/i })
+    await screen.findByRole('button', { name: /subjuntivos/i })
   })
 })
