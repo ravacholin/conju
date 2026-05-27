@@ -197,6 +197,139 @@ function buildThemeTopicOptions({ selectMood, selectTense, themeSubMenu, setThem
   ]
 }
 
+/* ── Level-filtered topic options (same grouping as "por tema" but level-gated) ── */
+function buildLevelTopicOptions({ level, selectMood, selectTense, themeSubMenu, setThemeSubMenu, getAvailableTensesForLevelAndMood }) {
+  const indicativeTenses   = getAvailableTensesForLevelAndMood(level, 'indicative')
+  const subjunctiveTenses  = getAvailableTensesForLevelAndMood(level, 'subjunctive')
+  const imperativeTenses   = getAvailableTensesForLevelAndMood(level, 'imperative')
+  const conditionalTenses  = getAvailableTensesForLevelAndMood(level, 'conditional')
+  const nonfiniteTenses    = getAvailableTensesForLevelAndMood(level, 'nonfinite')
+
+  const pick = (mood, tense) => () => {
+    selectMood(mood, { navigate: false })
+    selectTense(tense)
+  }
+
+  // ── Submenús activos ──
+  if (themeSubMenu === 'futuro') {
+    const futureTenses = indicativeTenses.filter(t => t === 'fut' || t === 'futPerf')
+    return [
+      { id: 'indicative-fut',     label: 'futuro simple',    tag: 'FUT', gloss: 'indicativo', ex: 'yo hablaré',        onSelect: pick('indicative', 'fut') },
+      { id: 'indicative-futPerf', label: 'futuro compuesto', tag: 'FUT', gloss: 'indicativo', ex: 'yo habré hablado',  onSelect: pick('indicative', 'futPerf') },
+    ].filter(o => futureTenses.includes(o.id.split('-')[1]))
+  }
+
+  if (themeSubMenu === 'condicional') {
+    return [
+      { id: 'conditional-cond',     label: 'condicional simple',    tag: 'COND', gloss: 'condicional', ex: 'yo hablaría',        onSelect: pick('conditional', 'cond') },
+      { id: 'conditional-condPerf', label: 'condicional compuesto', tag: 'COND', gloss: 'condicional', ex: 'yo habría hablado',  onSelect: pick('conditional', 'condPerf') },
+    ].filter(o => conditionalTenses.includes(o.id.split('-')[1]))
+  }
+
+  if (themeSubMenu === 'nonfinite') {
+    const nfEx = { ger: 'hablando', part: 'hablado', nonfiniteMixed: 'hablando / hablado' }
+    return nonfiniteTenses.map(t => ({
+      id: `nonfinite-${t}`,
+      label: getTenseLabel(t).toLowerCase(),
+      tag: 'NF',
+      gloss: 'no finita',
+      ex: nfEx[t] || '',
+      onSelect: pick('nonfinite', t),
+    }))
+  }
+
+  if (themeSubMenu === 'subjuntivo') {
+    const subjEx = { subjPres: 'hable', subjImpf: 'hablara', subjPerf: 'haya hablado', subjPlusc: 'hubiera hablado' }
+    return subjunctiveTenses.map(t => ({
+      id: `subjunctive-${t}`,
+      label: getTenseLabel(t).toLowerCase(),
+      tag: 'SUB',
+      gloss: 'subjuntivo',
+      ex: subjEx[t] || '',
+      onSelect: pick('subjunctive', t),
+    }))
+  }
+
+  if (themeSubMenu === 'imperativo') {
+    const impEx = { impAff: 'habla', impNeg: 'no hables' }
+    return imperativeTenses
+      .filter(t => t === 'impAff' || t === 'impNeg')
+      .map(t => ({
+        id: `imperative-${t}`,
+        label: getTenseLabel(t).toLowerCase(),
+        tag: 'IMP',
+        gloss: 'imperativo',
+        ex: impEx[t] || '',
+        onSelect: pick('imperative', t),
+      }))
+  }
+
+  // ── Menú raíz ──
+  const options = []
+
+  // Indicativos directos (sin futuro)
+  const indEx = {
+    pres: 'yo hablo', pretIndef: 'yo hablé', impf: 'yo hablaba',
+    pretPerf: 'he hablado', plusc: 'yo había hablado',
+  }
+  indicativeTenses
+    .filter(t => t !== 'fut' && t !== 'futPerf')
+    .forEach(t => options.push({
+      id: `indicative-${t}`,
+      label: getTenseLabel(t).toLowerCase(),
+      tag: 'IND',
+      gloss: 'indicativo',
+      ex: indEx[t] || '',
+      onSelect: pick('indicative', t),
+    }))
+
+  // Futuro (submenú si hay más de uno, directo si solo uno)
+  const futureTenses = indicativeTenses.filter(t => t === 'fut' || t === 'futPerf')
+  if (futureTenses.length > 1) {
+    options.push({ id: 'futuro-menu', label: 'futuro', tag: 'FUT', gloss: 'elegir tiempo', ex: 'simple · compuesto', onSelect: () => setThemeSubMenu('futuro') })
+  } else if (futureTenses.length === 1) {
+    options.push({ id: `indicative-${futureTenses[0]}`, label: getTenseLabel(futureTenses[0]).toLowerCase(), tag: 'FUT', gloss: 'indicativo', ex: 'yo hablaré', onSelect: pick('indicative', futureTenses[0]) })
+  }
+
+  // Condicional (submenú si hay más de uno, directo si solo uno)
+  if (conditionalTenses.length > 1) {
+    options.push({ id: 'conditional-menu', label: 'condicional', tag: 'COND', gloss: 'elegir tiempo', ex: 'simple · compuesto', onSelect: () => setThemeSubMenu('condicional') })
+  } else if (conditionalTenses.length === 1) {
+    options.push({ id: `conditional-${conditionalTenses[0]}`, label: getTenseLabel(conditionalTenses[0]).toLowerCase(), tag: 'COND', gloss: 'condicional', ex: 'yo hablaría', onSelect: pick('conditional', conditionalTenses[0]) })
+  }
+
+  // Formas no finitas (submenú si hay más de una forma "real", directo si solo una)
+  const nfReal = nonfiniteTenses.filter(t => t !== 'nonfiniteMixed')
+  if (nfReal.length > 1) {
+    options.push({ id: 'nonfinite-menu', label: 'formas no finitas', tag: 'NF', gloss: 'elegir forma', ex: 'gerundio · participio', onSelect: () => setThemeSubMenu('nonfinite') })
+  } else if (nonfiniteTenses.length > 0) {
+    const t = nonfiniteTenses[0]
+    const nfEx = { ger: 'hablando', part: 'hablado', nonfiniteMixed: 'hablando / hablado' }
+    options.push({ id: `nonfinite-${t}`, label: getTenseLabel(t).toLowerCase(), tag: 'NF', gloss: 'no finita', ex: nfEx[t] || '', onSelect: pick('nonfinite', t) })
+  }
+
+  // Subjuntivos (submenú si hay más de uno, directo si solo uno)
+  if (subjunctiveTenses.length > 1) {
+    options.push({ id: 'subjuntivo-menu', label: 'subjuntivos', tag: 'SUB', gloss: 'elegir tiempo', ex: 'presente · imperfecto', onSelect: () => setThemeSubMenu('subjuntivo') })
+  } else if (subjunctiveTenses.length === 1) {
+    const subjEx = { subjPres: 'hable', subjImpf: 'hablara', subjPerf: 'haya hablado', subjPlusc: 'hubiera hablado' }
+    const t = subjunctiveTenses[0]
+    options.push({ id: `subjunctive-${t}`, label: getTenseLabel(t).toLowerCase(), tag: 'SUB', gloss: 'subjuntivo', ex: subjEx[t] || '', onSelect: pick('subjunctive', t) })
+  }
+
+  // Imperativo (submenú si hay más de uno aff/neg, directo si solo uno)
+  const impFiltered = imperativeTenses.filter(t => t === 'impAff' || t === 'impNeg')
+  if (impFiltered.length > 1) {
+    options.push({ id: 'imperativo-menu', label: 'imperativo', tag: 'IMP', gloss: 'afirmativo o negativo', ex: 'habla · no hables', onSelect: () => setThemeSubMenu('imperativo') })
+  } else if (impFiltered.length === 1) {
+    const impEx = { impAff: 'habla', impNeg: 'no hables' }
+    const t = impFiltered[0]
+    options.push({ id: `imperative-${t}`, label: getTenseLabel(t).toLowerCase(), tag: 'IMP', gloss: 'imperativo', ex: impEx[t] || '', onSelect: pick('imperative', t) })
+  }
+
+  return options
+}
+
 const FALLBACK_FAMILIES = [
   { id: 'G_VERBS',   name: 'Irregulares en YO',  description: 'tener, poner, salir, conocer, vencer' },
   { id: 'UIR_Y',     name: '-uir (inserción y)',  description: 'construir, huir' },
@@ -342,13 +475,24 @@ function buildStep(step, settings, handlers) {
           options: buildThemeTopicOptions({ selectMood, selectTense, themeSubMenu, setThemeSubMenu }),
         }
       }
-      const availMoods = settings.level && settings.practiceMode === 'specific'
-        ? getAvailableMoodsForLevel(settings.level).map(id => MOOD_OPTS.find(m => m.id === id)).filter(Boolean)
-        : MOOD_OPTS
+      // Specific mode (por nivel): themed grouped menu filtered by level — no mode selection
+      const kickerMapLevel = {
+        futuro: 'FUTURO', condicional: 'CONDICIONAL',
+        nonfinite: 'FORMAS NO FINITAS', subjuntivo: 'SUBJUNTIVOS', imperativo: 'IMPERATIVO',
+      }
       return {
-        n: '05', kicker: 'MODO VERBAL',
-        prompt: 'Trabajás...', aux: 'Segmentá la práctica por bloque verbal.',
-        options: availMoods.map(o => ({ ...o, onSelect: () => selectMood(o.id) })),
+        n: '05',
+        kicker: themeSubMenu ? (kickerMapLevel[themeSubMenu] || themeSubMenu.toUpperCase()) : 'BLOQUE',
+        prompt: 'Trabajás...',
+        aux: themeSubMenu
+          ? 'Elegí un tiempo para seguir con el tipo de verbos.'
+          : 'Elegí un bloque para practicar.',
+        options: buildLevelTopicOptions({
+          level: settings.level,
+          selectMood, selectTense,
+          themeSubMenu, setThemeSubMenu,
+          getAvailableTensesForLevelAndMood,
+        }),
       }
     }
 
@@ -362,6 +506,8 @@ function buildStep(step, settings, handlers) {
       }
       if (!settings.specificMood) return null
       if (settings.practiceMode === 'theme' && !THEME_ROOT_MOOD_OPTS.has(settings.specificMood)) return null
+      // 'specific' mode: tense was already chosen at step 5 — skip step 6
+      if (settings.practiceMode === 'specific') return null
       const tenses = settings.level
         ? getAvailableTensesForLevelAndMood(settings.level, settings.specificMood)
         : getTensesForMood(settings.specificMood)

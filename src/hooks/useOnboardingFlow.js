@@ -49,7 +49,11 @@ const computePreviousStep = (currentStep, settingsSnapshot) => {
     case 8:
       return 7
     case 7:
-      if (settingsSnapshot?.specificTense) return 6
+      if (settingsSnapshot?.specificTense) {
+        // 'specific' mode: tense was chosen at step 5 (no step 6 used)
+        if (settingsSnapshot?.practiceMode === 'specific') return 5
+        return 6 // 'theme' mode still uses step 6 for subjunctive/imperative
+      }
       if (settingsSnapshot?.specificMood) return 5
       if (settingsSnapshot?.level) return 4
       return 2
