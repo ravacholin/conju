@@ -1,4 +1,12 @@
 /* ── VERB/OS shell overrides for NarrativeIntroduction ── */
+.narrative-introduction .vo-right {
+  /* Override justify-content: center from OnboardingFlow.css.
+     When content overflows a centered flex container, browsers clip the top
+     and anchor scrolling to center — making the top of the panel unreachable.
+     flex-start ensures overflow-y: auto scrolls from the top as expected. */
+  justify-content: flex-start;
+}
+
 .ni-right-panel {
   gap: 0;
   justify-content: flex-start !important;
