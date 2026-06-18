@@ -164,7 +164,7 @@
 }
 
 .ipa-notation span {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-size: 1.2em;
   background: #222;
   padding: 6px 12px;
@@ -201,7 +201,7 @@
 
 .record-btn {
   background: #222;
-  border: 1px solid #dc2626;
+  border: 1px solid var(--accent-error);
   border-radius: 6px;
   color: white;
   font-size: 1.2em;
@@ -218,7 +218,7 @@
 
 .record-btn:hover:not(:disabled) {
   background: #333;
-  border-color: #ef4444;
+  border-color: var(--accent-error);
   transform: translateY(-1px);
 }
 
@@ -229,8 +229,8 @@
 }
 
 .record-btn.recording {
-  background: #dc2626;
-  border-color: #dc2626;
+  background: var(--accent-error);
+  border-color: var(--accent-error);
   animation: pulse-recording 1.5s infinite;
 }
 
@@ -246,7 +246,7 @@
 .mic-icon {
   display: inline-block;
   font-size: 18px;
-  color: #dc2626;
+  color: var(--accent-error);
   opacity: 0.9;
 }
 
@@ -305,12 +305,12 @@
 }
 
 .recording-result.needs-work {
-  border-left-color: #ef4444;
+  border-left-color: var(--accent-error);
   background: rgba(239, 68, 68, 0.05);
 }
 
 .recording-result.error {
-  border-left-color: #dc2626;
+  border-left-color: var(--accent-error);
   background: rgba(220, 38, 38, 0.05);
 }
 
@@ -347,7 +347,7 @@
 }
 
 .recording-result.needs-work .score-number {
-  color: #ef4444;
+  color: var(--accent-error);
 }
 
 .score-label {
@@ -384,7 +384,7 @@
 }
 
 .recording-result.needs-work .accuracy-fill {
-  background: #ef4444;
+  background: var(--accent-error);
 }
 
 .feedback {
@@ -633,7 +633,7 @@
 }
 
 .compatibility-error h3 {
-  color: #ef4444;
+  color: var(--accent-error);
   margin-bottom: 20px;
   font-size: 1.3em;
   font-weight: 600;

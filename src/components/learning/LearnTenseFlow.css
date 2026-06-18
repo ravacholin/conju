@@ -127,7 +127,7 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 /* Tense sections */
@@ -157,7 +157,7 @@
 .learn-flow .learning-option-card.selected {
   background: rgba(255, 255, 255, 0.93);
   border-color: #ffffff;
-  box-shadow: 10px 10px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Selected state for tense cards */
@@ -255,7 +255,7 @@
   font-size: 0.9rem;
   min-width: 140px;
   justify-content: center;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   color: #888;
 }
 

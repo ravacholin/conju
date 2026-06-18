@@ -61,7 +61,7 @@
 
 .expert-profile:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 

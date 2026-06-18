@@ -11,36 +11,58 @@
 }
 
 :root {
-  /* Brutalist Dark Palette */
-  --bg: #000000;
-  --panel: #000000;
-  --text: #ffffff;
-  --muted: #888888;
-  --muted-2: #555555;
-  --border: #333333;
-  --border-active: #ffffff;
+  /* Minimalist Monochrome Dark Palette */
+  /* Surfaces — near-black (not pure) for an elegant, soft depth */
+  --bg: #0a0a0a;
+  --bg-raised: #111111;
+  --bg-raised-2: #161616;
+  --panel: #111111;
 
-  /* Accents - Minimal usage */
-  --accent-primary: #ffffff;
-  --accent-success: #00ff00;
-  --accent-error: #ff0000;
-  --accent-warning: #ffaa00;
-  --accent-orange: #ff5722;
+  /* Text ramp */
+  --text: #f2f2f0;
+  --text-secondary: #b8b8b4;
+  --muted: #8a8a86;
+  --muted-2: #5c5c58;
 
-  /* Mastery Levels */
-  --mastery-high: #5ee6a5;
-  --mastery-medium: #ffd166;
-  --mastery-low: #ff6b6b;
-  --mastery-none: #555555;
+  /* Borders — thin, subtle, multi-step */
+  --border: #222222;
+  --border-subtle: #1a1a1a;
+  --border-strong: #333333;
+  --border-active: #f2f2f0;
 
-  /* UI Elements */
-  --focus-ring: #ffffff;
-  --shadow-hard: 6px 6px 0px 0px #ffffff;
-  --shadow-hard-sm: 3px 3px 0px 0px #ffffff;
+  /* "Accent" = contrast, not hue (monochrome) */
+  --accent-primary: #f2f2f0;
+  --accent-orange: #f2f2f0; /* retargeted to white → removes orange app-wide via var */
 
-  /* Typography */
+  /* Functional state colors — desaturated, kept for usability */
+  --accent-success: #7fb89a;
+  --accent-error: #c97b7b;
+  --accent-warning: #c9b07b;
+
+  /* Mastery — luminance ramp (legible in grayscale) */
+  --mastery-high: #d8d8d4;
+  --mastery-medium: #8a8a86;
+  --mastery-low: #4a4a46;
+  --mastery-none: #242422;
+
+  /* Focus / shadows — soft, no brutalist offset */
+  --focus-ring: #f2f2f0;
+  --shadow-hard: 0 1px 0 0 var(--border);
+  --shadow-hard-sm: 0 1px 0 0 var(--border);
+  --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+
+  /* Typography — serif display + clean sans (mono collapsed to sans) */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'Courier New', monospace;
+  --font-mono: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -53,12 +75,6 @@ body {
   text-rendering: optimizeLegibility;
   background-color: var(--bg);
   color: var(--text);
-  /* Brutalist grid */
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px;
-  background-position: center top;
 }
 
 #root {
@@ -67,7 +83,7 @@ body {
   background-color: transparent;
 }
 
-/* Global Brutalist Enforcements */
+/* Subtle, near-sharp corners for a refined minimalist feel */
 button,
 input,
 select,
@@ -79,7 +95,7 @@ textarea,
 .dialog,
 .modal,
 .toast {
-  border-radius: 0 !important;
+  border-radius: 2px;
 }
 
 h1,
@@ -88,7 +104,8 @@ h3,
 h4,
 h5,
 h6 {
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
-  font-weight: 800;
+  font-family: var(--font-display);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 500;
 }

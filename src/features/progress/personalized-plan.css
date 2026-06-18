@@ -42,7 +42,7 @@
   background: transparent;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .plan-refresh:active {
@@ -127,7 +127,7 @@
 .plan-goal-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .plan-goal-card:active {
@@ -145,10 +145,10 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
-  color: #5ee6a5;
+  color: var(--accent-success);
   background: transparent;
   padding: 0.1rem 0.4rem;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -187,7 +187,7 @@
 .plan-week:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .plan-week:active {
@@ -244,7 +244,7 @@
 .plan-session-block:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .plan-session-block:active {
@@ -306,7 +306,7 @@
 
 .plan-progress-fill-compact {
   height: 100%;
-  background: #5ee6a5;
+  background: var(--accent-success);
   transition: width 0.4s ease;
 }
 

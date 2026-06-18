@@ -16,10 +16,10 @@ import './NarrativeIntroduction.css';
 import '../onboarding/OnboardingFlow.css';
 import { useSettings } from '../../state/settings.js';
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
 import { LEARNING_IRREGULAR_FAMILIES } from '../../lib/data/learningIrregularFamilies.js';
 import { highlightStemVowel } from './highlightHelpers.js';
 
@@ -945,9 +945,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       <div className="verbos-onboarding">
         <div className="vo-grid" aria-hidden="true" />
         <div className="vo-vignette" aria-hidden="true" />
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'JetBrains Mono, monospace' }}>
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'var(--font-ui)' }}>
           <p>No hay tiempo seleccionado.</p>
-          <button onClick={handleAnimatedBack} style={{ marginTop: 16, background: ACCENT, color: '#0c0c0c', border: 'none', padding: '12px 24px', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer' }}>
+          <button onClick={handleAnimatedBack} style={{ marginTop: 16, background: ACCENT, color: 'var(--bg)', border: 'none', padding: '12px 24px', fontFamily: 'var(--font-ui)', cursor: 'pointer' }}>
             ← volver
           </button>
         </div>
@@ -1406,7 +1406,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
           <span className="vo-breadcrumb-sep">/</span>
           <span className="vo-breadcrumb-val"> {tenseName.toLowerCase()}</span>
         </div>
-        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
+        <div style={{ fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
           INTRO · <span style={{ color: INK }}>01</span>
         </div>
       </header>

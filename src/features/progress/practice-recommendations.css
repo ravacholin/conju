@@ -49,13 +49,13 @@
   background: transparent;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .focus-mode-selector .mode-select:focus {
   outline: none;
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .focus-mode-selector .mode-select option {
@@ -103,12 +103,12 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   transition: all 0.15s ease;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .retry-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .retry-btn:active {
@@ -121,12 +121,12 @@
   text-align: center;
   padding: 2rem;
   background: transparent;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
 }
 
 .no-recommendations p {
   margin: 0.5rem 0;
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-weight: 700;
   line-height: 1.5;
   font-family: var(--font-mono);
@@ -156,7 +156,7 @@
 .recommendation-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .recommendation-card:active {
@@ -165,17 +165,17 @@
 }
 
 .recommendation-card.high {
-  border-left: 4px solid #ff6b6b;
+  border-left: 4px solid var(--accent-error);
   background: transparent;
 }
 
 .recommendation-card.medium {
-  border-left: 4px solid #ffd166;
+  border-left: 4px solid var(--accent-warning);
   background: transparent;
 }
 
 .recommendation-card.low {
-  border-left: 4px solid #5ee6a5;
+  border-left: 4px solid var(--accent-success);
   background: transparent;
 }
 
@@ -217,20 +217,20 @@
 
 .priority-badge.high {
   background: transparent;
-  border-color: #ff6b6b;
-  color: #ff6b6b;
+  border-color: var(--accent-error);
+  color: var(--accent-error);
 }
 
 .priority-badge.medium {
   background: transparent;
-  border-color: #ffd166;
-  color: #ffd166;
+  border-color: var(--accent-warning);
+  color: var(--accent-warning);
 }
 
 .priority-badge.low {
   background: transparent;
-  border-color: #5ee6a5;
-  color: #5ee6a5;
+  border-color: var(--accent-success);
+  color: var(--accent-success);
 }
 
 .recommendation-description {
@@ -260,12 +260,12 @@
   letter-spacing: 0.05em;
 }
 
-.difficulty-badge.green { background: transparent; border-color: #5ee6a5; color: #5ee6a5; }
-.difficulty-badge.orange { background: transparent; border-color: #ffd166; color: #ffd166; }
-.difficulty-badge.red { background: transparent; border-color: #ff6b6b; color: #ff6b6b; }
+.difficulty-badge.green { background: transparent; border-color: var(--accent-success); color: var(--accent-success); }
+.difficulty-badge.orange { background: transparent; border-color: var(--accent-warning); color: var(--accent-warning); }
+.difficulty-badge.red { background: transparent; border-color: var(--accent-error); color: var(--accent-error); }
 .difficulty-badge.blue { background: transparent; border-color: #fff; color: #fff; }
 .difficulty-badge.purple { background: transparent; border-color: var(--muted); color: var(--muted); }
-.difficulty-badge.teal { background: transparent; border-color: #5ee6a5; color: #5ee6a5; }
+.difficulty-badge.teal { background: transparent; border-color: var(--accent-success); color: var(--accent-success); }
 .difficulty-badge.gray { background: transparent; border-color: var(--muted-2); color: var(--muted-2); }
 
 .duration-badge {
@@ -346,7 +346,7 @@
   background: transparent;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .session-btn:active {
@@ -354,12 +354,12 @@
   box-shadow: none;
 }
 
-.session-btn.short { border-color: #5ee6a5; color: #5ee6a5; }
-.session-btn.short:hover { box-shadow: 3px 3px 0 #5ee6a5; }
-.session-btn.medium { border-color: #ffd166; color: #ffd166; }
-.session-btn.medium:hover { box-shadow: 3px 3px 0 #ffd166; }
-.session-btn.long { border-color: #ff6b6b; color: #ff6b6b; }
-.session-btn.long:hover { box-shadow: 3px 3px 0 #ff6b6b; }
+.session-btn.short { border-color: var(--accent-success); color: var(--accent-success); }
+.session-btn.short:hover { box-shadow: var(--shadow-soft); }
+.session-btn.medium { border-color: var(--accent-warning); color: var(--accent-warning); }
+.session-btn.medium:hover { box-shadow: var(--shadow-soft); }
+.session-btn.long { border-color: var(--accent-error); color: var(--accent-error); }
+.session-btn.long:hover { box-shadow: var(--shadow-soft); }
 
 .session-preview {
   background: transparent;
@@ -412,7 +412,7 @@
 .session-activity:hover {
   border-color: #333;
   transform: translate(-1px, -1px);
-  box-shadow: 2px 2px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .activity-icon {
@@ -449,12 +449,12 @@
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .start-session-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .start-session-btn:active {
@@ -489,7 +489,7 @@
   border-color: #fff;
   color: var(--text);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .refresh-btn:active {
@@ -601,7 +601,7 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.15s ease;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
   flex: 1;
   justify-content: center;
   min-width: 140px;
@@ -609,7 +609,7 @@
 
 .practice-now-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .practice-now-btn:active {
@@ -640,7 +640,7 @@
   border-color: #fff;
   color: var(--text);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .details-btn:active {
@@ -650,19 +650,19 @@
 
 /* Priority-based styling for practice buttons */
 .recommendation-card.high .practice-now-btn {
-  box-shadow: 4px 4px 0 #ff6b6b;
+  box-shadow: var(--shadow-soft);
 }
 
 .recommendation-card.high .practice-now-btn:hover {
-  box-shadow: 6px 6px 0 #ff6b6b;
+  box-shadow: var(--shadow-soft);
 }
 
 .recommendation-card.medium .practice-now-btn {
-  box-shadow: 4px 4px 0 #ffd166;
+  box-shadow: var(--shadow-soft);
 }
 
 .recommendation-card.medium .practice-now-btn:hover {
-  box-shadow: 6px 6px 0 #ffd166;
+  box-shadow: var(--shadow-soft);
 }
 
 .recommendation-card.medium .practice-now-btn .inline-icon {
@@ -677,9 +677,9 @@
 }
 
 .recommendation-card.high .practice-now-btn:focus {
-  outline-color: #ff6b6b;
+  outline-color: var(--accent-error);
 }
 
 .recommendation-card.medium .practice-now-btn:focus {
-  outline-color: #ffd166;
+  outline-color: var(--accent-warning);
 }

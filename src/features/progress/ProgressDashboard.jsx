@@ -22,10 +22,10 @@ import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('features:ProgressDashboard')
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
 
 function Crosshairs() {
   const positions = [
@@ -129,7 +129,7 @@ export default function ProgressDashboard({
         </header>
         <div className="vp-content vp-loading">
           <div className="vp-spinner" />
-          <p style={{ color: INK2, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          <p style={{ color: INK2, fontFamily: 'var(--font-ui)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
             {!systemReady ? 'Inicializando...' : 'Cargando progreso...'}
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function ProgressDashboard({
           </div>
         </header>
         <div className="vp-content vp-loading">
-          <p style={{ color: ACCENT, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
+          <p style={{ color: ACCENT, fontFamily: 'var(--font-ui)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 12 }}>
             ERROR
           </p>
           <p style={{ color: INK2, fontSize: 13, marginBottom: 20 }}>{error}</p>

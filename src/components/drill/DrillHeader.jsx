@@ -75,7 +75,7 @@ function DrillHeader({
         <div className="vd-logo" onClick={onHome} title="Ir al inicio">
           <div className="vd-logo-dot" />
           <span className="vd-logo-name">
-            VERB<span style={{ color: '#ff4d1c' }}>/</span>OS
+            VERB<span style={{ color: 'var(--accent-primary)' }}>/</span>OS
           </span>
         </div>
       </div>
@@ -88,7 +88,7 @@ function DrillHeader({
             <span>REPASO SRS</span>
           </span>
         ) : breadcrumb.length === 0 ? (
-          <span style={{ color: '#2a2823' }}>— · —</span>
+          <span style={{ color: 'var(--border-strong)' }}>— · —</span>
         ) : (
           breadcrumb.map((item, i) => (
             <React.Fragment key={i}>

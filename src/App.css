@@ -78,11 +78,11 @@
 }
 
 .streak-tier-2 {
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 .streak-tier-3 {
-  color: #ffd166;
+  color: var(--accent-warning);
 }
 
 .streak-tier-4 {
@@ -238,7 +238,7 @@ body {
 .icon-btn:hover {
   border: 1px solid var(--border-active);
   background: rgba(255, 255, 255, 0.05);
-  color: #f4f1ea;
+  color: var(--text);
 }
 
 .icon-btn:hover img {
@@ -382,7 +382,7 @@ body {
 
 .onboarding h1 {
   font-size: 5rem;
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 1rem;
   color: #ffffff;
   letter-spacing: -0.04em;
@@ -459,7 +459,7 @@ body {
   background: var(--text);
   border-color: var(--text);
   transform: translate(-4px, -4px);
-  box-shadow: 6px 6px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
   z-index: 10;
 }
 
@@ -579,7 +579,7 @@ body {
 
 .option-card h3 {
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 1rem;
   color: var(--text);
   display: flex;
@@ -644,7 +644,7 @@ body {
 
 .option-title {
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 0.75rem;
   line-height: 1;
   text-transform: uppercase;
@@ -718,7 +718,7 @@ body {
 
 .verb-lemma {
   font-size: 3rem;
-  font-weight: 900;
+  font-weight: 600;
   margin-bottom: 0.5rem;
   color: #ffffff;
   letter-spacing: -0.02em;
@@ -831,7 +831,7 @@ body {
   border-radius: 0;
   background: #000000;
   color: var(--text);
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 
@@ -863,7 +863,7 @@ body {
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 
@@ -885,7 +885,7 @@ body {
   letter-spacing: 0.05em;
   caret-color: #ffffff;
   box-shadow: none;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .accent-keypad {
@@ -907,7 +907,7 @@ body {
   cursor: pointer;
   transition: all 0.1s ease;
   box-shadow: none;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .accent-key:hover {
@@ -915,7 +915,7 @@ body {
   border-color: #ffffff;
   color: #000000;
   transform: translate(-2px, -2px);
-  box-shadow: 2px 2px 0 #ffffff;
+  box-shadow: var(--shadow-soft);
 }
 
 .accent-key:active {
@@ -932,7 +932,7 @@ body {
   margin-top: 0.4rem;
   color: #666;
   font-size: 0.8rem;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 .conjugation-input:focus {
@@ -940,7 +940,7 @@ body {
   border-color: #ffffff;
   background: #000000;
   transform: none;
-  box-shadow: 4px 4px 0 #ffffff;
+  box-shadow: var(--shadow-soft);
 }
 
 .conjugation-input::placeholder {
@@ -977,19 +977,19 @@ body {
   min-width: 140px;
   min-height: 48px;
   position: relative;
-  box-shadow: 4px 4px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn:hover {
   background: var(--text);
   color: var(--bg);
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn:disabled {
@@ -1037,18 +1037,18 @@ body {
   background: transparent;
   color: var(--text);
   border: 2px solid var(--text);
-  box-shadow: 4px 4px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-secondary:hover {
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
-  box-shadow: 6px 6px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-secondary:active {
-  box-shadow: 0px 0px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 
@@ -1158,7 +1158,7 @@ body {
 
 .digit-clock {
   position: relative;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: 2rem;
@@ -1379,7 +1379,7 @@ body {
   margin-bottom: 2rem;
   max-width: 550px;
   width: 100%;
-  box-shadow: 6px 6px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 .settings-panel h3 {
@@ -1414,7 +1414,7 @@ body {
   font-weight: 600;
   font-family: var(--font-mono);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 4px 4px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 .setting-select:focus {
@@ -1422,7 +1422,7 @@ body {
   border-color: var(--accent-orange);
   background: var(--bg);
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .setting-select option {
@@ -1450,7 +1450,7 @@ body {
   font-family: var(--font-mono);
   font-weight: 600;
   text-transform: uppercase;
-  box-shadow: 4px 4px 0px var(--text);
+  box-shadow: var(--shadow-soft);
 }
 
 .radio-group label:hover {
@@ -1458,7 +1458,7 @@ body {
   color: var(--bg);
   border-color: var(--text);
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .radio-group input[type="radio"] {
@@ -1762,18 +1762,18 @@ body {
     /* Improve contrast vs background on mobile */
     background: transparent !important;
     border: 2px solid var(--text) !important;
-    box-shadow: 4px 4px 0px var(--text) !important;
+    box-shadow: var(--shadow-soft);
   }
 
   .option-card:hover {
-    box-shadow: 6px 6px 0px var(--accent-orange) !important;
+    box-shadow: var(--shadow-soft);
     background: var(--text) !important;
     border-color: var(--text) !important;
   }
 
   /* Neo-Brutalist simplified swipe/click effect on touch */
   .option-card:active {
-    box-shadow: 0px 0px 0px var(--accent-orange) !important;
+    box-shadow: var(--shadow-soft);
     transform: translate(4px, 4px) !important;
   }
 
@@ -2109,7 +2109,7 @@ body {
 
 .digit-clock {
   position: relative;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: 2rem;
@@ -2237,12 +2237,12 @@ body {
 /* Shake animation when countdown reaches zero */
 .digit-clock.shake {
   animation: countdown-explosion 1.2s ease-in-out;
-  color: #ff0000 !important;
+  color: var(--accent-error) !important;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
 }
 
 .digit-clock.shake .digit {
-  color: #ff0000 !important;
+  color: var(--accent-error) !important;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.8) !important;
 }
 
@@ -3834,7 +3834,7 @@ body {
 .main-menu-onboarding .option-card:hover {
   background: #f2f2f2;
   border-color: #f2f2f2;
-  box-shadow: 10px 10px 0px rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-soft);
 }
 
 .main-menu-onboarding .option-card.compact {

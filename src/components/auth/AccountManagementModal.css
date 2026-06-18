@@ -23,7 +23,7 @@
   max-height: 85vh;
   background: var(--bg, #000);
   border: 1px solid var(--text, #fff);
-  box-shadow: 6px 6px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -76,7 +76,7 @@
 .account-modal__close:hover {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .account-modal__close:active {
@@ -120,7 +120,7 @@
 
 .account-modal__input:focus {
   border-color: var(--text, #fff);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
   outline: none;
 }
 
@@ -157,7 +157,7 @@
 
 .account-modal__button.primary:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--muted, #888);
+  box-shadow: var(--shadow-soft);
 }
 
 .account-modal__button.primary:active:not(:disabled) {
@@ -180,7 +180,7 @@
 .account-modal__button.secondary:hover {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .account-modal__button.secondary:active {

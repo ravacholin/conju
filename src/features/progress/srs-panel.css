@@ -108,7 +108,7 @@
 .toggle-details-btn:hover {
   border-color: #fff;
   color: var(--text);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 
@@ -125,7 +125,7 @@
 .toggle-details-btn.secondary:hover {
   background: var(--accent-orange);
   color: #000;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 /* Loading */
@@ -179,7 +179,7 @@
 }
 
 .stat-indicator.ready-indicator {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .stat-indicator.scheduled-indicator {
@@ -249,7 +249,7 @@
 }
 
 .srs-stat-card.ready .progress-ring {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .srs-stat-card.scheduled .progress-ring {
@@ -302,7 +302,7 @@
 
 .srs-main-btn:hover {
   border-color: #fff;
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-4px, -4px);
 }
 
@@ -439,7 +439,7 @@
 
 .btn:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 
@@ -461,7 +461,7 @@
 
 .btn-outline:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-badge {
@@ -540,8 +540,8 @@
 
 .legend-item.urgent-medium {
   background: transparent;
-  border-color: #5ee6a5;
-  color: #5ee6a5;
+  border-color: var(--accent-success);
+  color: var(--accent-success);
 }
 
 .legend-item.urgent-low {
@@ -581,7 +581,7 @@
 }
 
 .srs-item.urgent-medium {
-  border-left: 4px solid #5ee6a5;
+  border-left: 4px solid var(--accent-success);
 }
 
 .srs-item.urgent-low {
@@ -661,17 +661,17 @@
 }
 
 .mastery-value.mastery-high {
-  color: #5ee6a5;
+  color: var(--accent-success);
   background: rgba(94, 230, 165, 0.06);
 }
 
 .mastery-value.mastery-medium {
-  color: #ffd166;
+  color: var(--accent-warning);
   background: rgba(255, 209, 102, 0.06);
 }
 
 .mastery-value.mastery-low {
-  color: #ff6b6b;
+  color: var(--accent-error);
   background: rgba(255, 107, 107, 0.06);
 }
 
@@ -701,7 +701,7 @@
 }
 
 .urgency-badge.urgent-medium {
-  background: #5ee6a5;
+  background: var(--accent-success);
   color: #000;
 }
 

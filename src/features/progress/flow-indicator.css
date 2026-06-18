@@ -62,7 +62,7 @@
 
 .flow-indicator-main:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .flow-indicator-main:active {
@@ -122,7 +122,7 @@
 
 .momentum-indicator:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 2px 2px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 /* State change animation */
@@ -147,7 +147,7 @@
   width: 320px;
   background: #0a0a0a;
   padding: 20px;
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
   border: 1px solid #333;
   animation: panel-slide-in 0.15s ease-out;
   z-index: 1001;
@@ -303,7 +303,7 @@
 }
 
 .metric-fill.confidence {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .metric-fill.flow-time {
@@ -336,7 +336,7 @@
   font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 800;
-  color: #ff6b6b;
+  color: var(--accent-error);
 }
 
 .streak-icon {

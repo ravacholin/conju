@@ -22,7 +22,7 @@
 .auth-modal {
   background: var(--bg, #000);
   border: 1px solid var(--border, #333);
-  box-shadow: 4px 4px 0 var(--border, #333);
+  box-shadow: var(--shadow-soft);
   max-width: 400px;
   width: 100%;
   max-height: 90vh;
@@ -204,7 +204,7 @@
   font-family: var(--font-mono, monospace);
   transition: border-color 100ms;
   box-sizing: border-box;
-  caret-color: var(--accent-orange, #ff5722);
+  caret-color: var(--accent-orange, var(--accent-primary));
 }
 
 .form-group input:focus {

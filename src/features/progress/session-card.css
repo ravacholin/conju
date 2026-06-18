@@ -15,7 +15,7 @@
 .session-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .session-card:active {
@@ -45,7 +45,7 @@
 }
 
 .session-card.in-progress:hover {
-  box-shadow: 3px 3px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Session icon */
@@ -133,7 +133,7 @@
 
 .session-progress-fill {
   height: 100%;
-  background: #5ee6a5;
+  background: var(--accent-success);
   transition: width 0.3s ease;
 }
 
@@ -160,7 +160,7 @@
 
 .session-launch-btn:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 
@@ -174,7 +174,7 @@
 }
 
 .session-launch-btn.in-progress:hover {
-  box-shadow: 3px 3px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .session-launch-btn img {

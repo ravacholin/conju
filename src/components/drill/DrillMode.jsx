@@ -469,7 +469,7 @@ function DrillMode({
       {crosshairPositions.map((pos, i) => (
         <div key={i} className="vd-crosshair" style={pos} aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 14 14">
-            <path d="M0 7H14M7 0V14" stroke="#ff4d1c" strokeWidth="1" />
+            <path d="M0 7H14M7 0V14" stroke="var(--accent-primary)" strokeWidth="1" />
           </svg>
         </div>
       ))}
@@ -627,7 +627,7 @@ function DrillMode({
           <span><em>↵</em> verificar · continuar</span>
           <span><em>esc</em> limpiar</span>
         </div>
-        <div style={{ color: '#6e6a60' }}>PRÁCTICA</div>
+        <div style={{ color: 'var(--muted)' }}>PRÁCTICA</div>
         <div>SISTEMA · OK</div>
       </footer>
     </div>

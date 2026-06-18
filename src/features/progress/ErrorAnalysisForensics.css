@@ -192,7 +192,7 @@
   background: transparent;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .error-item:active {
@@ -259,11 +259,11 @@
 }
 
 .severity-dot.critical {
-  background: #ff6b6b;
+  background: var(--accent-error);
 }
 
 .severity-dot.high {
-  background: #ffd166;
+  background: var(--accent-warning);
 }
 
 .severity-dot.medium {
@@ -271,7 +271,7 @@
 }
 
 .severity-dot.low {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 @keyframes pulse {
@@ -434,11 +434,11 @@
 }
 
 .impact-bar.critical .impact-fill {
-  background: #ff6b6b;
+  background: var(--accent-error);
 }
 
 .impact-bar.high .impact-fill {
-  background: #ffd166;
+  background: var(--accent-warning);
 }
 
 .impact-bar.medium .impact-fill {
@@ -446,7 +446,7 @@
 }
 
 .impact-bar.low .impact-fill {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .metric-value {
@@ -459,11 +459,11 @@
 }
 
 .metric-value.critical {
-  color: #ff6b6b;
+  color: var(--accent-error);
 }
 
 .metric-value.high {
-  color: #ffd166;
+  color: var(--accent-warning);
 }
 
 .metric-value.medium {
@@ -471,7 +471,7 @@
 }
 
 .metric-value.low {
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 /* Contenido de Analisis */
@@ -559,7 +559,7 @@
 }
 
 .bar:hover {
-  background: #ff6b6b;
+  background: var(--accent-error);
   transform: scaleY(1.1);
 }
 
@@ -605,7 +605,7 @@
 
 .pattern-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   border-color: #fff;
 }
 
@@ -659,15 +659,15 @@
   gap: 16px;
   padding: 20px;
   background: transparent;
-  border: 1px solid #ff6b6b;
+  border: 1px solid var(--accent-error);
   border-radius: 0;
 }
 
 .period-date {
   background: transparent;
-  color: #ff6b6b;
+  color: var(--accent-error);
   padding: 8px 12px;
-  border: 1px solid #ff6b6b;
+  border: 1px solid var(--accent-error);
   border-radius: 0;
   font-weight: 700;
   font-size: 14px;
@@ -749,7 +749,7 @@
 .trigger-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .linguistic-pattern:active,
@@ -813,13 +813,13 @@
 }
 
 .example .incorrect {
-  color: #ff6b6b;
+  color: var(--accent-error);
   font-family: var(--font-mono);
   font-size: 14px;
 }
 
 .example .correct {
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-family: var(--font-mono);
   font-size: 14px;
 }
@@ -905,7 +905,7 @@
 .error-chain:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .error-chain:active {
@@ -923,9 +923,9 @@
 
 .chain-error {
   background: transparent;
-  color: #ff6b6b;
+  color: var(--accent-error);
   padding: 6px 12px;
-  border: 1px solid #ff6b6b;
+  border: 1px solid var(--accent-error);
   border-radius: 0;
   font-size: 12px;
   font-weight: 700;
@@ -954,11 +954,11 @@
 
 .chain-intervention {
   background: transparent;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   border-radius: 0;
   padding: 12px;
   font-size: 14px;
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 /* Analisis Contextual y Predictivo */
@@ -984,7 +984,7 @@
 .context-factor:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .context-factor:active {
@@ -1032,20 +1032,20 @@
 
 .impact-level.high {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
 }
 
 .impact-level.medium {
   background: transparent;
-  color: #ffd166;
-  border: 1px solid #ffd166;
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
 }
 
 .impact-level.low {
   background: transparent;
-  color: #5ee6a5;
-  border: 1px solid #5ee6a5;
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
 }
 
 .factor-description {
@@ -1269,14 +1269,14 @@
 
 .state-impact .impact.high {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
 }
 
 .state-impact .impact.positive {
   background: transparent;
-  color: #5ee6a5;
-  border: 1px solid #5ee6a5;
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
 }
 
 .state-impact .impact.low {
@@ -1320,23 +1320,23 @@
 }
 
 .risk-card.high {
-  border-color: #ff6b6b;
+  border-color: var(--accent-error);
   background: transparent;
 }
 
 .risk-card.medium {
-  border-color: #ffd166;
+  border-color: var(--accent-warning);
   background: transparent;
 }
 
 .risk-card.low {
-  border-color: #5ee6a5;
+  border-color: var(--accent-success);
   background: transparent;
 }
 
 .risk-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .risk-card:active {
@@ -1379,14 +1379,14 @@
 
 .risk-level.critical {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
 }
 
 .risk-level.high {
   background: transparent;
-  color: #ffd166;
-  border: 1px solid #ffd166;
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
 }
 
 .risk-level.medium {
@@ -1397,8 +1397,8 @@
 
 .risk-level.low {
   background: transparent;
-  color: #5ee6a5;
-  border: 1px solid #5ee6a5;
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
 }
 
 .risk-description {
@@ -1461,7 +1461,7 @@
 .projection-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .projection-card:active {
@@ -1489,9 +1489,9 @@
 
 .projection-confidence {
   background: transparent;
-  color: #5ee6a5;
+  color: var(--accent-success);
   padding: 4px 8px;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   border-radius: 0;
   font-size: 12px;
   font-weight: 700;
@@ -1529,7 +1529,7 @@
   min-width: 50px;
   font-family: var(--font-mono);
   font-weight: 700;
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 .point-description {
@@ -1580,7 +1580,7 @@
 .actionable-insight:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .actionable-insight:active {
@@ -1613,20 +1613,20 @@
 
 .priority.high {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
 }
 
 .priority.medium {
   background: transparent;
-  color: #ffd166;
-  border: 1px solid #ffd166;
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
 }
 
 .priority.low {
   background: transparent;
-  color: #5ee6a5;
-  border: 1px solid #5ee6a5;
+  color: var(--accent-success);
+  border: 1px solid var(--accent-success);
 }
 
 .insight-impact {
@@ -1711,12 +1711,12 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-family: var(--font-mono);
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .action-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .action-btn:active {
@@ -1744,7 +1744,7 @@
 .roadmap-step:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .roadmap-step:active {
@@ -1788,9 +1788,9 @@
 
 .step-duration {
   background: transparent;
-  color: #ffd166;
+  color: var(--accent-warning);
   padding: 4px 8px;
-  border: 1px solid #ffd166;
+  border: 1px solid var(--accent-warning);
   border-radius: 0;
   font-size: 12px;
   font-weight: 700;
@@ -1954,5 +1954,5 @@
 }
 
 .error-analysis-forensics button:focus {
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }

@@ -7,8 +7,8 @@ const GOAL_TYPES = {
 }
 
 function getMasteryColor(ratio) {
-  if (ratio >= 0.7) return '#7de9b8'
-  if (ratio >= 0.4) return '#f5d688'
+  if (ratio >= 0.7) return 'var(--accent-success)'
+  if (ratio >= 0.4) return 'var(--accent-warning)'
   return '#ff9f7a'
 }
 
@@ -45,7 +45,7 @@ export default function SummaryStrip({ srsStats, userStats, onSRSReview }) {
         onClick={itemsDue > 0 ? onSRSReview : undefined}
         disabled={itemsDue === 0}
       >
-        <div className="summary-value" style={itemsDue > 0 ? { color: '#7de9b8' } : { color: '#555' }}>
+        <div className="summary-value" style={itemsDue > 0 ? { color: 'var(--accent-success)' } : { color: '#555' }}>
           {itemsDue}
         </div>
         <div className="summary-label">pendiente{itemsDue !== 1 ? 's' : ''}</div>

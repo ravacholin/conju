@@ -1,7 +1,7 @@
 /* ============================================
    Account Button — nativo VERB/OS vo-header
    Diseñado para vivir en el header de 44px con
-   fondo #0c0c0c, fuente JetBrains Mono 10px.
+   fondo var(--bg), fuente mono 10px.
    ============================================ */
 
 .acct-container {
@@ -19,23 +19,23 @@
   align-items: center;
   gap: 6px;
   background: transparent;
-  /* Borde sutil pero visible sobre el fondo oscuro #0c0c0c */
-  border: 1px solid #2a2823;
+  /* Borde sutil pero visible sobre el fondo oscuro var(--bg) */
+  border: 1px solid var(--border-strong);
   padding: 5px 11px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #6e6a60;
+  color: var(--muted);
   transition: color 120ms, border-color 120ms;
   white-space: nowrap;
 }
 
 .acct-login-btn:hover {
-  color: #f4f1ea;
-  border-color: #6e6a60;
+  color: var(--text);
+  border-color: var(--muted);
 }
 
 .acct-login-label {
@@ -43,7 +43,7 @@
 }
 
 .acct-login-arrow {
-  color: #ff4d1c;
+  color: var(--accent-primary);
   font-size: 11px;
   line-height: 1;
 }
@@ -60,19 +60,19 @@
   border: 1px solid transparent;
   padding: 5px 8px;
   cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6e6a60;
+  color: var(--muted);
   transition: color 120ms, border-color 120ms;
   white-space: nowrap;
 }
 
 .acct-trigger:hover,
 .acct-trigger--open {
-  color: #f4f1ea;
-  border-color: #2a2823;
+  color: var(--text);
+  border-color: var(--border-strong);
 }
 
 /* Cuadrado con la inicial — visible y con propósito */
@@ -82,8 +82,8 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  background: #f4f1ea;
-  color: #0c0c0c;
+  background: var(--text);
+  color: var(--bg);
   font-weight: 800;
   font-size: 9px;
   letter-spacing: 0;
@@ -95,13 +95,13 @@
   max-width: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #6e6a60;
+  color: var(--muted);
   font-size: 10px;
 }
 
 .acct-trigger:hover .acct-name,
 .acct-trigger--open .acct-name {
-  color: #f4f1ea;
+  color: var(--text);
 }
 
 /* Badge de estado sync */
@@ -114,13 +114,13 @@
   flex-shrink: 0;
 }
 
-.acct-status--ok      { color: #5ee6a5; }
-.acct-status--syncing { color: #f4f1ea; animation: acct-blink 1s steps(2) infinite; }
-.acct-status--error   { color: #ff6b6b; }
-.acct-status--offline { color: #6e6a60; border-style: dashed; }
-.acct-status--local   { color: #6e6a60; border-style: dashed; }
+.acct-status--ok      { color: var(--accent-success); }
+.acct-status--syncing { color: var(--text); animation: acct-blink 1s steps(2) infinite; }
+.acct-status--error   { color: var(--accent-error); }
+.acct-status--offline { color: var(--muted); border-style: dashed; }
+.acct-status--local   { color: var(--muted); border-style: dashed; }
 .acct-status--stale   { color: #faad14; }
-.acct-status--unknown { color: #2a2823; }
+.acct-status--unknown { color: var(--border-strong); }
 
 @keyframes acct-blink {
   50% { opacity: 0.3; }
@@ -135,9 +135,9 @@
   right: 0;
   z-index: 1100;
   min-width: 256px;
-  background: #0c0c0c;
-  border: 1px solid #2a2823;
-  box-shadow: 4px 4px 0 #1f1d18;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-soft);
   animation: acct-in 100ms ease-out;
 }
 
@@ -157,12 +157,12 @@
 .acct-dropdown__avatar {
   width: 30px;
   height: 30px;
-  background: #f4f1ea;
-  color: #0c0c0c;
+  background: var(--text);
+  color: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-weight: 800;
   font-size: 0.9rem;
   flex-shrink: 0;
@@ -174,8 +174,8 @@
 }
 
 .acct-dropdown__name {
-  color: #f4f1ea;
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   font-weight: 600;
   white-space: nowrap;
@@ -185,9 +185,9 @@
 }
 
 .acct-dropdown__email {
-  color: #6e6a60;
+  color: var(--muted);
   font-size: 0.68rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -196,7 +196,7 @@
 /* Divider */
 .acct-dropdown__divider {
   height: 1px;
-  background: #1f1d18;
+  background: var(--border);
 }
 
 /* Section */
@@ -209,10 +209,10 @@
 }
 
 .acct-dropdown__section-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 0.58rem;
   font-weight: 700;
-  color: #2a2823;
+  color: var(--border-strong);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -227,31 +227,31 @@
 }
 
 .acct-dropdown__sync-key {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 0.68rem;
-  color: #6e6a60;
+  color: var(--muted);
   white-space: nowrap;
   padding: 2px 0;
 }
 
 .acct-dropdown__sync-val {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 0.68rem;
   font-weight: 600;
-  color: #f4f1ea;
+  color: var(--text);
   padding: 2px 0;
 }
 
-.acct-dropdown__sync-val.ok       { color: #5ee6a5; }
-.acct-dropdown__sync-val.syncing  { color: #f4f1ea; animation: acct-blink 1s steps(2) infinite; }
-.acct-dropdown__sync-val.error    { color: #ff6b6b; }
+.acct-dropdown__sync-val.ok       { color: var(--accent-success); }
+.acct-dropdown__sync-val.syncing  { color: var(--text); animation: acct-blink 1s steps(2) infinite; }
+.acct-dropdown__sync-val.error    { color: var(--accent-error); }
 .acct-dropdown__sync-val.offline  { color: #faad14; }
 
 .acct-dropdown__sync-error {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   font-size: 0.62rem;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
   padding: 5px 7px;
   margin-bottom: 8px;
   word-break: break-word;
@@ -263,9 +263,9 @@
   width: 100%;
   padding: 8px 10px;
   background: transparent;
-  color: #6e6a60;
-  border: 1px solid #2a2823;
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-ui);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -276,13 +276,13 @@
 }
 
 .acct-dropdown__sync-btn:hover:not(:disabled) {
-  color: #f4f1ea;
-  border-color: #6e6a60;
+  color: var(--text);
+  border-color: var(--muted);
 }
 
 .acct-dropdown__sync-btn:disabled {
-  color: #2a2823;
-  border-color: #1f1d18;
+  color: var(--border-strong);
+  border-color: var(--border);
   cursor: not-allowed;
 }
 
@@ -295,9 +295,9 @@
   padding: 9px 14px;
   background: none;
   border: none;
-  color: #6e6a60;
+  color: var(--muted);
   font-size: 0.78rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
   letter-spacing: 0.04em;
   text-align: left;
   cursor: pointer;
@@ -312,7 +312,7 @@
 }
 
 .acct-dropdown__menu-item:hover {
-  color: #f4f1ea;
+  color: var(--text);
   background: rgba(255,255,255, 0.03);
 }
 
@@ -321,12 +321,12 @@
 }
 
 .acct-dropdown__menu-item--danger {
-  color: #2a2823;
+  color: var(--border-strong);
   padding: 10px 14px 12px;
 }
 
 .acct-dropdown__menu-item--danger:hover {
-  color: #ff6b6b;
+  color: var(--accent-error);
   background: rgba(255, 107, 107, 0.05);
 }
 

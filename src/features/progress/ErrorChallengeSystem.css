@@ -37,7 +37,7 @@
 
 .progress-item:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   border-color: #fff;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .badge-item.unlocked {
-  border-color: #ffd166;
+  border-color: var(--accent-warning);
 }
 
 .badge-item.locked {
@@ -153,7 +153,7 @@
 
 .badge-item:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .badge-item:active {
@@ -282,7 +282,7 @@
 }
 
 .challenge-card.legendary::before {
-  background: #ffd166;
+  background: var(--accent-warning);
 }
 
 .challenge-card.epic::before {
@@ -294,7 +294,7 @@
 }
 
 .challenge-card.rare::before {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .challenge-card.common::before {
@@ -303,7 +303,7 @@
 
 .challenge-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
   border-color: #fff;
 }
 
@@ -345,7 +345,7 @@
 }
 
 .challenge-difficulty {
-  color: #ffd166;
+  color: var(--accent-warning);
   font-size: 16px;
 }
 
@@ -404,18 +404,18 @@
   gap: 6px;
   padding: 6px 10px;
   background: transparent;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   border-radius: 0;
   font-size: 12px;
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-weight: 700;
   font-family: var(--font-mono);
 }
 
 .reward-item.bonus {
   background: transparent;
-  border-color: #ffd166;
-  color: #ffd166;
+  border-color: var(--accent-warning);
+  color: var(--accent-warning);
 }
 
 .reward-icon {
@@ -469,12 +469,12 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-family: var(--font-mono);
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .accept-challenge-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .accept-challenge-btn:active {
@@ -486,10 +486,10 @@
   width: 100%;
   padding: 14px;
   background: transparent;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   border-radius: 0;
   text-align: center;
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -500,10 +500,10 @@
   width: 100%;
   padding: 14px;
   background: transparent;
-  border: 1px solid #ffd166;
+  border: 1px solid var(--accent-warning);
   border-radius: 0;
   text-align: center;
-  color: #ffd166;
+  color: var(--accent-warning);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -594,7 +594,7 @@
   position: absolute;
   width: 6px;
   height: 6px;
-  background: #ffd166;
+  background: var(--accent-warning);
   border-radius: 0;
   animation: particleExplode 2s ease-out infinite;
   animation-delay: var(--delay);
@@ -618,7 +618,7 @@
 
 .unlock-badge {
   background: transparent;
-  border: 2px solid #ffd166;
+  border: 2px solid var(--accent-warning);
   border-radius: 0;
   padding: 40px;
 }
@@ -636,7 +636,7 @@
   margin: 0 0 8px 0;
   font-size: 28px;
   font-weight: 800;
-  color: #ffd166;
+  color: var(--accent-warning);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-family: var(--font-mono);
@@ -661,7 +661,7 @@
 .unlock-xp {
   font-size: 24px;
   font-weight: 800;
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-family: var(--font-mono);
 }
 
@@ -670,7 +670,7 @@
   text-align: center;
   padding: 80px 40px;
   background: transparent;
-  border: 1px solid #5ee6a5;
+  border: 1px solid var(--accent-success);
   border-radius: 0;
   margin-top: 40px;
 }
@@ -684,7 +684,7 @@
   margin: 0 0 12px 0;
   font-size: 24px;
   font-weight: 800;
-  color: #5ee6a5;
+  color: var(--accent-success);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-family: var(--font-mono);
@@ -799,5 +799,5 @@
 }
 
 .error-challenge-system button:focus {
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }

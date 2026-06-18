@@ -126,7 +126,7 @@
 .tense-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-card:active {
@@ -141,8 +141,8 @@
 }
 
 .tense-card.mastery-excellent:hover {
-  border-color: #5ee6a5;
-  box-shadow: 3px 3px 0 #5ee6a5;
+  border-color: var(--accent-success);
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-card.mastery-good {
@@ -151,8 +151,8 @@
 }
 
 .tense-card.mastery-good:hover {
-  border-color: #5ee6a5;
-  box-shadow: 3px 3px 0 #5ee6a5;
+  border-color: var(--accent-success);
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-card.mastery-fair {
@@ -161,8 +161,8 @@
 }
 
 .tense-card.mastery-fair:hover {
-  border-color: #ffd166;
-  box-shadow: 3px 3px 0 #ffd166;
+  border-color: var(--accent-warning);
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-card.mastery-poor {
@@ -171,8 +171,8 @@
 }
 
 .tense-card.mastery-poor:hover {
-  border-color: #ff6b6b;
-  box-shadow: 3px 3px 0 #ff6b6b;
+  border-color: var(--accent-error);
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-card.mastery-none {
@@ -183,7 +183,7 @@
 .tense-card.mastery-none:hover {
   border-color: #555;
   opacity: 1;
-  box-shadow: 3px 3px 0 #555;
+  box-shadow: var(--shadow-soft);
 }
 
 .tense-name {
@@ -288,8 +288,8 @@
 }
 
 .legend-color.mastery-excellent {
-  background: #5ee6a5;
-  border-color: #5ee6a5;
+  background: var(--accent-success);
+  border-color: var(--accent-success);
 }
 
 .legend-color.mastery-good {
@@ -298,13 +298,13 @@
 }
 
 .legend-color.mastery-fair {
-  background: #ffd166;
-  border-color: #ffd166;
+  background: var(--accent-warning);
+  border-color: var(--accent-warning);
 }
 
 .legend-color.mastery-poor {
-  background: #ff6b6b;
-  border-color: #ff6b6b;
+  background: var(--accent-error);
+  border-color: var(--accent-error);
 }
 
 /* Responsive */

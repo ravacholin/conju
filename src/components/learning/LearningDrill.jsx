@@ -71,10 +71,10 @@ import { createLogger } from '../../lib/utils/logger.js';
 import './LearningDrill.css';
 import '../onboarding/OnboardingFlow.css';
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js';
 
 const logger = createLogger('LearningDrill');
@@ -917,11 +917,11 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
             <span className="vo-logo-name">VERB<span style={{ color: ACCENT }}>/</span>OS</span>
             <span style={{ marginLeft: 8 }}>drill</span>
           </div>
-          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', color: INK2 }}>
+          <div style={{ fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.14em', color: INK2 }}>
             CARGANDO...
           </div>
         </header>
-        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'JetBrains Mono, monospace', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+        <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', color: INK2, fontFamily: 'var(--font-ui)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
           cargando ejercicios...
         </div>
         <footer className="vo-footer">
@@ -964,7 +964,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
           <span className="vo-breadcrumb-sep">/</span>
           <span className="vo-breadcrumb-val"> {tenseLabelDisplay}</span>
         </div>
-        <div style={{ display: 'flex', gap: 16, fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: INK2 }}>
+        <div style={{ display: 'flex', gap: 16, fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: INK2 }}>
           <span>RACHA <span style={{ color: correctStreak > 0 ? ACCENT : INK, fontWeight: 700 }} className={showStreakAnimation ? 'streak-shake' : ''}>{correctStreak}</span></span>
           <span>PREC <span style={{ color: INK }}>{totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0}%</span></span>
           {failedItemsQueue.length > 0 && <span style={{ color: ACCENT }}>↺ {failedItemsQueue.length}</span>}

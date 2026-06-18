@@ -289,7 +289,7 @@ function PlacementTest({ onComplete, onCancel }) {
         {/* EXPLANATION / FEEDBACK OVERLAY or INLINE */}
         {showExplanation && feedbackResult && (
           <div style={{ marginTop: '2rem', borderTop: '2px solid #333', paddingTop: '1rem', textAlign: 'left' }}>
-            <span style={{ color: feedbackResult.isCorrect ? '#4ade80' : '#ef4444', fontWeight: 'bold', textTransform: 'uppercase' }}>
+            <span style={{ color: feedbackResult.isCorrect ? 'var(--accent-success)' : 'var(--accent-error)', fontWeight: 'bold', textTransform: 'uppercase' }}>
               {feedbackResult.isCorrect ? '¡CORRECTO!' : 'INCORRECTO'}
             </span>
             <p style={{ color: '#888', marginTop: '0.5rem' }}>

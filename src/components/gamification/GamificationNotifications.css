@@ -71,7 +71,7 @@
 }
 
 .notification.streak::before {
-  background: linear-gradient(90deg, #ef4444, #f87171);
+  background: linear-gradient(90deg, var(--accent-error), #f87171);
 }
 
 .notification.priority {
@@ -262,11 +262,11 @@
 }
 
 .notification.streak {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--accent-error);
 }
 
 .notification.streak .notification-title {
-  color: #dc2626;
+  color: var(--accent-error);
 }
 
 /* Animaciones de salida */

@@ -15,10 +15,10 @@ import './LearningDrill.css'
 import './IrregularRootDrill.css'
 import '../onboarding/OnboardingFlow.css'
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
 import { highlightStemVowel } from './highlightHelpers.js'
 
 import { safeLazy } from '../../lib/utils/lazyImport.js';
@@ -147,8 +147,8 @@ function IrregularRootDrill({
         </div>
       </header>
       <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',maxWidth:400,textAlign:'center',padding:32 }}>
-        <div style={{ fontFamily:'Inter Tight,sans-serif',fontSize:24,fontWeight:900,fontStyle:'italic',color:INK,marginBottom:16 }}>{title}</div>
-        <div style={{ fontFamily:'JetBrains Mono,monospace',fontSize:11,color:INK2,letterSpacing:'0.1em',marginBottom:24 }}>{body}</div>
+        <div style={{ fontFamily:'var(--font-ui)',fontSize:24,fontWeight:900,fontStyle:'italic',color:INK,marginBottom:16 }}>{title}</div>
+        <div style={{ fontFamily:'var(--font-ui)',fontSize:11,color:INK2,letterSpacing:'0.1em',marginBottom:24 }}>{body}</div>
         <button className="ld-confirm-btn" onClick={onBack}>← volver</button>
       </div>
       <footer className="vo-footer">
@@ -361,7 +361,7 @@ function IrregularRootDrill({
           <span className="vo-breadcrumb-sep">/</span>
           <span className="vo-breadcrumb-val"> irregulares</span>
         </div>
-        <div style={{ display:'flex',gap:16,fontFamily:'JetBrains Mono,monospace',fontSize:10,letterSpacing:'0.12em',textTransform:'uppercase',color:INK2 }}>
+        <div style={{ display:'flex',gap:16,fontFamily:'var(--font-ui)',fontSize:10,letterSpacing:'0.12em',textTransform:'uppercase',color:INK2 }}>
           {timeLeft != null && <span>TIEMPO <span style={{ color: INK }}>{Math.max(timeLeft,0)}s</span></span>}
           <span>{Math.min(index+1,questions.length)}<span style={{ color:INK3 }}>/{questions.length}</span></span>
           <span>✓ <span style={{ color: INK }}>{stats.correct}</span></span>
@@ -438,7 +438,7 @@ function IrregularRootDrill({
 
         {/* Utilities */}
         <div className="ld-utils">
-          <button className="ld-util-btn" onClick={() => setShowAccentKeypad(v => !v)} title="Tildes" style={{ background: showAccentKeypad ? ACCENT : 'transparent', color: showAccentKeypad ? '#0c0c0c' : INK2 }}>Ñ</button>
+          <button className="ld-util-btn" onClick={() => setShowAccentKeypad(v => !v)} title="Tildes" style={{ background: showAccentKeypad ? ACCENT : 'transparent', color: showAccentKeypad ? 'var(--bg)' : INK2 }}>Ñ</button>
           <button className="ld-util-btn" onClick={() => handleTogglePronunciation()} title="Pronunciación">◉</button>
           {onGoToProgress && <button className="ld-util-btn" onClick={onGoToProgress} title="Métricas">⬡</button>}
           {onHome && <button className="ld-util-btn" onClick={onHome} title="Inicio">⌂</button>}
