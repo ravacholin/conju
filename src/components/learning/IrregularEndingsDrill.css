@@ -87,9 +87,9 @@
 }
 
 .ending-value .irreg-frag {
-  color: var(--accent-warning);
-  background: rgba(255, 170, 0, 0.1);
-  border-bottom: 2px solid var(--accent-warning);
+  color: var(--highlight-emphasis);
+  background: rgba(232, 184, 90, 0.15);
+  border-bottom: 2px solid var(--highlight-emphasis);
   padding: 0 2px;
   border-radius: 0;
   font-weight: 700;
@@ -98,8 +98,8 @@
 
 /* Resalta toda la fila cuando la forma correspondiente es irregular */
 .ending-row.irregular {
-  background: rgba(255, 170, 0, 0.05);
-  border: 1px solid var(--accent-warning);
+  background: rgba(232, 184, 90, 0.08);
+  border: 1px solid var(--highlight-emphasis);
 }
 
 .ending-row.irregular .ending-person {

@@ -158,10 +158,10 @@
 
 /* Stem vowel highlighting for diphthong verbs */
 .learning-drill .stem-vowel-highlight {
-    color: var(--accent-orange);
+    color: var(--highlight-emphasis);
     font-weight: 700;
     text-decoration: underline;
-    text-decoration-color: var(--accent-orange);
+    text-decoration-color: var(--highlight-emphasis);
     text-decoration-thickness: 2px;
     text-underline-offset: 3px;
 }

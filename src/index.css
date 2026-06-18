@@ -34,6 +34,13 @@
   --accent-primary: #f2f2f0;
   --accent-orange: #f2f2f0; /* retargeted to white → removes orange app-wide via var */
 
+  /* Learning highlights — high contrast on the dark surface.
+     Filled chips invert (dark text on light fill); inline emphasis uses a
+     legible amber so highlighted fragments stand out from white body text. */
+  --highlight-fill: #f2f2f0;       /* near-white chip background */
+  --highlight-on-fill: #0a0a0a;    /* dark text on the chip */
+  --highlight-emphasis: #e8b85a;   /* amber for inline/underlined emphasis */
+
   /* Functional state colors — desaturated, kept for usability */
   --accent-success: #7fb89a;
   --accent-error: #c97b7b;
