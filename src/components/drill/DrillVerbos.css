@@ -1,17 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,700;1,900&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-/* ── Design tokens (scoped) ── */
+/* ── Design tokens (scoped) — now inherit the global monochrome theme ── */
 .verbos-drill {
-  --vd-bg:       #0c0c0c;
-  --vd-ink:      #f4f1ea;
-  --vd-ink2:     #6e6a60;
-  --vd-ink3:     #2a2823;
-  --vd-line:     #1f1d18;
-  --vd-accent:   #ff4d1c;
-  --vd-green:    #5ee6a5;
-  --vd-red:      #ff6b6b;
-  --vd-font:     'Inter Tight', -apple-system, sans-serif;
-  --vd-mono:     'JetBrains Mono', monospace;
+  --vd-bg:       var(--bg);
+  --vd-ink:      var(--text);
+  --vd-ink2:     var(--muted);
+  --vd-ink3:     var(--border-strong);
+  --vd-line:     var(--border);
+  --vd-accent:   var(--accent-primary);
+  --vd-green:    var(--accent-success);
+  --vd-red:      var(--accent-error);
+  --vd-font:     var(--font-ui);
+  --vd-mono:     var(--font-ui);
 }
 
 /* ── Wrapper ── */
@@ -76,30 +74,10 @@
 }
 
 /* ── Background grid ── */
-.vd-grid {
-  position: fixed;
-  inset: 44px 0 32px 0;
-  background-image:
-    linear-gradient(var(--vd-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--vd-line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.vd-vignette {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-
+.vd-grid,
+.vd-vignette,
 .vd-crosshair {
-  position: fixed;
-  pointer-events: none;
-  z-index: 2;
+  display: none;
 }
 
 /* ── Header ── */
@@ -233,7 +211,7 @@
 
 .verbos-drill .icon-btn.active {
   border-color: var(--vd-accent);
-  background: rgba(255, 77, 28, 0.1);
+  background: rgba(242, 242, 240, 0.1);
   color: var(--vd-accent);
 }
 
@@ -270,7 +248,7 @@
 }
 
 .verbos-drill .srs-badge-icon {
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg);
+  filter: invert(1);
   width: 12px;
   height: 12px;
 }
@@ -333,16 +311,16 @@
 
 /* ── Verb lemma — focal display ── */
 .verbos-drill .verb-lemma {
-  font-family: var(--vd-font);
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-weight: 600;
   font-style: italic;
   font-size: clamp(52px, 10vw, 120px);
-  letter-spacing: -0.055em;
+  letter-spacing: -0.035em;
   line-height: 0.9;
   text-transform: lowercase;
   color: var(--vd-accent);
   margin-bottom: 20px;
-  animation: vdScanIn 0.4s cubic-bezier(0.7, 0, 0.2, 1) both;
+  animation: vdLiftIn 0.4s cubic-bezier(0.2, 0, 0.2, 1) both;
 }
 
 /* ── Conjugation context ── */
@@ -403,7 +381,7 @@
 .verbos-drill .conjugation-input:focus {
   outline: none;
   border-color: var(--vd-accent);
-  background: rgba(255, 77, 28, 0.04);
+  background: rgba(242, 242, 240, 0.04);
   box-shadow: none;
   transform: none;
 }
@@ -448,7 +426,7 @@
 .verbos-drill .accent-key:hover {
   border-color: var(--vd-accent);
   color: var(--vd-accent);
-  background: rgba(255, 77, 28, 0.08);
+  background: rgba(242, 242, 240, 0.08);
   transform: none;
   box-shadow: none;
 }
@@ -570,7 +548,7 @@
 .verbos-drill .tts-btn:hover {
   border-color: var(--vd-accent);
   color: var(--vd-accent);
-  background: rgba(255,77,28,0.06);
+  background: rgba(242, 242, 240,0.06);
 }
 
 .verbos-drill .tts-btn img {
@@ -581,7 +559,7 @@
 }
 
 .verbos-drill .tts-btn:hover img {
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
+  filter: invert(1);
 }
 
 /* ── Diff component ── */
@@ -837,7 +815,7 @@
 .verbos-drill .pron-target-word {
   font-family: var(--vd-font);
   font-size: clamp(32px, 6vw, 52px);
-  font-weight: 900;
+  font-weight: 600;
   font-style: italic;
   color: var(--vd-accent);
   letter-spacing: -0.04em;
@@ -871,7 +849,7 @@
 .verbos-drill .pron-listen-btn:hover {
   border-color: var(--vd-accent);
   color: var(--vd-accent);
-  background: rgba(255,77,28,0.06);
+  background: rgba(242, 242, 240,0.06);
 }
 
 .verbos-drill .pron-listen-btn img,
@@ -887,7 +865,7 @@
 }
 
 .verbos-drill .pron-listen-btn:hover img {
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(320deg) brightness(1);
+  filter: invert(1);
 }
 
 /* Mic button */
@@ -924,19 +902,19 @@
 .verbos-drill .pron-mic-btn:hover:not(:disabled) {
   border-color: var(--vd-accent);
   color: var(--vd-accent);
-  background: rgba(255,77,28,0.06);
+  background: rgba(242, 242, 240,0.06);
 }
 
 .verbos-drill .pron-mic-btn.recording {
   border-color: var(--vd-accent);
-  background: rgba(255,77,28,0.12);
+  background: rgba(242, 242, 240,0.12);
   color: var(--vd-accent);
   animation: vdMicPulse 1.5s ease-in-out infinite;
 }
 
 @keyframes vdMicPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,28,0.3); }
-  50%       { box-shadow: 0 0 0 10px rgba(255,77,28,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 242, 240,0.3); }
+  50%       { box-shadow: 0 0 0 10px rgba(242, 242, 240,0); }
 }
 
 .verbos-drill .pron-mic-btn:disabled {
@@ -998,8 +976,8 @@
 
 .verbos-drill .pron-result.perfect   { border-color: var(--vd-green); }
 .verbos-drill .pron-result.excellent { border-color: var(--vd-green); }
-.verbos-drill .pron-result.good      { border-color: #9fda8a; }
-.verbos-drill .pron-result.needs-work{ border-color: #e0c05a; }
+.verbos-drill .pron-result.good      { border-color: var(--accent-success); }
+.verbos-drill .pron-result.needs-work{ border-color: var(--accent-warning); }
 .verbos-drill .pron-result.incorrect { border-color: var(--vd-red); }
 .verbos-drill .pron-result.error     { border-color: var(--vd-red); }
 
@@ -1020,8 +998,8 @@
 
 .verbos-drill .pron-result.perfect   .pron-score-number,
 .verbos-drill .pron-result.excellent .pron-score-number { color: var(--vd-green); }
-.verbos-drill .pron-result.good      .pron-score-number { color: #9fda8a; }
-.verbos-drill .pron-result.needs-work .pron-score-number { color: #e0c05a; }
+.verbos-drill .pron-result.good      .pron-score-number { color: var(--accent-success); }
+.verbos-drill .pron-result.needs-work .pron-score-number { color: var(--accent-warning); }
 .verbos-drill .pron-result.incorrect .pron-score-number,
 .verbos-drill .pron-result.error     .pron-score-number { color: var(--vd-red); }
 
@@ -1036,7 +1014,7 @@
   transition: width 0.5s ease;
   background: var(--vd-green);
 }
-.verbos-drill .pron-result.needs-work .pron-score-bar { background: #e0c05a; }
+.verbos-drill .pron-result.needs-work .pron-score-bar { background: var(--accent-warning); }
 .verbos-drill .pron-result.incorrect  .pron-score-bar { background: var(--vd-red); }
 .verbos-drill .pron-result.error      .pron-score-bar { background: var(--vd-red); }
 
@@ -1164,13 +1142,13 @@
 
 .verbos-drill .vd-qs-select:focus {
   outline: none;
-  background-color: rgba(255,77,28,0.04);
+  background-color: rgba(242, 242, 240,0.04);
   color: var(--vd-ink);
   border-left-color: var(--vd-accent);
 }
 
 .verbos-drill .vd-qs-select option {
-  background: #111;
+  background: var(--bg-raised);
   color: var(--vd-ink);
 }
 
@@ -1234,7 +1212,7 @@
 }
 
 .verbos-drill .vd-game-btn--active {
-  background: rgba(255,77,28,0.06);
+  background: rgba(242, 242, 240,0.06);
 }
 
 .verbos-drill .vd-game-img {

@@ -271,7 +271,7 @@
 }
 
 .connector-line.completed {
-  background: #5ee6a5;
+  background: var(--accent-success);
 }
 
 .connector-line.remaining {
@@ -294,7 +294,7 @@
 
 .milestone.achieved .milestone-icon {
   animation: milestone-achieved 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border-color: #5ee6a5;
+  border-color: var(--accent-success);
 }
 
 @keyframes milestone-achieved {
@@ -318,7 +318,7 @@
 .milestone-info:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .milestone.achieved .milestone-info {
@@ -349,7 +349,7 @@
 }
 
 .achievement-badge {
-  background: #5ee6a5;
+  background: var(--accent-success);
   color: #000;
   font-family: var(--font-mono);
   font-size: 11px;
@@ -416,7 +416,7 @@
   border-style: solid;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .next-icon {
@@ -490,7 +490,7 @@
 .insight-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .insight-icon {
@@ -511,11 +511,11 @@
 }
 
 .insight-value.positive {
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 .insight-value.negative {
-  color: #ff6b6b;
+  color: var(--accent-error);
 }
 
 .insight-value.neutral {

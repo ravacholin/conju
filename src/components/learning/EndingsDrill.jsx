@@ -9,9 +9,9 @@ import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
 import '../onboarding/OnboardingFlow.css';
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
 
 import { safeLazy } from '../../lib/utils/lazyImport.js';
 
@@ -596,7 +596,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
       <div className="verbos-onboarding">
         <div className="vo-grid" aria-hidden="true" />
         <div className="vo-vignette" aria-hidden="true" />
-        <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',color:INK2,fontFamily:'JetBrains Mono,monospace',fontSize:11,letterSpacing:'0.14em',textTransform:'uppercase' }}>
+        <div style={{ position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',color:INK2,fontFamily:'var(--font-ui)',fontSize:11,letterSpacing:'0.14em',textTransform:'uppercase' }}>
           cargando ejercicio...
         </div>
       </div>
@@ -628,7 +628,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
           <span className="vo-breadcrumb-sep">/</span>
           <span className="vo-breadcrumb-val"> {verb.lemma}</span>
         </div>
-        <div style={{ fontFamily:'JetBrains Mono,monospace',fontSize:10,letterSpacing:'0.14em',textTransform:'uppercase',color:INK2 }}>
+        <div style={{ fontFamily:'var(--font-ui)',fontSize:10,letterSpacing:'0.14em',textTransform:'uppercase',color:INK2 }}>
           FALTAN <span style={{ color: INK, fontWeight:700 }}>{drillQueue.length - currentIndex}</span>
         </div>
       </header>

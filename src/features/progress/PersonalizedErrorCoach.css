@@ -171,7 +171,7 @@
 .insight-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .insight-card:active {
@@ -224,7 +224,7 @@
 
 .insight-action:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 
@@ -263,7 +263,7 @@
 .strategy-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .strategy-card:active {
@@ -345,7 +345,7 @@
 
 .apply-strategy-btn:hover {
   border-color: #fff;
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   transform: translate(-2px, -2px);
 }
 
@@ -450,13 +450,13 @@
 }
 
 .example-item .incorrect {
-  color: #ff6b6b;
+  color: var(--accent-error);
   font-family: var(--font-mono);
   font-size: 13px;
 }
 
 .example-item .correct {
-  color: #5ee6a5;
+  color: var(--accent-success);
   font-family: var(--font-mono);
   font-size: 13px;
 }
@@ -533,8 +533,8 @@
 
 .step.completed {
   background: transparent;
-  border-color: #5ee6a5;
-  color: #5ee6a5;
+  border-color: var(--accent-success);
+  color: var(--accent-success);
 }
 
 .close-session-btn {
@@ -552,8 +552,8 @@
 }
 
 .close-session-btn:hover {
-  border-color: #ff6b6b;
-  color: #ff6b6b;
+  border-color: var(--accent-error);
+  color: var(--accent-error);
 }
 
 .session-content {
@@ -637,7 +637,7 @@
   color: var(--text);
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .back-btn:active,
@@ -659,13 +659,13 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-family: var(--font-mono);
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .next-step-btn:hover,
 .finish-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .next-step-btn:active,
@@ -747,14 +747,14 @@
 
 .severity-level.high {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid #ff6b6b;
+  color: var(--accent-error);
+  border: 1px solid var(--accent-error);
 }
 
 .severity-level.medium {
   background: transparent;
-  color: #ffd166;
-  border: 1px solid #ffd166;
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
 }
 
 .cause-chain {
@@ -807,7 +807,7 @@
 .phase-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .phase-card:active {
@@ -847,9 +847,9 @@
 
 .phase-duration {
   background: transparent;
-  color: #ffd166;
+  color: var(--accent-warning);
   padding: 4px 8px;
-  border: 1px solid #ffd166;
+  border: 1px solid var(--accent-warning);
   font-size: 11px;
   font-weight: 700;
   font-family: var(--font-mono);
@@ -901,7 +901,7 @@
 
 .practice-option:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
   border-color: #fff;
 }
 
@@ -967,12 +967,12 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-family: var(--font-mono);
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .start-practice-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .start-practice-btn:active {
@@ -1143,5 +1143,5 @@
 }
 
 .personalized-error-coach button:focus {
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }

@@ -31,7 +31,7 @@ class SafeComponent extends Component {
           border: '1px solid #f87171',
           borderRadius: '8px',
           backgroundColor: '#fef2f2',
-          color: '#dc2626'
+          color: 'var(--accent-error)'
         }}>
           <h3 style={{ margin: '0 0 0.5rem 0' }}>
             ⚠️ Error en {this.props.name || 'componente'}
@@ -43,7 +43,7 @@ class SafeComponent extends Component {
             onClick={this.handleRetry}
             style={{
               padding: '0.5rem 1rem',
-              backgroundColor: '#dc2626',
+              backgroundColor: 'var(--accent-error)',
               color: 'white',
               border: 'none',
               borderRadius: '4px',

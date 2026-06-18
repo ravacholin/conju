@@ -13,8 +13,8 @@
 .eds-reference {
   width: 100%;
   max-width: 600px;
-  border: 1px solid #1f1d18;
-  font-family: 'JetBrains Mono', monospace;
+  border: 1px solid var(--border);
+  font-family: var(--font-ui);
   font-size: 11px;
 }
 
@@ -23,41 +23,41 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid #1f1d18;
+  border-bottom: 1px solid var(--border);
   transition: background 0.12s;
 }
 
 .eds-ref-row:last-child { border-bottom: none; }
 
 .eds-ref-current {
-  background: rgba(255, 77, 28, 0.08);
-  border-left: 2px solid #ff4d1c;
+  background: rgba(242, 242, 240, 0.08);
+  border-left: 2px solid var(--accent-primary);
   padding-left: 14px;
 }
 
 .eds-ref-irreg {
-  border-left: 2px solid rgba(255, 77, 28, 0.4);
+  border-left: 2px solid rgba(242, 242, 240, 0.4);
   padding-left: 14px;
 }
 
 .eds-ref-current.eds-ref-irreg {
-  border-left: 2px solid #ff4d1c;
+  border-left: 2px solid var(--accent-primary);
 }
 
 .eds-ref-person {
-  color: #6e6a60;
+  color: var(--muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .eds-ref-form {
-  color: #f4f1ea;
+  color: var(--text);
   font-weight: 500;
   letter-spacing: 0.04em;
 }
 
 .eds-ref-current .eds-ref-person {
-  color: #ff4d1c;
+  color: var(--accent-primary);
 }
 
 .eds-ref-current .eds-ref-form {

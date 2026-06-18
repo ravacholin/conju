@@ -28,8 +28,8 @@ function SessionSummary({ onFinish, summary = {} }) {
       'C-': '#d97706',
       'D+': '#fb923c',
       'D': '#ea580c',
-      'D-': '#dc2626',
-      'F': '#ef4444'
+      'D-': 'var(--accent-error)',
+      'F': 'var(--accent-error)'
     };
     return colors[grade] || '#6b7280';
   };

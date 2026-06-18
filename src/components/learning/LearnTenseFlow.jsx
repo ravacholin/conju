@@ -699,14 +699,14 @@ function LearnTenseFlowContainer({ onHome, onGoToProgress }) {
   if (currentStep === 'session-complete') {
     return (
       <div className="learning-menu-layout" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: '1.5rem', textAlign: 'center' }}>
-        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#ff4d1c' }}>✓</div>
-        <h2 style={{ margin: 0, fontFamily: 'Inter Tight, sans-serif', fontSize: '1.75rem', fontWeight: 900, fontStyle: 'italic' }}>¡Sesión completada!</h2>
-        <p style={{ margin: 0, opacity: 0.6, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' }}>
+        <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--accent-primary)' }}>✓</div>
+        <h2 style={{ margin: 0, fontFamily: 'var(--font-ui)', fontSize: '1.75rem', fontWeight: 900, fontStyle: 'italic' }}>¡Sesión completada!</h2>
+        <p style={{ margin: 0, opacity: 0.6, fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontFamily: 'var(--font-ui)' }}>
           Practicaste con éxito. Buen trabajo.
         </p>
         <button
           onClick={handleFinish}
-          style={{ marginTop: '0.5rem', padding: '0.75rem 2rem', cursor: 'pointer', background: '#ff4d1c', color: '#0c0c0c', border: 'none', borderRadius: 4, fontSize: '0.95rem', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.1em', textTransform: 'uppercase' }}
+          style={{ marginTop: '0.5rem', padding: '0.75rem 2rem', cursor: 'pointer', background: 'var(--accent-primary)', color: 'var(--bg)', border: 'none', borderRadius: 4, fontSize: '0.95rem', fontWeight: 700, fontFamily: 'var(--font-ui)', letterSpacing: '0.1em', textTransform: 'uppercase' }}
         >
           Volver al inicio →
         </button>

@@ -23,7 +23,7 @@
   max-height: 85vh;
   background: var(--bg, #000);
   border: 1px solid var(--text, #fff);
-  box-shadow: 6px 6px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
   animation: modal-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -75,7 +75,7 @@
 .device-modal__close:hover {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .device-modal__close:active {
@@ -109,7 +109,7 @@
 
 .device-card--current {
   border-color: var(--text, #fff);
-  box-shadow: 2px 2px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .device-card__info h3 {
@@ -170,7 +170,7 @@
 
 .device-card__button.primary:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--muted, #888);
+  box-shadow: var(--shadow-soft);
 }
 
 .device-card__button.primary:active:not(:disabled) {
@@ -186,7 +186,7 @@
 .device-card__button.secondary:hover {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .device-card__button.secondary:active {
@@ -203,7 +203,7 @@
 .device-card__button.danger:hover {
   background: rgba(255, 0, 0, 0.08);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--accent-error, #f00);
+  box-shadow: 0 0 0 2px var(--accent-error);
 }
 
 .device-card__button.danger:active {
@@ -236,7 +236,7 @@
 
 .device-card__input:focus {
   border-color: var(--text, #fff);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
   outline: none;
 }
 
@@ -271,7 +271,7 @@
 .device-modal__button:hover {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .device-modal__button:active {

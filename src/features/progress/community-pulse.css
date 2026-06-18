@@ -86,7 +86,7 @@
 
 .community-leaderboard li.current-user {
   border-color: #fff;
-  box-shadow: 3px 3px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .community-rank {

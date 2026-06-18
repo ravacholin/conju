@@ -7,7 +7,7 @@
   z-index: 9999;
   cursor: pointer;
   user-select: none;
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: var(--font-ui), var(--font-mono);
 }
 
 .sync-status-badge {
@@ -48,12 +48,12 @@
 }
 
 .sync-status-indicator.error .sync-status-badge {
-  border-color: #ff0000;
+  border-color: var(--accent-error);
   background: #220000;
 }
 
 .sync-status-indicator.error .status-code {
-  color: #ff0000;
+  color: var(--accent-error);
 }
 
 .sync-status-indicator.offline .sync-status-badge {
@@ -89,7 +89,7 @@
   background: #000;
   border: 1px solid #fff;
   padding: 16px;
-  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
 .tooltip-header {
@@ -124,7 +124,7 @@
 .status-row .value {
   color: #fff;
   text-align: right;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-ui);
 }
 
 .status-row.warning .value {
@@ -133,7 +133,7 @@
 }
 
 .status-row.error .value {
-  color: #ff0000;
+  color: var(--accent-error);
   font-weight: bold;
 }
 

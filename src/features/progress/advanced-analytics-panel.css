@@ -38,11 +38,11 @@
 }
 
 .advanced-trend.positive {
-  color: #5ee6a5;
+  color: var(--accent-success);
 }
 
 .advanced-trend.negative {
-  color: #ff6b6b;
+  color: var(--accent-error);
 }
 
 .advanced-retention-series {

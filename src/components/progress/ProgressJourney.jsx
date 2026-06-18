@@ -103,7 +103,7 @@ export default function ProgressJourney({ compact = false }) {
         threshold: 250,
         achieved: totalAttempts >= 250,
         value: Math.min(totalAttempts, 250),
-        color: '#ef4444'
+        color: 'var(--accent-error)'
       },
       {
         id: 'spanish_warrior',

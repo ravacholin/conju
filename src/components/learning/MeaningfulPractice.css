@@ -83,12 +83,12 @@
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   margin-top: 1.5rem;
-  box-shadow: 4px 4px 0 var(--accent-orange, #ff5722);
+  box-shadow: var(--shadow-soft);
 }
 
 .retry-button:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange, #ff5722);
+  box-shadow: var(--shadow-soft);
 }
 
 .retry-button:active {
@@ -629,7 +629,7 @@
 .response-textarea:focus {
   outline: none;
   border-color: var(--text, #fff);
-  box-shadow: 4px 4px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .response-textarea::placeholder {
@@ -743,7 +743,7 @@
 .hint-button:hover:not(:disabled) {
   border-color: var(--text, #fff);
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--text, #fff);
+  box-shadow: var(--shadow-soft);
 }
 
 .hint-button:active:not(:disabled) {
@@ -772,12 +772,12 @@
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   min-width: 140px;
-  box-shadow: 4px 4px 0 var(--accent-orange, #ff5722);
+  box-shadow: var(--shadow-soft);
 }
 
 .submit-button:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange, #ff5722);
+  box-shadow: var(--shadow-soft);
 }
 
 .submit-button:active:not(:disabled) {

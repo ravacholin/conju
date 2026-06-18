@@ -68,7 +68,7 @@
   color: var(--text);
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .view-btn:active {
@@ -80,7 +80,7 @@
   background: #fff;
   color: #000;
   border-color: #fff;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .view-btn .view-icon {
@@ -167,7 +167,7 @@
 .dashboard-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .dashboard-card:active {
@@ -228,7 +228,7 @@
   background: transparent;
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .action-btn:active {
@@ -324,7 +324,7 @@
 .pattern-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .pattern-card:active {
@@ -396,12 +396,12 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .pattern-action-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .pattern-action-btn:active {
@@ -475,7 +475,7 @@
 .challenge-card:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .challenge-card:active {
@@ -590,12 +590,12 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 4px 4px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .challenge-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--accent-orange);
+  box-shadow: var(--shadow-soft);
 }
 
 .challenge-btn:active {
@@ -631,7 +631,7 @@
 .timeline-day:hover {
   border-color: #fff;
   transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }
 
 .timeline-day:active {
@@ -784,5 +784,5 @@
 }
 
 .enhanced-error-analysis button:focus {
-  box-shadow: 3px 3px 0 #fff;
+  box-shadow: var(--shadow-soft);
 }

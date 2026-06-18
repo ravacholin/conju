@@ -11,11 +11,11 @@ import {
 } from '../../lib/data/simplifiedFamilyGroups.js'
 
 /* ── Design tokens ── */
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
-const LINE   = '#1f1d18'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
+const LINE   = 'var(--border)'
 
 /* ── Static option datasets ── */
 const MOOD_OPTS = [
@@ -991,7 +991,7 @@ function OnboardingFlow({
           }
         </div>
 
-        <div className="vo-step-counter" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
+        <div className="vo-step-counter" style={{ fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
           STEP <span>{String(onboardingStep).padStart(2, '0')}</span> / {String(TOTAL_STEPS).padStart(2, '0')}
         </div>
       </header>

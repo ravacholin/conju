@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import '../onboarding/OnboardingFlow.css'
 
-const ACCENT = '#ff4d1c'
-const INK    = '#f4f1ea'
-const INK2   = '#6e6a60'
-const INK3   = '#2a2823'
-const LINE   = '#1f1d18'
+const ACCENT = 'var(--accent-primary)'
+const INK    = 'var(--text)'
+const INK2   = 'var(--muted)'
+const INK3   = 'var(--border-strong)'
+const LINE   = 'var(--border)'
 
 function Crosshairs() {
   const positions = [
@@ -136,7 +136,7 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
                     className="vo-option-num-box"
                     style={{
                       borderColor: active || selected ? ACCENT : LINE,
-                      background: selected && !active ? 'rgba(255,77,28,0.12)' : 'transparent',
+                      background: selected && !active ? 'rgba(242, 242, 240,0.12)' : 'transparent',
                     }}
                   >
                     {selected && !active ? '✓' : i + 1}
@@ -240,7 +240,7 @@ function LearningStepView({ stepConfig, onBack, breadcrumb = [], stepNum = 1, to
           }
         </div>
 
-        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
+        <div style={{ fontFamily: 'var(--font-ui)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: INK2 }}>
           PASO <span style={{ color: INK }}>{String(stepNum).padStart(2, '0')}</span> / {String(totalSteps).padStart(2, '0')}
         </div>
       </header>
