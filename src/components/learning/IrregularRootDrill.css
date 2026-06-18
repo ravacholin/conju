@@ -17,8 +17,8 @@
 .ird-hint-block .root-line { display:flex; justify-content:space-between; align-items:center; gap:16px; }
 .ird-hint-block .hint-label { color:var(--border-strong); }
 .ird-hint-block .hint-value { color:var(--text); font-weight:700; }
-.ird-hint-block .root-highlight { color:#ffffff; background:var(--accent-primary); font-weight:700; padding:2px 8px; letter-spacing:0.06em; }
-.ird-hint-block .nonfinite-highlight { color:#ffffff; background:var(--accent-primary); font-weight:700; padding:2px 8px; }
+.ird-hint-block .root-highlight { color:var(--highlight-on-fill); background:var(--highlight-fill); font-weight:700; padding:2px 8px; letter-spacing:0.06em; }
+.ird-hint-block .nonfinite-highlight { color:var(--highlight-on-fill); background:var(--highlight-fill); font-weight:700; padding:2px 8px; }
 .ird-hint-block .hint-note { color:var(--border-strong); font-size:10px; text-transform:none; font-style:italic; margin:0; }
 .ird-hint-block .hint-note.alternate { color:var(--muted); }
 
@@ -106,12 +106,12 @@
 .root-meta .root-highlight {
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: var(--accent-orange);
+  color: var(--highlight-emphasis);
 }
 
 .nonfinite-highlight {
   font-weight: 700;
-  color: var(--accent-orange);
+  color: var(--highlight-emphasis);
   letter-spacing: 0.08em;
 }
 

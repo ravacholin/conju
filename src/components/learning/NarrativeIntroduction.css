@@ -124,8 +124,8 @@
 }
 
 .story-sentence .highlight {
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--highlight-on-fill);
+  background: var(--highlight-fill);
   font-weight: 700;
   padding: 0.1em 0.35em;
   font-family: var(--font-ui);
@@ -185,30 +185,32 @@
 .verb-deconstruction.irregular .conjugated-form { color: var(--text); }
 
 .verb-deconstruction.irregular .conjugated-form .irreg-frag {
-  color: var(--accent-primary);
+  color: var(--highlight-emphasis);
   font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: var(--accent-primary);
+  text-decoration-color: var(--highlight-emphasis);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
 }
 
 .irreg-frag {
-  color: var(--accent-primary) !important;
+  color: var(--highlight-emphasis) !important;
   font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: var(--accent-primary);
+  text-decoration-color: var(--highlight-emphasis);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
 }
 
-/* Overrides inside orange backgrounds — keep white for underline consistency */
+/* Overrides inside light chips — dark text/underline so the fragment stays legible */
 .story-sentence .highlight .irreg-frag {
-  text-decoration-color: #ffffff;
+  color: var(--highlight-on-fill) !important;
+  text-decoration-color: var(--highlight-on-fill);
 }
 
 .yo-form-highlight .irreg-frag {
-  text-decoration-color: #ffffff;
+  color: var(--highlight-on-fill) !important;
+  text-decoration-color: var(--highlight-on-fill);
 }
 
 .verb-deconstruction.irregular .form-separator {
@@ -314,8 +316,8 @@
 .future-root-highlight {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--highlight-on-fill);
+  background: var(--highlight-fill);
   padding: 0.15rem 0.5rem;
   letter-spacing: 0.06em;
   font-family: var(--font-ui);
@@ -336,10 +338,11 @@
 .regular-ending-highlight {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--accent-primary);
+  color: var(--highlight-emphasis);
   letter-spacing: 0.04em;
   text-decoration: underline;
-  text-decoration-color: rgba(242, 242, 240, 0.4);
+  text-decoration-color: var(--highlight-emphasis);
+  text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
 
@@ -393,8 +396,8 @@
 
 .narrative-introduction .nonfinite-highlight {
   font-weight: 800;
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--highlight-on-fill);
+  background: var(--highlight-fill);
   padding: 0.15rem 0.45rem;
   letter-spacing: 0.05em;
   font-family: var(--font-ui);
@@ -414,8 +417,8 @@
 .group-label-large { color: var(--text); opacity: 0.45; font-weight: 800; }
 
 .stem-vowel-highlight-large {
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--highlight-on-fill);
+  background: var(--highlight-fill);
   font-weight: 800;
   font-size: 1.05em;
   padding: 0 0.12em;
@@ -530,8 +533,8 @@
 .irregular-yo-verb-complete .yo-form-highlight {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--highlight-on-fill);
+  background: var(--highlight-fill);
   padding: 0.4rem 0.85rem;
   font-family: var(--font-ui);
   text-transform: uppercase;
