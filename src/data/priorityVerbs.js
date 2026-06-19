@@ -25630,6 +25630,14 @@ export const priorityVerbs = [
           {
                     "mood": "indicative",
                     "tense": "pres",
+                    "person": "2s_vos",
+                    "value": "mentís",
+                    "tags": [],
+                    "region": "es"
+          },
+          {
+                    "mood": "indicative",
+                    "tense": "pres",
                     "person": "3s",
                     "value": "miente",
                     "tags": [],
@@ -25655,7 +25663,7 @@ export const priorityVerbs = [
                     "mood": "indicative",
                     "tense": "pres",
                     "person": "3p",
-                    "value": "minten",
+                    "value": "mienten",
                     "tags": [],
                     "region": "es"
           }
