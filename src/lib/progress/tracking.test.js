@@ -390,6 +390,28 @@ describe('Sistema de Tracking', () => {
       expect(stats.correctAttempts).toBe(1)
     })
 
+    it('debería actualizar el schedule SRS exactamente una vez por intento (sin doble contabilización)', async () => {
+      const { updateSchedule } = await import('./srs.js')
+
+      const attemptId = trackAttemptStarted({
+        id: 'test-item',
+        lemma: 'hablar',
+        mood: 'indicativo',
+        tense: 'presente',
+        person: '1s'
+      })
+
+      await trackAttemptSubmitted(attemptId, {
+        item: { lemma: 'hablar', mood: 'indicativo', tense: 'presente', person: '1s' },
+        correct: true,
+        userAnswer: 'hablo',
+        correctAnswer: 'hablo',
+        latencyMs: 1200
+      })
+
+      expect(updateSchedule).toHaveBeenCalledTimes(1)
+    })
+
     it('debería clasificar respuestas compuestas cuando faltan etiquetas', async () => {
       classifyError.mockImplementation((user) => {
         if (user === 'fallo1') return ['wrong-person']
