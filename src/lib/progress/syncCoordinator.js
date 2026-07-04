@@ -43,21 +43,35 @@ const {
   flushSyncQueue: flushSyncQueueFromService
 } = SyncService
 
-async function markSynced(storeName, ids) {
+/**
+ * Marks the given items as synced, stamping syncedAt with the current time.
+ * @param {string} storeName
+ * @param {Array<Object>} items - the exact objects that were just uploaded (not just ids),
+ *   so we can compare their updatedAt against whatever is in the store right now.
+ */
+async function markSynced(storeName, items) {
   try {
-    if (!ids || ids.length === 0) return
+    if (!items || items.length === 0) return
 
     const db = await initDB()
     const tx = db.transaction(storeName, 'readwrite')
     const store = tx.objectStore(storeName)
 
-    for (const id of ids) {
+    for (const item of items) {
+      const id = item?.sessionId || item?.id
       if (!id) continue
       try {
         const existing = await store.get(id)
         if (!existing) continue
-        // Update syncedAt to now
-        // Also ensure userId is correct if we just claimed it
+
+        // If the record changed locally after this snapshot was uploaded, don't mark it
+        // synced — leave it unsynced so the next sync cycle picks up the newer change.
+        const uploadedAt = item?.updatedAt ? new Date(item.updatedAt).getTime() : NaN
+        const currentAt = existing?.updatedAt ? new Date(existing.updatedAt).getTime() : NaN
+        if (Number.isFinite(uploadedAt) && Number.isFinite(currentAt) && currentAt > uploadedAt) {
+          continue
+        }
+
         const updated = { ...existing, syncedAt: new Date() }
         await store.put(updated)
       } catch (err) {
@@ -68,7 +82,7 @@ async function markSynced(storeName, ids) {
   } catch (error) {
     safeLogger.warn('markSynced: error marking items as synced', {
       storeName,
-      count: ids.length,
+      count: items.length,
       error: error?.message
     })
   }
@@ -455,7 +469,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (unsyncedAttempts.length > 0) {
           safeLogger.info('syncAccountData: uploading attempts', { count: unsyncedAttempts.length })
           const res = await tryBulk('attempts', unsyncedAttempts)
-          await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsyncedAttempts.map((a) => a.id))
+          await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsyncedAttempts)
           uploaded.attempts = unsyncedAttempts.length
           safeLogger.info('syncAccountData: attempts uploaded successfully', { count: unsyncedAttempts.length, server: res })
         }
@@ -476,7 +490,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
             mode: backfillMastery ? 'full-backfill' : 'incremental'
           })
           const res = await tryBulk('mastery', masteryPayload)
-          await markSynced(STORAGE_CONFIG.STORES.MASTERY, masteryPayload.map((m) => m.id))
+          await markSynced(STORAGE_CONFIG.STORES.MASTERY, masteryPayload)
           uploaded.mastery = masteryPayload.length
           safeLogger.info('syncAccountData: mastery uploaded successfully', { count: masteryPayload.length, server: res })
         }
@@ -497,7 +511,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
             mode: backfillSchedules ? 'full-backfill' : 'incremental'
           })
           const res = await tryBulk('schedules', schedulePayload)
-          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, schedulePayload.map((s) => s.id))
+          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, schedulePayload)
           uploaded.schedules = schedulePayload.length
           safeLogger.info('syncAccountData: schedules uploaded successfully', { count: schedulePayload.length, server: res })
         }
@@ -513,10 +527,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (unsyncedSessions.length > 0) {
           safeLogger.info('syncAccountData: uploading sessions', { count: unsyncedSessions.length })
           const res = await tryBulk('sessions', unsyncedSessions)
-          await markSynced(
-            STORAGE_CONFIG.STORES.LEARNING_SESSIONS,
-            unsyncedSessions.map((s) => s.sessionId || s.id)
-          )
+          await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsyncedSessions)
           uploaded.sessions = unsyncedSessions.length
           safeLogger.info('syncAccountData: sessions uploaded successfully', { count: unsyncedSessions.length, server: res })
         }
@@ -547,7 +558,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (unsyncedSettings.length > 0) {
           safeLogger.info('syncAccountData: uploading settings', { count: unsyncedSettings.length })
           const res = await tryBulk('settings', unsyncedSettings)
-          await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings.map((s) => s.id))
+          await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings)
           uploaded.settings = unsyncedSettings.length
           safeLogger.info('syncAccountData: settings uploaded successfully', { count: unsyncedSettings.length, server: res })
         } else {
@@ -564,7 +575,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (unsyncedChallenges.length > 0) {
           safeLogger.info('syncAccountData: uploading challenges', { count: unsyncedChallenges.length })
           const res = await tryBulk('challenges', unsyncedChallenges)
-          await markSynced(STORAGE_CONFIG.STORES.CHALLENGES, unsyncedChallenges.map((c) => c.id))
+          await markSynced(STORAGE_CONFIG.STORES.CHALLENGES, unsyncedChallenges)
           uploaded.challenges = unsyncedChallenges.length
           safeLogger.info('syncAccountData: challenges uploaded successfully', { count: unsyncedChallenges.length, server: res })
         }
@@ -579,7 +590,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (unsyncedEvents.length > 0) {
           safeLogger.info('syncAccountData: uploading events', { count: unsyncedEvents.length })
           const res = await tryBulk('events', unsyncedEvents)
-          await markSynced(STORAGE_CONFIG.STORES.EVENTS, unsyncedEvents.map((e) => e.id))
+          await markSynced(STORAGE_CONFIG.STORES.EVENTS, unsyncedEvents)
           uploaded.events = unsyncedEvents.length
           safeLogger.info('syncAccountData: events uploaded successfully', { count: unsyncedEvents.length, server: res })
         }
@@ -626,7 +637,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
           const payload = buildGamificationPayload(userRecord, resolvedUserId)
           safeLogger.info('syncAccountData: uploading gamification stats', { userId: resolvedUserId })
           const res = await tryBulk('gamification', [payload])
-          await markSynced(STORAGE_CONFIG.STORES.USERS, [payload.id || resolvedUserId])
+          await markSynced(STORAGE_CONFIG.STORES.USERS, [payload])
           uploaded.gamification = 1
           safeLogger.info('syncAccountData: gamification stats uploaded successfully', { server: res })
         }
@@ -807,7 +818,7 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
         safeLogger.info('syncNow: subiendo attempts al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('attempts', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced.map((a) => a.id))
+        await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced)
         results.attempts = { uploaded: unsynced.length, server: res }
         safeLogger.info('syncNow: attempts subidos exitosamente', { count: unsynced.length })
       } else {
@@ -828,7 +839,7 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
         safeLogger.info('syncNow: subiendo mastery al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('mastery', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced.map((m) => m.id))
+        await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced)
         results.mastery = { uploaded: unsynced.length, server: res }
         safeLogger.info('syncNow: mastery subidos exitosamente', { count: unsynced.length })
       } else {
@@ -849,7 +860,7 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
         safeLogger.info('syncNow: subiendo schedules al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('schedules', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced.map((s) => s.id))
+        await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced)
         results.schedules = { uploaded: unsynced.length, server: res }
         safeLogger.info('syncNow: schedules subidos exitosamente', { count: unsynced.length })
       } else {
@@ -870,10 +881,7 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
         safeLogger.info('syncNow: subiendo sesiones al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
         const res = await tryBulk('sessions', unsynced)
-        await markSynced(
-          STORAGE_CONFIG.STORES.LEARNING_SESSIONS,
-          unsynced.map((s) => s.sessionId || s.id)
-        )
+        await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsynced)
         results.sessions = { uploaded: unsynced.length, server: res }
         safeLogger.info('syncNow: sesiones subidas exitosamente', { count: unsynced.length })
       } else {

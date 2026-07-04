@@ -2,49 +2,21 @@
 // Integrates with redundancy, integrity, and auto-recovery systems
 // PERFORMANCE: Now uses lazy loading to eliminate 4.1MB initial bundle
 
-import { getVerbs, getVerbsSync, areVerbsLoaded } from '../../data/verbsLazy.js'
+import { getVerbs, getVerbsSync } from '../../data/verbsLazy.js'
 import { buildNonfiniteFormsForLemma } from './nonfiniteBuilder.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { convertLearningFamilyToOld, LEARNING_IRREGULAR_FAMILIES } from '../data/learningIrregularFamilies.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
-import { getAllVerbsWithRedundancy, getRedundancyManager } from './VerbDataRedundancyManager.js'
+import { getAllVerbsWithRedundancy } from './VerbDataRedundancyManager.js'
 import { validateAndHealVerbs, getIntegrityGuard } from './DataIntegrityGuard.js'
 import { handleErrorWithRecovery } from './AutoRecoverySystem.js'
-import { getOrchestrator } from './CacheOrchestrator.js'
-import { clearAllCaches as clearOptimizedCache } from './optimizedCache.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataService')
 
-let directDatasetCache = null
-let directDatasetPromise = null
-
 const formsCacheByRegion = new Map()
 const formsPromiseByRegion = new Map()
-
-async function loadDirectDataset() {
-  if (directDatasetCache) {
-    return directDatasetCache
-  }
-
-  if (directDatasetPromise) {
-    return directDatasetPromise
-  }
-
-  directDatasetPromise = import('../../data/verbs.js')
-    .then(module => {
-      const dataset = module?.verbs || module?.default || []
-      directDatasetCache = dataset
-      return dataset
-    })
-    .catch(error => {
-      directDatasetPromise = null
-      throw error
-    })
-
-  return directDatasetPromise
-}
 
 // Synchronous version for backward compatibility (returns cached verbs or empty array)
 export function getAllVerbsSync() {
@@ -74,106 +46,48 @@ export function getAllVerbsSync() {
   }
 }
 
-// Enhanced get all verbs with comprehensive fallback layers - ASYNC VERSION
+// Get all verbs - ASYNC VERSION. Real load first, minimal hardcoded set if that fails.
 export async function getAllVerbs() {
   try {
-    // Layer 1: Try redundancy manager first (most reliable)
-    try {
-      const redundantVerbs = getAllVerbsWithRedundancy()
-      if (redundantVerbs && Array.isArray(redundantVerbs) && redundantVerbs.length > 0) {
-        // If the redundancy manager is still on the emergency layer (tiny dataset),
-        // prefer awaiting the lazy dataset in async contexts.
-        if (areVerbsLoaded() || redundantVerbs.length > 10) {
-          logger.debug('getAllVerbs', `Retrieved ${redundantVerbs.length} verbs from redundancy manager`)
-          return redundantVerbs
-        }
-        logger.debug('getAllVerbs', `Redundancy manager returned ${redundantVerbs.length} verbs; awaiting lazy load`)
-      }
-    } catch (redundancyError) {
-      logger.warn('getAllVerbs', 'Redundancy manager failed, trying lazy loading', redundancyError)
+    const lazyVerbs = await getVerbs()
+    if (lazyVerbs && Array.isArray(lazyVerbs) && lazyVerbs.length > 0) {
+      logger.debug('getAllVerbs', `Retrieved ${lazyVerbs.length} verbs from lazy loading`)
+      return lazyVerbs
     }
+  } catch (lazyError) {
+    logger.warn('getAllVerbs', 'Lazy loading failed, using emergency fallback', lazyError)
+  }
 
-    // Layer 2: Lazy loading fallback
-    try {
-      const lazyVerbs = await getVerbs()
-      if (lazyVerbs && Array.isArray(lazyVerbs) && lazyVerbs.length > 0) {
-        logger.debug('getAllVerbs', `Retrieved ${lazyVerbs.length} verbs from lazy loading`)
-        return lazyVerbs
-      }
-    } catch (lazyError) {
-      logger.warn('getAllVerbs', 'Lazy loading failed, trying sync fallback', lazyError)
-    }
+  logger.error('getAllVerbs', 'Lazy loading returned no verbs - using minimal emergency set')
 
-    // Layer 3: Sync fallback if already loaded
-    const syncVerbs = getVerbsSync()
-    if (syncVerbs && Array.isArray(syncVerbs) && syncVerbs.length > 0) {
-      logger.debug('getAllVerbs', `Retrieved ${syncVerbs.length} verbs from sync cache`)
-      return syncVerbs
-    }
-
-    // Layer 3: Emergency fallback through redundancy manager
-    try {
-      const manager = getRedundancyManager()
-      const emergencyVerbs = manager.getAllVerbs()
-      if (emergencyVerbs && Array.isArray(emergencyVerbs) && emergencyVerbs.length > 0) {
-        logger.warn('getAllVerbs', `Using emergency verbs: ${emergencyVerbs.length} available`)
-        return emergencyVerbs
-      }
-    } catch (emergencyError) {
-      logger.error('getAllVerbs', 'Emergency fallback also failed', emergencyError)
-    }
-
-    // Layer 4: Absolute emergency - minimal hardcoded verbs
-    const emergencySet = [
-      {
-        lemma: 'ser',
-        type: 'irregular',
-        paradigms: [{
-          regionTags: ['la_general'],
-          forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'soy' }]
-        }]
-      },
-      {
-        lemma: 'estar',
-        type: 'irregular',
-        paradigms: [{
-          regionTags: ['la_general'],
-          forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'estoy' }]
-        }]
-      }
-    ]
-
-    logger.error('getAllVerbs', 'ALL FALLBACKS FAILED - Using minimal emergency set')
-
-    // Trigger recovery system
+  try {
     handleErrorWithRecovery(new Error('Complete verb data failure'), {
       component: 'verbDataService',
       function: 'getAllVerbs',
       severity: 'critical'
     })
+  } catch (recoveryError) {
+    logger.error('getAllVerbs', 'Recovery system also failed', recoveryError)
+  }
 
-    return emergencySet
-
-  } catch (criticalError) {
-    logger.error('getAllVerbs', 'CRITICAL: Even emergency set failed', criticalError)
-
-    // Trigger recovery system with critical error
-    handleErrorWithRecovery(criticalError, {
-      component: 'verbDataService',
-      function: 'getAllVerbs',
-      severity: 'catastrophic'
-    })
-
-    // Return absolutely minimal set to prevent complete failure
-    return [{
+  return [
+    {
       lemma: 'ser',
       type: 'irregular',
       paradigms: [{
         regionTags: ['la_general'],
         forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'soy' }]
       }]
-    }]
-  }
+    },
+    {
+      lemma: 'estar',
+      type: 'irregular',
+      paradigms: [{
+        regionTags: ['la_general'],
+        forms: [{ mood: 'indicative', tense: 'pres', person: '1s', value: 'estoy' }]
+      }]
+    }
+  ]
 }
 
 // Enhanced get single verb by lemma with comprehensive fallback
@@ -217,21 +131,7 @@ export async function getVerbByLemma(lemma) {
       }
     }
 
-    // Layer 2: Try direct search in original dataset
-    try {
-      const verbsDataset = await loadDirectDataset()
-      if (Array.isArray(verbsDataset)) {
-        const directVerb = verbsDataset.find(v => v.lemma === lemma)
-        if (directVerb) {
-          logger.debug('getVerbByLemma', `Found verb in direct dataset: ${lemma}`)
-          return directVerb
-        }
-      }
-    } catch (directError) {
-      logger.warn('getVerbByLemma', 'Direct dataset search failed', directError)
-    }
-
-    // Layer 3: Check if it's a common verb we must have
+    // Layer 2: Check if it's a common verb we must have
     const commonVerbs = ['ser', 'estar', 'haber', 'tener', 'hacer', 'decir', 'ir', 'ver']
     if (commonVerbs.includes(lemma)) {
       logger.error('getVerbByLemma', `CRITICAL: Common verb ${lemma} not found in any dataset`)
@@ -245,7 +145,7 @@ export async function getVerbByLemma(lemma) {
       })
 
       // Return minimal form for critical verbs
-      return this.createMinimalVerb(lemma)
+      return createMinimalVerb(lemma)
     }
 
     logger.debug('getVerbByLemma', `Verb not found: ${lemma}`)
@@ -1236,156 +1136,3 @@ export function getVerbMetadata(lemma) {
   }
 }
 
-// Enhanced cache stats with comprehensive error handling
-export async function getVerbDataCacheStats() {
-  try {
-    // Get verbs with fallback protection
-    const allVerbs = await getAllVerbs()
-
-    const baseStats = {
-      totalVerbs: allVerbs ? allVerbs.length : 0,
-      cacheType: 'direct_import_with_redundancy'
-    }
-
-    // Try to get additional stats from redundancy manager
-    try {
-      const redundancyManager = getRedundancyManager()
-      if (redundancyManager) {
-        const redundancyStats = redundancyManager.getSystemStats()
-        Object.assign(baseStats, {
-          redundancyLayers: redundancyStats.layers || 4,
-          currentLayer: redundancyStats.currentLayer || 'primary',
-          lastSwitchTime: redundancyStats.lastSwitchTime,
-          circuitBreakerStatus: redundancyStats.circuitBreakerStatus
-        })
-      }
-    } catch (redundancyStatsError) {
-      logger.debug('getVerbDataCacheStats', 'Could not get redundancy stats', redundancyStatsError)
-    }
-
-    // Try to get cache orchestrator stats
-    try {
-      const cacheOrchestrator = getOrchestrator()
-      if (cacheOrchestrator) {
-        const cacheStats = cacheOrchestrator.getGlobalStats()
-        Object.assign(baseStats, {
-          cacheHitRate: cacheStats.globalHitRate,
-          memoryUsage: cacheStats.totalMemoryUsage,
-          cacheCount: cacheStats.activeCaches
-        })
-      }
-    } catch (cacheStatsError) {
-      logger.debug('getVerbDataCacheStats', 'Could not get cache orchestrator stats', cacheStatsError)
-    }
-
-    logger.debug('getVerbDataCacheStats', 'Cache stats retrieved', baseStats)
-    return baseStats
-
-  } catch (error) {
-    logger.error('getVerbDataCacheStats', 'Error getting cache stats', error)
-
-    // Return minimal fallback stats
-    return {
-      totalVerbs: 0,
-      cacheType: 'error_fallback',
-      error: error.message
-    }
-  }
-}
-
-// Enhanced clear caches with comprehensive error handling
-export function clearVerbDataCaches() {
-  try {
-    logger.info('clearVerbDataCaches', 'Starting cache clearing process')
-
-    let clearedCount = 0
-    let errorCount = 0
-
-    // Clear cache orchestrator if available
-    try {
-      const cacheOrchestrator = getOrchestrator()
-      if (cacheOrchestrator) {
-        cacheOrchestrator.clearAllCaches()
-        clearedCount++
-        logger.debug('clearVerbDataCaches', 'Cache orchestrator cleared')
-      }
-    } catch (orchestratorError) {
-      logger.warn('clearVerbDataCaches', 'Error clearing cache orchestrator', orchestratorError)
-      errorCount++
-    }
-
-    // Clear redundancy manager caches if available
-    try {
-      const redundancyManager = getRedundancyManager()
-      if (redundancyManager) {
-        redundancyManager.clearAllCaches()
-        clearedCount++
-        logger.debug('clearVerbDataCaches', 'Redundancy manager caches cleared')
-      }
-    } catch (redundancyError) {
-      logger.warn('clearVerbDataCaches', 'Error clearing redundancy manager', redundancyError)
-      errorCount++
-    }
-
-    // Clear any other cached data
-    try {
-      // Clear optimized cache if available
-      if (typeof clearOptimizedCache === 'function') {
-        clearOptimizedCache()
-        clearedCount++
-        logger.debug('clearVerbDataCaches', 'Optimized cache cleared')
-      }
-    } catch (optimizedCacheError) {
-      logger.warn('clearVerbDataCaches', 'Error clearing optimized cache', optimizedCacheError)
-      errorCount++
-    }
-
-    // Log clearing results
-    logger.info('clearVerbDataCaches', 'Cache clearing completed', {
-      clearedCount,
-      errorCount,
-      successRate: clearedCount > 0 ? `${((clearedCount / (clearedCount + errorCount)) * 100).toFixed(1)}%` : '0%'
-    })
-
-    // Trigger recovery if there were significant errors
-    if (errorCount > 0) {
-      handleErrorWithRecovery(new Error(`Cache clearing had ${errorCount} errors`), {
-        component: 'verbDataService',
-        function: 'clearVerbDataCaches',
-        clearedCount,
-        errorCount,
-        severity: errorCount > clearedCount ? 'medium' : 'low'
-      })
-    }
-
-    return {
-      success: true,
-      clearedCount,
-      errorCount
-    }
-
-  } catch (error) {
-    logger.error('clearVerbDataCaches', 'Critical error during cache clearing', error)
-
-    // Trigger recovery system
-    handleErrorWithRecovery(error, {
-      component: 'verbDataService',
-      function: 'clearVerbDataCaches',
-      severity: 'medium'
-    })
-
-    return {
-      success: false,
-      error: error.message
-    }
-  }
-}
-
-// Preload function for progressive enhancement
-export function preloadVerbData() {
-  // Start loading verbs in background
-  getAllVerbs().catch((error) => {
-    // Log preload failures (non-critical, data will load on-demand)
-    logger.warn('Verb preload failed (non-critical, will load on-demand)', error)
-  })
-}

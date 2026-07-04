@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { diffChars } from 'diff';
 import { formatMoodTense, TENSE_LABELS, MOOD_LABELS } from '../../lib/utils/verbLabels.js';
 import { storyData } from '../../data/narrativeStories.js';
@@ -864,7 +865,12 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
   const [visibleSentence, setVisibleSentence] = useState(-1);
   const [entered, setEntered] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const settings = useSettings();
+  const settings = useSettings(
+    useShallow((state) => ({
+      useVoseo: state.useVoseo,
+      useVosotros: state.useVosotros
+    }))
+  );
 
   // Determinar si tenemos verbos regulares o irregulares
   const hasRegularVerbs = exampleVerbs && exampleVerbs.some(verbObj => verbObj.type === 'regular')
@@ -1383,6 +1389,22 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
       });
   };
 
+  // Memoizadas: cada una recorre exampleVerbs y hace trabajo pesado (diffChars por verbo
+  // irregular, búsqueda de stems/paradigmas), así que no deben recalcularse en renders
+  // disparados solo por animación (entered/leaving) o cambios de settings no relacionados.
+  const storySentences = useMemo(
+    () => renderStorySentences(),
+    [tenseStoryData, exampleVerbs, tense, visibleSentence]
+  );
+  const paradigmTable = useMemo(
+    () => renderParadigmTable(),
+    [exampleVerbs, tense, hasIrregularVerbs, settings.useVoseo, settings.useVosotros]
+  );
+  const deconstructionContent = useMemo(
+    () => renderDeconstructionContent(),
+    [exampleVerbs, tense, hasRegularVerbs, hasIrregularVerbs, settings.useVoseo, settings.useVosotros]
+  );
+
   return (
     <div className={`verbos-onboarding verbos-onboarding--intro narrative-introduction${leaving ? ' ni-leaving' : ''}`}>
       <div className="vo-grid" aria-hidden="true" />
@@ -1452,9 +1474,9 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
             {/* TERMINACIONES — siempre primero */}
             <div className="ni-section-header">TERMINACIONES</div>
             <div className="ni-analysis-block">
-              {renderParadigmTable() || (
+              {paradigmTable || (
                 <div className="deconstruction-list">
-                  {renderDeconstructionContent()}
+                  {deconstructionContent}
                 </div>
               )}
             </div>
@@ -1465,7 +1487,7 @@ function NarrativeIntroduction({ tense, exampleVerbs = [], onBack, onContinue })
                 <div className="ni-section-header">CONTEXTO</div>
                 <div className="ni-story-block">
                   <div className="ni-story-title">{tenseStoryData.title}</div>
-                  {renderStorySentences()}
+                  {storySentences}
                 </div>
               </>
             )}

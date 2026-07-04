@@ -57,6 +57,7 @@ import { chooseNext } from '../../lib/core/generator.js';
 import { FORM_LOOKUP_MAP, initializeMaps } from '../../lib/core/optimizedCache.js';
 import { classifyError } from '../../lib/progress/errorClassification.js';
 import { useSettings } from '../../state/settings.js';
+import { useShallow } from 'zustand/react/shallow';
 import { convertLearningFamilyToOld } from '../../lib/data/learningIrregularFamilies.js';
 import { calculateAdaptiveDifficulty, generateNextSessionRecommendations } from '../../lib/learning/adaptiveEngine.js';
 import {
@@ -139,6 +140,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   const [realTimeDifficulty, setRealTimeDifficulty] = useState(DIFFICULTY_PARAMS.DEFAULT);
   const [allAttempts, setAllAttempts] = useState([]);
   const [sessionStartTimestamp, setSessionStartTimestamp] = useState(null);
+  const [sessionSummary, setSessionSummary] = useState(null);
 
   // Cola de ejercicios fallados para reintegración (almacena objetos completos de ejercicios)
   const [failedItemsQueue, setFailedItemsQueue] = useState([]);
@@ -151,9 +153,15 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
 
   const inputRef = useRef(null);
   const containerRef = useRef(null);
+  // Incrementing token so a stale generateNextItem() response can't overwrite state
+  // from a newer, still-in-flight (or already-resolved) generation.
+  const generationRequestIdRef = useRef(0);
+  // Pending setTimeouts scheduled by handleContinue, cleared on unmount so a stale
+  // callback can't call setState (or generate an item) after the component is gone.
+  const handleContinueTimeoutsRef = useRef([]);
   const [entered, setEntered] = useState(false);
   const [swapAnim, setSwapAnim] = useState(false);
-  const settings = useSettings();
+  const settings = useSettings(useShallow((state) => ({ region: state.region })));
   const [showAccentKeys, setShowAccentKeys] = useState(false);
   const [showPronunciation, setShowPronunciation] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -276,6 +284,8 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   }, [duration]);
 
   const generateNextItem = React.useCallback(async () => {
+    const requestId = ++generationRequestIdRef.current;
+
     // Get current settings snapshot WITHOUT modifying global state
     const currentSettings = settings.getState ? settings.getState() : settings;
 
@@ -418,6 +428,10 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
         recentVerbs: exerciseHistory.slice(-5).map(item => item.lemma)
       });
 
+      // A newer call to generateNextItem started while we were awaiting — let it own
+      // the state instead of overwriting it with this stale result.
+      if (requestId !== generationRequestIdRef.current) return;
+
       if (nextItem) {
         setCurrentItem(nextItem);
         setInputValue('');
@@ -432,6 +446,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
         setCurrentItem(null);
       }
     } catch (error) {
+      if (requestId !== generationRequestIdRef.current) return;
       logger.error('Error generating next item', error);
       setCurrentItem(null);
     }
@@ -495,6 +510,33 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
       logger.debug('Analytics session started', { startTime });
     }
   }, [sessionStartTimestamp]);
+
+  // Compute the session summary exactly once when the session finishes — this has side
+  // effects (records analytics via recordLearningSession), so it must not run on every
+  // render of the summary screen, only on the active -> finished transition.
+  useEffect(() => {
+    if (sessionState === 'finished' && !sessionSummary) {
+      setSessionSummary(generateSessionSummary());
+    }
+  }, [sessionState]);
+
+  // Cancel any in-flight TTS utterance on unmount so it doesn't keep talking after
+  // navigating away from this screen.
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Clear any pending handleContinue timeouts on unmount.
+  useEffect(() => {
+    return () => {
+      handleContinueTimeoutsRef.current.forEach((id) => clearTimeout(id));
+      handleContinueTimeoutsRef.current = [];
+    };
+  }, []);
 
   // Ensure container maintains focus for keyboard navigation
   useEffect(() => {
@@ -649,6 +691,15 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     }
   };
 
+  const scheduleHandleContinueTimeout = (fn, delay) => {
+    const id = setTimeout(() => {
+      handleContinueTimeoutsRef.current = handleContinueTimeoutsRef.current.filter((t) => t !== id);
+      fn();
+    }, delay);
+    handleContinueTimeoutsRef.current.push(id);
+    return id;
+  };
+
   const handleContinue = () => {
     if (isProcessing) return;
     setIsProcessing(true);
@@ -663,7 +714,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
       logger.debug('🎤 PHASE COMPLETE - calling onPhaseComplete');
       logger.debug('🎤 PHASE COMPLETE - calling onPhaseComplete');
-      setTimeout(() => {
+      scheduleHandleContinueTimeout(() => {
         onPhaseComplete();
         setIsProcessing(false);
       }, 0);
@@ -676,13 +727,13 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
 
         // Configurar el ejercicio fallado como siguiente
         setSwapAnim(true);
-        setTimeout(() => {
+        scheduleHandleContinueTimeout(() => {
           setSwapAnim(false);
           setCurrentItem(nextFailedItem);
           setInputValue('');
           setResult('idle');
           setStartTime(Date.now());
-          setTimeout(() => inputRef.current?.focus(), 0);
+          scheduleHandleContinueTimeout(() => inputRef.current?.focus(), 0);
           logger.debug('Reintegrating failed exercise', { lemma: nextFailedItem.lemma, person: getPersonText(nextFailedItem.person) });
           setIsProcessing(false);
         }, 250);
@@ -692,14 +743,14 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
         setSwapAnim(true);
         // Reset result immediately to enable input
         setResult('idle');
-        setTimeout(() => {
+        scheduleHandleContinueTimeout(() => {
           setSwapAnim(false);
           generateNextItem().catch((error) => logger.error('Failed to generate next item', error)).finally(() => {
             setIsProcessing(false);
           });
         }, 250);
         // Ensure focus is set after animation with longer delay
-        setTimeout(() => {
+        scheduleHandleContinueTimeout(() => {
           if (inputRef.current) {
             inputRef.current.focus();
             // Ensure cursor is visible
@@ -934,8 +985,8 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   }
 
   if (sessionState === 'finished') {
-    const summary = generateSessionSummary();
-    return <SessionSummary onFinish={onFinish} summary={summary} />;
+    if (!sessionSummary) return null;
+    return <SessionSummary onFinish={onFinish} summary={sessionSummary} />;
   }
 
   const tenseLabelDisplay = (TENSE_LABELS[tense?.tense] || tense?.tense || '').toLowerCase();

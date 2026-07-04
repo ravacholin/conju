@@ -14,6 +14,7 @@
 import { getRedundancyManager } from './VerbDataRedundancyManager.js'
 import { getIntegrityGuard } from './DataIntegrityGuard.js'
 import { getOrchestrator } from './CacheOrchestrator.js'
+import { memoryManager } from '../progress/memoryManager.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('AutoRecovery')
@@ -127,9 +128,6 @@ class AutoRecoverySystem {
         // Setup error listeners
         this.setupErrorListeners()
 
-        // Start monitoring
-        this.startMonitoring()
-
         this.isInitialized = true
 
         logger.info('initialize', '✅ AutoRecoverySystem initialized successfully')
@@ -152,6 +150,9 @@ class AutoRecoverySystem {
    * Handle error with automatic recovery
    */
   async handleError(error, context = {}) {
+    // A real error just happened — worth starting periodic health monitoring from here on.
+    this.startMonitoring()
+
     const startTime = performance.now()
     this.metrics.totalErrors++
 
@@ -683,14 +684,15 @@ class AutoRecoverySystem {
    * Start continuous monitoring
    */
   startMonitoring() {
-    if (this.monitoringInterval) {
-      clearInterval(this.monitoringInterval)
-    }
+    if (this.monitoringInterval) return
 
     // Monitor every 30 seconds
-    this.monitoringInterval = setInterval(() => {
-      this.performHealthCheck()
-    }, 30000)
+    this.monitoringInterval = memoryManager.registerInterval(
+      'AutoRecoverySystem',
+      () => this.performHealthCheck(),
+      30000,
+      'Periodic auto-recovery health check'
+    )
 
     this.monitoringActive = true
     logger.info('startMonitoring', 'Auto-recovery monitoring started')
@@ -701,7 +703,7 @@ class AutoRecoverySystem {
    */
   stopMonitoring() {
     if (this.monitoringInterval) {
-      clearInterval(this.monitoringInterval)
+      memoryManager.clearInterval(this.monitoringInterval)
       this.monitoringInterval = null
     }
 

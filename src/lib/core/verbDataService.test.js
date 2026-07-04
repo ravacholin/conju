@@ -76,14 +76,23 @@ describe('verbDataService getVerbByLemma fallback', () => {
     })
   })
 
-  it('returns a verb from the direct dataset when the primary path misses the lemma', async () => {
+  it('falls back to the minimal emergency verb set when lazy loading returns nothing', async () => {
+    const lemma = 'ser'
+
+    const verb = await verbDataService.getVerbByLemma(lemma)
+
+    expect(getVerbsMock).toHaveBeenCalled()
+    expect(handleErrorWithRecoveryMock).toHaveBeenCalled()
+    expect(verb).toBeTruthy()
+    expect(verb?.lemma).toBe(lemma)
+    expect(verb?.type).toBe('irregular')
+  })
+
+  it('returns null for a non-critical lemma missing from every data source', async () => {
     const lemma = 'hablar'
 
     const verb = await verbDataService.getVerbByLemma(lemma)
 
-    expect(getAllVerbsWithRedundancyMock).toHaveBeenCalled()
-    expect(verb).toBeTruthy()
-    expect(verb?.lemma).toBe(lemma)
-    expect(verb?.type).toBe('regular')
+    expect(verb).toBeNull()
   })
 })

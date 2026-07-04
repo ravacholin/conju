@@ -16,6 +16,7 @@
  */
 
 import { getVerbs } from '../../data/verbsLazy.js'
+import { memoryManager } from '../progress/memoryManager.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('VerbDataRedundancy')
@@ -143,9 +144,6 @@ class VerbDataRedundancyManager {
     try {
       // Initialize all layers
       await this.initializeLayers()
-
-      // Start health monitoring
-      this.startHealthMonitoring()
 
       // Validate initial data
       await this.validateCurrentData()
@@ -312,6 +310,9 @@ class VerbDataRedundancyManager {
     this.metrics.fallbackRequests++
     this.layerHealth.set(this.currentLayer, false)
 
+    // A layer just failed for real — worth starting periodic validation from here on.
+    this.startHealthMonitoring()
+
     const fallbackOrder = this.getFallbackOrder()
 
     for (const layer of fallbackOrder) {
@@ -373,6 +374,7 @@ class VerbDataRedundancyManager {
   handleCriticalError(startTime) {
     logger.error('handleCriticalError', 'Entering critical error state')
 
+    this.startHealthMonitoring()
     this.healthState = HEALTH_STATES.CRITICAL
     this.failureCount++
 
@@ -462,13 +464,19 @@ class VerbDataRedundancyManager {
   }
 
   /**
-   * Start health monitoring
+   * Start health monitoring. Lazy — only called once a real fallback has happened,
+   * so a healthy app never pays for a permanent 30s background interval.
    */
   startHealthMonitoring() {
+    if (this.validationInterval) return
+
     // Validate data every 30 seconds
-    this.validationInterval = setInterval(() => {
-      this.validateAllLayers()
-    }, 30000)
+    this.validationInterval = memoryManager.registerInterval(
+      'VerbDataRedundancyManager',
+      () => this.validateAllLayers(),
+      30000,
+      'Periodic verb data layer validation'
+    )
 
     logger.info('startHealthMonitoring', 'Health monitoring started')
   }
@@ -573,6 +581,7 @@ class VerbDataRedundancyManager {
   async handleInitializationFailure(error) {
     logger.error('handleInitializationFailure', 'Initialization failed, entering emergency mode', error)
 
+    this.startHealthMonitoring()
     this.currentLayer = DATA_LAYERS.EMERGENCY
     this.healthState = HEALTH_STATES.EMERGENCY
     this.dataCache.clear()
@@ -701,7 +710,7 @@ class VerbDataRedundancyManager {
    */
   destroy() {
     if (this.validationInterval) {
-      clearInterval(this.validationInterval)
+      memoryManager.clearInterval(this.validationInterval)
       this.validationInterval = null
     }
 

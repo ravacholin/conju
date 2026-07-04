@@ -107,7 +107,6 @@ function AppRouter() {
 
   // Create stable refs for hooks to avoid dependency issues
   const onboardingFlowRef = useRef(onboardingFlow)
-  const drillModeRef = useRef(drillMode)
   const forceFullResetRef = useRef(false)
   const drillGenTimeoutRef = useRef(null)
 
@@ -115,10 +114,6 @@ function AppRouter() {
   useEffect(() => {
     onboardingFlowRef.current = onboardingFlow
   }, [onboardingFlow])
-
-  useEffect(() => {
-    drillModeRef.current = drillMode
-  }, [drillMode])
 
   const clearDrillGenerationTimeout = useCallback(() => {
     if (drillGenTimeoutRef.current) {
@@ -148,18 +143,10 @@ function AppRouter() {
       onboardingFlowRef.current.setOnboardingStep(route.step, { syncRouter: false })
     }
 
-    // Regenerate drill item if navigating to drill without current item
-    if (route.mode === 'drill' && !drillModeRef.current.currentItem) {
-      scheduleDrillGeneration(() => {
-        // Use the new dynamic forms generation - no need to pass cached region forms
-        drillModeRef.current.generateNextItem(
-          null,
-          onboardingFlowRef.current.getAvailableMoodsForLevel,
-          onboardingFlowRef.current.getAvailableTensesForLevelAndMood
-        )
-      }, 100)
-    }
-  }, [clearDrillGenerationTimeout, scheduleDrillGeneration]) // Stable dependencies to prevent router re-subscriptions
+    // Drill item generation on entering drill mode is handled by the guarded
+    // `currentMode === 'drill'` effect below (it also checks isGenerating), so it
+    // isn't duplicated here.
+  }, []) // Stable dependencies to prevent router re-subscriptions
 
   // Initialize router and subscribe to route changes
   useEffect(() => {

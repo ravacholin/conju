@@ -30,6 +30,7 @@ export class TemporalIntelligence {
       threshold: temporalConfig.CIRCADIAN.COGNITIVE_LOAD_THRESHOLD,
       recoveryRate: temporalConfig.CIRCADIAN.FATIGUE_RECOVERY_RATE
     }
+    this._autoSaveScheduled = false
     this.init()
   }
 
@@ -39,9 +40,29 @@ export class TemporalIntelligence {
   }
 
   /**
+   * Arranca el auto-save de forma perezosa, en el primer uso real, en vez de
+   * incondicionalmente al importar el módulo.
+   */
+  ensureAutoSaveScheduled() {
+    if (this._autoSaveScheduled) return
+    this._autoSaveScheduled = true
+
+    if (typeof setInterval !== 'undefined') {
+      registerInterval(
+        'TemporalIntelligence',
+        () => this.saveTemporalData(),
+        PROGRESS_CONFIG.AUTO_SAVE.TEMPORAL_INTELLIGENCE,
+        'Auto-save temporal data'
+      )
+    }
+  }
+
+  /**
    * Procesa una sesión de práctica para análisis temporal
    */
   processSession(sessionData) {
+    this.ensureAutoSaveScheduled()
+
     const {
       startTime,
       endTime,
@@ -802,16 +823,6 @@ export const processSessionForTempo = (sessionData) => {
  */
 export const getCurrentTemporalState = () => {
   return temporalIntelligence.getCurrentTemporalStats()
-}
-
-// Configurar auto-save con memory management
-if (typeof setInterval !== 'undefined') {
-  registerInterval(
-    'TemporalIntelligence',
-    () => temporalIntelligence.saveTemporalData(),
-    PROGRESS_CONFIG.AUTO_SAVE.TEMPORAL_INTELLIGENCE,
-    'Auto-save temporal data'
-  )
 }
 
 // Registrar sistema para cleanup

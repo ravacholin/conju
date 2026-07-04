@@ -22,6 +22,7 @@ export class ConfidenceEngine {
       calibration: 0.5 // qué tan bien calibrada está la confianza percibida vs. real
     }
     this.confidenceThresholds = PROGRESS_CONFIG.EMOTIONAL_INTELLIGENCE.CONFIDENCE.THRESHOLDS
+    this._autoSaveScheduled = false
     this.init()
   }
 
@@ -30,9 +31,29 @@ export class ConfidenceEngine {
   }
 
   /**
+   * Arranca el auto-save de forma perezosa, en el primer uso real, en vez de
+   * incondicionalmente al importar el módulo.
+   */
+  ensureAutoSaveScheduled() {
+    if (this._autoSaveScheduled) return
+    this._autoSaveScheduled = true
+
+    if (typeof setInterval !== 'undefined') {
+      registerInterval(
+        'ConfidenceEngine',
+        () => this.saveConfidenceData(),
+        PROGRESS_CONFIG.AUTO_SAVE.CONFIDENCE_ENGINE,
+        'Auto-save confidence data'
+      )
+    }
+  }
+
+  /**
    * Procesa una respuesta del usuario para análisis de confianza
    */
   processResponse(response) {
+    this.ensureAutoSaveScheduled()
+
     const {
       isCorrect,
       responseTime,
@@ -704,16 +725,6 @@ export const processResponseForConfidence = (response) => {
  */
 export const getCurrentConfidenceState = () => {
   return confidenceEngine.getCurrentConfidenceState()
-}
-
-// Configurar auto-save con memory management
-if (typeof setInterval !== 'undefined') {
-  registerInterval(
-    'ConfidenceEngine',
-    () => confidenceEngine.saveConfidenceData(),
-    PROGRESS_CONFIG.AUTO_SAVE.CONFIDENCE_ENGINE,
-    'Auto-save confidence data'
-  )
 }
 
 // Registrar sistema para cleanup

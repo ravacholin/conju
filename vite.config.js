@@ -5,9 +5,39 @@ import { VitePWA } from 'vite-plugin-pwa'
 // import { existsSync } from 'node:fs'
 // import { join } from 'node:path'
 
+// Kept in sync with workbox.maximumFileSizeToCacheInBytes below. If the data-verbs chunk
+// grows past this limit, Workbox silently drops it from the PWA precache — the app then
+// loses offline support for the core verb dataset with no build-time signal.
+const PWA_PRECACHE_LIMIT_BYTES = 5 * 1024 * 1024
+
+// Warns (loudly, in the build log) when the data-verbs chunk approaches the precache
+// limit above, instead of relying on Workbox's silent drop to surface the problem.
+function checkDataVerbsChunkSize() {
+  return {
+    name: 'check-data-verbs-chunk-size',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      const warnThreshold = PWA_PRECACHE_LIMIT_BYTES * 0.8
+      for (const chunkOrAsset of Object.values(bundle)) {
+        if (chunkOrAsset.type !== 'chunk' || chunkOrAsset.name !== 'data-verbs') continue
+        const size = Buffer.byteLength(chunkOrAsset.code, 'utf8')
+        if (size > warnThreshold) {
+          const mb = (bytes) => (bytes / (1024 * 1024)).toFixed(2)
+          console.warn(
+            `⚠️  [check-data-verbs-chunk-size] data-verbs chunk is ${mb(size)}MB ` +
+            `(limit for the PWA precache is ${mb(PWA_PRECACHE_LIMIT_BYTES)}MB). ` +
+            `If it crosses the limit, Workbox silently excludes it from the offline precache.`
+          )
+        }
+      }
+    }
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [
+    checkDataVerbsChunkSize(),
     // Dev helper: auto-arranca el servidor de sync local si existe
     // DESHABILITADO: Usando servidor remoto en conju.onrender.com
     // {
@@ -28,7 +58,7 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt'],
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+        maximumFileSizeToCacheInBytes: PWA_PRECACHE_LIMIT_BYTES,
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
