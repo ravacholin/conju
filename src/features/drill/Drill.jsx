@@ -3,7 +3,7 @@ import { grade } from '../../lib/core/grader.js';
 // Removed unused imports to satisfy lint
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
-import { useSettings, RESISTANCE_MAX_MS, warmupCachesIfNeeded } from '../../state/settings.js';
+import { useSettings, warmupCachesIfNeeded } from '../../state/settings.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 import ReverseInputs from './ReverseInputs.jsx';
 import ResistanceHUD from './ResistanceHUD.jsx';
@@ -33,7 +33,7 @@ export default function Drill({
   // Removed unused hint state
   const [showDiff, setShowDiff] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  const { showExplosion, urgentTick, clockClickFeedback, handleClockClick } = useResistanceTimer();
+  const { msLeft: resistanceMsLeft, showExplosion, urgentTick, clockClickFeedback, handleClockClick, addTime } = useResistanceTimer();
   const [secondInput, setSecondInput] = useState('');
 
   const inputRef = useRef(null);
@@ -148,12 +148,7 @@ export default function Drill({
       const lvl = useSettings.getState().level || 'A1';
       // Incrementos por nivel: A1 +6s, A2 +5s, B1 +4s, B2 +3s, C1 +2.5s, C2 +2s
       const inc = lvl === 'C2' ? 2000 : lvl === 'C1' ? 2500 : lvl === 'B2' ? 3000 : lvl === 'B1' ? 4000 : lvl === 'A2' ? 5000 : 6000;
-      settings.set({
-        resistanceMsLeft: Math.min(
-          useSettings.getState().resistanceMsLeft + inc,
-          RESISTANCE_MAX_MS
-        )
-      });
+      addTime(inc);
     }
 
     if (!gradeResult.correct) {
@@ -646,7 +641,7 @@ export default function Drill({
       {(settings.resistanceActive || showExplosion) && (
         <ResistanceHUD
           isActive={settings.resistanceActive}
-          msLeft={settings.resistanceMsLeft}
+          msLeft={resistanceMsLeft}
           showExplosion={showExplosion}
           urgentTick={urgentTick}
           clockClickFeedback={clockClickFeedback}
