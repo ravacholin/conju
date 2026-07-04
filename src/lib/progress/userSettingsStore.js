@@ -46,7 +46,7 @@ export function getCurrentUserId() {
   try {
     const id = getIdFromProgress()
     if (id && typeof id === 'string') {
-      // console.log('🔑 getCurrentUserId: Using progress system userId:', id)
+      // safeLogger.debug('🔑 getCurrentUserId: Using progress system userId', id)
       return id
     }
   } catch {
@@ -58,7 +58,7 @@ export function getCurrentUserId() {
     if (typeof window !== 'undefined' && window.authService?.isLoggedIn?.()) {
       const authUserId = window.authService?.getUser?.()?.id
       if (authUserId && typeof authUserId === 'string') {
-        // console.log('🔑 getCurrentUserId: Using AUTHENTICATED userId:', authUserId)
+        // safeLogger.debug('🔑 getCurrentUserId: Using AUTHENTICATED userId', authUserId)
         return authUserId
       }
     }
@@ -73,9 +73,9 @@ export function getCurrentUserId() {
       if (!userId || typeof userId !== 'string') {
         userId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
         window.localStorage.setItem(USER_ID_STORAGE_KEY, userId)
-        // console.warn('⚠️ getCurrentUserId: Generated NEW userId (no existing ID found):', userId)
+        // safeLogger.warn('⚠️ getCurrentUserId: Generated NEW userId (no existing ID found)', userId)
       } else {
-        // console.log('🔑 getCurrentUserId: Using userId from localStorage:', userId)
+        // safeLogger.debug('🔑 getCurrentUserId: Using userId from localStorage', userId)
       }
       return userId
     }
@@ -84,7 +84,7 @@ export function getCurrentUserId() {
   }
 
   const tempId = `user-temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
-  // console.warn('⚠️ getCurrentUserId: Using TEMP userId (fallback):', tempId)
+  // safeLogger.warn('⚠️ getCurrentUserId: Using TEMP userId (fallback)', tempId)
   return tempId
 }
 

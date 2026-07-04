@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { smartNotifications } from '../../lib/notifications/smartNotifications.js'
+import { createLogger } from '../../lib/utils/logger.js'
 import './NotificationSettings.css'
+
+const logger = createLogger('NotificationSettings')
 
 export default function NotificationSettings({ compact = false }) {
   const [notificationState, setNotificationState] = useState({
@@ -46,7 +49,7 @@ export default function NotificationSettings({ compact = false }) {
         }
       }
     } catch (error) {
-      console.error('Error enabling notifications:', error)
+      logger.error('Error enabling notifications', error)
     } finally {
       setIsRequesting(false)
     }

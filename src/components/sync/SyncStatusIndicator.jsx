@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useSyncStatus } from '../../hooks/useSyncStatus.js';
+import { createLogger } from '../../lib/utils/logger.js';
 import './SyncStatusIndicator.css';
+
+const logger = createLogger('SyncStatusIndicator');
 
 /**
  * SyncStatusIndicator - Indicador visual del estado de sincronización
@@ -20,7 +23,7 @@ function SyncStatusIndicator() {
       const { syncWithCloud } = await import('../../lib/progress/cloudSync.js');
       await syncWithCloud({ bypassIncognito: false });
     } catch (error) {
-      console.error('Error al sincronizar manualmente:', error);
+      logger.error('Error al sincronizar manualmente', error);
     } finally {
       setIsSyncingManual(false);
     }

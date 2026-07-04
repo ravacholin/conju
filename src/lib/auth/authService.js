@@ -667,11 +667,11 @@ class AuthService {
         try {
           migrationResult = await this.migrateAnonymousAccount(anonymousUserId)
         } catch (migrateError) {
-          console.warn('Server-side migration failed (non-blocking):', migrateError.message)
+          logger.warn('Server-side migration failed (non-blocking)', migrateError.message)
         }
 
         if (migrationResult?.status === 404) {
-          console.info('Anonymous progress already linked to an account or not found', {
+          logger.info('Anonymous progress already linked to an account or not found', {
             anonymousUserId
           })
         } else if (migrationResult) {

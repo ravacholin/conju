@@ -5,6 +5,9 @@ import { getCurrentUserProfile, AVAILABLE_LEVELS } from './userLevelProfile.js'
 import { LEVEL_REQUIREMENTS } from './levelProgression.js'
 import { getMasteryByUser } from '../progress/database.js'
 import { getDynamicLevelEvaluator } from './DynamicLevelEvaluator.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('LevelProgressCalculator')
 
 // Configuración del calculador de progreso
 const PROGRESS_CONFIG = {
@@ -107,7 +110,7 @@ export class LevelProgressCalculator {
       return progress
 
     } catch (error) {
-      console.error('Error calculating level progress:', error)
+      logger.error('Error calculating level progress', error)
       return this.getDefaultProgress(currentLevel || 'A2', error.message)
     }
   }
@@ -415,7 +418,7 @@ export class LevelProgressCalculator {
 
       return newProgress
     } catch (error) {
-      console.warn('Error applying smoothing:', error)
+      logger.warn('Error applying smoothing', error)
       return newProgress
     }
   }
@@ -428,7 +431,7 @@ export class LevelProgressCalculator {
       const masteryData = await getMasteryByUser(userId)
       return masteryData || {}
     } catch (error) {
-      console.warn('Error loading mastery data:', error)
+      logger.warn('Error loading mastery data', error)
       return {}
     }
   }
@@ -441,7 +444,7 @@ export class LevelProgressCalculator {
       const evaluator = getDynamicLevelEvaluator()
       return await evaluator.evaluateEffectiveLevel(userId, level)
     } catch (error) {
-      console.warn('Error getting level evaluation:', error)
+      logger.warn('Error getting level evaluation', error)
       return null
     }
   }

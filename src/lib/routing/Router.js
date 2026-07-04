@@ -2,6 +2,7 @@
  * Simple but robust router for the Spanish Conjugator app
  * Replaces manual History API management with a centralized solution
  */
+import { createLogger } from '../utils/logger.js'
 import {
   DEFAULT_ROUTE,
   ROUTES,
@@ -9,6 +10,8 @@ import {
   normalizeRoute,
   parseRouteFromURL
 } from './routeContract.js'
+
+const logger = createLogger('Router')
 
 const debug = (method, ...args) => {
   if (!import.meta.env?.DEV) return
@@ -69,7 +72,7 @@ class Router {
       // Safety timeout to prevent infinite lock
       setTimeout(() => {
         if (this.isNavigating) {
-          console.warn('Router: Navigation timed out, forcing reset')
+          logger.warn('Router: Navigation timed out, forcing reset')
           this.isNavigating = false
         }
       }, 2000)
@@ -98,7 +101,7 @@ class Router {
 
       return Promise.resolve()
     } catch (error) {
-      console.error('Navigation error:', error)
+      logger.error('Navigation error', error)
       return Promise.reject(error)
     } finally {
       this.isNavigating = false
@@ -130,7 +133,7 @@ class Router {
         this.notifyListeners(route, 'popstate')
       }
     } catch (error) {
-      console.error('Error handling popstate:', error)
+      logger.error('Error handling popstate', error)
       // Fallback to default route
       const fallbackRoute = normalizeRoute(DEFAULT_ROUTE)
       this.currentRoute = fallbackRoute
@@ -198,7 +201,7 @@ class Router {
       try {
         listener(route, type)
       } catch (error) {
-        console.error('Router listener error:', error)
+        logger.error('Router listener error', error)
       }
     })
   }
@@ -230,7 +233,7 @@ class Router {
         this.navigate(ROUTES.homeMenu())
       }
     } catch (error) {
-      console.error('Error navigating back:', error)
+      logger.error('Error navigating back', error)
       // Fallback navigation
       this.navigate(ROUTES.homeMenu())
     }

@@ -763,6 +763,6 @@ export async function forceRefreshVerbData() {
 // Auto-initialize in browser environment
 if (typeof window !== 'undefined') {
   initializeRedundancyManager().catch(error => {
-    console.error('Failed to auto-initialize VerbDataRedundancyManager:', error)
+    logger.error('Failed to auto-initialize VerbDataRedundancyManager', error)
   })
 }

@@ -4,6 +4,7 @@
  */
 
 import { getMasteryByUser } from '../progress/database.js';
+import { createLogger } from '../utils/logger.js';
 import {
   getAdaptiveLevelConfig,
   MASTERY_THRESHOLDS,
@@ -11,6 +12,8 @@ import {
   calculatePhaseDurations,
   getRealTimeDifficultyConfig
 } from './learningConfig.js';
+
+const logger = createLogger('adaptiveEngine');
 
 /**
  * Calculates adaptive difficulty level based on user's mastery scores
@@ -64,7 +67,7 @@ export function calculateAdaptiveDifficulty(userId, tense, _verbType) {
     };
 
   } catch (error) {
-    console.error('Error calculating adaptive difficulty:', error);
+    logger.error('Error calculating adaptive difficulty', error);
     // Fallback to safe defaults
     return {
       level: 'beginner',
@@ -177,7 +180,7 @@ export function generateNextSessionRecommendations(userId, currentSession) {
     return nextRecommendation;
 
   } catch (error) {
-    console.error('Error generating recommendations:', error);
+    logger.error('Error generating recommendations', error);
     return {
       recommendedTense: 'pres',
       recommendedType: 'regular', 
@@ -219,7 +222,7 @@ export function canSkipPhase(userId, tense, phase) {
         return false;
     }
   } catch (error) {
-    console.error('Error checking skip eligibility:', error);
+    logger.error('Error checking skip eligibility', error);
     return false;
   }
 }

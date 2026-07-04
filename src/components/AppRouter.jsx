@@ -58,15 +58,9 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import router from '../lib/routing/Router.js'
 import { ROUTES } from '../lib/routing/routeContract.js'
 import { useSessionStore } from '../state/session.js'
+import { createLogger } from '../lib/utils/logger.js'
 
-// Centralized logger for development-only debug output
-const logger = {
-  debug(message, ...args) {
-    if (import.meta.env?.DEV && !import.meta?.vitest) {
-      console.log(message, ...args)
-    }
-  }
-}
+const logger = createLogger('AppRouter')
 
 /**
  * Componente principal de enrutamiento de la aplicación

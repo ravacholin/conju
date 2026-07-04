@@ -27,7 +27,7 @@ const logger = createLogger('DoubleModeManager')
 const weightedRandomSelection = (items, weights) => {
   // Robust input validation
   if (!Array.isArray(items) || !Array.isArray(weights)) {
-    console.warn('weightedRandomSelection: items and weights must be arrays')
+    logger.warn('weightedRandomSelection: items and weights must be arrays')
     return null
   }
   
@@ -41,7 +41,7 @@ const weightedRandomSelection = (items, weights) => {
   }
   
   if (items.length !== weights.length) {
-    console.warn(`weightedRandomSelection: items length (${items.length}) must match weights length (${weights.length})`)
+    logger.warn(`weightedRandomSelection: items length (${items.length}) must match weights length (${weights.length})`)
     return null
   }
   

@@ -3,6 +3,10 @@
  * Manages PWA updates and provides user notifications for new versions
  */
 
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('swUpdateHandler')
+
 let updateAvailable = false
 let registration = null
 let initialized = false
@@ -55,7 +59,7 @@ function safeCheckForUpdate(_reason, options = {}) {
 
   Promise.resolve(registration.update()).catch((error) => {
     if (import.meta.env?.DEV) {
-      console.warn('SW update check failed:', error)
+      logger.warn('SW update check failed', error)
     }
   })
 }
@@ -128,7 +132,7 @@ export function initSWUpdateHandler() {
         })
 
       } catch (error) {
-        console.error('SW registration failed:', error)
+        logger.error('SW registration failed', error)
       }
     })
   }

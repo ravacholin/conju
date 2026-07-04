@@ -2,7 +2,10 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser, getMasteryByUser } from '../../lib/progress/database.js'
 import { getGamificationStats } from '../../lib/progress/gamification.js'
+import { createLogger } from '../../lib/utils/logger.js'
 import './ProgressJourney.css'
+
+const logger = createLogger('ProgressJourney')
 
 export default function ProgressJourney({ compact = false }) {
   const [data, setData] = useState({
@@ -35,7 +38,7 @@ export default function ProgressJourney({ compact = false }) {
         loading: false
       })
     } catch (error) {
-      console.error('Error loading progress data:', error)
+      logger.error('Error loading progress data', error)
       setData(prev => ({ ...prev, loading: false }))
     }
   }

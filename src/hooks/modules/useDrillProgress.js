@@ -30,28 +30,28 @@ try {
   processUserResponse = flowModule.processUserResponse
   flowDetector = flowModule.flowDetector
 } catch (error) {
-  console.warn('Flow detection module not available:', error)
+  logger.warn('Flow detection module not available', error)
 }
 
 try {
   const momentumModule = await import('../../lib/progress/momentumTracker.js')
   momentumTracker = momentumModule.momentumTracker
 } catch (error) {
-  console.warn('Momentum tracking module not available:', error)
+  logger.warn('Momentum tracking module not available', error)
 }
 
 try {
   const confidenceModule = await import('../../lib/progress/confidenceEngine.js')
   confidenceEngine = confidenceModule.confidenceEngine
 } catch (error) {
-  console.warn('Confidence engine module not available:', error)
+  logger.warn('Confidence engine module not available', error)
 }
 
 try {
   const goalsModule = await import('../../lib/progress/dynamicGoals.js')
   dynamicGoalsSystem = goalsModule.dynamicGoalsSystem
 } catch (error) {
-  console.warn('Dynamic goals module not available:', error)
+  logger.warn('Dynamic goals module not available', error)
 }
 
 // NOTE: attempt persistence, mastery calculation and SRS scheduling are NOT done here.

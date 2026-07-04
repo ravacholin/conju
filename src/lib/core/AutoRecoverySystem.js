@@ -1010,7 +1010,7 @@ if (typeof window !== 'undefined') {
   const recovery = getRecoverySystem()
   if (!recovery.isInitialized) {
     initializeRecoverySystem().catch(error => {
-      console.error('Failed to auto-initialize AutoRecoverySystem:', error)
+      logger.error('Failed to auto-initialize AutoRecoverySystem', error)
     })
   }
 }

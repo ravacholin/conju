@@ -4,7 +4,10 @@ import GlobalErrorBoundary from './components/GlobalErrorBoundary.jsx'
 import GamificationNotifications from './components/gamification/GamificationNotifications.jsx'
 import { inject } from '@vercel/analytics'
 import { Capacitor } from '@capacitor/core'
+import { createLogger } from './lib/utils/logger.js'
 import './App.css'
+
+const logger = createLogger('App')
 
 function App() {
   useEffect(() => {
@@ -32,7 +35,7 @@ function App() {
             }
           })
         } catch (error) {
-          console.error('Error setting up native back button listener:', error)
+          logger.error('Error setting up native back button listener', error)
         }
       }
     }

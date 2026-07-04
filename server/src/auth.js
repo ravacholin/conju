@@ -20,7 +20,9 @@ export async function authMiddleware(req, res, next) {
       const effectiveUserId = decoded.accountId || decoded.userId
 
       if (!effectiveUserId) {
-        console.log('⚠️ JWT verification succeeded but neither accountId nor userId is present in payload')
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('⚠️ JWT verification succeeded but neither accountId nor userId is present in payload')
+        }
         return res.status(401).json({ error: 'Invalid auth token' })
       }
 
@@ -31,7 +33,10 @@ export async function authMiddleware(req, res, next) {
     } catch (error) {
       // A token was sent but failed verification: never fall back to a client-asserted
       // identity for this request, or anyone could bypass auth with a bad/expired token.
-      console.log(`⚠️ JWT verification failed: ${error.message}`)
+      // Expected under normal use (expired tokens, etc.), so only logged outside production.
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(`⚠️ JWT verification failed: ${error.message}`)
+      }
       return res.status(401).json({ error: 'Invalid or expired auth token' })
     }
   }

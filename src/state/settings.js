@@ -4,6 +4,9 @@ import { z } from 'zod'
 import { getCacheStats, clearAllCaches } from '../lib/core/optimizedCache.js'
 import { getCurrentUserId } from '../lib/progress/userSettingsStore.js'
 import { createSettingsPersistenceQueue } from './settingsPersistence.js'
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('settings')
 
 // Niveles disponibles
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL']
@@ -135,7 +138,7 @@ const sanitizeSettingsUpdate = (update, source = 'unknown') => {
   })
 
   if (unknownKeys.length > 0 && import.meta.env?.DEV) {
-    console.warn(`useSettings.set ignored unknown keys (${source})`, unknownKeys)
+    logger.warn(`useSettings.set ignored unknown keys (${source})`, unknownKeys)
   }
 
   return sanitized
@@ -268,7 +271,7 @@ const sanitizePersistedSettings = (persistedState) => {
     }
 
     if (import.meta.env?.DEV) {
-      console.warn(`Settings hydration ignored invalid key: ${key}`, parsed.error)
+      logger.warn(`Settings hydration ignored invalid key: ${key}`, parsed.error)
     }
   })
 
@@ -321,7 +324,7 @@ export const warmupCachesIfNeeded = (() => {
     return import('../lib/core/optimizedCache.js').then(({ warmupCaches }) => {
       warmupCaches()
     }).catch(err => {
-      console.warn('Cache warmup failed:', err)
+      logger.warn('Cache warmup failed', err)
       hasWarmedUp = false // Allow retry on failure
     })
   }
@@ -473,7 +476,7 @@ const settingsPersistenceQueue = createSettingsPersistenceQueue({
     await saveUserSettings(userId, settings)
   },
   onError: (error) => {
-    console.warn('Failed to persist settings to IndexedDB:', error)
+    logger.warn('Failed to persist settings to IndexedDB', error)
   }
 })
 

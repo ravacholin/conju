@@ -1,4 +1,7 @@
 import { resolveDialect } from './languagePreferences.js';
+import { createLogger } from '../utils/logger.js';
+
+const logger = createLogger('pronunciationUtils');
 
 // Utilidades de pronunciación extraídas para reutilización en paneles de drill
 
@@ -178,7 +181,7 @@ export const speakText = (text, lang = 'es-ES', options = {}) => {
         // 6. Último recurso: cualquier voz española
         spanishVoices[0];
 
-      console.log('🔊 Selected voice:', preferredVoice?.name, preferredVoice?.lang);
+      logger.debug('🔊 Selected voice', { name: preferredVoice?.name, lang: preferredVoice?.lang });
 
       if (preferredVoice) {
         utterance.voice = preferredVoice;

@@ -2,6 +2,9 @@
 // Previene problemas de mapeo como "Undefined - undefined"
 
 import { MOOD_LABELS, TENSE_LABELS } from './verbLabels.js'
+import { createLogger } from './logger.js'
+
+const logger = createLogger('moodTenseValidator')
 
 /**
  * Valida que un mood/tense tenga mapeo correcto
@@ -43,7 +46,7 @@ export function getSafeMoodTenseLabels(mood, tense) {
   const tenseLabel = TENSE_LABELS[tense] || `[${tense || 'undefined'}]`
   
   if (!validation.isValid) {
-    console.warn('MoodTense mapping issues:', validation.errors, { mood, tense })
+    logger.warn('MoodTense mapping issues', { errors: validation.errors, mood, tense })
   }
   
   return {

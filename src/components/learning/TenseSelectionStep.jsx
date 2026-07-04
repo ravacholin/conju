@@ -2,6 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react'
 import LearningStepView from './LearningStepView.jsx'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { getVerbForms } from '../../lib/core/verbDataService.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('TenseSelectionStep')
 
 const REFERENCE_LEMMAS = ['hablar', 'comer', 'vivir']
 const SUBMENU_MOODS = {
@@ -50,14 +53,14 @@ function TenseSelectionStep({ availableTenses, onSelect, onHome, useVoseo = fals
               const forms = await getVerbForms(lemma, region)
               return [lemma, forms]
             } catch (error) {
-              console.warn(`TenseSelectionStep: no se pudieron obtener formas para ${lemma}`, error)
+              logger.warn(`no se pudieron obtener formas para ${lemma}`, error)
               return [lemma, []]
             }
           })
         )
         setReferenceForms(new Map(pairs))
       } catch (error) {
-        console.error('TenseSelectionStep: fallo al cargar verbos de referencia', error)
+        logger.error('fallo al cargar verbos de referencia', error)
         setReferenceForms(new Map())
       }
     }

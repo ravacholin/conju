@@ -13,6 +13,9 @@
 
 import { buildFormsForRegion } from '../core/eligibility.js';
 import { MOOD_LABELS, TENSE_LABELS, PERSON_LABELS } from '../utils/verbLabels.js';
+import { createLogger } from '../utils/logger.js';
+
+const logger = createLogger('semanticValidator');
 
 /**
  * Semantic validation engine for verb conjugations
@@ -55,9 +58,9 @@ export class SemanticValidator {
         verbForms.get(key).add(form.value.toLowerCase());
       });
 
-      console.log('🔍 SemanticValidator initialized with', this.verbFormsCache.size, 'verbs');
+      logger.debug('🔍 SemanticValidator initialized with verbs', this.verbFormsCache.size);
     } catch (error) {
-      console.error('Failed to initialize SemanticValidator:', error);
+      logger.error('Failed to initialize SemanticValidator', error);
     }
   }
 
@@ -111,7 +114,7 @@ export class SemanticValidator {
     const tense = context.tense;
     const person = context.person;
 
-    console.log('🔍 Semantic validation:', {
+    logger.debug('🔍 Semantic validation', {
       target: normalizedTarget,
       recognized: normalizedRecognized,
       verb,
@@ -414,7 +417,7 @@ export class SemanticValidator {
    */
   clearCaches() {
     this.validationCache.clear();
-    console.log('🧹 SemanticValidator caches cleared');
+    logger.debug('🧹 SemanticValidator caches cleared');
   }
 }
 

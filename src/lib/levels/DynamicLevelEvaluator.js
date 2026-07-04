@@ -5,6 +5,9 @@ import { getCurrentUserProfile, AVAILABLE_LEVELS } from './userLevelProfile.js'
 import { getMasteryByUser } from '../progress/database.js'
 import { LEVEL_REQUIREMENTS } from './levelProgression.js'
 import { getAdvancedAnalytics } from '../progress/analytics.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('DynamicLevelEvaluator')
 
 // Configuración del evaluador dinámico
 const EVALUATOR_CONFIG = {
@@ -100,7 +103,7 @@ export class DynamicLevelEvaluator {
       return evaluation
 
     } catch (error) {
-      console.error('Error evaluating effective level:', error)
+      logger.error('Error evaluating effective level', error)
       return this.getDefaultEvaluation(userId, declaredLevel)
     }
   }
@@ -414,7 +417,7 @@ export class DynamicLevelEvaluator {
       const masteryData = await getMasteryByUser(userId)
       return masteryData || {}
     } catch (error) {
-      console.warn('Error loading mastery data:', error)
+      logger.warn('Error loading mastery data', error)
       return {}
     }
   }
@@ -427,7 +430,7 @@ export class DynamicLevelEvaluator {
       const analytics = await getAdvancedAnalytics(userId)
       return analytics || {}
     } catch (error) {
-      console.warn('Error loading analytics:', error)
+      logger.warn('Error loading analytics', error)
       return {}
     }
   }

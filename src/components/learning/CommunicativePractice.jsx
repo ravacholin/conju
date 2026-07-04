@@ -7,7 +7,10 @@ import { useProgressTracking } from '../../features/drill/useProgressTracking.js
 import { ERROR_TAGS } from '../../lib/progress/dataModels.js';
 // import { grade } from '../../lib/core/grader.js';
 // import { classifyError } from '../../features/drill/tracking.js';
+import { createLogger } from '../../lib/utils/logger.js';
 import './CommunicativePractice.css';
+
+const logger = createLogger('CommunicativePractice');
 
 const PARTICIPLE_SUFFIXES = ['ado', 'ido', 'to', 'so', 'cho'];
 
@@ -421,7 +424,7 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
   }), [tense?.tense, tense?.mood]);
   
   const { handleResult } = useProgressTracking(currentItem, (result) => {
-    console.log('Communicative practice progress tracking result:', result);
+    logger.debug('Communicative practice progress tracking result', result);
   });
 
   useEffect(() => {
@@ -487,10 +490,10 @@ function CommunicativePractice({ tense, eligibleForms, onBack, onFinish }) {
             const userId = getCurrentUserId();
             if (userId) {
               await updateSchedule(userId, formObject, true, 0);
-              console.log(`Analytics: Updated schedule for communicative practice: ${formObject.lemma} - ${keywordFound}`);
+              logger.debug(`Analytics: Updated schedule for communicative practice: ${formObject.lemma} - ${keywordFound}`);
             }
           } catch (error) {
-            console.error("Failed to update SRS schedule:", error);
+            logger.error("Failed to update SRS schedule", error);
           }
         }
       }

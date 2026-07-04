@@ -19,6 +19,9 @@ import {
 import { getAllowedCombosForLevel as gateCombos } from '../../lib/core/curriculumGate.js'
 import { categorizeVerb } from '../../lib/data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../../lib/data/simplifiedFamilyGroups.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('DrillFormFilters')
 
 // Cache for generated forms to avoid regenerating
 const formsCache = new Map()
@@ -70,7 +73,7 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
   }
 
   if ((!forms || forms.length === 0) && settings.enableChunks !== false) {
-    console.warn('generateAllFormsForRegion', 'Primary form load returned empty, retrying with chunks disabled')
+    logger.warn('generateAllFormsForRegion: Primary form load returned empty, retrying with chunks disabled')
     const fallbackSettings = { ...settings, enableChunks: false }
     const fallbackForms = region === 'global'
       ? deduplicateForms([
@@ -85,7 +88,7 @@ async function buildFormsPool(region = 'la_general', settings = {}) {
   }
 
   if (!forms || forms.length === 0) {
-    console.error('generateAllFormsForRegion', 'No forms available after all fallbacks', { region, settings })
+    logger.error('generateAllFormsForRegion: No forms available after all fallbacks', { region, settings })
     return []
   }
 
@@ -190,7 +193,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
         return resolved
       } catch (error) {
         formsCache.delete(cacheKey)
-        console.error('generateAllFormsForRegion', 'Failed to resolve cached promise', { region, settings, error })
+        logger.error('generateAllFormsForRegion: Failed to resolve cached promise', { region, settings, error })
         return []
       }
     }
@@ -205,7 +208,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
       })
       .catch(error => {
         formsCache.delete(cacheKey)
-        console.error('generateAllFormsForRegion', 'Failed to build forms for region', { region, settings, error })
+        logger.error('generateAllFormsForRegion: Failed to build forms for region', { region, settings, error })
         return []
       })
 
@@ -213,7 +216,7 @@ export async function generateAllFormsForRegion(region = 'la_general', settings 
 
     return await buildingPromise
   } catch (error) {
-    console.error('generateAllFormsForRegion', 'Unexpected error while building forms', { region, settings, error })
+    logger.error('generateAllFormsForRegion: Unexpected error while building forms', { region, settings, error })
     formsCache.delete(cacheKey)
     return []
   }

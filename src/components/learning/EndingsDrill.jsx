@@ -8,6 +8,9 @@ import './LearningDrill.css'; // Reusing styles from main drill
 import './EndingsDrill.css'; // Own specific styles
 import './IrregularEndingsDrill.css'; // Irregular verb specific styles
 import '../onboarding/OnboardingFlow.css';
+import { createLogger } from '../../lib/utils/logger.js';
+
+const logger = createLogger('EndingsDrill');
 
 const ACCENT = 'var(--accent-primary)'
 const INK    = 'var(--text)'
@@ -208,7 +211,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
   const [isRecording, setIsRecording] = useState(false);
   const pronunciationPanelRef = useRef(null);
 
-  // console.log('EndingsDrill settings:', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
+  // logger.debug('EndingsDrill settings', { useVoseo: settings.useVoseo, useVosotros: settings.useVosotros });
 
   const PRONOUNS_DISPLAY = useMemo(() => getPronounsForDialect(settings), [settings?.useVoseo, settings?.useVosotros]);
 
@@ -331,9 +334,9 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
     // Si el usuario se equivoca, reintegrar la persona al final de la cola para práctica adicional
     if (!isCorrect) {
       setDrillQueue(prevQueue => [...prevQueue, currentPronoun]);
-      console.log(`❌ Error en ${currentPronoun.text} - reintegrando al final de la cola`);
+      logger.debug(`❌ Error en ${currentPronoun.text} - reintegrando al final de la cola`);
     } else {
-      console.log(`✅ Correcto: ${currentPronoun.text} - ${correctAnswer}`);
+      logger.debug(`✅ Correcto: ${currentPronoun.text} - ${correctAnswer}`);
     }
   };
 
@@ -438,7 +441,7 @@ function EndingsDrill({ verb, tense, onComplete, onBack, onHome, onGoToProgress 
         pickAndSpeak();
       }
     } catch (e) {
-      console.warn('TTS unavailable:', e);
+      logger.warn('TTS unavailable', e);
     }
   };
 
