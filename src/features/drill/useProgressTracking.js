@@ -16,7 +16,6 @@ import {
 } from '../../lib/progress/index.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { incrementSessionAttempts } from '../../lib/progress/planTracking.js'
-import { useSettings } from '../../state/settings.js'
 import { useSessionStore } from '../../state/session.js'
 import { initProgressSystem as initProgressSystemCore } from '../../lib/progress/index.js'
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
@@ -34,7 +33,6 @@ export function useProgressTracking(currentItem, onResult) {
   const itemStartTimeRef = useRef(null)
   const sessionInitializedRef = useRef(false)
   const [progressSystemReady, setProgressSystemReady] = useState(false)
-  const settings = useSettings()
   const sessionState = useSessionStore(
     useShallow((state) => ({
       activeSessionId: state.activeSessionId,

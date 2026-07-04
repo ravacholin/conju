@@ -1,12 +1,15 @@
 /**
  * useDrillProgress.js - Specialized hook for drill progress tracking
- * 
- * This hook provides a clean interface for progress tracking and SRS management:
+ *
+ * This hook provides a clean interface for the emotional-intelligence side of a
+ * drill response:
  * - Response processing with comprehensive error handling
- * - Mastery calculation and tracking
  * - Flow state detection and momentum tracking
  * - Confidence engine integration
  * - Progress analytics and insights
+ *
+ * Attempt persistence, mastery calculation and SRS scheduling live in
+ * src/lib/progress/tracking.js (trackAttemptSubmitted), not here.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react'
@@ -21,9 +24,6 @@ let flowDetector = null
 let momentumTracker = null
 let confidenceEngine = null
 let dynamicGoalsSystem = null
-let recordAttempt = null
-let updateMastery = null
-let scheduleNextReview = null
 
 try {
   const flowModule = await import('../../lib/progress/flowStateDetection.js')
@@ -54,15 +54,13 @@ try {
   console.warn('Dynamic goals module not available:', error)
 }
 
-try {
-  const srsModule = await import('../../lib/progress/srs.js')
-  recordAttempt = srsModule.recordAttempt
-  updateMastery = srsModule.updateMastery
-  scheduleNextReview = srsModule.scheduleNextReview
-} catch (error) {
-  console.warn('SRS system module not available:', error)
-}
-
+// NOTE: attempt persistence, mastery calculation and SRS scheduling are NOT done here.
+// They run once, in full, inside trackAttemptSubmitted (src/lib/progress/tracking.js),
+// triggered separately by useProgressTracking.handleResult. This hook only handles the
+// emotional-intelligence side (flow/momentum/confidence/goals) of a response — see
+// docs/INFORME_AUDITORIA_2026-07.md (C5) for why the old recordAttempt/updateMastery/
+// scheduleNextReview calls here were removed (they imported names that don't exist in
+// srs.js and were silent no-ops).
 const logger = createLogger('useDrillProgress')
 
 /**
@@ -201,48 +199,6 @@ export const useDrillProgress = () => {
           logger.debug('handleResponse', 'Progress tracking completed', progressResult)
         } catch (error) {
           logger.error('handleResponse', 'Error in progress tracking', error)
-        }
-      }
-
-      // Record SRS attempt
-      if (progressSystemAvailable && recordAttempt) {
-        try {
-          await recordAttempt(userId, {
-            lemma: item.lemma,
-            mood: item.mood,
-            tense: item.tense,
-            person: item.person
-          }, response.isCorrect)
-        } catch (error) {
-          logger.warn('handleResponse', 'SRS attempt recording failed', error)
-        }
-      }
-
-      // Update mastery if needed
-      if (progressSystemAvailable && updateMastery && response.isCorrect) {
-        try {
-          await updateMastery(userId, {
-            lemma: item.lemma,
-            mood: item.mood,
-            tense: item.tense,
-            person: item.person
-          }, response.responseTime || 0)
-        } catch (error) {
-          logger.warn('handleResponse', 'Mastery update failed', error)
-        }
-      }
-
-      // Schedule next review
-      if (progressSystemAvailable && scheduleNextReview) {
-        try {
-          await scheduleNextReview(userId, {
-            lemma: item.lemma,
-            mood: item.mood,
-            tense: item.tense,
-            person: item.person
-          }, response.isCorrect)
-        } catch (error) {
-          logger.warn('handleResponse', 'Next review scheduling failed', error)
         }
       }
 

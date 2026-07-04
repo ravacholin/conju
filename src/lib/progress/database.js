@@ -157,18 +157,20 @@ async function retryOperation(operation, maxRetries = 3, delayMs = 100) {
  * @returns {Promise<IDBDatabase>} La base de datos inicializada
  */
 export async function initDB() {
-  // Pre-chequeo: forzar que posibles mocks de idb se manifiesten (propaga si falla)
-  const { openDB } = await import("idb");
-  if (typeof openDB === "function") {
-    await openDB("progress-probe", 1, { upgrade() { } });
-  }
-
   if (dbInstance) {
     return dbInstance;
   }
 
   if (initPromise) {
     return initPromise;
+  }
+
+  // Pre-chequeo: forzar que posibles mocks de idb se manifiesten (propaga si falla).
+  // Solo corre en el primer arranque real (dbInstance/initPromise ya filtraron las
+  // ~22 llamadas subsiguientes por sesión), no en cada llamada a initDB().
+  const { openDB } = await import("idb");
+  if (typeof openDB === "function") {
+    await openDB("progress-probe", 1, { upgrade() { } });
   }
 
   initPromise = (async () => {

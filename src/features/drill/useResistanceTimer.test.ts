@@ -57,6 +57,19 @@ describe('useResistanceTimer', () => {
       result.current.handleClockClick()
     })
 
-    expect(useSettings.getState().resistanceMsLeft).toBe(RESISTANCE_MAX_MS)
+    // The live countdown is local state now (not written to the global store
+    // on every tick/click — see useResistanceTimer.ts), so assert against it
+    // directly instead of useSettings.getState().resistanceMsLeft.
+    expect(result.current.msLeft).toBe(RESISTANCE_MAX_MS)
+  })
+
+  it('does not write the live countdown to the global settings store', () => {
+    const { result } = renderHook(() => useResistanceTimer())
+
+    act(() => {
+      result.current.handleClockClick()
+    })
+
+    expect(useSettings.getState().resistanceMsLeft).toBe(RESISTANCE_MAX_MS - 1000)
   })
 })
