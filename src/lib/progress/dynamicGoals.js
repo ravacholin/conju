@@ -32,12 +32,31 @@ export class DynamicGoalsSystem {
       completionRate: 0,
       preferredGoalTypes: new Map()
     }
+    this._autoSaveScheduled = false
     this.init()
   }
 
   async init() {
     await this.loadGoalsData()
     this.generateInitialGoals()
+  }
+
+  /**
+   * Arranca el auto-save de forma perezosa, en el primer uso real, en vez de
+   * incondicionalmente al importar el módulo.
+   */
+  ensureAutoSaveScheduled() {
+    if (this._autoSaveScheduled) return
+    this._autoSaveScheduled = true
+
+    if (typeof setInterval !== 'undefined') {
+      registerInterval(
+        'DynamicGoals',
+        () => this.saveGoalsData(),
+        PROGRESS_CONFIG.AUTO_SAVE.DYNAMIC_GOALS,
+        'Auto-save goals data'
+      )
+    }
   }
 
   /**
@@ -366,6 +385,8 @@ export class DynamicGoalsSystem {
    * Procesa una respuesta del usuario para actualizar objetivos
    */
   processResponse(response) {
+    this.ensureAutoSaveScheduled()
+
     const {
       _isCorrect,
       _responseTime,
@@ -989,15 +1010,6 @@ export const getCurrentGoalsState = () => {
   return dynamicGoalsSystem.getCurrentGoalsState()
 }
 
-// Configurar auto-save con memory management
-if (typeof setInterval !== 'undefined') {
-  registerInterval(
-    'DynamicGoals',
-    () => dynamicGoalsSystem.saveGoalsData(),
-    PROGRESS_CONFIG.AUTO_SAVE.DYNAMIC_GOALS,
-    'Auto-save goals data'
-  )
-}
 
 // Registrar sistema para cleanup
 memoryManager.registerSystem('DynamicGoals', () => {

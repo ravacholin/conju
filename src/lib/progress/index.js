@@ -10,6 +10,7 @@ import { markProgressSystemReady } from './ProgressSystemEvents.js'
 import { injectVerbsIntoProvider } from './verbMetadataProvider.js'
 import { getAllVerbs } from '../core/verbDataService.js'
 import { cleanupMasteryCache } from './incrementalMastery.js'
+import { memoryManager } from './memoryManager.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('progress:system')
@@ -391,6 +392,12 @@ export async function resetProgressSystem() {
     }
     currentUserId = null
     clearMasteryCleanupScheduler()
+
+    // Detiene los auto-saves perezosos de los sistemas de inteligencia emocional,
+    // para que tests/montajes repetidos no acumulen intervals de fondo.
+    memoryManager.cleanupSystem('ConfidenceEngine')
+    memoryManager.cleanupSystem('TemporalIntelligence')
+    memoryManager.cleanupSystem('DynamicGoals')
 
     logger.info('resetProgressSystem', 'Sistema de progreso reiniciado')
   } catch (error) {

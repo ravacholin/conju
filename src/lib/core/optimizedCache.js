@@ -4,6 +4,7 @@
 import { getAllVerbs, getVerbByLemma, getVerbsByLemmas } from './verbDataService.js'
 import { getAllVerbsWithRedundancy } from './VerbDataRedundancyManager.js'
 import { validateAndHealVerbs } from './DataIntegrityGuard.js'
+import { memoryManager } from '../progress/memoryManager.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('OptimizedCache')
@@ -36,11 +37,6 @@ class IntelligentCache {
 
     // Initialize from persistence if available
     this.loadFromPersistence()
-
-    // Setup auto-save interval
-    if (this.persistenceKey && this.autoSaveEnabled) {
-      this.startAutoSave()
-    }
   }
 
   get(key) {
@@ -78,6 +74,12 @@ class IntelligentCache {
   }
 
   set(key, value, masteryScore) {
+    // Start auto-save lazily, on the first real write, instead of unconditionally in the
+    // constructor — an unused cache should never carry a permanent background interval.
+    if (this.persistenceKey && this.autoSaveEnabled && !this.autoSaveInterval) {
+      this.startAutoSave()
+    }
+
     // Clean cache if full
     if (this.cache.size >= this.maxSize) {
       this._evictByStrategy()
@@ -372,18 +374,19 @@ class IntelligentCache {
   }
 
   startAutoSave() {
-    if (this.autoSaveInterval) {
-      clearInterval(this.autoSaveInterval)
-    }
+    if (this.autoSaveInterval) return
 
-    this.autoSaveInterval = setInterval(() => {
-      this.saveToPersistence()
-    }, this.persistInterval)
+    this.autoSaveInterval = memoryManager.registerInterval(
+      `IntelligentCache:${this.persistenceKey}`,
+      () => this.saveToPersistence(),
+      this.persistInterval,
+      'Periodic cache persistence'
+    )
   }
 
   stopAutoSave() {
     if (this.autoSaveInterval) {
-      clearInterval(this.autoSaveInterval)
+      memoryManager.clearInterval(this.autoSaveInterval)
       this.autoSaveInterval = null
     }
   }
