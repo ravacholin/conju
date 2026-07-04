@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "android:sync": "npm run build && npx cap sync",
     "android:run": "npx cap run android",
