@@ -805,26 +805,37 @@ export async function deleteFromDB(storeName, id) {
  * @returns {Promise<void>}
  */
 export async function updateInDB(storeName, id, updates) {
-  try {
-    const existing = await getFromDB(storeName, id);
-    if (!existing) {
-      throw new Error(`Objeto con ID ${id} no encontrado en ${storeName}`);
+  return retryOperation(async () => {
+    try {
+      assertValidStore(storeName);
+      const db = await initDB();
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+
+      const existing = await store.get(id);
+      if (!existing) {
+        throw new Error(`Objeto con ID ${id} no encontrado en ${storeName}`);
+      }
+
+      const updated = { ...existing, ...updates, updatedAt: new Date() };
+      await store.put(updated);
+      await withTimeout(
+        tx.done,
+        DB_TRANSACTION_TIMEOUT,
+        `updateInDB(${storeName})`,
+      );
+
+      // Cache invalidation removed
+      // if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) { ... }
+      // else if (storeName === STORAGE_CONFIG.STORES.MASTERY) { ... }
+
+      if (isDev)
+        logger.debug("updateInDB", `Dato actualizado en ${storeName}`, { id });
+    } catch (error) {
+      logger.error("updateInDB", `Error al actualizar en ${storeName}`, error);
+      throw error;
     }
-
-    assertValidStore(storeName);
-    const updated = { ...existing, ...updates, updatedAt: new Date() };
-    await saveToDB(storeName, updated);
-
-    // Cache invalidation removed
-    // if (storeName === STORAGE_CONFIG.STORES.ATTEMPTS) { ... }
-    // else if (storeName === STORAGE_CONFIG.STORES.MASTERY) { ... }
-
-    if (isDev)
-      logger.debug("updateInDB", `Dato actualizado en ${storeName}`, { id });
-  } catch (error) {
-    logger.error("updateInDB", `Error al actualizar en ${storeName}`, error);
-    throw error;
-  }
+  });
 }
 
 /**

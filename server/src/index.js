@@ -48,11 +48,6 @@ app.use(`${API_PREFIX}/auth`, authRateLimiter, createAuthRoutes())
 // Progress routes (protected by legacy auth for backward compatibility)
 app.use(API_PREFIX, authMiddleware, createRoutes())
 
-// NOTE: /social/* routes are disabled — social-routes.js uses an async db API that doesn't
-// match the sync better-sqlite3 instance in db.js (every call fails), its migration never
-// runs (CommonJS module.exports in an ESM package), and it had no auth. See
-// docs/INFORME_AUDITORIA_2026-07.md (A1/C4) before re-enabling.
-
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`☁️  Progress Sync Server listening on http://localhost:${PORT}${API_PREFIX}`)
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)

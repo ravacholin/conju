@@ -365,6 +365,15 @@ export function revokeDevice(accountId, deviceId) {
   return true
 }
 
+/**
+ * Parses a timestamp defensively. Invalid/missing values normalize to 0 (oldest possible)
+ * instead of NaN, so `>` comparisons against them behave deterministically.
+ */
+function safeTime(value) {
+  const time = new Date(value).getTime()
+  return Number.isFinite(time) ? time : 0
+}
+
 export function mergeAccountData(accountId) {
   const users = db.prepare('SELECT id FROM users WHERE account_id = ?').all(accountId)
   const userIds = users.map(u => u.id)
@@ -376,22 +385,9 @@ export function mergeAccountData(accountId) {
     userIds.push(accountId)
   }
 
-  // DEBUG: Log which userIds we're searching for
-  console.log('🔍 mergeAccountData DEBUG:', {
-    accountId,
-    usersFound: users.length,
-    userIds,
-    searchingWith: userIds.join(', ')
-  })
-
   if (userIds.length === 0) {
-    console.log('⚠️ mergeAccountData: No userIds found for account!')
     return { attempts: [], mastery: [], schedules: [], sessions: [] }
   }
-
-  // DIAGNOSTIC: Check for orphan data that might exist with different userIds
-  const allUserIds = db.prepare('SELECT DISTINCT user_id FROM attempts LIMIT 20').all()
-  console.log('🔎 DIAGNOSTIC: Sample user_ids in attempts table:', allUserIds.map(r => r.user_id))
 
   const placeholders = userIds.map(() => '?').join(',')
 
@@ -411,18 +407,19 @@ export function mergeAccountData(accountId) {
     SELECT payload FROM sessions WHERE user_id IN (${placeholders})
   `).all(...userIds).map(r => JSON.parse(r.payload))
 
-  // DEBUG: Log data counts found
-  console.log('📊 mergeAccountData DATA FOUND:', {
-    attempts: attempts.length,
-    mastery: mastery.length,
-    schedules: schedules.length,
-    sessions: sessions.length
+  // Attempts are immutable once created and carry a stable id — dedup by id instead of
+  // returning the raw cross-device concatenation, which otherwise grows unbounded on every sync.
+  const mergedAttempts = new Map()
+  attempts.forEach(a => {
+    if (a?.id !== undefined && !mergedAttempts.has(a.id)) {
+      mergedAttempts.set(a.id, a)
+    }
   })
 
   const mergedMastery = new Map()
   mastery.forEach(m => {
     const key = `${m.verbId}|${m.mood}|${m.tense}|${m.person}`
-    if (!mergedMastery.has(key) || new Date(m.updatedAt) > new Date(mergedMastery.get(key).updatedAt)) {
+    if (!mergedMastery.has(key) || safeTime(m.updatedAt) > safeTime(mergedMastery.get(key).updatedAt)) {
       mergedMastery.set(key, m)
     }
   })
@@ -430,7 +427,7 @@ export function mergeAccountData(accountId) {
   const mergedSchedules = new Map()
   schedules.forEach(s => {
     const key = `${s.verbId}|${s.mood}|${s.tense}|${s.person}`
-    if (!mergedSchedules.has(key) || new Date(s.updatedAt) > new Date(mergedSchedules.get(key).updatedAt)) {
+    if (!mergedSchedules.has(key) || safeTime(s.updatedAt) > safeTime(mergedSchedules.get(key).updatedAt)) {
       mergedSchedules.set(key, s)
     }
   })
@@ -438,7 +435,7 @@ export function mergeAccountData(accountId) {
   const mergedSessions = new Map()
   sessions.forEach(s => {
     const key = s.sessionId || s.id
-    if (!mergedSessions.has(key) || new Date(s.updatedAt) > new Date(mergedSessions.get(key).updatedAt)) {
+    if (!mergedSessions.has(key) || safeTime(s.updatedAt) > safeTime(mergedSessions.get(key).updatedAt)) {
       mergedSessions.set(key, s)
     }
   })
@@ -554,7 +551,7 @@ export function mergeAccountData(accountId) {
   }
 
   return {
-    attempts,
+    attempts: Array.from(mergedAttempts.values()),
     mastery: Array.from(mergedMastery.values()),
     schedules: Array.from(mergedSchedules.values()),
     sessions: Array.from(mergedSessions.values()),
