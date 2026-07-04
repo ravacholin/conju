@@ -337,6 +337,18 @@ export function createAuthRoutes() {
       console.log(`🔄 Claiming orphan data from ${orphanUserId} to account ${accountId}`)
 
       const db = (await import('./db.js')).db
+
+      // Refuse to steal data that's already linked to a different account.
+      const existingOwner = db.prepare(`
+        SELECT account_id FROM users WHERE id = ? AND account_id IS NOT NULL
+      `).get(orphanUserId)
+      if (existingOwner && existingOwner.account_id !== accountId) {
+        return res.status(403).json({
+          success: false,
+          error: 'Orphan user id is already linked to another account'
+        })
+      }
+
       const results = {}
 
       // Update all progress tables to use accountId instead of orphanUserId

@@ -5,6 +5,10 @@ import { z } from 'zod'
 import { OAuth2Client } from 'google-auth-library'
 import { db } from './db.js'
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('JWT_SECRET must be set in production (see server/.env.example)')
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'spanish-conjugator-secret-key-2025'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '30d'
 

@@ -1,5 +1,6 @@
 export async function authMiddleware(req, res, next) {
-  // Accept Authorization: Bearer <token>, or explicit dev headers (X-API-Key / X-User-Id)
+  // Accept Authorization: Bearer <token>, or an anonymous device id via X-User-Id / X-API-Key
+  // (used by the client to sync progress before a user creates an account).
   const auth = req.get('authorization') || req.get('Authorization')
   const apiKey = req.get('x-api-key') || req.get('X-API-Key') || null
   let userId = (req.get('x-user-id') || req.get('X-User-Id') || '').trim() || null
@@ -9,7 +10,6 @@ export async function authMiddleware(req, res, next) {
     token = auth.slice(7).trim()
   }
 
-  // Validate JWT when present. If invalid, fallback to header-based identity for progress endpoints.
   if (token) {
     try {
       const { verifyJWT } = await import('./auth-service.js')
@@ -24,20 +24,15 @@ export async function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'Invalid auth token' })
       }
 
-      // If X-User-Id header is present, verify it matches the effective userId
-      if (userId && userId !== effectiveUserId) {
-        console.log(`⚠️ X-User-Id header (${userId}) doesn't match effective userId (${effectiveUserId})`)
-        // Don't reject - the header might be the old device-specific userId
-        // Just log a warning and use the accountId
-        console.log(`🔄 Using accountId (${effectiveUserId}) as userId for cross-device sync`)
-      }
-
       userId = effectiveUserId
       req.accountId = decoded.accountId
-      console.log(`🔵 Extracted userId from JWT: ${userId}, accountId: ${decoded.accountId}`)
+      req.userId = userId
+      return next()
     } catch (error) {
-      // Fallback: accept X-User-Id or X-API-Key for progress routes without account linkage
-      console.log(`⚠️ JWT verification failed. Falling back to header-based identity if provided: ${error.message}`)
+      // A token was sent but failed verification: never fall back to a client-asserted
+      // identity for this request, or anyone could bypass auth with a bad/expired token.
+      console.log(`⚠️ JWT verification failed: ${error.message}`)
+      return res.status(401).json({ error: 'Invalid or expired auth token' })
     }
   }
 
@@ -52,6 +47,22 @@ export async function authMiddleware(req, res, next) {
   if (typeof userId !== 'string' || userId.length < 3) {
     return res.status(400).json({ error: 'Invalid user id' })
   }
+
+  // No token was presented: userId comes straight from the client. This is only safe for
+  // genuinely anonymous, pre-account device ids. If it happens to match a real account id,
+  // reject it — otherwise anyone who learns/guesses an accountId could read/overwrite that
+  // account's synced data without ever proving they own it.
+  try {
+    const { db } = await import('./db.js')
+    const account = db.prepare('SELECT id FROM accounts WHERE id = ?').get(userId)
+    if (account) {
+      return res.status(401).json({ error: 'Auth token required for this account' })
+    }
+  } catch (error) {
+    console.error('authMiddleware: account lookup failed', error)
+    return res.status(500).json({ error: 'Internal auth error' })
+  }
+
   req.userId = userId
   next()
 }
