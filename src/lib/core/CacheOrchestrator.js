@@ -978,6 +978,6 @@ export async function performGlobalHealthCheck() {
 // eslint-disable-next-line no-constant-condition
 if (typeof window !== 'undefined' && false) {
   initializeOrchestrator().catch(error => {
-    console.error('Failed to auto-initialize CacheOrchestrator:', error)
+    logger.error('Failed to auto-initialize CacheOrchestrator', error)
   })
 }

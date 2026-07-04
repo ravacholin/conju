@@ -14,6 +14,9 @@
  */
 
 import { getSemanticValidator } from './semanticValidator.js';
+import { createLogger } from '../utils/logger.js';
+
+const logger = createLogger('pronunciationAnalyzer');
 
 /**
  * Spanish phonetic patterns and rules
@@ -172,7 +175,7 @@ class PronunciationAnalyzer {
     };
 
     try {
-      console.log('🎯 STRICT Pronunciation Analysis:', {
+      logger.debug('🎯 STRICT Pronunciation Analysis', {
         target,
         recognized,
         options
@@ -215,7 +218,7 @@ class PronunciationAnalyzer {
       analysis.suggestions = this.generateEducationalSuggestions(semanticResult, analysis.detailedAnalysis);
       analysis.phoneticsBreakdown = this.generatePhoneticsBreakdown(normalizedTarget, analysis.detailedAnalysis);
 
-      console.log('🎯 STRICT Analysis Result:', {
+      logger.debug('🎯 STRICT Analysis Result', {
         accuracy: analysis.accuracy,
         isCorrectForSRS: analysis.isCorrectForSRS,
         semanticType: semanticResult.type,
@@ -228,7 +231,7 @@ class PronunciationAnalyzer {
       analysis.isCorrectForSRS = false;
       analysis.feedback = 'Error en el análisis de pronunciación';
       analysis.suggestions = ['Inténtalo de nuevo - error técnico'];
-      console.error('Pronunciation analysis error:', error);
+      logger.error('Pronunciation analysis error', error);
     }
 
     return analysis;
@@ -929,7 +932,7 @@ class PronunciationAnalyzer {
    * Kept for backward compatibility
    */
   generateLegacyFeedback(accuracy, analysis) {
-    console.warn('Using legacy feedback method - consider using generatePedagogicalFeedback');
+    logger.warn('Using legacy feedback method - consider using generatePedagogicalFeedback');
 
     if (analysis.textSimilarity?.exact_match) {
       return '¡Perfecto! Pronunciación exacta y clara.';
@@ -949,7 +952,7 @@ class PronunciationAnalyzer {
    * Kept for backward compatibility
    */
   generateLegacySuggestions(analysis) {
-    console.warn('Using legacy suggestions method - consider using generateEducationalSuggestions');
+    logger.warn('Using legacy suggestions method - consider using generateEducationalSuggestions');
 
     const suggestions = ['Practica más la pronunciación'];
 

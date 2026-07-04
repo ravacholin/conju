@@ -1,4 +1,7 @@
 import { set, get } from 'idb-keyval'
+import { createLogger } from './utils/logger.js'
+
+const logger = createLogger('store')
 
 let useLocalStorage = false
 
@@ -19,7 +22,7 @@ async function setWithFallback(key, data) {
   try {
     await set(key, data)
   } catch (error) {
-    console.warn('IndexedDB failed, falling back to localStorage:', error)
+    logger.warn('IndexedDB failed, falling back to localStorage', error)
     useLocalStorage = true
     localStorage.setItem(key, JSON.stringify(data))
   }
@@ -38,7 +41,7 @@ async function getWithFallback(key) {
   try {
     return (await get(key)) || {}
   } catch (error) {
-    console.warn('IndexedDB failed, falling back to localStorage:', error)
+    logger.warn('IndexedDB failed, falling back to localStorage', error)
     useLocalStorage = true
     try {
       const item = localStorage.getItem(key)

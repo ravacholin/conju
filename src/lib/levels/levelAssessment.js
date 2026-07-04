@@ -3,6 +3,9 @@
 // CEFR Levels: A1, A2, B1, B2, C1, C2
 
 import { getCurrentUserProfile, setGlobalPlacementTestBaseline } from './userLevelProfile.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('levelAssessment')
 
 // Curated question pool: CEFR levels (A1-C2)
 export const QUESTION_POOL = {
@@ -290,7 +293,7 @@ class AdaptiveLevelTest {
     this.blockQuestions = []
     this.questionsAnsweredTotal = 0
 
-    console.log('🚀 Starting Adaptive Test at Level:', LEVEL_ORDER[this.currentLevelIndex])
+    logger.debug('🚀 Starting Adaptive Test at Level', LEVEL_ORDER[this.currentLevelIndex])
 
     return this.generateNextStep()
   }
@@ -298,7 +301,7 @@ class AdaptiveLevelTest {
   generateNextStep() {
     // Check Hard Stop
     if (this.questionsAnsweredTotal >= this.maxQuestions) {
-      console.log('🛑 Max questions reached.')
+      logger.debug('🛑 Max questions reached.')
       return this.completeTest()
     }
 
@@ -311,7 +314,7 @@ class AdaptiveLevelTest {
 
     // If we ran out of questions in this level, force a move or end
     if (available.length === 0) {
-      console.warn(`No more questions in ${levelStr}. Forcing completion based on current stats.`)
+      logger.warn(`No more questions in ${levelStr}. Forcing completion based on current stats.`)
       return this.completeTest()
     }
 
@@ -373,7 +376,7 @@ class AdaptiveLevelTest {
     const correctCount = this.blockQuestions.filter(r => r.isCorrect).length
 
     if (currentQCount === 3) {
-      console.log(`📊 Quick Check [${LEVEL_ORDER[this.currentLevelIndex]}]: ${correctCount}/3`)
+      logger.debug(`📊 Quick Check [${LEVEL_ORDER[this.currentLevelIndex]}]: ${correctCount}/3`)
 
       if (correctCount === 3) {
         nextAction = 'level_up'
@@ -381,13 +384,13 @@ class AdaptiveLevelTest {
         nextAction = 'level_down'
       } else {
         // 1 or 2 correct: Extend to 5 to be sure ("rectifying possibility")
-        console.log('🤔 Inconclusive. Extending block to 5 questions.')
+        logger.debug('🤔 Inconclusive. Extending block to 5 questions.')
         nextAction = 'continue'
       }
     } else if (currentQCount >= 5) {
       const accuracy = correctCount / currentQCount
 
-      console.log(`📊 Full Block Check [${LEVEL_ORDER[this.currentLevelIndex]}]: ${correctCount}/${currentQCount} (${(accuracy * 100).toFixed(0)}%)`)
+      logger.debug(`📊 Full Block Check [${LEVEL_ORDER[this.currentLevelIndex]}]: ${correctCount}/${currentQCount} (${(accuracy * 100).toFixed(0)}%)`)
 
       if (correctCount >= 4) {
         nextAction = 'level_up'
@@ -422,7 +425,7 @@ class AdaptiveLevelTest {
       }
     }
 
-    console.log(`🤖 Adaptive Decision: ${nextAction} -> Next Level: ${LEVEL_ORDER[this.currentLevelIndex]}`)
+    logger.debug(`🤖 Adaptive Decision: ${nextAction} -> Next Level: ${LEVEL_ORDER[this.currentLevelIndex]}`)
 
     if (nextAction === 'finish_stable') {
       const final = this.completeTest()
@@ -462,7 +465,7 @@ class AdaptiveLevelTest {
       finalLevel = LEVEL_ORDER[this.currentLevelIndex]
     }
 
-    console.log('🏁 Test Completed. Determined Level:', finalLevel)
+    logger.debug('🏁 Test Completed. Determined Level', finalLevel)
 
     return {
       completed: true,

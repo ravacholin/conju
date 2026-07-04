@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { getAttemptsByUser, getDueSchedules } from '../../lib/progress/database.js'
+import { createLogger } from '../../lib/utils/logger.js'
 import './SRSAnalytics.css'
+
+const logger = createLogger('SRSAnalytics')
 
 export default function SRSAnalytics({ compact = false }) {
   const [data, setData] = useState({
@@ -31,7 +34,7 @@ export default function SRSAnalytics({ compact = false }) {
         loading: false
       })
     } catch (error) {
-      console.error('Error loading SRS analytics:', error)
+      logger.error('Error loading SRS analytics', error)
       setData(prev => ({ ...prev, loading: false }))
     }
   }

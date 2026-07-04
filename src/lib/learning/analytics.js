@@ -9,6 +9,9 @@ import {
   getAllFromDB,
   saveAttempt,
 } from "../progress/database.js";
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("analytics");
 
 /**
  * Records detailed learning session metrics
@@ -37,9 +40,9 @@ export async function recordLearningSession(userId, sessionData) {
     try {
       await initDB();
       await saveLearningSession(sessionMetrics);
-      console.log("📊 Learning session recorded:", sessionMetrics.sessionId);
+      logger.debug("📊 Learning session recorded", sessionMetrics.sessionId);
     } catch (error) {
-      console.error("Error storing learning session:", error);
+      logger.error("Error storing learning session", error);
     }
 
     // Also record individual attempts for detailed analysis
@@ -53,7 +56,7 @@ export async function recordLearningSession(userId, sessionData) {
 
     return sessionMetrics;
   } catch (error) {
-    console.error("Error recording learning session:", error);
+    logger.error("Error recording learning session", error);
     return null;
   }
 }
@@ -82,7 +85,7 @@ async function recordDetailedAttempt(userId, attempt, sessionId) {
     // Use existing saveAttempt function but with enhanced data
     await saveAttempt(detailedAttempt);
   } catch (error) {
-    console.error("Error recording detailed attempt:", error);
+    logger.error("Error recording detailed attempt", error);
   }
 }
 
@@ -203,10 +206,10 @@ export async function generateErrorHeatMap(userId, timeframe = "month") {
         ? heatMapData.overall.totalErrors / heatMapData.overall.totalAttempts
         : 0;
 
-    console.log("📈 Generated error heat map:", heatMapData);
+    logger.debug("📈 Generated error heat map", heatMapData);
     return heatMapData;
   } catch (error) {
-    console.error("Error generating error heat map:", error);
+    logger.error("Error generating error heat map", error);
     return null;
   }
 }
@@ -349,10 +352,10 @@ export async function generateLearningCurve(
       }
     });
 
-    console.log("📈 Generated learning curve:", curveData);
+    logger.debug("📈 Generated learning curve", curveData);
     return curveData;
   } catch (error) {
-    console.error("Error generating learning curve:", error);
+    logger.error("Error generating learning curve", error);
     return null;
   }
 }
@@ -393,7 +396,7 @@ export class ABTestingFramework {
     };
 
     this.activeTests.set(testId, test);
-    console.log("🧪 A/B Test created:", testId);
+    logger.debug("🧪 A/B Test created", testId);
     return test;
   }
 
@@ -438,7 +441,7 @@ export class ABTestingFramework {
     }
     test.results.participants[assignedVariant].push(userId);
 
-    console.log(
+    logger.debug(
       `🧪 User ${userId} assigned to variant ${assignedVariant} for test ${testId}`,
     );
     return assignedVariant;
@@ -468,7 +471,7 @@ export class ABTestingFramework {
       ...metrics,
     });
 
-    console.log(`🧪 Recorded metrics for variant ${variant}:`, metrics);
+    logger.debug(`🧪 Recorded metrics for variant ${variant}`, metrics);
   }
 
   /**

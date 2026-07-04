@@ -247,7 +247,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   const handleContinueFromPronunciation = () => {
     // This will be called by the pronunciation panel after auto-advance
     // Reset result state and continue to next item
-    console.log('🎤 HANDLE CONTINUE FROM PRONUNCIATION CALLED');
+    logger.debug('🎤 HANDLE CONTINUE FROM PRONUNCIATION CALLED');
     setResult('idle');
     setInputValue('');
     handleContinue();
@@ -255,7 +255,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
 
   const { handleResult, handleStreakIncremented, handleTenseDrillStarted, handleTenseDrillEnded } = useProgressTracking(currentItem, (result) => {
     // Update local session stats based on progress tracking
-    console.log('Progress tracking result:', result);
+    logger.debug('Progress tracking result', result);
     if (result.correct) {
       setSessionStats(prev => ({
         points: prev.points + (result.isIrregular ? SCORING_CONFIG.IRREGULAR_VERB_POINTS : SCORING_CONFIG.REGULAR_VERB_POINTS),
@@ -287,7 +287,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
       selectedFamilyForGenerator = convertLearningFamilyToOld(learningFamilyId);
 
       // DEBUG: Log family conversion
-      console.log('🔄 SEGUNDO DRILL - Conversión de familia:', {
+      logger.debug('🔄 SEGUNDO DRILL - Conversión de familia', {
         learningFamilyId,
         selectedFamilyForGenerator,
         familyIndex,
@@ -326,7 +326,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     });
 
     // DEBUG: Log detailed settings for second drill
-    console.log('🎯 SEGUNDO DRILL - Configuración del generador:', {
+    logger.debug('🎯 SEGUNDO DRILL - Configuración del generador', {
       tense: tense?.tense,
       mood: canonicalizeMood(tense?.mood),
       verbType,
@@ -407,7 +407,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
       });
 
       // DEBUG: Log the generated item for second drill
-      console.log('✅ SEGUNDO DRILL - Ejercicio generado:', {
+      logger.debug('✅ SEGUNDO DRILL - Ejercicio generado', {
         lemma: nextItem?.lemma,
         person: nextItem?.person,
         mood: nextItem?.mood,
@@ -440,7 +440,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
   // Only generate first item on mount, not when currentItem changes
   useEffect(() => {
     if (!currentItem) {
-      generateNextItem().catch(console.error);
+      generateNextItem().catch((error) => logger.error('Failed to generate next item', error));
     }
   }, [tense?.tense, verbType, selectedFamilies]); // Don't depend on generateNextItem
 
@@ -653,7 +653,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     if (isProcessing) return;
     setIsProcessing(true);
 
-    console.log('🎤 HANDLE CONTINUE CALLED', {
+    logger.debug('🎤 HANDLE CONTINUE CALLED', {
       correctStreak,
       completionThreshold: DRILL_THRESHOLDS.STREAK_FOR_COMPLETION,
       hasOnPhaseComplete: !!onPhaseComplete,
@@ -661,8 +661,8 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     });
 
     if (correctStreak >= DRILL_THRESHOLDS.STREAK_FOR_COMPLETION && onPhaseComplete) {
-      console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
-      console.log('🎤 PHASE COMPLETE - calling onPhaseComplete');
+      logger.debug('🎤 PHASE COMPLETE - calling onPhaseComplete');
+      logger.debug('🎤 PHASE COMPLETE - calling onPhaseComplete');
       setTimeout(() => {
         onPhaseComplete();
         setIsProcessing(false);
@@ -670,7 +670,7 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     } else {
       // Verificar si hay ejercicios fallados para reintegrar
       if (failedItemsQueue.length > 0) {
-        console.log('🎤 REINTEGRATING FAILED ITEM');
+        logger.debug('🎤 REINTEGRATING FAILED ITEM');
         const nextFailedItem = failedItemsQueue[0];
         setFailedItemsQueue(prev => prev.slice(1));
 
@@ -687,14 +687,14 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
           setIsProcessing(false);
         }, 250);
       } else {
-        console.log('🎤 GENERATING NEXT ITEM');
+        logger.debug('🎤 GENERATING NEXT ITEM');
         // subtle swap animation when moving to next random item
         setSwapAnim(true);
         // Reset result immediately to enable input
         setResult('idle');
         setTimeout(() => {
           setSwapAnim(false);
-          generateNextItem().catch(console.error).finally(() => {
+          generateNextItem().catch((error) => logger.error('Failed to generate next item', error)).finally(() => {
             setIsProcessing(false);
           });
         }, 250);

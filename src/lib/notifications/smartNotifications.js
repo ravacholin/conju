@@ -2,6 +2,9 @@
 import { PROGRESS_CONFIG } from '../progress/config.js'
 import { getCurrentUserId } from '../progress/userManager/index.js'
 import { getAttemptsByUser, getDueSchedules } from '../progress/database.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('smartNotifications')
 
 // Configuración de notificaciones
 const NOTIFICATION_CONFIG = {
@@ -88,7 +91,7 @@ export class SmartNotificationManager {
     // Configurar listeners de eventos
     this.setupEventListeners()
 
-    console.log('🔔 Smart Notifications initialized')
+    logger.debug('🔔 Smart Notifications initialized')
     return true
   }
 
@@ -104,7 +107,7 @@ export class SmartNotificationManager {
       this.permission = await Notification.requestPermission()
       return this.permission === 'granted'
     } catch (error) {
-      console.error('Error requesting notification permission:', error)
+      logger.error('Error requesting notification permission', error)
       return false
     }
   }
@@ -173,9 +176,9 @@ export class SmartNotificationManager {
         avgAccuracy: attempts.filter(a => a.correct).length / attempts.length
       }
 
-      console.log('📊 User patterns analyzed:', this.userPatterns)
+      logger.debug('📊 User patterns analyzed', this.userPatterns)
     } catch (error) {
-      console.error('Error analyzing user patterns:', error)
+      logger.error('Error analyzing user patterns', error)
     }
   }
 
@@ -205,10 +208,10 @@ export class SmartNotificationManager {
 
       await this.scheduleForDay(tomorrow, dueCount)
 
-      console.log('📅 Smart notifications scheduled')
+      logger.debug('📅 Smart notifications scheduled')
       return true
     } catch (error) {
-      console.error('Error scheduling notifications:', error)
+      logger.error('Error scheduling notifications', error)
       return false
     }
   }
@@ -343,7 +346,7 @@ export class SmartNotificationManager {
         })
       }
     } catch (error) {
-      console.error('Error scheduling streak preservation:', error)
+      logger.error('Error scheduling streak preservation', error)
     }
   }
 
@@ -368,9 +371,9 @@ export class SmartNotificationManager {
 
       this.scheduledNotifications.set(notification.id, timeoutId)
 
-      console.log(`📅 Notification scheduled: ${notification.title} at ${notification.time.toLocaleString()}`)
+      logger.debug(`📅 Notification scheduled: ${notification.title} at ${notification.time.toLocaleString()}`)
     } catch (error) {
-      console.error('Error scheduling individual notification:', error)
+      logger.error('Error scheduling individual notification', error)
     }
   }
 
@@ -404,7 +407,7 @@ export class SmartNotificationManager {
 
       if (registration?.showNotification) {
         await registration.showNotification(notification.title, options)
-        console.log('🔔 Notification sent (SW):', notification.title)
+        logger.debug('🔔 Notification sent (SW)', notification.title)
         return
       }
 
@@ -419,9 +422,9 @@ export class SmartNotificationManager {
         notif.close()
       }
 
-      console.log('🔔 Notification sent:', notification.title)
+      logger.debug('🔔 Notification sent', notification.title)
     } catch (error) {
-      console.error('Error sending notification:', error)
+      logger.error('Error sending notification', error)
     }
   }
 
@@ -430,7 +433,7 @@ export class SmartNotificationManager {
 
     if (!this.registrationPromise) {
       this.registrationPromise = navigator.serviceWorker.ready.catch(error => {
-        console.warn('Service worker registration unavailable:', error)
+        logger.warn('Service worker registration unavailable', error)
         this.registrationPromise = null
         return null
       })

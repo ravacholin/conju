@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useSettings } from '../state/settings.js'
 import { buildFormsForRegion, getEligibleFormsForSettings } from '../lib/core/eligibility.js'
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('useEligiblePool')
 
 // Hook de conveniencia: retorna pool base por región y pool elegible (curriculum + dialecto)
 export function useEligiblePool() {
@@ -22,7 +25,7 @@ export function useEligiblePool() {
         setEligible(getEligibleFormsForSettings(baseForms, settings))
       } catch (err) {
         if (cancelled) return
-        console.error('useEligiblePool: failed to build forms for region', err)
+        logger.error('failed to build forms for region', err)
         setError(err)
         setBase([])
         setEligible([])

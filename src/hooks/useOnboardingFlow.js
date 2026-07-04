@@ -6,7 +6,10 @@ import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
 import { LEVELS } from '../lib/data/levels.js'
 import router from '../lib/routing/Router.js'
 import { ROUTES } from '../lib/routing/routeContract.js'
+import { createLogger } from '../lib/utils/logger.js'
 // import gates from '../data/curriculum.json'
+
+const logger = createLogger('useOnboardingFlow')
 
 // Helper function to get allowed lemmas from level configuration
 function getAllowedLemmasForLevel(level) {
@@ -121,7 +124,7 @@ export function useOnboardingFlow() {
       router.navigate(ROUTES.onboarding(safeStep), options)
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.warn('Router navigation failed, ignoring.', error)
+        logger.warn('Router navigation failed, ignoring.', error)
       }
     }
   }, [])
@@ -131,8 +134,8 @@ export function useOnboardingFlow() {
     const { syncRouter = true, replace = false } = options
     const safeStep = typeof newStep === 'number' && newStep >= 1 ? newStep : 1
     if (import.meta.env.DEV) {
-      console.log(`🚨 setOnboardingStep called: ${onboardingStepRef.current} → ${safeStep}`, { syncRouter, replace });
-      console.trace('Stack trace for setOnboardingStep:');
+      logger.debug(`🚨 setOnboardingStep called: ${onboardingStepRef.current} → ${safeStep}`, { syncRouter, replace });
+      logger.debug('Stack trace for setOnboardingStep');
     }
 
     dispatch({
@@ -147,7 +150,7 @@ export function useOnboardingFlow() {
   }, [navigateToStep])
   
   if (import.meta.env.DEV) {
-    console.log('--- HOOK useOnboardingFlow ---', {
+    logger.debug('--- HOOK useOnboardingFlow ---', {
       onboardingStep
     });
   }
@@ -313,7 +316,7 @@ export function useOnboardingFlow() {
 
   const selectDialect = useCallback((dialect) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectDialect', dialect);
+      logger.debug('ACTION: selectDialect', dialect);
     }
     closeTopPanelsAndFeatures()
     
@@ -379,7 +382,7 @@ export function useOnboardingFlow() {
 
   const selectLevel = useCallback((level) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectLevel', level);
+      logger.debug('ACTION: selectLevel', level);
     }
     closeTopPanelsAndFeatures()
     // Apply level-specific policies
@@ -496,7 +499,7 @@ export function useOnboardingFlow() {
 
   const selectPracticeMode = useCallback((mode, onStartPractice) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectPracticeMode', mode);
+      logger.debug('ACTION: selectPracticeMode', mode);
     }
     closeTopPanelsAndFeatures()
 
@@ -565,7 +568,7 @@ export function useOnboardingFlow() {
 
   const selectMood = useCallback((mood, options = {}) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectMood', mood);
+      logger.debug('ACTION: selectMood', mood);
     }
     closeTopPanelsAndFeatures()
     // For theme-based practice (cameFromTema=true), keep the flag set
@@ -589,7 +592,7 @@ export function useOnboardingFlow() {
 
   const selectTense = useCallback((tense) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectTense', tense);
+      logger.debug('ACTION: selectTense', tense);
     }
     closeTopPanelsAndFeatures()
 
@@ -628,7 +631,7 @@ export function useOnboardingFlow() {
 
   const selectVerbType = useCallback((verbType, onStartPractice) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectVerbType', verbType);
+      logger.debug('ACTION: selectVerbType', verbType);
     }
     closeTopPanelsAndFeatures()
     
@@ -669,7 +672,7 @@ export function useOnboardingFlow() {
   
   const selectFamily = useCallback((familyId, onStartPractice) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: selectFamily', familyId);
+      logger.debug('ACTION: selectFamily', familyId);
     }
     closeTopPanelsAndFeatures()
     const updates = { selectedFamily: familyId }
@@ -679,7 +682,7 @@ export function useOnboardingFlow() {
 
   const goBack = useCallback(() => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: goBack');
+      logger.debug('ACTION: goBack');
     }
 
     const settingsSnapshot = createSettingsSnapshot(settings)
@@ -687,7 +690,7 @@ export function useOnboardingFlow() {
     const nextState = onboardingReducer(state, action)
 
     if (import.meta.env.DEV) {
-      console.log(`🔙 Manual back navigation: ${onboardingStep} → ${nextState.step}`)
+      logger.debug(`🔙 Manual back navigation: ${onboardingStep} → ${nextState.step}`)
     }
 
     if (nextState.step === onboardingStep) {
@@ -700,14 +703,14 @@ export function useOnboardingFlow() {
 
   const goToLevelDetails = useCallback(() => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: goToLevelDetails');
+      logger.debug('ACTION: goToLevelDetails');
     }
     setOnboardingStep(3)
   }, [setOnboardingStep])
 
   const handleHome = useCallback((setCurrentMode) => {
     if (import.meta.env.DEV) {
-      console.log('ACTION: handleHome');
+      logger.debug('ACTION: handleHome');
     }
     if (setCurrentMode) {
       setCurrentMode('onboarding')

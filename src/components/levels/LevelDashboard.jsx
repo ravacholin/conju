@@ -3,6 +3,9 @@ import { useSettings } from '../../state/settings.js'
 import { getCurrentUserProfile, getLevelColor, getLevelDescription } from '../../lib/levels/userLevelProfile.js'
 import { getProgressionStatus } from '../../lib/levels/levelProgression.js'
 import ClickableCard from '../shared/ClickableCard.jsx'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('LevelDashboard')
 
 function LevelDashboard({ onStartPlacementTest, onLevelChange }) {
   const settings = useSettings()
@@ -31,7 +34,7 @@ function LevelDashboard({ onStartPlacementTest, onLevelChange }) {
         settings.setUserLevelProgress(userProfile.getLevelProgress())
       }
     } catch (error) {
-      console.error('Failed to load user data:', error)
+      logger.error('Failed to load user data', error)
     } finally {
       setLoading(false)
     }
@@ -46,7 +49,7 @@ function LevelDashboard({ onStartPlacementTest, onLevelChange }) {
         onLevelChange && onLevelChange(newLevel)
       }
     } catch (error) {
-      console.error('Failed to change level:', error)
+      logger.error('Failed to change level', error)
     }
   }
 

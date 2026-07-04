@@ -7,6 +7,9 @@ import { IRREGULAR_PARTICIPLES } from '../../lib/data/irregularPatterns.js'
 import './LearningDrill.css'
 import './NonfiniteGuidedDrill.css'
 import { highlightStemVowel } from './highlightHelpers.js'
+import { createLogger } from '../../lib/utils/logger.js'
+
+const logger = createLogger('NonfiniteGuidedDrill')
 
 const specialChars = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü']
 
@@ -266,7 +269,7 @@ function NonfiniteGuidedDrill({
               const verb = await getVerbByLemma(lemma)
               return verb ? [lemma, verb] : null
             } catch (error) {
-              console.warn(`NonfiniteGuidedDrill: no se pudo cargar ${lemma}`, error)
+              logger.warn(`no se pudo cargar ${lemma}`, error)
               return null
             }
           })
@@ -277,7 +280,7 @@ function NonfiniteGuidedDrill({
           setVerbLookup(map)
         }
       } catch (error) {
-        console.error('NonfiniteGuidedDrill: fallo al precargar verbos no finitos', error)
+        logger.error('fallo al precargar verbos no finitos', error)
         if (!cancelled) {
           setVerbLookup(new Map())
         }
@@ -333,7 +336,7 @@ function NonfiniteGuidedDrill({
       if (preferred) utter.voice = preferred
       synth.speak(utter)
     } catch (err) {
-      console.warn('No se pudo reproducir audio', err)
+      logger.warn('No se pudo reproducir audio', err)
     }
   }
 

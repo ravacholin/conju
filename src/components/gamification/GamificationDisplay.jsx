@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { getGamificationStats } from '../../lib/progress/gamification.js'
 import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
+import { createLogger } from '../../lib/utils/logger.js'
 import './GamificationDisplay.css'
+
+const logger = createLogger('GamificationDisplay')
 
 export default function GamificationDisplay({ compact = false, showBadges = true }) {
   const [stats, setStats] = useState(null)
@@ -38,7 +41,7 @@ export default function GamificationDisplay({ compact = false, showBadges = true
       const gamificationData = await getGamificationStats(userId)
       setStats(gamificationData)
     } catch (error) {
-      console.error('Error loading gamification stats:', error)
+      logger.error('Error loading gamification stats', error)
       setStats(null)
     } finally {
       setLoading(false)

@@ -4,6 +4,9 @@
 import { openDB } from 'idb'
 import { getDynamicLevelEvaluator } from './DynamicLevelEvaluator.js'
 import { getLevelProgressCalculator } from './LevelProgressCalculator.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('userLevelProfile')
 
 const LEVEL_ORDER = {
   'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6
@@ -61,7 +64,7 @@ export class UserLevelProfile {
         return instance
       }
     } catch (error) {
-      console.warn('Failed to load user level profile:', error)
+      logger.warn('Failed to load user level profile', error)
     }
 
     // Return new profile if none exists
@@ -75,7 +78,7 @@ export class UserLevelProfile {
       await database.put('profiles', { ...this })
       return true
     } catch (error) {
-      console.error('Failed to save user level profile:', error)
+      logger.error('Failed to save user level profile', error)
       return false
     }
   }
@@ -109,7 +112,7 @@ export class UserLevelProfile {
 
       return progress
     } catch (error) {
-      console.warn('Error calculating dynamic progress:', error)
+      logger.warn('Error calculating dynamic progress', error)
       return {
         level: this.currentLevel,
         userId: this.userId,
@@ -177,7 +180,7 @@ export class UserLevelProfile {
         const { useSettings } = await import('../../state/settings.js')
         useSettings.getState().setUserLevel(newLevel)
       } catch (error) {
-        console.warn('Failed to sync level to global settings:', error)
+        logger.warn('Failed to sync level to global settings', error)
       }
     }
 
@@ -209,7 +212,7 @@ export class UserLevelProfile {
 
       return dynamicProgress
     } catch (error) {
-      console.warn('Error updating dynamic progress:', error)
+      logger.warn('Error updating dynamic progress', error)
     }
   }
 
@@ -227,7 +230,7 @@ export class UserLevelProfile {
         this.levelHistory = this.levelHistory.slice(-50)
       }
     } catch (error) {
-      console.error('Failed to add level history:', error)
+      logger.error('Failed to add level history', error)
     }
   }
 
@@ -242,7 +245,7 @@ export class UserLevelProfile {
         .filter(entry => entry.userId === this.userId)
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     } catch (error) {
-      console.error('Failed to get level history:', error)
+      logger.error('Failed to get level history', error)
       return this.levelHistory
     }
   }
@@ -398,7 +401,7 @@ export class UserLevelProfile {
 
       return evaluation.effectiveLevel
     } catch (error) {
-      console.warn('Error getting effective level:', error)
+      logger.warn('Error getting effective level', error)
       return this.currentLevel
     }
   }
@@ -421,7 +424,7 @@ export class UserLevelProfile {
 
       return evaluation
     } catch (error) {
-      console.warn('Error getting dynamic evaluation:', error)
+      logger.warn('Error getting dynamic evaluation', error)
       return null
     }
   }
@@ -463,7 +466,7 @@ export class UserLevelProfile {
         recommendations: dynamicEvaluation?.recommendations || []
       }
     } catch (error) {
-      console.warn('Error checking dynamic promotion readiness:', error)
+      logger.warn('Error checking dynamic promotion readiness', error)
       return {
         ready: this.isReadyForPromotion(),
         progress: this.levelProgress,
@@ -538,7 +541,7 @@ export class UserLevelProfile {
         lastEvaluated: Date.now()
       }
     } catch (error) {
-      console.warn('Error getting dynamic level display info:', error)
+      logger.warn('Error getting dynamic level display info', error)
       return this.getLevelDisplayInfo()
     }
   }
@@ -591,7 +594,7 @@ export async function recordGlobalCompetency(mood, tense, accuracy, responseTime
   if (profile.evaluationEnabled) {
     // Don't await to avoid blocking the main flow
     profile.updateDynamicProgress().catch(err =>
-      console.warn('Error updating dynamic progress after competency record:', err)
+      logger.warn('Error updating dynamic progress after competency record', err)
     )
   }
 
@@ -664,7 +667,7 @@ export async function checkGlobalLevelRecommendation({ signal } = {}) {
     }
     return await shouldUserChangeLevel(profile.userId)
   } catch (error) {
-    console.warn('Error checking level recommendation:', error)
+    logger.warn('Error checking level recommendation', error)
     return {
       shouldChange: false,
       confidence: 0,

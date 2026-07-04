@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getGlobalAssessment } from '../../lib/levels/levelAssessment.js'
 import { setGlobalPlacementTestBaseline } from '../../lib/levels/userLevelProfile.js'
+import { createLogger } from '../../lib/utils/logger.js'
 import './PlacementTest.css'
+
+const logger = createLogger('PlacementTest')
 
 function PlacementTest({ onComplete, onCancel }) {
   const settings = useSettings()
@@ -25,14 +28,14 @@ function PlacementTest({ onComplete, onCancel }) {
 
   const handleStartTest = async () => {
     try {
-      console.log('🚀 Starting placement test...')
+      logger.debug('🚀 Starting placement test...')
       const test = assessment.startTest()
-      console.log('✅ Test started:', test)
+      logger.debug('✅ Test started', test)
       setCurrentTest(test)
       setCurrentQuestion(test.currentQuestion)
       setTestStarted(true)
     } catch (error) {
-      console.error('❌ Failed to start placement test:', error)
+      logger.error('❌ Failed to start placement test', error)
       alert('Error al iniciar el test. Por favor, recarga la página e intenta de nuevo.')
     }
   }
@@ -70,7 +73,7 @@ function PlacementTest({ onComplete, onCancel }) {
         setIsSubmitting(false)
       }, 2000) // 2 second delay for feedback
     } catch (error) {
-      console.error('Failed to submit answer:', error)
+      logger.error('Failed to submit answer', error)
       setIsSubmitting(false)
     }
   }

@@ -1,6 +1,9 @@
 // Sistema de caché inteligente para datos de progreso
 // Reduce solicitudes duplicadas y mejora el rendimiento del dashboard
 import { onProgressEvent, PROGRESS_EVENTS } from '../events/progressEventBus.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('ProgressDataCache')
 
 const PROGRESS_CACHE_TTL_MS = Object.freeze({
   heatMap: 3 * 60 * 1000,
@@ -243,7 +246,7 @@ class ProgressDataCache {
     
     // Ejecutar en paralelo sin esperar
     Promise.allSettled(warmupPromises).catch(error => {
-      console.warn('Cache warmup partial failure:', error)
+      logger.warn('Cache warmup partial failure', error)
     })
   }
   
@@ -342,7 +345,7 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
     const cacheKeys = resolveProgressUpdateKeys(detail)
     
     if (import.meta.env?.DEV) {
-      console.log('🗑️ Cache invalidation triggered:', { userId, updateType })
+      logger.debug('🗑️ Cache invalidation triggered', { userId, updateType })
     }
     
     if (userId) {
@@ -367,7 +370,7 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
     const settings = event.detail
     if (settings && (settings.level || settings.region || settings.practiceMode)) {
       if (import.meta.env?.DEV) {
-        console.log('⚙️ Settings changed, invalidating recommendations cache')
+        logger.debug('⚙️ Settings changed, invalidating recommendations cache')
       }
       progressDataCache.invalidateByDataType(['recommendations', 'heatMap'])
     }
@@ -376,7 +379,7 @@ if (typeof window !== 'undefined' && !window.__CONJU_PROGRESS_CACHE_EVENTS__) {
   onProgressEvent(PROGRESS_EVENTS.CHALLENGE_COMPLETED, (detail = {}) => {
     const userId = detail.userId
     if (import.meta.env?.DEV) {
-      console.log('🏅 Desafío diario completado, invalidando caché correspondiente', detail)
+      logger.debug('🏅 Desafío diario completado, invalidando caché correspondiente', detail)
     }
     if (userId) {
       progressDataCache.invalidateByDataType('dailyChallenges', userId)

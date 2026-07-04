@@ -5,6 +5,9 @@ import { getCurrentUserProfile } from './userLevelProfile.js'
 import { getDynamicLevelEvaluator } from './DynamicLevelEvaluator.js'
 import { getLevelProgressCalculator } from './LevelProgressCalculator.js'
 import { LEVEL_REQUIREMENTS } from './levelProgression.js'
+import { createLogger } from '../utils/logger.js'
+
+const logger = createLogger('LevelRecommendationEngine')
 
 // Configuración del motor de recomendaciones
 const RECOMMENDATION_CONFIG = {
@@ -97,7 +100,7 @@ export class LevelRecommendationEngine {
       return recommendations
 
     } catch (error) {
-      console.error('Error generating recommendations:', error)
+      logger.error('Error generating recommendations', error)
       return this.getDefaultRecommendations(userId)
     }
   }
@@ -542,7 +545,7 @@ export class LevelRecommendationEngine {
       const evaluator = getDynamicLevelEvaluator()
       return await evaluator.evaluateEffectiveLevel(userId)
     } catch (error) {
-      console.warn('Error getting dynamic evaluation:', error)
+      logger.warn('Error getting dynamic evaluation', error)
       return null
     }
   }
@@ -555,7 +558,7 @@ export class LevelRecommendationEngine {
       const calculator = getLevelProgressCalculator()
       return await calculator.calculateLevelProgress(userId)
     } catch (error) {
-      console.warn('Error getting dynamic progress:', error)
+      logger.warn('Error getting dynamic progress', error)
       return null
     }
   }

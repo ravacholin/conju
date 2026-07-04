@@ -3,6 +3,10 @@
  * Solves the common PWA issue where stale chunks fail to load after deployments
  */
 
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('dynamicImportRetry')
+
 /**
  * Retry dynamic import with cache busting
  * @param {Function} importFn - The import function to retry
@@ -29,7 +33,7 @@ async function clearDynamicImportCache(error) {
 
     await cache.delete(failedUrl ?? '')
   } catch (cacheError) {
-    console.debug('Cache clearing failed:', cacheError)
+    logger.debug('Cache clearing failed', cacheError)
   }
 }
 
@@ -52,7 +56,7 @@ export async function retryDynamicImport(importFn, maxRetries = 2) {
       return await importFn()
     } catch (error) {
       lastError = error
-      console.warn(`Dynamic import failed (attempt ${attempt + 1}/${maxRetries + 1}):`, error.message)
+      logger.warn(`Dynamic import failed (attempt ${attempt + 1}/${maxRetries + 1})`, error.message)
 
       // On failed attempts, try cache busting strategies
       if (attempt < maxRetries) {
@@ -68,7 +72,7 @@ export async function retryDynamicImport(importFn, maxRetries = 2) {
   }
 
   // All retries failed - force page reload as last resort
-  console.error('All dynamic import attempts failed, forcing page reload')
+  logger.error('All dynamic import attempts failed, forcing page reload')
   reloadPage()
 
   throw lastError

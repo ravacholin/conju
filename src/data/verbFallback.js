@@ -2,6 +2,9 @@
 // Even if lazy loading fails, app continues with basic functionality
 
 import { getVerbsSync, areVerbsLoaded } from './verbsLazy.js'
+import { createLogger } from '../lib/utils/logger.js'
+
+const logger = createLogger('verbFallback')
 
 // Essential verbs for basic functionality - hardcoded as absolute fallback
 const ESSENTIAL_VERBS_FALLBACK = [
@@ -67,10 +70,10 @@ export function getVerbsWithFallback() {
       return syncVerbs
     }
 
-    console.warn('⚠️ No verbs in cache, using essential fallback verbs')
+    logger.warn('⚠️ No verbs in cache, using essential fallback verbs')
     return ESSENTIAL_VERBS_FALLBACK
   } catch (error) {
-    console.error('❌ Even fallback verbs failed, using minimal set:', error)
+    logger.error('❌ Even fallback verbs failed, using minimal set', error)
     return ESSENTIAL_VERBS_FALLBACK
   }
 }
@@ -90,7 +93,7 @@ export async function getVerbsProgressive() {
     const { getVerbs } = await import('./verbsLazy.js')
     return await getVerbs()
   } catch (error) {
-    console.warn('⚠️ Progressive loading failed, using fallback:', error)
+    logger.warn('⚠️ Progressive loading failed, using fallback', error)
     return getVerbsWithFallback()
   }
 }
