@@ -941,7 +941,12 @@ function MeaningfulPractice({
 
 // Componente para mostrar el encabezado del ejercicio
 function ExerciseHeader({ exercise, step, tense, mood, eligibleForms }) {
-  const requiredVerbs = extractRequiredVerbs(exercise, eligibleForms, tense, mood);
+  // Memoizado: extractRequiredVerbs recorre eligibleForms y hace lookups de lemma por
+  // verbo esperado, así que no debe re-ejecutarse en cada tecla que el usuario tipea.
+  const requiredVerbs = useMemo(
+    () => extractRequiredVerbs(exercise, eligibleForms, tense, mood),
+    [exercise, eligibleForms, tense, mood]
+  );
 
   return (
     <div className="exercise-header">

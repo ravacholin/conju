@@ -505,6 +505,15 @@ function PronunciationPractice({ tense, eligibleForms, onBack, onContinue }) {
     };
   }, [logger]);
 
+  // Cancel any in-flight TTS utterance on unmount so it doesn't keep talking after
+  // navigating away from this screen.
+  useEffect(() => {
+    return () => {
+      const { win } = resolveWindow();
+      win?.speechSynthesis?.cancel();
+    };
+  }, []);
+
   // Speech recognition event handlers
   // Waveform animation
   const startWaveformAnimation = useCallback(() => {

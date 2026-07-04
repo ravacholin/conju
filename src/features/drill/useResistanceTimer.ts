@@ -22,6 +22,9 @@ export function useResistanceTimer() {
   const [clockClickFeedback, setClockClickFeedback] = useState(false)
   const intervalRef = useRef<number | null>(null)
   const msLeftRef = useRef(0)
+  const urgentTickTimeoutRef = useRef<number | null>(null)
+  const explosionTimeoutRef = useRef<number | null>(null)
+  const clockClickTimeoutRef = useRef<number | null>(null)
 
   // Countdown tick and end-of-time effects
   useEffect(() => {
@@ -31,9 +34,20 @@ export function useResistanceTimer() {
         intervalRef.current = null
       }
     }
+    const clearPendingTimeouts = () => {
+      if (urgentTickTimeoutRef.current !== null) {
+        clearTimeout(urgentTickTimeoutRef.current)
+        urgentTickTimeoutRef.current = null
+      }
+      if (explosionTimeoutRef.current !== null) {
+        clearTimeout(explosionTimeoutRef.current)
+        explosionTimeoutRef.current = null
+      }
+    }
 
     if (!resistanceActive) {
       clearTimer()
+      clearPendingTimeouts()
       return
     }
 
@@ -53,13 +67,20 @@ export function useResistanceTimer() {
 
       if (left <= 5000 && left > 0) {
         setUrgentTick(true)
-        setTimeout(() => setUrgentTick(false), 150)
+        if (urgentTickTimeoutRef.current !== null) {
+          clearTimeout(urgentTickTimeoutRef.current)
+        }
+        urgentTickTimeoutRef.current = window.setTimeout(() => {
+          urgentTickTimeoutRef.current = null
+          setUrgentTick(false)
+        }, 150)
       }
 
       if (left === 0) {
         clearTimer()
         setShowExplosion(true)
-        setTimeout(() => {
+        explosionTimeoutRef.current = window.setTimeout(() => {
+          explosionTimeoutRef.current = null
           setShowExplosion(false)
           const latest = (useSettings as any).getState()
           const lvl = latest.level || 'A1'
@@ -76,8 +97,19 @@ export function useResistanceTimer() {
 
     return () => {
       clearTimer()
+      clearPendingTimeouts()
     }
   }, [resistanceActive, set])
+
+  // Clear any pending timeouts if the component using this hook unmounts, so a stale
+  // callback can't fire setState or write to the global settings store after unmount.
+  useEffect(() => {
+    return () => {
+      if (urgentTickTimeoutRef.current !== null) clearTimeout(urgentTickTimeoutRef.current)
+      if (explosionTimeoutRef.current !== null) clearTimeout(explosionTimeoutRef.current)
+      if (clockClickTimeoutRef.current !== null) clearTimeout(clockClickTimeoutRef.current)
+    }
+  }, [])
 
   // On-clock click: add 5 seconds and feedback
   const handleClockClick = useCallback(() => {
@@ -85,7 +117,13 @@ export function useResistanceTimer() {
     msLeftRef.current = Math.min(msLeftRef.current + 5000, RESISTANCE_MAX_MS)
     setMsLeft(msLeftRef.current)
     setClockClickFeedback(true)
-    setTimeout(() => setClockClickFeedback(false), 300)
+    if (clockClickTimeoutRef.current !== null) {
+      clearTimeout(clockClickTimeoutRef.current)
+    }
+    clockClickTimeoutRef.current = window.setTimeout(() => {
+      clockClickTimeoutRef.current = null
+      setClockClickFeedback(false)
+    }, 300)
   }, [resistanceActive])
 
   // Called by Drill on a correct answer to add bonus time.

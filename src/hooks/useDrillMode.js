@@ -170,9 +170,16 @@ export function useDrillMode() {
       } else {
         logger.error('handleSessionGeneration', 'Failed to generate session item')
       }
+    } catch (error) {
+      logger.error('handleSessionGeneration', 'Error generating session item', error)
     } finally {
-      // Restore original settings (except practiceMode)
-      setSettings({ ...originalSettings, practiceMode: 'personalized_session' })
+      // Restore original settings (except practiceMode) — but only if nothing else
+      // (e.g. handleDrillResult finishing the session concurrently) already moved
+      // practiceMode away from what we set here, so we don't resurrect a session
+      // that legitimately ended while this generation was in flight.
+      if (useSettings.getState().practiceMode === activitySettings.practiceMode) {
+        setSettings({ ...originalSettings, practiceMode: 'personalized_session' })
+      }
     }
   }
 

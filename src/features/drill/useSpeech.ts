@@ -1,5 +1,5 @@
 // Lightweight TypeScript hook for Text-to-Speech logic
-import { useMemo } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getSpeechLanguagePreferences } from '../../lib/pronunciation/languagePreferences.js'
 
@@ -16,6 +16,7 @@ export function useSpeech() {
     () => getSpeechLanguagePreferences(settings?.region),
     [settings?.region]
   )
+  const fallbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const speak = (text?: string) => {
     try {
@@ -73,11 +74,10 @@ export function useSpeech() {
 
       if (synth.getVoices && synth.getVoices().length === 0) {
         let hasSpoken = false
-        let fallbackId = null
         const onVoices = () => {
-          if (fallbackId) {
-            clearTimeout(fallbackId)
-            fallbackId = null
+          if (fallbackTimeoutRef.current) {
+            clearTimeout(fallbackTimeoutRef.current)
+            fallbackTimeoutRef.current = null
           }
           if (!hasSpoken) {
             hasSpoken = true
@@ -87,7 +87,8 @@ export function useSpeech() {
         }
         synth.addEventListener('voiceschanged', onVoices)
         // Fallback if event doesn't fire
-        fallbackId = setTimeout(() => {
+        fallbackTimeoutRef.current = setTimeout(() => {
+          fallbackTimeoutRef.current = null
           if (!hasSpoken) {
             hasSpoken = true
             pickAndSpeak()
@@ -101,6 +102,20 @@ export function useSpeech() {
       // No-op on TTS errors
     }
   }
+
+  // Cancel any pending voice-fallback timeout and in-flight utterance if the component
+  // using this hook unmounts before speech actually starts.
+  useEffect(() => {
+    return () => {
+      if (fallbackTimeoutRef.current) {
+        clearTimeout(fallbackTimeoutRef.current)
+        fallbackTimeoutRef.current = null
+      }
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
 
   const getSpeakText = ({ currentItem, result, isReverse, isDouble }: SpeakArgs) => {
     if (!currentItem) return ''
