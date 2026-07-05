@@ -2,17 +2,7 @@ import { useSettings, PRACTICE_MODES } from '../../state/settings.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
-import { isRegularFormForMood, isRegularNonfiniteForm, hasIrregularParticiple as HAS_IRREGULAR_PARTICIPLE } from './conjugationRules.js'
-import { levelPrioritizer as LEVEL_PRIORITIZER, getWeightedFormsSelection } from './prioritizer/index.js'
-import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel as GET_ALLOWED_COMBOS } from './curriculumGate.js'
-import { varietyEngine } from './advancedVarietyEngine.js'
-import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePolicy.js'
-import {
-  isIrregularInTense,
-  hasAnyIrregularTense as HAS_ANY_IRREGULAR_TENSE,
-  getEffectiveVerbType,
-  shouldTargetIrregularForSettings as SHOULD_TARGET_IRREGULAR_FOR_SETTINGS
-} from '../utils/irregularityUtils.js'
+import { getAllowedCombosForLevel as GET_ALLOWED_COMBOS } from './curriculumGate.js'
 
 // Extracted services for cleaner architecture
 import { filterEligibleForms, createFallbackPool, excludeCurrentItem } from './FormFilterService.js'
@@ -21,20 +11,13 @@ import { selectForm } from './FormSelectorService.js'
 // Imports optimizados
 import {
   VERB_LOOKUP_MAP,
-  FORM_LOOKUP_MAP,
   formFilterCache,
-  warmupCaches as WARMUP_CACHES,
   clearAllCaches,
   initializeMaps
 } from './optimizedCache.js'
 import { createLogger } from '../utils/logger.js'
-import { getAdaptiveEngine } from '../progress/AdaptiveDifficultyEngine.js'
 
 const logger = createLogger('core:generator')
-const isDev = import.meta?.env?.DEV
-
-// Quiet debug logging during tests; keep in dev runtime
-const dbg = (...args) => { if (isDev && !import.meta?.env?.VITEST) logger.debug('dbg', ...args) }
 
 // Ensure maps are initialized
 async function ensureMapsInitialized() {
@@ -48,78 +31,13 @@ async function ensureMapsInitialized() {
   }
 }
 
-// CRITICAL FIX: Clear corrupted cache data from refactoring
-// This was caused by incompatible compression format changes
-function clearCorruptedCache() {
-  try {
-    if (typeof localStorage !== 'undefined') {
-      // Clear corrupted form filter cache
-      localStorage.removeItem('formFilterCache')
-      // Clear corrupted verb lookup cache
-      localStorage.removeItem('verbLookupCache')
-      if (isDev) {
-        logger.info('clearCorruptedCache', 'Cleared corrupted cache from localStorage')
-      }
-    }
-  } catch (error) {
-    logger.warn('clearCorruptedCache', 'Failed to clear corrupted cache', error)
-  }
-}
-
-// Clear corrupted cache on module load (only once per session)
-if (typeof window !== 'undefined' && !window.__generatorCacheCleared) {
-  clearCorruptedCache()
-  window.__generatorCacheCleared = true
-}
-
-// Fast lookups (ahora usando cache optimizado)
-const LEMMA_TO_VERB = VERB_LOOKUP_MAP
 // Use canonical gate from curriculumGate (handles Spanish/English key normalization)
 const getAllowedCombosForLevel = (level) => GET_ALLOWED_COMBOS(level)
-
-const REGULAR_MOOD_MEMO = new Map() // key: lemma|mood|tense|person|value
-const REGULAR_NONFINITE_MEMO = new Map() // key: lemma|tense|value
 
 const VALID_LEVELS = new Set(['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'ALL'])
 const VALID_PRACTICE_MODES = new Set(['mixed', 'specific', 'theme', 'all'])
 const VALID_VERB_TYPES = new Set(['all', 'regular', 'irregular', 'mixed'])
 const VALID_REGIONS = new Set(['rioplatense', 'la_general', 'peninsular'])
-
-// MCER Level verb type restrictions
-const levelVerbRestrictions = {
-  'A1': { regular: true, irregular: true },
-  'A2': { regular: true, irregular: true },
-  'B1': { regular: true, irregular: true },
-  'B2': { regular: true, irregular: true },
-  'C1': { regular: true, irregular: true }, // Allow all verb types for C1 (was incorrectly restricted)
-  'C2': { regular: true, irregular: true },
-  'ALL': { regular: true, irregular: true } // Allow all verb types for ALL level
-}
-
-function isVerbTypeAllowedForLevel(verbType, level) {
-  const restrictions = levelVerbRestrictions[level]
-  if (!restrictions) return true // Default to allowing all if level not found
-  return restrictions[verbType] || false
-}
-
-// New helper function for per-tense verb filtering
-function IS_VERB_ALLOWED_FOR_TENSE_AND_LEVEL(verb, tense, verbType, level) {
-  // Check level restrictions first
-  const effectiveVerbType = getEffectiveVerbType(verb)
-  if (!isVerbTypeAllowedForLevel(effectiveVerbType, level)) {
-    return false
-  }
-
-  // If practicing specific verb type, check tense-specific irregularity
-  if (verbType === 'irregular') {
-    return isIrregularInTense(verb, tense)
-  } else if (verbType === 'regular') {
-    return !isIrregularInTense(verb, tense)
-  }
-
-  // For 'all' or undefined verbType, allow all
-  return true
-}
 
 export async function chooseNext({ forms, history: _history, currentItem, sessionSettings }) {
   // Ensure maps are initialized before proceeding
@@ -306,30 +224,6 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
 
   return await selectForm(eligible, allSettings, selectorContext)
 }
-
-// Helper function to find a verb by its lemma
-function FIND_VERB_BY_LEMMA(lemma) {
-  return VERB_LOOKUP_MAP.get(lemma)
-}
-
-
-
-// Helper function to determine if a verb is irregular (fallback)
-function IS_IRREGULAR_VERB(lemma) {
-  const irregularVerbs = [
-    'ser', 'estar', 'tener', 'hacer', 'ir', 'venir', 'decir', 'dar', 'ver', 'saber',
-    'poder', 'querer', 'poner', 'salir', 'traer', 'caer', 'oir', 'valer', 'caber',
-    'haber', 'satisfacer', 'hacer', 'deshacer', 'rehacer', 'contrahacer'
-  ]
-  return irregularVerbs.includes(lemma)
-}
-
-
-function ACC(f, history) {
-  const k = key(f); const h = history[k] || { seen: 0, correct: 0 }
-  return (h.correct + 1) / (h.seen + 2)
-}
-function key(f) { return `${f.mood}:${f.tense}:${f.person}:${f.value}` }
 
 /**
  * PROGRESS SYSTEM INTEGRATION: Validates if a mood/tense combination has available forms

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { grade } from '../../lib/core/grader.js';
-// Removed unused imports to satisfy lint
+import { stripAccents } from '../../lib/utils/accentUtils.js';
+import { PERSON_LABELS } from '../../lib/utils/verbLabels.js';
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
 import { useSettings, warmupCachesIfNeeded } from '../../state/settings.js';
@@ -98,9 +99,10 @@ export default function Drill({
     let extendedResult;
 
     if (settings.reverseActive) {
-      // Reverse mode: check against lemma
+      // Reverse mode: check against lemma (accent-tolerant, matching lenient grading)
       const correctAnswer = currentItem?.lemma || '';
-      const isCorrect = input.trim().toLowerCase() === correctAnswer.toLowerCase();
+      const normalize = (s) => stripAccents(s.trim().toLowerCase());
+      const isCorrect = normalize(input) === normalize(correctAnswer);
       gradeResult = {
         correct: isCorrect,
         targets: [correctAnswer],
@@ -287,18 +289,6 @@ export default function Drill({
 
   const getPersonText = () => {
     if (!currentItem) return '';
-
-    // Import labels locally to avoid issues
-    const PERSON_LABELS = {
-      '1s': 'yo',
-      '2s_tu': 'tú',
-      '2s_vos': 'vos',
-      '3s': 'él/ella',
-      '1p': 'nosotros',
-      '2p_vosotros': 'vosotros',
-      '3p': 'ellos'
-    };
-
     return PERSON_LABELS[currentItem.person] || currentItem.person;
   };
 
@@ -372,15 +362,6 @@ export default function Drill({
   };
 
   const getPersonLabel = (person) => {
-    const PERSON_LABELS = {
-      '1s': 'yo',
-      '2s_tu': 'tú',
-      '2s_vos': 'vos',
-      '3s': 'él/ella',
-      '1p': 'nosotros',
-      '2p_vosotros': 'vosotros',
-      '3p': 'ellos'
-    };
     return PERSON_LABELS[person] || person;
   };
 

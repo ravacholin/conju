@@ -352,13 +352,14 @@ const useSettings = create(
 
         // Métodos para actualizar configuración
         set: (newSettings) => set(newSettings),
-        setLevel: (level) => set({ level, lastUpdated: Date.now() }),
+        // The wrapped `set` above injects `lastUpdated` on every update, so setters don't repeat it.
+        setLevel: (level) => set({ level }),
 
         // User level system methods
-        setUserLevel: (userLevel) => set({ userLevel, lastUpdated: Date.now() }),
-        setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)), lastUpdated: Date.now() }),
-        setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed, lastUpdated: Date.now() }),
-        setPlacementTestReport: (report) => set({ placementTestReport: report, lastUpdated: Date.now() }),
+        setUserLevel: (userLevel) => set({ userLevel }),
+        setUserLevelProgress: (progress) => set({ userLevelProgress: Math.max(0, Math.min(100, progress)) }),
+        setPlacementTestCompleted: (completed) => set({ hasCompletedPlacementTest: completed }),
+        setPlacementTestReport: (report) => set({ placementTestReport: report }),
 
         // Practice mode methods
         setLevelPracticeMode: (mode) => set({ levelPracticeMode: mode }),

@@ -21,6 +21,8 @@ import { initProgressSystem as initProgressSystemCore } from '../../lib/progress
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
 import { useShallow } from 'zustand/react/shallow'
 
+const logger = createLogger('useProgressTracking')
+
 /**
  * Hook personalizado para tracking de progreso en Drill
  * @param {Object} currentItem - Ítem actual que se está practicando
@@ -28,7 +30,6 @@ import { useShallow } from 'zustand/react/shallow'
  * @returns {Object} Funciones para manejar el tracking
  */
 export function useProgressTracking(currentItem, onResult) {
-  const logger = createLogger('useProgressTracking')
   const attemptIdRef = useRef(null)
   const itemStartTimeRef = useRef(null)
   const sessionInitializedRef = useRef(false)
@@ -128,6 +129,9 @@ export function useProgressTracking(currentItem, onResult) {
       onResult(result)
     }
 
+    // Latencia del intento (una sola medición reutilizada por los consumidores)
+    const latencyMs = itemStartTimeRef.current ? Date.now() - itemStartTimeRef.current : 0
+
     // Si hay una sesión de plan activa, incrementar el contador
     if (sessionState.activeSessionId && sessionState.activePlanId) {
       try {
@@ -142,7 +146,6 @@ export function useProgressTracking(currentItem, onResult) {
     if (currentItem && itemStartTimeRef.current) {
       try {
         const adaptiveEngine = getAdaptiveEngine()
-        const latencyMs = Date.now() - itemStartTimeRef.current
 
         const adaptiveResponse = {
           correct: result.correct,
@@ -167,8 +170,6 @@ export function useProgressTracking(currentItem, onResult) {
     // Registrar el resultado del intento solo si el sistema está listo
     if (progressSystemReady && attemptIdRef.current && itemStartTimeRef.current) {
       try {
-        const latencyMs = Date.now() - itemStartTimeRef.current
-
         // Registrar intento completado
         await trackAttemptSubmitted(attemptIdRef.current, {
           correct: result.correct,
