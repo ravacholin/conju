@@ -2,17 +2,17 @@
  * LearnTenseFlow.jsx - Componente principal del flujo de aprendizaje estructurado
  * 
  * Este componente orquesta el flujo completo de aprendizaje de tiempos verbales,
- * desde la selección hasta la práctica comunicativa con algoritmos adaptativos.
+ * desde la selección hasta la práctica libre con algoritmos adaptativos.
  * 
  * @component
  * @description
  * Responsabilidades principales:
- * - Gestión del flujo de aprendizaje multi-etapa (introducción → práctica mecánica → práctica significativa → práctica comunicativa)
+ * - Gestión del flujo de aprendizaje multi-etapa (introducción → práctica mecánica guiada → práctica libre)
  * - Selección dinámica de verbos basada en familias irregulares y nivel de dificultad
  * - Integración con motor de aprendizaje adaptativo y sistema de A/B testing
  * - Manejo de configuraciones de sesión personalizadas por duración
  * - Navegación inteligente con salto de fases según nivel de dominio del usuario
- * 
+ *
  * Fases del flujo de aprendizaje:
  * 1. 'tense-selection': Selección de tiempo verbal con ejemplos dinámicos
  * 2. 'type-selection': Elección entre verbos regulares/irregulares con categorías pedagógicas
@@ -21,10 +21,8 @@
  * 5. 'guided_drill_*': Práctica mecánica guiada por conjugaciones (-ar, -er, -ir)
  * 6. 'recap': Resumen y consolidación de patrones aprendidos
  * 7. 'practice': Práctica mecánica con verbos adicionales (excluyendo ejemplos iniciales)
- * 8. 'meaningful_practice': Práctica contextual con oraciones completas
- * 9. 'pronunciation_practice': Práctica de pronunciación con audio
- * 10. 'communicative_practice': Práctica comunicativa con situaciones reales
- * 
+ * 8. 'session-complete': Pantalla de cierre de sesión
+ *
  * @example
  * ```jsx
  * // Uso típico desde AppRouter
