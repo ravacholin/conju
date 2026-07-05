@@ -136,13 +136,7 @@ export function grade(input, expected, settings){
   if(settings.useTuteo && a.tu) candidates.add(a.tu)
   if(allowDialectAlts && settings.useVoseo && a.vos) candidates.add(a.vos)
   if(settings.useVosotros && a.vosotros) candidates.add(a.vosotros)
-  
-  // Add additional alternative forms only if not in strict mode
-  if(!settings.strict){
-    // Additional alt forms beyond dialect variants
-    // (this is for other types of alternatives, not dialect-specific ones)
-  }
-  
+
   // UNIFIED ACCENT SYSTEM - Single point of truth
   const accentPolicy = settings.accentTolerance || 'warn' // 'accept' (A1), 'warn' (A2/B1), 'strict' (B2+), 'off'
   const norm = (s)=> normalizeKeepAccents(s)
@@ -179,12 +173,8 @@ export function grade(input, expected, settings){
           // A1: Accept but warn
           correct = true
           feedback = `A1: acento no estricto (aceptado) — revisá la tilde. Forma correcta: "${correctForm}"`
-        } else if (accentPolicy === 'warn') {
-          // A2/B1: Reject, but message is instructive
-          correct = false
-          feedback = `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
         } else {
-          // B2+: Reject
+          // A2/B1 ('warn') and B2+ ('strict'): reject with an instructive message
           correct = false
           feedback = `⚠️ ERROR DE TILDE: Tu respuesta "${input}" está bien escrita pero le falta la tilde. La forma correcta es "${correctForm}"`
         }
@@ -208,7 +198,8 @@ export function grade(input, expected, settings){
         targets: [...candidates],
         note: 'Falta diéresis (ü) en güe/güi: revisá la ortografía',
         warnings: wasCorrected ? warnings : null,
-        isAccentError: false
+        isAccentError: false,
+        ts: startTs
       }
     }
   }
@@ -223,7 +214,8 @@ export function grade(input, expected, settings){
         targets: [...candidates],
         note: 'Grafía no normativa ("fué"). Debe ser "fue".',
         warnings: wasCorrected ? warnings : null,
-        isAccentError: false
+        isAccentError: false,
+        ts: startTs
       }
     }
     if (settings.level === 'C2') {
@@ -235,7 +227,8 @@ export function grade(input, expected, settings){
           targets: [...candidates],
           note: 'Norma C2: usar "guion" (sin tilde).',
           warnings: wasCorrected ? warnings : null,
-          isAccentError: false
+          isAccentError: false,
+          ts: startTs
         }
       }
     }
@@ -249,7 +242,8 @@ export function grade(input, expected, settings){
       targets: [...candidates],
       note: '“soler” no admite imperativo en español estándar',
       warnings: wasCorrected ? warnings : null,
-      isAccentError: false
+      isAccentError: false,
+      ts: startTs
     }
   }
 
@@ -266,7 +260,8 @@ export function grade(input, expected, settings){
         targets: [...candidates],
         note: 'Imperativo afirmativo: clíticos enclíticos requeridos',
         warnings: wasCorrected ? warnings : null,
-        isAccentError: false
+        isAccentError: false,
+        ts: startTs
       }
     }
     if (isImpNeg && enclitic && settings.cliticStrictness !== 'off') {
@@ -276,7 +271,8 @@ export function grade(input, expected, settings){
         targets: [...candidates],
         note: 'Imperativo negativo: clíticos proclíticos (antes del verbo) requeridos',
         warnings: wasCorrected ? warnings : null,
-        isAccentError: false
+        isAccentError: false,
+        ts: startTs
       }
     }
     // Heurística voseo 2s: 1 clítico → sin tilde; 2 clíticos → con tilde; C2 exigir regla
@@ -291,7 +287,8 @@ export function grade(input, expected, settings){
           targets: [...candidates],
           note: 'C2: con un clítico en voseo 2ª sg. no lleva tilde (hablame, comeme, vivime).',
           warnings: wasCorrected ? warnings : null,
-          isAccentError: true
+          isAccentError: true,
+          ts: startTs
         }
       }
       if (clCount >= 2 && !hasTilde) {
@@ -301,24 +298,18 @@ export function grade(input, expected, settings){
           targets: [...candidates],
           note: 'C2: con dos clíticos en voseo 2ª sg. debe llevar tilde (hablámelo, comémelo, vivímelo).',
           warnings: wasCorrected ? warnings : null,
-          isAccentError: true
+          isAccentError: true,
+          ts: startTs
         }
       }
     }
   }
   
-  // FINAL VALIDATION: Only apply fallback for truly undefined feedback on incorrect answers
   // Generate positive feedback for correct answers
   if (correct && !feedback) {
     feedback = '¡Correcto!'
   }
-  
-  if (!correct && feedback === undefined) {
-    logger.warn('⚠️ GRADER WARNING: Generated undefined feedback for incorrect answer, using fallback')
-    const correctForm = expected.value || (expected.alt && expected.alt[0]) || 'la forma correcta'
-    feedback = `❌ Forma incorrecta. La forma correcta es "${correctForm}"`
-  }
-  
+
   const result = {
     correct,
     accepted: correct ? input : null,

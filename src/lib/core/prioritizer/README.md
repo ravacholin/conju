@@ -154,17 +154,16 @@ import { PriorityCalculator } from '../core/prioritizer/PriorityCalculator.js'
 
 ## Files Affected (Phase 2 Migration)
 
-When completing Phase 2, these 10 files will need import updates:
-1. `src/lib/progress/studyPlansV2.js`
-2. `src/lib/progress/personalizedCoaching.js`
-3. `src/lib/progress/AdaptivePracticeEngine.js`
-4. `src/lib/core/quickLevelTest.js`
-5. `src/lib/core/levelDrivenTesting.js`
-6. `src/lib/core/generator.js`
-7. `src/lib/core/FormSelectorService.js`
-8. `src/hooks/useDrillMode_refactored.js`
-9. `src/hooks/useDrillMode.js`
-10. Test files
+When completing Phase 2, these files will need import updates:
+1. `src/lib/progress/personalizedCoaching.js`
+2. `src/lib/progress/AdaptivePracticeEngine.js`
+3. `src/lib/core/quickLevelTest.js`
+4. `src/lib/core/levelDrivenTesting.js`
+5. `src/lib/core/generator.js`
+6. `src/lib/core/FormSelectorService.js`
+7. `src/hooks/useDrillMode_refactored.js`
+8. `src/hooks/useDrillMode.js`
+9. Test files
 
 **Migration script** will be provided to automate this.
 

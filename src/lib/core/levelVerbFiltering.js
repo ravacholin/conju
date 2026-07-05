@@ -50,7 +50,7 @@ export const B1_ALLOWED_IRREGULAR_VERBS = [
   // Diptongación o→ue menos común
   'morir', 'recordar', 'soñar', 'almorzar', 'costar', 'probar', 'encontrar',
   'volar', 'sonar', 'llorar', 'rogar',
-  
+
   // e→i comunes (más complejos que A1)
   'pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir',
   'competir', 'impedir', 'medir', 'vestir',
@@ -100,7 +100,8 @@ export const C1_PLUS_ONLY_VERBS = [
   'aborrir', 'colorir', 'descolorir', 
   
   // Variantes muy específicas
-  'placer', 'complacer', 'desplacer', 'yacir'
+  // ('yacer' ya está clasificado en B2_PLUS_ONLY_VERBS; 'yacir' no es un infinitivo válido.)
+  'placer', 'complacer', 'desplacer'
 ]
 
 // ===== FUNCIONES DE CLASIFICACIÓN POR NIVEL =====
